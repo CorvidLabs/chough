@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 81
+version: 82
 status: active
 files:
   - src/main.rs
@@ -104,6 +104,16 @@ files:
   - tests/fixtures/skill-releases/blobs/e92e5a8fdc2e7b02ac6e01f34e15ee66501f7e3a312970069abb9e409aca167a.txt
   - tests/fixtures/skill-releases/blobs/ef831afa1094da91e5766c2d9597d6c933abe11b4d1a50913893415bd0d511a4.txt
   - tests/fixtures/skill-releases/blobs/fcbc759ab4605a6dd8fffd4af4498783186e308c6d771284bb9a2626f6e0b4e8.txt
+  - tests/evidence_inventory_compatibility.rs
+  - tests/fixtures/evidence-inventory/OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56.json
+  - tests/fixtures/evidence-inventory/OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23.json
+  - tests/fixtures/evidence-inventory/OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62.json
+  - tests/fixtures/evidence-inventory/OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314.json
+  - tests/fixtures/evidence-inventory/OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3.json
+  - tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7.json
+  - tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b.json
+  - tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619.json
+  - tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e.json
 
 db_tables: []
 depends_on: []
@@ -368,3 +378,4 @@ provider, runtime or hosted service.
 | 79 | 2026-11-07 | make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: Make evidence prune --apply recheck protections and restore partial removals (65) |
 | 80 | 2026-11-07 | correct-prune-capture-authority-and-unsafe-rollback-for-pr-197: Correct prune capture authority and unsafe rollback for PR 197 |
 | 81 | 2026-11-09 | recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits: Recognize pristine skills from pinned released bundles without replacing edits |
+| 82 | 2026-11-10 | read-bounded-diagnostic-input-inventories-without-changing-freshness-authority: Read bounded diagnostic input inventories without changing freshness authority |

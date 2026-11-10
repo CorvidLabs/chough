@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1794323940,
+      "commit": "893f280db2e26a7f569542b8227e5550206a7f04",
+      "contract_digest": "0266672cc2ade33263812d9ab616048dbd17d1c66d32c626694d2befebbf702f",
+      "execution_digest": "f890aa4a685e366861684f083dadc3c4923c36a2f712cc8d2577e472096bce7c",
+      "workspace_digest": "6ad7fbb428eb7cda37b1003943d7927ec006dfa499fb5dcd41c5808b82633ea2",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-004",
+        "REQ-cli-006"
+      ]
+    },
+    {
+      "timestamp": 1794323952,
+      "commit": "f06d4f757d542a500a7484ca8e5ecbad7486e5cd",
+      "contract_digest": "0266672cc2ade33263812d9ab616048dbd17d1c66d32c626694d2befebbf702f",
+      "execution_digest": "f890aa4a685e366861684f083dadc3c4923c36a2f712cc8d2577e472096bce7c",
+      "workspace_digest": "6da471cc6f692d6c6701911ac117a6fd3bbd4148b8f064a777fef59556e55bbe",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-004",
+        "REQ-cli-006"
+      ]
+    },
+    {
+      "timestamp": 1794323952,
+      "commit": "2f120a671ed4a3f06a75cb5dc1fe9bcf6b728384",
+      "contract_digest": "0266672cc2ade33263812d9ab616048dbd17d1c66d32c626694d2befebbf702f",
+      "execution_digest": "f890aa4a685e366861684f083dadc3c4923c36a2f712cc8d2577e472096bce7c",
+      "workspace_digest": "6da471cc6f692d6c6701911ac117a6fd3bbd4148b8f064a777fef59556e55bbe",
+      "acceptance_input_digest": "48cbf308719252cc9dfd65c4fc7d012d03f41e89a0cea9cbf2297cff4e61672d",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": ".chough/cases/cli.inventory-compat.cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5545e51a16465810413a907510c1aac67ff06b790188ad805ca31badd94fcba8",
+            "entry_digest": "da42c05ca2c6347311e6fee055dd30cd8bd2c4e5ed96d9dc0bfff994505ac3dd",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": ".chough/sessions/evidence-inventory-compat.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "dac555c154414d200bb2b25ad555af6d678a4cc82b887f6a8e774039aa94a820",
+            "entry_digest": "5981b5cc74480399397b6d1fdb9efc9a53e4846f612fde89205ef39742118757",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fb5de2b534362ef0c5cd55e53a76c27237cb79693148da48c31003a8a27114cc",
+            "entry_digest": "010afc42c5589ba3ef6792b9703ef4e91ab3aaf47cadd33a12556b77171a57b8",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/INDEX.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "bd8611734f7b6ee134898c702570a8b5f80e4e204cd59a701263347ff088b611",
+            "entry_digest": "bba17e150f445156307919de0bb0fbf498b0896be8c8b926de175b854aff0ef2",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "specs/cli/cli.3md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "35c0238b3221ca8b600366541d910327bd81b6a85cde2f9278bf38af5ae99074",
+            "entry_digest": "0ed50b4fc722a134345453943f6afc0e00078c6006f0a4df0843db3e745a7cd3",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/cli.spec.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c5949a15abb0d54537728f216aba75ad6ea149499f907adf1372d5d057de90d9",
+            "entry_digest": "d769e7fd410a513b932222b991b77ba9c5980c6e1199ed4534dbb87920328d78",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/context.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+            "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/requirements.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "64d534e48e55c0262c8905d44ccfed54ad3ad121ba4fa00c81226343af74342b",
+            "entry_digest": "3a526f78e9ac7c9c94632b23cfe769a26e1cf2a00a3ed909b6ff59a1e2ce8f54",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/tasks.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "06f3a8c0850c62325383f36e79273eb2fd9d355ce4d83a543f3c306c43294c3d",
+            "entry_digest": "8f5dc063d921267ddba11b030ed5d923c31baaedd8368d9816a654c8bf950e56",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "specs/cli/testing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "483933ab74792a113e55a1b3bf4ab1bc2e36578229a52a89c5dbee82d5375eec",
+            "entry_digest": "8ff2dbf45ad083bbcbd7ab754fb4bf49d644ee8baea9f02dc8dd4f4c313ce848",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "src/evidence.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5089b1698ee7c65af530427102f6827936056b87dc47a781372113d5a06e4f55",
+            "entry_digest": "bf92add29cc006dafd093e369a93c19159053b3a9e362e0c388060758e0055be",
+            "owners": [
+              "cli"
+            ]
+          },
+          {
+            "path": "tests/evidence_inventory_compatibility.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fb888ed1eacbd64017dfbc581b844ed4ca6bff18b0db619e8a189c6440892b64",
+            "entry_digest": "7a301cec60ae38e05ebd717e9057d16faa44b068993b221cdd842a94de7fbdd6",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/evidence-inventory/OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "eef88566047783ad44c244fb205e6021ec8a502cfbf89b987d9daf459f3c1d84",
+            "entry_digest": "ea1546a76f8af5c3fc706eac8eae5c4c303135e648aad56ca03a9c702317d372",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/evidence-inventory/OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3feb28f66e781a02414fbac8f1ebabff8ec8eca51387eb4fa1a29fc3180c3f36",
+            "entry_digest": "a7ef73b9f47f70410bcc95c080b38543a48948d2fe58cb6d5b1174cd7615d3af",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/evidence-inventory/OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d17e7975311ca456d098357e733d3be9ac271224262fdcde24410151af68c1f1",
+            "entry_digest": "a99ae617ef8787512c40ddc8f408880c932a529bb77b693ea20f05843d4c0879",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/evidence-inventory/OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "60711e54532e5e287c07bd1c08138fb3de371c1dea803f684bf5d47842c4c460",
+            "entry_digest": "2e182291d53d781b6c3fa181d6921f1386243388545b63b21974fa72cf38b404",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/evidence-inventory/OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8cefa2683f41815e013f85bcb1c127a3cec94aa5875dd809f7689c78b7e3fb45",
+            "entry_digest": "0688584e41755edb2d625c95433c114e66cd34b7590103051ea7f926b4e2488d",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d6c3f27880495cca8de70287170d93e670705fb6a08707e121b128d88263d5ff",
+            "entry_digest": "52e828565cc9eecd8204b607137eef029ee7875bffd5e72990d8a02e3ad05c13",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "006be4baf62fb33f8c008003e4be964a256fb383f78619952bc183cf3881a6fb",
+            "entry_digest": "be42b4d6ef2fc427ca268139c76bfb1d1f4dd2085f07581a3b587518a2f972b1",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "eb7f6638c470816b1624c7e0ef4fc9002bb05bb9270568c93b20c9a71d3b3136",
+            "entry_digest": "d9d31a6b6666125745f75e0a6f16e225e3682056141f4d31ce2cb55d139761b1",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/evidence-inventory/OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e.json",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "042eb1f89d752370bb739a02242c549476f57f08b656e64c2115f2eb7c3fbd30",
+            "entry_digest": "da9dc9058dcb5bd5418eddd923e0aa0848d46e697e4ff79d59482d66736625c0",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-004",
+        "REQ-cli-006"
+      ]
+    }
+  ]
+}

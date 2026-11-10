@@ -1,0 +1,171 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-inventory-historical"
+title = "Bounded diagnostic inventory reader: inventory_exact_nine_originals_stay_historical_partial_and_byte_identical"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-4"]
+requirements = ["REQ-cli-004", "REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
+steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
+expected = ["inventory_exact_nine_originals_stay_historical_partial_and_byte_identical passes with unchanged aggregate freshness authority and original OBS bytes"]
+notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence_inventory_compatibility"
+test = "inventory_exact_nine_originals_stay_historical_partial_and_byte_identical"
+
+[[case]]
+id = "TC-cli-inventory-advisory"
+title = "Bounded diagnostic inventory reader: inventory_absent_null_and_advisory_data_never_change_authoritative_freshness"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-4"]
+requirements = ["REQ-cli-004", "REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
+steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
+expected = ["inventory_absent_null_and_advisory_data_never_change_authoritative_freshness passes with unchanged aggregate freshness authority and original OBS bytes"]
+notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence_inventory_compatibility"
+test = "inventory_absent_null_and_advisory_data_never_change_authoritative_freshness"
+
+[[case]]
+id = "TC-cli-inventory-strict"
+title = "Bounded diagnostic inventory reader: inventory_strict_schema_versions_and_unsafe_semantics_refuse"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-4"]
+requirements = ["REQ-cli-004", "REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
+steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
+expected = ["inventory_strict_schema_versions_and_unsafe_semantics_refuse passes with unchanged aggregate freshness authority and original OBS bytes"]
+notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence_inventory_compatibility"
+test = "inventory_strict_schema_versions_and_unsafe_semantics_refuse"
+
+[[case]]
+id = "TC-cli-inventory-caps"
+title = "Bounded diagnostic inventory reader: inventory_entry_and_serialized_byte_caps_are_exact"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-4"]
+requirements = ["REQ-cli-004", "REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
+steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
+expected = ["inventory_entry_and_serialized_byte_caps_are_exact passes with unchanged aggregate freshness authority and original OBS bytes"]
+notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence_inventory_compatibility"
+test = "inventory_entry_and_serialized_byte_caps_are_exact"
+
+[[case]]
+id = "TC-cli-inventory-change-key"
+title = "Bounded diagnostic inventory reader: inventory_change_key_classification_and_writer_omission_are_preserved"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-4"]
+requirements = ["REQ-cli-004", "REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
+steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
+expected = ["inventory_change_key_classification_and_writer_omission_are_preserved passes with unchanged aggregate freshness authority and original OBS bytes"]
+notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence_inventory_compatibility"
+test = "inventory_change_key_classification_and_writer_omission_are_preserved"
+
+[[case]]
+id = "TC-cli-inventory-legacy"
+title = "Bounded diagnostic inventory reader: inventory_legacy_schema_one_and_environment_rules_remain_authoritative"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-4"]
+requirements = ["REQ-cli-004", "REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
+steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
+expected = ["inventory_legacy_schema_one_and_environment_rules_remain_authoritative passes with unchanged aggregate freshness authority and original OBS bytes"]
+notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence_inventory_compatibility"
+test = "inventory_legacy_schema_one_and_environment_rules_remain_authoritative"
+
+[[case]]
+id = "TC-cli-inventory-aliases"
+title = "Bounded diagnostic inventory reader: inventory_noncanonical_aliases_cannot_claim_distinct_normal_inputs"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-4"]
+requirements = ["REQ-cli-004", "REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
+steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
+expected = ["inventory_noncanonical_aliases_cannot_claim_distinct_normal_inputs passes with unchanged aggregate freshness authority and original OBS bytes"]
+notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence_inventory_compatibility"
+test = "inventory_noncanonical_aliases_cannot_claim_distinct_normal_inputs"
+
+[[case]]
+id = "TC-cli-inventory-bookkeeping-alias"
+title = "Bounded diagnostic inventory reader: inventory_noncanonical_alias_cannot_bypass_change_bookkeeping_classification"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-4"]
+requirements = ["REQ-cli-004", "REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
+steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
+expected = ["inventory_noncanonical_alias_cannot_bypass_change_bookkeeping_classification passes with unchanged aggregate freshness authority and original OBS bytes"]
+notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence_inventory_compatibility"
+test = "inventory_noncanonical_alias_cannot_bypass_change_bookkeeping_classification"
+

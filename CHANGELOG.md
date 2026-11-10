@@ -6,6 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Read strict bounded optional v1 diagnostic input inventories while preserving
+  aggregate freshness and original observations; reject noncanonical inventory paths.
+
 - `chough skill update` recognizes the exact pinned 0.1.0 through 0.5.0 released
   bundle files (#102, REQ-cli-016). Six missing filename/SHA256 pairs restore pristine
   updates while keeping edited bytes/modes and host/legacy rules unchanged.
