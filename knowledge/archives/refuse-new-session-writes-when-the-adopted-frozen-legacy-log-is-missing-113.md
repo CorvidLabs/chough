@@ -67,7 +67,7 @@ verification records, the retention ledger and Git stay authoritative.
 | `.chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-c37fc67c6a58b193c6b63a5a.json` | 205a37f46308db39991421a727f2842cb079cbb9919955014cbd081c95100e71 | working tree |
 | `.chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-d74fb343ef83944b03298d26.json` | 2191c0b23fe9620b4b65f7305c8085d9a3dee3973760075bd39a11b7f41811ef | working tree |
 | `.chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-e7a5da26da3c4e0392253bc0.json` | 997f2e8a2efa3f8ac0e1b0d1a1b0be6e1bd3528cb03ff1152bf0bccd7d67be15 | working tree |
-| `.chough/sessions/chough-113-missing-log.json` | eb59fc8621e928f71d66badfc25f50044a558ac4ab4eae48919fa468efcc30c7 | working tree |
+| `.chough/sessions/chough-113-missing-log.json` | eb59fc8621e928f71d66badfc25f50044a558ac4ab4eae48919fa468efcc30c7 | Git 9b081b8742ae7af03d0b097522f1e8ecd9905de4 |
 
 ## Observations
 

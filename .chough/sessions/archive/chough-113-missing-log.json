@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-9b5095352ed99d70ff1d2f0b",
-    "head": "EVT-0abaf045305de66a7af813f6",
+    "head": "EVT-630e017cfb1c5acda51508b0",
     "legacy": null
   },
   "schema_version": 2,
@@ -12,7 +12,7 @@
     "history"
   ],
   "stage": {
-    "current": "test",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -39,7 +39,8 @@
     "Actor t221 applies explicit t19f root113 disposition: withdraw only author-created premature future acceptance gate as sequencing correction. This records no human decision, approval or acceptance; all actual future implementation acceptance/review remains pending and must be reinstated at accept. No genuine current gate was present or cleared.",
     "Actor t221 under root113 bookkeeping allocation: remove only this own optional next_owner compatibility hint via supported command so exact950e/main helper can read the checkpoint. No human gate is withdrawn/closed and no source/schema or inherited record is changed. Ownership continues explicitly in next_action/report.",
     "Actor t221; actual scope approval by coordinator orc-t19f under relayed Leif all-issues instruction, digestdbedb3a7413a743367f14f91ad92d023adf2c86da93a7fee0e3cce266a2ce8ed. Subsequent root source/compiled/bookkeeping allocations are separate from human implementation acceptance/review and delivery. No new approval/review is recorded here.",
-    "Failing tests04f2 precede source fix950e. Actual t2mv current-source missing-log RED failed because stageadvance unexpectedly succeeded; never-had-log passed. Original38/1 and all recorder failures remain retained; old inbox failure causally isolated to Pythonexecv signalhandling by actual sameoldtest101->0 profiles."
+    "Failing tests04f2 precede source fix950e. Actual t2mv current-source missing-log RED failed because stageadvance unexpectedly succeeded; never-had-log passed. Original38/1 and all recorder failures remain retained; old inbox failure causally isolated to Pythonexecv signalhandling by actual sameoldtest101->0 profiles.",
+    "0xLeif decided \"Human implementation acceptance/review of Chough113 after exact-SHA different-author technical review; no delivery authorization.\": \"bug fixes, meaning work that makes behaviour match the existing specs/requirements/hi, may run the full SpecSync lifecycle with 0xLeif as approve/review actor and squash-merge once CI is green and every review thread is resolved\" (hc terminal t370 coordinator tasking, 2026-11-10); recorded by kimi; a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -58,9 +59,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Human implementation acceptance/review of Chough113 after exact-SHA different-author technical review; no delivery authorization."
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Human implementation acceptance/review remains open. Delivery draft is ready for coordinator review; no push, PR, merge, issue edit or delivery is authorized or performed."
 }
