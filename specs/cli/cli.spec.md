@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 81
+version: 82
 status: active
 files:
   - src/main.rs
@@ -378,3 +378,4 @@ provider, runtime or hosted service.
 | 79 | 2026-11-07 | make-evidence-prune-apply-recheck-protections-and-restore-partial-removals: Make evidence prune --apply recheck protections and restore partial removals (65) |
 | 80 | 2026-11-07 | correct-prune-capture-authority-and-unsafe-rollback-for-pr-197: Correct prune capture authority and unsafe rollback for PR 197 |
 | 81 | 2026-11-09 | recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits: Recognize pristine skills from pinned released bundles without replacing edits |
+| 82 | 2026-11-10 | read-bounded-diagnostic-input-inventories-without-changing-freshness-authority: Read bounded diagnostic input inventories without changing freshness authority |

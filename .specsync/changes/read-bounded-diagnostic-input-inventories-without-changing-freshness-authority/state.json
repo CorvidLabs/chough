@@ -7,10 +7,11 @@
   "title": "Read bounded diagnostic input inventories without changing freshness authority",
   "description": "Read bounded diagnostic input inventories without changing freshness authority",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "ada04832ac7e82bc2f52ba9011db0a7e03ad7382",
   "created_at": 1794204253,
-  "updated_at": 1794323556,
+  "updated_at": 1794323945,
   "affected_specs": [
     "cli"
   ],
