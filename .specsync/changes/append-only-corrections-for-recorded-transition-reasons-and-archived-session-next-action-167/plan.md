@@ -7,7 +7,7 @@ artifact: plan
 
 ## Approach
 
-A new `correction` event kind (from == to == current stage) carries `{target, statement}`, validated like the relayed-by and direct-write payloads; `chough correct` appends it after checking the target exists and is not itself a correction. next/status read corrections of the active session's current cycle.
+A new `correction` event kind (from == to == current stage) carries `{target, statement}`, validated like the relayed-by and direct-write payloads; `chough correct` appends it after checking the target exists and is not itself a correction. next/status read corrections of the active session's current cycle. src/timing.rs (module reporting) treats the kind as known, starting or ending no segment.
 
 ## Out of scope
 
