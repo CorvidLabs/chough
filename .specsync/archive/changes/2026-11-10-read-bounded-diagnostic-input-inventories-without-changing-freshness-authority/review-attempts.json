@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "read-bounded-diagnostic-input-inventories-without-changing-freshness-authority",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "2f120a671ed4a3f06a75cb5dc1fe9bcf6b728384",
+      "contract_digest": "0266672cc2ade33263812d9ab616048dbd17d1c66d32c626694d2befebbf702f",
+      "execution_digest": "f890aa4a685e366861684f083dadc3c4923c36a2f712cc8d2577e472096bce7c",
+      "workspace_digest": "6da471cc6f692d6c6701911ac117a6fd3bbd4148b8f064a777fef59556e55bbe",
+      "timestamp": 1794323977
+    }
+  ]
+}

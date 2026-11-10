@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "9b081b8742ae7af03d0b097522f1e8ecd9905de4",
+  "contract_digest": "dbedb3a7413a743367f14f91ad92d023adf2c86da93a7fee0e3cce266a2ce8ed",
+  "execution_digest": "e223eb0486fe91f0a09f51d5b7226c23db715b2a8e0897b0ea1f75f8ee2e728c",
+  "workspace_digest": "159294b72b6fd78eeba5565bd2350c087768567c10d269ec47b4db23b26b9f18",
+  "timestamp": 1794321282
+}

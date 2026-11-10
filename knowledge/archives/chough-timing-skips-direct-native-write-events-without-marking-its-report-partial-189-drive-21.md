@@ -70,4 +70,4 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [sessions/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.json](../attachments/chough-timing-37741162/sessions/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.json)

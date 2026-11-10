@@ -64,6 +64,29 @@ pub(super) struct Snapshot {
     /// SpecSync lifecycle bookkeeping (REQ-cli-004, REQ-cli-017).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) content: Option<String>,
+    /// Retained diagnostic metadata only; aggregate identities remain authoritative.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    input_inventory: Option<InputInventory>,
+}
+
+const INPUT_INVENTORY_ENTRIES: usize = 128;
+const INPUT_INVENTORY_BYTES: usize = 32_768;
+
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct InputInventory {
+    version: u32,
+    complete: bool,
+    entries: Vec<InputIdentity>,
+}
+
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct InputIdentity {
+    domain: u8,
+    key: String,
+    path: String,
+    digest: String,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -416,6 +439,7 @@ pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
         dirty,
         fingerprint: legacy,
         content: Some(content),
+        input_inventory: None,
     })
 }
 
@@ -722,6 +746,40 @@ pub(super) fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
         evidence.snapshot.content.as_deref().is_none_or(is_digest),
         "invalid evidence fields: {name}: snapshot content must be a SHA-256 digest"
     );
+    if let Some(inventory) = &evidence.snapshot.input_inventory {
+        ensure!(
+            inventory.version == 1,
+            "unsupported input inventory version: {name}"
+        );
+        ensure!(
+            inventory.entries.len() <= INPUT_INVENTORY_ENTRIES
+                && serde_json::to_vec(inventory)?.len() <= INPUT_INVENTORY_BYTES,
+            "invalid input inventory bounds: {name}"
+        );
+        let mut paths = BTreeSet::new();
+        for entry in &inventory.entries {
+            ensure!(
+                canonical_path(&entry.path).as_deref() == Some(entry.path.as_str()),
+                "invalid input inventory entry: {name}: path must be canonical"
+            );
+            let safe = !Path::new(&entry.path).is_absolute()
+                && Path::new(&entry.path)
+                    .components()
+                    .all(|part| matches!(part, Component::Normal(_)));
+            let expected = match fingerprint_key(&entry.path) {
+                Key::Path(key) => Some((0, key)),
+                Key::Change { key, .. } => Some((1, key)),
+                Key::Skip => None,
+            };
+            ensure!(
+                safe && !entry.path.is_empty()
+                    && is_digest(&entry.digest)
+                    && paths.insert(entry.path.as_str())
+                    && expected == Some((entry.domain, entry.key.clone())),
+                "invalid input inventory entry: {name}"
+            );
+        }
+    }
     ensure!(
         evidence.artifacts.len() == evidence.artifact_fingerprints.len(),
         "invalid artifact bindings: {name}"
@@ -3674,6 +3732,7 @@ mod tests {
                 dirty: false,
                 fingerprint: "0".repeat(64),
                 content: Some("0".repeat(64)),
+                input_inventory: None,
             },
             provenance: PROVENANCE.into(),
             cases: vec![],

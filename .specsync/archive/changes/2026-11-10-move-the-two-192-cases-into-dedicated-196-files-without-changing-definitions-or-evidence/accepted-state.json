@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence",
+  "slug": "move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence",
+  "title": "Move the two #192 cases into dedicated #196 files without changing definitions or evidence",
+  "description": "Move the two #192 cases into dedicated #196 files without changing definitions or evidence",
+  "kind": "refactor",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "4bbd5a6373d26c0ad069878f8f543842a4564a6f",
+  "created_at": 1794191973,
+  "updated_at": 1794323860,
+  "affected_specs": [],
+  "affected_paths": [
+    ".chough/cases/cli.change-steps.cases.toml",
+    ".chough/cases/history.direct-writes.cases.toml",
+    ".chough/cases/cli.case-split-196.cases.toml",
+    ".chough/cases/history.case-split-196.cases.toml",
+    "knowledge/INDEX.md",
+    ".chough/sessions/chough-196-case-files.json",
+    ".chough/history/cycles/CYC-00f626375dc00fca193eb5c5/"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Only relocate existing TOML case blocks and preserve all fields, stable IDs, bindings, case digests and evidence records. Existing DRIVE-12 per-change-file contract already requires this layout; runtime, canonical requirements, HI and policy remain unchanged.",
+  "acceptance_criteria": [
+    "Move only TC-cli-change-new-no-spec-change from .chough/cases/cli.change-steps.cases.toml to .chough/cases/cli.case-split-196.cases.toml and TC-history-timing-skips-direct-writes from .chough/cases/history.direct-writes.cases.toml to .chough/cases/history.case-split-196.cases.toml. Preserve both raw case blocks, all fields/IDs/bindings/links and the entire catalog count, ID set, normalized definitions and actual case digests. Keep every other case, runtime/test source, canonical contract/requirements, HI, policy, accepted/inherited records and evidence files unchanged. Actual pinned chough cases check and library index --check pass after only supported own knowledge regeneration. Prove the preservation oracle discriminates missing/altered case data in private controls. Finish a clean committed local source and honest exact-tool results; no Rust binding/full/site execution is claimed without a separate lease, and no approval/review/finalize/delivery is performed by this author."
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing",
+    "design",
+    "tasks",
+    "research"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "public_contract": "no"
+  }
+}

@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "reporting"
+
+[[case]]
+id = "TC-reporting-timed-out-native-read-kills-descendants"
+title = "A timed-out native timing read leaves no live stand-in descendants"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-19"]
+requirements = ["REQ-reporting-002"]
+paths = ["tests/common/mod.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the original native timing descendant probe passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown"
+timeout_seconds = 600

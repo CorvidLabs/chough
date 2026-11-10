@@ -1,0 +1,145 @@
+   Compiling libc v0.2.191
+   Compiling proc-macro2 v1.0.107
+   Compiling serde_core v1.0.229
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling version_check v0.9.5
+   Compiling generic-array v0.14.7
+   Compiling typenum v1.20.1
+   Compiling syn v3.0.9
+   Compiling utf8parse v0.2.2
+   Compiling rustix v1.1.6
+   Compiling anstyle-parse v1.0.0
+   Compiling errno v0.3.14
+   Compiling cfg-if v1.0.5
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling getrandom v0.4.3
+   Compiling anstyle v1.0.14
+   Compiling bitflags v2.13.2
+   Compiling colorchoice v1.0.5
+   Compiling zmij v1.0.23
+   Compiling anstyle-query v1.1.5
+   Compiling anstream v1.0.0
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling serde_json v1.0.154
+   Compiling clap_lex v1.1.1
+   Compiling serde v1.0.229
+   Compiling winnow v1.0.4
+   Compiling anyhow v1.0.104
+   Compiling heck v0.5.0
+   Compiling strsim v0.11.1
+   Compiling clap_derive v4.6.7
+   Compiling clap_builder v4.6.7
+   Compiling toml_parser v1.1.5+spec-1.1.0
+   Compiling digest v0.10.7
+   Compiling serde_derive v1.0.229
+   Compiling toml_datetime v1.1.2+spec-1.1.0
+   Compiling serde_spanned v1.1.2
+   Compiling cpufeatures v0.2.17
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling toml_writer v1.1.3+spec-1.1.0
+   Compiling toml v1.1.8+spec-1.1.0
+   Compiling sha2 v0.10.9
+   Compiling clap v4.6.7
+   Compiling fs4 v1.1.0
+   Compiling fastrand v2.5.0
+   Compiling once_cell v1.21.4
+   Compiling tempfile v3.27.0
+   Compiling chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-queue-113-missing-log)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.57s
+     Running tests/sessions.rs (/private/tmp/chough113-missing-log/target/debug/deps/sessions-79ce5b9ccf473113)
+
+thread 'a_new_session_refuses_a_missing_adopted_legacy_log_without_mutation' (587485127) panicked at tests/common/mod.rs:102:9:
+["stage", "advance"] unexpectedly succeeded: {
+  "applied": {
+    "from": "intent",
+    "gate": null,
+    "kind": "advance",
+    "to": "design"
+  },
+  "authority": "Native SpecSync status decides lifecycle gates; Chough never writes native approval or review, and a relayed decision it keeps is a claim, not authenticated.",
+  "awaiting_human": [],
+  "native_change": null,
+  "recent_transitions": [
+    {
+      "at_unix_seconds": 1794197780,
+      "from": "intent",
+      "gate": null,
+      "kind": "advance",
+      "reason": null,
+      "refresh": [],
+      "revision": null,
+      "schema_version": 1,
+      "to": "design"
+    }
+  ],
+  "schema_version": 1,
+  "stage": {
+    "callers": [],
+    "current": "design",
+    "iteration": 1,
+    "status": "active"
+  },
+  "stages": [
+    {
+      "kind": "main",
+      "name": "intent"
+    },
+    {
+      "kind": "conditional",
+      "name": "design"
+    },
+    {
+      "kind": "main",
+      "name": "plan"
+    },
+    {
+      "kind": "main",
+      "name": "build"
+    },
+    {
+      "kind": "main",
+      "name": "test"
+    },
+    {
+      "kind": "main",
+      "name": "accept"
+    },
+    {
+      "kind": "terminal",
+      "name": "done"
+    },
+    {
+      "kind": "optional",
+      "name": "release"
+    },
+    {
+      "kind": "side",
+      "name": "bugs"
+    },
+    {
+      "kind": "side",
+      "name": "validate"
+    },
+    {
+      "kind": "side",
+      "name": "librarian"
+    }
+  ],
+  "transitions_partial": false,
+  "valid_transitions": [
+    "chough stage advance  (design -> plan)",
+    "chough stage skip --reason <why not applicable>",
+    "chough stage iterate --note <what changed>",
+    "chough stage back --to <intent> --reason <why>",
+    "chough stage reset [--to <stage>] --reason <why>",
+    "chough stage pause --reason <why>",
+    "chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]"
+  ]
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `--test sessions`
+error: Task 'test' failed with exit code 101

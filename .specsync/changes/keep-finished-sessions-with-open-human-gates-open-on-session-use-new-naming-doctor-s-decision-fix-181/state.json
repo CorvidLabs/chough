@@ -10,18 +10,22 @@
   "state": "draft",
   "base_commit": "2981a59cd4a545c7ce38421c72e53469993194cd",
   "created_at": 1794325175,
-  "updated_at": 1794325320,
+  "updated_at": 1794345193,
   "affected_specs": [
     "history"
   ],
   "affected_paths": [
     "src/sessions.rs",
-    "tests/sessions.rs"
+    "tests/sessions.rs",
+    "docs/cli.md",
+    "CHANGELOG.md",
+    ".chough/cases/history.gated-switch-181.cases.toml",
+    "knowledge/"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
   "acceptance_criteria": [
-    "A finished session (stage done or native change finalized on HEAD) with a non-empty awaiting_human list and a finalized native change stays open on session new and session use and is reported in kept_open with its open-gate count and the recovery 'chough doctor --fix --reason <text>'; a finished session without open gates is archived unchanged as before; the existing inbox-unfolded kept-open behavior is unchanged. Regression: a switch with one gated finalized session and one ungated finalized session archives only the ungated one."
+    "A finished session (stage done, or native change finalized on HEAD) with a non-empty awaiting_human list stays open on session new and session use and is reported in kept_open with its open-gate count and a recovery: 'chough doctor --fix --reason <text>' when its native change is finalized, otherwise the checkpoint --close-gate command; a finished session without open gates is archived unchanged as before; the existing inbox-unfolded kept-open behavior is unchanged. Regression: a switch with one gated finalized session, one gated done session without a finalized change and one ungated finalized session archives only the ungated one, leaving the two gated sessions byte-identical."
   ],
   "selected_artifacts": [
     "context",

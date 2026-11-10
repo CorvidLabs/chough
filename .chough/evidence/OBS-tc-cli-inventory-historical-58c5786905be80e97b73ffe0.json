@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-inventory-historical-58c5786905be80e97b73ffe0",
+  "criteria": [
+    "LIFE-2",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-004",
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Actual retained HCt2sm 2026-11-09T06:15:40.553322..06:16:10.933744Z, sourcebe17ade8/test17add: exact Fledge test --locked --test evidence_inventory_compatibility compiled6,1PASS5unknown-input_inventory FAIL after all valid legacy/corpus controls. No retrospective pass. Raw original compiled-red packet preserved; this observation is capture-only.",
+  "artifacts": [],
+  "artifact_fingerprints": {},
+  "observed_at_unix_seconds": 1794210276,
+  "snapshot": {
+    "revision": "4b35b15064a0d5d7172163a5501ffc95c3bc018d",
+    "dirty": true,
+    "fingerprint": "195a84c8a69813c47eff2f0647c854e6c044b93ddecda0a301d5a26e81e43523",
+    "content": "3cdf63286b570568c89a615b60e171598e6d30bce8c184c3d4ebd71a328d3a30"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-inventory-historical",
+      "digest": "558662abf69282b368c9e36a626b767bcb23cbe2d65dff8924a0aee3387d2de0"
+    }
+  ],
+  "method": "agent-assisted",
+  "limitations": [
+    "Retained execution receipt recorded now; not a fresh adapter/case run or authenticated proof. Snapshot/case digest is capture context, not the historical execution inputs.",
+    "No full/Trust/site/hosted/platform qualification or human acceptance."
+  ]
+}

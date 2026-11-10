@@ -5,8 +5,7 @@ artifact: tasks
 
 # Tasks
 
-- [x] RED: regression test archiving a gated finished session fails before the fix.
-- [x] Fix: `archive_done` keeps such sessions open, named with the doctor recovery.
-- [x] GREEN: regression passes; full `fledge run test` suite passes (593s, macOS arm64).
-
-Remaining as plain text, not checkboxes: human scope approval (this amends REQ-history-006), then verification, review, archive and merge.
+- [x] RED: regression test archiving gated finished sessions fails before the fix.
+- [x] Fix: `archive_done` keeps every finished session with an open gate open, naming the doctor recovery when its change is finalized and the close-gate command otherwise.
+- [x] GREEN: regression passes.
+- [x] Document the open-gate kept-open variant in docs/cli.md and add a CHANGELOG bullet.

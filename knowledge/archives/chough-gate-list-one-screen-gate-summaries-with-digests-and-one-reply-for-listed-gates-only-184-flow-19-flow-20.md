@@ -56,9 +56,9 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-dry-run-7a3fb4d187037a2efae55ac9 | passed (by cycle time) | local-linux-aarch64 |  |
+| OBS-dry-run-7a3fb4d187037a2efae55ac9 | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
 | OBS-product-test-1e38299188b5d2c640dd711a | passed (pruned) (by cycle time) | local-macos-arm64 |  |
-| OBS-structural-00139f76b41cb62e23cf99b8 | passed (by cycle time) | local-linux-aarch64 |  |
+| OBS-structural-00139f76b41cb62e23cf99b8 | passed (pruned) (by cycle time) | local-linux-aarch64 |  |
 | OBS-tc-cli-gate-list-summaries-and-digests-2ef20f50ff3431f5d302ba14 | failed (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
 | OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1 | failed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
 | OBS-tc-cli-gate-list-summaries-and-digests-cad9ec5762752374e58b95e7 | passed (by cycle time) | local-macos-arm64 | TC-cli-gate-list-summaries-and-digests |
@@ -86,4 +86,6 @@ verification records, the retention ledger and Git stay authoritative.
 ## Attachments
 
 - [artifacts/OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1.log](../attachments/chough-gate-7a10a0f2/artifacts/OBS-tc-cli-gate-list-summaries-and-digests-a028a3bcf17a07a8a0fcb6a1.log)
+- [evidence/OBS-dry-run-7a3fb4d187037a2efae55ac9.json](../attachments/chough-gate-7a10a0f2/evidence/OBS-dry-run-7a3fb4d187037a2efae55ac9.json)
+- [evidence/OBS-structural-00139f76b41cb62e23cf99b8.json](../attachments/chough-gate-7a10a0f2/evidence/OBS-structural-00139f76b41cb62e23cf99b8.json)
 - [sessions/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.json](../attachments/chough-gate-7a10a0f2/sessions/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.json)

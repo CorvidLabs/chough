@@ -17,7 +17,7 @@ Keep finished sessions with open human gates open on session use/new, naming doc
 
 ## Acceptance Criteria
 
-- A finished session (stage done or native change finalized on HEAD) with a non-empty awaiting_human list and a finalized native change stays open on session new and session use and is reported in kept_open with its open-gate count and the recovery 'chough doctor --fix --reason <text>'; a finished session without open gates is archived unchanged as before; the existing inbox-unfolded kept-open behavior is unchanged. Regression: a switch with one gated finalized session and one ungated finalized session archives only the ungated one.
+- A finished session (stage done, or native change finalized on HEAD) with a non-empty awaiting_human list stays open on session new and session use and is reported in kept_open with its open-gate count and a recovery: 'chough doctor --fix --reason <text>' when its native change is finalized, otherwise the checkpoint --close-gate command; a finished session without open gates is archived unchanged as before; the existing inbox-unfolded kept-open behavior is unchanged. Regression: a switch with one gated finalized session, one gated done session without a finalized change and one ungated finalized session archives only the ungated one, leaving the two gated sessions byte-identical.
 
 ## No-spec Rationale
 

@@ -1,0 +1,814 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314",
+  "criteria": [
+    "FLOW-1",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Retained actual t2p7 at2026-11-09T05:04:53.416163+00:00; sourced9a9d92459a611eeca6a587fb83e130b95c91dee; SAME Fledge1.8 run test -- --locked --test skill_releases:7/7 PASS, legacy_status_update_and_explicit_removal_keep_the_existing_policy passed. Exact Rust1.95/source/test/corpus identities in evidence/chough102-focused-green;720 edited rows/modes and all filename/host/current/missing/legacy boundaries retain assertions. Additional existing4+3+16, fmt/lint passed; no fresh execution while recording.",
+  "artifacts": [],
+  "artifact_fingerprints": {},
+  "observed_at_unix_seconds": 1794201269,
+  "snapshot": {
+    "revision": "d9a9d92459a611eeca6a587fb83e130b95c91dee",
+    "dirty": true,
+    "fingerprint": "378a9ddae680a7a3894b0553d6038821020471c94a998a91f7f006bf79ac6b85",
+    "content": "06c26c73395526350b28c0d3d3b313c73e0e82af8ebd55c21c007c5f065bea8f",
+    "input_inventory": {
+      "version": 1,
+      "complete": false,
+      "entries": [
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/SKILL.md",
+          "path": ".agents/skills/chough-workflow/SKILL.md",
+          "digest": "87fc26e88fccf0cc6a356e5b6a15efa7bb91aa517066a6a7d99f6588d1ba7546"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/agents/openai.yaml",
+          "path": ".agents/skills/chough-workflow/agents/openai.yaml",
+          "digest": "172b3f3f908f3fa194c87b9dd6b088d93c6c3a19db3e1d7caefa94bd9423ba17"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/accept.md",
+          "path": ".agents/skills/chough-workflow/references/accept.md",
+          "digest": "14814f6e267b3ff7fc619da6ca7890f0ab43e1048a79873d70c10d5be2766120"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/bugs.md",
+          "path": ".agents/skills/chough-workflow/references/bugs.md",
+          "digest": "a88d18f3df983e836dcedb28fb2980bbde4b7184c156d8d175b9753535837f82"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/build.md",
+          "path": ".agents/skills/chough-workflow/references/build.md",
+          "digest": "e01d496028a5d9685bbc15a78fdcc01c3fe905ba10e07c2c79be2c1a5d2c505a"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/checkpoint.md",
+          "path": ".agents/skills/chough-workflow/references/checkpoint.md",
+          "digest": "c93c4834bf5ba1760145aafc882650f19bcb0c2dcf66a8fc7aab9ebcc787c7ae"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/design.md",
+          "path": ".agents/skills/chough-workflow/references/design.md",
+          "digest": "894f0c2178641b93808c2a350f143139e7b71523c10d9eade9c9508f71962e93"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/intent.md",
+          "path": ".agents/skills/chough-workflow/references/intent.md",
+          "digest": "073c88f1db2043621be77a753be6937f15ab774a6464e31dfdc93bda25871b1c"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/librarian.md",
+          "path": ".agents/skills/chough-workflow/references/librarian.md",
+          "digest": "354f6435d0def93a1a171f56f466b27da9897a6b00aa310df8328623e98dd7b3"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/lifecycle.md",
+          "path": ".agents/skills/chough-workflow/references/lifecycle.md",
+          "digest": "155a69a18c3cb8d41fa58553e3cc2f7b801613ef75afc5421f25f5421fb3fd97"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/plan.md",
+          "path": ".agents/skills/chough-workflow/references/plan.md",
+          "digest": "8dc3156e4d537b39019c7aac25a1ce407ac79c6516ade7bc401d3d9754ac2739"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/release.md",
+          "path": ".agents/skills/chough-workflow/references/release.md",
+          "digest": "9f398eee733cceb262a2c080561b51aee40a6e345aa935da5113106a91328343"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/roles.md",
+          "path": ".agents/skills/chough-workflow/references/roles.md",
+          "digest": "df9779b03970d0195eefc05ac407639a8f98d0bcd6082b418ece6aca1502e3f7"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/stages.md",
+          "path": ".agents/skills/chough-workflow/references/stages.md",
+          "digest": "d3ef6761f8e9f8b58393684cc2d4c219cb3566c22850f4225090b142afba4a0a"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/testing.md",
+          "path": ".agents/skills/chough-workflow/references/testing.md",
+          "digest": "f329c17e76ca496687d730df1924001f19a9fbb65094cfec7ed11031b5326422"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/references/validate.md",
+          "path": ".agents/skills/chough-workflow/references/validate.md",
+          "digest": "860836729b3416a71c1c031f0eb728ba5cc7ae8c4e7d094eb9cd21123e4230aa"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/templates/brief.md",
+          "path": ".agents/skills/chough-workflow/templates/brief.md",
+          "digest": "14b6ae2821e0d03985455c5041fafa55546ce19ffcc378def6c7e06c6f0e85ae"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/templates/bug-report.md",
+          "path": ".agents/skills/chough-workflow/templates/bug-report.md",
+          "digest": "f0a24c5ce69fde33886e0d3b5160f0529bee94ec80c16fd3cab6d879eda09a5a"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/templates/cases.toml",
+          "path": ".agents/skills/chough-workflow/templates/cases.toml",
+          "digest": "75bcee5c3d695261523292ff1f9ac0daab2ebf205e76b78c320be1e6580a3d4b"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/templates/frd.md",
+          "path": ".agents/skills/chough-workflow/templates/frd.md",
+          "digest": "d6abe5254b9a384cca398efd6ccdbd1fc7d7bce8a602f009681ce902cd0878a1"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/templates/prototype/COMPANION.md",
+          "path": ".agents/skills/chough-workflow/templates/prototype/COMPANION.md",
+          "digest": "4f4ea9aee3c8f20ca9ac10e738adbc593253f86cdadb9d1d6988fd7acfcaa075"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/templates/prototype/index.html",
+          "path": ".agents/skills/chough-workflow/templates/prototype/index.html",
+          "digest": "d444e99ad682963d8211ce87ca87eaa21ec4f718dc5c4f8f9fc8f1b04ce68493"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/templates/prototype/styles.css",
+          "path": ".agents/skills/chough-workflow/templates/prototype/styles.css",
+          "digest": "eb35548ca493727638697dbd04b543aaf0c67175e9a0d51b2cef321a49666fa3"
+        },
+        {
+          "domain": 0,
+          "key": ".agents/skills/chough-workflow/templates/review-findings.md",
+          "path": ".agents/skills/chough-workflow/templates/review-findings.md",
+          "digest": "94e4f18af996881b0e7ad852ada312352247a8980820cae79a37697b3e4b0822"
+        },
+        {
+          "domain": 0,
+          "key": ".fledge/.gitignore",
+          "path": ".fledge/.gitignore",
+          "digest": "259a160ab2cfaeee48362434c7cc617902532b56446475bd9cfd4dec746a07bc"
+        },
+        {
+          "domain": 0,
+          "key": ".fledge/meta.toml",
+          "path": ".fledge/meta.toml",
+          "digest": "323d4bc1a697b2a46fa810eb0bb1551c9719828fdf4425fab3b492e2d7a75077"
+        },
+        {
+          "domain": 0,
+          "key": ".gitattributes",
+          "path": ".gitattributes",
+          "digest": "9166ef64837f9899d7bb142914c16cca70335c09d3ea470d9fbb8451a9f5bc62"
+        },
+        {
+          "domain": 0,
+          "key": ".github/scripts/check-specsync-archive.py",
+          "path": ".github/scripts/check-specsync-archive.py",
+          "digest": "ce3ccfcd57fac7f73d1287f3b366546f3482404e3c97e29333248b7599b18746"
+        },
+        {
+          "domain": 0,
+          "key": ".github/scripts/test-specsync-archive.py",
+          "path": ".github/scripts/test-specsync-archive.py",
+          "digest": "49436a0f7b839d40b4804943f1916127359731478223b057a69676b9db57eba0"
+        },
+        {
+          "domain": 0,
+          "key": ".github/workflows/ci.yml",
+          "path": ".github/workflows/ci.yml",
+          "digest": "a2a3fa010ff19bc9cb16b52fd7cd064f2c622dc49eaae5a111688e157933f465"
+        },
+        {
+          "domain": 0,
+          "key": ".gitignore",
+          "path": ".gitignore",
+          "digest": "33c2b347178d109f99f72c18f7acde83a12e50ba9252fea896b48740ed27c439"
+        },
+        {
+          "domain": 0,
+          "key": ".specsync/.gitignore",
+          "path": ".specsync/.gitignore",
+          "digest": "902188064eeb5967d9ef4cd03eb4ef4b54a11706b92619f6b7b0ddb7666e499f"
+        },
+        {
+          "domain": 0,
+          "key": ".specsync/adoption-report.json",
+          "path": ".specsync/adoption-report.json",
+          "digest": "87f2c52857b5c90c510953966c1d5f475cef61ceb7794655746d680d58af7ade"
+        },
+        {
+          "domain": 0,
+          "key": ".specsync/config.toml",
+          "path": ".specsync/config.toml",
+          "digest": "4a632837f2218d0b1db525dbedfbf89875779eeac61a1f4d3f7c5e87ba9bf781"
+        },
+        {
+          "domain": 0,
+          "key": ".specsync/registry.toml",
+          "path": ".specsync/registry.toml",
+          "digest": "068d6b1a1c623a7fdd03d94e849f3f2cf240e6b6016eb035ddc15b35b74d994d"
+        },
+        {
+          "domain": 0,
+          "key": ".specsync/sdd.json",
+          "path": ".specsync/sdd.json",
+          "digest": "8357961ac7ea30320357ee765b6569009f50e667ea9ebd70a06ff82ae7e19234"
+        },
+        {
+          "domain": 0,
+          "key": ".specsync/version",
+          "path": ".specsync/version",
+          "digest": "d557f67e7a96fb0457d2176cdb78bc94b50e7a99650a77ba4b0e67b159d5e2fc"
+        },
+        {
+          "domain": 0,
+          "key": ".specsync/workflow-v2-baseline.json",
+          "path": ".specsync/workflow-v2-baseline.json",
+          "digest": "c398a72c914ca4a1ccd7b65c4d90072d03b6e5492d8a5007bd7b0e4be4387f63"
+        },
+        {
+          "domain": 0,
+          "key": "AGENTS.md",
+          "path": "AGENTS.md",
+          "digest": "d5a2eecd65a4c9632dc261e7dc2a9075c863fe99c2f57887928996a3911321b4"
+        },
+        {
+          "domain": 0,
+          "key": "CHANGELOG.md",
+          "path": "CHANGELOG.md",
+          "digest": "7b861da4d3837e8cea13b7d65e7d34e72b2810bec5b9455b0f57a9ae77b61b72"
+        },
+        {
+          "domain": 0,
+          "key": "CLAUDE.md",
+          "path": "CLAUDE.md",
+          "digest": "0ad78c96d476b83b0a2f78d6dd9d7b33dfd82c044fbe5dfd2a73425b29c010ae"
+        },
+        {
+          "domain": 0,
+          "key": "Cargo.lock",
+          "path": "Cargo.lock",
+          "digest": "2748fc0348508a2df8916109edcf4b2d1e76d0e3469b9a40fc7cc1e811bb245f"
+        },
+        {
+          "domain": 0,
+          "key": "Cargo.toml",
+          "path": "Cargo.toml",
+          "digest": "13c1741c90faacec62c21e29b0eb51684bac078afeee0a5af8507cf55aacbe3b"
+        },
+        {
+          "domain": 0,
+          "key": "INTENT.md",
+          "path": "INTENT.md",
+          "digest": "a4d1fbb1a54bb182bacb8c2896cfb1c1ce5dd8c6a4428dca45295dea84fdcc1f"
+        },
+        {
+          "domain": 0,
+          "key": "LICENSE",
+          "path": "LICENSE",
+          "digest": "1cbcd6b985fed485a35b407155798daa91c3535abad567e5d4ae23a6cf9e045f"
+        },
+        {
+          "domain": 0,
+          "key": "README.md",
+          "path": "README.md",
+          "digest": "0af2cd60abeea3e8519bcb9a52d24f1cb04f81af6eb9b83f3d013479f3a047bf"
+        },
+        {
+          "domain": 0,
+          "key": "docs/DECISIONS.md",
+          "path": "docs/DECISIONS.md",
+          "digest": "e528f1f8660b2bbfdb418bde9cc0851a60903666d49b1f0aab33f8f06a8e276b"
+        },
+        {
+          "domain": 0,
+          "key": "docs/FRD.md",
+          "path": "docs/FRD.md",
+          "digest": "07f93629032fadf09aabc0853e53569c4d8c021c88cee3620e4e7c0d6dbff03d"
+        },
+        {
+          "domain": 0,
+          "key": "docs/NEXT_CHANGE.md",
+          "path": "docs/NEXT_CHANGE.md",
+          "digest": "c2b922b3c04b47ac324939141eb68159413b4146ee05a6b7acd01fb8a4f1b8a2"
+        },
+        {
+          "domain": 0,
+          "key": "docs/ROADMAP.md",
+          "path": "docs/ROADMAP.md",
+          "digest": "6cc0a2d86c14f186eeaab6dc26238299437de0fb591bbd08ddf66163ce11e2b7"
+        },
+        {
+          "domain": 0,
+          "key": "docs/architecture.md",
+          "path": "docs/architecture.md",
+          "digest": "dfe131ebbbb26ed1b839c99c15b59737822c1851e52c764e2aae5d036b5f9ac9"
+        },
+        {
+          "domain": 0,
+          "key": "docs/ci.md",
+          "path": "docs/ci.md",
+          "digest": "12ec695456788e3d66db5ec5e355f90ec21e8e067025cda2dc4c56e7e3ef9026"
+        },
+        {
+          "domain": 0,
+          "key": "docs/cli.md",
+          "path": "docs/cli.md",
+          "digest": "995dc6f4b930c6a7958d016583b9513c143a241f70e9d20d61c29572c8e015ab"
+        },
+        {
+          "domain": 0,
+          "key": "docs/diagrams/context.mmd",
+          "path": "docs/diagrams/context.mmd",
+          "digest": "179734649298c37ece9be8820a97384790293d4c19612e78093e5947feac6d7c"
+        },
+        {
+          "domain": 0,
+          "key": "docs/diagrams/context.svg",
+          "path": "docs/diagrams/context.svg",
+          "digest": "792bc1288fb94592077a2e03fd2f1731c761082dbe103d9e59cfd4aa05db48c9"
+        },
+        {
+          "domain": 0,
+          "key": "docs/diagrams/lifecycle.mmd",
+          "path": "docs/diagrams/lifecycle.mmd",
+          "digest": "424290aaf73e2fd6b2c00c7a3b5993c2a239f2b264a49820b98b325f5bacd368"
+        },
+        {
+          "domain": 0,
+          "key": "docs/diagrams/lifecycle.svg",
+          "path": "docs/diagrams/lifecycle.svg",
+          "digest": "f295edc5b44bc67273b0c8787c191fbdd221b324fe91d6755244ec7ad0acef76"
+        },
+        {
+          "domain": 0,
+          "key": "docs/diagrams/ownership.mmd",
+          "path": "docs/diagrams/ownership.mmd",
+          "digest": "8c2e4c544069a7094e276049e012286f231fc1dd855089d70722f2f5ef6e1cb0"
+        },
+        {
+          "domain": 0,
+          "key": "docs/diagrams/ownership.svg",
+          "path": "docs/diagrams/ownership.svg",
+          "digest": "a7600f91bcc10ec963e8c0ccc923b85fd9f6111989823c681720f0c1eda33920"
+        },
+        {
+          "domain": 0,
+          "key": "docs/diagrams/render.mjs",
+          "path": "docs/diagrams/render.mjs",
+          "digest": "63968e1ec19d9c33d08d43d5a6677e6deb1af138c51e3d69f6356343b46863d7"
+        },
+        {
+          "domain": 0,
+          "key": "docs/diagrams/stages.mmd",
+          "path": "docs/diagrams/stages.mmd",
+          "digest": "3aaa4cafcaf81df920954b77805321e4f317f1b4685345a7a7fa00daff5f35f9"
+        },
+        {
+          "domain": 0,
+          "key": "docs/diagrams/stages.svg",
+          "path": "docs/diagrams/stages.svg",
+          "digest": "fd29172bf7a739e803488153b5208f97c29f2f422f46af59db10a18da6cc8fa2"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/cold-start.md",
+          "path": "docs/exercises/cold-start.md",
+          "digest": "09f9e63a0e72f969fb6b8940cbd0e149f9e009936df7d029dfbc0597c72772ce"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/feature-bug-loop.md",
+          "path": "docs/exercises/feature-bug-loop.md",
+          "digest": "de107e3e262173593a4e098e27e5814da05cc30090d827ff6067a947399d5bbf"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/handoff-cold-start/rubric.md",
+          "path": "docs/exercises/handoff-cold-start/rubric.md",
+          "digest": "c89b1dc1444f89deff53e35a8ac98786052f67bd77b2e673085a2cb5bcb633eb"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/handoff-cold-start/seed.sh",
+          "path": "docs/exercises/handoff-cold-start/seed.sh",
+          "digest": "b5260ea93b43b28a16fb4c070ea5006d5cb35634f229a1d21e5714d8ae380383"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/intent.md",
+          "path": "docs/exercises/intent.md",
+          "digest": "027437b4b98fdc21275d14a6941203926cca446cf8d8a2addaf3ec1f6689360b"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/release-candidate.md",
+          "path": "docs/exercises/release-candidate.md",
+          "digest": "5bfc81366af7f0df24202cc77857471946c93d25d87af19a696e2e1c9d8fa9c6"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/visual-design.md",
+          "path": "docs/exercises/visual-design.md",
+          "digest": "66b96e7f8619179b6ae57dcc29e126356719a5e961871f8900ba69f0d9e37426"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/visual-review/desktop-1280x800-free.png",
+          "path": "docs/exercises/visual-review/desktop-1280x800-free.png",
+          "digest": "b596292cc6e439fdd9acf938d46d810358cb5658e582c9c0858113f64e7de264"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/visual-review/desktop-1280x800-loading.png",
+          "path": "docs/exercises/visual-review/desktop-1280x800-loading.png",
+          "digest": "1ebdda3ba39ed02aeb83bc6057cf645bd4650b781384783ef62824d7c21dab73"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/visual-review/mobile-390x844-below.png",
+          "path": "docs/exercises/visual-review/mobile-390x844-below.png",
+          "digest": "65a2795b171f938967667c59be7679a84e8bafa6f6445c83a6ecbf3315647048"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/visual-review/mobile-390x844-error.png",
+          "path": "docs/exercises/visual-review/mobile-390x844-error.png",
+          "digest": "719956d72eecce194144d38c0a77bbbb13c76e797ca4ee718c39a2c5a02acbbb"
+        },
+        {
+          "domain": 0,
+          "key": "docs/exercises/visual-review/reviewer-note.md",
+          "path": "docs/exercises/visual-review/reviewer-note.md",
+          "digest": "44fb30ea4e24f8f2c4f30f0bbf08c1b61a597d6c9744579effab6e6b766eca50"
+        },
+        {
+          "domain": 0,
+          "key": "docs/integrations.md",
+          "path": "docs/integrations.md",
+          "digest": "f93b76663f46acec29ff4aba2d33b725f6d656e2298df76e7b2a6e03e23fba26"
+        },
+        {
+          "domain": 0,
+          "key": "docs/lifecycle.md",
+          "path": "docs/lifecycle.md",
+          "digest": "c0e522cb811cca3ea06668a5db2d221e1c9b69d8e73c238e40f1c80fb831aaa0"
+        },
+        {
+          "domain": 0,
+          "key": "docs/releasing.md",
+          "path": "docs/releasing.md",
+          "digest": "081a67f0a91064fc613db9be97f81d3dcc90f6639d12d3b1d9805649e071e5b7"
+        },
+        {
+          "domain": 0,
+          "key": "docs/verification.md",
+          "path": "docs/verification.md",
+          "digest": "1886f29a290bbdda46ee7a6a29a13f9aa73704e8cf60d9a4e78bc965807a80df"
+        },
+        {
+          "domain": 0,
+          "key": "docs/walkthrough.md",
+          "path": "docs/walkthrough.md",
+          "digest": "8c6ac688f9cfe7897526e0d6724a384502048f6853f214fbde9419ffec1a6817"
+        },
+        {
+          "domain": 0,
+          "key": "examples/README.md",
+          "path": "examples/README.md",
+          "digest": "8f055a43dd440d63bb6fdfc4a9802f7d30e776d32aa054d4923c8d8e864ff521"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/.chough/cases/checkout-ui.cases.toml",
+          "path": "examples/checkout-ui/.chough/cases/checkout-ui.cases.toml",
+          "digest": "94e7bca3afbd3616b0b060fd22d58cbc2b139571a0d65d917edefbbb0c1578b8"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/.gitignore",
+          "path": "examples/checkout-ui/.gitignore",
+          "digest": "bdd7e8ccf2b55407dd43b15559f70967946735a12ed0586174ff9736f4e0e663"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/AGENTS.md",
+          "path": "examples/checkout-ui/AGENTS.md",
+          "digest": "bf31671c98b9c8b4ddc287d8a91bfe946be1d914d065ea8d2a85205c8b6a00c4"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/INTENT.md",
+          "path": "examples/checkout-ui/INTENT.md",
+          "digest": "74ef7d3f2ed50d004f7bc0ad10f13ed0604a83afe590dbace3a315b87f6b407b"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/design/prototype/COMPANION.md",
+          "path": "examples/checkout-ui/design/prototype/COMPANION.md",
+          "digest": "bd89b6e7782dc9747645ddf8336679652c0f36909e7733904e2cbbc8089dc32d"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/design/prototype/index.html",
+          "path": "examples/checkout-ui/design/prototype/index.html",
+          "digest": "fbb34f64d9d51310f9d758b0af9f95a1c1065ce151f69c48c77591077c4c5dbd"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/design/prototype/styles.css",
+          "path": "examples/checkout-ui/design/prototype/styles.css",
+          "digest": "452c476135b5a65f9264aa82da435607f9b3ebe94a998ce06112a7f80e0029e6"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/design/prototype/tokens.css",
+          "path": "examples/checkout-ui/design/prototype/tokens.css",
+          "digest": "2e817e70bef4a62824164a218a850a67353fb6d9b92e0df04df329d61144fe3a"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/hi/checkout.md",
+          "path": "examples/checkout-ui/hi/checkout.md",
+          "digest": "185191aa2331bfed9952d95e2092464efac3ad1dbca55137a834e981a33f6550"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/review.mjs",
+          "path": "examples/checkout-ui/review.mjs",
+          "digest": "102b4b50d0c283c88fd34e1a6762896b6c38494aa2ad0ce64a963a38236e92b7"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/specs/checkout-ui/checkout-ui.spec.md",
+          "path": "examples/checkout-ui/specs/checkout-ui/checkout-ui.spec.md",
+          "digest": "33a3f965694795a1c5cbfba9ffd5f5e0abc5dedc713a551d36bd6c53b9984c13"
+        },
+        {
+          "domain": 0,
+          "key": "examples/checkout-ui/specs/checkout-ui/requirements.md",
+          "path": "examples/checkout-ui/specs/checkout-ui/requirements.md",
+          "digest": "d593b03e8ba99f94c181973b22f8ffb9568ca9b1db638b76e77a476abc73939f"
+        },
+        {
+          "domain": 0,
+          "key": "examples/feature-bug-loop.sh",
+          "path": "examples/feature-bug-loop.sh",
+          "digest": "9f783eeddd3122598ec6d6f3815c94551da37d0641a47e999cd277d3dcce3449"
+        },
+        {
+          "domain": 0,
+          "key": "examples/measure-report.sh",
+          "path": "examples/measure-report.sh",
+          "digest": "8f495e16ff9577ff708987271df11095f35c2092c20fd5df29f604d46db3512d"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/.chough/cases/shipping.cases.toml",
+          "path": "examples/shipping/.chough/cases/shipping.cases.toml",
+          "digest": "4a281bcf7427c087c299ff932708d31928b2085c3d377a9dc052c696a634755d"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/.gitignore",
+          "path": "examples/shipping/.gitignore",
+          "digest": "a5681676478f04864d7085f61855599dc2bf1f705cdde82d02f9bfef29484613"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/.specsync/archive/changes/.keep",
+          "path": "examples/shipping/.specsync/archive/changes/.keep",
+          "digest": "dc6c385008c571c8de165222ed821b6a58053e888efe2a903da36132acfb401e"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/.specsync/changes/.keep",
+          "path": "examples/shipping/.specsync/changes/.keep",
+          "digest": "fb558c9688555e94c9b4ba2e7580c84deeb51094e0ce9471577a7a0a557e9c07"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/.specsync/config.toml",
+          "path": "examples/shipping/.specsync/config.toml",
+          "digest": "c157ee6bd23354f5a33e466311ba9e5dc31aeb7581325594a02e6a4d9fca9c21"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/.specsync/registry.toml",
+          "path": "examples/shipping/.specsync/registry.toml",
+          "digest": "fdf14b808b08776a41f02cef796489d848d1e1e612b2f6ae2ce5694a80da8985"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/.specsync/sdd.json",
+          "path": "examples/shipping/.specsync/sdd.json",
+          "digest": "641ff1ae384b1ed0e5cd4232d4b485cee801474e2af0da19c66ffd266d7b095d"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/AGENTS.md",
+          "path": "examples/shipping/AGENTS.md",
+          "digest": "819cdf049dadc6c05b63135ac00c3fec3b95f12506f26a7f9c6834ee2af77fc9"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/Cargo.lock",
+          "path": "examples/shipping/Cargo.lock",
+          "digest": "6c28af60e8f39bc97673ec842192f203be4ae3e965498cfa0eff4e767f382e6b"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/Cargo.toml",
+          "path": "examples/shipping/Cargo.toml",
+          "digest": "28a45dca6a62b914d93a198fc1fb24f7ceef46f009bd96872f653622787f275a"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/INTENT.md",
+          "path": "examples/shipping/INTENT.md",
+          "digest": "f34060f5a0dcf33561299613c22c27a2c1b927387e575cd2d0a546549257570e"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/hi/checkout.md",
+          "path": "examples/shipping/hi/checkout.md",
+          "digest": "46aaa1a6bbf2477885440a20cf23737b6ee7267f4cf6fc2272cd1cae1d7c5770"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/patches/lib.v1.rs",
+          "path": "examples/shipping/patches/lib.v1.rs",
+          "digest": "7ae6ecec726126bf9fbaaf0edb5093644e4042557dcbf70266b1077140e414ab"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/patches/lib.v2.rs",
+          "path": "examples/shipping/patches/lib.v2.rs",
+          "digest": "f9e0bd71fb8be36adee57fdacfa66cbc4e3ce25439949a64d2a54493d984603d"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/patches/threshold.rs",
+          "path": "examples/shipping/patches/threshold.rs",
+          "digest": "92962a82c86a42b00359f3752c21660896e9d23fd4b355eb006c6ddd84c00f6b"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/specs/shipping/context.md",
+          "path": "examples/shipping/specs/shipping/context.md",
+          "digest": "b7d9a1a4d2f611e6af97597683528442c11fa52e43350d06b67190a38bb4961e"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/specs/shipping/requirements.md",
+          "path": "examples/shipping/specs/shipping/requirements.md",
+          "digest": "6273d2774a3b5aeeb817de1ed69cb2211718529c3f3feac8432b2ef9a604ddeb"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/specs/shipping/shipping.spec.md",
+          "path": "examples/shipping/specs/shipping/shipping.spec.md",
+          "digest": "c74bc864e2588af061cea419c9360357d7005a7259880697db54142b06442781"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/specs/shipping/tasks.md",
+          "path": "examples/shipping/specs/shipping/tasks.md",
+          "digest": "cf18d1ab02b0c90ad754ac707562b7bddb4f6abdff74631380c7aedecc74b49b"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/specs/shipping/testing.md",
+          "path": "examples/shipping/specs/shipping/testing.md",
+          "digest": "ca4833b68244beea32e6569d1eeba6c76f6e145a4dfce0443e56721f8640244c"
+        },
+        {
+          "domain": 0,
+          "key": "examples/shipping/src/lib.rs",
+          "path": "examples/shipping/src/lib.rs",
+          "digest": "3e7825257d784905ef8c2455f6d6cea3f871b97770dce3ae08836af51c71c6b8"
+        },
+        {
+          "domain": 0,
+          "key": "examples/visual-design.sh",
+          "path": "examples/visual-design.sh",
+          "digest": "30b4d5ba8175b168b260a40006a55a17838937dd8fa394a85643a1919d672071"
+        },
+        {
+          "domain": 0,
+          "key": "fledge.toml",
+          "path": "fledge.toml",
+          "digest": "25193e4dc8928f560359723015b5aa2dfde5f78e8a3158ed2b4d8f5eb8ac7598"
+        },
+        {
+          "domain": 0,
+          "key": "hi/AGENTS.md",
+          "path": "hi/AGENTS.md",
+          "digest": "d3b5dc630024d2e6ba8db0f36e6ae546a83fea56b10396a5d37a8ebfad8b0c01"
+        },
+        {
+          "domain": 0,
+          "key": "hi/CLAUDE.md",
+          "path": "hi/CLAUDE.md",
+          "digest": "c4068fd97dfc84f86127df0dcdf0e3bf42e37a9139b8a803b14bd4eff6efcc2b"
+        },
+        {
+          "domain": 0,
+          "key": "hi/drive.md",
+          "path": "hi/drive.md",
+          "digest": "17e3ef03a426d35a7db15e21f55d77e7ce23517301fad5cd9d006f825830a811"
+        },
+        {
+          "domain": 0,
+          "key": "hi/flow.md",
+          "path": "hi/flow.md",
+          "digest": "92b76c05c7f522c73c0b2d26f81e041db36ebcc68bfdf8d91801473f6aab44ed"
+        },
+        {
+          "domain": 0,
+          "key": "hi/knowledge.md",
+          "path": "hi/knowledge.md",
+          "digest": "712e0bf7499059929191535421f1345c830fb3cc1c3a7696bf6396897e6a6cb8"
+        },
+        {
+          "domain": 0,
+          "key": "hi/life.md",
+          "path": "hi/life.md",
+          "digest": "46ca2fbe6ee89178fc2d3186f07831da3daef0bf5fe37742443a8541af547124"
+        },
+        {
+          "domain": 0,
+          "key": "knowledge/INDEX.md",
+          "path": "knowledge/INDEX.md",
+          "digest": "4c24422b39595c0c7233f572685ac1989b6ef13c304aaf2202f3727be5864996"
+        },
+        {
+          "domain": 0,
+          "key": "knowledge/README.md",
+          "path": "knowledge/README.md",
+          "digest": "72ed5ce0d93ec06c01fb4976ae30c5febb97e6f3d75b1fe649524ce54771211a"
+        },
+        {
+          "domain": 0,
+          "key": "knowledge/archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md",
+          "path": "knowledge/archives/a-project-in-a-subdirectory-of-its-git-repository-records-evidence-against-its-own-files-170-drive-18.md",
+          "digest": "945fff10d17edc1e38f746dc5dd6047fb096569550f32eb7539131aefa0da1e6"
+        },
+        {
+          "domain": 0,
+          "key": "knowledge/archives/a-session-archives-itself-at-its-own-move-into-done-155.md",
+          "path": "knowledge/archives/a-session-archives-itself-at-its-own-move-into-done-155.md",
+          "digest": "2ea50c0f197075cf10291d383aaaceeed515c6418a41f66363bae98d7b12da09"
+        },
+        {
+          "domain": 0,
+          "key": "knowledge/archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md",
+          "path": "knowledge/archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md",
+          "digest": "6162329c6926ac9667564cd4db1a7313c4764c9c5e2903fe2f69f7f0bca953d7"
+        }
+      ]
+    }
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-release-legacy-policy",
+      "digest": "d386e03ca8cccb1eb2e99ff760f89061c9578aa1b2ccd387aa1335f50c674f3a"
+    }
+  ],
+  "method": "agent-assisted",
+  "track": "functional",
+  "limitations": [
+    "This is a newly recorded unauthenticated retained-execution receipt, not a fresh case run. Original execution revision/time is stated in the summary; no human review/acceptance/full/Trust/hosted proof.",
+    "Raw immutable test logs and source/corpus hashes are external evidence packets; no new test-log artifact or script execution was created in this phase."
+  ]
+}

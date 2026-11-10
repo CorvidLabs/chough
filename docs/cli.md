@@ -528,7 +528,11 @@ every command uses `.chough/session.json` exactly as before.
   finalized the change. A finished session with unfolded inbox entries stays open, so
   its entries are not stranded; it is reported under `kept_open` with its
   `inbox_unfolded` count. Make it active and run `chough inbox fold`, and the next
-  switch archives it. With no active pointer, finished sessions do not count toward
+  switch archives it. A finished session that still holds an open human gate also
+  stays open (#181): closing a gate is a decision, so it is reported under
+  `kept_open` with its `open_gates` count and a `recovery`, `chough doctor --fix
+  --reason <text>` when its native change is archived, otherwise `chough checkpoint
+  --close-gate` with the human's decision. With no active pointer, finished sessions do not count toward
   several open sessions: the only unfinished one is active.
 - `chough session close <key> --reason <text>` closes an open session for abandoned
   work, without a native read (#163, DRIVE-16). It adds the decision `Closed without

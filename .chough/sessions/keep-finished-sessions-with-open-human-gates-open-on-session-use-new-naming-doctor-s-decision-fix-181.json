@@ -14,21 +14,36 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": null,
+  "native_change": "keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181",
   "references": {
-    "criteria": [],
-    "requirements": [],
-    "cases": [],
+    "criteria": [
+      "DRIVE-17"
+    ],
+    "requirements": [
+      "REQ-history-006",
+      "REQ-history-012"
+    ],
+    "cases": [
+      "TC-history-switch-keeps-gated-finished-sessions-open"
+    ],
     "design": [],
     "files": []
   },
   "decisions": [],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
-  "bugs": [],
+  "completed": [
+    "Failing tests: be1dc60a"
+  ],
+  "observations": [
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992",
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e",
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-267a8deb386341d2ff15f774"
+  ],
+  "bugs": [
+    "BUG-session-use-new-archive-finished-sessions-that-still-hold-an-open-human-7f275557438d8b4e21bf17d5"
+  ],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+  "next_action": "Native definition approval (blocked: this agent's permission classifier refuses approve as 0xLeif), then specsync change check, rerun TC-history-switch-keeps-gated-finished-sessions-open after materialization, commit, check --commit, review, ship, push, merge on green CI."
 }

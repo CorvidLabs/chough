@@ -7,6 +7,6 @@ artifact: testing
 
 | Requirement | Coverage |
 |---|---|
-| REQ-history-006 | New regression `a_finished_session_with_an_open_gate_stays_open_on_switch` in tests/sessions.rs: one gated finalized session stays open with the recovery named, one ungated finalized session is archived unchanged; existing switch/inbox/doctor suites unchanged and passing |
+| REQ-history-006 | `TC-history-switch-keeps-gated-finished-sessions-open` binds `a_finished_session_with_an_open_gate_stays_open_on_switch` in tests/sessions.rs: a gated finalized session and a gated done session stay open byte for byte with their gate counts and recoveries, and an ungated finalized session is archived unchanged |
 
-RED observed by stashing the src fix: the regression fails. GREEN with the fix. Full suite: `fledge run test` green on macOS arm64.
+Failing-first: the regression is committed before the fix and run there through the case (failed observation linked to the #181 bug); the same case passes after the fix. Existing switch, inbox and doctor suites run unchanged in the full `fledge run test` suite.
