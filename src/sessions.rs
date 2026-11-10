@@ -593,14 +593,34 @@ fn archive_done(root: &Path, keep: &str) -> Result<(Vec<String>, Vec<serde_json:
     let mut kept_open = vec![];
     for key in keys_in(root, DIR)? {
         // An unreadable session is left where it is; `session list` reports it.
-        if key == keep
-            || !read_at(root, &session_file(&key)).is_ok_and(|session| finished(root, &session))
-        {
+        if key == keep {
+            continue;
+        }
+        let Ok(session) = read_at(root, &session_file(&key)) else {
+            continue;
+        };
+        if !finished(root, &session) {
             continue;
         }
         let count = unfolded(root, &key)?;
         if count > 0 {
             kept_open.push(json!({"key": key, "inbox_unfolded": count}));
+            continue;
+        }
+        // Closing a session that still holds an open human gate is the decision
+        // doctor makes only with --reason; a switch never drops a gate silently
+        // (#181, DRIVE-17).
+        if !session.awaiting_human.is_empty()
+            && session
+                .native_change
+                .as_deref()
+                .is_some_and(|change| crate::library::finalized_at(root, change).is_some())
+        {
+            kept_open.push(json!({
+                "key": key,
+                "open_gates": session.awaiting_human.len(),
+                "recovery": "chough doctor --fix --reason <text>",
+            }));
             continue;
         }
         archive_open(root, &key)?;
