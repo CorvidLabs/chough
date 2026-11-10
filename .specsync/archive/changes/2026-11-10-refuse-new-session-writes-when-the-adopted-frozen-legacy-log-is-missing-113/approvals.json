@@ -1,0 +1,53 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "orc-t19f",
+      "timestamp": 1794195620,
+      "digest": "dbedb3a7413a743367f14f91ad92d023adf2c86da93a7fee0e3cce266a2ce8ed",
+      "note": "Agent orc-t19f records bounded local issue113 scope under Leif request to review/work all Chough issues and explicit Approve and continue to merge and fix bugs. Exact eight affected paths, source7bc05153 plus root supported constraints answer with dbedb3a7 digest, canonical owner history explicitly declared; existing history contract repair only. First committed current-source RED before minimal production fix; isolated build lease required. Preserve original failures/archives/other owners. This agent scope action is not human implementation acceptance, scoped review, delivery, release or global installation.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113",
+        "title": "Refuse new-session writes when the adopted frozen legacy log is missing (113)",
+        "description": "Refuse new-session writes when the adopted frozen legacy log is missing (113)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/artifacts/issue-113/",
+          ".chough/cases/history.missing-log-113.cases.toml",
+          ".chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/",
+          ".chough/sessions/chough-113-missing-log.json",
+          "CHANGELOG.md",
+          "knowledge/INDEX.md",
+          "src/history.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Repair existing REQ-history-002 acceptance: unexpected anchor changes refuse new writes, together with independent session history REQ-history-006. The missing frozen log is a mismatch with remembered adoption proof. No canonical wording, HI, CLI/schema, retention authorization or new lifecycle policy is introduced; source/test repair implements the existing contract.",
+        "acceptance_criteria": [
+          "Find a remembered legacy adoption anchor independently of whether transitions.jsonl currently exists. With a valid adoption holder open, archived, shelved or in its existing supported vault location, deleting that frozen log must refuse a new session append before checkpoint/cursor/active-pointer or event bytes change. Preserve original adopting-session refusal and changed-byte mismatch refusal. Intact/restored logs permit new-session writes, and genuinely new projects with no adoption anchor/log still work with legacy:null. Preserve each session own independent lineage; no anchor copying, immutable record rewrite, new schema, broad archive scan or weakened bounds/path protections. Add meaningful committed regression before the production patch and prove same assertions RED then GREEN on an actually built exact-source artifact only under a separate root lease. Keep old tests/assertions and failed receipts. Current older-runtime private8 controls are qualified evidence only, not current-main execution. Update only the allocated per-change cases/changelog/INDEX and own records, freeze clean exact SHA, and return for different-author review; human acceptance/delivery remain separate."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Existing REQ-history-002 and REQ-history-006; preserve independent legacy-null new sessions, bounded existing open/archive/shelved/vault holder lookup and existing unreadable/invalid-holder policy. Refuse missing/changed adopted log before event/checkpoint/cursor/active-pointer writes; preserve intact/restored/never-adopted positives. Exact eight affected paths only; no canonical HI/spec wording, schema/CLI/policy or immutable archive/history rewrite. Fledge-first, isolated source, committed meaningful current-source RED before minimal patch and same GREEN; separate exclusive build lease; preserve old assertions, failures and exact tool/source identities. Root coordinator scope authority under Leif all-issues request; no agent human acceptance/review or public delivery. These constraints restate reviewed plan/design; no new product decision.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794321364,
+      "digest": "4d25bf46e310b717e9f353bad6e64a0e335199bbb8509332478f046f72292c67",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

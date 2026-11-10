@@ -37,6 +37,32 @@ pub(super) fn remove_checkpoint_lock(root: &Path) {
     }
 }
 
+#[cfg(unix)]
+pub(super) fn alive(pid: &str) -> bool {
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(1);
+    loop {
+        let present = Command::new("kill")
+            .args(["-0", pid])
+            .stderr(std::process::Stdio::null())
+            .status()
+            .is_ok_and(|status| status.success());
+        if !present {
+            return false;
+        }
+        if let Ok(output) = Command::new("ps").args(["-o", "stat=", "-p", pid]).output() {
+            let state = String::from_utf8_lossy(&output.stdout);
+            let state = state.trim();
+            if state.is_empty() || state.starts_with('Z') {
+                return false;
+            }
+        }
+        if std::time::Instant::now() >= deadline {
+            return true;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(20));
+    }
+}
+
 impl Fixture {
     pub(super) fn new() -> Self {
         let fixture = Self(tempfile::tempdir().unwrap());
