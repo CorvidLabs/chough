@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "know-29-roll-up-keeps-or-flags-tracked-session-records-when-the-librarian-vault-is-untracked-165",
+  "slug": "know-29-roll-up-keeps-or-flags-tracked-session-records-when-the-librarian-vault-is-untracked-165",
+  "title": "KNOW-29 roll-up keeps or flags tracked session records when the librarian vault is untracked (#165)",
+  "description": "KNOW-29 roll-up keeps or flags tracked session records when the librarian vault is untracked (#165)",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "4e7bd5cbba1175f17e69752f317def5a49ac001f",
+  "created_at": 1794328533,
+  "updated_at": 1794328597,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/library.rs",
+    "src/sessions.rs",
+    "src/vault.rs"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "When the librarian vault directory is untracked or ignored by git, the KNOW-29 roll-up at done keeps a tracked session record in .chough/sessions/archive/ instead of moving it out of the tree, or refuses/warns naming what would leave the tree and how to recover; when the vault is tracked, the roll-up behaves as today. Existing keep-five retention and vault summary behavior are unchanged."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "research",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "yes",
+    "constraints": "none",
+    "public_contract": "yes"
+  }
+}
