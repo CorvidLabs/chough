@@ -7,10 +7,10 @@
   "title": "Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit",
   "description": "Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "implementing",
   "base_commit": "86ae8dda94aba981094e92d5395dc085ebe65dbd",
   "created_at": 1794021418,
-  "updated_at": 1794022467,
+  "updated_at": 1794325816,
   "affected_specs": [
     "cli",
     "reporting"

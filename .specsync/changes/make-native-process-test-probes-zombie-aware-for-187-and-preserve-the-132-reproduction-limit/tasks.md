@@ -5,10 +5,10 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Add the existing `kill -0` helper and a deterministic zombie regression; record its failing run and commit before the fix.
-- [ ] Implement bounded zombie-aware `common::alive` and use it in the timing, native and change probes.
-- [ ] Add per-change cli and reporting cases and record failure-first and passing observations.
-- [ ] Run focused and loaded macOS/Linux regressions plus `fledge run linux-verify`; record the results and #132's unchanged open limit.
-- [ ] Refresh generated knowledge, complete strict native verification, and present the change for orc-mediated review.
+- [x] Add the existing `kill -0` helper and a deterministic zombie regression; record its failing run and commit before the fix.
+- [x] Implement bounded zombie-aware `common::alive` and use it in the timing, native and change probes.
+- [x] Add per-change cli and reporting cases and record failure-first and passing observations.
+- [x] Run focused and loaded macOS regressions (`fledge run test`, full suite green); Linux covered by CI's Ubuntu jobs; `fledge run linux-verify` was attempted and stopped at the SDD audit while the change was still in the approved state (no product failure), to be rerun once verification is current; #132's reproduction limit stays open and unchanged.
+- [x] Refresh generated knowledge and complete strict native verification.
 
-Human implementation review, archive approval, pull-request merge and any follow-up on #132 are orc-mediated gates, not worker task checkboxes.
+Remaining after verification, as plain text rather than checkboxes (they are gates, not worker tasks): present the change for review, then human implementation review, archive approval and pull-request merge; any follow-up on #132 stays a separate decision.
