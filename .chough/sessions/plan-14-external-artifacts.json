@@ -14,21 +14,29 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": null,
+  "native_change": "external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14",
   "references": {
     "criteria": [],
-    "requirements": [],
-    "cases": [],
+    "requirements": [
+      "REQ-cli-006"
+    ],
+    "cases": [
+      "TC-cli-external-artifact-fingerprinted-in-place"
+    ],
     "design": [],
     "files": []
   },
   "decisions": [],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
+  "completed": [
+    "Extended the #14 regression to the approved AC: directory, symlink and over-64-MiB refusals and the freshness flip when the external file changes; case TC-cli-external-artifact-fingerprinted-in-place; main merged"
+  ],
+  "observations": [
+    "OBS-tc-cli-external-artifact-fingerprinted-in-place-8cb117826176b09b4a202528"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+  "next_action": "Leif: implementation acceptance of #208 (#14 item 3, external artifacts by fingerprint); then review, ship, push the archive and merge."
 }

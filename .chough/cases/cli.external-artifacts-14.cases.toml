@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-external-artifact-fingerprinted-in-place"
+title = "An external artifact is fingerprinted in place and never copied in"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["evidence add with an absolute artifact path records its SHA-256 without copying it into the project; missing, directory, symlinked and over-64-MiB paths are refused by name; changing the external file makes the observation stop reading current"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "an_external_artifact_is_fingerprinted_in_place"

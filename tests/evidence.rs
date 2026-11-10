@@ -2041,7 +2041,8 @@ fn an_external_artifact_is_fingerprinted_in_place() {
     fixture.stubs();
     fixture.init();
     fixture.commit("fixture");
-    let external = std::env::temp_dir().join(format!("chough-14-external-{}.png", std::process::id()));
+    let external =
+        std::env::temp_dir().join(format!("chough-14-external-{}.png", std::process::id()));
     std::fs::write(&external, b"png-bytes").unwrap();
     let added = fixture.ok(&[
         "evidence",
@@ -2064,8 +2065,7 @@ fn an_external_artifact_is_fingerprinted_in_place() {
         external.to_str().unwrap(),
     ]);
     let record = added["recorded"].as_str().unwrap().to_string();
-    let observation: Value =
-        serde_json::from_str(&fixture.read(&record)).unwrap();
+    let observation: Value = serde_json::from_str(&fixture.read(&record)).unwrap();
     let key = external.to_str().unwrap();
     assert_eq!(observation["artifacts"], serde_json::json!([key]));
     let digest = observation["artifact_fingerprints"][key].as_str().unwrap();
@@ -2096,5 +2096,67 @@ fn an_external_artifact_is_fingerprinted_in_place() {
         missing.to_str().unwrap(),
     ]);
     assert!(refused.contains("missing artifact"), "{refused}");
+
+    // A symlink, a directory and a file over the 64 MiB bound are refused by name.
+    let add_external = |path: &std::path::Path| {
+        fixture.fails(&[
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "test-local",
+            "--summary",
+            "screenshot checked",
+            "--artifact",
+            path.to_str().unwrap(),
+        ])
+    };
+    let directory = external.with_file_name(format!("chough-14-dir-{}", std::process::id()));
+    std::fs::create_dir_all(&directory).unwrap();
+    let refused = add_external(&directory);
+    assert!(refused.contains("not a plain file"), "{refused}");
+    #[cfg(unix)]
+    {
+        let link = external.with_file_name(format!("chough-14-link-{}.png", std::process::id()));
+        let _ = std::fs::remove_file(&link);
+        std::os::unix::fs::symlink(&external, &link).unwrap();
+        let refused = add_external(&link);
+        assert!(refused.contains("not a plain file"), "{refused}");
+        std::fs::remove_file(&link).unwrap();
+    }
+    let oversized = external.with_file_name(format!("chough-14-big-{}.bin", std::process::id()));
+    std::fs::File::create(&oversized)
+        .unwrap()
+        .set_len(64 * 1_048_576 + 1)
+        .unwrap();
+    let refused = add_external(&oversized);
+    assert!(refused.contains("64 MiB"), "{refused}");
+    std::fs::remove_file(&oversized).unwrap();
+    std::fs::remove_dir(&directory).unwrap();
+
+    // Freshness re-reads the external file in place: changing it makes the
+    // observation stop reading current.
+    let id = observation["id"].as_str().unwrap().to_string();
+    fixture.ok(&["checkpoint", "--observation", &id]);
+    let label = |fixture: &Fixture| {
+        fixture.ok(&["status", "--environment", "test-local"])["observations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["record"]["id"] == id)
+            .map(|entry| entry["label"].as_str().unwrap().to_string())
+    };
+    assert_eq!(label(&fixture).as_deref(), Some("current"));
+    std::fs::write(&external, b"different-bytes").unwrap();
+    assert_ne!(label(&fixture).as_deref(), Some("current"));
     std::fs::remove_file(&external).unwrap();
 }
