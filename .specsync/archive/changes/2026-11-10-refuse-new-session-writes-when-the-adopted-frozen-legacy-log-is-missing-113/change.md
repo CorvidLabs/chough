@@ -1,6 +1,6 @@
 ---
 id: refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 4bbd5a6373d26c0ad069878f8f543842a4564a6f
 ---
