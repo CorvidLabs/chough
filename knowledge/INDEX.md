@@ -100,8 +100,10 @@ Archived lesson bundles:
 
 ## Observations
 
-589 recorded; most recent:
+591 recorded; most recent:
 
+- OBS-tc-history-rolled-session-stays-listed-and-protecting-1fe8daacc8c86871977488e9 ProductTest Passed in local-macos-arm64 at a24b77f02a39
+- OBS-tc-history-rollup-copies-and-keeps-archived-sessions-cfc1d3f5770320dbd89df7bb ProductTest Passed in local-macos-arm64 at a24b77f02a39
 - OBS-structural-28551a0cdbe9c0ab26005f41 Structural Passed in local-macos-arm64 at 7cf73cbe8018
 - OBS-structural-68d43a6b1e76579bb372ad1d Structural Passed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a ProductTest Passed in local-macos-arm64 at 4b35b15064a0
@@ -110,8 +112,6 @@ Archived lesson bundles:
 - OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 
 ## Briefs
 

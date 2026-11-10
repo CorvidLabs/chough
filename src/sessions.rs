@@ -886,7 +886,10 @@ fn roll_up(root: &Path) -> Result<serde_json::Value> {
         if let Some(parent) = target.parent() {
             fs::create_dir_all(parent)?;
         }
-        // A hard link shares the bytes; the source stays in the tree (#165).
+        // A hard link shares the bytes; the source stays in the tree (#165). Archived
+        // session records are never written in place, so the vault copy and the
+        // archive record cannot diverge; anything that ever edits an archived record in
+        // place must replace the file rather than write through the shared inode.
         fs::hard_link(&source, &target).with_context(|| format!("copying {key} into the vault"))?;
         copied.push(key);
     }

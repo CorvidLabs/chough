@@ -1,0 +1,38 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-rollup-copies-and-keeps-archived-sessions"
+title = "The roll-up copies older archived sessions into the vault and keeps every record"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-29"]
+requirements = ["REQ-history-011"]
+paths = ["src/sessions.rs", "tests/reduce.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the move into done keeps the five newest archived sessions, copies the other two byte for byte into knowledge/attachments, reports them under copied, and every archived record stays in .chough/sessions/archive unchanged"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault"
+
+[[case]]
+id = "TC-history-rolled-session-stays-listed-and-protecting"
+title = "A rolled session stays listed and keeps protecting its observations"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-29"]
+requirements = ["REQ-history-011"]
+paths = ["src/sessions.rs", "src/evidence.rs", "tests/reduce.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["after the roll-up copies s0 and s6, session list still lists both, and evidence prune protects an observation referenced only by s0 with the reason archived session s0"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "a_rolled_session_stays_listed_and_keeps_protecting_its_observations"

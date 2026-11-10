@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test a_rolled_session_stays_listed_and_keeps_protecting_its_observations ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 43 filtered out; finished in 2.15s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/reduce.rs (target/debug/deps/reduce-d96b3a132bd53268)

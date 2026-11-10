@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-rolled-session-stays-listed-and-protecting-1fe8daacc8c86871977488e9",
+  "criteria": [
+    "KNOW-29"
+  ],
+  "requirements": [
+    "REQ-history-011"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact a_rolled_session_stays_listed_and_keeps_protecting_its_observations for TC-history-rolled-session-stays-listed-and-protecting: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-rolled-session-stays-listed-and-protecting-1fe8daacc8c86871977488e9.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-rolled-session-stays-listed-and-protecting-1fe8daacc8c86871977488e9.log": "c14ccdf772613bc3245707a8ad1e90c32390d2dc66ddb9573cde1c8deeea8feb"
+  },
+  "observed_at_unix_seconds": 1794346097,
+  "snapshot": {
+    "revision": "a24b77f02a390097cb60fa381233cd84381c2e96",
+    "dirty": true,
+    "fingerprint": "249f4664c330fa6775d15fda76c497cd7959f9783c98a8fac4994caf092e83b2",
+    "content": "b0cdbcfa9645b1737cb6bee47201d3df0fd717d48f65755aee979a7d36963cb7"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-rolled-session-stays-listed-and-protecting",
+      "digest": "05e285565239c6789b228d868c7abb13a723bf930e46ef43af1071e86789701a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "a_rolled_session_stays_listed_and_keeps_protecting_its_observations"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

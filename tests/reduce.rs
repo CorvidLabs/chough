@@ -1606,6 +1606,42 @@ fn done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vaul
     fixture.ok(&["session", "list"]);
 }
 
+/// #165 (REQ-history-011): a session the roll-up copies into the vault stays in
+/// `.chough/sessions/archive/`, so `session list` keeps listing it and it keeps
+/// protecting the observations it references from `evidence prune`.
+#[test]
+fn a_rolled_session_stays_listed_and_keeps_protecting_its_observations() {
+    let fixture = project("0");
+    seven_archived_sessions(&fixture);
+    let path = ".chough/sessions/archive/s0.json";
+    let mut s0: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    s0["observations"] = json!(["r1"]);
+    fixture.write(path, &(serde_json::to_string_pretty(&s0).unwrap() + "\n"));
+    fixture.commit("s0 references r1");
+
+    let moved = fixture.ok(&["stage", "advance"]);
+    let rollup = &moved["applied"]["session_rollup"];
+    assert_eq!(rollup["copied"], json!(["s0", "s6"]), "{moved:#}");
+    let list = fixture.ok(&["session", "list"]).to_string();
+    for key in ["s0", "s6"] {
+        assert!(list.contains(&format!("\"{key}\"")), "{key}: {list}");
+    }
+    assert!(fixture.exists(".chough/evidence/r1.json"), "{moved:#}");
+    // Done archived the active session; retention runs from the next one.
+    fixture.ok(&["session", "new", "next", "--objective", "Next work"]);
+    let preview = fixture.ok(&["evidence", "prune"]);
+    let r1 = preview["protected"]
+        .as_array()
+        .unwrap_or_else(|| panic!("{preview:#}"))
+        .iter()
+        .find(|entry| entry["id"] == "r1")
+        .unwrap_or_else(|| panic!("r1 is not protected: {preview:#}"));
+    assert!(
+        r1["reasons"].to_string().contains("archived session s0"),
+        "{preview:#}"
+    );
+}
+
 /// #191 (KNOW-4, REQ-cli-051): a session rolled into a vault built by the same move links
 /// its change's archive note, so the move into done leaves the directory as its sources
 /// generate, with no command in between.

@@ -14,21 +14,33 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": null,
+  "native_change": "know-29-roll-up-copies-never-moves-tracked-session-records-165",
   "references": {
-    "criteria": [],
-    "requirements": [],
-    "cases": [],
+    "criteria": [
+      "KNOW-29"
+    ],
+    "requirements": [
+      "REQ-history-011"
+    ],
+    "cases": [
+      "TC-history-rollup-copies-and-keeps-archived-sessions",
+      "TC-history-rolled-session-stays-listed-and-protecting"
+    ],
     "design": [],
     "files": []
   },
   "decisions": [],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
+  "completed": [
+    "Addressed corvid-agent review of #211: docs/cli.md aligned to copy semantics, regression for listing and retention of rolled sessions, hard-link note, main merged and index rebuilt. The HI capture of Leif's #165 decision is KNOW-30 in PR #212 (not amended here, to avoid a duplicate capture)."
+  ],
+  "observations": [
+    "OBS-tc-history-rollup-copies-and-keeps-archived-sessions-cfc1d3f5770320dbd89df7bb",
+    "OBS-tc-history-rolled-session-stays-listed-and-protecting-1fe8daacc8c86871977488e9"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+  "next_action": "Leif: implementation acceptance of #211 (and #212's KNOW-30 for the HI; KNOW-29's 'only five stay' clause still contradicts copy-not-move until #212 amends or supersedes it); then review, ship, push the archive and merge."
 }
