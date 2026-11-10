@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- append-only-event-corrections-with-chough-correct-never-rewriting-history-167 (active; `specsync change status append-only-event-corrections-with-chough-correct-never-rewriting-history-167`)
 
 Archived changes (newest first; the newest 3 are hot):
 
