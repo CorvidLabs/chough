@@ -56,3 +56,10 @@ Open follow-ups, not part of the approved change:
 
 - [ ] Exercise discovery and cold starts on Cursor, Gemini and Grok.
 - [ ] Use the workflow on a real CorvidLabs project feature and bug.
+
+## Released skill recognition (#102, human acceptance pending)
+
+- [x] Retain the five pinned release bundles as120 manifest mappings/51 exact offline blobs; add seven standalone runtime tests.
+- [x] Reproduce pristine recognition/update failures on the original68-pair production table, then add only six exact filename/SHA256 pairs and pass SAME7 plus23 unchanged skill controls, fmt and lint.
+
+Native materialization/currentness, independent review, human acceptance and delivery remain separate gates. The completed boxes describe retained observed product work, not a new case run or human review.

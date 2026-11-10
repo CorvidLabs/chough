@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "02a0a7052220c8afa21b72e0bc0c951938fd6f90",
+  "contract_digest": "c0ea4a48cdf77cf4ad45a25951968c26c1749dcf8f4de92b2d618d05341674cd",
+  "execution_digest": "2af28428c49fe799cdce027d46318e73be2b572024b66164a4df7e9a25ab7f20",
+  "workspace_digest": "64a75ab8d8b16f2189e96d167fdbb4eaa3aa7ac2ad7b3a3b9f42a22d17870ef2",
+  "timestamp": 1794320703
+}

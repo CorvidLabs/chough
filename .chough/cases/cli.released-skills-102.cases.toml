@@ -1,0 +1,150 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-release-corpus-identity"
+title = "Pinned release skill check: corpus-identity"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/skill_releases.rs", "tests/fixtures/skill-releases/manifest.json"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+setup = ["Validate the complete pinned offline corpus before any CLI invocation; use private test roots."]
+steps = ["Run the named standalone runtime assertion under the declared Fledge test task."]
+expected = ["tests/skill_releases.rs::released_corpus_identity_rejects_tampering_before_cli_invocation passes"]
+notes = "Receipt records may refer to retained execution at its original source SHA; recording is not a fresh case run or human approval."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "skill_releases"
+test = "released_corpus_identity_rejects_tampering_before_cli_invocation"
+
+[[case]]
+id = "TC-cli-release-pristine-status"
+title = "Pinned release skill check: pristine-status"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/skill_releases.rs", "tests/fixtures/skill-releases/manifest.json"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+setup = ["Validate the complete pinned offline corpus before any CLI invocation; use private test roots."]
+steps = ["Run the named standalone runtime assertion under the declared Fledge test task."]
+expected = ["tests/skill_releases.rs::every_pinned_release_file_is_recognized_before_update passes"]
+notes = "Receipt records may refer to retained execution at its original source SHA; recording is not a fresh case run or human approval."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "skill_releases"
+test = "every_pinned_release_file_is_recognized_before_update"
+
+[[case]]
+id = "TC-cli-release-pristine-update"
+title = "Pinned release skill check: pristine-update"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/skill_releases.rs", "tests/fixtures/skill-releases/manifest.json"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+setup = ["Validate the complete pinned offline corpus before any CLI invocation; use private test roots."]
+steps = ["Run the named standalone runtime assertion under the declared Fledge test task."]
+expected = ["tests/skill_releases.rs::every_pristine_release_updates_instead_of_staying_a_preserved_edit passes"]
+notes = "Receipt records may refer to retained execution at its original source SHA; recording is not a fresh case run or human approval."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "skill_releases"
+test = "every_pristine_release_updates_instead_of_staying_a_preserved_edit"
+
+[[case]]
+id = "TC-cli-release-edited-preservation"
+title = "Pinned release skill check: edited-preservation"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/skill_releases.rs", "tests/fixtures/skill-releases/manifest.json"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+setup = ["Validate the complete pinned offline corpus before any CLI invocation; use private test roots."]
+steps = ["Run the named standalone runtime assertion under the declared Fledge test task."]
+expected = ["tests/skill_releases.rs::user_edited_release_bytes_and_modes_survive_every_host_update passes"]
+notes = "Receipt records may refer to retained execution at its original source SHA; recording is not a fresh case run or human approval."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "skill_releases"
+test = "user_edited_release_bytes_and_modes_survive_every_host_update"
+
+[[case]]
+id = "TC-cli-release-name-byte-matching"
+title = "Pinned release skill check: name-byte-matching"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/skill_releases.rs", "tests/fixtures/skill-releases/manifest.json"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+setup = ["Validate the complete pinned offline corpus before any CLI invocation; use private test roots."]
+steps = ["Run the named standalone runtime assertion under the declared Fledge test task."]
+expected = ["tests/skill_releases.rs::recognition_requires_the_filename_and_exact_unnormalized_bytes passes"]
+notes = "Receipt records may refer to retained execution at its original source SHA; recording is not a fresh case run or human approval."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "skill_releases"
+test = "recognition_requires_the_filename_and_exact_unnormalized_bytes"
+
+[[case]]
+id = "TC-cli-release-host-current-missing"
+title = "Pinned release skill check: host-current-missing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/skill_releases.rs", "tests/fixtures/skill-releases/manifest.json"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+setup = ["Validate the complete pinned offline corpus before any CLI invocation; use private test roots."]
+steps = ["Run the named standalone runtime assertion under the declared Fledge test task."]
+expected = ["tests/skill_releases.rs::current_missing_and_shared_host_routing_stay_unchanged passes"]
+notes = "Receipt records may refer to retained execution at its original source SHA; recording is not a fresh case run or human approval."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "skill_releases"
+test = "current_missing_and_shared_host_routing_stay_unchanged"
+
+[[case]]
+id = "TC-cli-release-legacy-policy"
+title = "Pinned release skill check: legacy-policy"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/skill_releases.rs", "tests/fixtures/skill-releases/manifest.json"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+setup = ["Validate the complete pinned offline corpus before any CLI invocation; use private test roots."]
+steps = ["Run the named standalone runtime assertion under the declared Fledge test task."]
+expected = ["tests/skill_releases.rs::legacy_status_update_and_explicit_removal_keep_the_existing_policy passes"]
+notes = "Receipt records may refer to retained execution at its original source SHA; recording is not a fresh case run or human approval."
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "skill_releases"
+test = "legacy_status_update_and_explicit_removal_keep_the_existing_policy"
+

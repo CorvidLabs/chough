@@ -43,6 +43,39 @@ pub(super) const BUNDLE: &[(&str, &str)] = bundle!(
 
 /// SHA-256 digests of files shipped by earlier releases; such copies may be updated.
 const KNOWN_PREVIOUS: &[(&str, &str)] = &[
+    // Issue #102: exact released source bytes, pinned in the offline release corpus.
+    // v0.1.0 commit c03d41956ef1d9f8380f02034f03d42bf52bc174.
+    // v0.2.0 commit edbc3c1adecebf6a1378a731965c3bfe8c8217df.
+    // v0.3.0 commit 4d65542ff583ee2478f7d98c1dd4434a960e9dc1.
+    // v0.4.0 commit 69950c7a9253230aeeee3bac0d0d6b580e291aad.
+    (
+        "templates/brief.md",
+        "fcbc759ab4605a6dd8fffd4af4498783186e308c6d771284bb9a2626f6e0b4e8",
+    ),
+    // Issue #102: exact released source bytes, pinned in the offline release corpus.
+    // v0.2.0 commit edbc3c1adecebf6a1378a731965c3bfe8c8217df.
+    (
+        "references/accept.md",
+        "d2a185514ebe6f7428ed2d31c946126e6201bfd1e0feec5e0dccd1250474aa9c",
+    ),
+    (
+        "references/plan.md",
+        "a159d2c4846ca0441337be0716fdd7c7fd96da27e7aea0b0b6e3dfb3b0f9696f",
+    ),
+    (
+        "references/testing.md",
+        "ef831afa1094da91e5766c2d9597d6c933abe11b4d1a50913893415bd0d511a4",
+    ),
+    // Issue #102: exact released source bytes, pinned in the offline release corpus.
+    // v0.5.0 commit 455cb643cd91a9c804afdf5566e3889abf1bde49.
+    (
+        "references/accept.md",
+        "18299d9d1adb30fb87a167a1a59ecd8595d1f53ec73522ccee257ea817641701",
+    ),
+    (
+        "references/lifecycle.md",
+        "ac787118e30b11a8b5eb1429108bf1ac42911767b1ff33c56d68e925c84f11a3",
+    ),
     // Releases 0.1.0 to 0.4.0, unchanged since #22 through main 01f1d023; superseded by
     // the `stage advance --to` row in the transition table (REQ-cli-052, DRIVE-9).
     (

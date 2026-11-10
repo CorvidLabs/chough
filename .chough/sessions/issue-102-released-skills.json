@@ -1,0 +1,67 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-43c30f46eb478046aa4710b3",
+    "head": "EVT-7369d71533b3056afb8e6807",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Recognize every pristine skill file from pinned released bundles while preserving all user edits",
+  "intent_scope": "FLOW",
+  "modules": [
+    "cli"
+  ],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits",
+  "references": {
+    "criteria": [
+      "FLOW-1",
+      "LIFE-4"
+    ],
+    "requirements": [
+      "REQ-cli-016"
+    ],
+    "cases": [
+      "TC-cli-release-corpus-identity",
+      "TC-cli-release-pristine-status",
+      "TC-cli-release-pristine-update",
+      "TC-cli-release-edited-preservation",
+      "TC-cli-release-name-byte-matching",
+      "TC-cli-release-host-current-missing",
+      "TC-cli-release-legacy-policy"
+    ],
+    "design": [],
+    "files": [
+      "src/skill.rs"
+    ]
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [
+    "Retained t2ns actual compiled RED then t2p7 SAME7/7 plus23 unchanged controls/fmtlint; no fresh run while recording receipts"
+  ],
+  "observations": [
+    "OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b",
+    "OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e",
+    "OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56",
+    "OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7",
+    "OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619",
+    "OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23",
+    "OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3",
+    "OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62",
+    "OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314"
+  ],
+  "bugs": [
+    "BUG-pinned-released-skill-files-are-misclassified-as-edits-because-six-pred-2448f259d21efce039cd3e9b"
+  ],
+  "blockers": [],
+  "awaiting_human": [
+    "Independent scoped review and human implementation acceptance remain pending; no review/ship authorization is recorded."
+  ],
+  "run_consents": [],
+  "next_action": "Finish allocated INDEX-only generation/native-current freeze then different-author scoped review; human implementation acceptance pending"
+}

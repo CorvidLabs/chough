@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "id": "BUG-pinned-released-skill-files-are-misclassified-as-edits-because-six-pred-2448f259d21efce039cd3e9b",
+  "title": "Pinned released skill files are misclassified as edits because six predecessor pairs are missing",
+  "symptom": "Exact pristine released bytes remain edited/preserved-edit after skill update.",
+  "trigger": "Run committed seven-test offline source corpus at6bb513b across5tags/6hosts; two assertion groups each expose54 pristine rows.",
+  "expected": "Pinned pristine release files are current or known-outdated and update to current bytes; true edits/modes and filename matching stay exact.",
+  "actual": "t2ns actual compiled seven tests5pass/2fail; six missing pairs misclassify54 rows in each recognition/update group. t2p7 after only six pairs passes SAME7 plus23 existing controls, fmt/lint.",
+  "criteria": [
+    "FLOW-1",
+    "LIFE-4"
+  ],
+  "requirements": [
+    "REQ-cli-016"
+  ],
+  "cases": [
+    "TC-cli-release-pristine-status",
+    "TC-cli-release-pristine-update"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "d9a9d92459a611eeca6a587fb83e130b95c91dee",
+  "steps": [
+    "Validate complete corpus identities before runtime.",
+    "Run Fledge test --locked --test skill_releases on unchanged68-pair table; retain recognition/update assertions.",
+    "Add only approved six pairs then run SAME7 and existing focused controls."
+  ],
+  "fixture": "tests/fixtures/skill-releases/manifest.json;51 exact blobs,120 pinned source mappings",
+  "observations": [
+    "OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b",
+    "OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e",
+    "OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7",
+    "OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619"
+  ],
+  "impact": "Existing installs retain stale pristine guidance; source update must keep all real edits intact.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "Issue102/direct all-PR task; retained actual t2ns product RED and t2p7 SAME GREEN, agent record only",
+  "notes": [
+    {
+      "at_unix_seconds": 1794201271,
+      "text": "status: open -> verified. Retained actual compiled RED t2ns ended2026-11-09T04:46:29.660928Z on6bb; SAME GREEN t2p7 after approved six-row d9 sourcefix, plus23 old controls/fmtlint. Current record timestamps are receipt-capture times, not retroactively fabricated execution timestamps; immutable original logs preserve execution chronology. Human acceptance/full/Trust/hosted remain separate.",
+      "observations": [
+        "OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7",
+        "OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794201256,
+  "updated_at_unix_seconds": 1794201271
+}
