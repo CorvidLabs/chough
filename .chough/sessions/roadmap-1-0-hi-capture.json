@@ -42,7 +42,8 @@
   "open_questions": [],
   "completed": [
     "Wrote docs/roadmap-1.0.md (milestones M1-M7 tied to the four bar items, session slug-folder migration design) and docs/test-plan-1.0.md (dogfood checklist, flake tracker and clean window, migration fixtures, host-matrix harness); linked both from README and docs/ROADMAP.md",
-    "Completed the native change artifacts (context, docs, design, tasks) after the verify lane's audit step refused the TODO placeholders"
+    "Completed the native change artifacts (context, docs, design, tasks) after the verify lane's audit step refused the TODO placeholders",
+    "PR #212 open (docs+hi, stopped for Leif); milestone 'Chough 1.0' created with epic #232 and issues #213-#231, existing open issues mapped onto the milestone; dependencies linked with blocked-by"
   ],
   "observations": [],
   "bugs": [],
@@ -51,5 +52,5 @@
     "Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping"
   ],
   "run_consents": [],
-  "next_action": "When the verify lane is green: commit hi, docs, session and change files; push; open the PR with the draft issue list; report to hc t370"
+  "next_action": "Awaiting Leif: intent approval (13 new criteria), native scope approval, rulings on the FLOW-17/FLOW-21 and KNOW-29/KNOW-30 conflicts"
 }
