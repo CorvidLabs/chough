@@ -100,8 +100,9 @@ Archived lesson bundles:
 
 ## Observations
 
-591 recorded; most recent:
+592 recorded; most recent:
 
+- OBS-tc-history-switch-keeps-gated-finished-sessions-open-267a8deb386341d2ff15f774 ProductTest Passed in local-macos-arm64 at be1dc60a654a
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e ProductTest Passed in local-macos-arm64 at be1dc60a654a
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992 ProductTest Failed in local-macos-arm64 at be1dc60a654a
 - OBS-structural-28551a0cdbe9c0ab26005f41 Structural Passed in local-macos-arm64 at 7cf73cbe8018
@@ -111,7 +112,6 @@ Archived lesson bundles:
 - OBS-tc-cli-inventory-historical-58c5786905be80e97b73ffe0 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
 - OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 - OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
 
 ## Briefs
 
