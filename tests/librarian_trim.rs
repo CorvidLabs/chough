@@ -122,16 +122,8 @@ fn at_accept() -> Fixture {
     );
     write_obs(&fixture, "cold-b", 6, &[]);
     fixture.commit("fixture");
-    let path = fixture.root().join(".chough/session.json");
-    let mut session: Value =
-        serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
-    session["stage"]["current"] = json!("accept");
-    session["native_change"] = json!("a5");
-    std::fs::write(
-        &path,
-        serde_json::to_string_pretty(&session).unwrap() + "\n",
-    )
-    .unwrap();
+    fixture.set_front("stage", "accept");
+    fixture.set_front("native_change", "a5");
     fixture
 }
 
