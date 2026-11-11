@@ -164,12 +164,40 @@ const LEGACY_FILES: [&str; 3] = [
     ".chough/transitions.jsonl",
     ".chough/pruned.jsonl",
 ];
-const LEGACY_FOLDERS: [&str; 3] = [
+/// `.chough/sessions/shelved/` held 0.5.x shelved sessions as `<key>.json`; left alone,
+/// 0.6.0 would read the folder as a session's.
+const LEGACY_FOLDERS: [&str; 4] = [
     ".chough/sessions/archive",
+    ".chough/sessions/shelved",
     ".chough/history",
     ".chough/evidence",
 ];
 const LEGACY_JSON_IN: [&str; 2] = [".chough/sessions", ".chough/bugs"];
+/// How many 0.5.x paths an unmigrated refusal names before it counts the rest.
+const NAMED_LEGACY_PATHS: usize = 5;
+
+/// Refuse while any 0.5.x record exists, before anything is read or written
+/// (REQ-records-010). Every command but `migrate`, `doctor` and `skill` calls this once,
+/// so a mixed tree, 0.6.0 records with a 0.5.x file written later, refuses the same way.
+pub(crate) fn ensure_migrated(root: &Path) -> Result<()> {
+    let legacy = legacy_paths(root)?;
+    if legacy.is_empty() {
+        return Ok(());
+    }
+    let named = legacy
+        .iter()
+        .take(NAMED_LEGACY_PATHS)
+        .map(String::as_str)
+        .collect::<Vec<_>>()
+        .join(", ");
+    let rest = match legacy.len().saturating_sub(NAMED_LEGACY_PATHS) {
+        0 => String::new(),
+        more => format!(" and {more} more"),
+    };
+    bail!(
+        "refused:unmigrated: this project uses the Chough 0.5.x layout ({named}{rest}), so nothing was written. Run `chough migrate` to preview the conversion, then `chough migrate --apply <digest>` to convert."
+    )
+}
 
 /// 0.5.x files REQ-records-009 removes or carries that REQ-records-010 does not count
 /// as making a tree unmigrated: the schema 1 checkpoint backup, every file under

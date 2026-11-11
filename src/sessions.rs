@@ -65,8 +65,6 @@ const LOCAL: &str = ".chough/local";
 pub(super) const POINTER: &str = ".chough/local/active-session";
 const INBOX_LIMIT: u64 = 16_384;
 const MAX_INBOX: usize = 200;
-/// A 0.5.x checkpoint; its presence means the project has not been migrated.
-const LEGACY: &str = ".chough/session.json";
 
 #[derive(Subcommand)]
 pub(super) enum SessionCommand {
@@ -192,24 +190,6 @@ pub(super) fn ensure_key(key: &str) -> Result<()> {
 
 pub(super) fn enabled(root: &Path) -> Result<bool> {
     Ok(local_path(root, DIR)?.is_dir())
-}
-
-/// Refuse a project still in the 0.5.x layout (REQ-records-010).
-pub(super) fn ensure_migrated(root: &Path) -> Result<()> {
-    let legacy_session = local_path(root, LEGACY)?.exists();
-    let legacy_files = match fs::read_dir(local_path(root, DIR)?) {
-        Ok(entries) => entries.filter_map(|entry| entry.ok()).any(|entry| {
-            entry.file_name().to_str().is_some_and(|name| {
-                name.ends_with(".json") || name == "archive" || name == "shelved"
-            })
-        }),
-        Err(_) => false,
-    };
-    ensure!(
-        !legacy_session && !legacy_files,
-        "refused:unmigrated: this project's Chough records are in the 0.5.x format; run `chough migrate` to see the plan, then `chough migrate --apply <digest>`"
-    );
-    Ok(())
 }
 
 /// The names (without `.json`) of the JSON files directly in `dir`.
@@ -383,7 +363,6 @@ pub(super) fn pointer(root: &Path) -> Result<Option<String>> {
 
 /// The active session's ID, or a refusal naming the next command.
 fn active(root: &Path) -> Result<String> {
-    ensure_migrated(root)?;
     if let Some(id) = pointer(root)? {
         if local_path(root, &archive_file(&id))?.is_file() {
             bail!(
@@ -741,7 +720,6 @@ pub(super) fn create(
         "invalid module name: use a module ID SpecSync accepts, such as cli or chat.service"
     );
     lock_project(root)?;
-    ensure_migrated(root)?;
     for id in open_ids(root)?.iter().chain(archived_ids(root)?.iter()) {
         let file = if local_path(root, &archive_file(id))?.is_file() {
             archive_file(id)
@@ -807,7 +785,6 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
         }
         SessionCommand::Use { key } => {
             lock_project(root)?;
-            ensure_migrated(root)?;
             ensure!(
                 enabled(root)?,
                 "no sessions; run `chough session new <key>`"
@@ -818,7 +795,6 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
             print_json(&json!({"schema_version":1,"active":id}))
         }
         SessionCommand::List => {
-            ensure_migrated(root)?;
             ensure!(
                 enabled(root)?,
                 "no sessions; run `chough session new <key>`"
@@ -952,7 +928,6 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
 
 /// The newest archived story's checkpoint, by its `closed` date and then its ID.
 pub(super) fn newest_archived(root: &Path) -> Result<Option<Session>> {
-    ensure_migrated(root)?;
     let mut newest: Option<(String, String, Checkpoint)> = None;
     for id in archived_ids(root)? {
         let Ok(session) = read_at(root, &archive_file(&id)) else {
@@ -1096,7 +1071,6 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
         "the reason must not be blank; say why the work is abandoned with --reason <text>"
     );
     lock_project(root)?;
-    ensure_migrated(root)?;
     let id = resolve_open(root, key)?;
     let count = unfolded(root, &id)?;
     ensure!(
@@ -1123,32 +1097,65 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
     }))
 }
 
-/// Move session folder `key` unparsed and byte for byte to
-/// `.chough/archive/shelved/<id>/`, never replacing a file, record why beside it, and
-/// clear the active pointer when it named this session (REQ-history-006, DRIVE-14).
-fn shelve(root: &Path, key: &str) -> Result<()> {
+/// The name of the note shelving writes inside the shelved folder (REQ-history-006).
+const SHELVED_NOTE: &str = "shelved.md";
+
+/// One entry of a shelved folder: a file's size and SHA-256, or a symbolic link, which is
+/// listed and not followed.
+type ShelvedFile = (String, Option<(u64, String)>);
+
+/// Every file under `dir`, folder-relative and sorted (REQ-history-006).
+fn shelved_files(dir: &Path, relative: &str, out: &mut Vec<ShelvedFile>) -> Result<()> {
     use sha2::{Digest, Sha256};
+    let mut entries: Vec<fs::DirEntry> = fs::read_dir(dir)?.collect::<Result<_, _>>()?;
+    entries.sort_by_key(fs::DirEntry::file_name);
+    for entry in entries {
+        let name = entry.file_name().to_string_lossy().into_owned();
+        let path = if relative.is_empty() {
+            name
+        } else {
+            format!("{relative}/{name}")
+        };
+        let kind = entry.file_type()?;
+        if kind.is_dir() {
+            shelved_files(&entry.path(), &path, out)?;
+        } else if kind.is_file() {
+            let bytes = fs::read(entry.path()).with_context(|| format!("reading {path}"))?;
+            let sha256 = format!("{:x}", Sha256::digest(&bytes));
+            out.push((path, Some((bytes.len() as u64, sha256))));
+        } else {
+            out.push((path, None));
+        }
+    }
+    Ok(())
+}
+
+/// Move session folder `key` unparsed and byte for byte to
+/// `.chough/archive/shelved/<id>/`, never replacing a file, with a `shelved.md` inside
+/// giving its size, each file's SHA-256, the time and the reason, and clear the active
+/// pointer when it named this session (REQ-history-006, DRIVE-14).
+fn shelve(root: &Path, key: &str) -> Result<()> {
     ensure_key(key)?;
     let source = format!("{DIR}/{key}");
     let from = local_path(root, &source)?;
     ensure!(from.is_dir(), "no session folder {source} to shelve");
     let target = format!("{SHELVED}/{key}");
-    let note = format!("{SHELVED}/{key}.shelved.json");
-    for file in [&target, &note] {
-        ensure!(
-            !local_path(root, file)?.exists(),
-            "{file} already exists; shelving never replaces a file"
-        );
-    }
-    let session_path = from.join("session.md");
-    let bytes = fs::read(&session_path).unwrap_or_default();
-    let sha256 = format!("{:x}", Sha256::digest(&bytes));
-    let readable = bytes.len() as u64 <= checkpoint::SESSION_LIMIT
-        && String::from_utf8(bytes.clone())
+    let note = format!("{target}/{SHELVED_NOTE}");
+    ensure!(
+        !local_path(root, &target)?.exists(),
+        "{target} already exists; shelving never replaces a file"
+    );
+    ensure!(
+        !from.join(SHELVED_NOTE).exists(),
+        "{source}/{SHELVED_NOTE} would become {note}, which shelving writes; it never replaces a file, so nothing was moved"
+    );
+    let session_bytes = fs::read(from.join("session.md")).unwrap_or_default();
+    let readable = session_bytes.len() as u64 <= checkpoint::SESSION_LIMIT
+        && String::from_utf8(session_bytes.clone())
             .ok()
             .and_then(|text| checkpoint::parse(&session_file(key), &text).ok())
             .is_some();
-    let reason = if bytes.len() as u64 > checkpoint::SESSION_LIMIT {
+    let reason = if session_bytes.len() as u64 > checkpoint::SESSION_LIMIT {
         format!(
             "over the session bound of {} bytes",
             checkpoint::SESSION_LIMIT
@@ -1158,26 +1165,48 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
     } else {
         "not a readable session record".to_string()
     };
-    fs::create_dir_all(local_path(root, SHELVED)?)?;
-    let record = json!({
-        "schema_version": 1,
-        "id": key,
-        "from": source,
-        "bytes": bytes.len(),
-        "sha256": sha256,
-        "bound": checkpoint::SESSION_LIMIT,
-        "reason": reason,
-        "shelved_at_unix_seconds": now()?,
-    });
-    ensure!(
-        write_new(
-            root,
-            &note,
-            &(serde_json::to_string_pretty(&record)? + "\n")
-        )?,
-        "{note} already exists; shelving never replaces a file"
+    let mut files = vec![];
+    shelved_files(&from, "", &mut files)?;
+    let total: u64 = files
+        .iter()
+        .filter_map(|(_, file)| Some(file.as_ref()?.0))
+        .sum();
+    let mut body = format!(
+        "# Shelved session {key}\n\nMoved unparsed and byte for byte from `{source}`: {reason}. No reader scans this folder.\n\n## Files\n\n"
     );
+    for (path, file) in &files {
+        match file {
+            Some((size, sha256)) => body.push_str(&format!("- `{path}` {size} bytes {sha256}\n")),
+            None => body.push_str(&format!("- `{path}` a symbolic link, not followed\n")),
+        }
+    }
+    let mut record = crate::markdown::Record::new(&body);
+    record.set_scalar("kind", "shelved")?;
+    record.set_scalar("id", key)?;
+    record.set_scalar("from", &source)?;
+    record.set_scalar("shelved", &crate::session_md::iso_time(now()?))?;
+    record.set_scalar("reason", &reason)?;
+    record.set_scalar("bytes", &total.to_string())?;
+    // REQ-records-006: a file name can hold what a committed record must not.
+    let local = crate::leaks::Local::current();
+    if crate::leaks::redacting() {
+        record.redact_leaks(local);
+    } else {
+        record.check_leaks(local)?;
+    }
+    let text = record.render();
+    ensure!(
+        text.len() as u64 <= crate::markdown::RECEIPT_BOUND,
+        "refused: the shelving note would be {} bytes, over its bound of {} bytes; nothing was moved",
+        text.len(),
+        crate::markdown::RECEIPT_BOUND
+    );
+    fs::create_dir_all(local_path(root, SHELVED)?)?;
     fs::rename(&from, local_path(root, &target)?).with_context(|| format!("shelving {source}"))?;
+    ensure!(
+        write_new_bounded(root, &note, &text, crate::markdown::RECEIPT_BOUND)?,
+        "{note} appeared while shelving; it was not replaced"
+    );
     if pointer(root).ok().flatten().as_deref() == Some(key) {
         let _ = fs::remove_file(local_path(root, POINTER)?);
     }
@@ -1187,7 +1216,7 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
         "shelved": target,
         "record": note,
         "from": source,
-        "bytes": bytes.len(),
+        "bytes": total,
         "bound": checkpoint::SESSION_LIMIT,
         "reason": reason,
         "next": "chough session new <key>",
