@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "BUG-the-move-into-done-regenerates-the-whole-knowledge-library-churning-tra-9e0f47c021a4aec725ee4b03",
+  "title": "The move into done regenerates the whole knowledge library, churning tracked files in an unrelated change",
+  "symptom": "chough stage advance from accept to done modified 35 tracked files under knowledge/ and added 39, indexing 34 archived changes main had not indexed.",
+  "trigger": "chough stage advance accept to done in a repository with many archived native changes and a knowledge library that is behind them.",
+  "expected": "The move into done writes only its own journal post and the feed entry; every other knowledge file stays byte-identical, because the library only links (KNOW-30, KNOW-31, KNOW-33).",
+  "actual": "Chough 0.5.0 rebuilt archive, module, intent and timeline notes for every archived change at done (spec-sync repository, seen by the spec-sync worker t38b, relayed by the coordinator on 2026-11-11).",
+  "criteria": [
+    "KNOW-30",
+    "KNOW-31"
+  ],
+  "requirements": [
+    "REQ-cli-043"
+  ],
+  "cases": [
+    "TC-records-done-touches-only-its-own-post",
+    "TC-records-journal-and-feed"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "279fc74f043b5b60a89913f687021f235d7ec501",
+  "steps": [
+    "In a repository whose knowledge library lags its archived native changes, advance a session from accept to done.",
+    "git status shows dozens of modified and new files under knowledge/."
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Unrelated changes carry dozens of generated knowledge files, which collide on a shared repository and blur review.",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "spec-sync repository, Chough 0.5.0, worker t38b; relayed by t370 on 2026-11-11",
+  "notes": [],
+  "created_at_unix_seconds": 1794415065,
+  "updated_at_unix_seconds": 1794415065
+}
