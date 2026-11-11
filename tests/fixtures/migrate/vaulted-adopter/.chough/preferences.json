@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "preferences": [
+    {
+      "key": "librarian",
+      "value": "on",
+      "source": "Fixture: the librarian keeps the vault",
+      "scope": "project",
+      "set_at_unix_seconds": 1794428179
+    }
+  ]
+}

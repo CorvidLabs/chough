@@ -1916,10 +1916,25 @@ pub(crate) fn migrate_0_5(
     let mut carried = crate::migrate::Carried::default();
     let receipt = migration_receipt()?;
     // Names already taken: 0.6.0 bugs in a mixed tree, then the ones this plan writes.
-    let mut taken: BTreeSet<String> = records_in(root, BUGS_DIR, Kind::Bug.bound())
+    // A 0.6.0 bug already in the tree, with the 0.5.x IDs it answers to. One that holds
+    // a migrating bug's old ID is that bug's own write from an interrupted apply, so its
+    // name is not taken from it and the plan, and its digest, stay the same.
+    let existing: Vec<(String, Vec<String>)> = records_in(root, BUGS_DIR, Kind::Bug.bound())
         .into_iter()
-        .map(|(name, _)| name.trim_end_matches(".md").to_string())
+        .map(|(name, record)| {
+            (
+                name.trim_end_matches(".md").to_string(),
+                record.list("aliases"),
+            )
+        })
         .collect();
+    let mut planned: BTreeSet<String> = BTreeSet::new();
+    let taken = |name: &str, old: &str, planned: &BTreeSet<String>| {
+        planned.contains(name)
+            || existing
+                .iter()
+                .any(|(other, aliases)| other == name && !aliases.iter().any(|alias| alias == old))
+    };
     let local = Local::current();
     for (source, legacy) in legacy_bugs(root)? {
         carried.sources.insert(source.clone());
@@ -2024,14 +2039,14 @@ pub(crate) fn migrate_0_5(
             &title,
             "bug",
         );
-        if taken.contains(&name) {
+        if taken(&name, &legacy.id, &planned) {
             name = format!("{name}-{}", migration_suffix(&legacy.id));
             ensure!(
-                !taken.contains(&name),
+                !taken(&name, &legacy.id, &planned),
                 "refused: {source} and another bug both migrate to {BUGS_DIR}/{name}.md, so no plan was made"
             );
         }
-        taken.insert(name.clone());
+        planned.insert(name.clone());
         record.set_scalar("id", &name)?;
         let path = format!("{BUGS_DIR}/{name}.md");
         let stored = Stored {

@@ -333,7 +333,7 @@ fn apply(
         let path = local_path(root, &written.path)?;
         if let Ok(existing) = std::fs::read(&path)
             && existing != written.bytes.as_bytes()
-            && !replaces_by_case(root, plan, &written.path)
+            && !collides_by_case(plan, &written.path)
         {
             bail!(
                 "refused:target-exists: {} already exists with other bytes, and the migration writes by create-new only, so nothing more was written.",
@@ -342,38 +342,17 @@ fn apply(
         }
     }
     // Write: create-new, or count a file an interrupted apply wrote with the planned
-    // bytes as done; a path that differs only in case from a planned removal on a
-    // case-insensitive file system replaces it in place.
+    // bytes as done. A path that differs only in case from a planned removal (on a
+    // case-insensitive file system, one file) waits until the removals, so an
+    // interruption or a restore never meets it half replaced.
     let mut written_now = vec![];
-    for written in &plan.carried.written {
-        let path = local_path(root, &written.path)?;
-        let done = std::fs::read(&path).is_ok_and(|bytes| bytes == written.bytes.as_bytes());
-        if !done {
-            if let Some(parent) = path.parent() {
-                std::fs::create_dir_all(parent)?;
-            }
-            if replaces_by_case(root, plan, &written.path) {
-                crate::records::write_replace_bounded(
-                    root,
-                    &written.path,
-                    &written.bytes,
-                    crate::markdown::Kind::Receipt.bound(),
-                )?;
-            } else {
-                ensure!(
-                    crate::records::write_new(root, &written.path, &written.bytes)?,
-                    "{} appeared while migrating; nothing more was written",
-                    written.path
-                );
-            }
-            written_now.push(written.path.clone());
-        }
-        let back = std::fs::read(&path)?;
-        ensure!(
-            sha256(&back) == sha256(written.bytes.as_bytes()),
-            "{} did not read back as planned; nothing was removed",
-            written.path
-        );
+    for written in plan
+        .carried
+        .written
+        .iter()
+        .filter(|written| !collides_by_case(plan, &written.path))
+    {
+        write_planned(root, written, &mut written_now)?;
     }
     let receipt = receipt_path()?;
     let receipt_text = receipt_record(plan, digest, &consent, &removals, root)?;
@@ -439,7 +418,16 @@ fn apply(
                 .join(", ")
         );
     }
+    for written in plan
+        .carried
+        .written
+        .iter()
+        .filter(|written| collides_by_case(plan, &written.path))
+    {
+        write_planned(root, written, &mut written_now)?;
+    }
     prune_empty_folders(root)?;
+    prune_emptied(root, kept_bytes.iter().map(|(path, _)| path.as_str()));
     print_json(&json!({
         "schema_version": 1,
         "applied": true,
@@ -452,16 +440,40 @@ fn apply(
     }))
 }
 
-/// Whether `path` stands in for a planned removal that differs from it only in case,
-/// such as `knowledge/index.md` for `knowledge/INDEX.md`, on a file system that sees
-/// them as one file.
-fn replaces_by_case(root: &Path, plan: &Plan, path: &str) -> bool {
-    plan.carried.removed.keys().any(|removed| {
-        removed != path
-            && removed.eq_ignore_ascii_case(path)
-            && local_path(root, removed).is_ok_and(|local| local.exists())
-            && local_path(root, path).is_ok_and(|local| local.exists())
-    })
+/// Whether `path` differs only in case from a planned removal, such as
+/// `knowledge/index.md` for `knowledge/INDEX.md`: one file on a case-insensitive file
+/// system, so it is written after the removals.
+fn collides_by_case(plan: &Plan, path: &str) -> bool {
+    plan.carried
+        .removed
+        .keys()
+        .chain(plan.carried.sources.iter())
+        .any(|removed| removed != path && removed.eq_ignore_ascii_case(path))
+}
+
+/// Write one planned file by create-new, or count it done when it already holds the
+/// planned bytes, then read it back.
+fn write_planned(root: &Path, written: &Written, written_now: &mut Vec<String>) -> Result<()> {
+    let path = local_path(root, &written.path)?;
+    let done = std::fs::read(&path).is_ok_and(|bytes| bytes == written.bytes.as_bytes());
+    if !done {
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        ensure!(
+            crate::records::write_new(root, &written.path, &written.bytes)?,
+            "{} appeared while migrating; nothing more was written",
+            written.path
+        );
+        written_now.push(written.path.clone());
+    }
+    let back = std::fs::read(&path)?;
+    ensure!(
+        sha256(&back) == sha256(written.bytes.as_bytes()),
+        "{} did not read back as planned",
+        written.path
+    );
+    Ok(())
 }
 
 /// Every native change with a workspace under `.specsync/changes/`: not archived.
@@ -558,6 +570,25 @@ fn validity(root: &Path, ids: &[String]) -> Result<BTreeMap<String, String>> {
 /// Whether a terminal evidence validity reads as valid.
 fn is_valid(state: &str) -> bool {
     matches!(state, "authenticated-history" | "exact" | "valid")
+}
+
+/// Remove each folder a removal left empty, from the removed file's own folder up to,
+/// never including, the project root: a session rolled into the vault leaves no empty
+/// `knowledge/attachments/<folder>/sessions/` behind. A folder that still holds anything
+/// stays.
+fn prune_emptied<'a>(root: &Path, removed: impl Iterator<Item = &'a str>) {
+    for path in removed {
+        let mut folder = Path::new(path).parent();
+        while let Some(relative) = folder.filter(|folder| !folder.as_os_str().is_empty()) {
+            let Ok(local) = local_path(root, &relative.to_string_lossy()) else {
+                break;
+            };
+            if std::fs::remove_dir(local).is_err() {
+                break;
+            }
+            folder = relative.parent();
+        }
+    }
 }
 
 /// Remove the 0.5.x folders the migration emptied.
@@ -674,8 +705,13 @@ fn plan(root: &Path) -> Result<Plan> {
     let mut carried = Carried::default();
     let (sessions, homes) = sessions_0_5(root)?;
     carried.absorb(sessions)?;
-    // REQ-records-002: the reading guide, written only when there is none.
-    if !local_path(root, ".chough/README.md")?.exists() {
+    // REQ-records-002: the reading guide, written only when there is none; one an
+    // interrupted apply already wrote with these bytes stays planned, so the plan the
+    // resumed apply builds has the same digest.
+    let guide = local_path(root, ".chough/README.md")?;
+    if !guide.exists()
+        || std::fs::read(&guide).is_ok_and(|bytes| bytes == crate::sessions::README.as_bytes())
+    {
         carried.written.push(Written {
             path: ".chough/README.md".into(),
             bytes: crate::sessions::README.into(),
