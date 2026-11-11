@@ -319,7 +319,11 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     session["next_action"] = json!("n".repeat(4_096));
     session["objective"] = json!("o".repeat(4_000));
     let session_text = write_session(&fixture, &session);
-    assert!(session_text.len() <= common::CHECKPOINT_CAP, "{}", session_text.len());
+    assert!(
+        session_text.len() <= common::CHECKPOINT_CAP,
+        "{}",
+        session_text.len()
+    );
 
     fixture.native_calls();
     let raw = text(&fixture, &["next", "--json"]);
@@ -437,7 +441,11 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     session["awaiting_human"] = json!(list("Gate"));
     session["blockers"] = json!(list("Blocker"));
     let session_text = write_session(&fixture, &session);
-    assert!(session_text.len() <= common::CHECKPOINT_CAP, "{}", session_text.len());
+    assert!(
+        session_text.len() <= common::CHECKPOINT_CAP,
+        "{}",
+        session_text.len()
+    );
     let raw = text(&fixture, &["next", "--json"]);
     assert!(raw.len() <= NEXT_LIMIT, "JSON form is {} bytes", raw.len());
     let next: Value = serde_json::from_str(&raw).unwrap();
@@ -685,7 +693,13 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
         if stage == "accept" {
             // In 0.6.0 a session archives itself at done (REQ-history-006); a release
             // consent keeps it open so the done-stage assertions still apply.
-            fixture.ok(&["consent", "grant", "release", "--source", "Human: release it"]);
+            fixture.ok(&[
+                "consent",
+                "grant",
+                "release",
+                "--source",
+                "Human: release it",
+            ]);
             let advanced = run_suggested(&fixture, command);
             assert_eq!(advanced["applied"]["to"], "done", "{advanced}");
             let done = fixture.ok(&["next", "--json"]);
@@ -1295,7 +1309,6 @@ fn next_and_the_librarian_pick_the_same_hot_archives_when_a_bundle_is_missing() 
     }
 }
 
-
 /// Render a 0.5.x-shaped checkpoint JSON into the active session's session.md
 /// (front matter plus body sections), keeping its id and Timeline, and return the
 /// bytes written.
@@ -1330,10 +1343,16 @@ fn render_session(existing: &str, session: &Value) -> String {
     };
     let mut front = format!("---\nkind: session\nid: {id}\naliases: []\n");
     front.push_str(&format!("objective: {}\n", scalar(&session["objective"])));
-    front.push_str(&format!("intent_scope: {}\n", scalar(&session["intent_scope"])));
+    front.push_str(&format!(
+        "intent_scope: {}\n",
+        scalar(&session["intent_scope"])
+    ));
     front.push_str(&format!("modules: {}\n", list(&session["modules"])));
     let status = scalar(&session["stage"]["status"]);
-    front.push_str(&format!("stage: {}\n", scalar(&session["stage"]["current"])));
+    front.push_str(&format!(
+        "stage: {}\n",
+        scalar(&session["stage"]["current"])
+    ));
     front.push_str(&format!(
         "stage_status: {}\n",
         if status.is_empty() { "active" } else { &status }
@@ -1353,7 +1372,10 @@ fn render_session(existing: &str, session: &Value) -> String {
     for key in ["observations", "bugs", "blockers"] {
         front.push_str(&format!("{key}: {}\n", list(&session[key])));
     }
-    let gates = session["awaiting_human"].as_array().cloned().unwrap_or_default();
+    let gates = session["awaiting_human"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
     if gates.is_empty() {
         front.push_str("waiting_on_human: []\n");
     } else {

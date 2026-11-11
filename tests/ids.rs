@@ -63,7 +63,10 @@ fn dotted_module_ids_and_sub_criteria_are_accepted_and_resume() {
 fn a_checkpoint_written_with_dotted_modules_is_read_by_every_view() {
     let fixture = Fixture::new();
     fixture.init();
-    fixture.set_front("modules", "[chat.service, room.service, linked-wallet.service]");
+    fixture.set_front(
+        "modules",
+        "[chat.service, room.service, linked-wallet.service]",
+    );
     fixture.set_front("criteria", "[UX-12.a, CHAT-34.a, BOTS-4.g]");
     for args in [
         &["next"][..],

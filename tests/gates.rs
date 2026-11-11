@@ -467,18 +467,20 @@ fn a_gate_of_another_open_session_is_refused_naming_session_use() {
         .find(|gate| gate["gate"] == SCOPE)
         .unwrap()
         .clone();
-    assert_eq!(gate["session"], KEY);
+    // The list names the session by its ID, which `session use` takes as it is.
+    let id = fixture.id_of(KEY);
+    assert_eq!(gate["session"], id.as_str());
     let number = gate["number"].to_string();
     let list_id = listed["list"].as_str().unwrap().to_string();
     let before = records(fixture.root());
     let error = fixture.fails(&record(&list_id, &number, "yes"));
     assert!(
-        error.contains(&format!("`chough session use {KEY}`")),
+        error.contains(&format!("`chough session use {id}`")),
         "{error}"
     );
     assert_eq!(records(fixture.root()), before, "something was written");
     // The recovery it names succeeds.
-    fixture.ok(&["session", "use", KEY]);
+    fixture.ok(&["session", "use", &id]);
     fixture.ok(&record(&list_id, &number, "yes"));
     assert_eq!(session(&fixture)["awaiting_human"], json!([]));
 }

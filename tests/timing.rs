@@ -70,7 +70,11 @@ fn write_transitions(fixture: &Fixture, lines: &[String]) {
         let transition: Value = serde_json::from_str(line).unwrap();
         let reason = transition["reason"].as_str().unwrap_or_default();
         let gate = transition["gate"].as_str();
-        let text_of = if reason.is_empty() { gate.unwrap_or("") } else { reason };
+        let text_of = if reason.is_empty() {
+            gate.unwrap_or("")
+        } else {
+            reason
+        };
         let at = transition["at_unix_seconds"]
             .as_u64()
             .map(iso_of)
@@ -626,7 +630,10 @@ fn gate_records_are_reconciled_with_the_awaiting_human_list() {
     ]);
     let reopened_file = reopened.session_file();
     let reopened_text = reopened.read(&reopened_file);
-    assert!(reopened_text.contains("waiting_on_human: []"), "{reopened_text}");
+    assert!(
+        reopened_text.contains("waiting_on_human: []"),
+        "{reopened_text}"
+    );
     reopened.write(
         &reopened_file,
         &reopened_text.replace(
@@ -753,7 +760,10 @@ fn missing_and_out_of_order_times_are_unknown_never_zero() {
     ]);
     let future_file = future.session_file();
     let future_text = future.read(&future_file);
-    assert!(future_text.contains("waiting_on_human: []"), "{future_text}");
+    assert!(
+        future_text.contains("waiting_on_human: []"),
+        "{future_text}"
+    );
     future.write(
         &future_file,
         &future_text.replace(
@@ -1180,8 +1190,6 @@ fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() 
     let error = fixture.fails(&["status"]);
     assert!(error.contains("unknown field"), "{error}");
 }
-
-
 
 #[test]
 fn transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identical() {

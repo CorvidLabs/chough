@@ -216,14 +216,26 @@ pub(super) fn timing(session: &Checkpoint) -> HistoryRead {
 
 #[derive(Subcommand)]
 pub(super) enum HistoryCommand {
-    /// Show the active session's timeline, newest first, with what could not be read.
+    /// Show the active session's timeline, oldest first, with what could not be read.
+    /// With no open session, it shows the newest archived story's.
     Show,
 }
 
 pub(super) fn run(root: &Path, command: HistoryCommand) -> Result<()> {
     match command {
         HistoryCommand::Show => {
-            let session = read_checkpoint_unlocked(root)?;
+            // With no open session, the newest archived story is the one to show, as
+            // `chough timing` reads it after done.
+            let (session, archived) = match read_checkpoint_unlocked(root) {
+                Ok(session) => (session, false),
+                Err(error) if crate::sessions::open_ids(root)?.is_empty() => {
+                    match crate::sessions::newest_archived(root)? {
+                        Some(crate::checkpoint::Session::V2(session)) => (*session, true),
+                        None => return Err(error),
+                    }
+                }
+                Err(error) => return Err(error),
+            };
             let read = selected(&session, CYCLE_EVENTS, CYCLE_BYTES, true);
             // An entry that is not a valid transition is refused, never shown as history.
             if let Some(invalid) = read
@@ -236,6 +248,7 @@ pub(super) fn run(root: &Path, command: HistoryCommand) -> Result<()> {
             print_json(&json!({
                 "schema_version": 1,
                 "session": session.meta.id,
+                "archived": archived,
                 "complete": read.partial.is_empty(),
                 "partial": read.partial,
                 "entries": read.records,

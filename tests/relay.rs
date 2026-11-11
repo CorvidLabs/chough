@@ -287,9 +287,16 @@ fn clearing_records_no_relay_and_a_relayed_close_lets_advance_apply() {
     fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
     assert_eq!(fixture.session()["decisions"], json!([]));
     let cleared: Vec<Value> = events(&fixture);
-    assert!(cleared.iter().all(|entry| entry.get("relayed_by").is_none()));
+    assert!(
+        cleared
+            .iter()
+            .all(|entry| entry.get("relayed_by").is_none())
+    );
     assert_eq!(
-        cleared.iter().filter(|entry| entry["kind"] == "gate-closed").count(),
+        cleared
+            .iter()
+            .filter(|entry| entry["kind"] == "gate-closed")
+            .count(),
         2
     );
 
@@ -310,7 +317,9 @@ fn clearing_records_no_relay_and_a_relayed_close_lets_advance_apply() {
     // Records without a relay carry none: one relayed entry in all.
     let all = events(&fixture);
     assert_eq!(
-        all.iter().filter(|entry| entry.get("relayed_by").is_some()).count(),
+        all.iter()
+            .filter(|entry| entry.get("relayed_by").is_some())
+            .count(),
         1
     );
 }
@@ -359,10 +368,7 @@ fn invalid_relays_are_refused_as_invalid_payloads() {
     let shown = events(&fixture);
     assert_eq!(shown.last().unwrap()["relayed_by"], good);
     for (kind, relay) in &variants {
-        fixture.write(
-            &file,
-            &format!("{original}\n{}", entry(kind, relay)),
-        );
+        fixture.write(&file, &format!("{original}\n{}", entry(kind, relay)));
         let error = fixture.fails(&["history", "show"]);
         assert!(
             error.contains("invalid transition"),

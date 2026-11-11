@@ -323,6 +323,15 @@ fn sessions_live_in_folders_and_finish_into_one_story() {
     assert!(!fixture.exists(".chough/local/active-session"));
     let refused = fixture.fails(&["next"]);
     assert!(refused.contains("chough session new <key>"), "{refused}");
+    // With no session open, `history show` reads the story it finished into.
+    let shown = fixture.ok(&["history", "show"]);
+    assert_eq!(shown["session"], id.as_str(), "{shown:#}");
+    assert_eq!(shown["archived"], true, "{shown:#}");
+    let last = shown["entries"].as_array().unwrap().last().unwrap().clone();
+    assert_eq!(
+        (&last["from"], &last["to"]),
+        (&json!("accept"), &json!("done"))
+    );
     let list = fixture.ok(&["session", "list"]);
     assert_eq!(list["sessions"][0]["archived"], true, "{list:#}");
     assert_eq!(list["sessions"].as_array().unwrap().len(), 1, "{list:#}");

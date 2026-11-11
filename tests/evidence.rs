@@ -650,63 +650,6 @@ fn a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned() {
     );
 }
 
-/// A SpecSync stand-in whose acceptance entries come from `.stub-manifest-<id>` files.
-#[cfg(unix)]
-fn native_fixture() -> Fixture {
-    let fixture = Fixture::new();
-    fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
-    fixture.write(
-        "bin/specsync",
-        r#"#!/bin/sh
-if [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi
-id="$3"
-entries=$(cat ".stub-manifest-$id" 2>/dev/null || echo '')
-printf '{"summary":{"id":"%s","state":"stub"},"acceptance_entries":[%s]}\n' "$id" "$entries"
-"#,
-    );
-    fixture.executable("bin/specsync");
-    fixture.write(".specsync/changes/active-one/change.md", "active\n");
-    for (dir, id, timestamp) in [
-        ("2026-01-01-old-one", "old-one", 100),
-        ("2026-02-01-new-one", "new-one", 200),
-    ] {
-        fixture.write(
-            &format!(".specsync/archive/changes/{dir}/finalization.json"),
-            &format!(
-                "{{\"schema_version\": 2, \"change_id\": \"{id}\", \"timestamp\": {timestamp}}}\n"
-            ),
-        );
-    }
-    let entry = |path: &str| format!("{{\"kind\":\"file\",\"path\":\"{path}\"}}");
-    fixture.write(
-        ".stub-manifest-active-one",
-        &entry(".chough/artifacts/listed-active.log"),
-    );
-    fixture.write(
-        ".stub-manifest-new-one",
-        &entry(".chough/evidence/listed-archive.json"),
-    );
-    fixture.write(
-        ".stub-manifest-old-one",
-        &entry(".chough/evidence/listed-old.json"),
-    );
-    fixture.init();
-    fixture.commit("fixture");
-    for (id, age) in [("n1", 20), ("n2", 21), ("n3", 22)] {
-        write_obs(&fixture, &Obs::run(id, "TC-a", "passed", age));
-    }
-    write_obs(
-        &fixture,
-        &Obs::run("listed-active", "TC-a", "passed", 40)
-            .with_log(".chough/artifacts/listed-active.log", "log\n"),
-    );
-    write_obs(&fixture, &Obs::run("listed-archive", "TC-a", "passed", 41));
-    write_obs(&fixture, &Obs::run("listed-old", "TC-a", "passed", 42));
-    write_obs(&fixture, &Obs::run("plain", "TC-a", "passed", 43));
-    fixture
-}
-
-#[cfg(unix)]
 #[cfg(unix)]
 /// #136: rebuilding the knowledge index lists the observation in INDEX.md, and
 /// that generated write must not make the observation stale (REQ-cli-004 AC2).

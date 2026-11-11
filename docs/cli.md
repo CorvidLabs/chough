@@ -34,7 +34,7 @@ their JSON.
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. Hosts that share a directory get one entry. Both report a `legacy` list for an older `.claude/skills` copy, with each file's state, and never write it. |
 | `skill remove-legacy [--host claude]` | Remove a legacy `.claude/skills` copy's files that are byte-identical to the current or a known earlier bundle, then empty directories; keeps edited and unknown files and reports `removed` and `kept`. Refuses, removing nothing, while the shared `.agents/skills` copy is missing. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
-| `history show` | The active session's Timeline, oldest first, with what could not be read; an entry that is not a valid transition is refused. See [Transition history](#transition-history). |
+| `history show` | The active session's Timeline, oldest first, with what could not be read; an entry that is not a valid transition is refused. With no open session it shows the newest archived story's Timeline, marked `archived`. See [Transition history](#transition-history). |
 | `session new\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions in their own folders, setting aside an unreadable one, and the subagent inbox. Starting or switching work never touches another session. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]...` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. See [Doctor](#doctor). |
 | `gate list\|record` | Numbers the open human gates, each with a one-screen summary and its digest, and records one relayed reply for listed gates only. See [Gate lists](#gate-lists). |
@@ -101,7 +101,8 @@ structured fields as indented `- key: value` lines (`native_change`, `gate`,
 relay and direct-write fields). The entry is written in the same atomic save as the
 checkpoint change it goes with, so a refused save leaves neither. Chough only appends
 entries and never edits, reorders or removes one; an entry ID is never reused in its
-file. `history show` lists the active session's entries.
+file. `history show` lists the active session's entries, or the newest archived
+story's when no session is open.
 
 | Timeline limit | Bound |
 |---|---|

@@ -548,16 +548,14 @@ fn gate_closed_with_relay(fixture: &Fixture) -> bool {
     for line in story.lines() {
         if line.starts_with("- ") {
             gate_closed = line.contains("· gate-closed ·");
-        } else if gate_closed {
-            if let Some(payload) = line.strip_prefix("  - relayed_by: ") {
-                let relay: serde_json::Value = serde_json::from_str(payload).unwrap();
-                let four = serde_json::json!({
-                    "decided_by": relay["decided_by"], "words": relay["words"],
-                    "where": relay["where"], "recorded_by": relay["recorded_by"]
-                });
-                if four == expected {
-                    return true;
-                }
+        } else if gate_closed && let Some(payload) = line.strip_prefix("  - relayed_by: ") {
+            let relay: serde_json::Value = serde_json::from_str(payload).unwrap();
+            let four = serde_json::json!({
+                "decided_by": relay["decided_by"], "words": relay["words"],
+                "where": relay["where"], "recorded_by": relay["recorded_by"]
+            });
+            if four == expected {
+                return true;
             }
         }
     }

@@ -166,8 +166,7 @@ fn init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only() {
     let session_rel = created
         .iter()
         .find(|path| {
-            path.starts_with(".chough/sessions/")
-                && path.ends_with("-try-chough/session.md")
+            path.starts_with(".chough/sessions/") && path.ends_with("-try-chough/session.md")
         })
         .unwrap_or_else(|| panic!("no session record in {created:?}"))
         .clone();
