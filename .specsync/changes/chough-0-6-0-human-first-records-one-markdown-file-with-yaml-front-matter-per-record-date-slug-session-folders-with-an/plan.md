@@ -265,6 +265,11 @@ approval). Until then the approved deltas stay as they are.
    entry also gives `state`, `started`, `completed`, `failures`, `not_run`,
    `elapsed_seconds` and `attempts`, one flat map per attempt with `started`,
    `observed`, `result` and `duration_seconds`.
+5. REQ-records-009 (the vaulted-adopter criterion): no release has that bug. The
+   roll-up came after 0.4.0 (#135), and its fix (#142, 90e5de6f; the anchor holder
+   kept out of the roll-up in #143/#161) is in 0.5.0. So "first recorded refusing on
+   0.5.0" becomes "first recorded refusing on the last build before #142 (90e5de6f^),
+   with the same tree recorded as observed on 0.5.0".
 
 ## Risks
 
