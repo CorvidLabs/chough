@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-cb50b361cc5e91b8c111702c",
-    "head": "EVT-0adae55c2cb8c27aaa63eee4",
+    "head": "EVT-5ef2dcc45c4a8713dfac1a66",
     "legacy": null
   },
   "schema_version": 2,
@@ -45,14 +45,16 @@
     "Wrote docs/roadmap-1.0.md (milestones M1-M7 tied to the four bar items, session slug-folder migration design) and docs/test-plan-1.0.md (dogfood checklist, flake tracker and clean window, migration fixtures, host-matrix harness); linked both from README and docs/ROADMAP.md",
     "Completed the native change artifacts (context, docs, design, tasks) after the verify lane's audit step refused the TODO placeholders",
     "PR #212 open (docs+hi, stopped for Leif); milestone 'Chough 1.0' created with epic #232 and issues #213-#231, existing open issues mapped onto the milestone; dependencies linked with blocked-by",
-    "Addressed corvid-agent's review of #212: merged main (resolved the issue-102 session roll-up conflict in main's favor), regenerated the knowledge vault, re-answered the native change's acceptance criteria and tasks to match the created issues; marked #187 and #196 closed in epic #232 and the PR body"
+    "Addressed corvid-agent's review of #212: merged main (resolved the issue-102 session roll-up conflict in main's favor), regenerated the knowledge vault, re-answered the native change's acceptance criteria and tasks to match the created issues; marked #187 and #196 closed in epic #232 and the PR body",
+    "Review addressed: merged head green (verify lane 10 steps), change record matches the created issues, review reply posted on #212"
   ],
   "observations": [],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [
-    "Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping"
+    "Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping",
+    "Leif: intent approval of the 13 criteria; native scope approval of the change; rulings on FLOW-17 vs FLOW-21 and KNOW-29 vs KNOW-30"
   ],
   "run_consents": [],
-  "next_action": "When the verify lane is green at the merged head: commit, push, reply to the review and report to t370"
+  "next_action": "Wait for Leif's review of PR #212 or the coordinator's next instruction"
 }
