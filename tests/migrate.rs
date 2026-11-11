@@ -820,3 +820,64 @@ fn a_standing_migration_preference_gives_consent_and_the_receipt_names_it() {
     );
     assert_eq!(fixture.read(".chough/preferences.json"), preferences);
 }
+
+/// The migration rehearsal on this repository (plan Migration step 2): every 0.5.x file
+/// REQ-records-009 removes is in the plan. `.chough/session.v1.json` and
+/// `.chough/pruned.jsonl` are removed with why, and a file under `.chough/artifacts/`
+/// is a source the plan carries, removes or reports as unaccounted, which the apply
+/// refuses; never silently left behind.
+#[test]
+fn every_legacy_file_and_artifact_is_accounted_for() {
+    let stray = ".chough/artifacts/stray/run.log";
+    let fixture = migrate_project(
+        "adopted",
+        &[
+            (".chough/session.v1.json", "{\"schema_version\": 1}\n"),
+            (".chough/pruned.jsonl", "{\"archives\": []}\n"),
+            (stray, "passed\n"),
+        ],
+    );
+    let plan = fixture.ok(&["migrate"]);
+    for path in [".chough/session.v1.json", ".chough/pruned.jsonl", stray] {
+        assert!(
+            plan["sources"].get(path).is_some(),
+            "{path} is not in the plan's sources: {plan:#}"
+        );
+    }
+    for (path, why) in [
+        (".chough/session.v1.json", "schema 1"),
+        (".chough/pruned.jsonl", "retention"),
+    ] {
+        assert!(
+            plan["removed"][path]
+                .as_str()
+                .is_some_and(|text| text.contains(why)),
+            "{path} is not removed with why: {plan:#}"
+        );
+    }
+    let unaccounted: Vec<&str> = plan["unaccounted"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(Value::as_str)
+        .collect();
+    assert!(
+        !unaccounted.contains(&".chough/session.v1.json")
+            && !unaccounted.contains(&".chough/pruned.jsonl"),
+        "{plan:#}"
+    );
+    // Until the evidence mapper carries or removes it, the stray artifact is
+    // unaccounted, and the apply refuses rather than leave it in a migrated tree.
+    if unaccounted.contains(&stray) {
+        let digest = plan["plan_digest"].as_str().unwrap();
+        let before = files(fixture.root());
+        let refused = fixture.fails(&["migrate", "--apply", digest, "--consent", CONSENT]);
+        assert!(
+            refused.contains("refused:unaccounted") && refused.contains(stray),
+            "{refused}"
+        );
+        assert_eq!(files(fixture.root()), before, "a refused apply wrote");
+    } else {
+        assert!(plan["removed"].get(stray).is_some(), "{plan:#}");
+    }
+}

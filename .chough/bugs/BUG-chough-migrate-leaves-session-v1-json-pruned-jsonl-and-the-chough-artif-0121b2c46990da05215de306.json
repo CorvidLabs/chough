@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "id": "BUG-chough-migrate-leaves-session-v1-json-pruned-jsonl-and-the-chough-artif-0121b2c46990da05215de306",
+  "title": "chough migrate leaves session.v1.json, pruned.jsonl and the .chough/artifacts files out of its accounting",
+  "symptom": "The migration preview of this repository lists neither .chough/session.v1.json nor any of the 643 tracked files under .chough/artifacts/ anywhere in the plan, and lists .chough/pruned.jsonl as unaccounted with no mapper removing it",
+  "trigger": "Build the 0.6.0 branch and run chough migrate (preview only) on a fresh clone of this repository",
+  "expected": "Every 0.5.x file REQ-records-009 removes is in the plan's sources and is carried, removed with why, kept as an open bug's fixture, or reported as unaccounted so the apply refuses",
+  "actual": "session.v1.json and the artifacts are absent from sources, removed and unaccounted, so an apply would leave them in the migrated tree silently; pruned.jsonl is unaccounted",
+  "criteria": [
+    "DRIVE-27"
+  ],
+  "requirements": [
+    "REQ-records-009"
+  ],
+  "cases": [
+    "TC-records-migrate-accounts-every-file"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "87a49d823684498c3c9aec2bf10198bd853b054a",
+  "steps": [
+    "Clone the repository at the branch head into a scratch folder",
+    "Build it and run chough migrate",
+    "Compare the plan's sources, removed and unaccounted with every file Git tracks under .chough/"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-records-migrate-accounts-every-file-3feae26266cdf9c6b9d9ea90"
+  ],
+  "impact": "A migrated tree would keep 0.5.x files the requirement removes, and a file a mapper misses under .chough/artifacts/ would never show as unaccounted",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37j's read-only migration preview rehearsal (plan Migration step 2) at 5c47bc7b, plan digest 79d47efd",
+  "notes": [
+    {
+      "at_unix_seconds": 1794430626,
+      "text": "Red on the current framework: TC-records-migrate-accounts-every-file fails at the plan's sources assertion (session.v1.json absent), revision 398a73da on leif/0.6.0-migrate-accounting-red.",
+      "observations": [
+        "OBS-tc-records-migrate-accounts-every-file-3feae26266cdf9c6b9d9ea90"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794430556,
+  "updated_at_unix_seconds": 1794430626
+}

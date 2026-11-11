@@ -25,6 +25,10 @@
 //! 5. knowledge (t37j, [`knowledge_0_5`]): the generated and copied vault content of
 //!    REQ-cli-044 removed with why.
 //!
+//! The framework itself removes the 0.5.x files no mapper carries
+//! ([`retired_files_0_5`]), keeps open bugs' fixtures, and accounts for every file of
+//! [`accountable_paths`], so a file a mapper misses is reported as unaccounted.
+//!
 //! A mapper only reads and returns a [`Carried`]; it writes nothing and redacts
 //! nothing. The framework redacts every written file (REQ-records-006), counting each
 //! redaction by file, field and kind, builds the plan and its digest, and applies it.
@@ -127,6 +131,12 @@ const LEGACY_FOLDERS: [&str; 3] = [
 ];
 const LEGACY_JSON_IN: [&str; 2] = [".chough/sessions", ".chough/bugs"];
 
+/// 0.5.x files REQ-records-009 removes that REQ-records-010 does not count as making a
+/// tree unmigrated: the schema 1 checkpoint backup, and every file under
+/// `.chough/artifacts/`, where an open bug's fixture rightly stays.
+const ACCOUNTED_FILES: [&str; 1] = [".chough/session.v1.json"];
+const ACCOUNTED_FOLDERS: [&str; 1] = [".chough/artifacts"];
+
 /// Every 0.5.x record path in the project, sorted (REQ-records-010).
 pub(crate) fn legacy_paths(root: &Path) -> Result<Vec<String>> {
     let mut found = BTreeSet::new();
@@ -148,6 +158,25 @@ pub(crate) fn legacy_paths(root: &Path) -> Result<Vec<String>> {
                 found.insert(format!("{folder}/{name}"));
             }
         }
+    }
+    Ok(found.into_iter().collect())
+}
+
+/// Every 0.5.x file the plan must carry, keep or remove (REQ-records-009): the paths of
+/// [`legacy_paths`] and, while there are any, the files only the migration removes. A
+/// migrated tree has none, so its kept fixtures are never planned again.
+fn accountable_paths(root: &Path) -> Result<Vec<String>> {
+    let mut found: BTreeSet<String> = legacy_paths(root)?.into_iter().collect();
+    if found.is_empty() {
+        return Ok(vec![]);
+    }
+    for file in ACCOUNTED_FILES {
+        if local_path(root, file)?.is_file() {
+            found.insert(file.to_string());
+        }
+    }
+    for folder in ACCOUNTED_FOLDERS {
+        walk_files(root, folder, &mut found)?;
     }
     Ok(found.into_iter().collect())
 }
@@ -193,9 +222,11 @@ struct Redaction {
 struct Plan {
     /// Every 0.5.x file with its SHA-256.
     sources: BTreeMap<String, String>,
-    /// The 0.5.x record paths of REQ-records-010 found in the project.
+    /// Every 0.5.x file the plan must account for ([`accountable_paths`]).
     legacy: Vec<String>,
     carried: Carried,
+    /// Open bugs' fixture files, kept byte for byte, each with why.
+    kept: BTreeMap<String, String>,
     redactions: Vec<Redaction>,
     follow_ups: Vec<String>,
 }
@@ -217,6 +248,7 @@ impl Plan {
             "writes": written,
             "redactions": self.redactions,
             "removed": self.carried.removed,
+            "kept": self.kept,
             "kept_with_leaks": self.carried.kept_with_leaks,
             "gaps": self.carried.gaps,
             "unaccounted": self.unaccounted(),
@@ -226,13 +258,15 @@ impl Plan {
         })
     }
 
-    /// The 0.5.x files the plan neither carries nor removes; an apply refuses while
-    /// there is any, so it never leaves a mixed tree.
+    /// The 0.5.x files the plan neither carries, removes nor keeps; an apply refuses
+    /// while there is any, so it never leaves a mixed tree.
     fn unaccounted(&self) -> Vec<String> {
         self.legacy
             .iter()
             .filter(|path| {
-                !self.carried.sources.contains(*path) && !self.carried.removed.contains_key(*path)
+                !self.carried.sources.contains(*path)
+                    && !self.carried.removed.contains_key(*path)
+                    && !self.kept.contains_key(*path)
             })
             .cloned()
             .collect()
@@ -705,6 +739,7 @@ fn plan(root: &Path) -> Result<Plan> {
     let mut carried = Carried::default();
     let (sessions, homes) = sessions_0_5(root)?;
     carried.absorb(sessions)?;
+    carried.absorb(retired_files_0_5(root)?)?;
     // REQ-records-002: the reading guide, written only when there is none; one an
     // interrupted apply already wrote with these bytes stays planned, so the plan the
     // resumed apply builds has the same digest.
@@ -731,6 +766,9 @@ fn plan(root: &Path) -> Result<Plan> {
     carried
         .removed
         .retain(|path, _| !carried_sources.contains(path));
+    // An open bug's fixture is kept byte for byte, whatever a mapper listed.
+    let kept = crate::bugs::open_fixture_owners_0_5(root)?;
+    carried.removed.retain(|path, _| !kept.contains_key(path));
     carried
         .written
         .sort_by(|left, right| left.path.cmp(&right.path));
@@ -740,7 +778,7 @@ fn plan(root: &Path) -> Result<Plan> {
         redactions.extend(redact(local, written)?);
     }
     redactions.sort();
-    let legacy = legacy_paths(root)?;
+    let legacy = accountable_paths(root)?;
     let mut sources = BTreeMap::new();
     for path in legacy
         .clone()
@@ -762,6 +800,7 @@ fn plan(root: &Path) -> Result<Plan> {
         sources,
         legacy,
         carried,
+        kept,
         redactions,
         follow_ups,
     })
@@ -1122,6 +1161,27 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
         carried.removed.insert(path, why.into());
     }
     Ok((carried, homes))
+}
+
+/// The 0.5.x files no mapper carries and nothing in 0.6.0 replaces, each removed with
+/// why (REQ-records-009).
+fn retired_files_0_5(root: &Path) -> Result<Carried> {
+    let mut carried = Carried::default();
+    for (path, why) in [
+        (
+            ".chough/session.v1.json",
+            "the schema 1 checkpoint backup an earlier Chough kept when it moved the checkpoint to schema 2; 0.6.0 reads neither",
+        ),
+        (
+            ".chough/pruned.jsonl",
+            "the 0.5.x retention ledger; 0.6.0 has no retention (REQ-cli-049), and Git keeps its bytes",
+        ),
+    ] {
+        if local_path(root, path)?.is_file() {
+            carried.removed.insert(path.to_string(), why.to_string());
+        }
+    }
+    Ok(carried)
 }
 
 /// Mapper 2, each 0.5.x bug's linked observation IDs (t38b).

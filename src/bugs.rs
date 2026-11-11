@@ -1879,12 +1879,29 @@ fn fixture_files(root: &Path, fixture: &str) -> Vec<String> {
 /// The fixture files of every open 0.5.x bug, folders expanded: kept byte for byte by
 /// the migration, so the evidence mapper never lists them as removed (REQ-records-009).
 pub(super) fn open_fixtures_0_5(root: &Path) -> Result<BTreeSet<String>> {
-    Ok(legacy_bugs(root)?
-        .iter()
-        .filter(|(_, legacy)| legacy.is_open())
-        .filter_map(|(_, legacy)| legacy.fixture.as_deref())
-        .flat_map(|fixture| fixture_files(root, fixture))
-        .collect())
+    Ok(open_fixture_owners_0_5(root)?.into_keys().collect())
+}
+
+/// Each fixture file of an open 0.5.x bug, folders expanded, with why the migration
+/// keeps it byte for byte, naming the bug (REQ-records-009).
+pub(super) fn open_fixture_owners_0_5(
+    root: &Path,
+) -> Result<std::collections::BTreeMap<String, String>> {
+    let mut owners = std::collections::BTreeMap::new();
+    for (_, legacy) in legacy_bugs(root)? {
+        if !legacy.is_open() {
+            continue;
+        }
+        let Some(fixture) = legacy.fixture.as_deref() else {
+            continue;
+        };
+        for file in fixture_files(root, fixture) {
+            owners.entry(file).or_insert_with(|| {
+                format!("the fixture of open bug {}, kept byte for byte", legacy.id)
+            });
+        }
+    }
+    Ok(owners)
 }
 
 /// The migration receipt this plan writes. Plan step 10's `migrate::receipt_path` gives
