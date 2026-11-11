@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test next_guides_a_fresh_agent_from_init_to_accept ... FAILED
+
+failures:
+
+---- next_guides_a_fresh_agent_from_init_to_accept stdout ----
+
+thread 'next_guides_a_fresh_agent_from_init_to_accept' (890469206) panicked at tests/next.rs:1889:5:
+a fresh agent is not told where to start: Continue intent: Read scoped intent and native status, then choose the next action within the authorized scope.
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    next_guides_a_fresh_agent_from_init_to_accept
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 20 filtered out; finished in 2.61s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running tests/next.rs (target/debug/deps/next-1e7e61bb16f68fdb)
+error: test failed, to rerun pass `--test next`

@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-76-next-guides-a-fresh-agent-c0aa2f39f9ffa0401eaeab92",
+  "criteria": [
+    "LIFE-1",
+    "LIFE-3",
+    "FLOW-13",
+    "FLOW-10"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact next_guides_a_fresh_agent_from_init_to_accept for TC-cli-76-next-guides-a-fresh-agent: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-76-next-guides-a-fresh-agent-c0aa2f39f9ffa0401eaeab92.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-76-next-guides-a-fresh-agent-c0aa2f39f9ffa0401eaeab92.log": "41f1ee2be24774af6c0dd31fc4d2756575250923b5d5a83d58a396b48fb96e7d"
+  },
+  "observed_at_unix_seconds": 1794426173,
+  "snapshot": {
+    "revision": "f9c0ae674c89f3a4c4a6c5b9d29057f22f7b9bf0",
+    "dirty": false,
+    "fingerprint": "284a5fb02e4edd838f449bdb1cd661f494832fe5708ce82660700c5a6fcce606",
+    "content": "4adc6e184b41d042b73284db8f143439ad1bd2bdc6fc389e3a5266068b430ba2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-76-next-guides-a-fresh-agent",
+      "digest": "4f9cb078a8262a1c9fcc1ec23d78a5cbaaf2ee6440053e573b6a2022bb7113cb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "next_guides_a_fresh_agent_from_init_to_accept"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

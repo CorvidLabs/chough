@@ -1,0 +1,30 @@
+--- stdout ---
+
+running 1 test
+test status_leads_with_the_same_summary_as_next ... FAILED
+
+failures:
+
+---- status_leads_with_the_same_summary_as_next stdout ----
+
+thread 'status_leads_with_the_same_summary_as_next' (890478083) panicked at tests/next.rs:1903:5:
+status does not lead with a summary: {
+  "blocking_bugs": [],
+  "checkpoint": {
+    "awaiting_human": [],
+    "blockers": [],
+    "gate": null,
+    "native_c
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    status_leads_with_the_same_summary_as_next
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 20 filtered out; finished in 1.92s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/next.rs (target/debug/deps/next-1e7e61bb16f68fdb)
+error: test failed, to rerun pass `--test next`

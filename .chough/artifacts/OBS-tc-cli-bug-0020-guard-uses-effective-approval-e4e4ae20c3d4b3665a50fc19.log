@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test the_delta_guard_compares_with_the_effective_approval ... FAILED
+
+failures:
+
+---- the_delta_guard_compares_with_the_effective_approval stdout ----
+
+thread 'the_delta_guard_compares_with_the_effective_approval' (890000150) panicked at tests/common/mod.rs:117:9:
+["stage", "advance"] failed: Error: advance refused (refused:native-delta-changed): Reaching build needs the approved semantic deltas; the delta for cli (edited) changed after the definition approval, while native status still reports approval_valid true (SpecSync 6.1.1, BUG-0002). Restore the approved delta, or resolve authority for the changed scope and record specsync change approve effective-change --actor "<agent-account>" --note "Human authority: <source>; covered scope: <scope>; limits: <limits>", then run specsync change check effective-change. Digests use SpecSync 6.1.1's specsync.approved-delta.v1 framing.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_delta_guard_compares_with_the_effective_approval
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 59 filtered out; finished in 1.98s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/stages.rs (target/debug/deps/stages-ce01d5b97a0c27a5)
+error: test failed, to rerun pass `--test stages`

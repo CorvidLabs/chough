@@ -16,6 +16,9 @@ exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" 
 ci-archive-fixtures = "python3 .github/scripts/test-specsync-archive.py"
 linux-image = "sh tools/linux/image.sh"
 linux-verify = "sh tools/linux/verify.sh"
+# Installed HI, SpecSync, Fledge and Rust beside the CI pins; fails naming each that
+# differs (REQ-cli-019, BUG-0022). First in the verify lane.
+toolchain = "sh tools/toolchain.sh"
 [lanes.ci]
 description = "Run full CI pipeline"
 steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "exercise", "build"]
@@ -33,4 +36,4 @@ steps = ["fmt", "check", "intent", "spec", "audit"]
 
 [lanes.verify]
 description = "Product, structural, native lifecycle and case-definition verification"
-steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "exercise", "build"]
+steps = ["toolchain", "fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "exercise", "build"]

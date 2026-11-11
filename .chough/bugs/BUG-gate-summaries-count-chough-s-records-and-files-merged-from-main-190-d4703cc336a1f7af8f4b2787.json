@@ -25,17 +25,26 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-190-gate-summary-counts-the-change-99cf6eeb353b024999329d9c"
+    "OBS-tc-cli-190-gate-summary-counts-the-change-99cf6eeb353b024999329d9c",
+    "OBS-tc-cli-190-gate-summary-counts-the-change-a4077f7200f7c230117b9e16"
   ],
   "impact": "The human deciding a gate cannot see what the change touched (GitHub #190)",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "GitHub issue #190; red on 0.5.0 at leif/0.6.0-190-red 603456f3",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794426211,
+      "text": "status: open -> verified. Fixed in plan step 12 (PR #238, 657dc532); the case passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-cli-190-gate-summary-counts-the-change-a4077f7200f7c230117b9e16"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794424802,
-  "updated_at_unix_seconds": 1794424802
+  "updated_at_unix_seconds": 1794426211
 }

@@ -22,12 +22,14 @@
   "observations": [
     "kimi-cold-start-5af3f78",
     "kimi-cold-start-5af3f78-scope",
-    "tc-cli-0106-kimi-original"
+    "tc-cli-0106-kimi-original",
+    "OBS-tc-cli-bug-0023-status-leads-with-summary-756b63467d9055a1e6ef254a",
+    "OBS-tc-cli-bug-0023-status-leads-with-summary-93588cb44d8c09012f035462"
   ],
   "impact": "Cold resume is slow and the important contradiction is easy to miss",
   "classification": "requirement-gap",
-  "scope": "out-of-scope",
-  "status": "open",
+  "scope": "in-scope",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -63,8 +65,22 @@
       "observations": [
         "tc-cli-0106-kimi-original"
       ]
+    },
+    {
+      "at_unix_seconds": 1794425962,
+      "text": "status: open -> fix-pending-verification; scope: out-of-scope -> in-scope. Red on 0.5.0: TC-cli-bug-0023-status-leads-with-summary failed on leif/0.6.0-76-0023-red at dbd3d23b. Fixed in plan step 12 (PR #238): status JSON leads with a summary (stage, the same next action and command as next, open gates, blockers).",
+      "observations": [
+        "OBS-tc-cli-bug-0023-status-leads-with-summary-756b63467d9055a1e6ef254a"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794426211,
+      "text": "status: fix-pending-verification -> verified. Fixed in plan step 12 (PR #238, f9c0ae67); the case passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-cli-bug-0023-status-leads-with-summary-93588cb44d8c09012f035462"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793546202,
-  "updated_at_unix_seconds": 1793551402
+  "updated_at_unix_seconds": 1794426211
 }

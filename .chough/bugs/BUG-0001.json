@@ -20,7 +20,9 @@
     "Compare with .github/workflows/ci.yml and docs/DECISIONS.md D-009"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-0110-d401e774e0492b43be1a2895"
+  ],
   "impact": "Misleading comment only; no behavior or gate depends on it. Fixing it needs a native change that covers .specsync/config.toml, which the approved scope does not.",
   "classification": "evidence-gap",
   "scope": "out-of-scope",
@@ -29,7 +31,15 @@
   "duplicate_of": null,
   "related": [],
   "source": "specsync change audit on feat/resumable-stage-workflow",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794428234,
+      "text": "Fixed in plan step 12 (PR #238, t38b): the SpecSync config comment names 6.2.0, HI 0.8.0 and Fledge 1.8.0 and joins the version check. Passed here; the red run on 0.5.0 is to be recorded before verification.",
+      "observations": [
+        "OBS-tc-cli-0110-d401e774e0492b43be1a2895"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793473149,
-  "updated_at_unix_seconds": 1793473149
+  "updated_at_unix_seconds": 1794428234
 }

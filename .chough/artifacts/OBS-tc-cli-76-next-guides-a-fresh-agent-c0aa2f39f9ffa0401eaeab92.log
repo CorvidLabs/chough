@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test next_guides_a_fresh_agent_from_init_to_accept ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 1.32s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/next.rs (target/debug/deps/next-1e7e61bb16f68fdb)

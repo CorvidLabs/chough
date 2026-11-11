@@ -26,6 +26,8 @@ const KEYS: &[(&str, &[&str], &str)] = &[
     ("library-dir", &[], "knowledge"),
     ("required-lane", &[], ""),
     ("retention", &["off", "auto", "manual"], "off"),
+    // A standing consent to `chough migrate --apply` (REQ-records-009).
+    ("migration", &["on-request", "standing"], "on-request"),
 ];
 const CONSENT_KEYS: [&str; 4] = ["repeat-validation", "monitoring", "release", "retention"];
 

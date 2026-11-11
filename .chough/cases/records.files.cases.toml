@@ -1,0 +1,41 @@
+profile = "chough-testing/1"
+module = "records"
+
+# Record files and the records tree (REQ-records-001, REQ-records-002, #235). Evidence
+# entries join both tests when plan step 4 lands.
+
+[[case]]
+id = "TC-records-files-are-markdown-and-tolerant"
+title = "Records are Markdown with front matter; a person's edits, unknown keys and comments survive Chough's writes; front matter outside the subset is refused naming the file, line and rule; CRLF reads as LF; no JSON twin"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25", "DRIVE-26", "KNOW-32", "LIFE-3"]
+requirements = ["REQ-records-001"]
+paths = ["src/markdown.rs", "src/session_md.rs", "src/bugs.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::every_record_is_markdown_and_keeps_human_edits passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "every_record_is_markdown_and_keeps_human_edits"
+
+[[case]]
+id = "TC-records-tree-and-readme"
+title = "init writes the records tree's reading guide create-only and a full cycle leaves committed files under .chough/ only at the listed paths"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24", "DRIVE-28", "KNOW-32"]
+requirements = ["REQ-records-002"]
+paths = ["src/main.rs", "src/sessions.rs", "src/records.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::the_tree_holds_only_the_listed_paths passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "the_tree_holds_only_the_listed_paths"
