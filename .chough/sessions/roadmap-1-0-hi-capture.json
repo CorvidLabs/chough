@@ -45,7 +45,8 @@
   },
   "decisions": [
     "Criteria drafted from the 2026-11-10 MVP interview and the same-day issue decisions on #14, #165, #167 and #201",
-    "2026-11-10 pause from Leif via t370: no approvals, reviews, acceptances, gates, closes or merges recorded as 0xLeif/Leif until new instructions; work stops at READY"
+    "2026-11-10 pause from Leif via t370: no approvals, reviews, acceptances, gates, closes or merges recorded as 0xLeif/Leif until new instructions; work stops at READY",
+    "2026-11-10 coordinator: #212 is the INTENT of Leif's one big human-first-records Chough cycle (design stage in _worktrees/ch-human-first, artifact 1gaHcJYeiULDxWtKMGUZim); hold #212 at READY, no merge, no new criteria unless the coordinator sends exact deltas"
   ],
   "open_questions": [],
   "completed": [
@@ -65,5 +66,5 @@
     "Leif: intent approval of the 13 criteria; native scope approval of the change; rulings on FLOW-17 vs FLOW-21 and KNOW-29 vs KNOW-30"
   ],
   "run_consents": [],
-  "next_action": "Wait for Leif's review of #212 (intent approval of 20 criteria, native scope approval, FLOW-17/FLOW-21 ruling) or the coordinator's answer on the knowledge-copies scope call"
+  "next_action": "Hold. Fold in the coordinator's exact design-review deltas (Leif's words) when they arrive; Leif approves the intent as a whole when the design settles"
 }
