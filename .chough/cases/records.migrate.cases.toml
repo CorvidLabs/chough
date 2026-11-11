@@ -67,3 +67,23 @@ adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "migrate", "--test", "migrate_bugs", "--", "every_legacy_file_and_artifact_is_accounted_for", "a_bug_of_each_id_form_carries_its_links_fixtures_and_redactions"]
 expect_output = ["test every_legacy_file_and_artifact_is_accounted_for ... ok", "test a_bug_of_each_id_form_carries_its_links_fixtures_and_redactions ... ok"]
 timeout_seconds = 600
+
+# t38b's unmigrated guard (REQ-records-010): one check in main before any record is read.
+
+[[case]]
+id = "TC-records-unmigrated-fails-closed"
+title = "On a 0.5.x tree every command but migrate, doctor and skill refuses as refused:unmigrated naming up to 5 paths and the count of the rest, writing nothing; migrate, doctor, skill status, --help and --version run; a mixed tree refuses and doctor reports it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20", "DRIVE-25", "LIFE-3"]
+requirements = ["REQ-records-010"]
+paths = ["src/migrate.rs", "src/main.rs", "src/checkpoint.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::an_unmigrated_tree_is_refused_with_the_migrate_command passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "an_unmigrated_tree_is_refused_with_the_migrate_command"
