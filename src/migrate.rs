@@ -755,6 +755,7 @@ fn plan(root: &Path) -> Result<Plan> {
     let links = bug_links_0_5(root)?;
     let (evidence, observations) = evidence_0_5(root, &homes, &links)?;
     carried.absorb(evidence)?;
+    story_receipts(&mut carried, &homes, &observations)?;
     carried.absorb(bugs_0_5(root, &observations)?)?;
     // Knowledge runs last: its index.md is the one the tree has once every other
     // mapper's plan applies.
@@ -1184,6 +1185,58 @@ fn retired_files_0_5(root: &Path) -> Result<Carried> {
     Ok(carried)
 }
 
+/// Each archived story's `receipts` (REQ-history-006): the receipt the evidence mapper
+/// made of each observation its 0.5.x session referenced, or, for one carried nowhere, a
+/// tombstone naming the migration receipt, which never counts, its ID aliased `removed`
+/// unless a mapper already placed it. The sessions mapper writes every story with no
+/// receipts, since evidence runs after it.
+fn story_receipts(
+    carried: &mut Carried,
+    sessions: &BTreeMap<String, SessionHome>,
+    homes: &ObservationHomes,
+) -> Result<()> {
+    let receipt = receipt_path()?;
+    for home in sessions.values().filter(|home| home.archived) {
+        let path = format!(".chough/archive/sessions/{}.md", home.id);
+        let Some(written) = carried
+            .written
+            .iter_mut()
+            .find(|written| written.path == path)
+        else {
+            continue;
+        };
+        let mut receipts: Vec<Vec<(String, String)>> = vec![];
+        for id in &home.observations {
+            let map = match homes.receipts.get(id) {
+                Some(map) => map.clone(),
+                None if homes.entries.contains_key(id) => continue,
+                None => {
+                    carried
+                        .aliases
+                        .entry(id.clone())
+                        .or_insert_with(|| "removed".to_string());
+                    vec![
+                        ("id".to_string(), id.clone()),
+                        ("removed".to_string(), receipt.clone()),
+                    ]
+                }
+            };
+            if !receipts.contains(&map) {
+                receipts.push(map);
+            }
+        }
+        if receipts.is_empty() {
+            continue;
+        }
+        let mut record = crate::markdown::parse(&path, &written.bytes)?;
+        record.set("receipts", crate::markdown::Value::Maps(receipts))?;
+        written.bytes = record
+            .render_within(crate::markdown::Kind::Story)
+            .with_context(|| format!("{path} with its receipts"))?;
+    }
+    Ok(())
+}
+
 /// Mapper 2, each 0.5.x bug's linked observation IDs (t38b).
 fn bug_links_0_5(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
     crate::bugs::links_0_5(root)
@@ -1322,6 +1375,63 @@ mod tests {
             .iter()
             .find(|written| &written.path == story)
             .unwrap();
+        crate::session_md::read(&written.path, &written.bytes).unwrap();
+    }
+
+    /// Story receipts: a carried observation's receipt once, an open session's entry
+    /// left to that session, and one carried nowhere as a tombstone aliased `removed`.
+    #[test]
+    fn a_story_takes_its_receipts_and_tombstones_after_the_evidence_mapper() {
+        fn copy(from: &Path, to: &Path) {
+            std::fs::create_dir_all(to).unwrap();
+            for entry in std::fs::read_dir(from).unwrap().flatten() {
+                let target = to.join(entry.file_name());
+                if entry.path().is_dir() {
+                    copy(&entry.path(), &target);
+                } else {
+                    std::fs::copy(entry.path(), target).unwrap();
+                }
+            }
+        }
+        let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/releases/v0.5.0");
+        let root = tempfile::tempdir().unwrap();
+        copy(&fixture, root.path());
+        let (mut carried, mut sessions) = sessions_0_5(root.path()).unwrap();
+        let key = sessions
+            .iter()
+            .find(|(_, home)| home.archived)
+            .map(|(key, _)| key.clone())
+            .unwrap();
+        let home = sessions.get_mut(&key).unwrap();
+        home.observations = vec![
+            "OBS-carried".into(),
+            "OBS-carried".into(),
+            "OBS-entry".into(),
+            "OBS-gone".into(),
+        ];
+        let story = format!(".chough/archive/sessions/{}.md", home.id);
+        let carried_map = vec![
+            ("id".to_string(), "OBS-carried".to_string()),
+            ("result".to_string(), "passed".to_string()),
+        ];
+        let homes = ObservationHomes {
+            entries: BTreeMap::from([("OBS-entry".into(), "elsewhere".into())]),
+            receipts: BTreeMap::from([("OBS-carried".into(), carried_map.clone())]),
+        };
+        story_receipts(&mut carried, &sessions, &homes).unwrap();
+        let written = carried
+            .written
+            .iter()
+            .find(|written| written.path == story)
+            .unwrap();
+        let record = crate::markdown::parse(&story, &written.bytes).unwrap();
+        let tombstone = vec![
+            ("id".to_string(), "OBS-gone".to_string()),
+            ("removed".to_string(), receipt_path().unwrap()),
+        ];
+        assert_eq!(record.maps("receipts"), vec![carried_map, tombstone]);
+        assert_eq!(carried.aliases["OBS-gone"], "removed");
+        assert!(!carried.aliases.contains_key("OBS-entry"));
         crate::session_md::read(&written.path, &written.bytes).unwrap();
     }
 
