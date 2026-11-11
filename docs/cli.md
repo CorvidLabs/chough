@@ -502,7 +502,7 @@ The gate's `gate-closed` entry carries `relayed_by` with the four values under
 `decided_by`, `words`, `where` and `recorded_by` (REQ-history-010), the shape agreed
 with SpecSync's side for its approval and review records (spec-sync#633). When the
 close drove a SpecSync step, `relayed_by` also gives `native`, the command it ran
-(`specsync change approve <change>` or `specsync change review <change>`), and
+(`specsync change approve` or `specsync change review`, then the change ID), and
 `actor`, the SpecSync actor it ran as, both or neither. One decision
 is added to Decisions and why for the handoff, ending with the native step when one
 ran:
