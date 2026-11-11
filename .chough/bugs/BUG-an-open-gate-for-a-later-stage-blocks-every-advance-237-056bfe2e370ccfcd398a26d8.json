@@ -26,12 +26,13 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-237-gate-holds-its-stage-bb20e2599081ad8899140f35"
+    "OBS-tc-cli-237-gate-holds-its-stage-bb20e2599081ad8899140f35",
+    "OBS-tc-cli-237-gate-holds-its-stage-e67a2b8c1d138b94f8605278"
   ],
   "impact": "Agents clear real gates to keep working, or stall; the release decision has no place to wait (GitHub #237)",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -41,8 +42,15 @@
       "at_unix_seconds": 1794423926,
       "text": "Added despite similar reports: The verified bug is the opposite defect: gates were ignored and advance went through. This one is the fix's overreach: every gate refuses every move, including gates that hold a later stage.",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1794424180,
+      "text": "status: open -> verified. Fixed by plan step 6 (PR #238, f70f5727): a gate holds the stage it names (--holds, default the current stage), and advance and skip are refused only out of a stage an open gate holds. TC-cli-237-gate-holds-its-stage passed on the 0.6.0 branch after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-cli-237-gate-holds-its-stage-e67a2b8c1d138b94f8605278"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794423926,
-  "updated_at_unix_seconds": 1794423926
+  "updated_at_unix_seconds": 1794424180
 }

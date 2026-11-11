@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-append-only-corrections-759aeda0263a98f22822c814",
+  "criteria": [
+    "LIFE-18",
+    "LIFE-7",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-history-015"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test correct for TC-history-append-only-corrections: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-append-only-corrections-759aeda0263a98f22822c814.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-append-only-corrections-759aeda0263a98f22822c814.log": "192822405db6ed313be95651961506567c2ea17af31ac9e66127819038f44c42"
+  },
+  "observed_at_unix_seconds": 1794424162,
+  "snapshot": {
+    "revision": "82a7392dda5b59925f1dad704d2c6c2778b23b8b",
+    "dirty": false,
+    "fingerprint": "6592d43dd826eb5454937a8b18135ca2b197f73dda20f3cdc3d52de41f16d6dd",
+    "content": "c0ad4a455cdd87cc042886e343d1ad1a31016c6ee2b83c35f413758823f87006"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-append-only-corrections",
+      "digest": "63d947c0746119fc5cc8bfd1fa261342f13d91aa75824dfaa7ae5585c601efb8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "correct"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

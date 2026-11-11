@@ -1,0 +1,14 @@
+--- stdout ---
+
+running 4 tests
+test a_correction_appends_one_linked_entry_and_changes_no_earlier_byte ... ok
+test bad_targets_and_statements_are_refused_with_nothing_written ... ok
+test next_lists_the_ten_newest_corrections_and_the_total ... ok
+test an_archived_story_gets_the_correction_appended_and_nothing_else ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.91s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/correct.rs (target/debug/deps/correct-947b9ace269abb12)

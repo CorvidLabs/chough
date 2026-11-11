@@ -1,0 +1,60 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-close-gate-drives-native-step-40befe9849980c3cda707578",
+  "criteria": [
+    "FLOW-16",
+    "FLOW-23"
+  ],
+  "requirements": [
+    "REQ-cli-050",
+    "REQ-cli-061"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test humans -- a_scope_gate_runs_the_approval_once_as_the_configured_human a_review_gate_needs_a_verdict_and_runs_the_review_with_it no_native_closes_a_driving_gate_and_runs_nothing a_specsync_refusal_passes_through_and_nothing_is_written one_gate_record_runs_at_most_one_native_step for TC-cli-close-gate-drives-native-step: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-close-gate-drives-native-step-40befe9849980c3cda707578.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-close-gate-drives-native-step-40befe9849980c3cda707578.log": "62e95539c36cd1667de50d5c1de50111e3e4dc8c3b307e5933805643b1a42852"
+  },
+  "observed_at_unix_seconds": 1794424153,
+  "snapshot": {
+    "revision": "82a7392dda5b59925f1dad704d2c6c2778b23b8b",
+    "dirty": false,
+    "fingerprint": "6592d43dd826eb5454937a8b18135ca2b197f73dda20f3cdc3d52de41f16d6dd",
+    "content": "c0ad4a455cdd87cc042886e343d1ad1a31016c6ee2b83c35f413758823f87006"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-close-gate-drives-native-step",
+      "digest": "8e594a949445e6d02b48ecc64323b883155b4a76d1a4d148dee19013fb695e2c"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "humans",
+    "--",
+    "a_scope_gate_runs_the_approval_once_as_the_configured_human",
+    "a_review_gate_needs_a_verdict_and_runs_the_review_with_it",
+    "no_native_closes_a_driving_gate_and_runs_nothing",
+    "a_specsync_refusal_passes_through_and_nothing_is_written",
+    "one_gate_record_runs_at_most_one_native_step"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

@@ -24,7 +24,8 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-actor-recorded-556298a33aba7c34ff56307b"
+    "OBS-tc-records-actor-recorded-556298a33aba7c34ff56307b",
+    "OBS-tc-records-actor-recorded-838ca2648f678ed5413a44a5"
   ],
   "impact": "Several agents' work cannot be told apart in the history (GitHub #201, folded from PR #233)",
   "classification": "product-defect",
@@ -34,7 +35,15 @@
   "duplicate_of": null,
   "related": [],
   "source": "GitHub issue #201; red on 0.5.0 at leif/0.6.0-features-red 82c85c99",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794424180,
+      "text": "Timeline entries fixed by plan steps 6 and 7 (PR #238): the 'by' field names agent, model and hc terminal. TC-records-actor-recorded passed for Timeline entries; evidence entries (step 4) and bugs (step 5) join the case at integration, so this stays open until then.",
+      "observations": [
+        "OBS-tc-records-actor-recorded-838ca2648f678ed5413a44a5"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794424053,
-  "updated_at_unix_seconds": 1794424053
+  "updated_at_unix_seconds": 1794424180
 }

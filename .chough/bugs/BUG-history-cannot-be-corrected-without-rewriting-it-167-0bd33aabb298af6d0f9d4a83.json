@@ -24,17 +24,26 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-history-append-only-corrections-2154744639f0ea1e779ae0b5"
+    "OBS-tc-history-append-only-corrections-2154744639f0ea1e779ae0b5",
+    "OBS-tc-history-append-only-corrections-759aeda0263a98f22822c814"
   ],
   "impact": "Wrong history stays or gets rewritten by hand (GitHub #167, folded from PR #210)",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "GitHub issue #167; red on 0.5.0 at leif/0.6.0-features-red 9e3eef8a",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794424180,
+      "text": "status: open -> verified. Fixed by plan step 7 (PR #238, 99b2664f): chough correct appends a linked correction entry and changes no earlier byte; next and status show the corrected text, marked. TC-history-append-only-corrections passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-history-append-only-corrections-759aeda0263a98f22822c814"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794424053,
-  "updated_at_unix_seconds": 1794424053
+  "updated_at_unix_seconds": 1794424180
 }

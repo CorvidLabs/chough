@@ -1,0 +1,15 @@
+--- stdout ---
+
+running 5 tests
+test a_specsync_refusal_passes_through_and_nothing_is_written ... ok
+test a_review_gate_needs_a_verdict_and_runs_the_review_with_it ... ok
+test a_scope_gate_runs_the_approval_once_as_the_configured_human ... ok
+test no_native_closes_a_driving_gate_and_runs_nothing ... ok
+test one_gate_record_runs_at_most_one_native_step ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 1.85s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/humans.rs (target/debug/deps/humans-4b790b2ba5f9d8c7)
