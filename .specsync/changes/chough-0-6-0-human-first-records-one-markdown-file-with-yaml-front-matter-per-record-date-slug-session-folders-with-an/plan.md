@@ -254,6 +254,17 @@ approval). Until then the approved deltas stay as they are.
    its verified state, which needs a pass observed after the latest failure
    (REQ-cli-012), and timing can order case runs read from receipts (REQ-reporting-001).
    A receipt's `aliases` is one scalar, comma-and-space separated.
+3. REQ-cli-054 (bug values), which the deltas leave unchanged: REQ-cli-012 adds
+   `fixed-upstream` as a closed status, so REQ-cli-054 becomes modified: eight
+   statuses, four of them closed (`verified`, `duplicate`, `wont-fix`,
+   `fixed-upstream`), `fixed-upstream` accepted only with `--note`, and a bug in a
+   closed status never blocks.
+4. REQ-cli-017 and REQ-cli-023 (run times): an evidence entry and its receipt also carry
+   `duration_seconds`, the run's wall-clock seconds when known, which the timing report
+   reads for case run times (REQ-reporting-001); a repeated validation run's single
+   entry also gives `state`, `started`, `completed`, `failures`, `not_run`,
+   `elapsed_seconds` and `attempts`, one flat map per attempt with `started`,
+   `observed`, `result` and `duration_seconds`.
 
 ## Risks
 

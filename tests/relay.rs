@@ -245,14 +245,21 @@ fn a_relayed_decision_never_touches_native_state_or_its_gate() {
         ".specsync/changes/x/state.json",
         "{\"id\":\"x\",\"state\":\"draft\"}\n",
     );
-    fixture.ok(&["checkpoint", "--awaiting-human", "Scope approval of x"]);
+    // A gate that drives nothing (REQ-cli-030) closes with no native step.
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Scope check of x",
+        "--drives",
+        "none",
+    ]);
     let before: BTreeMap<String, Vec<u8>> = snapshot(fixture.root())
         .into_iter()
         .filter(|(path, _)| path.starts_with(".specsync"))
         .collect();
     fixture.write(".stub-count", "");
     fixture.ok(&close(
-        "Scope approval of x",
+        "Scope check of x",
         &relay(
             "SYNTHETIC-human",
             "Approve the scope",
@@ -269,6 +276,32 @@ fn a_relayed_decision_never_touches_native_state_or_its_gate() {
     let refused = fixture.fails(&["stage", "advance"]);
     assert!(refused.contains("refused:native-draft"), "{refused}");
     assert_eq!(fixture.session()["stage"]["current"], "plan");
+    // The scope gate, held at plan, drives the approval: closing it runs the approval
+    // once as the configured human (REQ-records-008), and the advance then reads
+    // native state as usual.
+    fixture.write(
+        ".chough/local/identity.toml",
+        "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-approver\"\n",
+    );
+    fixture.ok(&["checkpoint", "--awaiting-human", "Scope approval of x"]);
+    fixture.native_calls();
+    fixture.ok(&close(
+        "Scope approval of x",
+        &relay(
+            "SYNTHETIC-human",
+            "Approve the scope",
+            "orc tab",
+            "SYNTHETIC-agent",
+        ),
+    ));
+    let calls = fixture.read(".stub-calls");
+    assert!(
+        calls.starts_with("change approve x --actor SYNTHETIC-approver --note "),
+        "{calls}"
+    );
+    assert_eq!(fixture.native_calls(), 1, "{calls}");
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(refused.contains("refused:native-draft"), "{refused}");
 }
 
 /// Withdrawing gates keeps working and records no relay and no decision; closing the

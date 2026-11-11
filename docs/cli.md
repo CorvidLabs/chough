@@ -880,9 +880,9 @@ does not supply implementation acceptance or delivery authority.
 
 | Label | When | Next native action |
 |---|---|---|
-| `refused:native-delta-changed` | A delta differs from its approved digest, is deleted, or belongs to a module not in the approval | Restore the approved delta, or resolve authority for the changed scope and record `specsync change approve <id> --actor "<agent-account>" --note "Human authority: <source>; covered scope: <scope>; limits: <limits>"`, then run `specsync change check <id>` |
+| `refused:native-delta-changed` | A delta differs from its approved digest, is deleted, or belongs to a module not in the approval | Restore the approved delta, or have the changed scope approved: open a scope gate with `chough checkpoint --awaiting-human "<gate>" --drives approve` and record the human's decision with `chough checkpoint --close-gate`, which runs the approval as them; on authority they gave in advance, record `specsync change approve <id> --actor "<agent>-<terminal>" --note "Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>)."`. Then run `specsync change check <id>` |
 | `refused:native-delta-unverifiable` | The ledger is missing, unreadable, over 4 MiB or malformed; it has no definition approval; status reports no `change.affected_specs`; a module name is not one SpecSync 6.1.1 accepts; a delta cannot be read | Run `specsync change status <id>` |
-| `refused:native-delta-unverifiable` | A change with deltas has an approval without `approved_delta_digests` | Under applicable human authority, record `specsync change approve <id> --actor "<agent-account>" --note "Human authority: <source>; covered scope: <scope>; limits: <limits>"` to record the digests, then run `specsync change check <id>`; a status read cannot clear it |
+| `refused:native-delta-unverifiable` | A change with deltas has an approval without `approved_delta_digests` | An approval records the digests, the same two ways as for `refused:native-delta-changed`; then run `specsync change check <id>`; a status read cannot clear it |
 
 A no-spec-change approval with no deltas and an empty or absent digest map passes. The
 guard starts no process and copies nothing; no gate runs `specsync change check`,

@@ -10,6 +10,7 @@ mod doctor;
 mod evidence;
 mod gates;
 mod history;
+mod humans;
 mod identity;
 mod leaks;
 mod library;
@@ -426,6 +427,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             "gate": assessment.gate.as_ref().map(|(target, gate)| json!({"to": target, "allowed": gate.allowed, "label": gate.label, "detail": gate.detail})),
             "valid_transitions": stage::valid_transitions(checkpoint),
             "awaiting_human": checkpoint.awaiting_human,
+            "gates": open_gates(checkpoint, usize::MAX),
             "blockers": checkpoint.blockers,
             "open_questions": checkpoint.open_questions,
             "references": checkpoint.references,
@@ -536,6 +538,20 @@ fn cut(text: &str) -> String {
         end = index + character.len_utf8();
     }
     format!("{}{CUT}", &text[..end])
+}
+
+/// The first `limit` open gates with the stage each holds and the native step each
+/// drives (REQ-cli-030).
+fn open_gates(checkpoint: &checkpoint::Checkpoint, limit: usize) -> Vec<Value> {
+    checkpoint
+        .awaiting_human
+        .iter()
+        .take(limit)
+        .map(|gate| {
+            let meta = session_md::gate(checkpoint, gate);
+            json!({"gate": cut(gate), "holds": meta.holds, "drives": meta.drives})
+        })
+        .collect()
 }
 
 fn listed<'a>(items: impl ExactSizeIterator<Item = &'a String>) -> Value {
@@ -789,6 +805,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         },
         "gate": assessment.gate.as_ref().map(|(to, gate)| json!({"to": to, "allowed": gate.allowed, "label": cut(&gate.label), "detail": cut(&gate.detail)})),
         "awaiting_human": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.awaiting_human).iter()),
+        "gates": checkpoint.map_or_else(Vec::new, |checkpoint| open_gates(checkpoint, LIST_LIMIT)),
         "blockers": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.blockers).iter()),
         "open_questions": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.open_questions).iter()),
         "blocking_bugs": listed(assessment.blocking.iter()),
@@ -942,7 +959,26 @@ fn next_text(view: &Value) -> String {
             continue;
         }
         lines.push(format!("{title}: {total} open"));
-        lines.extend(items.iter().map(|item| format!("  - {}", text(item))));
+        lines.extend(items.iter().map(|item| {
+            // A gate shows the stage it holds and the step it drives (REQ-cli-030).
+            let held = (key == "awaiting_human")
+                .then(|| {
+                    view["gates"]
+                        .as_array()?
+                        .iter()
+                        .find(|gate| gate["gate"] == *item)
+                })
+                .flatten()
+                .map(|gate| {
+                    format!(
+                        " (holds {}; drives {})",
+                        text(&gate["holds"]),
+                        text(&gate["drives"])
+                    )
+                })
+                .unwrap_or_default();
+            format!("  - {}{held}", text(item))
+        }));
         if total > items.len() as u64 {
             lines.push(format!(
                 "  {} more; chough status",

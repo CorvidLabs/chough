@@ -343,6 +343,11 @@ fn gate_record_refuses_unknown_unlisted_closed_or_changed_gates_with_nothing_wri
 fn a_verifying_gate_is_refused_and_closes_through_ship_with_the_list() {
     let review = "Implementation review of g1";
     let fixture = project(&[]);
+    // The review gate drives the native review as the decided human (REQ-records-008).
+    fixture.write(
+        ".chough/local/identity.toml",
+        "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-reviewer\"\n",
+    );
     let archive = ".specsync/archive/changes/2026-11-01-g1";
     fixture.write(
         &format!("{archive}/finalization.json"),

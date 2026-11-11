@@ -36,12 +36,45 @@ pub(super) struct Meta {
     pub(super) gates: Vec<GateMeta>,
 }
 
-/// An open human gate with the stage it holds and when it opened (REQ-cli-030).
+/// An open human gate with the stage it holds, the native step it drives and when it
+/// opened (REQ-cli-030).
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub(super) struct GateMeta {
     pub(super) gate: String,
     pub(super) holds: String,
+    /// `approve`, `review` or `none`; empty means the default for `holds`.
+    pub(super) drives: String,
     pub(super) opened: String,
+}
+
+impl GateMeta {
+    /// The native step this gate drives, its recorded value or the default.
+    pub(super) fn drives(&self) -> crate::humans::Drives {
+        crate::humans::Drives::parse(&self.drives)
+            .unwrap_or_else(|| crate::humans::Drives::default_for(&self.holds))
+    }
+}
+
+/// An open gate's metadata: what the session records for it, with the stage it holds
+/// defaulting to the current stage and the step it drives to that stage's default.
+pub(super) fn gate(session: &Checkpoint, gate: &str) -> GateMeta {
+    let mut meta = session
+        .meta
+        .gates
+        .iter()
+        .find(|meta| meta.gate == gate)
+        .cloned()
+        .unwrap_or_else(|| GateMeta {
+            gate: gate.to_string(),
+            ..GateMeta::default()
+        });
+    if meta.holds.is_empty() {
+        meta.holds = session.stage.current.clone();
+    }
+    if crate::humans::Drives::parse(&meta.drives).is_none() {
+        meta.drives = meta.drives().name().to_string();
+    }
+    meta
 }
 
 /// One parsed Timeline entry.
@@ -82,6 +115,7 @@ pub(super) fn read(relative: &str, text: &str) -> Result<Checkpoint> {
         .map(|map| GateMeta {
             gate: pick(&map, "gate"),
             holds: pick(&map, "holds"),
+            drives: pick(&map, "drives"),
             opened: pick(&map, "opened"),
         })
         .collect();
@@ -195,16 +229,18 @@ pub(super) fn render(session: &Checkpoint, now: u64) -> Result<Record> {
         .awaiting_human
         .iter()
         .map(|gate| {
-            let known = meta.gates.iter().find(|meta| &meta.gate == gate);
+            let known = self::gate(session, gate);
             vec![
                 ("gate".into(), gate.clone()),
-                (
-                    "holds".into(),
-                    known.map_or_else(|| session.stage.current.clone(), |meta| meta.holds.clone()),
-                ),
+                ("holds".into(), known.holds),
+                ("drives".into(), known.drives),
                 (
                     "opened".into(),
-                    known.map_or_else(|| iso_time(now), |meta| meta.opened.clone()),
+                    if known.opened.is_empty() {
+                        iso_time(now)
+                    } else {
+                        known.opened
+                    },
                 ),
             ]
         })

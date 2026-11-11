@@ -478,6 +478,10 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
 /// done_action's new-cycle steps, shared by the archived-not-done action.
 const NEW_CYCLE: &str = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work), then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
 const RESET: &str = "chough stage reset --to intent --reason \"<why>\"";
+/// After done the session is archived, so the next piece of work starts a new session
+/// (REQ-cli-021, corrected in the 0.6.0 plan's Delta corrections).
+const NEXT_WORK: &str = "Start the next piece of work in a new session: chough session new <key> --objective \"<outcome>\", then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
+const NEXT_SESSION: &str = "chough session new <key> --objective \"<outcome>\"";
 
 /// Split a suggested command into arguments, honoring double quotes.
 fn words(command: &str) -> Vec<String> {
@@ -503,7 +507,10 @@ fn words(command: &str) -> Vec<String> {
 
 /// Run a suggested `chough ...` command with its placeholders filled.
 fn run_suggested(fixture: &Fixture, command: &str) -> Value {
-    let command = command.replace("<why>", "New work after the archive");
+    let command = command
+        .replace("<why>", "New work after the archive")
+        .replace("<key>", "next-work")
+        .replace("<outcome>", "The next piece of work");
     let arguments = words(&command);
     assert_eq!(arguments[0], "chough", "{command}");
     let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
@@ -650,7 +657,7 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
         );
         let expected = if stage == "accept" {
             format!(
-                "{opening}Record done first: chough stage advance (accept to done is allowed). Then: {NEW_CYCLE}"
+                "{opening}Record done first: chough stage advance (accept to done is allowed), which archives this session. Then: {NEXT_WORK}"
             )
         } else {
             format!("{opening}{NEW_CYCLE}")
@@ -703,11 +710,15 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
             let advanced = run_suggested(&fixture, command);
             assert_eq!(advanced["applied"]["to"], "done", "{advanced}");
             let done = fixture.ok(&["next", "--json"]);
-            assert_eq!(done["next_valid_action"]["action"], NEW_CYCLE);
-            assert_eq!(done["next_valid_action"]["command"], RESET);
-            let reset = run_suggested(&fixture, RESET);
-            assert_eq!(reset["applied"]["to"], "intent");
-            assert_after_reset(&fixture, "done");
+            assert_eq!(done["next_valid_action"]["action"], NEXT_WORK);
+            assert_eq!(done["next_valid_action"]["command"], NEXT_SESSION);
+            let created = run_suggested(&fixture, NEXT_SESSION);
+            assert_eq!(
+                fixture.session()["objective"],
+                "The next piece of work",
+                "{created}"
+            );
+            assert_eq!(fixture.session()["stage"]["current"], "intent");
         } else {
             let reset = run_suggested(&fixture, command);
             assert_eq!(reset["applied"]["to"], "intent", "{reset}");

@@ -593,8 +593,9 @@ fn native_gate(
             return refused(
                 "refused:native-delta-changed".into(),
                 format!(
-                    "{purpose} needs the approved semantic deltas; the delta for {} changed after the definition approval, while native status still reports approval_valid true (SpecSync 6.1.1, BUG-0002). Restore the approved delta, or resolve authority for the changed scope and record specsync change approve {change} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\", then run specsync change check {change}. Digests use SpecSync 6.1.1's {DELTA_DOMAIN} framing.",
-                    modules.join(", ")
+                    "{purpose} needs the approved semantic deltas; the delta for {} changed after the definition approval, while native status still reports approval_valid true (SpecSync 6.1.1, BUG-0002). Restore the approved delta, or have the changed scope approved: {} Digests use SpecSync 6.1.1's {DELTA_DOMAIN} framing.",
+                    modules.join(", "),
+                    reapproval(change)
                 ),
             );
         }
@@ -610,7 +611,8 @@ fn native_gate(
             return refused(
                 "refused:native-delta-unverifiable".into(),
                 format!(
-                    "{purpose} needs the approved semantic deltas, which cannot be compared: {reason}. Native next action: under applicable human authority, record specsync change approve {change} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\" to record the digests, then run specsync change check {change}; a status read cannot clear this."
+                    "{purpose} needs the approved semantic deltas, which cannot be compared: {reason}. An approval records the digests, and a status read cannot clear this: {}",
+                    reapproval(change)
                 ),
             );
         }
@@ -947,6 +949,25 @@ fn new_cycle() -> String {
     format!("{NEW_CYCLE_STEPS}, then {NEW_CYCLE_CHANGE}, then {NEW_CYCLE_RECORD}.")
 }
 
+/// After done the session is archived into its story (REQ-history-006), so the next
+/// piece of work starts a new session, not a reset (REQ-cli-021, corrected in the
+/// plan's Delta corrections).
+const NEXT_SESSION: &str = "chough session new <key> --objective \"<outcome>\"";
+
+/// The next piece of work after done: a new session, then, with a native lifecycle, a
+/// new native change recorded in it.
+fn next_work(native: bool) -> String {
+    if native {
+        format!(
+            "Start the next piece of work in a new session: {NEXT_SESSION}, then {NEW_CYCLE_CHANGE}, then {NEW_CYCLE_RECORD}."
+        )
+    } else {
+        format!(
+            "Start the next piece of work in a new session: {NEXT_SESSION}, then chough checkpoint --next-action \"<next step>\"."
+        )
+    }
+}
+
 /// The terminal evidence validity a native status response reports.
 fn terminal_validity(state: &NativeState) -> &str {
     match state {
@@ -1189,11 +1210,20 @@ pub(super) fn assess(
             reason: "A paused stage keeps its scope, preferences and gates; native state may have changed meanwhile.".into(),
             command: Some("chough stage resume".into()),
         }
-    } else if !session.awaiting_human.is_empty() {
+    } else if let holding @ [_, ..] = session
+        .awaiting_human
+        .iter()
+        .filter(|gate| crate::session_md::gate(session, gate).holds == current)
+        .map(String::as_str)
+        .collect::<Vec<_>>()
+        .as_slice()
+    {
+        // REQ-cli-030: only a gate holding the current stage waits here; a gate holding
+        // a later stage is listed and waits there (#237).
         Action {
             action: format!(
-                "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
-                session.awaiting_human.join("; ")
+                "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`. `chough stage advance` and `chough stage skip` are refused until it is closed.",
+                holding.join("; ")
             ),
             reason: "Only a person can close these gates.".into(),
             command: None,
@@ -1289,23 +1319,25 @@ fn done_action(
     let check_first = native_next
         .map(|text| format!(" Native next action, check it first: {text}."))
         .unwrap_or_default();
+    // A session still open at done is kept for release or for inbox entries to fold;
+    // its next piece of work still starts in a new session.
     let closed = |action: String, reason: String| Action {
         action,
         reason: format!("{reason}{check_first}"),
-        command: Some(NEW_CYCLE_RESET.into()),
+        command: Some(NEXT_SESSION.into()),
     };
     let done = gate_for_state(root, session, "done", state.clone());
     match (state, done) {
         (NativeState::NotConfigured | NativeState::Disabled, _) => closed(
-            format!("{NEW_CYCLE_STEPS}, then chough checkpoint --next-action \"<next step>\"."),
+            next_work(false),
             "The cycle is closed; no native lifecycle gates it.".into(),
         ),
         (NativeState::NoChange, _) => closed(
-            new_cycle(),
+            next_work(true),
             "No native change is recorded for this cycle, so it is closed.".into(),
         ),
         (NativeState::State(..), Some(gate)) if gate.allowed => closed(
-            new_cycle(),
+            next_work(true),
             format!(
                 "The cycle for {} is closed: native state archived, terminal evidence {}.",
                 session
@@ -1344,7 +1376,7 @@ fn archived_action(session: &Checkpoint, state: &NativeState, native_next: Optio
         .unwrap_or("the native change");
     let at_accept = current == "accept";
     let record_done = if at_accept {
-        "Record done first: chough stage advance (accept to done is allowed). Then: "
+        "Record done first: chough stage advance (accept to done is allowed), which archives this session. Then: "
     } else {
         ""
     };
@@ -1356,7 +1388,11 @@ fn archived_action(session: &Checkpoint, state: &NativeState, native_next: Optio
     Action {
         action: format!(
             "The recorded native change is archived while the checkpoint is at {current}, so this cycle's work is closed. {record_done}{}",
-            new_cycle()
+            if at_accept {
+                next_work(true)
+            } else {
+                new_cycle()
+            }
         ),
         reason: format!(
             "Native change {change} is archived while the checkpoint is at {current}, with terminal evidence {}; continuing {current} would work on a closed change.{check_first}",
@@ -1611,9 +1647,25 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
 /// How to record a human's decision on a gate on their behalf (REQ-cli-050).
 pub(super) const CLOSE_GATE_COMMAND: &str = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
 
-/// An open human gate holds advance and skip (REQ-cli-030); no reason bypasses it.
-fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str) -> Result<()> {
-    let gates = &session.awaiting_human;
+/// How the scope of `change` is approved again (REQ-cli-022): the human's decision at
+/// a scope gate that drives the approval (REQ-cli-030, REQ-records-008), or, on
+/// authority they gave in advance, the acting agent's approval quoting it
+/// (REQ-cli-029); never a command for the human to run.
+fn reapproval(change: &str) -> String {
+    format!(
+        "open the scope gate with `chough checkpoint --awaiting-human \"Approve the changed scope of {change}\" --drives approve`, and when the human decides, record it with `{CLOSE_GATE_COMMAND}`, which runs the approval as them; on authority they gave in advance, record specsync change approve {change} --actor \"<agent>-<terminal>\" --note \"Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>).\" instead. Then run specsync change check {change}."
+    )
+}
+
+/// An open human gate holds advance and skip out of the stage it holds (REQ-cli-030);
+/// no reason bypasses it. A gate holding a later stage does not stop a move out of an
+/// earlier one (#237). `leaving` is every stage the move leaves.
+fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str, leaving: &[&str]) -> Result<()> {
+    let gates: Vec<&String> = session
+        .awaiting_human
+        .iter()
+        .filter(|gate| leaving.contains(&crate::session_md::gate(session, gate).holds.as_str()))
+        .collect();
     if gates.is_empty() {
         return Ok(());
     }
@@ -1626,7 +1678,7 @@ fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str) -> Result<()> {
         gates
             .iter()
             .take(3)
-            .map(String::as_str)
+            .map(|gate| gate.as_str())
             .collect::<Vec<_>>()
             .join("; ")
     )
@@ -1866,7 +1918,6 @@ fn advance_to(
 ) -> Result<(Value, Option<NativeState>)> {
     ensure_active(session)?;
     ensure_main(session, "advance")?;
-    ensure_no_open_human_gate(session, "advance")?;
     let from = session.stage.current.clone();
     let start = position(&from).ok_or_else(|| {
         anyhow::anyhow!(
@@ -1882,6 +1933,8 @@ fn advance_to(
         end > start,
         "{target} is not ahead of {from}; `stage advance --to` only moves forward (use `chough stage back` or `chough stage reset` to go back)"
     );
+    // Every stage the move leaves counts (REQ-cli-030).
+    ensure_no_open_human_gate(session, "advance", &ORDER[start..end])?;
     let mut read = None;
     let mut steps = Vec::new();
     for index in start..end {
@@ -1927,8 +1980,8 @@ fn move_forward(
 ) -> Result<(Value, Option<NativeState>)> {
     ensure_active(session)?;
     ensure_main(session, kind)?;
-    ensure_no_open_human_gate(session, kind)?;
     let from = session.stage.current.clone();
+    ensure_no_open_human_gate(session, kind, &[from.as_str()])?;
     ensure!(
         backfill.is_none() || from != "release",
         "backfill refused: release to done cannot be backfilled; advance it when it happens"

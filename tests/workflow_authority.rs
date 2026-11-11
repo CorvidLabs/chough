@@ -513,7 +513,13 @@ fn native_writer_examples_and_installed_workflows_are_consistent() {
             found.insert((relative.to_string(), operation.clone()));
             if !matches!(
                 actor.as_deref(),
-                Some("<agent-account>" | "<project-agent-account>" | "corvid-agent" | "corvid")
+                Some(
+                    "<agent>-<terminal>"
+                        | "<agent-account>"
+                        | "<project-agent-account>"
+                        | "corvid-agent"
+                        | "corvid"
+                )
             ) {
                 problems.push(format!(
                     "{relative}: native {operation} must name the acting agent account, got {actor:?}"

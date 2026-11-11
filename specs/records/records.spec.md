@@ -7,8 +7,11 @@ files:
   - src/leaks.rs
   - src/identity.rs
   - src/actor.rs
+  - src/humans.rs
+  - src/session_md.rs
   - tests/ids.rs
   - tests/actor.rs
+  - tests/humans.rs
 
 db_tables: []
 depends_on:
@@ -102,6 +105,20 @@ or redacting every value before it is written.
 | `display` | The actor as one line for people. |
 | `front_value` | The actor as the one flat map a record's front matter `actor` holds. |
 | `from_front` | The actor a front matter `actor` value holds, when it is one well-formed map. |
+| `set_redacting` | Records whether this command was given `--redact`. |
+| `redacting` | Whether this command was given `--redact`. |
+| `guard` | Checks one value for leaks, or redacts it in place under `--redact`, returning how many matches were redacted. |
+| `Drives` | The native step an open gate drives when a human closes it: approve, review or none (REQ-cli-030). |
+| `default_for` | The step a gate drives by default: approve for one held at plan, review for one held at accept, none otherwise. |
+| `Human` | One configured human: display name, aliases and SpecSync actor (REQ-records-008). |
+| `LOCAL_FILE` | `.chough/local/identity.toml`, the project's identity file, which replaces the user file when present. |
+| `USER_FILE` | `chough/identity.toml` under `XDG_CONFIG_HOME` or `~/.config`, the user identity file. |
+| `Step` | A native step run as a human: an approval with its note, or a review with its verdict. |
+| `arguments` | The SpecSync arguments of a step, with the human's configured actor. |
+| `summary` | A step as one line for the decision and the output, without the note's text. |
+| `approval_note` | The note an approval records: the human's words, where and when, and the relaying agent. |
+| `Ran` | What a native step left: SpecSync's output and exit code. |
+| `run` | Runs a step as a human in the project root, keeping the direct-write baseline current. |
 
 ## Invariants
 

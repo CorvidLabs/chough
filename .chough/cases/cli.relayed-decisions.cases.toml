@@ -39,13 +39,13 @@ test = "relay_refusals_save_nothing_and_their_recovery_succeeds"
 
 [[case]]
 id = "TC-cli-relay-never-touches-native"
-title = "A relayed decision leaves SpecSync files unchanged and never opens a native gate"
+title = "A relay at a gate that drives nothing leaves SpecSync unchanged; a scope gate runs the approval once as the configured human; neither opens a native gate"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["FLOW-16", "FLOW-10"]
 requirements = ["REQ-cli-050"]
-paths = ["src/checkpoint.rs", "src/stage.rs"]
+paths = ["src/checkpoint.rs", "src/stage.rs", "src/humans.rs"]
 environments = ["local", "local-linux-aarch64", "ci-linux"]
 artifacts = ["test-log"]
 expected = ["the relay test a_relayed_decision_never_touches_native_state_or_its_gate passes"]

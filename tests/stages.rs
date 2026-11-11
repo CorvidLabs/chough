@@ -437,8 +437,10 @@ fn native_state_gates_build_and_closing_without_inventing_it() {
 #[cfg(unix)]
 #[test]
 fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
-    const NEW_CYCLE: &str = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work), then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
-    const RESET: &str = "chough stage reset --to intent --reason \"<why>\"";
+    // After done the session is archived, so the next piece of work starts a new
+    // session (REQ-cli-021, corrected in the 0.6.0 plan's Delta corrections).
+    const NEW_CYCLE: &str = "Start the next piece of work in a new session: chough session new <key> --objective \"<outcome>\", then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
+    const RESET: &str = "chough session new <key> --objective \"<outcome>\"";
 
     let fixture = Fixture::new();
     fixture.stubs();
@@ -522,7 +524,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
     for command in ["next", "status"] {
         assert_action(
             command,
-            "Waiting for a human decision: Human scope decision. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
+            "Waiting for a human decision: Human scope decision. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`. `chough stage advance` and `chough stage skip` are refused until it is closed.",
             &session_bytes,
         );
     }
@@ -632,18 +634,16 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
     let next = fixture.ok(&["next", "--json"]);
     let command = next["next_valid_action"]["command"].as_str().unwrap();
     assert_eq!(command, RESET);
-    let arguments = words(&command.replace("<why>", "Start approved follow-up"));
+    let arguments = words(
+        &command
+            .replace("<key>", "follow-up")
+            .replace("<outcome>", "Start approved follow-up"),
+    );
     assert_eq!(arguments[0], "chough");
     let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
     fixture.ok(&arguments);
-    assert_eq!(
-        fixture.session()["next_action"],
-        "New cycle from done after reset: Start approved follow-up. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
-    );
-    assert_eq!(
-        transitions(&fixture).pop().unwrap()["text"],
-        "Start approved follow-up"
-    );
+    assert_eq!(fixture.session()["objective"], "Start approved follow-up");
+    assert_eq!(fixture.session()["stage"]["current"], "intent");
 }
 
 #[cfg(unix)]
@@ -1107,12 +1107,14 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     let text = action["action"].as_str().unwrap();
+    // REQ-cli-021, corrected: a new session, not a reset (the plan's Delta corrections).
     assert!(
-        text.starts_with("Start a new cycle: chough stage reset --to intent --reason \"<why>\""),
+        text.starts_with(
+            "Start the next piece of work in a new session: chough session new <key> --objective \"<outcome>\""
+        ),
         "{text}"
     );
     for part in [
-        "--to plan",
         "specsync change new \"<outcome>\" --spec <module> --path <path>",
         "chough checkpoint --native-change <id> --next-action \"<next step>\"",
     ] {
@@ -1134,7 +1136,7 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
     );
     assert_eq!(
         action["command"],
-        "chough stage reset --to intent --reason \"<why>\""
+        "chough session new <key> --objective \"<outcome>\""
     );
     let status = fixture.ok(&["status", "--json"]);
     assert_eq!(status["next_valid_action"], action["action"]);
@@ -1143,36 +1145,31 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
         "specsync change review old-change --reviewer 0xLeif, then ship"
     );
     let shown = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
-    assert!(shown.contains("Next: Start a new cycle"), "{shown}");
+    assert!(
+        shown.contains("Next: Start the next piece of work in a new session"),
+        "{shown}"
+    );
     assert!(
         shown.contains("Native next action: merge the PR on GitHub"),
         "{shown}"
     );
 
-    // The suggested reset, with its placeholder filled, succeeds and replaces the stale
-    // next action; the transition keeps the reason.
+    // The suggested command, its placeholders filled, starts the next piece of work in
+    // a new session and leaves the finished one as it was.
+    let finished = fixture.read(&fixture.session_file());
     let command = action["command"]
         .as_str()
         .unwrap()
-        .replace("<why>", "New work: a focused view");
+        .replace("<key>", "focused-view")
+        .replace("<outcome>", "New work: a focused view");
     let arguments = words(&command);
     assert_eq!(arguments[0], "chough");
     let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
-    let reset = fixture.ok(&arguments);
-    assert_eq!(reset["applied"]["to"], "intent");
-    assert_eq!(
-        fixture.session()["next_action"],
-        "New cycle from done after reset: New work: a focused view. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
-    );
-    let last = transitions(&fixture).pop().unwrap();
-    assert_eq!(last["kind"], "reset");
-    assert_eq!(last["text"], "New work: a focused view");
-
-    // Back continues the same cycle and keeps the next action.
-    fixture.ok(&["checkpoint", "--next-action", "Keep this step"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "back", "--to", "intent", "--reason", "Refine"]);
-    assert_eq!(fixture.session()["next_action"], "Keep this step");
+    let before = fixture.session_file();
+    fixture.ok(&arguments);
+    assert_eq!(fixture.session()["objective"], "New work: a focused view");
+    assert_eq!(fixture.session()["stage"]["current"], "intent");
+    assert_eq!(fixture.read(&before), finished);
 }
 
 #[test]
@@ -1262,14 +1259,14 @@ fn done_without_a_native_change_or_with_sdd_disabled_recommends_the_reset() {
     );
     assert_eq!(
         action["command"],
-        "chough stage reset --to intent --reason \"<why>\""
+        "chough session new <key> --objective \"<outcome>\""
     );
 
     fixture.write(".specsync/sdd.json", "{\"enabled\": false}\n");
     let next = fixture.ok(&["next", "--json"]);
     let text = next["next_valid_action"]["action"].as_str().unwrap();
     assert!(
-        text.starts_with("Start a new cycle: chough stage reset --to intent --reason"),
+        text.starts_with("Start the next piece of work in a new session: chough session new <key>"),
         "{text}"
     );
     assert!(!text.contains("specsync change new"), "{text}");
@@ -1490,7 +1487,8 @@ fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_change
     }
     let refused = fixture.fails(&["stage", "advance"]);
     for part in [
-        "specsync change approve guarded-change --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\"",
+        "specsync change approve guarded-change --actor \"<agent>-<terminal>\" --note \"Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>).\"",
+        "--drives approve",
         "specsync change check guarded-change",
         "specsync.approved-delta.v1",
     ] {
@@ -1593,7 +1591,7 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
     // An approval without digests can only be cleared by a new approval, so its
     // refusal names that rather than a status read.
     let approve = format!(
-        "specsync change approve {id} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\""
+        "specsync change approve {id} --actor \"<agent>-<terminal>\" --note \"Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>).\""
     );
     let cases: Vec<(&str, String, &str)> = vec![
         ("malformed", "{\"approvals\": [".into(), &status),
@@ -1777,7 +1775,7 @@ fn open_human_gates_leave_other_moves_and_agree_in_next() {
     );
     assert!(
         action.contains(
-            "`chough stage advance` and `chough stage skip` are refused until it is cleared"
+            "`chough stage advance` and `chough stage skip` are refused until it is closed"
         ),
         "{action}"
     );
@@ -2220,7 +2218,6 @@ fn native_next_action_is_shown_once_and_does_not_cut_the_next_line() {
 
 #[cfg(unix)]
 #[test]
-#[ignore = "plan step 6: the refusal names the scope gate with --drives approve and the <agent>-<terminal> actor"]
 fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
     // TC-cli-delta-guard-refusals-name-the-agent-actor in 0.6.0 (REQ-cli-022): a remedy
     // that needs a new definition approval names the scope gate to open with

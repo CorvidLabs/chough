@@ -10,6 +10,8 @@ use tempfile::TempDir;
 /// The checkpoint byte cap of REQ-cli-032 (DRIVE-14: 1 MiB, from the 2026-11-05 sizing study).
 #[allow(dead_code)]
 pub(super) const CHECKPOINT_CAP: usize = 1_048_576;
+/// Where a test's user configuration folder is, inside its project (REQ-records-008).
+pub(super) const USER_CONFIG: &str = ".user-config";
 /// The environment variables that name the acting agent (REQ-records-007).
 pub(super) const ACTOR_VARIABLES: [&str; 5] = [
     "CHOUGH_ACTOR",
@@ -139,6 +141,9 @@ impl Fixture {
         for name in ACTOR_VARIABLES {
             command.env_remove(name);
         }
+        // No test reads this machine's identity file (REQ-records-008); a test that
+        // needs a user file writes it under USER_CONFIG.
+        command.env("XDG_CONFIG_HOME", self.root().join(USER_CONFIG));
         command.envs(environment.iter().copied());
         command.output().unwrap()
     }

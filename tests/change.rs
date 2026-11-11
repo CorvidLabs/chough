@@ -424,6 +424,11 @@ if [ "$2" = ship ]; then
     if [ -f .stub-ship-err ]; then cat .stub-ship-err >&2; fi
     exit "$(cat .stub-ship-exit 2>/dev/null || echo 0)"
 fi
+if [ "$2" = review ] || [ "$2" = approve ]; then
+    echo "$*" >>.stub-native-calls
+    if [ -f .stub-review-exit ]; then echo 'review refused' >&2; exit "$(cat .stub-review-exit)"; fi
+    exit 0
+fi
 if [ -f .stub-status-fail ]; then echo 'status failed' >&2; exit 2; fi
 printf '{"summary":{"id":"%s","state":"archived","approval_valid":true,"correction_valid":true,"terminal_evidence":{"validity":"authenticated-history"}},"acceptance_entries":[{"path":"specs/cli/cli.spec.md","kind":"file"}]}\n' "$3"
 "#;
@@ -468,6 +473,11 @@ fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
         "---\nid: a5\nstate: archived\n---\n\n# Title of a5\n\n## Intent\n\nx\n\n## Acceptance Criteria\n\n- a5 works\n",
     );
     fixture.ok(&["session", "new", SHIP_KEY, "--objective", "Ship a5"]);
+    // The review gate drives the native review as the decided human (REQ-records-008).
+    fixture.write(
+        ".chough/local/identity.toml",
+        "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-reviewer\"\n",
+    );
     fixture.ok(&["checkpoint", "--native-change", SHIP_ID]);
     fixture.ok(&["stage", "reset", "--to", stage, "--reason", "Ready to ship"]);
     for gate in gates {
@@ -573,6 +583,11 @@ fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
         String::from_utf8_lossy(&output.stderr)
     );
     assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID]);
+    // REQ-records-008: the review ran once, as the decided human, before the ship.
+    assert_eq!(
+        fixture.read(".stub-native-calls"),
+        format!("change review {SHIP_ID} --reviewer SYNTHETIC-reviewer --verdict pass\n")
+    );
     assert!(
         output.stdout.starts_with(b"SHIPPED a5\n"),
         "SpecSync's output does not come first: {}",
@@ -585,6 +600,36 @@ fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
     let session = ship_session(&fixture);
     assert_eq!(session["stage"]["current"], "done", "{session:#}");
     assert_eq!(session["awaiting_human"], serde_json::json!([]));
+}
+
+/// REQ-cli-059, REQ-records-008: a review gate's relay naming no configured human is
+/// refused before SpecSync runs; a refused review stops the ship with its output and
+/// exit code.
+#[test]
+fn ship_refuses_an_unknown_human_and_stops_on_a_refused_review() {
+    let fixture = shipping_session_at("accept");
+    let before = records(fixture.root());
+    let mut relay = review_relay();
+    relay[3] = "nobody";
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &relay), &[]);
+    assert!(!output.status.success());
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("refused:human-identity-unknown"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!fixture.exists(".stub-native-calls"));
+    assert!(ship_calls(&fixture).is_empty());
+    assert_eq!(records(fixture.root()), before);
+    fixture.write(".stub-review-exit", "3");
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    assert_eq!(output.status.code(), Some(3));
+    assert_eq!(String::from_utf8_lossy(&output.stderr), "review refused\n");
+    assert!(
+        ship_calls(&fixture).is_empty(),
+        "the ship ran after a refused review"
+    );
+    assert_eq!(records(fixture.root()), before);
 }
 
 #[test]
@@ -629,6 +674,8 @@ fn ship_refuses_before_running_without_the_relay_or_outside_accept() {
         "a test",
         "--recorded-by",
         "SYNTHETIC-agent",
+        // A docs check held at accept drives the review by default, and is not one.
+        "--no-native",
     ]
     .to_vec();
     // Each case: the arguments; the stage, whether the native change is recorded and
