@@ -25,12 +25,13 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-76-next-guides-a-fresh-agent-a9e1c71dbf2104d904c41589"
+    "OBS-tc-cli-76-next-guides-a-fresh-agent-a9e1c71dbf2104d904c41589",
+    "OBS-tc-cli-76-next-guides-a-fresh-agent-c0aa2f39f9ffa0401eaeab92"
   ],
   "impact": "A fresh agent cannot get from intent to archive on its own (GitHub #76, items 1, 3 and 4)",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -40,8 +41,15 @@
       "at_unix_seconds": 1794425970,
       "text": "Added despite similar reports: The near matches are fixture and history bugs, not next's guidance",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1794426211,
+      "text": "status: open -> verified. Fixed in plan step 12 (PR #238, f9c0ae67); the case passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-cli-76-next-guides-a-fresh-agent-c0aa2f39f9ffa0401eaeab92"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794425970,
-  "updated_at_unix_seconds": 1794425970
+  "updated_at_unix_seconds": 1794426211
 }

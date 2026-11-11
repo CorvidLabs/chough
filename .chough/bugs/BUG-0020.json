@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-bug-0020-guard-uses-effective-approval-e4e4ae20c3d4b3665a50fc19"
+    "OBS-tc-cli-bug-0020-guard-uses-effective-approval-e4e4ae20c3d4b3665a50fc19",
+    "OBS-tc-cli-bug-0020-guard-uses-effective-approval-01c9ea9bdadd02ee6d933114"
   ],
   "impact": "Low: SpecSync 6.1.1 records workflow_version 2 or later, so only changes approved by older SpecSync versions are affected. Found in the PR #23 review; deferred by 0xLeif because fixing it changes REQ-cli-022.",
   "classification": "requirement-gap",
   "scope": "in-scope",
-  "status": "fix-pending-verification",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-bug-0020-guard-uses-effective-approval-e4e4ae20c3d4b3665a50fc19"
       ]
+    },
+    {
+      "at_unix_seconds": 1794426211,
+      "text": "status: fix-pending-verification -> verified. Fixed in plan step 12 (PR #238, d507cf28); the case passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-cli-bug-0020-guard-uses-effective-approval-01c9ea9bdadd02ee6d933114"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793558737,
-  "updated_at_unix_seconds": 1794425596
+  "updated_at_unix_seconds": 1794426211
 }

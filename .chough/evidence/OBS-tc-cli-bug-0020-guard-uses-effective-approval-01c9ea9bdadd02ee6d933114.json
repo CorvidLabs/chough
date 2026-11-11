@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-bug-0020-guard-uses-effective-approval-01c9ea9bdadd02ee6d933114",
+  "criteria": [
+    "FLOW-5",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-022"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact the_delta_guard_compares_with_the_effective_approval for TC-cli-bug-0020-guard-uses-effective-approval: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-bug-0020-guard-uses-effective-approval-01c9ea9bdadd02ee6d933114.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-bug-0020-guard-uses-effective-approval-01c9ea9bdadd02ee6d933114.log": "4e422562042480a6ac49a96bb5879f8ab1bc98040b17c56eb647d2627ec8e4b9"
+  },
+  "observed_at_unix_seconds": 1794426171,
+  "snapshot": {
+    "revision": "f9c0ae674c89f3a4c4a6c5b9d29057f22f7b9bf0",
+    "dirty": false,
+    "fingerprint": "284a5fb02e4edd838f449bdb1cd661f494832fe5708ce82660700c5a6fcce606",
+    "content": "4adc6e184b41d042b73284db8f143439ad1bd2bdc6fc389e3a5266068b430ba2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-bug-0020-guard-uses-effective-approval",
+      "digest": "169c8cf7de2e748b8ce4349b918824a99315db0ea2a64cdfae00f89b9e6d7066"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "the_delta_guard_compares_with_the_effective_approval"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
