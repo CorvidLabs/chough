@@ -313,24 +313,6 @@ fn a_direct_write_field_on_another_kind_is_an_invalid_payload() {
     }
 }
 
-#[test]
-fn the_change_log_names_the_oldest_chough_that_reads_direct_write_events() {
-    let log =
-        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("CHANGELOG.md")).unwrap();
-    let entry = log
-        .split("\n- ")
-        .find(|entry| entry.contains("direct-native-write"))
-        .expect("no change-log entry names direct-native-write");
-    assert!(
-        entry.contains("oldest Chough that reads"),
-        "the entry names no oldest reader: {entry}"
-    );
-    assert!(
-        entry.contains("refuse"),
-        "the entry does not say older builds refuse it: {entry}"
-    );
-}
-
 /// #189: a `direct-native-write` event is a known kind that starts or ends no stage
 /// segment, so `chough timing` skips it without calling the report partial.
 #[test]

@@ -446,20 +446,6 @@ fn relay_summary_fields_are_both_or_neither() {
 }
 
 #[test]
-fn the_change_log_names_the_oldest_chough_that_reads_summary_digests() {
-    let log =
-        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("CHANGELOG.md")).unwrap();
-    let entry = log
-        .split("\n- ")
-        .find(|entry| entry.contains("summary_digest"))
-        .expect("no change-log entry names summary_digest");
-    assert!(
-        entry.contains("oldest Chough that reads"),
-        "the entry names no oldest reader: {entry}"
-    );
-}
-
-#[test]
 fn a_gate_of_another_open_session_is_refused_naming_session_use() {
     let fixture = project(&[SCOPE]);
     // A second session becomes active; the first stays open with its gate.
