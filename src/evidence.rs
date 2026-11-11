@@ -1110,37 +1110,6 @@ fn read_ledger(root: &Path) -> Result<BTreeSet<String>> {
     Ok(ids)
 }
 
-/// What the retention ledger recorded about one pruned observation.
-pub(super) struct PrunedEntry {
-    pub(super) observed_at_unix_seconds: Option<u64>,
-    pub(super) outcome: Option<String>,
-}
-
-/// Each pruned observation's recorded time and outcome, by ID, read within the
-/// ledger's bound; an unreadable ledger is an error the caller reports.
-pub(super) fn ledger_entries(root: &Path) -> Result<BTreeMap<String, PrunedEntry>> {
-    let mut entries = BTreeMap::new();
-    for line in ledger_lines(root)? {
-        let entry: Value = serde_json::from_str(&line).context("invalid retention ledger line")?;
-        let id = entry["id"]
-            .as_str()
-            .context("retention ledger line without an id")?
-            .to_string();
-        if entry["event"] == "restored" {
-            entries.remove(&id);
-            continue;
-        }
-        entries.insert(
-            id,
-            PrunedEntry {
-                observed_at_unix_seconds: entry["observed_at_unix_seconds"].as_u64(),
-                outcome: entry["outcome"].as_str().map(str::to_string),
-            },
-        );
-    }
-    Ok(entries)
-}
-
 /// Labels observation references current, historical, pruned or unavailable.
 pub(super) struct Labels<'a> {
     reads: Reads<'a>,
