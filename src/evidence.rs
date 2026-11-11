@@ -1639,13 +1639,18 @@ impl Reads<'_> {
     }
 }
 
-/// Every observation an open session's front matter or a bug's record references.
+/// Every observation a readable open session's front matter or a bug's record
+/// references. A session that is over its bound or does not parse is skipped: it never
+/// stops another session's commands, and `session list` names its recovery (DRIVE-14).
 fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
     let mut found: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for session_id in crate::sessions::open_ids(root)? {
         let file = crate::sessions::session_file(&session_id);
-        let text = read_bounded_record(&local_path(root, &file)?, markdown::SESSION_BOUND)?;
-        let record = markdown::parse(&file, &text)?;
+        let Ok(record) = read_bounded_record(&local_path(root, &file)?, markdown::SESSION_BOUND)
+            .and_then(|text| markdown::parse(&file, &text))
+        else {
+            continue;
+        };
         for id in record.list("observations") {
             found.entry(id).or_default().push(file.clone());
         }
