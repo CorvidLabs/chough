@@ -324,9 +324,313 @@ fn redact(local: &Local, written: &mut Written) -> Result<Vec<Redaction>> {
     Ok(found)
 }
 
-/// Mapper 1, sessions (t382). Being built; it carries nothing yet.
-fn sessions_0_5(_root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)> {
-    Ok((Carried::default(), BTreeMap::new()))
+// Called by the bug mapper (t38b) and the apply; removed at integration (t382).
+#[allow(dead_code)]
+/// The migration receipt's path, fixed when the plan is built: an apply on another UTC
+/// day rebuilds a plan with another digest and asks for a fresh preview.
+pub(crate) fn receipt_path() -> Result<String> {
+    Ok(format!(
+        ".chough/archive/migrations/{}-from-0-5.md",
+        crate::identity::utc_date(crate::records::now()?)
+    ))
+}
+
+/// A deterministic six-hex-digit suffix or entry ID from `seed`, so the plan an apply
+/// rebuilds has the previewed digest (REQ-records-009).
+fn hex6(seed: &str) -> String {
+    sha256(seed.as_bytes())[..6].to_string()
+}
+
+/// The 0.5.x history cursor of a session (`history_cursor`).
+#[derive(serde::Deserialize, Clone, Default)]
+struct Cursor {
+    cycle: String,
+    head: Option<String>,
+    #[serde(default)]
+    legacy: Option<Value>,
+}
+
+/// One 0.5.x history event.
+#[derive(serde::Deserialize)]
+struct Event {
+    parent: Option<String>,
+    previous_cycle: Option<Cursor>,
+    transition: crate::stage::Transition,
+}
+
+/// A session's selected history lineage, oldest first, as 0.5.x selected it: from the
+/// cursor's head through each parent and previous cycle, then the legacy log when the
+/// walk reaches its anchor. Returns the transitions, the files read, and what could not
+/// be read (a pruned or missing event ends the walk there).
+fn lineage(
+    root: &Path,
+    cursor: &Cursor,
+) -> Result<(Vec<crate::stage::Transition>, Vec<String>, Vec<String>)> {
+    let mut transitions = vec![];
+    let mut files = vec![];
+    let mut missing = vec![];
+    let mut current = cursor.clone();
+    let mut seen = BTreeSet::new();
+    while let Some(id) = current.head.clone() {
+        if !seen.insert((current.cycle.clone(), id.clone())) {
+            missing.push(format!("a parent loop at {id}"));
+            break;
+        }
+        let path = format!(".chough/history/cycles/{}/{id}.json", current.cycle);
+        let Ok(bytes) = std::fs::read(local_path(root, &path)?) else {
+            missing.push(format!("{path} (pruned or missing)"));
+            break;
+        };
+        let event: Event = serde_json::from_slice(&bytes)
+            .with_context(|| format!("{path} is not a 0.5.x history event"))?;
+        files.push(path);
+        transitions.push(event.transition);
+        current.head = event.parent;
+        if current.head.is_none()
+            && let Some(previous) = event.previous_cycle
+        {
+            current = previous;
+        }
+    }
+    if current.legacy.is_some() && missing.is_empty() {
+        let legacy = ".chough/transitions.jsonl";
+        if let Ok(text) = std::fs::read_to_string(local_path(root, legacy)?) {
+            for line in text.lines().rev().filter(|line| !line.trim().is_empty()) {
+                transitions.push(
+                    serde_json::from_str(line).with_context(|| {
+                        format!("{legacy} holds a line that is not a transition")
+                    })?,
+                );
+            }
+            files.push(legacy.to_string());
+        } else {
+            missing.push(format!("{legacy} (the adopted legacy log)"));
+        }
+    }
+    transitions.reverse();
+    Ok((transitions, files, missing))
+}
+
+/// The newest commit time of `relative`, when Git has one.
+fn committed_at(root: &Path, relative: &str) -> Option<u64> {
+    let output = std::process::Command::new("git")
+        .args(["log", "-1", "--format=%ct", "--", relative])
+        .current_dir(root)
+        .output()
+        .ok()?;
+    String::from_utf8_lossy(&output.stdout).trim().parse().ok()
+}
+
+/// Mapper 1, sessions (t382): each 0.5.x session becomes a session folder (open) or an
+/// archived story, its timeline the selected lineage; unfolded inbox entries move to
+/// `agent/inbox/`; shelved sessions are removed.
+fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)> {
+    let mut carried = Carried::default();
+    let mut homes = BTreeMap::new();
+    let mut found: Vec<(String, String, bool)> = vec![];
+    if local_path(root, ".chough/session.json")?.is_file() {
+        found.push(("legacy".into(), ".chough/session.json".into(), false));
+    }
+    for (folder, archived) in [
+        (".chough/sessions", false),
+        (".chough/sessions/archive", true),
+    ] {
+        let mut names: Vec<String> = std::fs::read_dir(local_path(root, folder)?)
+            .map(|entries| {
+                entries
+                    .flatten()
+                    .filter(|entry| entry.path().is_file())
+                    .filter_map(|entry| entry.file_name().into_string().ok())
+                    .filter(|name| name.ends_with(".json"))
+                    .collect()
+            })
+            .unwrap_or_default();
+        names.sort();
+        for name in names {
+            let key = name.trim_end_matches(".json").to_string();
+            found.push((key, format!("{folder}/{name}"), archived));
+        }
+    }
+    let mut taken: BTreeSet<String> = BTreeSet::new();
+    let mut lineage_files: BTreeSet<String> = BTreeSet::new();
+    for (key, path, archived) in found {
+        let text = std::fs::read_to_string(local_path(root, &path)?)
+            .with_context(|| format!("{path} cannot be read, so no plan was made"))?;
+        let mut value: Value = serde_json::from_str(&text)
+            .with_context(|| format!("{path} is not a 0.5.x session record"))?;
+        let cursor = value
+            .as_object_mut()
+            .and_then(|map| map.remove("history_cursor"))
+            .filter(|cursor| !cursor.is_null());
+        let mut session: crate::checkpoint::Checkpoint = serde_json::from_value(value)
+            .with_context(|| format!("{path} is not a 0.5.x session record"))?;
+        let (transitions, files, missing) = match cursor {
+            Some(cursor) => lineage(root, &serde_json::from_value(cursor)?)?,
+            // A legacy single checkpoint before history events: its log is its history.
+            None if key == "legacy" => lineage(
+                root,
+                &Cursor {
+                    legacy: Some(Value::Bool(true)),
+                    ..Cursor::default()
+                },
+            )?,
+            None => (vec![], vec![], vec![]),
+        };
+        lineage_files.extend(files.iter().cloned());
+        let at = transitions
+            .iter()
+            .map(|transition| transition.at_unix_seconds)
+            .filter(|at| *at > 0)
+            .min()
+            .or_else(|| committed_at(root, &path))
+            .unwrap_or(crate::records::now()?);
+        let last = transitions
+            .iter()
+            .map(|transition| transition.at_unix_seconds)
+            .max()
+            .unwrap_or(at);
+        let source = if key == "legacy" {
+            session.objective.clone()
+        } else {
+            key.clone()
+        };
+        let mut id =
+            crate::identity::dated_name(&crate::identity::utc_date(at), &source, "session");
+        if !taken.insert(id.clone()) {
+            id = format!("{id}-{}", hex6(&path));
+            taken.insert(id.clone());
+        }
+        session.meta = crate::session_md::Meta {
+            id: id.clone(),
+            aliases: if key == "legacy" {
+                vec![]
+            } else {
+                vec![key.clone()]
+            },
+            pr: String::new(),
+            gates: vec![],
+        };
+        session.pending = transitions;
+        let record = crate::session_md::render_with(&session, last, &mut |index, attempt| {
+            Ok(format!("t-{}", hex6(&format!("{id}#{index}#{attempt}"))))
+        })?;
+        let mut record = record;
+        let (target, text) = if archived {
+            let date = crate::identity::utc_date(last);
+            let outcome = if session.stage.current == "done" {
+                "done"
+            } else {
+                "closed-without-done"
+            };
+            record.set_scalar("closed", &date)?;
+            record.set_scalar("outcome", outcome)?;
+            record.set("receipts", crate::markdown::Value::Maps(vec![]))?;
+            let mut text = record.render();
+            if !text.ends_with('\n') {
+                text.push('\n');
+            }
+            text.push_str(&format!("\nClosed {date}: {outcome}.\n"));
+            (format!(".chough/archive/sessions/{id}.md"), text)
+        } else {
+            (format!(".chough/sessions/{id}/session.md"), record.render())
+        };
+        for gap in missing {
+            carried.removed.insert(
+                format!("{path} history"),
+                format!("not carried into {target}: {gap}"),
+            );
+        }
+        carried.written.push(Written {
+            path: target.clone(),
+            bytes: text,
+        });
+        carried.sources.insert(path.clone());
+        carried.sources.extend(files);
+        if key != "legacy" {
+            carried.aliases.insert(key.clone(), target.clone());
+        }
+        // Unfolded inbox entries of an open session move to its agent/inbox/.
+        let inbox = format!(".chough/sessions/{key}.inbox");
+        let mut entries: Vec<String> = std::fs::read_dir(local_path(root, &inbox)?)
+            .map(|entries| {
+                entries
+                    .flatten()
+                    .filter_map(|entry| entry.file_name().into_string().ok())
+                    .filter(|name| name.ends_with(".json"))
+                    .collect()
+            })
+            .unwrap_or_default();
+        entries.sort();
+        for name in entries {
+            let entry_path = format!("{inbox}/{name}");
+            if archived {
+                carried
+                    .removed
+                    .insert(entry_path, "an inbox entry of an archived session".into());
+                continue;
+            }
+            let entry: Value =
+                serde_json::from_str(&std::fs::read_to_string(local_path(root, &entry_path)?)?)
+                    .with_context(|| format!("{entry_path} is not a 0.5.x inbox entry"))?;
+            let text = |field: &str| entry[field].as_str().unwrap_or_default().to_string();
+            let kind = <crate::sessions::Kind as clap::ValueEnum>::from_str(&text("kind"), true)
+                .map_err(|_| anyhow::anyhow!("{entry_path} has an unknown inbox kind"))?;
+            let added = entry["recorded_at_unix_seconds"].as_u64().unwrap_or(at);
+            let name = crate::identity::dated_name(
+                &crate::identity::utc_date(added),
+                &text("text"),
+                "entry",
+            );
+            let rendered = crate::sessions::render_entry(
+                &name,
+                &id,
+                &text("from"),
+                kind,
+                &text("text"),
+                None,
+                &crate::session_md::iso_time(added),
+            )?;
+            carried.written.push(Written {
+                path: format!(".chough/sessions/{id}/agent/inbox/{name}.md"),
+                bytes: rendered,
+            });
+            carried.sources.insert(entry_path.clone());
+            carried.aliases.insert(text("id"), entry_path);
+        }
+        homes.insert(
+            key,
+            SessionHome {
+                id,
+                archived,
+                observations: session.observations.clone(),
+            },
+        );
+    }
+    // What no session's lineage selected, shelved sessions and 0.5.x-only files.
+    let mut leftovers = BTreeSet::new();
+    walk_files(root, ".chough/history", &mut leftovers)?;
+    walk_files(root, ".chough/sessions/shelved", &mut leftovers)?;
+    for path in [".chough/transitions.jsonl", ".chough/sessions/.gitignore"] {
+        if local_path(root, path)?.is_file() {
+            leftovers.insert(path.to_string());
+        }
+    }
+    for path in leftovers {
+        if lineage_files.contains(&path) || carried.sources.contains(&path) {
+            continue;
+        }
+        let why = if path.starts_with(".chough/sessions/shelved") {
+            "a shelved 0.5.x session is not carried"
+        } else if path.ends_with(".gitignore") {
+            "0.5.x temporary-file ignore; 0.6.0 keeps local state in .chough/local/"
+        } else if path.contains("/pruned/") {
+            "a 0.5.x retention receipt; there is no retention in 0.6.0"
+        } else {
+            "history no session's selected lineage holds"
+        };
+        carried.removed.insert(path, why.into());
+    }
+    Ok((carried, homes))
 }
 
 /// Mapper 2, each 0.5.x bug's linked observation IDs (t38b): replace this body with a
@@ -383,6 +687,49 @@ mod tests {
             written.bytes
         );
         assert!(!written.bytes.contains("/Users/"));
+    }
+
+    /// Every release fixture's sessions map to 0.6.0 records that read back strictly,
+    /// with every selected transition on the timeline, and the same plan twice.
+    #[test]
+    fn every_release_fixture_maps_its_sessions_to_readable_records() {
+        let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/releases");
+        for tag in ["v0.1.0", "v0.2.0", "v0.3.0", "v0.4.0", "v0.5.0"] {
+            let root = fixtures.join(tag);
+            let (carried, homes) = sessions_0_5(&root).unwrap();
+            let (again, _) = sessions_0_5(&root).unwrap();
+            assert_eq!(carried.written, again.written, "{tag}: not deterministic");
+            assert!(!carried.written.is_empty(), "{tag}: no session carried");
+            let events = {
+                let mut found = BTreeSet::new();
+                walk_files(&root, ".chough/history", &mut found).unwrap();
+                found.len()
+            };
+            let legacy = std::fs::read_to_string(root.join(".chough/transitions.jsonl"))
+                .map(|text| text.lines().filter(|line| !line.trim().is_empty()).count())
+                .unwrap_or(0);
+            let mut entries = 0;
+            for written in &carried.written {
+                if written.path.ends_with("/session.md")
+                    || written.path.starts_with(".chough/archive/sessions/")
+                {
+                    let session = crate::session_md::read(&written.path, &written.bytes)
+                        .unwrap_or_else(|error| panic!("{tag} {}: {error:#}", written.path));
+                    let record = session.source.as_ref().unwrap();
+                    entries += crate::session_md::timeline(record).unwrap().len();
+                    assert!(
+                        homes.values().any(|home| written.path.contains(&home.id)),
+                        "{tag}: {} has no home",
+                        written.path
+                    );
+                }
+            }
+            assert_eq!(
+                entries,
+                events + legacy,
+                "{tag}: transitions lost or duplicated"
+            );
+        }
     }
 
     #[test]

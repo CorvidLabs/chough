@@ -181,6 +181,17 @@ pub(super) fn read(relative: &str, text: &str) -> Result<Checkpoint> {
 /// new section items appended, withdrawn and resolved items marked on their own lines,
 /// and its pending transitions appended to the Timeline. `now` stamps a new gate.
 pub(super) fn render(session: &Checkpoint, now: u64) -> Result<Record> {
+    render_with(session, now, &mut |_, _| entry_id())
+}
+
+/// As [`render`], with each queued entry's ID from `next_id`, given the entry's index
+/// among the queued ones and the attempt; `chough migrate` derives them from the
+/// content, so the plan an apply rebuilds has the previewed digest (REQ-records-009).
+pub(super) fn render_with(
+    session: &Checkpoint,
+    now: u64,
+    next_id: &mut dyn FnMut(usize, usize) -> Result<String>,
+) -> Result<Record> {
     let mut record = match &session.source {
         Some(record) => record.clone(),
         None => Record::new(&new_body(&session.objective)),
@@ -281,12 +292,18 @@ pub(super) fn render(session: &Checkpoint, now: u64) -> Result<Record> {
         meta.id
     );
     let mut ids: Vec<String> = existing.into_iter().map(|entry| entry.id).collect();
-    for transition in &session.pending {
+    for (index, transition) in session.pending.iter().enumerate() {
+        let mut attempt = 0;
         let id = loop {
-            let candidate = entry_id()?;
+            let candidate = next_id(index, attempt)?;
+            ensure!(
+                valid_entry_id(&candidate),
+                "a timeline entry ID must be t- and 6 lowercase hexadecimal digits"
+            );
             if !ids.contains(&candidate) {
                 break candidate;
             }
+            attempt += 1;
         };
         let text = render_entry(transition, session.native_change.as_deref(), &id);
         ensure!(
