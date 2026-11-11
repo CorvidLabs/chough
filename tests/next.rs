@@ -683,6 +683,9 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
 
         // The suggested command, placeholders filled, succeeds.
         if stage == "accept" {
+            // In 0.6.0 a session archives itself at done (REQ-history-006); a release
+            // consent keeps it open so the done-stage assertions still apply.
+            fixture.ok(&["consent", "grant", "release", "--source", "Human: release it"]);
             let advanced = run_suggested(&fixture, command);
             assert_eq!(advanced["applied"]["to"], "done", "{advanced}");
             let done = fixture.ok(&["next", "--json"]);

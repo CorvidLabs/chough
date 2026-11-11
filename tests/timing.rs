@@ -71,9 +71,13 @@ fn write_transitions(fixture: &Fixture, lines: &[String]) {
         let reason = transition["reason"].as_str().unwrap_or_default();
         let gate = transition["gate"].as_str();
         let text_of = if reason.is_empty() { gate.unwrap_or("") } else { reason };
+        let at = transition["at_unix_seconds"]
+            .as_u64()
+            .map(iso_of)
+            .unwrap_or_else(|| "sometime".to_string());
         let mut entry = format!(
             "- {} · {} · {} → {} · {} ^t-{:06x}\n",
-            iso_of(transition["at_unix_seconds"].as_u64().unwrap()),
+            at,
             transition["kind"].as_str().unwrap(),
             transition["from"].as_str().unwrap(),
             transition["to"].as_str().unwrap(),
@@ -659,9 +663,10 @@ fn missing_and_out_of_order_times_are_unknown_never_zero() {
         transition(Some(T + 400), "advance", "test", "accept", "same second"),
         transition(Some(T + 900), "reset", "accept", "intent", "again"),
     ]);
+    let file = fixture.session_file();
     fixture.write(
-        ".chough/transitions.jsonl",
-        &(fixture.read(".chough/transitions.jsonl") + "not json at all\n"),
+        &file,
+        &(fixture.read(&file) + "- this line is not an entry\n"),
     );
     let report = timing(&fixture, &[]);
     let first = segments(&report, 0);
@@ -746,11 +751,15 @@ fn missing_and_out_of_order_times_are_unknown_never_zero() {
             "Ahead",
         ),
     ]);
-    let mut session = future.session();
-    session["awaiting_human"] = json!(["Ahead"]);
+    let future_file = future.session_file();
+    let future_text = future.read(&future_file);
+    assert!(future_text.contains("waiting_on_human: []"), "{future_text}");
     future.write(
-        ".chough/session.json",
-        &serde_json::to_string_pretty(&session).unwrap(),
+        &future_file,
+        &future_text.replace(
+            "waiting_on_human: []",
+            "waiting_on_human:\n  - gate: Ahead\n    holds: intent\n    opened: 2026-01-01T00:00:00Z",
+        ),
     );
     let report = timing(&future, &[]);
     let design = &segments(&report, 0)[0];
@@ -1193,7 +1202,7 @@ fn transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identica
     assert!(
         report["partial"]
             .to_string()
-            .contains("the timeline exceeds the entry or byte read bound"),
+            .contains("entries skipped beyond the 4096-entry timing bound"),
         "{}",
         report["partial"]
     );
