@@ -13,6 +13,25 @@ pub(super) const CHECKPOINT_CAP: usize = 1_048_576;
 
 pub(super) struct Fixture(TempDir);
 
+/// The slug Chough names a session by: lowercase letters and digits, other runs as `-`.
+pub(super) fn slug(source: &str) -> String {
+    let mut out = String::new();
+    let mut separated = false;
+    for character in source.chars() {
+        let lower = character.to_ascii_lowercase();
+        if lower.is_ascii_lowercase() || lower.is_ascii_digit() {
+            if separated && !out.is_empty() {
+                out.push('-');
+            }
+            separated = false;
+            out.push(lower);
+        } else {
+            separated = true;
+        }
+    }
+    out
+}
+
 /// Remove this fixture's checkpoint lock file from the system temporary directory when
 /// the fixture is dropped, so the suite leaves no lock files behind (issue 62's lock
 /// lives outside the project by design).
@@ -143,12 +162,6 @@ impl Fixture {
             "--module",
             "cli",
         ]);
-        // These pre-existing workflow fixtures exercise legacy schema-2 projects.
-        // New-format history tests initialize through the CLI directly, and explicit
-        // adoption tests cover the transition from these unchanged legacy records.
-        let mut session = self.session();
-        session.as_object_mut().unwrap().remove("history_cursor");
-        self.write(".chough/session.json", &session.to_string());
     }
 
     /// Set an observation's recorded time, since `now()` is not injectable and two
@@ -170,8 +183,129 @@ impl Fixture {
         record["observed_at_unix_seconds"].as_u64().unwrap()
     }
 
+    /// The active session's checkpoint, as `chough checkpoint` prints it.
     pub(super) fn session(&self) -> Value {
-        serde_json::from_str(&self.read(".chough/session.json")).unwrap()
+        self.checkpoint()
+    }
+
+    /// The active session's checkpoint, as `chough checkpoint` prints it (no native read).
+    pub(super) fn checkpoint(&self) -> Value {
+        self.ok(&["checkpoint"])["checkpoint"].clone()
+    }
+
+    /// The ID of the active session: the pointer, or the only open session.
+    pub(super) fn active_id(&self) -> String {
+        if let Ok(id) = fs::read_to_string(self.root().join(".chough/local/active-session")) {
+            return id.trim().to_string();
+        }
+        let open = self.open_ids();
+        assert_eq!(open.len(), 1, "no single open session: {open:?}");
+        open[0].clone()
+    }
+
+    /// The project-relative `session.md` of the active session.
+    pub(super) fn session_file(&self) -> String {
+        format!(".chough/sessions/{}/session.md", self.active_id())
+    }
+
+    /// The IDs of the session folders under `.chough/sessions/`.
+    pub(super) fn open_ids(&self) -> Vec<String> {
+        let mut ids: Vec<String> = fs::read_dir(self.root().join(".chough/sessions"))
+            .map(|entries| {
+                entries
+                    .filter_map(|entry| entry.ok())
+                    .filter(|entry| entry.path().join("session.md").is_file())
+                    .filter_map(|entry| entry.file_name().into_string().ok())
+                    .collect()
+            })
+            .unwrap_or_default();
+        ids.sort();
+        ids
+    }
+
+    /// The ID of the open session created with `key`: `<date>-<key>`.
+    pub(super) fn id_of(&self, key: &str) -> String {
+        let slug = slug(key);
+        self.open_ids()
+            .into_iter()
+            .chain(self.archived_ids())
+            .find(|id| id.get(11..) == Some(slug.as_str()))
+            .unwrap_or_else(|| panic!("no session for key {key}"))
+    }
+
+    /// The `session.md` of the open session created with `key`.
+    pub(super) fn session_file_of(&self, key: &str) -> String {
+        format!(".chough/sessions/{}/session.md", self.id_of(key))
+    }
+
+    /// The story of the archived session created with `key`.
+    pub(super) fn story_of(&self, key: &str) -> String {
+        format!(".chough/archive/sessions/{}.md", self.id_of(key))
+    }
+
+    /// Whether the session created with `key` is archived (its story exists).
+    pub(super) fn is_archived(&self, key: &str) -> bool {
+        let slug = slug(key);
+        self.archived_ids()
+            .iter()
+            .any(|id| id.get(11..) == Some(slug.as_str()))
+    }
+
+    /// The IDs of archived sessions, from `.chough/archive/sessions/<id>.md`.
+    pub(super) fn archived_ids(&self) -> Vec<String> {
+        let mut ids: Vec<String> = fs::read_dir(self.root().join(".chough/archive/sessions"))
+            .map(|entries| {
+                entries
+                    .filter_map(|entry| entry.ok())
+                    .filter_map(|entry| entry.file_name().into_string().ok())
+                    .filter_map(|name| name.strip_suffix(".md").map(str::to_string))
+                    .collect()
+            })
+            .unwrap_or_default();
+        ids.sort();
+        ids
+    }
+
+    /// The checkpoint of the session created with `key`, open or archived, read from its
+    /// file in the 0.5.x JSON shape the older tests use.
+    pub(super) fn session_json(&self, key: &str) -> Value {
+        let file = if self.is_archived(key) {
+            self.story_of(key)
+        } else {
+            self.session_file_of(key)
+        };
+        parse_session(&self.read(&file))
+    }
+
+    /// Set one front matter key of the active session to `value`, as written in the
+    /// file (`accept`, `[a, b]`, `"quoted text"`).
+    pub(super) fn set_front(&self, key: &str, value: &str) {
+        let file = self.session_file();
+        let text = self.read(&file);
+        let (front, body) = text
+            .strip_prefix("---\n")
+            .and_then(|rest| rest.split_once("\n---\n"))
+            .expect("a session record");
+        let mut lines: Vec<String> = vec![];
+        let mut skipping = false;
+        let mut found = false;
+        for line in front.lines() {
+            if skipping && line.starts_with("  ") {
+                continue;
+            }
+            skipping = false;
+            if line.split_once(':').map(|(name, _)| name) == Some(key) {
+                lines.push(format!("{key}: {value}"));
+                skipping = true;
+                found = true;
+            } else {
+                lines.push(line.to_string());
+            }
+        }
+        if !found {
+            lines.push(format!("{key}: {value}"));
+        }
+        self.write(&file, &format!("---\n{}\n---\n{body}", lines.join("\n")));
     }
 
     pub(super) fn git(&self, args: &[&str]) {
@@ -372,4 +506,130 @@ pub(super) fn stand_in(bin: &Path, name: &str, stdout: &str) {
         };
         fs::copy(program, bin.join(format!("{name}.exe"))).unwrap();
     }
+}
+
+/// A session record's checkpoint in the 0.5.x JSON shape: front matter scalars and
+/// lists, waiting gates as `awaiting_human`, and the Decisions, Where it stands and Open
+/// threads items (without withdrawn or resolved ones) as lists.
+pub(super) fn parse_session(text: &str) -> Value {
+    let text = text.replace("\r\n", "\n");
+    let (front, body) = text
+        .strip_prefix("---\n")
+        .and_then(|rest| rest.split_once("\n---\n"))
+        .expect("a session record");
+    let mut fields = serde_json::Map::new();
+    let mut key = String::new();
+    let mut gates = vec![];
+    for line in front.lines() {
+        if let Some(item) = line.strip_prefix("  - ") {
+            if key == "waiting_on_human" {
+                if let Some(gate) = item.strip_prefix("gate: ") {
+                    gates.push(Value::String(unquote(gate)));
+                }
+            } else if let Some(Value::Array(list)) = fields.get_mut(&key) {
+                list.push(Value::String(unquote(item)));
+            }
+            continue;
+        }
+        if line.starts_with("    ") {
+            continue;
+        }
+        let Some((name, value)) = line.split_once(':') else {
+            continue;
+        };
+        key = name.to_string();
+        let value = value.trim();
+        let parsed = if value.is_empty() {
+            Value::Array(vec![])
+        } else if let Some(inner) = value.strip_prefix('[').and_then(|v| v.strip_suffix(']')) {
+            Value::Array(
+                inner
+                    .split(", ")
+                    .filter(|item| !item.is_empty())
+                    .map(|item| Value::String(unquote(item)))
+                    .collect(),
+            )
+        } else {
+            Value::String(unquote(value))
+        };
+        fields.insert(key.clone(), parsed);
+    }
+    let text_of = |name: &str| {
+        fields
+            .get(name)
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+            .to_string()
+    };
+    let list_of = |name: &str| fields.get(name).cloned().unwrap_or(Value::Array(vec![]));
+    let section = |heading: &str, mark: &str| -> Value {
+        let start = body.find(&format!("## {heading}\n"));
+        let Some(start) = start else {
+            return Value::Array(vec![]);
+        };
+        let rest = &body[start + heading.len() + 4..];
+        let end = rest.find("\n## ").map_or(rest.len(), |at| at + 1);
+        Value::Array(
+            rest[..end]
+                .lines()
+                .filter_map(|line| line.strip_prefix("- "))
+                .filter(|item| mark.is_empty() || !item.ends_with(mark))
+                .map(|item| Value::String(item.to_string()))
+                .collect(),
+        )
+    };
+    let native = text_of("native_change");
+    serde_json::json!({
+        "id": text_of("id"),
+        "aliases": list_of("aliases"),
+        "objective": text_of("objective"),
+        "intent_scope": text_of("intent_scope"),
+        "modules": list_of("modules"),
+        "stage": {
+            "current": text_of("stage"),
+            "status": text_of("stage_status"),
+            "iteration": text_of("iteration").parse::<u64>().unwrap_or(1),
+        },
+        "native_change": if native.is_empty() { Value::Null } else { Value::String(native) },
+        "references": {
+            "criteria": list_of("criteria"),
+            "requirements": list_of("requirements"),
+            "cases": list_of("cases"),
+            "design": list_of("design"),
+            "files": list_of("files"),
+        },
+        "observations": list_of("observations"),
+        "bugs": list_of("bugs"),
+        "blockers": list_of("blockers"),
+        "awaiting_human": gates,
+        "next_action": text_of("next"),
+        "decisions": section("Decisions and why", ""),
+        "completed": section("Where it stands", " (withdrawn)"),
+        "open_questions": section("Open threads", " (resolved)"),
+        "closed": text_of("closed"),
+        "outcome": text_of("outcome"),
+    })
+}
+
+/// A front matter scalar as text: plain, or double-quoted with its escapes undone.
+fn unquote(value: &str) -> String {
+    let Some(inner) = value.strip_prefix('"').and_then(|v| v.strip_suffix('"')) else {
+        return value.to_string();
+    };
+    inner
+        .replace("\\n", "\n")
+        .replace("\\\"", "\"")
+        .replace("\\\\", "\\")
+}
+
+/// The Timeline entry lines of a session record.
+pub(super) fn timeline(text: &str) -> Vec<String> {
+    let Some(start) = text.find("\n## Timeline\n") else {
+        return vec![];
+    };
+    text[start..]
+        .lines()
+        .filter(|line| line.starts_with("- "))
+        .map(str::to_string)
+        .collect()
 }

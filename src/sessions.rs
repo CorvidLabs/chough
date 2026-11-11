@@ -318,8 +318,16 @@ fn resolve_open(root: &Path, name: &str) -> Result<String> {
     match found.as_slice() {
         [id] => Ok(id.clone()),
         [] => {
-            if archived_ids(root)?.iter().any(|id| id == name) {
-                bail!("session {name} is archived");
+            for id in archived_ids(root)? {
+                let aliases = read_at(root, &archive_file(&id))
+                    .map(|session| session.meta.aliases)
+                    .unwrap_or_default();
+                if id == name
+                    || id.get(11..) == Some(name)
+                    || aliases.iter().any(|alias| alias == name)
+                {
+                    bail!("session {name} is archived");
+                }
             }
             bail!("no session {name}")
         }

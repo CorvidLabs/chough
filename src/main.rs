@@ -300,6 +300,10 @@ fn init(
     // would, keyed by `--session` or the objective's slug; without it, none.
     if let Some(objective) = objective {
         ensure!(!objective.trim().is_empty(), "objective must not be blank");
+        ensure!(
+            sessions::open_ids(root)?.is_empty(),
+            "the project already has an open session; run `chough session new <key>` for new work"
+        );
         let key = session_key.unwrap_or_else(|| identity::slug(&objective, "session", 64));
         let id = sessions::create(root, &key, objective, intent_scope, modules)?;
         created.push(sessions::session_file(&id));
