@@ -1898,6 +1898,17 @@ struct PinSources<'a> {
     cargo: &'a str,
     ci_doc: &'a str,
     integrations: &'a str,
+    /// `.specsync/config.toml`: its header comment names the pins too (BUG-0001).
+    config: &'a str,
+}
+
+/// The leading comment lines of `.specsync/config.toml`.
+fn config_header(config: &str) -> String {
+    config
+        .lines()
+        .take_while(|line| line.starts_with('#'))
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 fn version_token(word: &str) -> Option<String> {
@@ -2109,6 +2120,10 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
                     "docs/integrations.md",
                     doc_versions(sources.integrations, "HI"),
                 ),
+                (
+                    ".specsync/config.toml",
+                    doc_versions(&config_header(sources.config), "HI"),
+                ),
             ],
         ),
         (
@@ -2122,6 +2137,10 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
                     "docs/integrations.md",
                     doc_versions(sources.integrations, "SpecSync"),
                 ),
+                (
+                    ".specsync/config.toml",
+                    doc_versions(&config_header(sources.config), "SpecSync"),
+                ),
             ],
         ),
         (
@@ -2134,6 +2153,10 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
                 (
                     "docs/integrations.md",
                     doc_versions(sources.integrations, "Fledge"),
+                ),
+                (
+                    ".specsync/config.toml",
+                    doc_versions(&config_header(sources.config), "Fledge"),
                 ),
             ],
         ),
@@ -2204,20 +2227,24 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
     problems
 }
 
+/// TC-cli-0110 (REQ-cli-019, BUG-0001): README, AGENTS.md, CI, the docs and the header
+/// comment of `.specsync/config.toml` name the same HI, SpecSync and Fledge versions,
+/// and Cargo.toml, README and the MSRV job the same Rust version.
 #[test]
-fn tool_and_rust_version_pins_agree() {
+fn versions_agree_across_readme_agents_ci_and_specsync_config() {
     let read = |file: &str| {
         fs::read_to_string(manifest_dir().join(file))
             .unwrap()
             .replace("\r\n", "\n")
     };
-    let (readme, agents, ci, cargo, ci_doc, integrations) = (
+    let (readme, agents, ci, cargo, ci_doc, integrations, config) = (
         read("README.md"),
         read("AGENTS.md"),
         read(".github/workflows/ci.yml"),
         read("Cargo.toml"),
         read("docs/ci.md"),
         read("docs/integrations.md"),
+        read(".specsync/config.toml"),
     );
     let sources = PinSources {
         readme: &readme,
@@ -2226,6 +2253,7 @@ fn tool_and_rust_version_pins_agree() {
         cargo: &cargo,
         ci_doc: &ci_doc,
         integrations: &integrations,
+        config: &config,
     };
     let problems = pin_disagreements(&sources);
     assert!(problems.is_empty(), "{}", problems.join("\n"));
@@ -2316,6 +2344,24 @@ fn tool_and_rust_version_pins_agree() {
             "CorvidLabs/fledge) 1.8.0",
             "CorvidLabs/fledge) 9.9.9",
         ),
+        (
+            ".specsync/config.toml",
+            "HI (human-intent)",
+            "HI 0.8.0",
+            "HI 9.9.9",
+        ),
+        (
+            ".specsync/config.toml",
+            "SpecSync",
+            "SpecSync 6.2.0",
+            "SpecSync 9.9.9",
+        ),
+        (
+            ".specsync/config.toml",
+            "Fledge",
+            "Fledge 1.8.0",
+            "Fledge 9.9.9",
+        ),
     ];
     let changed_sources = |slot: usize, from: &str, to: &str| {
         let mut changed = [
@@ -2325,12 +2371,13 @@ fn tool_and_rust_version_pins_agree() {
             cargo.clone(),
             ci_doc.clone(),
             integrations.clone(),
+            config.clone(),
         ];
         assert!(changed[slot].contains(from), "slot {slot} lacks {from}");
         changed[slot] = changed[slot].replacen(from, to, 1);
         changed
     };
-    let problems_in = |changed: &[String; 6]| {
+    let problems_in = |changed: &[String; 7]| {
         pin_disagreements(&PinSources {
             readme: &changed[0],
             agents: &changed[1],
@@ -2338,6 +2385,7 @@ fn tool_and_rust_version_pins_agree() {
             cargo: &changed[3],
             ci_doc: &changed[4],
             integrations: &changed[5],
+            config: &changed[6],
         })
     };
     for (file, tool, from, to) in cases {
@@ -2347,6 +2395,7 @@ fn tool_and_rust_version_pins_agree() {
             "Cargo.toml" => 3,
             "docs/ci.md" => 4,
             "docs/integrations.md" => 5,
+            ".specsync/config.toml" => 6,
             _ => 2,
         };
         let problems = problems_in(&changed_sources(slot, from, to));
