@@ -100,5 +100,11 @@ fn init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bounded(
         !fixture.exists("knowledge"),
         "a partial knowledge folder was left"
     );
-    assert!(fixture.exists(".chough/session.json"));
+    assert!(
+        fixture
+            .open_ids()
+            .iter()
+            .any(|id| fixture.exists(&format!(".chough/sessions/{id}/session.md"))),
+        "no session record was written"
+    );
 }
