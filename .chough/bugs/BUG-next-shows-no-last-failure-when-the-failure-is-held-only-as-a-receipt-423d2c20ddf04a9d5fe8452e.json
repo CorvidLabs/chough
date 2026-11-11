@@ -23,12 +23,13 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-next-last-failure-from-receipts-7b1c7fbab6a386220a89d52a"
+    "OBS-tc-cli-next-last-failure-from-receipts-7b1c7fbab6a386220a89d52a",
+    "OBS-tc-cli-next-last-failure-from-receipts-ee676fb9ef0042aa355a9fd1"
   ],
   "impact": "A fresh agent resuming after a migration or a finished session is not told the last failure",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -40,8 +41,15 @@
       "observations": [
         "OBS-tc-cli-next-last-failure-from-receipts-7b1c7fbab6a386220a89d52a"
       ]
+    },
+    {
+      "at_unix_seconds": 1794439701,
+      "text": "status: open -> verified. Green: TC-cli-next-last-failure-from-receipts passes; next names a failure held only as a bug receipt.",
+      "observations": [
+        "OBS-tc-cli-next-last-failure-from-receipts-ee676fb9ef0042aa355a9fd1"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794439607,
-  "updated_at_unix_seconds": 1794439633
+  "updated_at_unix_seconds": 1794439701
 }
