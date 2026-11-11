@@ -1666,9 +1666,12 @@ pub(super) fn fix_times(root: &Path) -> Result<Vec<FixTimes>> {
         .collect())
 }
 
+/// One receipt: the flat map of its front matter fields (REQ-history-006).
+pub(super) type Receipt = Vec<(String, String)>;
+
 /// Each bug's receipts (REQ-cli-012), with the bug's ID, for the timing report's case
 /// runs.
-pub(super) fn receipts(root: &Path) -> Result<Vec<(String, Vec<(String, String)>)>> {
+pub(super) fn receipts(root: &Path) -> Result<Vec<(String, Receipt)>> {
     Ok(read_all(root)?
         .iter()
         .flat_map(|bug| {
