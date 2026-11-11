@@ -381,3 +381,33 @@ fn doctor_fix_keeps_a_finished_session_with_unfolded_entries_open() {
     assert_eq!(fixture.read(".chough/sessions/alpha.json"), alpha);
     assert!(!fixture.exists(".native-calls"));
 }
+
+/// #12 in the 0.5.x layout, red on 0.5.0: with a SpecSync policy that does not exclude
+/// Chough's records from verification, doctor says nothing. The 0.6.0 test of the same
+/// name replaces it.
+#[test]
+fn doctor_names_the_missing_verification_exclusions() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
+    let output = fixture.run(&["doctor"]);
+    let text = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        text.contains("records_in_verification"),
+        "doctor does not name the missing exclusions: {text}"
+    );
+}
+
+/// #12 in the 0.5.x layout, red on 0.5.0: next never says when Chough's writes are
+/// safe. The 0.6.0 test of the same name replaces it.
+#[test]
+fn next_says_when_chough_writes_are_safe_and_init_gives_the_advice() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        !next["chough_writes"].is_null(),
+        "next does not say when Chough's writes are safe"
+    );
+}
