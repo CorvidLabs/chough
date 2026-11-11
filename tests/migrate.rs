@@ -898,3 +898,208 @@ fn every_legacy_file_and_artifact_is_accounted_for() {
         "{plan:#}"
     );
 }
+
+/// A project holding the whole v0.5.0 release fixture, committed: sessions, history,
+/// evidence, a JSON bug and its artifacts, all in the 0.5.x layout.
+fn unmigrated_project() -> Fixture {
+    fn copy(from: &Path, to: &Path) {
+        std::fs::create_dir_all(to).unwrap();
+        for entry in std::fs::read_dir(from).unwrap().flatten() {
+            let target = to.join(entry.file_name());
+            if entry.path().is_dir() {
+                copy(&entry.path(), &target);
+            } else {
+                std::fs::copy(entry.path(), target).unwrap();
+            }
+        }
+    }
+    let fixture = Fixture::new();
+    let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/releases/v0.5.0");
+    copy(&source, fixture.root());
+    fixture.commit("a 0.5.x project");
+    fixture
+}
+
+/// The refusal of REQ-records-010: typed, naming the layout and both migrate commands.
+fn assert_refused_unmigrated(refusal: &str, context: &str) {
+    for needed in [
+        "refused:unmigrated",
+        "Chough 0.5.x layout",
+        "`chough migrate`",
+        "`chough migrate --apply",
+    ] {
+        assert!(
+            refusal.contains(needed),
+            "{context}: no {needed:?} in {refusal}"
+        );
+    }
+}
+
+/// TC-records-unmigrated-fails-closed (REQ-records-010): while any 0.5.x record exists,
+/// every command but migrate, doctor and skill (and clap's --help and --version) refuses
+/// as `refused:unmigrated` and writes nothing; the refusal names up to 5 of the paths and
+/// counts the rest; a 0.5.x file written into a migrated tree is refused the same way.
+#[test]
+fn an_unmigrated_tree_is_refused_with_the_migrate_command() {
+    let fixture = unmigrated_project();
+    let before = files(fixture.root());
+    let refused: [&[&str]; 8] = [
+        &["next"],
+        &["status"],
+        &["stage", "advance"],
+        &["checkpoint", "--decision", "SYNTHETIC decision"],
+        &[
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-fixture-001",
+            "--contract",
+            "specs/fixture/fixture.spec.md",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "fixture",
+            "--summary",
+            "SYNTHETIC observation",
+        ],
+        &[
+            "bug",
+            "add",
+            "--title",
+            "SYNTHETIC bug",
+            "--symptom",
+            "SYNTHETIC symptom",
+            "--trigger",
+            "SYNTHETIC trigger",
+            "--expected",
+            "SYNTHETIC expected",
+            "--actual",
+            "SYNTHETIC actual",
+            "--environment",
+            "fixture",
+        ],
+        &[
+            "cases",
+            "run",
+            "TC-fixture-0001",
+            "--environment",
+            "fixture",
+        ],
+        &["init", "--objective", "SYNTHETIC objective"],
+    ];
+    for args in refused {
+        let refusal = fixture.fails(args);
+        assert_refused_unmigrated(&refusal, &args.join(" "));
+        assert!(
+            refusal.contains(".chough/bugs/BUG-fixture-bug-example-record-"),
+            "{args:?}: the refusal names no 0.5.x path: {refusal}"
+        );
+        assert_eq!(
+            files(fixture.root()),
+            before,
+            "{args:?} wrote something on an unmigrated tree"
+        );
+    }
+
+    // migrate, doctor and skill run on the same tree; clap answers --help and --version.
+    let plan = fixture.ok(&["migrate"]);
+    assert!(
+        plan["apply"]
+            .as_str()
+            .is_some_and(|apply| apply.starts_with("chough migrate --apply ")),
+        "{plan:#}"
+    );
+    for args in [
+        &["doctor"][..],
+        &["skill", "status"],
+        &["--help"],
+        &["--version"],
+    ] {
+        let output = fixture.run(args);
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(!stderr.contains("refused:unmigrated"), "{args:?}: {stderr}");
+        assert!(
+            output.status.success() || args == ["doctor"],
+            "{args:?}: {stderr}"
+        );
+    }
+    assert_eq!(
+        files(fixture.root()),
+        before,
+        "an allowed command wrote a record"
+    );
+
+    // With 12 0.5.x paths the refusal names the first 5, sorted, and says 7 more.
+    let fixture = Fixture::new();
+    let legacy = [
+        ".chough/bugs/BUG-0001.json",
+        ".chough/bugs/BUG-0002.json",
+        ".chough/evidence/OBS-1.json",
+        ".chough/evidence/OBS-2.json",
+        ".chough/history/cycles/CYC-1/EVT-1.json",
+        ".chough/pruned.jsonl",
+        ".chough/session.json",
+        ".chough/sessions/archive/archived.json",
+        ".chough/sessions/open.json",
+        ".chough/sessions/shelved/set-aside.json",
+        ".chough/sessions/second.json",
+        ".chough/transitions.jsonl",
+    ];
+    for path in legacy {
+        fixture.write(path, "{}\n");
+    }
+    let before = files(fixture.root());
+    let refusal = fixture.fails(&["next"]);
+    assert_refused_unmigrated(&refusal, "12 paths");
+    for path in &legacy[..5] {
+        assert!(refusal.contains(path), "{path} is not named: {refusal}");
+    }
+    for path in &legacy[5..] {
+        assert!(
+            !refusal.contains(path),
+            "{path} is named past the 5: {refusal}"
+        );
+    }
+    assert!(refusal.contains("and 7 more"), "{refusal}");
+    assert_eq!(files(fixture.root()), before);
+
+    // A mixed tree: 0.6.0 records, then a .chough/session.json written by an older
+    // Chough. The next command refuses naming it, and doctor reports it with its fix.
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&[
+        "session",
+        "new",
+        "mixed",
+        "--objective",
+        "SYNTHETIC mixed tree",
+    ]);
+    fixture.commit("0.6.0 records");
+    fixture.ok(&["next", "--json"]);
+    fixture.write(".chough/session.json", "{\"schema_version\": 2}\n");
+    let before = files(fixture.root());
+    let refusal = fixture.fails(&["next"]);
+    assert_refused_unmigrated(&refusal, "mixed tree");
+    assert!(refusal.contains(".chough/session.json"), "{refusal}");
+    assert!(!refusal.contains("more"), "{refusal}");
+    assert_eq!(files(fixture.root()), before);
+    let output = fixture.run(&["doctor"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
+        panic!(
+            "doctor printed no report ({error}): {}",
+            String::from_utf8_lossy(&output.stderr)
+        )
+    });
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|finding| finding["fix"] == "chough migrate"),
+        "{report:#}"
+    );
+}

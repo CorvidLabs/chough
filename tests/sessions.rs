@@ -811,7 +811,8 @@ fn an_unrecorded_inbox_observation_is_added_with_a_warning() {
 
 /// DRIVE-14: an unreadable session is listed with `chough session shelve`, `next` on
 /// another session and `session new` still work, and shelving moves the folder byte for
-/// byte under `.chough/archive/shelved/`.
+/// byte under `.chough/archive/shelved/` with a `shelved.md` giving its size, each file's
+/// SHA-256, the time and the reason (REQ-history-006).
 #[test]
 fn an_unreadable_session_is_listed_and_shelving_moves_its_folder_byte_for_byte() {
     let fixture = Fixture::new();
@@ -819,6 +820,8 @@ fn an_unreadable_session_is_listed_and_shelving_moves_its_folder_byte_for_byte()
     let alpha = fixture.id_of("alpha");
     let file = format!(".chough/sessions/{alpha}/session.md");
     fixture.write(&file, "not a record\n");
+    let kept = format!(".chough/sessions/{alpha}/agent/SYNTHETIC-kept.txt");
+    fixture.write(&kept, "SYNTHETIC bytes kept as they are\n");
     let list = fixture.ok(&["session", "list"]);
     let entry = list["sessions"]
         .as_array()
@@ -840,7 +843,55 @@ fn an_unreadable_session_is_listed_and_shelving_moves_its_folder_byte_for_byte()
         fixture.read(&format!(".chough/archive/shelved/{alpha}/session.md")),
         "not a record\n"
     );
+    assert_eq!(
+        fixture.read(&format!(
+            ".chough/archive/shelved/{alpha}/agent/SYNTHETIC-kept.txt"
+        )),
+        "SYNTHETIC bytes kept as they are\n"
+    );
     assert!(!fixture.exists(&format!(".chough/sessions/{alpha}")));
+    // The note is inside the shelved folder; nothing else is written beside it.
+    let note = format!(".chough/archive/shelved/{alpha}/shelved.md");
+    assert_eq!(shelved["record"], note.as_str(), "{shelved:#}");
+    let names: Vec<String> = fs::read_dir(fixture.root().join(".chough/archive/shelved"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    assert_eq!(names, std::slice::from_ref(&alpha));
+    let text = fixture.read(&note);
+    let front = |key: &str| -> String {
+        let (front, _) = text
+            .strip_prefix("---\n")
+            .and_then(|rest| rest.split_once("\n---\n"))
+            .unwrap_or_else(|| panic!("no front matter in {text}"));
+        front
+            .lines()
+            .find_map(|line| line.strip_prefix(&format!("{key}: ")))
+            .unwrap_or_default()
+            .trim_matches('"')
+            .to_string()
+    };
+    assert_eq!(front("kind"), "shelved", "{text}");
+    assert_eq!(front("id"), alpha, "{text}");
+    assert_eq!(front("from"), format!(".chough/sessions/{alpha}"), "{text}");
+    assert_eq!(front("reason"), "not a readable session record", "{text}");
+    assert!(front("shelved").ends_with('Z'), "{text}");
+    let total = "not a record\n".len() + "SYNTHETIC bytes kept as they are\n".len();
+    assert_eq!(front("bytes"), total.to_string(), "{text}");
+    for (path, bytes) in [
+        ("session.md", "not a record\n"),
+        (
+            "agent/SYNTHETIC-kept.txt",
+            "SYNTHETIC bytes kept as they are\n",
+        ),
+    ] {
+        let line = format!(
+            "- `{path}` {} bytes {:x}",
+            bytes.len(),
+            <sha2::Sha256 as sha2::Digest>::digest(bytes.as_bytes())
+        );
+        assert!(text.contains(&line), "no {line:?} in {text}");
+    }
 }
 
 /// REQ-history-007: `.chough/local/` holds only the pointer and the writer lock here,

@@ -387,11 +387,7 @@ fn active_session(root: &Path) -> Result<String> {
 /// refusing a same-name different-content creation with no retry (REQ-cli-023), then
 /// register it in the session: the `observations` front matter list, which the session
 /// writer links in What was verified (REQ-records-004).
-pub(super) fn record(
-    root: &Path,
-    evidence: &Evidence,
-    screenshot: Option<(String, Vec<u8>)>,
-) -> Result<String> {
+pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Result<String> {
     validate_record(evidence, &evidence.id)?;
     let session_id = active_session(root)?;
     let dir = evidence_dir(&session_id);
@@ -400,7 +396,7 @@ pub(super) fn record(
     // and uncommitted, REQ-records-012).
     let written_shot = std::cell::Cell::new(None);
     if evidence.explicit_id {
-        return record_explicit(root, evidence, screenshot, &session_id, &dir);
+        return record_explicit(root, evidence, files, &session_id, &dir);
     }
     let name = identity::create_named(
         root,
@@ -410,10 +406,13 @@ pub(super) fn record(
         markdown::RECORD_BOUND,
         |name| {
             let mut entry = evidence.clone();
-            if let Some((extension, bytes)) = &screenshot {
+            if let Some((extension, bytes)) = &files.screenshot {
                 let file = write_screenshot(root, &session_id, name, extension, bytes)?;
                 written_shot.set(Some(format!("{dir}/{file}")));
                 entry.screenshot = Some(file);
+            }
+            if let Some(log) = &files.log {
+                crate::local::write_log(root, name, log)?;
             }
             let mut record = entry.to_record(name);
             if leaks::redacting() {
@@ -450,7 +449,7 @@ pub(super) fn record(
 fn record_explicit(
     root: &Path,
     evidence: &Evidence,
-    screenshot: Option<(String, Vec<u8>)>,
+    files: EntryFiles,
     session_id: &str,
     dir: &str,
 ) -> Result<String> {
@@ -461,9 +460,12 @@ fn record_explicit(
         "observation identity collision: {name} already exists; record a new observation or omit the ID"
     );
     let mut entry = evidence.clone();
-    if let Some((extension, bytes)) = &screenshot {
+    if let Some((extension, bytes)) = &files.screenshot {
         let file = write_screenshot(root, session_id, &name, extension, bytes)?;
         entry.screenshot = Some(file);
+    }
+    if let Some(log) = &files.log {
+        crate::local::write_log(root, &name, log)?;
     }
     let mut record = entry.to_record(&name);
     if leaks::redacting() {
@@ -473,7 +475,10 @@ fn record_explicit(
     }
     let text = record.render_within(markdown::Kind::Evidence)?;
     let created = crate::records::write_new_bounded(root, &target, &text, markdown::RECORD_BOUND)?;
-    ensure!(created, "observation identity collision: {name} already exists");
+    ensure!(
+        created,
+        "observation identity collision: {name} already exists"
+    );
 
     let mut session = match crate::checkpoint::read_session(root)? {
         crate::checkpoint::Session::V2(session) => *session,
@@ -508,7 +513,7 @@ pub(super) struct EvidenceArgs {
     summary: String,
     /// A project-local artifact to fingerprint, or an absolute path outside the
     /// project, fingerprinted in place and never copied (REQ-records-005).
-    #[arg(long)]
+    #[arg(long = "artifact")]
     artifacts: Vec<String>,
     /// Key failing lines of a manual failure, within the bounds of REQ-records-005.
     #[arg(long)]
@@ -704,7 +709,14 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         actor: crate::actor::Actor::current(),
         duration_seconds: None,
     };
-    let name = record(root, &evidence, screenshot_data)?;
+    let name = record(
+        root,
+        &evidence,
+        EntryFiles {
+            screenshot: screenshot_data,
+            log: None,
+        },
+    )?;
     // The stored ID, so automation never parses it out of `recorded` (#60).
     print_json(&json!({
         "schema_version": 1,
@@ -984,14 +996,17 @@ fn evidence_from_receipt(map: &[(String, String)]) -> Result<Evidence> {
 /// Receipts held by archived stories and bugs, as (qualified source, entry) pairs.
 fn receipt_entries(root: &Path, id: &str) -> Result<Vec<(String, Evidence)>> {
     let mut found = vec![];
-    for view_sources in [receipt_maps(root, ".chough/archive/sessions", "receipts")?, {
-        let bugs = local_path(root, crate::bugs::BUGS_DIR)?;
-        if bugs.is_dir() {
-            receipt_maps(root, crate::bugs::BUGS_DIR, "receipts")?
-        } else {
-            vec![]
-        }
-    }] {
+    for view_sources in [
+        receipt_maps(root, ".chough/archive/sessions", "receipts")?,
+        {
+            let bugs = local_path(root, crate::bugs::BUGS_DIR)?;
+            if bugs.is_dir() {
+                receipt_maps(root, crate::bugs::BUGS_DIR, "receipts")?
+            } else {
+                vec![]
+            }
+        },
+    ] {
         for (source, map) in view_sources {
             let entry = evidence_from_receipt(&map)?;
             if entry.id == id || entry.aliases.iter().any(|alias| alias == id) {
@@ -1003,11 +1018,7 @@ fn receipt_entries(root: &Path, id: &str) -> Result<Vec<(String, Evidence)>> {
 }
 
 /// Every `receipts:` map in the Markdown records under a folder, with the record name.
-fn receipt_maps(
-    root: &Path,
-    dir: &str,
-    key: &str,
-) -> Result<Vec<(String, Vec<(String, String)>)>> {
+fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<Vec<(String, Vec<(String, String)>)>> {
     let folder = local_path(root, dir)?;
     let mut found = vec![];
     let Ok(entries) = fs::read_dir(&folder) else {
@@ -1044,7 +1055,11 @@ pub(super) fn load(root: &Path, id: &str) -> Result<Evidence> {
             found.push(Evidence::from_record(&record)?);
         }
     }
-    found.extend(receipt_entries(root, id)?.into_iter().map(|(_, entry)| entry));
+    found.extend(
+        receipt_entries(root, id)?
+            .into_iter()
+            .map(|(_, entry)| entry),
+    );
     match found.len() {
         0 => bail!("evidence not found: {id}"),
         1 => Ok(found.pop().expect("one entry")),
@@ -2256,6 +2271,14 @@ pub(super) fn resolve_entry(root: &Path, id: &str) -> Result<Option<(String, Evi
 /// The one entry for a validation run's evidence record shape (REQ-cli-023, plan
 /// delta correction 4): written by validate.rs.
 #[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+/// The files written beside an entry: an optional screenshot (extension, bytes) and
+/// the raw log of an executed case (bytes, written machine-local, never committed).
+#[derive(Default)]
+pub(super) struct EntryFiles {
+    pub(super) screenshot: Option<(String, Vec<u8>)>,
+    pub(super) log: Option<Vec<u8>>,
+}
+
 pub(super) struct ValidationRun {
     pub(super) id: String,
     pub(super) case: String,

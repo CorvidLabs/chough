@@ -108,7 +108,6 @@ fn sha256(text: &str) -> String {
 
 /// Every open session: its ID, its file and its checkpoint, by ID.
 fn open_sessions(root: &Path) -> Result<Vec<(String, String, Value)>> {
-    crate::sessions::ensure_migrated(root)?;
     let mut sessions = vec![];
     for id in crate::sessions::open_ids(root)? {
         let file = crate::sessions::session_file(&id);

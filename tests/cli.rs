@@ -2588,56 +2588,97 @@ fn the_checkpoint_lock_lives_in_the_project_and_git_ignores_it() {
     );
 }
 
-/// Issue #83 item d: legacy writers racing `session adopt` each either save their
-/// decision in the one remaining checkpoint or refuse with nothing saved. (#77's
-/// `legacy_writers_racing_adopt_end_in_one_mode` asserts only the single mode.)
+/// Issue #83 item d, in 0.6.0 (REQ-cli-040, REQ-records-010): checkpoint writers racing
+/// `chough migrate --apply` each either save their decision in the migrated session or
+/// refuse as `refused:unmigrated` with nothing saved. No decision is lost, and none lands
+/// in a 0.5.x file; a writer after the apply saves. (0.6.0 has no `session adopt`; the migration is the one way out of the
+/// 0.5.x layout, so it is what legacy writers now race.)
 #[test]
-#[ignore = "plan step 10: rewritten with chough migrate"]
 fn legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved() {
+    fn copy(from: &Path, to: &Path) {
+        fs::create_dir_all(to).unwrap();
+        for entry in fs::read_dir(from).unwrap().flatten() {
+            let target = to.join(entry.file_name());
+            if entry.path().is_dir() {
+                copy(&entry.path(), &target);
+            } else {
+                fs::copy(entry.path(), target).unwrap();
+            }
+        }
+    }
+    let release = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/releases/v0.5.0");
     for trial in 0..10 {
-        let fixture = Fixture::new();
-        fixture.init();
-        let outputs: Vec<(String, Output)> = std::thread::scope(|scope| {
+        // v0.5.0's sessions and history: one open session and one archived.
+        let fixture = common::Fixture::new();
+        copy(&release, fixture.root());
+        for folder in [".chough/evidence", ".chough/bugs", ".chough/artifacts"] {
+            let _ = fs::remove_dir_all(fixture.root().join(folder));
+        }
+        fixture.commit("a 0.5.x project");
+        let digest = fixture.ok(&["migrate"])["plan_digest"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        let (outputs, applied): (Vec<(String, Output)>, Output) = std::thread::scope(|scope| {
             let fixture = &fixture;
-            let writers: Vec<_> = (0..4)
+            let digest = digest.as_str();
+            let apply = scope.spawn(move || {
+                fixture.run(&[
+                    "migrate",
+                    "--apply",
+                    digest,
+                    "--consent",
+                    "SYNTHETIC-human said migrate it (fixture)",
+                ])
+            });
+            // Spread over the apply's run, so writers land before, during and after it.
+            let writers: Vec<_> = (0..6u64)
                 .map(|writer| {
                     scope.spawn(move || {
+                        std::thread::sleep(std::time::Duration::from_millis(40 * writer));
                         let decision = format!("writer {writer} of trial {trial}");
                         let output = fixture.run(&["checkpoint", "--decision", &decision]);
                         (decision, output)
                     })
                 })
                 .collect();
-            let adopt = scope.spawn(move || fixture.run(&["session", "adopt", "alpha"]));
             let outputs = writers
                 .into_iter()
                 .map(|writer| writer.join().unwrap())
                 .collect();
-            adopt.join().unwrap();
-            outputs
+            (outputs, apply.join().unwrap())
         });
-        let file = if fixture.root().join(".chough/session.json").exists() {
-            ".chough/session.json"
-        } else {
-            ".chough/sessions/alpha.json"
-        };
-        let session: Value =
-            serde_json::from_str(&fs::read_to_string(fixture.root().join(file)).unwrap()).unwrap();
-        let decisions = session["decisions"].as_array().unwrap();
+        assert!(
+            applied.status.success(),
+            "trial {trial}: {}",
+            String::from_utf8_lossy(&applied.stderr)
+        );
+        assert!(!fixture.exists(".chough/sessions/fixture-first.json"));
+        // A writer after the apply always saves, into the migrated session.
+        let mut outputs = outputs;
+        let decision = format!("the writer after trial {trial}'s apply");
+        let output = fixture.run(&["checkpoint", "--decision", &decision]);
+        outputs.push((decision, output));
+        let open = fixture.open_ids();
+        assert_eq!(open.len(), 1, "trial {trial}: {open:?}");
+        let session = fixture.read(&format!(".chough/sessions/{}/session.md", open[0]));
         for (decision, output) in &outputs {
-            let present = decisions.iter().any(|entry| entry == decision.as_str());
+            let present = session.contains(decision.as_str());
             if output.status.success() {
                 assert!(
                     present,
-                    "trial {trial}: {decision} reported saved but is not in {file}"
+                    "trial {trial}: {decision} reported saved but is not in the session"
                 );
             } else {
                 let stderr = String::from_utf8_lossy(&output.stderr);
                 assert!(
-                    stderr.contains("was adopted") && stderr.contains("nothing was saved"),
+                    stderr.contains("refused:unmigrated"),
                     "trial {trial}: {stderr}"
                 );
-                assert!(!present, "trial {trial}: refused {decision} is in {file}");
+                assert!(
+                    !present,
+                    "trial {trial}: refused {decision} is in the session"
+                );
             }
         }
     }

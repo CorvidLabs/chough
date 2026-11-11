@@ -308,9 +308,10 @@ fn validate(stored: &Stored) -> Result<()> {
     Ok(())
 }
 
-/// Every bug record, by name. A `.json` bug is the 0.5.x layout and refuses as
-/// unmigrated (REQ-records-010); a file that does not read as a bug record is refused
-/// naming its file, line and rule (REQ-records-001).
+/// Every bug record, by name. A `.json` bug is the 0.5.x layout, which the one guard in
+/// main refuses before any bug command runs (REQ-records-010), so it is not read here; a
+/// file that does not read as a bug record is refused naming its file, line and rule
+/// (REQ-records-001).
 fn read_all(root: &Path) -> Result<Vec<Stored>> {
     let folder = local_path(root, BUGS_DIR)?;
     let entries = match std::fs::read_dir(&folder) {
@@ -327,10 +328,6 @@ fn read_all(root: &Path) -> Result<Vec<Stored>> {
         let Ok(name) = entry.file_name().into_string() else {
             continue;
         };
-        ensure!(
-            !name.ends_with(".json"),
-            "refused:unmigrated: {BUGS_DIR}/{name} is a Chough 0.5.x bug record; run `chough migrate` to see the plan, then `chough migrate --apply <digest>`"
-        );
         if name.ends_with(".md") && !name.starts_with('.') {
             names.push(name);
         }

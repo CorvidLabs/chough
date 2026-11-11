@@ -98,45 +98,58 @@ fn every_stage_is_documented_in_the_shared_stage_contract() {
     }
 }
 
+/// TC-cli-0016 in 0.6.0 (REQ-cli-007, REQ-records-010): nothing migrates implicitly. A
+/// schema 1 `.chough/session.json` is a 0.5.x record, so every command refuses as
+/// unmigrated naming `chough migrate`, and the file keeps its bytes. 0.6.0's migrate has
+/// no schema 1 meaning: it refuses the file by name, also writing nothing.
 #[test]
-#[ignore = "plan step 10: rewritten with chough migrate"]
 fn migration_is_explicit_and_preserves_schema_1_bytes() {
     let fixture = Fixture::new();
     let original = "{\n  \"schema_version\": 1,\n  \"objective\": \"Keep my old session\",\n  \"intent_scope\": \"LIFE\",\n  \"modules\": [\"cli\"],\n  \"decisions\": [\"Decided A because B\"],\n  \"open_questions\": [\"Q1\"],\n  \"next_action\": \"Do the next thing\"\n}\n";
     fixture.write(".chough/session.json", original);
-    // Schema 1 remains readable for context and status, but not for stage changes.
-    assert_eq!(
-        fixture.ok(&["context", "--json"])["session"]["schema_version"],
-        1
-    );
-    assert!(
-        fixture.ok(&["status", "--json"])["checkpoint"]["migration"]
-            .as_str()
-            .unwrap()
-            .contains("chough migrate")
-    );
-    assert!(
-        fixture
-            .fails(&["stage", "advance"])
-            .contains("chough migrate")
-    );
+    fixture.commit("a schema 1 checkpoint");
+    // Every file of the project but Git's, with its bytes.
+    fn files(dir: &Path, out: &mut Vec<(std::path::PathBuf, Vec<u8>)>) {
+        for entry in fs::read_dir(dir).unwrap().flatten() {
+            let path = entry.path();
+            if entry.file_name() == ".git" {
+                continue;
+            }
+            if path.is_dir() {
+                files(&path, out);
+            } else {
+                out.push((path.clone(), fs::read(&path).unwrap()));
+            }
+        }
+    }
+    let tree = || {
+        let mut out = vec![];
+        files(fixture.root(), &mut out);
+        out.sort();
+        out
+    };
+    let before = tree();
+    for args in [
+        &["context", "--json"][..],
+        &["status", "--json"],
+        &["next", "--json"],
+        &["stage", "advance"],
+        &["checkpoint", "--decision", "Decided C"],
+    ] {
+        let refusal = fixture.fails(args);
+        assert!(
+            refusal.contains("refused:unmigrated")
+                && refusal.contains(".chough/session.json")
+                && refusal.contains("`chough migrate`"),
+            "{args:?}: {refusal}"
+        );
+        assert_eq!(fixture.read(".chough/session.json"), original, "{args:?}");
+        assert_eq!(tree(), before, "{args:?} wrote something");
+    }
+    let refusal = fixture.fails(&["migrate"]);
+    assert!(refusal.contains(".chough/session.json"), "{refusal}");
     assert_eq!(fixture.read(".chough/session.json"), original);
-
-    let migrated = fixture.ok(&["migrate", "--stage", "plan"]);
-    assert_eq!(migrated["migrated"], true);
-    assert_eq!(fixture.read(".chough/session.v1.json"), original);
-    let session = fixture.session();
-    assert_eq!(session["schema_version"], 2);
-    assert_eq!(session["stage"]["current"], "plan");
-    assert_eq!(session["decisions"], json!(["Decided A because B"]));
-    assert_eq!(session["open_questions"], json!(["Q1"]));
-    assert_eq!(session["next_action"], "Do the next thing");
-    assert_eq!(fixture.ok(&["migrate"])["migrated"], false);
-
-    // A second schema 1 file never overwrites the preserved backup.
-    fixture.write(".chough/session.json", original);
-    assert!(fixture.fails(&["migrate"]).contains("already exists"));
-    assert_eq!(fixture.read(".chough/session.json"), original);
+    assert_eq!(tree(), before, "the migrate refusal wrote something");
 }
 
 #[test]
