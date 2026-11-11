@@ -680,8 +680,10 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
     let fixture = Fixture::new();
     sessions(&fixture);
     let kept = add_entry(&fixture, "beta", "decision", "Before the killed add");
+    // One block of file size lets the writer lock record its process ID (REQ-cli-040),
+    // and the entry, longer than that, is stopped while it is written.
     let killed = std::process::Command::new("sh")
-        .args(["-c", "ulimit -f 0; exec \"$@\"", "sh"])
+        .args(["-c", "ulimit -f 1; exec \"$@\"", "sh"])
         .arg(env!("CARGO_BIN_EXE_chough"))
         .arg("--root")
         .arg(fixture.root())
@@ -695,7 +697,7 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
             "--kind",
             "decision",
             "--text",
-            "Killed while writing",
+            &format!("Killed while writing {}", "x".repeat(3_000)),
         ])
         .output()
         .unwrap();
