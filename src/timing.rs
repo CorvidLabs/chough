@@ -9,7 +9,6 @@
 //! wait is bounded by one budget. None of this applies to gates, `next` or `status`.
 
 use crate::checkpoint::{Session, read_session};
-use crate::evidence::{self, Outcome};
 use crate::markdown::{self, Kind, Record as Front};
 use crate::records::{
     NativeJson, TIMING_BUDGET_VARIABLE, local_path, native_json_within, now, print_json,
@@ -797,17 +796,8 @@ fn estimate_text(value: &Value) -> String {
 // ---------------------------------------------------------------------------
 // Tests, validation runs and bugs.
 
-fn outcome_word(outcome: &Outcome) -> &'static str {
-    match outcome {
-        Outcome::Passed => "passed",
-        Outcome::Failed => "failed",
-        Outcome::NotRun => "not-run",
-    }
-}
-
-/// One case run: from an open session's evidence entry, an archived story's or a bug's
-/// receipt (REQ-reporting-001, REQ-cli-017), or, until plan step 4's writers land, a
-/// 0.5.x observation.
+/// One case run: from an open session's evidence entry, or an archived story's or a
+/// bug's receipt (REQ-reporting-001, REQ-cli-017).
 struct Run {
     id: String,
     cases: Vec<String>,
@@ -854,7 +844,18 @@ fn case_runs(root: &Path, stories: &[Story], partial: &mut Vec<Value>) -> Vec<Ru
     for session in crate::sessions::open_ids(root).unwrap_or_default() {
         let dir = format!("{}/{session}/evidence", crate::sessions::DIR);
         for (_, record) in bugs::records_in(root, &dir, Kind::Evidence.bound()) {
-            runs.extend(run_from(&scalars(&record), format!("entry in {session}")));
+            // A repeated run's entry summarizes its attempts, which are entries of their
+            // own; it is shown under validation runs, never as a case run (REQ-cli-023).
+            if record.scalar("validation_run") == Some("true") {
+                continue;
+            }
+            // An entry gives `case` as a list (REQ-records-005); a receipt as a scalar.
+            runs.extend(
+                run_from(&scalars(&record), format!("entry in {session}")).map(|mut run| {
+                    run.cases = record.list("case");
+                    run
+                }),
+            );
         }
     }
     for story in stories {
@@ -869,22 +870,6 @@ fn case_runs(root: &Path, stories: &[Story], partial: &mut Vec<Value>) -> Vec<Ru
             }
         }
         Err(error) => partial.push(json!({"source": bugs::BUGS_DIR, "reason": format!("bugs unreadable, so their receipts are not shown: {error:#}")})),
-    }
-    // Transitional: `cases run` and `evidence add` still write 0.5.x observations in this
-    // build. Plan step 4's evidence reader replaces this at integration.
-    match evidence::load_all(root) {
-        Ok(records) => runs.extend(records.into_iter().map(|record| Run {
-            cases: record.cases.iter().map(|case| case.id.clone()).collect(),
-            environment: record.environment,
-            result: outcome_word(&record.outcome).to_string(),
-            observed: Some(record.observed_at_unix_seconds),
-            duration: record.duration_seconds,
-            found_in: "observation".into(),
-            id: record.id,
-        })),
-        Err(error) => {
-            partial.push(json!({"source": evidence::EVIDENCE_DIR, "reason": format!("observations unreadable, so none are shown: {error:#}")}));
-        }
     }
     let mut seen = BTreeSet::new();
     runs.retain(|run| seen.insert((run.id.clone(), run.observed, run.cases.clone())));
@@ -940,7 +925,7 @@ fn validation_section(root: &Path, case: Option<&str>, partial: &mut Vec<Value>)
     let runs = match validate::run_times(root) {
         Ok(runs) => runs,
         Err(error) => {
-            partial.push(json!({"source": ".chough/validation", "reason": format!("validation runs unreadable, so none are shown: {error:#}")}));
+            partial.push(json!({"source": crate::sessions::DIR, "reason": format!("validation runs unreadable, so none are shown: {error:#}")}));
             return vec![];
         }
     };

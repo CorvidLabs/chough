@@ -858,6 +858,8 @@ fn history_ranges_need_three_samples_and_exclude_idle_time() {
     assert_eq!(plan["max"], 300);
 }
 
+/// A 0.6.0 evidence entry of the active session (REQ-records-005), as a hand-written
+/// fixture: `case` is a list, as the entry writer gives it.
 fn write_observation(
     fixture: &Fixture,
     id: &str,
@@ -867,32 +869,23 @@ fn write_observation(
     at: u64,
     duration: Option<u64>,
 ) {
-    let mut record = json!({
-        "schema_version": 2,
-        "id": id,
-        "criteria": ["LIFE-1"],
-        "requirements": ["REQ-cli-001"],
-        "contracts": ["specs/cli/cli.spec.md"],
-        "kind": "product-test",
-        "outcome": outcome,
-        "environment": environment,
-        "summary": format!("fixture observation {id}"),
-        "artifacts": [],
-        "artifact_fingerprints": {},
-        "observed_at_unix_seconds": at,
-        "snapshot": {"revision": "0".repeat(40), "dirty": false, "fingerprint": ZERO},
-        "provenance": "fixture",
-    });
+    let mut text = format!(
+        "---\nkind: evidence\nid: {id}\naliases: []\nclaim: fixture observation {id}\nresult: {outcome}\nevidence_kind: product-test\nenvironment: {environment}\nrevision: {}\nobserved: {}\n",
+        "0".repeat(40),
+        iso_of(at)
+    );
     if let Some(case) = case {
-        record["cases"] = json!([{"id": case, "digest": ZERO}]);
-        record["method"] = json!("automated");
+        text.push_str(&format!(
+            "case: [{case}]\ncase_digest: [{ZERO}]\nmethod: automated\n"
+        ));
     }
     if let Some(duration) = duration {
-        record["duration_seconds"] = json!(duration);
+        text.push_str(&format!("duration_seconds: {duration}\n"));
     }
+    text.push_str(&format!("---\n**fixture observation {id}.**\n"));
     fixture.write(
-        &format!(".chough/evidence/{id}.json"),
-        &serde_json::to_string_pretty(&record).unwrap(),
+        &format!(".chough/sessions/{}/evidence/{id}.md", fixture.active_id()),
+        &text,
     );
 }
 
@@ -1371,26 +1364,19 @@ fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() 
         None,
     );
     write_observation(&fixture, "loose", None, "local", "passed", T + 50, None);
+    // A repeated run's entry (REQ-cli-023): its attempts are a-1 and a-2.
     fixture.write(
-        ".chough/validation/val-1.json",
-        &serde_json::to_string_pretty(&json!({
-            "schema_version": 1,
-            "id": "val-1",
-            "case": "TC-a",
-            "times": 3,
-            "interval_seconds": 60,
-            "environment": "local",
-            "authority": "run consent: fixture",
-            "state": "complete",
-            "completed": 3,
-            "failures": 1,
-            "not_run": 0,
-            "observations": ["a-1", "a-2"],
-            "bugs": [],
-            "elapsed_seconds": 125,
-            "started_at_unix_seconds": T,
-        }))
-        .unwrap(),
+        &format!(".chough/sessions/{}/evidence/val-1.md", fixture.active_id()),
+        &format!(
+            "---\nkind: evidence\nid: val-1\naliases: []\nvalidation_run: true\nclaim: Repeated validation run of TC-a\nresult: not-run\nevidence_kind: structural\nrun_case: TC-a\nenvironment: local\nauthority: \"run consent: fixture\"\ntimes: 3\ninterval_seconds: 60\nstate: complete\nstarted: {}\nfailures: 1\nnot_run: 0\nelapsed_seconds: 125\nbugs: []\nattempts:\n  - started: {}\n    observed: {}\n    result: failed\n    observation: a-1\n  - started: {}\n    observed: {}\n    result: passed\n    duration_seconds: 7\n    observation: a-2\nobserved: {}\nrevision: {}\n---\n**A repeated validation run of TC-a.**\n",
+            iso_of(T),
+            iso_of(T + 5),
+            iso_of(T + 10),
+            iso_of(T + 15),
+            iso_of(T + 20),
+            iso_of(T + 20),
+            "0".repeat(40)
+        ),
     );
     let report = timing(&fixture, &[]);
     let group = |case: Value, environment: &str| -> Value {
@@ -1434,7 +1420,8 @@ fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() 
     assert_eq!(run["id"], "val-1");
     assert_eq!(run["case"], "TC-a");
     assert_eq!(at(&run["started"]), Some(T));
-    assert_eq!(run["completed"], 3);
+    // Without retention every completed attempt keeps its map, so the two agree.
+    assert_eq!(run["completed"], 2);
     assert_eq!(run["failures"], 1);
     assert_eq!(run["attempts"], 2);
     assert_eq!(seconds(&run["run_wall_clock"]), Some(125));
@@ -1450,20 +1437,17 @@ fn observations_group_per_case_and_validation_elapsed_is_total_run_wall_clock() 
     assert!(rendered.contains("total run wall-clock, including intervals and resumes"));
     assert!(!rendered.to_lowercase().contains("effort:"));
 
-    // Compatibility decision: `duration_seconds` is an optional schema 2 field, read
-    // here, while observation fields stay closed. A reader refuses a field it does not
-    // know, so builds before this field refuse records that carry it (docs/cli.md says
-    // so), exactly as this build refuses a field it does not know.
+    // A key a later build adds is kept and never refuses the entry: records keep what
+    // people and other builds write (REQ-records-001).
     assert!(fixture.run(&["status"]).status.success());
-    let mut record: Value =
-        serde_json::from_str(&fixture.read(".chough/evidence/a-2.json")).unwrap();
-    record["field_from_a_later_build"] = json!(1);
+    let entry = format!(".chough/sessions/{}/evidence/a-2.md", fixture.active_id());
+    let text = fixture.read(&entry);
     fixture.write(
-        ".chough/evidence/a-2.json",
-        &serde_json::to_string_pretty(&record).unwrap(),
+        &entry,
+        &text.replacen("---\n", "---\nfield_from_a_later_build: 1\n", 1),
     );
-    let error = fixture.fails(&["status"]);
-    assert!(error.contains("unknown field"), "{error}");
+    assert!(fixture.run(&["status"]).status.success());
+    assert!(fixture.read(&entry).contains("field_from_a_later_build: 1"));
 }
 
 #[test]
@@ -2189,10 +2173,17 @@ fn a_case_run_records_its_run_time_and_the_report_shows_it() {
     fixture.commit("fixture");
     let run = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
     let id = run["observation"].as_str().unwrap();
-    let record: Value =
-        serde_json::from_str(&fixture.read(&format!(".chough/evidence/{id}.json"))).unwrap();
-    let duration = record["duration_seconds"].as_u64().unwrap();
-    assert!((1..30).contains(&duration), "{record:#}");
+    let record = fixture.read(&format!(
+        ".chough/sessions/{}/evidence/{id}.md",
+        fixture.active_id()
+    ));
+    let duration: u64 = record
+        .lines()
+        .find_map(|line| line.strip_prefix("duration_seconds: "))
+        .unwrap_or_else(|| panic!("no duration_seconds:\n{record}"))
+        .parse()
+        .unwrap();
+    assert!((1..30).contains(&duration), "{record}");
     let report = timing(&fixture, &["--case", "TC-cli-0001"]);
     let observation = &report["tests"][0]["observations"][0];
     assert_eq!(observation["id"], id);

@@ -127,8 +127,8 @@ fn warm_reports_reuse_but_every_lifecycle_read_stays_live() {
 
     fixture.ok(&["timing", "--cycle", "current", "--json"]);
     assert_eq!(fixture.native_calls(), 1, "timing reused the report");
-    fixture.ok(&["evidence", "prune"]);
-    assert_eq!(fixture.native_calls(), 1, "retention reused the report");
+    // 0.6.0 has no retention, so `evidence prune` is gone (REQ-history-001 and
+    // REQ-history-004 are removed).
 }
 
 #[cfg(unix)]

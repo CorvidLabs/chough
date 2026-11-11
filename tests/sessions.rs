@@ -762,7 +762,18 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
 fn an_unrecorded_inbox_observation_is_added_with_a_warning() {
     let fixture = Fixture::new();
     fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
-    fixture.write(".chough/evidence/OBS-recorded.json", "{}\n");
+    // A recorded observation: a 0.6.0 evidence entry of the session (REQ-records-005).
+    let recorded_id = "2026-01-01-recorded";
+    fixture.write(
+        &format!(
+            ".chough/sessions/{}/evidence/{recorded_id}.md",
+            fixture.id_of("alpha")
+        ),
+        &format!(
+            "---\nkind: evidence\nid: {recorded_id}\naliases: []\nclaim: a recorded observation\nresult: passed\nevidence_kind: product-test\ncase: []\ncase_digest: []\ncriteria: []\nrequirements: []\ncontracts: []\nenvironment: local\nrevision: {}\nobserved: 2026-01-01T00:00:00Z\n---\n**a recorded observation.**\n",
+            "0".repeat(40)
+        ),
+    );
     let output = fixture.run(&[
         "inbox",
         "add",
@@ -791,7 +802,7 @@ fn an_unrecorded_inbox_observation_is_added_with_a_warning() {
         "--kind",
         "observation",
         "--text",
-        "OBS-recorded",
+        recorded_id,
     ]);
     assert!(output.status.success());
     assert!(!String::from_utf8_lossy(&output.stderr).contains("no record"));
@@ -806,7 +817,7 @@ fn an_unrecorded_inbox_observation_is_added_with_a_warning() {
             .unwrap_or_else(|| panic!("{text} missing: {list:#}"))
     };
     assert_eq!(recorded("OBS-bogus"), false, "{list:#}");
-    assert_eq!(recorded("OBS-recorded"), true, "{list:#}");
+    assert_eq!(recorded(recorded_id), true, "{list:#}");
 }
 
 /// DRIVE-14: an unreadable session is listed with `chough session shelve`, `next` on

@@ -1827,27 +1827,20 @@ fn at_test_with_case() -> Fixture {
     fixture
 }
 
+/// Write a 0.6.0 evidence entry of the active session (REQ-records-005) for `case`,
+/// with a fixed observed time, as a hand-written fixture.
 fn case_observation(fixture: &Fixture, id: &str, case: &str, outcome: &str, observed: u64) {
-    let record = json!({
-        "schema_version": 2,
-        "id": id,
-        "criteria": ["LIFE-1"],
-        "requirements": ["REQ-cli-001"],
-        "contracts": ["specs/cli/cli.spec.md"],
-        "kind": "product-test",
-        "outcome": outcome,
-        "environment": "local",
-        "summary": format!("fixture observation {id}"),
-        "artifacts": [],
-        "artifact_fingerprints": {},
-        "observed_at_unix_seconds": observed,
-        "snapshot": {"revision": "0".repeat(40), "dirty": false, "fingerprint": "0".repeat(64)},
-        "provenance": "fixture",
-        "cases": [{"id": case, "digest": "0".repeat(64)}],
-    });
+    let session = fixture.active_id();
+    let (hours, rest) = (observed / 3600, observed % 3600);
+    assert!(hours < 24, "fixture times stay within the first day");
+    let time = format!("1970-01-01T{hours:02}:{:02}:{:02}Z", rest / 60, rest % 60);
+    let zeros = "0".repeat(64);
+    let revision = "0".repeat(40);
     fixture.write(
-        &format!(".chough/evidence/{id}.json"),
-        &serde_json::to_string(&record).unwrap(),
+        &format!(".chough/sessions/{session}/evidence/{id}.md"),
+        &format!(
+            "---\nkind: evidence\nid: {id}\naliases: []\nclaim: fixture observation {id}\nresult: {outcome}\nevidence_kind: product-test\ncase: [{case}]\ncase_digest: [{zeros}]\ncriteria: [LIFE-1]\nrequirements: [REQ-cli-001]\ncontracts: [specs/cli/cli.spec.md]\nenvironment: local\nrevision: {revision}\nobserved: {time}\n---\n**fixture observation {id}.**\n"
+        ),
     );
 }
 
@@ -1855,7 +1848,7 @@ fn linking_bug(fixture: &Fixture, id: &str, status: &str, scope: &str, observati
     fixture.bug_md(id, scope, status, &[observation]);
 }
 
-const FAILED: &str = "OBS-fail-000000000000000000000001";
+const FAILED: &str = "2026-01-01-fail-1";
 
 /// Issue #39: leaving test is refused, by advance and by skip, while a referenced
 /// case's latest observation failed and no bug links it; next and status name the
@@ -1863,13 +1856,7 @@ const FAILED: &str = "OBS-fail-000000000000000000000001";
 #[test]
 fn leaving_test_refuses_an_unlinked_failed_case_until_it_passes() {
     let fixture = at_test_with_case();
-    case_observation(
-        &fixture,
-        "OBS-pass-000000000000000000000001",
-        "TC-cli-0001",
-        "passed",
-        100,
-    );
+    case_observation(&fixture, "2026-01-01-pass-1", "TC-cli-0001", "passed", 100);
     case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
     for route in [
         vec!["stage", "advance"],
@@ -1901,13 +1888,7 @@ fn leaving_test_refuses_an_unlinked_failed_case_until_it_passes() {
         status["next_valid_action"]
     );
     // A later pass of the same case lifts the refusal.
-    case_observation(
-        &fixture,
-        "OBS-pass-000000000000000000000002",
-        "TC-cli-0001",
-        "passed",
-        300,
-    );
+    case_observation(&fixture, "2026-01-01-pass-2", "TC-cli-0001", "passed", 300);
     let next = fixture.ok(&["next", "--json"]);
     assert!(
         !next["next_valid_action"]["action"]
@@ -1928,7 +1909,7 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
     case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 100);
     case_observation(
         &fixture,
-        "OBS-notrun-000000000000000000000001",
+        "2026-01-01-notrun-1",
         "TC-cli-0001",
         "not-run",
         200,
@@ -1954,16 +1935,10 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
         next["next_valid_action"]["action"],
         status["next_valid_action"]
     );
+    case_observation(&fixture, "2026-01-01-pass-3", "TC-cli-0001", "passed", 300);
     case_observation(
         &fixture,
-        "OBS-pass-000000000000000000000003",
-        "TC-cli-0001",
-        "passed",
-        300,
-    );
-    case_observation(
-        &fixture,
-        "OBS-notrun-000000000000000000000002",
+        "2026-01-01-notrun-2",
         "TC-cli-0001",
         "not-run",
         400,
@@ -1974,7 +1949,7 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
     let fixture = at_test_with_case();
     case_observation(
         &fixture,
-        "OBS-notrun-000000000000000000000003",
+        "2026-01-01-notrun-3",
         "TC-cli-0001",
         "not-run",
         200,
@@ -2018,7 +1993,7 @@ fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchange
         "BUG-0002",
         "open",
         "blocking",
-        "OBS-other-000000000000000000000001",
+        "2026-01-01-other-1",
     );
     let error = fixture.fails(&["stage", "advance"]);
     assert!(error.contains("refused:blocking-bugs"), "{error}");
@@ -2026,52 +2001,22 @@ fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchange
 
     let fixture = at_test_with_case();
     case_observation(&fixture, FAILED, "TC-cli-0002", "failed", 200);
-    case_observation(
-        &fixture,
-        "OBS-pass-000000000000000000000001",
-        "TC-cli-0001",
-        "passed",
-        100,
-    );
+    case_observation(&fixture, "2026-01-01-pass-1", "TC-cli-0001", "passed", 100);
     fixture.ok(&["stage", "advance"]);
     assert_eq!(stage(&fixture), "accept");
 
     // Equal times: the greater ID is the latest.
     let fixture = at_test_with_case();
-    case_observation(
-        &fixture,
-        "OBS-a-000000000000000000000001",
-        "TC-cli-0001",
-        "failed",
-        200,
-    );
-    case_observation(
-        &fixture,
-        "OBS-b-000000000000000000000001",
-        "TC-cli-0001",
-        "passed",
-        200,
-    );
+    case_observation(&fixture, "2026-01-01-a-1", "TC-cli-0001", "failed", 200);
+    case_observation(&fixture, "2026-01-01-b-1", "TC-cli-0001", "passed", 200);
     fixture.ok(&["stage", "advance"]);
     let fixture = at_test_with_case();
-    case_observation(
-        &fixture,
-        "OBS-a-000000000000000000000001",
-        "TC-cli-0001",
-        "passed",
-        200,
-    );
-    case_observation(
-        &fixture,
-        "OBS-b-000000000000000000000001",
-        "TC-cli-0001",
-        "failed",
-        200,
-    );
+    case_observation(&fixture, "2026-01-01-a-1", "TC-cli-0001", "passed", 200);
+    case_observation(&fixture, "2026-01-01-b-1", "TC-cli-0001", "failed", 200);
     assert!(
         fixture
             .fails(&["stage", "advance"])
-            .contains("OBS-b-000000000000000000000001")
+            .contains("2026-01-01-b-1")
     );
 
     // Other moves out of test are not gated by it.

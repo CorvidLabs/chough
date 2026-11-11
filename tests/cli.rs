@@ -194,50 +194,77 @@ impl Fixture {
         ]);
     }
 
-    fn add(&self, id: &str, kind: &str, outcome: &str) -> Output {
-        let run = |id: &str| {
-            self.run(&[
-                "evidence",
-                "add",
-                id,
-                "--criterion",
-                "LIFE-1",
-                "--requirement",
-                "REQ-cli-001",
-                "--contract",
-                "specs/cli/cli.spec.md",
-                "--kind",
-                kind,
-                "--outcome",
-                outcome,
-                "--environment",
-                "test-local",
-                "--summary",
-                "Observed behavior in isolated fixture",
-            ])
-        };
-        let allocated = format!("OBS-{id}-000000000000000000000001");
-        let output = run(&allocated);
-        if !output.status.success() {
-            return output;
-        }
-        let allocated_name = format!(".chough/evidence/{allocated}.json");
-        let legacy_name = format!(".chough/evidence/{id}.json");
-        if self.root().join(&legacy_name).exists() {
-            fs::remove_file(self.root().join(allocated_name)).unwrap();
-            return run(id);
-        }
-        let mut record: Value =
-            serde_json::from_str(&fs::read_to_string(self.root().join(&allocated_name)).unwrap())
-                .unwrap();
-        record["id"] = json!(id);
-        self.write(
-            &legacy_name,
-            &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
-        );
-        fs::remove_file(self.root().join(allocated_name)).unwrap();
-        output
+    /// Record evidence entry `name` (see [`entry_id`]) in the active session; a name
+    /// already recorded is an identity collision, refused with nothing written
+    /// (REQ-cli-023).
+    fn add(&self, name: &str, kind: &str, outcome: &str) -> Output {
+        self.run(&[
+            "evidence",
+            "add",
+            &entry_id(name),
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            kind,
+            "--outcome",
+            outcome,
+            "--environment",
+            "test-local",
+            "--summary",
+            "Observed behavior in isolated fixture",
+        ])
     }
+
+    /// The active session's evidence folder (REQ-records-004).
+    fn evidence_dir(&self) -> String {
+        let file = self.session_file();
+        format!("{}/evidence", file.trim_end_matches("/session.md"))
+    }
+
+    /// The project-relative file of evidence entry `name`.
+    fn entry_file(&self, name: &str) -> String {
+        format!("{}/{}.md", self.evidence_dir(), entry_id(name))
+    }
+
+    /// Rewrite the front matter of evidence entry `name`: each `(key, value)` replaces
+    /// that key's line, and a `None` value removes it.
+    fn edit_entry(&self, name: &str, edits: &[(&str, Option<&str>)]) {
+        let file = self.entry_file(name);
+        let text = self.read(&file);
+        let (front, body) = text
+            .strip_prefix("---\n")
+            .and_then(|rest| rest.split_once("\n---\n"))
+            .expect("an evidence entry");
+        for (key, _) in edits {
+            assert!(
+                front
+                    .lines()
+                    .any(|line| line.starts_with(&format!("{key}:"))),
+                "{file} has no {key}: {front}"
+            );
+        }
+        let mut lines = vec![];
+        for line in front.lines() {
+            let key = line.split_once(':').map(|(key, _)| key);
+            match edits.iter().find(|(name, _)| Some(*name) == key) {
+                Some((key, Some(value))) => lines.push(format!("{key}: {value}")),
+                Some((_, None)) => {}
+                None => lines.push(line.to_string()),
+            }
+        }
+        self.write(&file, &format!("---\n{}\n---\n{body}", lines.join("\n")));
+    }
+}
+
+/// The ID of the evidence entry these tests call `name`: an explicit date-slug ID
+/// (REQ-records-003). An old-style ID such as `OBS-…` now refuses a new write, and
+/// automatic IDs could not show an explicit ID's collision refusal (REQ-cli-023).
+fn entry_id(name: &str) -> String {
+    format!("2020-01-01-{name}")
 }
 
 #[test]
@@ -757,7 +784,6 @@ fn artifacts_inside_managed_records_are_independently_bound() {
     let output = fixture.run(&[
         "evidence",
         "add",
-        "OBS-product-test-000000000000000000000001",
         "--criterion",
         "LIFE-1",
         "--requirement",
@@ -1180,13 +1206,14 @@ impl Fixture {
         ]);
     }
 
-    fn freshness(&self, id: &str) -> String {
+    fn freshness(&self, name: &str) -> String {
         let status = self.ok(&["status", "--environment", "test-local", "--json"]);
+        let id = entry_id(name);
         status["observations"]
             .as_array()
             .unwrap()
             .iter()
-            .find(|observation| observation["record"]["id"] == id)
+            .find(|observation| observation["record"]["id"] == id.as_str())
             .unwrap_or_else(|| panic!("no observation {id}"))["freshness"]
             .as_str()
             .unwrap()
@@ -1255,10 +1282,16 @@ fn committing_only_chough_records_or_an_empty_commit_keeps_an_observation_curren
     assert_eq!(fixture.freshness("observed"), "current-observation");
     fixture.commit_all("an empty commit");
     assert_eq!(fixture.freshness("observed"), "current-observation");
-    // The revision is still recorded and shown; it no longer decides freshness.
+    // The revision is still recorded and shown; it no longer decides freshness. The
+    // entry records it in its `revision` field (REQ-records-004).
+    assert!(
+        fixture
+            .read(&fixture.entry_file("observed"))
+            .contains(&format!("\nrevision: {revision}\n"))
+    );
     let status = fixture.ok(&["status", "--environment", "test-local", "--json"]);
     assert_eq!(
-        status["observations"][0]["record"]["snapshot"]["revision"],
+        status["observations"][0]["record"]["revision"],
         revision.as_str()
     );
     assert_ne!(status["snapshot"]["revision"], revision.as_str());
@@ -1412,37 +1445,15 @@ fn observations_without_a_content_identity_stay_stale_after_a_commit() {
     let fixture = Fixture::new();
     fixture.evidence_fixture();
     fixture.observe("legacy");
-    let name = fixture.root().join(".chough/evidence/legacy.json");
-    let mut record: Value = serde_json::from_str(&fs::read_to_string(&name).unwrap()).unwrap();
-    record["snapshot"]
-        .as_object_mut()
-        .unwrap()
-        .remove("content");
-    fs::write(&name, serde_json::to_string_pretty(&record).unwrap() + "\n").unwrap();
+    // An entry without a `content` line has no content identity: it is revision-bound.
+    fixture.edit_entry("legacy", &[("content", None)]);
     assert_eq!(fixture.freshness("legacy"), "current-observation");
-    // A schema 1 record has no content identity in its schema; one that carries a
-    // `content` field anyway keeps the schema 1 revision-bound freshness.
-    fixture.observe("schema-one");
-    let name = fixture.root().join(".chough/evidence/schema-one.json");
-    let mut record: Value = serde_json::from_str(&fs::read_to_string(&name).unwrap()).unwrap();
-    record["schema_version"] = json!(1);
-    for field in [
-        "cases",
-        "method",
-        "track",
-        "argv",
-        "exit_code",
-        "tests_run",
-        "limitations",
-    ] {
-        record.as_object_mut().unwrap().remove(field);
-    }
-    assert!(record["snapshot"]["content"].is_string());
-    fs::write(&name, serde_json::to_string_pretty(&record).unwrap() + "\n").unwrap();
-    assert_eq!(fixture.freshness("schema-one"), "current-observation");
+    // A schema 1 record (whose schema has no content identity) has no 0.6.0 form: an
+    // entry carries no schema version, and a 0.5.x JSON observation makes every command
+    // refuse as unmigrated (REQ-records-010). Its revision-bound freshness is the
+    // evidence mapper's to keep when it migrates one (plan step 4).
     fixture.commit_all("an empty commit");
     assert_eq!(fixture.freshness("legacy"), "stale-revision-or-inputs");
-    assert_eq!(fixture.freshness("schema-one"), "stale-revision-or-inputs");
 }
 
 #[test]
@@ -1450,10 +1461,7 @@ fn a_malformed_content_identity_is_refused() {
     let fixture = Fixture::new();
     fixture.evidence_fixture();
     fixture.observe("malformed");
-    let name = fixture.root().join(".chough/evidence/malformed.json");
-    let mut record: Value = serde_json::from_str(&fs::read_to_string(&name).unwrap()).unwrap();
-    record["snapshot"]["content"] = json!("not-a-sha256-digest");
-    fs::write(&name, serde_json::to_string_pretty(&record).unwrap() + "\n").unwrap();
+    fixture.edit_entry("malformed", &[("content", Some("not-a-sha256-digest"))]);
     let output = fixture.run(&["status", "--environment", "test-local", "--json"]);
     assert!(!output.status.success());
     assert!(
@@ -1752,11 +1760,12 @@ fn evidence_add_names_the_contract_for_another_modules_requirement() {
         "specs/checkout-ui/requirements.md",
         "### REQ-checkout-ui-004\nShow the order total.\n",
     );
+    let id = entry_id("order-total");
     let add = |requirement: &str| {
         fixture.run(&[
             "evidence",
             "add",
-            "OBS-product-test-000000000000000000000004",
+            &id,
             "--criterion",
             "LIFE-1",
             "--requirement",
@@ -1800,17 +1809,22 @@ fn evidence_add_names_the_contract_for_another_modules_requirement() {
         }
         assert!(!error.contains(absent), "{error}");
     }
+    // Nothing was written: no entry, so the same ID is still free.
     assert!(
         !fixture
             .root()
-            .join(".chough/evidence/OBS-product-test-000000000000000000000004.json")
+            .join(fixture.entry_file("order-total"))
             .exists()
     );
+    let entries = fs::read_dir(fixture.root().join(fixture.evidence_dir()))
+        .map(|entries| entries.count())
+        .unwrap_or(0);
+    assert_eq!(entries, 0, "a refused add wrote into the evidence folder");
     // With the owning contract named, the same link is accepted.
     let output = fixture.run(&[
         "evidence",
         "add",
-        "OBS-product-test-000000000000000000000004",
+        &id,
         "--criterion",
         "LIFE-1",
         "--requirement",
@@ -1910,11 +1924,10 @@ fn spec_requirements_companions_are_read_at_any_size() {
         "specs/checkout-ui/requirements.md",
         &format!("{padding}### REQ-checkout-ui-004\nShow the order total.\n"),
     );
-    let add = |id: &str, requirement: &str| {
+    let add = |requirement: &str| {
         fixture.run(&[
             "evidence",
             "add",
-            id,
             "--criterion",
             "LIFE-1",
             "--requirement",
@@ -1931,16 +1944,13 @@ fn spec_requirements_companions_are_read_at_any_size() {
             "Observed preserved files",
         ])
     };
-    let accepted = add("OBS-product-test-000000000000000000000071", "REQ-cli-001");
+    let accepted = add("REQ-cli-001");
     assert!(
         accepted.status.success(),
         "{}",
         String::from_utf8_lossy(&accepted.stderr)
     );
-    let refused = add(
-        "OBS-product-test-000000000000000000000072",
-        "REQ-checkout-ui-004",
-    );
+    let refused = add("REQ-checkout-ui-004");
     let error = String::from_utf8_lossy(&refused.stderr).into_owned();
     assert_eq!(refused.status.code(), Some(1), "{error}");
     assert!(!error.contains("exceeds"), "{error}");
@@ -2703,11 +2713,10 @@ fn criteria_validate_against_a_hi_family_export_over_16_kib() {
     .to_string();
     assert!(export.len() > 16_384 * 4, "{}", export.len());
     common::stand_in(&fixture.root().join("bin"), "hi", &export);
-    let add = |id: &str, criterion: &str| {
+    let add = |criterion: &str| {
         fixture.run(&[
             "evidence",
             "add",
-            id,
             "--criterion",
             criterion,
             "--requirement",
@@ -2725,13 +2734,13 @@ fn criteria_validate_against_a_hi_family_export_over_16_kib() {
         ])
     };
     // The last criterion sits far past the first 16 KiB of the export.
-    let accepted = add("OBS-product-test-000000000000000000000100", "LIFE-40");
+    let accepted = add("LIFE-40");
     assert!(
         accepted.status.success(),
         "{}",
         String::from_utf8_lossy(&accepted.stderr)
     );
-    let refused = add("OBS-product-test-000000000000000000000101", "LIFE-2");
+    let refused = add("LIFE-2");
     let stderr = String::from_utf8_lossy(&refused.stderr);
     assert!(!refused.status.success());
     assert!(

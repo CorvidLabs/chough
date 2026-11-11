@@ -92,16 +92,12 @@ fn delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not() {
         "live-health-observation",
         "dry-run",
     ];
-    let ids: Vec<String> = kinds
-        .iter()
-        .enumerate()
-        .map(|(index, kind)| format!("OBS-{kind}-{:024x}", index + 1))
-        .collect();
-    for (kind, id) in kinds.iter().zip(&ids) {
-        fixture.ok(&[
+    // Each entry gets its automatic date-slug ID (REQ-records-003).
+    let mut ids: Vec<String> = vec![];
+    for kind in &kinds {
+        let added = fixture.ok(&[
             "evidence",
             "add",
-            id,
             "--criterion",
             "LIFE-1",
             "--requirement",
@@ -117,6 +113,12 @@ fn delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not() {
             "--summary",
             &format!("A SYNTHETIC {kind} of the 1.2.0 release"),
         ]);
+        ids.push(
+            added["observation"]
+                .as_str()
+                .unwrap_or_else(|| panic!("no observation: {added:#}"))
+                .to_string(),
+        );
     }
     fixture.commit("receipts");
     let moved = fixture.ok(&["stage", "advance"]);

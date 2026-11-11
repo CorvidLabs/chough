@@ -139,6 +139,9 @@ pub(crate) fn observation(source: &str) -> Result<String> {
     allocate("OBS-", source, "observation", OBSERVATION_SLUG_LIMIT)
 }
 
+// Step 4 retired validation-run allocation (runs are named by date and slug); the
+// integration cleanup removes it with its records spec row (t382).
+#[allow(dead_code)]
 pub(crate) fn validation(source: &str) -> Result<String> {
     allocate("VAL-", source, "validation", VALIDATION_SLUG_LIMIT)
 }

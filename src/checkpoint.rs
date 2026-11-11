@@ -453,6 +453,18 @@ fn remove_orphaned_session_temps(root: &Path) -> Result<()> {
     crate::sessions::remove_orphaned_temps(root)
 }
 
+/// Release every checkpoint writer lock this process holds. A long command that saves
+/// between waits, a repeated validation run, calls it before it waits, so another
+/// command can write meanwhile (REQ-cli-040); its next save takes the lock again before
+/// it reads, so it never saves on a stale read. Nothing this process read before the
+/// release may be saved after it.
+pub(super) fn release_checkpoint_locks() {
+    HELD_LOCKS
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .clear();
+}
+
 /// Take the checkpoint writer lock before a read-modify-write, in either mode: when
 /// `.chough/session.json` exists or, in sessions mode (REQ-cli-037), when
 /// `.chough/sessions/` exists, so a save never lands on a stale read and `session
