@@ -1,0 +1,47 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-bba430d2b716c0f8fa00897f",
+    "head": "EVT-ce667dac6436b78bea282928",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Ship human-first Chough records as one change, Chough 0.6.0: readable one-file Markdown records, date+slug session folders with agent/ working files, one-file archived stories, journal and feed, one source of truth, no leaks, gate approvals as the approving human; dogfooded on the chough repo only",
+  "intent_scope": "DRIVE",
+  "modules": [
+    "cli",
+    "reporting",
+    "history"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": null,
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [
+      "design/prototype/index.html",
+      "design/prototype/COMPANION.md"
+    ],
+    "files": []
+  },
+  "decisions": [
+    "Run one Chough cycle on chough itself for human-first records, because Leif wants to see the design before one big change",
+    "Ship the human-first redesign as ONE change, released as Chough 0.6.0, dogfooded on the chough repo only; update the other repos only after 0.6.0 is released at >=95% confidence, because Leif chose 'all at once for chough 0.6.0 and only use it for chough itself' (2026-11-10)",
+    "Windows: FLOW-17 and FLOW-21 read together as 'Windows is best-effort, through WSL'; offered to Leif as the default with the #212 summary and not changed (2026-11-10)",
+    "Leif (0xLeif) decided \"Design review of design/prototype (Artifact 1gaHcJYeiULDxWtKMGUZim)\": \"Approve the design\" (Coordinator chat with Leif (Claude Code, hc terminal t370), 2026-11-10, answer to the design approval question); recorded by claude-code (claude-opus-5-5, hc t370); a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Intent approval of the human-first cycle as a whole (chough #212)\": \"Approve it\" (Coordinator chat with Leif (Claude Code, hc terminal t370), 2026-11-10, answer to: Do you approve this as Chough's intent? (the 10-point #212 summary, Windows read as best-effort through WSL)); recorded by claude-code (claude-opus-5-5, hc t370); a relayed claim, not authenticated"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Record Leif's design and intent approvals, then plan the single native 0.6.0 change"
+}
