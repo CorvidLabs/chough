@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-cb50b361cc5e91b8c111702c",
-    "head": "EVT-5ef2dcc45c4a8713dfac1a66",
+    "head": "EVT-2d203fe3e2be80bb61eb1d23",
     "legacy": null
   },
   "schema_version": 2,
@@ -48,7 +48,9 @@
   "decisions": [
     "Criteria drafted from the 2026-11-10 MVP interview and the same-day issue decisions on #14, #165, #167 and #201",
     "2026-11-10 pause from Leif via t370: no approvals, reviews, acceptances, gates, closes or merges recorded as 0xLeif/Leif until new instructions; work stops at READY",
-    "2026-11-10 coordinator: #212 is the INTENT of Leif's one big human-first-records Chough cycle (design stage in _worktrees/ch-human-first, artifact 1gaHcJYeiULDxWtKMGUZim); hold #212 at READY, no merge, no new criteria unless the coordinator sends exact deltas"
+    "2026-11-10 coordinator: #212 is the INTENT of Leif's one big human-first-records Chough cycle (design stage in _worktrees/ch-human-first, artifact 1gaHcJYeiULDxWtKMGUZim); hold #212 at READY, no merge, no new criteria unless the coordinator sends exact deltas",
+    "Leif (0xLeif) decided \"Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping\": \"Approve it\" (Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10, answering 'Do you approve this as Chough's intent?'); recorded by kimi-code agent, chough session roadmap-1-0-hi-capture; a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Leif: intent approval of the 13 criteria; native scope approval of the change; rulings on FLOW-17 vs FLOW-21 and KNOW-29 vs KNOW-30\": \"\"Approve it\"; \"Yes, merge when green\" (Windows read as best-effort through WSL in the approved summary; KNOW-29/KNOW-30 closed earlier by the #235 rewrite)\" (Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10); recorded by kimi-code agent, chough session roadmap-1-0-hi-capture; a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [
@@ -66,10 +68,7 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping",
-    "Leif: intent approval of the 13 criteria; native scope approval of the change; rulings on FLOW-17 vs FLOW-21 and KNOW-29 vs KNOW-30"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "When the lane is green: commit, push, send t370 the head SHA and the plain summary for Leif"
 }
