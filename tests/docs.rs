@@ -581,6 +581,7 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
         ("audit", "change audit"),
         ("cases", "case definitions"),
         ("knowledge", "knowledge index"),
+        ("leaks", "leak scan"),
         ("exercise", "feature and bug exercise"),
         ("build", "build"),
     ];
