@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bba430d2b716c0f8fa00897f",
-    "head": "EVT-ce667dac6436b78bea282928",
+    "head": "EVT-b0a56249351d3318158df32c",
     "legacy": null
   },
   "schema_version": 2,
@@ -50,7 +50,9 @@
   "observations": [],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Scope approval of the Chough 0.6.0 native change"
+  ],
   "run_consents": [],
-  "next_action": "Write the 0.6.0 native change artifacts and deltas, then open the scope gate"
+  "next_action": "Wait for Leif's scope decision on the 0.6.0 native change (draft PR). When it is relayed, close this gate with his exact words, where and who relayed it, and record the SpecSync approval in his name; then build in plan.md's order. Do not approve on standing authority: scope approval is Leif's."
 }
