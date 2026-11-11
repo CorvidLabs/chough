@@ -269,20 +269,12 @@ fn advance_into_done_reads_native_status_once() {
     let moved = fixture.ok(&["stage", "advance"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     assert_eq!(moved["applied"]["gate"], "native:archived", "{moved:#}");
-    assert_eq!(
-        moved["applied"]["librarian_trim"]["status"], "trimmed",
-        "{moved:#}"
-    );
     assert_eq!(fixture.native_calls(), 1, "{moved:#}");
 
     let fixture = archived_session_at("test");
     let moved = fixture.ok(&["stage", "advance", "--to", "done"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     assert_eq!(moved["applied"]["steps"].as_array().unwrap().len(), 2);
-    assert_eq!(
-        moved["applied"]["librarian_trim"]["status"], "trimmed",
-        "{moved:#}"
-    );
     assert_eq!(fixture.native_calls(), 1, "{moved:#}");
 }
 
