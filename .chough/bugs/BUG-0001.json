@@ -22,12 +22,13 @@
   "fixture": null,
   "observations": [
     "OBS-tc-cli-0110-d401e774e0492b43be1a2895",
-    "OBS-tc-cli-0110-6f332c7ddda57139d7373d58"
+    "OBS-tc-cli-0110-6f332c7ddda57139d7373d58",
+    "OBS-tc-cli-0110-246ea544b0723c91fb40903a"
   ],
   "impact": "Misleading comment only; no behavior or gate depends on it. Fixing it needs a native change that covers .specsync/config.toml, which the approved scope does not.",
   "classification": "evidence-gap",
   "scope": "out-of-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -46,8 +47,15 @@
       "observations": [
         "OBS-tc-cli-0110-6f332c7ddda57139d7373d58"
       ]
+    },
+    {
+      "at_unix_seconds": 1794429583,
+      "text": "status: open -> verified. Fixed in plan step 12 (PR #238, dc0a6e5d); the case passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-cli-0110-246ea544b0723c91fb40903a"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793473149,
-  "updated_at_unix_seconds": 1794429417
+  "updated_at_unix_seconds": 1794429583
 }

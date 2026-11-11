@@ -24,17 +24,26 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-migrate-from-0-5-9a6172dd97f16a59589dfcf5"
+    "OBS-tc-records-migrate-from-0-5-9a6172dd97f16a59589dfcf5",
+    "OBS-tc-records-migrate-from-0-5-352c53f003aa9671c80affda"
   ],
   "impact": "Existing projects cannot move to 0.6.0 (GitHub #213)",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "GitHub issue #213; red on 0.5.0 at leif/0.6.0-batch-red 370d221d",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794429583,
+      "text": "status: open -> verified. Fixed by plan step 10 (PR #238): chough migrate previews, applies with consent and a receipt, proven on a fixture from every 0.x release; the evidence mapper (t37d) joins when step 4 lands. The case passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-records-migrate-from-0-5-352c53f003aa9671c80affda"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794429417,
-  "updated_at_unix_seconds": 1794429417
+  "updated_at_unix_seconds": 1794429583
 }

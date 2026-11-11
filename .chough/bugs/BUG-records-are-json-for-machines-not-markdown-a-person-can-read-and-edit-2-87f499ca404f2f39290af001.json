@@ -23,17 +23,26 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-files-are-markdown-and-tolerant-8df622c4c2bdbdbf0930c6d7"
+    "OBS-tc-records-files-are-markdown-and-tolerant-8df622c4c2bdbdbf0930c6d7",
+    "OBS-tc-records-files-are-markdown-and-tolerant-9f961221bc2961b934e3ddfe"
   ],
   "impact": "People cannot use the records directly (GitHub #235)",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "GitHub issue #235; red on 0.5.0 at leif/0.6.0-batch-red 370d221d",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794429582,
+      "text": "status: open -> verified. Fixed by plan steps 2 to 5 (PR #238): sessions and bugs are Markdown records whose human edits survive; evidence entries (step 4) join the case when they land. The case passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-records-files-are-markdown-and-tolerant-9f961221bc2961b934e3ddfe"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794429417,
-  "updated_at_unix_seconds": 1794429417
+  "updated_at_unix_seconds": 1794429582
 }
