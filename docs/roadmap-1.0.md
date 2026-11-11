@@ -242,7 +242,7 @@ Tested by: [the test plan](test-plan-1.0.md) in full.
 - bugs as `.chough/bugs/<id>.md`;
 - machine-only files in the Git-ignored `.chough/local/`.
 
-The [README](../README.md) shows the tree, and `.chough/README.md`
+The [README](../README.md#what-a-project-holds) shows the tree, and `.chough/README.md`
 in each project explains it.
 
 The upgrade is one explicit, previewed step.
