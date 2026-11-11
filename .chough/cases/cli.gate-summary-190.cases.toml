@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# #190: a gate summary counted Chough's records and work merged from main.
+
+[[case]]
+id = "TC-cli-190-gate-summary-counts-the-change"
+title = "A gate summary counts from the merge base with the default branch and leaves out Chough's records, the knowledge directory and SpecSync bookkeeping"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::gate_summary_counts_only_the_changes_own_files passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "gate_summary_counts_only_the_changes_own_files"
