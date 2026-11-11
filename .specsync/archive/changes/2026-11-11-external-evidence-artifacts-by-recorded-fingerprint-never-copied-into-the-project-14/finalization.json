@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14",
+  "implementation_commit": "538473bfe44ef617e7f851e19e52aa72e18cc637",
+  "implementation_tree": "a5975bcb7bd54de23095f6c60bb840f4fc2d4a2f",
+  "contract_digest": "814a8c5b960f88ae24eed7f02f1f7f935dae3576e109e85249487fa51f572dce",
+  "workspace_digest": "4176042da9fb1c0972093d63f3d3384ca466170e655b96b50ac5ba228245aaa2",
+  "closing_digest": "d9fece12e76fa870fb749c97725b3a1f70a43bbe34d980713a24d775ee7387df",
+  "review_digest": "7786afd0a595c252871b8e10d3f1b30c86292ea37c177736aecdc50d7a005bdc",
+  "finalization_digest": "cc429900a5d6d346314e94de2393e497fb14124c85b3046d2ba33efd24fae116",
+  "timestamp": 1794356420
+}

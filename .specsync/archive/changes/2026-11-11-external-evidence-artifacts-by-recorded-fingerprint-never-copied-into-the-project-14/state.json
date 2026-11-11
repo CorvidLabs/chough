@@ -7,11 +7,11 @@
   "title": "External evidence artifacts by recorded fingerprint, never copied into the project (#14)",
   "description": "External evidence artifacts by recorded fingerprint, never copied into the project (#14)",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "9f0a2df721821504c0fdae3d43c911c70a63e661",
   "created_at": 1794333646,
-  "updated_at": 1794356365,
+  "updated_at": 1794356424,
   "affected_specs": [
     "cli"
   ],
