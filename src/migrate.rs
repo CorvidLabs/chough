@@ -1296,14 +1296,13 @@ fn bug_links_0_5(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
     crate::bugs::links_0_5(root)
 }
 
-/// Mapper 3, evidence (t37d): replace this body with a call to
-/// `crate::evidence::migrate_0_5(root, sessions, bug_links)`.
+/// Mapper 3, evidence (t38b).
 fn evidence_0_5(
-    _root: &Path,
-    _sessions: &BTreeMap<String, SessionHome>,
-    _bug_links: &BTreeMap<String, Vec<String>>,
+    root: &Path,
+    sessions: &BTreeMap<String, SessionHome>,
+    bug_links: &BTreeMap<String, Vec<String>>,
 ) -> Result<(Carried, ObservationHomes)> {
-    Ok((Carried::default(), ObservationHomes::default()))
+    crate::evidence_migrate::migrate_0_5(root, sessions, bug_links)
 }
 
 /// Mapper 4, bugs (t38b).

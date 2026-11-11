@@ -8,6 +8,7 @@ mod context;
 mod direct_writes;
 mod doctor;
 mod evidence;
+mod evidence_migrate;
 mod gates;
 mod history;
 mod humans;
