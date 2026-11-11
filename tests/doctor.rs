@@ -9,10 +9,6 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
-fn json(fixture: &Fixture, name: &str) -> Value {
-    serde_json::from_str(&fixture.read(name)).unwrap()
-}
-
 /// Run `chough doctor` with `args`, returning its exit code and JSON report.
 fn doctor(fixture: &Fixture, args: &[&str]) -> (i32, Value) {
     let mut all = vec!["doctor"];
@@ -82,14 +78,10 @@ fn no_native_reads(fixture: &Fixture) {
     fixture.executable("bin/specsync");
 }
 
-/// Set a checkpoint file's native change and archive that change on HEAD.
-fn finalized_change(fixture: &Fixture, file: &str, change: &str) {
-    let mut session = json(fixture, file);
-    session["native_change"] = Value::String(change.to_string());
-    fixture.write(
-        file,
-        &(serde_json::to_string_pretty(&session).unwrap() + "\n"),
-    );
+/// Set session `key`'s native change and archive that change on HEAD.
+fn finalized_change(fixture: &Fixture, key: &str, change: &str) {
+    fixture.ok(&["session", "use", key]);
+    fixture.set_front("native_change", change);
     fixture.write(
         &format!(".specsync/archive/changes/2026-11-06-{change}/finalization.json"),
         &format!("{{\"schema_version\": 2, \"change_id\": \"{change}\", \"timestamp\": 700}}\n"),
@@ -102,13 +94,9 @@ fn indebted(fixture: &Fixture) {
     fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
     fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
     fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
-    finalized_change(fixture, ".chough/sessions/alpha.json", "ch-alpha");
-    let mut beta = json(fixture, ".chough/sessions/beta.json");
-    beta["stage"]["current"] = Value::String("done".to_string());
-    fixture.write(
-        ".chough/sessions/beta.json",
-        &(serde_json::to_string_pretty(&beta).unwrap() + "\n"),
-    );
+    finalized_change(fixture, "alpha", "ch-alpha");
+    fixture.ok(&["session", "use", "beta"]);
+    fixture.set_front("stage", "done");
     fixture.write(".chough/local/active-session", "ghost\n");
 }
 
@@ -127,8 +115,8 @@ fn doctor_reports_debt_and_changes_nothing() {
     assert_eq!(
         findings(&report),
         vec![
-            triple("finished_session", "alpha", "found"),
-            triple("finished_session", "beta", "found"),
+            triple("finished_session", &fixture.id_of("alpha"), "found"),
+            triple("finished_session", &fixture.id_of("beta"), "found"),
             triple("stale_pointer", "ghost", "found"),
         ],
         "{report:#}"
@@ -158,24 +146,22 @@ fn doctor_fix_archives_finished_sessions_and_removes_a_stale_pointer() {
     let fixture = Fixture::new();
     indebted(&fixture);
     no_native_reads(&fixture);
-    let alpha = fixture.read(".chough/sessions/alpha.json");
-    let beta = fixture.read(".chough/sessions/beta.json");
-    let gamma = fixture.read(".chough/sessions/gamma.json");
+    let gamma = fixture.read(&fixture.session_file_of("gamma"));
     let (code, report) = doctor(&fixture, &["--fix"]);
     assert_eq!(code, 0, "{report:#}");
     assert_eq!(report["mode"], "fix", "{report:#}");
     assert_eq!(
         findings(&report),
         vec![
-            triple("finished_session", "alpha", "fixed"),
-            triple("finished_session", "beta", "fixed"),
+            triple("finished_session", &fixture.id_of("alpha"), "fixed"),
+            triple("finished_session", &fixture.id_of("beta"), "fixed"),
             triple("stale_pointer", "ghost", "fixed"),
         ],
         "{report:#}"
     );
-    assert_eq!(fixture.read(".chough/sessions/archive/alpha.json"), alpha);
-    assert_eq!(fixture.read(".chough/sessions/archive/beta.json"), beta);
-    assert_eq!(fixture.read(".chough/sessions/gamma.json"), gamma);
+    assert!(fixture.is_archived("alpha") && fixture.is_archived("beta"));
+    assert_eq!(fixture.session_json("alpha")["outcome"], "done");
+    assert_eq!(fixture.read(&fixture.session_file_of("gamma")), gamma);
     assert!(!fixture.exists(".chough/local/active-session"));
     // With the debt gone, a fresh worktree enters Chough: gamma is the only open session.
     fixture.ok(&["checkpoint", "--decision", "gamma decision"]);
@@ -185,65 +171,26 @@ fn doctor_fix_archives_finished_sessions_and_removes_a_stale_pointer() {
     assert!(!fixture.exists(".native-calls"));
 }
 
-/// DRIVE-17: a legacy `.chough/session.json` is adopted under its native change's ID,
-/// adopting history first when it has no cursor; one with no native change needs
-/// `--adopt-as <key>` and is otherwise reported as skipped with that fix.
+/// REQ-records-010: a 0.5.x `.chough/session.json` means the project is not migrated;
+/// doctor reports it with `chough migrate` as the fix, never migrates itself, and its
+/// --fix changes nothing.
 #[cfg(unix)]
 #[test]
-fn doctor_fix_adopts_a_legacy_checkpoint() {
+fn doctor_reports_an_unmigrated_checkpoint_and_never_migrates() {
     let fixture = Fixture::new();
-    fixture.init();
-    let mut legacy = json(&fixture, ".chough/session.json");
-    legacy["native_change"] = Value::String("ch-legacy".to_string());
-    fixture.write(
-        ".chough/session.json",
-        &(serde_json::to_string_pretty(&legacy).unwrap() + "\n"),
-    );
+    fixture.write(".chough/session.json", "{\"schema_version\": 2}\n");
     no_native_reads(&fixture);
+    let before = snapshot(&fixture);
     let (code, report) = doctor(&fixture, &[]);
     assert_eq!(code, 1, "{report:#}");
-    assert_eq!(
-        findings(&report),
-        vec![triple("legacy_checkpoint", ".chough/session.json", "found")],
-        "{report:#}"
-    );
+    assert_eq!(report["findings"][0]["fix"], "chough migrate", "{report:#}");
     let (code, fixed) = doctor(&fixture, &["--fix"]);
-    assert_eq!(code, 0, "{fixed:#}");
-    assert!(!fixture.exists(".chough/session.json"));
-    let adopted = json(&fixture, ".chough/sessions/ch-legacy.json");
-    assert!(adopted["history_cursor"].is_object(), "{adopted:#}");
-    assert_eq!(adopted["native_change"], "ch-legacy");
-    assert_eq!(
-        fixture.read(".chough/local/active-session").trim(),
-        "ch-legacy"
-    );
-
-    let bare = Fixture::new();
-    bare.init();
-    no_native_reads(&bare);
-    let before = bare.read(".chough/session.json");
-    let (code, skipped) = doctor(&bare, &["--fix"]);
-    assert_eq!(code, 1, "{skipped:#}");
-    assert_eq!(
-        findings(&skipped),
-        vec![triple(
-            "legacy_checkpoint",
-            ".chough/session.json",
-            "skipped"
-        )],
-        "{skipped:#}"
-    );
-    assert!(
-        skipped["findings"][0]["fix"]
-            .as_str()
-            .is_some_and(|fix| fix.contains("--adopt-as")),
-        "{skipped:#}"
-    );
-    assert_eq!(bare.read(".chough/session.json"), before);
-    let (code, adopted) = doctor(&bare, &["--fix", "--adopt-as", "legacy"]);
-    assert_eq!(code, 0, "{adopted:#}");
-    assert!(bare.exists(".chough/sessions/legacy.json"));
-    assert!(!bare.exists(".native-calls"));
+    assert_eq!(code, 1, "{fixed:#}");
+    // Only Git-ignored local state (the writer lock) may appear.
+    let mut after = snapshot(&fixture);
+    after.retain(|path, _| !path.starts_with(".chough/local/"));
+    assert_eq!(after, before);
+    assert!(fixture.fails(&["next"]).contains("refused:unmigrated"));
     assert!(!fixture.exists(".native-calls"));
 }
 
@@ -263,18 +210,18 @@ fn doctor_decision_fixes_need_a_reason_and_record_no_human_decision() {
     ]);
     fixture.ok(&["session", "new", "gamma", "--objective", "Abandoned work"]);
     fixture.ok(&["session", "new", "delta", "--objective", "Live work"]);
-    finalized_change(&fixture, ".chough/sessions/alpha.json", "ch-alpha");
+    finalized_change(&fixture, "alpha", "ch-alpha");
     no_native_reads(&fixture);
-    let alpha = fixture.read(".chough/sessions/alpha.json");
-    let gamma = fixture.read(".chough/sessions/gamma.json");
+    let alpha = fixture.read(&fixture.session_file_of("alpha"));
+    let gamma = fixture.read(&fixture.session_file_of("gamma"));
 
     let (code, skipped) = doctor(&fixture, &["--fix", "--close", "gamma"]);
     assert_eq!(code, 1, "{skipped:#}");
     assert_eq!(
         findings(&skipped),
         vec![
-            triple("stale_gates", "alpha", "skipped"),
-            triple("unfinished_session", "gamma", "skipped"),
+            triple("stale_gates", &fixture.id_of("alpha"), "skipped"),
+            triple("unfinished_session", &fixture.id_of("gamma"), "skipped"),
         ],
         "{skipped:#}"
     );
@@ -287,8 +234,8 @@ fn doctor_decision_fixes_need_a_reason_and_record_no_human_decision() {
             "{finding:#}"
         );
     }
-    assert_eq!(fixture.read(".chough/sessions/alpha.json"), alpha);
-    assert_eq!(fixture.read(".chough/sessions/gamma.json"), gamma);
+    assert_eq!(fixture.read(&fixture.session_file_of("alpha")), alpha);
+    assert_eq!(fixture.read(&fixture.session_file_of("gamma")), gamma);
 
     let (code, fixed) = doctor(
         &fixture,
@@ -304,13 +251,13 @@ fn doctor_decision_fixes_need_a_reason_and_record_no_human_decision() {
     assert_eq!(
         findings(&fixed),
         vec![
-            triple("finished_session", "alpha", "fixed"),
-            triple("stale_gates", "alpha", "fixed"),
-            triple("unfinished_session", "gamma", "fixed"),
+            triple("finished_session", &fixture.id_of("alpha"), "fixed"),
+            triple("stale_gates", &fixture.id_of("alpha"), "fixed"),
+            triple("unfinished_session", &fixture.id_of("gamma"), "fixed"),
         ],
         "{fixed:#}"
     );
-    let archived = json(&fixture, ".chough/sessions/archive/alpha.json");
+    let archived = fixture.session_json("alpha");
     assert_eq!(
         archived["awaiting_human"],
         serde_json::json!([]),
@@ -327,7 +274,7 @@ fn doctor_decision_fixes_need_a_reason_and_record_no_human_decision() {
                 .is_some_and(|text| text.contains("ch-alpha"))),
         "{archived:#}"
     );
-    let closed = json(&fixture, ".chough/sessions/archive/gamma.json");
+    let closed = fixture.session_json("gamma");
     assert!(
         closed["decisions"]
             .as_array()
@@ -338,7 +285,7 @@ fn doctor_decision_fixes_need_a_reason_and_record_no_human_decision() {
                 .is_some_and(|text| text.contains("Superseded; ch-alpha is archived"))),
         "{closed:#}"
     );
-    assert!(fixture.exists(".chough/sessions/delta.json"));
+    assert!(!fixture.is_archived("delta"));
     assert!(!fixture.exists(".native-calls"));
 }
 
@@ -350,7 +297,7 @@ fn doctor_fix_keeps_a_finished_session_with_unfolded_entries_open() {
     let fixture = Fixture::new();
     fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
     fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
-    finalized_change(&fixture, ".chough/sessions/alpha.json", "ch-alpha");
+    finalized_change(&fixture, "alpha", "ch-alpha");
     fixture.ok(&[
         "inbox",
         "add",
@@ -364,12 +311,16 @@ fn doctor_fix_keeps_a_finished_session_with_unfolded_entries_open() {
         "Fold me first",
     ]);
     no_native_reads(&fixture);
-    let alpha = fixture.read(".chough/sessions/alpha.json");
+    let alpha = fixture.read(&fixture.session_file_of("alpha"));
     let (code, report) = doctor(&fixture, &["--fix"]);
     assert_eq!(code, 1, "{report:#}");
     assert_eq!(
         findings(&report),
-        vec![triple("finished_session", "alpha", "skipped")],
+        vec![triple(
+            "finished_session",
+            &fixture.id_of("alpha"),
+            "skipped"
+        )],
         "{report:#}"
     );
     assert!(
@@ -378,6 +329,6 @@ fn doctor_fix_keeps_a_finished_session_with_unfolded_entries_open() {
             .is_some_and(|fix| fix.contains("chough inbox fold")),
         "{report:#}"
     );
-    assert_eq!(fixture.read(".chough/sessions/alpha.json"), alpha);
+    assert_eq!(fixture.read(&fixture.session_file_of("alpha")), alpha);
     assert!(!fixture.exists(".native-calls"));
 }

@@ -2328,12 +2328,12 @@ requirements = ["REQ-cli-032"]
 paths = ["src/checkpoint.rs", "src/records.rs", "src/main.rs", "tests/cli.rs"]
 environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
-expected = ["tests/cli.rs::checkpoint_byte_bound_is_exactly_131072 passes"]
+expected = ["tests/cli.rs::checkpoint_byte_bound_is_exactly_1048576 passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "cli"
-test = "checkpoint_byte_bound_is_exactly_131072"
+test = "checkpoint_byte_bound_is_exactly_1048576"
 
 [[case]]
 id = "TC-cli-observation-pointer-bound-is-400"
@@ -2352,24 +2352,6 @@ expected = ["tests/cli.rs::observation_pointer_bound_is_400_and_other_lists_stay
 adapter = "cargo-test"
 test_target = "cli"
 test = "observation_pointer_bound_is_400_and_other_lists_stay_at_200"
-
-[[case]]
-id = "TC-cli-checkpoint-merge-enforces-the-raised-bounds"
-title = "Checkpoint merge accepts inputs at 131072 bytes and 400 merged observations and refuses one over either bound"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-11", "FLOW-13"]
-requirements = ["REQ-cli-032", "REQ-cli-007"]
-paths = ["src/checkpoint.rs", "tests/stages.rs"]
-environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/stages.rs::checkpoint_merge_enforces_input_collection_and_output_byte_bounds passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "stages"
-test = "checkpoint_merge_enforces_input_collection_and_output_byte_bounds"
 
 [[case]]
 id = "TC-cli-delta-guard-refusals-name-the-agent-actor"
