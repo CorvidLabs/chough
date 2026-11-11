@@ -664,9 +664,9 @@ questions from these sections, so no field repeats them.
   post. A blank reason, an archived or missing session and one with unfolded inbox
   entries are refused with nothing changed.
 - `chough session shelve <id>` moves an unreadable or oversized session folder,
-  unparsed and byte for byte, to `.chough/archive/shelved/<id>/`, with a
-  `<id>.shelved.json` record of its size, SHA-256 per file, time and reason beside it,
-  and clears the active pointer when it named it. Shelving never replaces a file, and
+  unparsed and byte for byte, to `.chough/archive/shelved/<id>/`, with `shelved.md`
+  inside it giving the folder's size, each file's size and SHA-256, the time and the
+  reason, and clears the active pointer when it named it. Shelving never replaces a file, and
   no reader scans `.chough/archive/shelved/`.
 
 A session is finished when it is at stage done, or when its native change is archived
