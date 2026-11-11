@@ -37,7 +37,8 @@
     "files": []
   },
   "decisions": [
-    "Criteria drafted from the 2026-11-10 MVP interview and the same-day issue decisions on #14, #165, #167 and #201"
+    "Criteria drafted from the 2026-11-10 MVP interview and the same-day issue decisions on #14, #165, #167 and #201",
+    "2026-11-10 pause from Leif via t370: no approvals, reviews, acceptances, gates, closes or merges recorded as 0xLeif/Leif until new instructions; work stops at READY"
   ],
   "open_questions": [],
   "completed": [
@@ -52,5 +53,5 @@
     "Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping"
   ],
   "run_consents": [],
-  "next_action": "Awaiting Leif: intent approval (13 new criteria), native scope approval, rulings on the FLOW-17/FLOW-21 and KNOW-29/KNOW-30 conflicts"
+  "next_action": "Wait for Leif's review of PR #212 and the coordinator's new instructions; then address review comments without recording anything as Leif"
 }
