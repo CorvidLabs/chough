@@ -189,6 +189,14 @@ pub(super) fn run(root: &Path, command: HistoryCommand) -> Result<()> {
         HistoryCommand::Show => {
             let session = read_checkpoint_unlocked(root)?;
             let read = selected(&session, CYCLE_EVENTS, CYCLE_BYTES, true);
+            // An entry that is not a valid transition is refused, never shown as history.
+            if let Some(invalid) = read
+                .partial
+                .iter()
+                .find(|why| why.contains("invalid transition"))
+            {
+                anyhow::bail!("{invalid}");
+            }
             print_json(&json!({
                 "schema_version": 1,
                 "session": session.meta.id,
