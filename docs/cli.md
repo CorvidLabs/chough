@@ -104,6 +104,15 @@ entries and never edits, reorders or removes one; an entry ID is never reused in
 file. `history show` lists the active session's entries, or the newest archived
 story's when no session is open.
 
+An entry also records the acting agent, when known, as an `actor` field with its
+`agent`, `model` and `terminal` (REQ-records-007). `CHOUGH_ACTOR`,
+`CHOUGH_ACTOR_MODEL` and `CHOUGH_HC_TERMINAL` set them; otherwise the agent is
+`claude-code` when `CLAUDECODE` is set, and the terminal is `HC_TERMINAL_ID`. A value
+that fails the leak check, or a terminal that is not a plain hc name, is left out with
+a warning, and an unknown actor writes no field; neither fails the command. `chough
+next` and `chough status` show the last actor. The actor is a claim an agent makes
+about itself, never a human decision.
+
 | Timeline limit | Bound |
 |---|---|
 | One entry with its fields | 65,536 bytes |

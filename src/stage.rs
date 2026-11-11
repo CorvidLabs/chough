@@ -294,6 +294,9 @@ pub(super) struct Transition {
     /// Present only on a `direct-native-write` event (REQ-history-013).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) direct_write: Option<DirectWrite>,
+    /// The acting agent, when known (REQ-records-007); an unauthenticated claim.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) actor: Option<crate::actor::Actor>,
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -1425,6 +1428,7 @@ fn log_transition_at(
         backfill,
         relayed_by,
         direct_write: None,
+        actor: None,
     };
     validate_records(&transition)?;
     // REQ-cli-060 (DRIVE-21): a stage move first records the direct lifecycle writes
@@ -1444,6 +1448,7 @@ fn log_transition_at(
                 backfill: None,
                 relayed_by: None,
                 direct_write: Some(write),
+                actor: None,
             };
             validate_records(&event)?;
             append_transition(root, session, event)?;

@@ -6,7 +6,9 @@ files:
   - src/markdown.rs
   - src/leaks.rs
   - src/identity.rs
+  - src/actor.rs
   - tests/ids.rs
+  - tests/actor.rs
 
 db_tables: []
 depends_on:
@@ -85,10 +87,21 @@ or redacting every value before it is written.
 | `parse` | Reads a record, refusing front matter outside the subset with the file, line and rule. |
 | `Match` | One leak match: its kind and byte range. |
 | `Local` | The local user and host names a value is checked against. |
-| `current` | This machine's local facts, read once per process. |
+| `current` | This machine's local facts, read once per process; for `Actor`, the acting agent this process runs as, or none. |
 | `check` | Refuses a value that leaks as `refused:leak`, naming the field and kinds, never the text. |
 | `redact` | Replaces every leak in a value with `<redacted:<kind>>` and counts them. |
 | `find` | Every non-overlapping leak match in a value. |
+| `Actor` | The acting agent of a record (REQ-records-007): its agent, model and hc terminal, each only when known; an unauthenticated claim. |
+| `AGENT` | `CHOUGH_ACTOR`, the variable that names the agent. |
+| `MODEL` | `CHOUGH_ACTOR_MODEL`, the variable that names the agent's model. |
+| `TERMINAL` | `CHOUGH_HC_TERMINAL`, the variable that names the hc terminal. |
+| `CLAUDE_CODE` | `CLAUDECODE`, set by Claude Code; it names the agent `claude-code` when no override does. |
+| `HC_TERMINAL` | `HC_TERMINAL_ID`, set by hc; it names the terminal when no override does. |
+| `from_lookup` | The actor from a variable lookup, leaving out with a warning each value that leaks, is too long, or is a terminal other than a plain hc name. |
+| `account` | The agent account `<agent>-<terminal>` a native step records when an agent acts on authority given in advance. |
+| `display` | The actor as one line for people. |
+| `front_value` | The actor as the one flat map a record's front matter `actor` holds. |
+| `from_front` | The actor a front matter `actor` value holds, when it is one well-formed map. |
 
 ## Invariants
 

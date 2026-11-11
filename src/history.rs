@@ -121,8 +121,22 @@ pub(super) fn append(
         "invalid transition payload"
     );
     stage::validate_records(&transition)?;
+    let mut transition = transition;
+    if transition.actor.is_none() {
+        transition.actor = crate::actor::Actor::current();
+    }
     session.pending.push(transition);
     Ok(())
+}
+
+/// The acting agent of the session's newest Timeline entry that names one
+/// (REQ-records-007), read leniently: an unreadable entry is passed over.
+pub(super) fn last_actor(session: &Checkpoint) -> Option<crate::actor::Actor> {
+    let read = selected(session, CYCLE_EVENTS, CYCLE_BYTES, true);
+    read.records
+        .iter()
+        .rev()
+        .find_map(|entry| serde_json::from_value(entry.get("actor")?.clone()).ok())
 }
 
 /// The session's transitions, oldest first, within `limit` entries and `byte_limit`

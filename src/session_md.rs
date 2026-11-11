@@ -361,6 +361,7 @@ fn parse_head_with(head: &str, lenient: bool) -> Result<(Entry, bool)> {
                 backfill: None,
                 relayed_by: None,
                 direct_write: None,
+                actor: None,
             },
             native_change: None,
         },
@@ -443,6 +444,7 @@ fn apply_field(entry: &mut Entry, key: &str, value: String) -> Result<()> {
         }
         "relayed_by" => transition.relayed_by = Some(serde_json::from_str(&value)?),
         "direct_write" => transition.direct_write = Some(serde_json::from_str(&value)?),
+        "actor" => transition.actor = Some(serde_json::from_str(&value)?),
         // A field a later Chough writes (`by`, corrections and so on) reads as unknown.
         _ => {}
     }
@@ -489,6 +491,9 @@ fn render_entry(transition: &Transition, native_change: Option<&str>, id: &str) 
     }
     if let Some(write) = &transition.direct_write {
         field("direct_write", &json(write));
+    }
+    if let Some(actor) = &transition.actor {
+        field("actor", &json(actor));
     }
     out
 }
@@ -656,6 +661,7 @@ mod tests {
             backfill: None,
             relayed_by: None,
             direct_write: None,
+            actor: None,
         }
     }
 

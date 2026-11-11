@@ -10,6 +10,14 @@ use tempfile::TempDir;
 /// The checkpoint byte cap of REQ-cli-032 (DRIVE-14: 1 MiB, from the 2026-11-05 sizing study).
 #[allow(dead_code)]
 pub(super) const CHECKPOINT_CAP: usize = 1_048_576;
+/// The environment variables that name the acting agent (REQ-records-007).
+pub(super) const ACTOR_VARIABLES: [&str; 5] = [
+    "CHOUGH_ACTOR",
+    "CHOUGH_ACTOR_MODEL",
+    "CHOUGH_HC_TERMINAL",
+    "CLAUDECODE",
+    "HC_TERMINAL_ID",
+];
 
 pub(super) struct Fixture(TempDir);
 
@@ -126,6 +134,11 @@ impl Fixture {
             &std::env::var_os("PATH").unwrap_or_default(),
         ));
         command.env("PATH", std::env::join_paths(paths).unwrap());
+        // The suite gives the same records under Claude Code, hc or neither
+        // (REQ-records-007): a test sets the actor it means through `environment`.
+        for name in ACTOR_VARIABLES {
+            command.env_remove(name);
+        }
         command.envs(environment.iter().copied());
         command.output().unwrap()
     }

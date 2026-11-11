@@ -1,3 +1,4 @@
+mod actor;
 mod attachments;
 mod bugs;
 mod cases;
@@ -476,6 +477,9 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             Session::V2(checkpoint) => checkpoint.native_change.as_deref(),
         }),
         "transition_history": assessment.history,
+        "last_actor": match session {
+            Session::V2(checkpoint) => history::last_actor(checkpoint),
+        },
         "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
         "native_specsync": native_status,
         "native_summary": native_summary,
@@ -811,6 +815,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "unreferenced": unreferenced,
         },
         "decisions": decisions(checkpoint.map_or(&empty, |checkpoint| &checkpoint.decisions)),
+        "last_actor": checkpoint.and_then(history::last_actor),
         "last_failure": last_failure(root)?,
         "lessons": lessons(root, modules)?,
         "knowledge": library::pointer(root),
@@ -917,6 +922,10 @@ fn next_text(view: &Value) -> String {
     }
     lines.extend(native_check::lines(&view["native_check"]));
     let action = &view["next_valid_action"];
+    if let Ok(actor) = serde_json::from_value::<actor::Actor>(view["last_actor"].clone()) {
+        // An unauthenticated claim of which agent wrote the newest entry (REQ-records-007).
+        lines.push(format!("Last actor: {}", actor.display()));
+    }
     lines.push(format!("Next: {}", text(&action["action"])));
     lines.push(format!("  Why: {}", text(&action["reason"])));
     if action["command"].is_string() {
