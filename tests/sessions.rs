@@ -423,6 +423,80 @@ fn add_entry(fixture: &Fixture, key: &str, kind: &str, text: &str) -> String {
         .to_string()
 }
 
+/// #181: a finished session that still holds an open human gate is not archived on
+/// a switch; closing it is doctor's decision fix and needs --reason, so the switch
+/// names it as kept open with that recovery. A finished session without open gates
+/// is archived as before.
+#[test]
+fn a_finished_session_with_an_open_gate_stays_open_on_switch() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    let gated = json(&fixture, ".chough/sessions/alpha.json");
+    let mut alpha = gated.clone();
+    alpha["native_change"] = Value::String("ch-alpha".to_string());
+    alpha["awaiting_human"] = serde_json::json!(["Human acceptance of ch-alpha"]);
+    fixture.write(
+        ".chough/sessions/alpha.json",
+        &(serde_json::to_string_pretty(&alpha).unwrap() + "\n"),
+    );
+    fixture.write(
+        ".specsync/archive/changes/2026-11-10-ch-alpha/finalization.json",
+        "{\"schema_version\": 2, \"change_id\": \"ch-alpha\", \"timestamp\": 700}\n",
+    );
+    // Beta is finished the same way but holds no open gate.
+    let mut beta = json(&fixture, ".chough/sessions/beta.json");
+    beta["native_change"] = Value::String("ch-beta".to_string());
+    fixture.write(
+        ".chough/sessions/beta.json",
+        &(serde_json::to_string_pretty(&beta).unwrap() + "\n"),
+    );
+    fixture.write(
+        ".specsync/archive/changes/2026-11-10-ch-beta/finalization.json",
+        "{\"schema_version\": 2, \"change_id\": \"ch-beta\", \"timestamp\": 701}\n",
+    );
+
+    // Delta is at stage done with a gate opened there, its change not finalized:
+    // doctor has no mechanical fix for it either, so it stays open, naming the
+    // close-gate recovery instead.
+    let mut delta = json(&fixture, ".chough/sessions/beta.json");
+    delta["native_change"] = Value::Null;
+    delta["stage"]["current"] = Value::String("done".to_string());
+    delta["awaiting_human"] = serde_json::json!(["Release go for delta", "Docs sign-off"]);
+    let delta_bytes = serde_json::to_string_pretty(&delta).unwrap() + "\n";
+    fixture.write(".chough/sessions/delta.json", &delta_bytes);
+
+    let switched = fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    assert_eq!(
+        switched["archived"],
+        serde_json::json!(["beta"]),
+        "{switched}"
+    );
+    let kept = switched["kept_open"].as_array().unwrap();
+    assert_eq!(kept.len(), 2, "{switched}");
+    let entry = |key: &str| kept.iter().find(|entry| entry["key"] == key).unwrap();
+    assert_eq!(entry("alpha")["open_gates"], 1, "{switched}");
+    assert!(
+        entry("alpha")["recovery"]
+            .as_str()
+            .is_some_and(|fix| fix.contains("doctor --fix --reason")),
+        "{switched}"
+    );
+    assert_eq!(entry("delta")["open_gates"], 2, "{switched}");
+    assert!(
+        entry("delta")["recovery"]
+            .as_str()
+            .is_some_and(|fix| fix.contains("checkpoint --close-gate")),
+        "{switched}"
+    );
+    assert_eq!(
+        fixture.read(".chough/sessions/alpha.json"),
+        serde_json::to_string_pretty(&alpha).unwrap() + "\n"
+    );
+    assert_eq!(fixture.read(".chough/sessions/delta.json"), delta_bytes);
+    assert!(!fixture.exists(".chough/sessions/beta.json"));
+    assert!(fixture.exists(".chough/sessions/archive/beta.json"));
+}
+
 /// A done session with unfolded inbox entries is not archived on a switch, so its
 /// entries are not stranded; `session list` shows each session's unfolded count
 /// (review of #77).
@@ -1518,4 +1592,126 @@ fn session_close_refuses_a_session_with_unfolded_inbox_entries() {
     );
     assert_eq!(fixture.read(".chough/sessions/alpha.json"), before);
     assert!(!fixture.exists(".chough/sessions/archive/alpha.json"));
+}
+
+// #113: a missing adopted frozen log refuses writes; fresh session lineages stay independent.
+fn missing_log_proof_files(root: &std::path::Path) -> std::collections::BTreeMap<String, Vec<u8>> {
+    fn visit(
+        root: &std::path::Path,
+        path: &std::path::Path,
+        files: &mut std::collections::BTreeMap<String, Vec<u8>>,
+    ) {
+        if !path.exists() {
+            return;
+        }
+        if path.is_dir() {
+            for entry in fs::read_dir(path).unwrap() {
+                visit(root, &entry.unwrap().path(), files);
+            }
+        } else {
+            files.insert(
+                path.strip_prefix(root)
+                    .unwrap()
+                    .to_string_lossy()
+                    .into_owned(),
+                fs::read(path).unwrap(),
+            );
+        }
+    }
+    let mut files = std::collections::BTreeMap::new();
+    for path in [
+        ".chough/history",
+        ".chough/sessions",
+        ".chough/local/active-session",
+    ] {
+        visit(root, &root.join(path), &mut files);
+    }
+    files
+}
+
+#[test]
+fn a_new_session_refuses_a_missing_adopted_legacy_log_without_mutation() {
+    for holder in [
+        ".chough/sessions/legacy.json",
+        ".chough/sessions/archive/legacy.json",
+        ".chough/sessions/shelved/legacy.json",
+        "knowledge/attachments/legacy/sessions/legacy.json",
+    ] {
+        let fixture = Fixture::new();
+        fixture.init();
+        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["history", "adopt", "--apply"]);
+        fixture.ok(&["session", "adopt", "legacy"]);
+        fixture.ok(&["session", "new", "other", "--objective", "Other work"]);
+        assert!(
+            json(&fixture, ".chough/sessions/other.json")["history_cursor"]["legacy"].is_null()
+        );
+        let original = fixture.read(".chough/sessions/legacy.json");
+        if holder != ".chough/sessions/legacy.json" {
+            fixture.write(holder, &original);
+            fs::remove_file(fixture.root().join(".chough/sessions/legacy.json")).unwrap();
+        }
+        assert_eq!(fixture.read(holder), original);
+        let frozen = fixture.read(".chough/transitions.jsonl");
+        assert!(!frozen.trim().is_empty());
+        fs::remove_file(fixture.root().join(".chough/transitions.jsonl")).unwrap();
+        let before = missing_log_proof_files(fixture.root());
+        let error = fixture.fails(&["stage", "advance"]);
+        assert!(error.contains("legacy history anchor"), "{holder}: {error}");
+        assert_eq!(missing_log_proof_files(fixture.root()), before, "{holder}");
+        assert!(!fixture.exists(".chough/transitions.jsonl"));
+        assert_eq!(fixture.read(holder), original);
+    }
+}
+
+#[test]
+fn a_new_session_that_never_had_a_legacy_log_still_writes() {
+    let fixture = Fixture::new();
+    fixture.ok(&[
+        "init",
+        "--objective",
+        "Fresh history",
+        "--intent-scope",
+        "LIFE",
+        "--module",
+        "cli",
+    ]);
+    fixture.ok(&["session", "adopt", "first"]);
+    fixture.ok(&["session", "new", "other", "--objective", "Other work"]);
+    assert!(!fixture.exists(".chough/transitions.jsonl"));
+    let before = events(&fixture, &cycle(&fixture, "other"));
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(events(&fixture, &cycle(&fixture, "other")), before + 1);
+    assert!(json(&fixture, ".chough/sessions/other.json")["history_cursor"]["legacy"].is_null());
+    assert!(!fixture.exists(".chough/transitions.jsonl"));
+}
+
+#[test]
+fn a_missing_adopted_log_is_not_hidden_by_an_earlier_session_without_an_anchor() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["history", "adopt", "--apply"]);
+    fixture.ok(&["session", "adopt", "legacy"]);
+    fixture.ok(&[
+        "session",
+        "new",
+        "aaa-no-anchor",
+        "--objective",
+        "Earlier independent session",
+    ]);
+    fixture.ok(&["session", "new", "other", "--objective", "Other work"]);
+    assert!(
+        json(&fixture, ".chough/sessions/aaa-no-anchor.json")["history_cursor"]["legacy"].is_null()
+    );
+    assert!(json(&fixture, ".chough/sessions/other.json")["history_cursor"]["legacy"].is_null());
+    let holder = fixture.read(".chough/sessions/legacy.json");
+    assert!(json(&fixture, ".chough/sessions/legacy.json")["history_cursor"]["legacy"].is_object());
+    fs::remove_file(fixture.root().join(".chough/transitions.jsonl")).unwrap();
+    let before = missing_log_proof_files(fixture.root());
+    let error = fixture.fails(&["stage", "advance"]);
+    assert!(error.contains("legacy history anchor"), "{error}");
+    assert_eq!(missing_log_proof_files(fixture.root()), before);
+    assert_eq!(fixture.read(".chough/sessions/legacy.json"), holder);
+    assert!(!fixture.exists(".chough/transitions.jsonl"));
 }

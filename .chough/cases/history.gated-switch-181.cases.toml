@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-switch-keeps-gated-finished-sessions-open"
+title = "A session switch keeps finished sessions with open human gates open"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16", "DRIVE-17"]
+requirements = ["REQ-history-006", "REQ-history-012"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["session new archives only the ungated finished session; the gated finalized session and the gated done session stay open byte for byte, reported in kept_open with their gate counts and the doctor or close-gate recovery"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_finished_session_with_an_open_gate_stays_open_on_switch"

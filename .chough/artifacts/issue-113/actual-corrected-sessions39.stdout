@@ -1,0 +1,46 @@
+▶️ Running task: test
+
+running 39 tests
+test a_folded_inbox_question_appears_in_next ... ok
+test a_missing_adopted_log_is_not_hidden_by_an_earlier_session_without_an_anchor ... ok
+test a_new_session_that_never_had_a_legacy_log_still_writes ... ok
+test a_project_without_sessions_is_unchanged ... ok
+test a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded ... ok
+test a_done_session_with_unfolded_entries_stays_open_on_switch ... ok
+test a_session_whose_native_change_is_archived_is_finished_without_a_native_read ... ok
+test a_new_session_refuses_a_missing_adopted_legacy_log_without_mutation ... ok
+test adopt_moves_the_checkpoint_byte_for_byte ... ok
+test an_inbox_entry_of_exactly_16_kib_is_read_and_one_byte_more_is_refused ... ok
+test an_inbox_add_killed_while_writing_leaves_no_partial_entry ... ok
+test an_unrecorded_inbox_observation_is_added_with_a_warning ... ok
+test a_save_refused_because_the_session_vanished_leaves_no_event ... ok
+test commands_use_the_active_session_and_refuse_when_unclear ... ok
+test a_switch_partway_through_a_command_does_not_redirect_its_save ... ok
+test each_session_has_its_own_cycle ... ok
+test concurrent_decisions_in_sessions_mode_keep_every_one ... ok
+test fold_checks_its_targets_before_saving_the_session ... ok
+test fold_validates_entries_like_add ... ok
+test branches_with_different_sessions_merge_without_conflict ... ok
+test in_sessions_mode_local_holds_only_the_pointer_and_the_lock ... ok
+test inbox_entries_fold_once_without_touching_the_session ... ok
+test fold_racing_a_writer_keeps_both_updates ... ok
+test one_oversized_or_unreadable_session_does_not_break_the_others ... ok
+test orphaned_session_file_temps_are_removed_and_ignored ... ok
+test session_close_archives_abandoned_work_with_its_reason ... ok
+test session_close_refuses_a_session_with_unfolded_inbox_entries ... ok
+test session_list_reports_an_archived_session_as_archived ... ok
+test an_inbox_holds_200_unfolded_entries_and_refuses_the_201st ... ok
+test session_new_accepts_the_module_ids_init_accepts ... ok
+test session_use_archives_a_finalized_session_unless_its_inbox_has_entries ... ok
+test sessions_still_write_after_the_anchor_holder_rolls_into_the_vault_or_is_shelved ... ok
+test inbox_add_racing_an_archive_never_strands_its_entry ... ok
+test shelving_an_oversized_legacy_checkpoint_lets_a_session_start ... ok
+test shelving_an_oversized_session_lets_work_continue ... ok
+test the_repository_declares_the_merge_driver_for_every_session_file ... ok
+test switching_archives_done_sessions ... ok
+test legacy_writers_racing_adopt_end_in_one_mode ... ok
+test session_use_waits_for_a_running_stage_advance ... ok
+
+test result: ok. 39 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.96s
+
+✅ test (8.2s)

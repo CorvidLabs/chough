@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "aac844ae4e40780dcb93973a4077acaaed6cda07",
+  "contract_digest": "c5647f0bbe410b5784a50cf5110c75706ba139055508bdd8699e8771034b544a",
+  "execution_digest": "b8ce8ea6a6252d3e6b607ccb37007604542a8c1eefbe47aba8f37cfc0af4ae90",
+  "workspace_digest": "c9d241cc04dc78e7d0059d732cad396c5bf375a4b7efbe47501eebb605204001",
+  "timestamp": 1794323765
+}

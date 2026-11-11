@@ -1,0 +1,54 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-f3d769a6b072659e08bf73b7",
+    "head": "EVT-20b0f3769a823e03666e867e",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Keep finished sessions with open human gates open on session use/new (#181)",
+  "intent_scope": "",
+  "modules": [],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181",
+  "references": {
+    "criteria": [
+      "DRIVE-17"
+    ],
+    "requirements": [
+      "REQ-history-006",
+      "REQ-history-012"
+    ],
+    "cases": [
+      "TC-history-switch-keeps-gated-finished-sessions-open"
+    ],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Scope approval recorded natively as 0xLeif under Leif's 2026-11-10 merge rule (relayed by coordinator hc t370, which also relayed that Leif allowed specsync approve/review for this worker): bug fixes matching existing specs/requirements/hi run the full lifecycle with 0xLeif as approve/review actor and squash-merge on green CI with every review thread resolved. Recorded by Claude Code worker hc t37j; a relayed claim, not authenticated.",
+    "0xLeif decided \"Implementation review of keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181\": \"bug fixes, meaning work that makes behaviour match the existing specs/requirements/hi, may run the full SpecSync lifecycle with 0xLeif as approve/review actor and squash-merge once CI is green and every review thread is resolved\" (Leif's merge rule, 2026-11-10, relayed by coordinator Claude Code (hc t370) to worker hc t37j; Leif also approved allowing specsync approve/review for this worker); recorded by claude-code (claude-opus-5-5) on hc t37j; a relayed claim, not authenticated"
+  ],
+  "open_questions": [],
+  "completed": [
+    "Failing tests: be1dc60a"
+  ],
+  "observations": [
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992",
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e",
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-267a8deb386341d2ff15f774",
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-e3ceaa42d7d2ca9f573093c0",
+    "OBS-tc-history-switch-keeps-gated-finished-sessions-open-513e970c867a3b306088d874"
+  ],
+  "bugs": [
+    "BUG-session-use-new-archive-finished-sessions-that-still-hold-an-open-human-7f275557438d8b4e21bf17d5"
+  ],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Review and ship keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181 under the merge rule, push the archive, merge on green CI."
+}

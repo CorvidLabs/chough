@@ -1,9 +1,0 @@
-{
-  "case": "TC-history-prune-restore-preserves-recreated-file",
-  "observation": "OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05",
-  "outcome": "passed",
-  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
-  "retention": null,
-  "schema_version": 1,
-  "summary": "Ran cargo test --locked --bin chough -- --exact evidence::tests::prune_restore_preserves_recreated_file_and_uncommitted_original for TC-history-prune-restore-preserves-recreated-file: passed (exit 0)."
-}

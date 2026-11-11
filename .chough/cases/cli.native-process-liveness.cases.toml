@@ -1,0 +1,56 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-killed-unreaped-child-not-alive"
+title = "A killed unreaped child is not alive and a running child is"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-19"]
+requirements = ["REQ-cli-053"]
+paths = ["tests/common/mod.rs", "tests/native.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the zombie and running-child regression passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "a_killed_unreaped_child_is_not_alive_but_a_running_child_is"
+
+[[case]]
+id = "TC-cli-timed-out-prime-kills-native-process"
+title = "A timed-out prime leaves no live native process"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-19"]
+requirements = ["REQ-cli-053"]
+paths = ["tests/common/mod.rs", "tests/native.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the timed-out native process probe passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "a_timed_out_prime_writes_nothing_kills_children_and_retries_cold"
+
+[[case]]
+id = "TC-cli-sigterm-stops-native-process"
+title = "SIGTERM to change check stops the native process"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-19"]
+requirements = ["REQ-cli-059"]
+paths = ["tests/common/mod.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change check SIGTERM process probe passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "sigterm_to_change_check_stops_specsync"

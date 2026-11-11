@@ -1,0 +1,57 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794351002,
+      "digest": "acf60b7442cd58db740d15f4a690012cdbbd43ff0e5c2aa3a0f106fecbf340e3",
+      "note": "Leif's 2026-11-10 merge rule, relayed by coordinator Claude Code (hc t370): bug fixes that make behaviour match existing specs/requirements/hi may run the full SpecSync lifecycle with 0xLeif as approve/review actor and squash-merge once CI is green and every review thread is resolved; the coordinator listed #60 (PR #204) as a bug fix under it, and Leif earlier said 'yes to all' to this scope (context.md). Covers #60 only: additive case/observation keys from cases record and evidence add. Recorded by the Claude Code worker (hc t37j); a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "return-the-observation-id-from-cases-record-and-evidence-add-issue-60",
+        "title": "Return the observation ID from cases record and evidence add (issue 60)",
+        "description": "Return the observation ID from cases record and evidence add (issue 60)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.observation-ids-60.cases.toml",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "knowledge/",
+          "src/cases.rs",
+          "src/evidence.rs",
+          "tests/cases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "On base 5ff54dd7, new focused tests fail because cases record omits case and observation and evidence add omits observation. After the fix, cases record returns case equal to the requested case ID and observation equal to both the recorded file stem and stored record id; evidence add returns observation with the same equality. Existing keys, record bytes apart from ordinary ID allocation, exit codes and stored schemas remain unchanged; docs/cli.md names the returned keys, the focused cases and full Fledge verify lane pass locally."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "FLOW-7 keeps case definitions separate from observations; FLOW-18 requires docs/cli.md to match current behavior; LIFE-4 covers the small CLI workflow. Issue 60 bounds this to additive case/observation keys only: preserve existing keys, exit codes, stored records and schemas; exclude bug-output and stage-refusal envelope changes. Write failing regressions first, use a change-specific cases file, run strict audit before every push, and do not tag, release, publish or deploy.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "a6d6a5ca82e04b131ed6720206f96bace954f1d7c05698884f620205b360fd14"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-011": "f03c626751f7758c394ac9381ce523db267e01afc23a6dc686b6f134db1c9e9b",
+        "cli: REQUIREMENT REQ-cli-017": "6bc836f7943931e54e3b38396645a640053eee47d666c47d035abf2b87adb14a"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794352544,
+      "digest": "7e64110d7ad8ab90dc179c9da7034a39a2b77d8a00f4583596bfd2193ad7fbda",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

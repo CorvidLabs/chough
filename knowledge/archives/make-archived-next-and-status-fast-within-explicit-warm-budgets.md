@@ -56,7 +56,7 @@ verification records, the retention ledger and Git stay authoritative.
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-product-test-43953badfa0bdb247decd5d4 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
-| OBS-structural-d609d7d731efad7e2db11df1 | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-structural-d609d7d731efad7e2db11df1 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-tc-cli-change-ship-checks-before-running-850fd2b5156999ca3757ed47 | failed (by cycle time) | local-macos-arm64 | TC-cli-change-ship-checks-before-running |
 | OBS-tc-cli-change-ship-checks-before-running-a1285806eaa44873ff77349c | failed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-change-ship-checks-before-running |
 | OBS-tc-cli-change-ship-checks-before-running-c14a4660777723bfb60f4498 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-change-ship-checks-before-running |

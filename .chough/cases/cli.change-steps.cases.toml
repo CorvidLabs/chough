@@ -126,21 +126,3 @@ expected = ["the change test an_invalid_native_bound_refuses_status_naming_a_val
 adapter = "cargo-test"
 test_target = "change"
 test = "an_invalid_native_bound_refuses_status_naming_a_valid_retry"
-
-[[case]]
-id = "TC-cli-change-new-no-spec-change"
-title = "chough change new passes --no-spec-change with its --rationale, and refuses the first alone"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-20"]
-requirements = ["REQ-cli-057"]
-paths = ["src/change.rs", "tests/change.rs"]
-environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["the change test change_new_passes_no_spec_change_with_its_rationale passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "change"
-test = "change_new_passes_no_spec_change_with_its_rationale"
