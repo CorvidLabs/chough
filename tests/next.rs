@@ -2230,3 +2230,41 @@ fn status_leads_with_the_same_summary_as_next() {
         next["next_valid_action"]
     );
 }
+
+/// t37f's seed capture: after a migration, or once a session has finished, the latest
+/// failure may be a receipt that a bug or an archived story holds; next still names
+/// it, with the bug that links it (REQ-cli-021).
+#[test]
+fn next_names_the_latest_failure_held_only_as_a_receipt() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.bug_md(
+        "2026-01-01-broken",
+        "in-scope",
+        "verified",
+        &["2026-01-01-failing"],
+    );
+    let path = ".chough/bugs/2026-01-01-broken.md";
+    let text = fixture.read(path).replacen(
+        "receipts: []\n",
+        "receipts:\n  - id: 2026-01-01-failing\n    aliases: OBS-failing-000000000000000000000001\n    claim: the probe failed\n    result: failed\n    observed: 2026-01-01T00:00:10Z\n",
+        1,
+    );
+    fixture.write(path, &text);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["last_failure"]["id"], "2026-01-01-failing", "{next:#}");
+    assert_eq!(
+        next["last_failure"]["bugs"]["items"][0]["id"], "2026-01-01-broken",
+        "{next:#}"
+    );
+    let shown = text_of(&fixture);
+    assert!(
+        shown.contains("Last failure: 2026-01-01-failing"),
+        "{shown}"
+    );
+}
+
+fn text_of(fixture: &Fixture) -> String {
+    let output = fixture.run(&["next"]);
+    String::from_utf8_lossy(&output.stdout).to_string()
+}

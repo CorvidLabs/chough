@@ -662,20 +662,46 @@ fn decisions(entries: &[String]) -> Value {
 
 /// The failed observation with the greatest recorded time, ties to the greater ID, and
 /// every bug that links it, by bug ID. Recorded fields only: never file times or order.
+/// It is an open session's entry, or a receipt an archived story or a bug holds, as it
+/// is after a migration or once its session finished (REQ-cli-021).
 fn last_failure(root: &Path) -> Result<Value> {
-    let latest = evidence::load_all(root)?
+    // (observed, id, claim) of every failed observation.
+    let mut failed: Vec<(u64, String, String)> = evidence::load_all(root)?
         .into_iter()
         .filter(|record| record.outcome == evidence::Outcome::Failed)
-        .max_by(|left, right| {
-            (left.observed_at_unix_seconds, &left.id)
-                .cmp(&(right.observed_at_unix_seconds, &right.id))
-        });
-    let Some(latest) = latest else {
+        .map(|record| (record.observed_at_unix_seconds, record.id, record.summary))
+        .collect();
+    let receipt = |map: &[(String, String)]| -> Option<(u64, String, String)> {
+        let get = |key: &str| {
+            map.iter()
+                .find(|(name, _)| name == key)
+                .map(|(_, value)| value.clone())
+        };
+        (get("result")? == "failed").then_some(())?;
+        let observed = session_md::parse_time(&get("observed")?).ok()?;
+        Some((observed, get("id")?, get("claim").unwrap_or_default()))
+    };
+    failed.extend(
+        bugs::receipts(root)?
+            .iter()
+            .filter_map(|(_, map)| receipt(map)),
+    );
+    for (_, story) in bugs::records_in(
+        root,
+        ".chough/archive/sessions",
+        markdown::Kind::Story.bound(),
+    ) {
+        failed.extend(story.maps("receipts").iter().filter_map(|map| receipt(map)));
+    }
+    let Some((observed, id, claim)) = failed
+        .into_iter()
+        .max_by(|left, right| (left.0, &left.1).cmp(&(right.0, &right.1)))
+    else {
         return Ok(Value::Null);
     };
     let mut linked: Vec<(String, String)> = bugs::observation_references(root)?
         .into_iter()
-        .filter(|(_, ids)| ids.contains(&latest.id))
+        .filter(|(_, ids)| ids.contains(&id))
         .filter_map(|(label, _)| {
             let (id, status) = label.split_once(' ')?;
             Some((id.to_string(), status.to_string()))
@@ -683,9 +709,9 @@ fn last_failure(root: &Path) -> Result<Value> {
         .collect();
     linked.sort();
     Ok(json!({
-        "id": latest.id,
-        "observed_at_unix_seconds": latest.observed_at_unix_seconds,
-        "summary": cut(&latest.summary),
+        "id": id,
+        "observed_at_unix_seconds": observed,
+        "summary": cut(&claim),
         "bugs": {
             "total": linked.len(),
             "items": linked.iter().take(LINKED_BUG_LIMIT).map(|(id, status)| json!({"id": id, "status": status})).collect::<Vec<_>>(),

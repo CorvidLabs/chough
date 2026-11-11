@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-next-last-failure-from-receipts-7b1c7fbab6a386220a89d52a",
+  "criteria": [
+    "LIFE-1",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact next_names_the_latest_failure_held_only_as_a_receipt for TC-cli-next-last-failure-from-receipts: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-next-last-failure-from-receipts-7b1c7fbab6a386220a89d52a.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-next-last-failure-from-receipts-7b1c7fbab6a386220a89d52a.log": "855587a93ae2af7bdbd2250e1dd048c9dd03ef0d8868415d69d8ee6d19bacb89"
+  },
+  "observed_at_unix_seconds": 1794439631,
+  "snapshot": {
+    "revision": "e7f5b4ccd1457c30925b0bf8ab151d3075b1df50",
+    "dirty": false,
+    "fingerprint": "b73cae7ea2c3fb285c32e5369ceaaa91e9959377bd2f4e1c39287a739723d601",
+    "content": "7dd942d3909d12595dfcf13ef55257239ada8ae5602b926dacd0a4af90be9bbc"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-next-last-failure-from-receipts",
+      "digest": "24a34fe926ef8547bf47bc07c4ee6401ee3fdf365ae3e115fe1542918551c4dc"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "next_names_the_latest_failure_held_only_as_a_receipt"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
