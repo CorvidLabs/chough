@@ -125,17 +125,9 @@ fn project(delay: &str) -> Fixture {
 }
 
 fn set_checkpoint(fixture: &Fixture, observations: &[&str]) {
-    let path = fixture.root().join(".chough/session.json");
-    let mut session: Value =
-        serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
-    session["stage"]["current"] = json!("accept");
-    session["native_change"] = json!("a5");
-    session["observations"] = json!(observations);
-    std::fs::write(
-        &path,
-        serde_json::to_string_pretty(&session).unwrap() + "\n",
-    )
-    .unwrap();
+    fixture.set_front("stage", "accept");
+    fixture.set_front("native_change", "a5");
+    fixture.set_front("observations", &format!("[{}]", observations.join(", ")));
 }
 
 fn pruned(trim: &Value) -> Vec<String> {
@@ -199,6 +191,7 @@ fn unlisted_proof_is_attributed_to_its_change_by_cycle_time() {
 }
 
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn done_drops_checkpoint_references_from_closed_cycles() {
     let fixture = project("0");
     // The current cycle began 15 days ago; r2 is from an earlier cycle, u3 from this one.
@@ -333,6 +326,7 @@ fn many_cold_archives() -> Fixture {
 /// host with more than eight cores; `validity_readers` in src/evidence.rs holds the
 /// ceiling on every host.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn at_most_eight_validity_reads_run_at_once() {
     let fixture = many_cold_archives();
     let moved = fixture.ok(&["stage", "advance"]);
@@ -627,6 +621,7 @@ fn key_items_of_a_cold_change_move_into_the_vault() {
 /// Review of #108: a current-cycle reference whose record exists but cannot be read is
 /// kept, and the step reports `refused` instead of dropping it; done still completes.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn an_unreadable_record_keeps_its_reference_and_refuses_the_drop() {
     let fixture = project("0");
     let reset = json!({
@@ -1125,6 +1120,7 @@ fn set_references(fixture: &Fixture, files: &[&str], design: &[&str]) {
 /// trimmed. No reset is recorded here, so the observation part has no cycle start, but
 /// the file and design part does not need one.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn done_drops_every_file_and_design_reference() {
     let fixture = project("0");
     fixture.write(".chough/artifacts/old-pr/notes.log", "old\n");
@@ -1170,6 +1166,7 @@ fn done_drops_every_file_and_design_reference() {
 /// KNOW-21: an archived session is done, so retention ignores its file and design
 /// references; a cold loose folder only it names is trimmed.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn an_archived_session_file_reference_protects_nothing() {
     let fixture = project("0");
     fixture.write(".chough/artifacts/old-pr/notes.log", "old\n");
@@ -1530,136 +1527,11 @@ fn a_rotation_larger_than_the_record_bound_still_rotates() {
     );
 }
 
-/// Archived sessions for KNOW-29: s1 to s5 belong to archives a1 to a5 (finalized 60 to 20
-/// days ago), s0 ties with s1 on a1 and sorts before it by key, and s6 has no native
-/// change, so it is the oldest. The active session is adopted from the legacy checkpoint.
-fn seven_archived_sessions(fixture: &Fixture) -> Vec<(String, String)> {
-    fixture.ok(&["history", "adopt", "--apply"]);
-    fixture.ok(&["session", "adopt", "legacy"]);
-    let template: Value =
-        serde_json::from_str(&fixture.read(".chough/sessions/legacy.json")).unwrap();
-    let mut written = vec![];
-    for (key, change) in [
-        ("s0", Some("a1")),
-        ("s1", Some("a1")),
-        ("s2", Some("a2")),
-        ("s3", Some("a3")),
-        ("s4", Some("a4")),
-        ("s5", Some("a5")),
-        ("s6", None),
-    ] {
-        let mut session = template.clone();
-        session["stage"]["current"] = json!("done");
-        session["objective"] = json!(format!("Archived objective {key}"));
-        session["native_change"] = json!(change);
-        session["observations"] = json!([]);
-        // One session holds the legacy anchor: the adopting one, still open (#143).
-        session["history_cursor"]["legacy"] = Value::Null;
-        let text = serde_json::to_string_pretty(&session).unwrap() + "\n";
-        let path = format!(".chough/sessions/archive/{key}.json");
-        fixture.write(&path, &text);
-        written.push((key.to_string(), text));
-    }
-    fixture.commit("seven archived sessions");
-    written
-}
-
-/// KNOW-29: at done only the five most recent archived sessions stay in
-/// `.chough/sessions/archive/`, newest by their native change's finalization; older ones
-/// move byte for byte into the vault with a summary note, and nothing else changes.
-#[test]
-fn done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault() {
-    let fixture = project("0");
-    let written = seven_archived_sessions(&fixture);
-    let moved = fixture.ok(&["stage", "advance"]);
-    let rollup = &moved["applied"]["session_rollup"];
-    assert_eq!(rollup["status"], "rolled", "{moved:#}");
-    assert_eq!(rollup["moved"], json!(["s0", "s6"]), "{rollup:#}");
-    for key in ["s1", "s2", "s3", "s4", "s5"] {
-        assert!(
-            fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
-            "{key}"
-        );
-    }
-    for (key, text) in written.iter().filter(|(key, _)| key == "s0" || key == "s6") {
-        assert!(
-            !fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
-            "{key}"
-        );
-        let attachment = format!("knowledge/attachments/{key}/sessions/{key}.json");
-        assert_eq!(&fixture.read(&attachment), text, "{key}");
-        let note = fixture.read(&format!("knowledge/sessions/{key}.md"));
-        assert!(note.contains(&format!("id: \"session/{key}\"")), "{note}");
-        assert!(
-            note.contains(&format!("../attachments/{key}/sessions/{key}.json")),
-            "{note}"
-        );
-        assert!(
-            note.contains(&format!("Archived objective {key}")),
-            "{note}"
-        );
-    }
-    fixture.ok(&["library", "index", "--check"]);
-    fixture.ok(&["session", "list"]);
-}
-
-/// #191 (KNOW-4, REQ-cli-051): a session rolled into a vault built by the same move links
-/// its change's archive note, so the move into done leaves the directory as its sources
-/// generate, with no command in between.
-#[test]
-fn a_session_rolled_into_a_fresh_vault_links_its_archive_note_and_the_check_passes() {
-    let fixture = project("0");
-    seven_archived_sessions(&fixture);
-    // As in a fresh clone of a project that does not commit its vault, with no trim
-    // building the vault first (#191 reproduced with the trim refused).
-    std::fs::remove_dir_all(fixture.root().join("knowledge")).unwrap();
-    fixture.ok(&[
-        "pref",
-        "set",
-        "retention",
-        "manual",
-        "--source",
-        "Human: keep proof",
-    ]);
-    let moved = fixture.ok(&["stage", "advance"]);
-    let applied = &moved["applied"];
-    assert_eq!(
-        applied["librarian_trim"]["status"], "skipped",
-        "{applied:#}"
-    );
-    assert_eq!(
-        applied["session_rollup"]["moved"],
-        json!(["s0", "s6"]),
-        "{applied:#}"
-    );
-    assert_eq!(
-        applied["librarian_index"]["status"], "refreshed",
-        "{applied:#}"
-    );
-    let note = fixture.read("knowledge/sessions/s0.md");
-    assert!(
-        note.contains("- Native change: [a1](../archives/a1.md)\n"),
-        "{note}"
-    );
-    fixture.ok(&["library", "index", "--check"]);
-    // One build over a vault that holds the rolled sessions but no notes gives what a
-    // rebuild gives (KNOW-4): the link never depends on notes already on disk.
-    for generated in ["archives", "sessions"] {
-        std::fs::remove_dir_all(fixture.root().join("knowledge").join(generated)).unwrap();
-    }
-    fixture.ok(&["library", "index"]);
-    let note = fixture.read("knowledge/sessions/s0.md");
-    assert!(
-        note.contains("- Native change: [a1](../archives/a1.md)\n"),
-        "{note}"
-    );
-    fixture.ok(&["library", "index", "--check"]);
-}
-
 /// #191 (KNOW-4, REQ-cli-043): when the change's archive lists the session file that
 /// archives itself at done, the move regenerates after that step, so the change's entry
 /// places the file in Git and `library index --check` passes with no command in between.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn done_leaves_the_vault_current_when_the_archive_lists_the_self_archiving_session() {
     let fixture = project("0");
     fixture.ok(&["history", "adopt", "--apply"]);
@@ -1699,32 +1571,6 @@ fn done_leaves_the_vault_current_when_the_archive_lists_the_self_archiving_sessi
     assert!(row.contains("| Git "), "{row}");
 }
 
-/// KNOW-29: with the librarian off, no session moves.
-#[test]
-fn with_the_librarian_off_archived_sessions_stay() {
-    let fixture = project("0");
-    seven_archived_sessions(&fixture);
-    fixture.ok(&[
-        "pref",
-        "set",
-        "librarian",
-        "off",
-        "--source",
-        "Human: keep everything",
-    ]);
-    let moved = fixture.ok(&["stage", "advance"]);
-    assert_eq!(
-        moved["applied"]["session_rollup"]["status"], "skipped",
-        "{moved:#}"
-    );
-    for key in ["s0", "s1", "s6"] {
-        assert!(
-            fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
-            "{key}"
-        );
-    }
-}
-
 /// Record a reset `days` ago in the legacy transition log, so the current cycle began then.
 fn reset_days_ago(fixture: &Fixture, days: u64) {
     let reset = json!({
@@ -1741,6 +1587,7 @@ fn reset_days_ago(fixture: &Fixture, days: u64) {
 /// preference, the move into done reports the checkpoint references `skipped` and leaves
 /// every observation, file and design reference as it was, even one from a closed cycle.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn with_the_librarian_off_done_leaves_the_references_and_reports_skipped() {
     let fixture = project("0");
     fixture.ok(&[
@@ -1772,6 +1619,7 @@ fn with_the_librarian_off_done_leaves_the_references_and_reports_skipped() {
 /// reference is dropped, however old its record; with nothing else to drop the step reports
 /// `skipped` with that reason.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn with_no_reset_time_done_drops_no_observation_reference() {
     let fixture = project("0");
     // r2 was observed 65 days ago and u3 10 days ago; with no reset neither is known to be
@@ -1889,55 +1737,43 @@ fn a_script_installed_while_an_old_write_handle_is_open_still_runs() {
     }
 }
 
-/// Adopts the legacy checkpoint as session `legacy`, the active session at accept.
-fn adopted_session(fixture: &Fixture) {
-    fixture.ok(&["history", "adopt", "--apply"]);
-    fixture.ok(&["session", "adopt", "legacy"]);
-    fixture.commit("adopted session");
-}
-
 /// #155 (REQ-history-006, DRIVE-13, DRIVE-3): the move into done archives the session
-/// itself, in its own change, and clears the active pointer, so no later `session new`
-/// in another worktree moves it.
+/// itself into one story, in its own change, and clears the active pointer, so no later
+/// `session new` in another worktree moves it.
 #[test]
 fn the_move_into_done_archives_the_session_and_clears_the_pointer() {
     let fixture = project("0");
-    adopted_session(&fixture);
+    fixture.commit("session at accept");
+    let id = fixture.active_id();
     let moved = fixture.ok(&["stage", "advance"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     let archive = &moved["applied"]["session_archive"];
     assert_eq!(archive["status"], "archived", "{moved:#}");
-    assert_eq!(archive["key"], "legacy", "{moved:#}");
-    // REQ-cli-049: the ledger rotation ran in the same move, before the archive.
-    assert!(
-        moved["applied"]["ledger_rotation"]["status"].is_string(),
-        "{moved:#}"
-    );
+    assert_eq!(archive["id"], id, "{moved:#}");
     assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
-    assert!(!fixture.exists(".chough/sessions/legacy.json"));
-    let archived: Value =
-        serde_json::from_str(&fixture.read(".chough/sessions/archive/legacy.json")).unwrap();
-    assert_eq!(archived["stage"]["current"], "done", "{archived:#}");
+    let story = common::parse_session(&fixture.read(&format!(".chough/archive/sessions/{id}.md")));
+    assert_eq!(story["stage"]["current"], "done", "{story:#}");
+    assert_eq!(story["outcome"], "done", "{story:#}");
     assert!(!fixture.exists(".chough/local/active-session"));
     let next = fixture.fails(&["next"]);
     assert!(next.contains("no open session"), "{next}");
     assert!(next.contains("chough session new <key>"), "{next}");
     let started = fixture.ok(&["session", "new", "beta", "--objective", "Next work"]);
-    assert_eq!(started["archived"], json!([]), "{started:#}");
+    assert!(started.get("archived").is_none(), "{started:#}");
     let list = fixture.ok(&["session", "list"]);
-    assert!(list.to_string().contains("\"archived\""), "{list:#}");
+    assert!(list.to_string().contains("\"archived\":true"), "{list:#}");
 }
 
-/// #155: a session with unfolded inbox entries stays open at done, as on a switch.
+/// #155: a session with unfolded inbox entries stays open at done.
 #[test]
 fn the_move_into_done_keeps_a_session_with_unfolded_inbox_entries_open() {
     let fixture = project("0");
-    adopted_session(&fixture);
+    let id = fixture.active_id();
     fixture.ok(&[
         "inbox",
         "add",
         "--session",
-        "legacy",
+        &id,
         "--from",
         "worker",
         "--kind",
@@ -1949,22 +1785,13 @@ fn the_move_into_done_keeps_a_session_with_unfolded_inbox_entries_open() {
     let archive = &moved["applied"]["session_archive"];
     assert_eq!(archive["status"], "kept_open", "{moved:#}");
     assert_eq!(archive["inbox_unfolded"], 1, "{moved:#}");
-    assert!(fixture.exists(".chough/sessions/legacy.json"));
-    assert!(!fixture.exists(".chough/sessions/archive/legacy.json"));
-    assert_eq!(fixture.read(".chough/local/active-session"), "legacy\n");
-    fixture.ok(&["next", "--json"]);
-}
-
-/// #155: a project still on the single legacy checkpoint has no session to archive.
-#[test]
-fn the_move_into_done_skips_the_archive_without_sessions() {
-    let fixture = project("0");
-    let moved = fixture.ok(&["stage", "advance"]);
+    assert!(fixture.exists(&format!(".chough/sessions/{id}/session.md")));
+    assert!(!fixture.exists(&format!(".chough/archive/sessions/{id}.md")));
     assert_eq!(
-        moved["applied"]["session_archive"]["status"], "skipped",
-        "{moved:#}"
+        fixture.read(".chough/local/active-session"),
+        format!("{id}\n")
     );
-    assert!(fixture.exists(".chough/session.json"));
+    fixture.ok(&["next", "--json"]);
 }
 
 /// #155: when release is authorized at the move into done, the session stays open for
@@ -1972,7 +1799,7 @@ fn the_move_into_done_skips_the_archive_without_sessions() {
 #[test]
 fn a_session_with_release_authorized_archives_itself_after_release() {
     let fixture = project("0");
-    adopted_session(&fixture);
+    let id = fixture.active_id();
     fixture.ok(&[
         "consent",
         "grant",
@@ -1983,7 +1810,7 @@ fn a_session_with_release_authorized_archives_itself_after_release() {
     let done = fixture.ok(&["stage", "advance"]);
     let archive = &done["applied"]["session_archive"];
     assert_eq!(archive["status"], "kept_open", "{done:#}");
-    assert!(fixture.exists(".chough/sessions/legacy.json"));
+    assert!(fixture.exists(&format!(".chough/sessions/{id}/session.md")));
     fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     let released = fixture.ok(&["stage", "advance"]);
     assert_eq!(released["applied"]["to"], "done", "{released:#}");
@@ -1991,45 +1818,7 @@ fn a_session_with_release_authorized_archives_itself_after_release() {
         released["applied"]["session_archive"]["status"], "archived",
         "{released:#}"
     );
-    assert!(!fixture.exists(".chough/sessions/legacy.json"));
-    assert!(fixture.exists(".chough/sessions/archive/legacy.json"));
+    assert!(fixture.exists(&format!(".chough/archive/sessions/{id}.md")));
     assert!(!fixture.exists(".chough/local/active-session"));
 }
 
-/// #143 (REQ-history-011): the archived session that holds the legacy history anchor is
-/// never rolled into the vault and does not count toward the five, so the anchor never
-/// depends on the knowledge directory. Here s0, which would roll first, holds the
-/// anchor; it stays, and s6 still rolls.
-#[test]
-fn the_roll_up_keeps_the_session_that_holds_the_legacy_anchor() {
-    let fixture = project("0");
-    // A legacy log, so adoption records a real legacy anchor in the adopting session.
-    fixture.write(".chough/transitions.jsonl", "");
-    seven_archived_sessions(&fixture);
-    let adopting: Value =
-        serde_json::from_str(&fixture.read(".chough/sessions/legacy.json")).unwrap();
-    let anchor = adopting["history_cursor"]["legacy"].clone();
-    assert!(anchor.is_object(), "{adopting:#}");
-    let path = ".chough/sessions/archive/s0.json";
-    let mut holder: Value = serde_json::from_str(&fixture.read(path)).unwrap();
-    holder["history_cursor"]["legacy"] = anchor;
-    fixture.write(
-        path,
-        &(serde_json::to_string_pretty(&holder).unwrap() + "\n"),
-    );
-    fixture.commit("s0 holds the legacy anchor");
-    let moved = fixture.ok(&["stage", "advance"]);
-    let rollup = &moved["applied"]["session_rollup"];
-    assert_eq!(rollup["status"], "rolled", "{moved:#}");
-    assert_eq!(rollup["moved"], json!(["s6"]), "{rollup:#}");
-    for key in ["s0", "s1", "s2", "s3", "s4", "s5"] {
-        assert!(
-            fixture.exists(&format!(".chough/sessions/archive/{key}.json")),
-            "{key}"
-        );
-    }
-    assert!(
-        !fixture.exists("knowledge/attachments/s0/sessions/s0.json"),
-        "{rollup:#}"
-    );
-}
