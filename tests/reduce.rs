@@ -278,3 +278,67 @@ fn a_session_with_release_authorized_archives_itself_after_release() {
     assert!(fixture.exists(&format!(".chough/archive/sessions/{id}.md")));
     assert!(!fixture.exists(".chough/local/active-session"));
 }
+
+/// REQ-cli-021, as delta correction 1 has it: at done, `chough next` names a new
+/// session, unless unfolded inbox entries or an authorized release keep the session
+/// open; then it names what closes it, never a new session while it is still open.
+#[test]
+fn next_at_done_names_what_keeps_the_session_open() {
+    // Unfolded inbox entries: fold them, then `chough doctor --fix` archives it.
+    let fixture = project();
+    let id = fixture.active_id();
+    fixture.ok(&[
+        "inbox",
+        "add",
+        "--session",
+        &id,
+        "--from",
+        "worker",
+        "--kind",
+        "decision",
+        "--text",
+        "Fold me first",
+    ]);
+    fixture.ok(&["stage", "advance"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    assert_eq!(action["command"], "chough inbox fold", "{next:#}");
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.contains("1 unfolded inbox entry") && text.contains("chough doctor --fix"),
+        "{text}"
+    );
+    assert!(!text.contains("session new"), "{text}");
+
+    // An authorized release: enter it; the session archives itself after release.
+    let fixture = project();
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "release",
+        "--source",
+        "Human: release it",
+    ]);
+    fixture.ok(&["stage", "advance"]);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    assert_eq!(
+        action["command"], "chough stage enter release --reason \"<request>\"",
+        "{next:#}"
+    );
+    assert!(
+        !action["action"].as_str().unwrap().contains("session new"),
+        "{next:#}"
+    );
+
+    // Neither: the session archived itself, and next names a new session.
+    let fixture = project();
+    fixture.ok(&["stage", "advance"]);
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        next["next_valid_action"]["command"]
+            .as_str()
+            .is_some_and(|command| command.starts_with("chough session new <key>")),
+        "{next:#}"
+    );
+}
