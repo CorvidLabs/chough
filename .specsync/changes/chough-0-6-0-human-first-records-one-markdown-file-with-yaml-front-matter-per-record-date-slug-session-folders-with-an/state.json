@@ -7,10 +7,10 @@
   "title": "Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt",
   "description": "Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "50eb4f5f5c2d571c1b4465292b36449baf3a10e0",
   "created_at": 1794406897,
-  "updated_at": 1794406920,
+  "updated_at": 1794412054,
   "affected_specs": [
     "cli",
     "history",
