@@ -45,3 +45,25 @@ expected = ["tests/migrate.rs::a_vaulted_adopter_migrates_and_writes_work passes
 adapter = "cargo-test"
 test_target = "migrate"
 test = "a_vaulted_adopter_migrates_and_writes_work"
+
+# t37j's migration preview rehearsal on this repository (plan Migration step 2) found
+# 0.5.x files REQ-records-009 removes that the plan left out or left unaccounted.
+
+[[case]]
+id = "TC-records-migrate-accounts-every-file"
+title = "chough migrate lists .chough/session.v1.json, .chough/pruned.jsonl and every file under .chough/artifacts/ in the plan: removed with why, kept as an open bug's fixture, or unaccounted so the apply refuses"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-21"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "src/bugs.rs", "tests/migrate.rs", "tests/migrate_bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the accounting test in tests/migrate.rs and the fixture test in tests/migrate_bugs.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "migrate", "--test", "migrate_bugs", "--", "every_legacy_file_and_artifact_is_accounted_for", "a_bug_of_each_id_form_carries_its_links_fixtures_and_redactions"]
+expect_output = ["test every_legacy_file_and_artifact_is_accounted_for ... ok", "test a_bug_of_each_id_form_carries_its_links_fixtures_and_redactions ... ok"]
+timeout_seconds = 600

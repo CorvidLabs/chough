@@ -212,6 +212,21 @@ fn a_bug_of_each_id_form_carries_its_links_fixtures_and_redactions() {
             .get(".chough/artifacts/repro/case.log")
             .is_none()
     );
+    // The open bug's fixture is listed as kept, and so is accounted for.
+    assert!(
+        plan["kept"][".chough/artifacts/repro/case.log"]
+            .as_str()
+            .is_some_and(|why| why.contains("BUG-0003")),
+        "{plan:#}"
+    );
+    assert!(
+        !plan["unaccounted"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|path| path == ".chough/artifacts/repro/case.log"),
+        "{plan:#}"
+    );
     // The note's home path is redacted in the written bug and counted, never printed.
     assert!(
         plan["redactions"]
