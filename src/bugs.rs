@@ -1838,7 +1838,7 @@ fn legacy_bugs(root: &Path) -> Result<Vec<(String, Legacy)>> {
 
 /// Migration hook 2 (REQ-records-009): each 0.5.x bug's ID with the observation IDs it
 /// links, for the evidence mapper to place before the bug mapper runs.
-pub(crate) fn links_0_5(root: &Path) -> Result<std::collections::BTreeMap<String, Vec<String>>> {
+pub(super) fn links_0_5(root: &Path) -> Result<std::collections::BTreeMap<String, Vec<String>>> {
     Ok(legacy_bugs(root)?
         .into_iter()
         .map(|(_, legacy)| (legacy.id.clone(), legacy.linked()))
@@ -1878,7 +1878,7 @@ fn fixture_files(root: &Path, fixture: &str) -> Vec<String> {
 #[cfg_attr(not(test), allow(dead_code))]
 /// The fixture files of every open 0.5.x bug, folders expanded: kept byte for byte by
 /// the migration, so the evidence mapper never lists them as removed (REQ-records-009).
-pub(crate) fn open_fixtures_0_5(root: &Path) -> Result<BTreeSet<String>> {
+pub(super) fn open_fixtures_0_5(root: &Path) -> Result<BTreeSet<String>> {
     Ok(legacy_bugs(root)?
         .iter()
         .filter(|(_, legacy)| legacy.is_open())
@@ -1909,7 +1909,7 @@ fn migration_suffix(old: &str) -> String {
 /// leak listed; a closed bug's fixture files under `.chough/artifacts/` are removed.
 /// Nothing is written and nothing redacted here: the framework redacts every written
 /// file.
-pub(crate) fn migrate_0_5(
+pub(super) fn migrate_0_5(
     root: &Path,
     homes: &crate::migrate::ObservationHomes,
 ) -> Result<crate::migrate::Carried> {

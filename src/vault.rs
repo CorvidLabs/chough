@@ -224,7 +224,7 @@ fn list(items: Vec<String>, empty: &str) -> String {
 type OpenBug = (Option<String>, String, String, String);
 
 #[derive(Default)]
-pub(crate) struct Pending {
+pub(super) struct Pending {
     /// Whether a migration plan is being built; a 0.5.x bug record is then left to the
     /// bug mapper instead of refused.
     pub(crate) migrating: bool,

@@ -281,7 +281,7 @@ fn bytes_0_5(root: &Path, path: &str, link: bool) -> Result<Vec<u8>> {
 /// `index.md` and `journal/feed.xml` are written as `chough library index` builds them
 /// once the plan applies, given what the earlier mappers carry (`earlier`). Rolled
 /// sessions under `attachments/*/sessions/` are the session mapper's. It reads only.
-pub(crate) fn migrate_0_5(
+pub(super) fn migrate_0_5(
     root: &Path,
     earlier: &crate::migrate::Carried,
 ) -> Result<crate::migrate::Carried> {

@@ -106,7 +106,7 @@ pub(super) enum SessionCommand {
 }
 
 #[derive(Clone, Copy, ValueEnum)]
-pub(crate) enum Kind {
+pub(super) enum Kind {
     Observation,
     Decision,
     Completed,
@@ -549,7 +549,7 @@ pub(super) fn lock_project(root: &Path) -> Result<()> {
 
 /// `.chough/README.md`, the records tree's reading guide (REQ-records-002), written
 /// create-only by `chough init` and `chough migrate --apply`; an existing one is kept.
-pub(crate) const README: &str = "# Chough records
+pub(super) const README: &str = "# Chough records
 
 This folder holds Chough's records for this project. Each record is one Markdown file:
 people read its body, agents parse its front matter.
