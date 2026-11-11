@@ -74,12 +74,13 @@
     "Retirements done per t370, but the lane's cases step fails: the 9 retired criteria still back live REQ-cli requirements with ~35 active case bindings on main; surfaced to t370 with the recommendation to move retirements into the 0.6.0 change",
     "Un-retired the 9 KNOW criteria per t370's call, each carrying the supersession note ('Superseded by KNOW-30/31/33 (Leif, 2026-11-10); retired in the Chough 0.6.0 change...'); KNOW-30 tail simplified; cases check valid again",
     "Leif's 'Yes, make it match' folded in: supersession notes on KNOW-8/9/13/16/17/20/21/26/27, carry-forward notes on KNOW-10/11, KNOW-24 reword note, DRIVE-25 and KNOW-31 fixed to the approved design, KNOW-34 (Keep all) and KNOW-35 (Split them) captured verbatim; both open questions resolved by them; roadmap and PR body updated",
-    "Captured FLOW-24 (the agent's name for approval on permission given in advance, quoting the earlier permission); roadmap and PR body updated; 112 criteria"
+    "Captured FLOW-24 (the agent's name for approval on permission given in advance, quoting the earlier permission); roadmap and PR body updated; 112 criteria",
+    "Bug recorded for the intermittent lane failures; tests green under the shared lock; verification refreshed at 27c2cd14 after committing the bug"
   ],
   "observations": [],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Lane green -> commit -> check --commit last -> push -> t37j re-review -> merge -> merged SHA to t370"
+  "next_action": "Lane green at 27c2cd14 -> push -> t37j re-review -> merge"
 }
