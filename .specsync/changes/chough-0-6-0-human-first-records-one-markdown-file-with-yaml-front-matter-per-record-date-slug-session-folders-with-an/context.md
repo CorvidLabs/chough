@@ -109,6 +109,11 @@ Answered by Leif on 2026-11-10 (coordinator chat, relayed; each is on the sessio
   (Recommended)".
 - Release condition: "yes.. but we dog food and fix all bugs before tagging and
   releasing" (plan.md, Release gate).
+- On 2026-11-11: "we need to make sure we use chough to fix and close all the bugs and
+  tickets for 0.6.0 before tagging 0.6.0.. we need to dogfood and make sure chough is
+  perfect". plan.md carries the ticket ledger and the release gate the coordinator set
+  from it: every item in the Chough 0.6.0 milestone closed through Chough, the dogfood
+  complete with every bug it finds fixed the same way, then Leif's go.
 
 Planned as the audit's recommended defaults, which Leif can still change at scope
 approval:

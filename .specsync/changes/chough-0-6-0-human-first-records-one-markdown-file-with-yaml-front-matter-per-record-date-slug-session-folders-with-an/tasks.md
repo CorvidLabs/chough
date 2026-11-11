@@ -115,7 +115,9 @@ repository with the 0.6.0 build as its own commit with the receipt; then run the
 cycle in plan.md, the next change on this branch, intent to done in 0.6.0; close #233,
 #210 and #208 as folded in, #211 as superseded by KNOW-30, and #237, #165, #12, #190,
 #76, #14 and #132 and the nine local bugs as their cases show (a flake that never
-reproduced stays open with its diagnostics, saying so). No 0.6.0 tag or release until
-the dogfood is complete and `chough bug list` shows zero open Chough bugs; a flake that
+reproduced stays open with its diagnostics, saying so). Close every row of plan.md's ticket ledger through Chough (bug record, fix, regression
+case, evidence, closed), re-checking each already-fixed row first. No 0.6.0 tag or
+release until every item in the Chough 0.6.0 milestone is closed that way, the dogfood
+is complete and `chough bug list` shows zero open Chough bugs; a flake that
 will not reproduce goes to Leif, never closed to clear the gate. Publication waits for
 Leif's go. After release: refresh the shared skill copy the hc agents load with `chough skill update`.

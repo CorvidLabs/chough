@@ -38,7 +38,7 @@ requirement are inside the named test, one assertion block per criterion.
 | REQ-history-007 | TC-history-local-only-ignored | tests/sessions.rs `local_state_is_ignored_by_git` | every local file ignored |
 | REQ-history-009 | TC-history-inbox-in-agent-folder | tests/sessions.rs `inbox_entries_live_in_the_agent_folder` | lock, whole publication, fold once |
 | REQ-history-010 | TC-history-relay-fields-on-gate-entries | tests/history.rs `relay_fields_live_on_gate_closed_entries` | four values together, native step fields, refusals |
-| REQ-history-012 | TC-history-doctor-findings-0-6 | tests/doctor.rs `doctor_reports_and_fixes_0_6_debt` | unmigrated, leak, unfinished archive, timeline rewritten, alias conflict, existing findings |
+| REQ-history-012 | TC-history-doctor-findings-0-6 | tests/doctor.rs `doctor_reports_and_fixes_0_6_debt` | unmigrated, leak, unfinished archive, timeline rewritten, alias conflict, oversize (a committed receipt over its bound fails the verify lane's `leaks` step, #215), records in verification, existing findings |
 | REQ-history-013 | TC-history-direct-write-entries | tests/history.rs `direct_write_entries_are_known_to_timing` | fields, refusal elsewhere, timing complete |
 | REQ-history-014 | TC-history-relay-summary-digests | tests/history.rs `relay_digests_come_in_pairs` | both or neither |
 | REQ-history-015 | TC-history-append-only-corrections | tests/history.rs `a_correction_appends_and_is_shown_without_rewriting_history` | correction entry, archived story append only, refusals, bounded list |
@@ -94,6 +94,7 @@ and timing-budget flakes, #132, and the issues #12, #14 item 3, #76, #165, #167,
 | BUG-…-empty-change-directory (#148) | fixed by #157 for the index: close the record with that link; 0.6.0 extends the rule to every reader of open changes | REQ-cli-043 | TC-cli-empty-change-dir-not-open (rewritten) | the case is rerun on 0.5.0 for `next`, `gate list` and `doctor` |
 | BUG-…-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault | fixed by #142: close the record with that link; the roll-up and the legacy anchor also go, and migration puts the legacy entries in the adopter's story | REQ-records-009 | TC-records-migrate-vaulted-adopter (`tests/migrate.rs` `a_vaulted_adopter_migrates_and_writes_work`) | the 0.5.x fixture is built at the release before #142, where the writes refuse |
 | BUG-…-full-macos-lane-checkpoint-writer-lock-timeout | root cause unverified; same family as #132. Each writer child reports how long it waited, and the stress case runs the writer test under the full parallel suite on macOS | REQ-cli-040 | TC-cli-132-fork-inheritance-stress | as #132 |
+| BUG-…-verify-lane-test-step-fails-intermittently-under-load | root cause unverified; same family as #132 and the lock timeout: the stress case runs the full suite in parallel under load and records each failure with its test name and environment, and the writer and lock diagnostics of #132 name what waited | REQ-cli-040 | TC-cli-132-fork-inheritance-stress | as #132; a flake that never reproduces goes to Leif, never closed to clear the gate |
 | BUG-…-timing-native-budget-…-no-initial-stub-call | the budget clock starts at the first native read, as REQ-reporting-002 already bounds only time spent waiting on native reads | REQ-reporting-002 | TC-reporting-budget-starts-at-first-read (`tests/timing.rs` `a_slow_record_load_does_not_spend_the_native_budget`) | a record load slower than the budget starts no read on 0.5.0 |
 | BUG-…-timing-trace-…-cross-a-second | fixed by #172 (TC-reporting-timing-trace-straddles-a-second): close the record with that link; the case also runs in the stress run | REQ-reporting-002 | TC-reporting-timing-trace-straddles-a-second | not needed: fixed before this change |
 
@@ -135,6 +136,11 @@ its own for them.
 - This session's move into done in 0.6.0: its story, journal post, feed entry and an
   unchanged archive of earlier stories.
 - CI's archive authentication over the migrated tree.
+- The KNOW gap list (#216): computed from `hi/knowledge.md` and the recorded evidence,
+  not from memory, it shows every live KNOW criterion with a passing observation and
+  every retired one as retired.
+- The ticket ledger in plan.md: every row in the Chough 0.6.0 milestone closed through
+  Chough, each with its case's evidence.
 
 Running and recording cases, the human scope approval and the human acceptance are
 plain steps, not checkboxes.

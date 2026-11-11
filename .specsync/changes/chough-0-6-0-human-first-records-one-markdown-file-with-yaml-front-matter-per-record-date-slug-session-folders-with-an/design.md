@@ -233,7 +233,7 @@ references say which case applies.
 write runs them over every value: refuse by default, `--redact` to replace. Automatic
 key failing lines are redacted, never refused, so a panic path cannot block a test
 record. `chough doctor` scans tracked files under `.chough/` and `knowledge/`; the
-verify lane gains a `leaks` step that runs it. Messages name the field and kind,
+verify lane gains a `leaks` step that runs it and fails on a leak or an oversized record, so CI refuses a receipt over its bound (#215). Messages name the field and kind,
 never the text. Git history keeps whatever leaked before 0.6.0; the migration
 cleans the current tree and the receipt says how many values it redacted.
 

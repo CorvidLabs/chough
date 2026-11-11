@@ -97,6 +97,7 @@ Doctor findings and fixes. `chough doctor` (REQ-cli-055) SHALL find this debt wi
 - `unfinished_session`: an open, unfinished session named with `--close <id>`. This fix is a decision. With `--reason`, it SHALL close the session as `chough session close <id> --reason` does.
 - `timeline_rewritten`: a session or story whose Timeline at HEAD is not an exact prefix of its working Timeline (REQ-history-002). It has no fix; the finding names the entries that differ.
 - `alias_conflict`: an ID that is the `id` or alias of two records (REQ-records-003). It has no fix; the finding names both records.
+- `oversize`: a committed record, evidence entry or screenshot over its bound (REQ-records-001, REQ-records-005, REQ-records-013). It has no fix; the finding names the file, its size and the bound, and the verify lane's `leaks` step fails on it as it does on `leak`, so CI refuses an oversized receipt.
 - `records_in_verification`: `.specsync/sdd.json` exists and its `verification_ignored_paths` lacks one of Chough's record folders (REQ-records-014). It has no fix, because Chough never writes SpecSync's policy; the finding names the entries to add.
 
 The fixes SHALL run in that order. They SHALL never replace a file, and SHALL leave the bytes of every session and story they do not fix unchanged. Trace: DRIVE-17, DRIVE-16, DRIVE-13, DRIVE-3, DRIVE-4, LIFE-26, LIFE-20.

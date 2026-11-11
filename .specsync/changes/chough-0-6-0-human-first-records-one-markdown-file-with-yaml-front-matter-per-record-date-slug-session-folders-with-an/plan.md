@@ -137,9 +137,91 @@ is the next change on this branch.
 7. The pull request merges only after the dogfood cycle, so main never holds 0.6.0
    code with 0.5.x records. Touch no other repository.
 
+## Ticket ledger
+
+Leif (2026-11-11, relayed by the coordinator): "we need to make sure we use chough to
+fix and close all the bugs and tickets for 0.6.0 before tagging 0.6.0.. we need to
+dogfood and make sure chough is perfect". Every open GitHub issue and pull request in
+CorvidLabs/chough and every open local bug record gets exactly one disposition:
+
+1. fixed in 0.6.0, naming the regression case that proves it;
+2. already fixed on main, naming the proof; closed after a fresh re-check;
+3. superseded by 0.6.0; closed with a link once 0.6.0 merges;
+4. after 0.6.0: only the per-repository dogfood issues (#221 to #229), the 1.0 freeze
+   and epic (#231, #232) and anything Leif himself deferred, quoted.
+
+No agent defers anything else. Every 1, 2 and 3 on GitHub is in the "Chough 0.6.0"
+milestone; nothing is closed yet. Read on 2026-11-11.
+
+### Open GitHub issues
+
+| Issue | Disposition | Proof |
+|---|---|---|
+| #213 Migration fixtures from every 0.x tag | 1 | TC-records-migrate-from-0-5 (a fixture from every release, 0.1.0 to 0.5.0, built from its tag) |
+| #214 Per-session slug folders | 1 | TC-history-sessions-in-folders |
+| #215 Digest-committed evidence receipts | 1 | TC-records-proof-split-and-external (receipt with command, key lines and fingerprint; no raw log), TC-history-doctor-findings-0-6 (`oversize` fails the verify lane) |
+| #216 All of KNOW: librarian, index, observations | 1 | TC-records-journal-and-feed, TC-records-tree-and-readme, and the KNOW gap list check (testing.md, Dogfood checks) |
+| #217 Flake tracker and two-week clean window | needs Leif: 4 proposed | not in this plan; the two-week window needs two weeks of CI history after the fixes |
+| #218 Host-matrix e2e harness | needs Leif: 4 proposed | not in this plan |
+| #219 integrations/ folder | needs Leif: 4 proposed | not in this plan; it depends on #218 |
+| #220 Qualify one local agent setup | needs Leif: 4 proposed | not in this plan; it depends on #218 |
+| #221 to #229 Dogfood other repositories | 4 | Leif, 2026-11-10: "the other repos update only after that dogfood passes" (roadmap M6) |
+| #230 Weekly 0.x releases | needs Leif: 4 proposed | a cadence that starts after 0.6.0; 0.6.0 itself waits for Leif's go |
+| #231 Freeze the format and ship 1.0 | 4 | named by the coordinator's rule |
+| #232 Chough 1.0 epic | 4 | named by the coordinator's rule |
+| #234 Committed records must never leak | 1 | TC-records-leak-guard |
+| #235 Human-first records, one source of truth | 1 | TC-records-files-are-markdown-and-tolerant, TC-records-journal-and-feed |
+| #236 Gate approval drives SpecSync as that human | 1 | TC-records-approval-as-the-human |
+| #237 An open gate blocks every stage advance | 1 | TC-cli-237-gate-holds-its-stage |
+
+### Open pull requests
+
+| Pull request | Disposition | Proof |
+|---|---|---|
+| #208 External artifacts by fingerprint (#14) | 3 | folded into REQ-records-005, the record holding a neutral ID instead of the path |
+| #210 Append-only corrections (#167) | 3 | folded into REQ-history-015 |
+| #211 Roll-up copy-never-move (#165) | 3 | superseded by KNOW-30 and KNOW-34 |
+| #233 Agent, model and terminal on records (#201) | 3 | folded into REQ-records-007 |
+
+### Open local bug records
+
+| Bug | Disposition | Proof |
+|---|---|---|
+| BUG-0001 config comment names stale versions | 2 | the comment on main names 6.2.0; TC-cli-0110 keeps it in the version check |
+| BUG-0002 approval stays valid after a delta edit | 2 | fixed upstream, spec-sync #823; t37b re-checked on spec-sync 46f55652 |
+| BUG-0003 a failing check records passed | 2 | fixed upstream, spec-sync #824; t37b re-checked on spec-sync 46f55652 |
+| BUG-0020 delta guard uses the latest approval | 1 | TC-cli-bug-0020-guard-uses-effective-approval |
+| BUG-0022 local tools differ from CI | 1 | TC-cli-bug-0022-toolchain-matches-ci |
+| BUG-0023 cold-start output hard to scan | 1 | TC-cli-bug-0023-status-leads-with-summary |
+| BUG-…-empty-change-directory (#148) | 1 | TC-cli-empty-change-dir-not-open (#157 fixed the index; 0.6.0 covers every reader) |
+| BUG-…-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault | 2 | #142 (merged 90e5de6f); TC-records-migrate-vaulted-adopter stays as the regression |
+| BUG-…-full-macos-lane-checkpoint-writer-lock-timeout | 1 | TC-cli-132-fork-inheritance-stress |
+| BUG-…-timing-native-budget-…-no-initial-stub-call | 1 | TC-reporting-budget-starts-at-first-read |
+| BUG-…-timing-trace-…-cross-a-second | 2 | #172 (merged b8088923), TC-reporting-timing-trace-straddles-a-second |
+| BUG-…-verify-lane-test-step-fails-intermittently-under-load | 1 | TC-cli-132-fork-inheritance-stress |
+
+### Closed on GitHub without a fix
+
+#12, #14, #76, #132, #165, #167, #190 and #201 were closed on 2026-11-11 by the
+`corvid-agent` account, with no comment and no fix. This plan still fixes each in
+0.6.0 with its case (testing.md): TC-cli-12-native-closeout-stays-current and the two
+#12 repro cases, TC-records-proof-split-and-external, TC-cli-76-next-guides-a-fresh-agent,
+TC-cli-132-fork-inheritance-stress, TC-history-165-earlier-archives-stay,
+TC-history-append-only-corrections, TC-cli-190-gate-summary-counts-the-change and
+TC-records-actor-recorded. They belong in the milestone once reopened.
+
+Counted: 24 items in 0.6.0 (8 open issues, 4 pull requests, 12 local bugs), 5 of them
+already fixed on main or upstream; 11 after 0.6.0 (#221 to #229, #231, #232); 5 wait for
+Leif's word (#217 to #220, #230); and 8 closed without a fix that 0.6.0 still covers.
+
 ## Release gate
 
-Leif (2026-11-10): "yes.. but we dog food and fix all bugs before tagging and
+The release gate (Leif, 2026-11-11, relayed by the coordinator), verbatim: every item
+in that milestone closed through Chough (bug record -> fix -> regression case ->
+evidence -> closed), the chough-repo dogfood complete with every bug it finds fixed the
+same way, then Leif says go.
+
+Earlier, Leif (2026-11-10): "yes.. but we dog food and fix all bugs before tagging and
 releasing". So:
 
 - No 0.6.0 tag and no release until the chough-repository dogfood above is complete.
