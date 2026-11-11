@@ -145,6 +145,8 @@ fn doctor_reports_debt_and_changes_nothing() {
 fn doctor_fix_archives_finished_sessions_and_removes_a_stale_pointer() {
     let fixture = Fixture::new();
     indebted(&fixture);
+    // Committed, so archiving removes the finished sessions' folders (REQ-records-012).
+    fixture.commit("finished sessions");
     no_native_reads(&fixture);
     let gamma = fixture.read(&fixture.session_file_of("gamma"));
     let (code, report) = doctor(&fixture, &["--fix"]);
