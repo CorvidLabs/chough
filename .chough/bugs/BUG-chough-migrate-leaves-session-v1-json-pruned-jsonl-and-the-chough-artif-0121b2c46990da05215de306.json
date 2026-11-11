@@ -24,12 +24,13 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-migrate-accounts-every-file-3feae26266cdf9c6b9d9ea90"
+    "OBS-tc-records-migrate-accounts-every-file-3feae26266cdf9c6b9d9ea90",
+    "OBS-tc-records-migrate-accounts-every-file-a83f107d1a247a8f6a34f157"
   ],
   "impact": "A migrated tree would keep 0.5.x files the requirement removes, and a file a mapper misses under .chough/artifacts/ would never show as unaccounted",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -41,8 +42,15 @@
       "observations": [
         "OBS-tc-records-migrate-accounts-every-file-3feae26266cdf9c6b9d9ea90"
       ]
+    },
+    {
+      "at_unix_seconds": 1794430991,
+      "text": "status: open -> verified. Green on 3b732002: TC-records-migrate-accounts-every-file passes; the plan lists session.v1.json and pruned.jsonl as removed with why, a stray artifact as a source the apply refuses while unaccounted, and an open bug's fixture as kept.",
+      "observations": [
+        "OBS-tc-records-migrate-accounts-every-file-a83f107d1a247a8f6a34f157"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794430556,
-  "updated_at_unix_seconds": 1794430626
+  "updated_at_unix_seconds": 1794430991
 }
