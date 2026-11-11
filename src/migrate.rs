@@ -113,7 +113,19 @@ impl Carried {
         self.written.extend(other.written);
         self.binaries.extend(other.binaries);
         self.sources.extend(other.sources);
-        self.aliases.extend(other.aliases);
+        // An ID has one home: a real home wins over `removed`, and two different homes
+        // are refused rather than decided by mapper order (REQ-records-003).
+        for (id, home) in other.aliases {
+            match self.aliases.get(&id) {
+                Some(known) if *known == home || home == "removed" => {}
+                Some(known) if known != "removed" => bail!(
+                    "two mappers alias {id}, to {known} and to {home}, so the plan is refused; this is a Chough bug"
+                ),
+                _ => {
+                    self.aliases.insert(id, home);
+                }
+            }
+        }
         self.removed.extend(other.removed);
         self.kept_with_leaks.extend(other.kept_with_leaks);
         self.gaps.extend(other.gaps);
@@ -1513,6 +1525,27 @@ mod tests {
         let mut again = vec![];
         write_planned(root.path(), &planned, &mut again).unwrap();
         assert!(again.is_empty());
+    }
+
+    /// An alias has one home: a real home wins over `removed` in either order, and two
+    /// different homes are refused.
+    #[test]
+    fn an_alias_keeps_its_one_real_home() {
+        let carry = |id: &str, home: &str| {
+            let mut carried = Carried::default();
+            carried.aliases.insert(id.into(), home.into());
+            carried
+        };
+        let mut plan = carry("OBS-a", "removed");
+        plan.absorb(carry("OBS-a", ".chough/bugs/x.md")).unwrap();
+        plan.absorb(carry("OBS-a", "removed")).unwrap();
+        plan.absorb(carry("OBS-a", ".chough/bugs/x.md")).unwrap();
+        assert_eq!(plan.aliases["OBS-a"], ".chough/bugs/x.md");
+        let refused = plan
+            .absorb(carry("OBS-a", ".chough/archive/sessions/y.md"))
+            .unwrap_err()
+            .to_string();
+        assert!(refused.contains("two mappers alias OBS-a"), "{refused}");
     }
 
     #[test]
