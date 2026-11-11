@@ -22,9 +22,13 @@ pub(super) const RECENT_BYTES: u64 = 512 * 1_024;
 pub(super) const CYCLE_EVENTS: usize = session_md::MAX_ENTRIES;
 /// `chough timing` reads at most this much timeline content in one request.
 pub(super) const CYCLE_BYTES: u64 = 16 * 1_048_576;
+#[allow(dead_code)] // removed at integration (t382)
 const EVENT_BYTES: u64 = 65_536;
+#[allow(dead_code)] // removed at integration (t382)
 const SOURCE_FILES: usize = 16_384;
+#[allow(dead_code)] // removed at integration (t382)
 const SOURCE_BYTES: u64 = 64 * 1_048_576;
+#[allow(dead_code)] // removed at integration (t382)
 const RECEIPT_BYTES: u64 = 1_048_576;
 
 thread_local! {
@@ -33,6 +37,7 @@ thread_local! {
     static MAINTENANCE: std::cell::Cell<Option<(usize, u64)>> = const { std::cell::Cell::new(None) };
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) struct MaintenanceGuard {
     owner: bool,
 }
@@ -45,6 +50,7 @@ impl Drop for MaintenanceGuard {
     }
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn maintenance_budget() -> MaintenanceGuard {
     let owner = MAINTENANCE.with(|budget| {
         if budget.get().is_some() {
@@ -57,6 +63,7 @@ pub(super) fn maintenance_budget() -> MaintenanceGuard {
     MaintenanceGuard { owner }
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn charge_maintenance(bytes: u64) -> Result<()> {
     MAINTENANCE.with(|budget| -> Result<()> {
         if let Some((files, used)) = budget.get() {
@@ -70,10 +77,12 @@ fn charge_maintenance(bytes: u64) -> Result<()> {
     })
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn digest(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn bounded_bytes(root: &Path, name: &str, limit: u64) -> Result<Vec<u8>> {
     use std::io::Read;
     let path = local_path(root, name)?;
@@ -272,6 +281,7 @@ pub(super) fn run(root: &Path, command: HistoryCommand) -> Result<()> {
     }
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 #[derive(Default)]
 struct Budget {
     files: usize,
@@ -279,6 +289,7 @@ struct Budget {
     directories: usize,
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn walk(
     root: &Path,
     relative: &str,
@@ -341,6 +352,7 @@ fn walk(
     Ok(())
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn protection_sources(
     root: &Path,
     budget: &mut Budget,
@@ -403,11 +415,13 @@ fn protection_sources(
     Ok(sources)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// Used by evidence cleanup to notice newly added or changed reference records.
 pub(super) fn protection_fingerprint(root: &Path) -> Result<String> {
     source_fingerprint(root, false)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn source_fingerprint(root: &Path, include_artifacts: bool) -> Result<String> {
     let sources = protection_sources(root, &mut Budget::default(), include_artifacts)?;
     let mut hash = Sha256::new();

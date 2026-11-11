@@ -10,10 +10,13 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::Path;
 
+#[allow(dead_code)] // removed at integration (t382)
 /// Where loose artifacts live.
 pub(super) const ARTIFACTS_DIR: &str = ".chough/artifacts";
 
+#[allow(dead_code)] // removed at integration (t382)
 const SCREENSHOTS: [&str; 6] = ["png", "jpg", "jpeg", "gif", "webp", "svg"];
+#[allow(dead_code)] // removed at integration (t382)
 const FAILURE_FIRST: [&str; 6] = [
     "failure-first",
     "failing-first",
@@ -23,6 +26,7 @@ const FAILURE_FIRST: [&str; 6] = [
     "reproduction",
 ];
 
+#[allow(dead_code)] // removed at integration (t382)
 /// A screenshot or a failure-first log, by file name (KNOW-19).
 pub(super) fn is_key_item(path: &str) -> bool {
     let lower = path.to_lowercase();
@@ -32,6 +36,7 @@ pub(super) fn is_key_item(path: &str) -> bool {
         || FAILURE_FIRST.iter().any(|marker| name.contains(marker))
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// The longest attachment path the summary writes: Windows refuses a checkout path of
 /// 260 characters or more, so this leaves 39 for the folder a clone sits in (#109).
 pub(super) const MAX_ATTACHMENT_PATH: usize = 220;
@@ -52,12 +57,14 @@ pub(super) fn attachment_folder(archive: &str) -> String {
     format!("{prefix}-{}", &digest[..8])
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// Where a file under `.chough/` moves in the vault: `<dir>/attachments/<folder>/<rest>`.
 pub(super) fn attachment(dir: &str, archive: &str, file: &str) -> String {
     let rest = file.strip_prefix(".chough/").unwrap_or(file);
     format!("{dir}/attachments/{}/{rest}", attachment_folder(archive))
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// The oldest commit time per file in `git log --diff-filter=A --format=@%ct --name-only`
 /// output (newest commit first), so each file maps to the commit that first added it.
 pub(super) fn parse_first_commits(log: &str) -> BTreeMap<String, u64> {
@@ -73,6 +80,7 @@ pub(super) fn parse_first_commits(log: &str) -> BTreeMap<String, u64> {
     found
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// One loose artifact entry: a top-level file or folder under `.chough/artifacts/` and
 /// the files in it that no observation record references.
 pub(super) struct LooseGroup {
@@ -97,6 +105,7 @@ fn walk(path: &Path, relative: &str, files: &mut Vec<(String, u64)>) -> Result<(
     Ok(())
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// The loose groups under `.chough/artifacts/`, skipping hidden entries. `referenced`
 /// tells whether a record references a file, directly or through a referenced folder.
 pub(super) fn loose_groups(
@@ -137,6 +146,7 @@ pub(super) fn loose_groups(
     Ok(groups)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// The fixture paths that open bugs name, as (bug ID, path): they hold a loose artifact;
 /// a closed bug (verified, duplicate or wont-fix) no longer does (KNOW-18).
 pub(super) fn open_bug_fixtures(root: &Path) -> Result<Vec<(String, String)>> {

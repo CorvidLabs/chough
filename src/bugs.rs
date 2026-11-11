@@ -1033,17 +1033,20 @@ pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<Str
         .collect())
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// Whether a bug status is closed: verified, duplicate or wont-fix.
 pub(super) fn is_closed_status(status: &str) -> bool {
     CLOSED.contains(&status)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// A closed bug (verified, duplicate or wont-fix) as retention and the vault see it
 /// (KNOW-22): every observation it links in link order, and its fixture.
 pub(super) struct ClosedBug {
     pub(super) id: String,
     pub(super) title: String,
     pub(super) status: String,
+    #[allow(dead_code)] // removed at integration (t382)
     pub(super) linked: Vec<String>,
     pub(super) fixture: Option<String>,
 }
@@ -1066,6 +1069,7 @@ pub(super) fn closed_links(root: &Path) -> Result<Vec<ClosedBug>> {
     Ok(closed)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// Each bug's fixture path, whatever its status, labeled `<bug-id> <status>`.
 pub(super) fn fixture_references(root: &Path) -> Result<Vec<(String, String)>> {
     Ok(load_all(root)?

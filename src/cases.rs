@@ -5,7 +5,6 @@ use crate::identity;
 use crate::records::valid_module_name;
 use crate::records::{
     Captured, Limits, digest_bytes, local_path, now, print_json, run_bounded, valid_name,
-    write_new_bytes,
 };
 use crate::{checkpoint, prefs, stage};
 use anyhow::{Context, Result, bail, ensure};

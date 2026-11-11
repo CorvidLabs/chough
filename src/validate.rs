@@ -198,6 +198,7 @@ fn continue_run(root: &Path, mut run: Run) -> Result<()> {
     }))
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// Each stored run's ID with the observations it recorded, in attempt order.
 pub(super) fn run_references(root: &Path) -> Result<Vec<(String, Vec<String>)>> {
     let mut runs = vec![];

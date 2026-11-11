@@ -354,6 +354,7 @@ pub(super) fn write_replace_bounded(
     result.with_context(|| format!("writing {relative}"))
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// Append one line to an append-only managed log.
 pub(super) fn append_line(root: &Path, relative: &str, line: &str) -> Result<()> {
     ensure!(

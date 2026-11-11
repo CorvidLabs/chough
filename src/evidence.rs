@@ -1923,6 +1923,7 @@ impl<'de> Deserialize<'de> for Evidence {
     where
         D: serde::Deserializer<'de>,
     {
+        #[allow(dead_code)] // schema_version/provenance are read only to parse a 0.5.x record whole
         #[derive(Deserialize)]
         #[serde(deny_unknown_fields)]
         struct Legacy {

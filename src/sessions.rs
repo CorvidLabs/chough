@@ -426,6 +426,7 @@ pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
     Ok(relative)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// Every session checkpoint with how retention names it: the active checkpoint as
 /// `checkpoint`, other open sessions as `session <id>`, archived stories as
 /// `archived session <id>`, shelved ones as `shelved session <id>`, then, for each
@@ -435,11 +436,13 @@ pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>>
     checkpoints(root, false)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 /// As [`every_checkpoint`], skipping what cannot be read.
 pub(super) fn readable_checkpoints(root: &Path) -> Result<Vec<(String, Checkpoint)>> {
     checkpoints(root, true)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn checkpoints(root: &Path, lenient: bool) -> Result<Vec<(String, Checkpoint)>> {
     let read = |file: &str| -> Result<Option<Checkpoint>> {
         match read_at(root, file) {
