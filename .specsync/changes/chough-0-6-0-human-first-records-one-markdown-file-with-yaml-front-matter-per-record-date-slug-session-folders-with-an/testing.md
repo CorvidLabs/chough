@@ -22,8 +22,8 @@ requirement are inside the named test, one assertion block per criterion.
 | REQ-records-004 | TC-records-session-story-sections | tests/records.rs `the_session_record_is_checkpoint_and_story` | keys, sections, decisions and questions in the story only |
 | REQ-records-005 | TC-records-proof-split-and-external | tests/records.rs `logs_stay_local_and_failures_keep_key_lines` | local logs, digest, key failing lines with redaction, external artifacts by ID and fingerprint |
 | REQ-records-006 | TC-records-leak-guard | tests/leaks.rs `no_write_leaks_and_doctor_finds_old_leaks` | each pattern kind refused or redacted, value never echoed, doctor finding, verify lane fails |
-| REQ-records-007 | TC-records-actor-recorded | tests/records.rs `transitions_evidence_and_bugs_record_the_acting_agent` | override and detected values, none when unknown, unsafe terminal dropped |
-| REQ-records-008 | TC-records-approval-as-the-human | tests/approval.rs `a_gate_decision_approves_as_the_configured_human` | approve and review run as the configured actor through a SpecSync stub; refusals; no default name in sources |
+| REQ-records-007 | TC-records-actor-recorded | tests/actor.rs, tests/bugs.rs `bugs_record_the_acting_agent` and the evidence actor test | override and detected values, none when unknown, unsafe terminal dropped |
+| REQ-records-008 | TC-records-approval-as-the-human | tests/humans.rs, the five identity tests (`an_unknown_or_ambiguous_human_is_refused_before_anything_runs`, `no_source_names_a_person_as_the_default_human` and others) | approve and review run as the configured actor through a SpecSync stub; refusals; no default name in sources |
 | REQ-records-009 | TC-records-migrate-from-0-5 | tests/migrate.rs `migrate_previews_applies_and_keeps_every_byte_in_git` | preview, refusal on uncommitted files, refusal while a change is open or without consent, mapping, receipt digests, idempotence, interrupted apply, removed IDs |
 | REQ-records-010 | TC-records-unmigrated-fails-closed | tests/migrate.rs `an_unmigrated_tree_is_refused_with_the_migrate_command` | every command refused, allowed commands run, mixed tree |
 | REQ-records-011 | TC-records-journal-and-feed | tests/journal.rs `done_writes_a_short_post_and_the_feed_lists_it` | post at done, archive link, never overwritten, feed determinism, index names the timeline |
@@ -41,7 +41,7 @@ requirement are inside the named test, one assertion block per criterion.
 | REQ-history-012 | TC-history-doctor-findings-0-6 | tests/doctor.rs `doctor_reports_and_fixes_0_6_debt` | unmigrated, leak, unfinished archive, timeline rewritten, alias conflict, oversize (a committed receipt over its bound fails the verify lane's `leaks` step, #215), records in verification, existing findings |
 | REQ-history-013 | TC-history-direct-write-entries | tests/history.rs `direct_write_entries_are_known_to_timing` | fields, refusal elsewhere, timing complete |
 | REQ-history-014 | TC-history-relay-summary-digests | tests/history.rs `relay_digests_come_in_pairs` | both or neither |
-| REQ-history-015 | TC-history-append-only-corrections | tests/history.rs `a_correction_appends_and_is_shown_without_rewriting_history` | correction entry, archived story append only, refusals, bounded list |
+| REQ-history-015 | TC-history-append-only-corrections | tests/correct.rs, its four tests | correction entry, archived story append only, refusals, bounded list |
 | REQ-cli-007 | TC-cli-checkpoint-in-session-front-matter | tests/cli.rs `the_checkpoint_is_the_session_front_matter` | round trip across processes, typed refusals, native-change refusals unchanged |
 | REQ-cli-011 | TC-cli-case-run-writes-entry-and-local-log | tests/cases.rs `a_case_run_writes_an_entry_and_a_local_log` | existing execution assertions ported, log path, names |
 | REQ-cli-012 | TC-cli-bugs-are-markdown | tests/bugs.rs `bugs_are_markdown_with_an_append_only_log` | existing bug assertions ported, Log append-only, aliases, receipts after archive |
@@ -53,7 +53,7 @@ requirement are inside the named test, one assertion block per criterion.
 | REQ-cli-022 | TC-cli-bug-0020-guard-uses-effective-approval and TC-cli-delta-guard-refusals-name-the-agent-actor (rewritten) | tests/native_check.rs `the_delta_guard_compares_with_the_effective_approval`; the ported guard tests | the effective, digest-matching approval (BUG-0020); the remedy names the scope gate, and the agent only for authority given in advance |
 | REQ-cli-023 | TC-cli-names-and-draws | tests/ids.rs `new_records_get_date_slug_names_without_retry` | existing identity assertions ported to names |
 | REQ-cli-029 | TC-cli-authority-before-approval (rewritten) | tests/workflow_authority.rs `authority_given_in_advance_names_the_agent_and_quotes_the_human` | a gate decision is the human's; authority given in advance names the agent as `<agent>-<terminal>`, for an approval or a review, with the quoted words (FLOW-24); a refused agent actor is reported, never retried as the human; the skill references agree |
-| REQ-cli-030 | TC-cli-237-gate-holds-its-stage | tests/gates.rs `a_gate_holds_only_the_stage_it_names` | the #237 regression and the ported gate assertions |
+| REQ-cli-030 | TC-cli-237-gate-holds-its-stage | tests/humans.rs `a_gate_holds_only_the_stage_it_names` | the #237 regression and the ported gate assertions |
 | REQ-cli-032 | TC-cli-session-record-capacity | tests/cli.rs `the_session_record_is_bounded_at_one_mebibyte` | the 1 MiB and 400 bounds, timing at the cap |
 | REQ-cli-034 | the ported REQ-cli-034 cases | tests/cli.rs, the existing size tests | spec files read at any size; no `library snapshot` exception; the 0.6.0 record bounds |
 | REQ-cli-037 | TC-cli-active-session-folder | tests/sessions.rs `the_active_session_is_resolved_once` | pointer rules, mid-command switch, init with objective |
@@ -62,9 +62,9 @@ requirement are inside the named test, one assertion block per criterion.
 | REQ-cli-043 | TC-cli-index-links-every-lesson | tests/vault.rs `the_index_is_a_reading_guide_that_links_every_lesson` | index contents, refresh at done, check passes after done |
 | REQ-cli-044 | TC-cli-vault-holds-only-its-own | tests/vault.rs `the_vault_holds_only_what_has_no_other_home` | allowed paths only, no copied text, links resolve |
 | REQ-cli-047 | TC-cli-markdown-bug-merge | tests/bugs.rs `bug_merge_unions_logs_and_takes_one_sided_edits` | driver, attributes, index check |
-| REQ-cli-050 | TC-cli-close-gate-drives-native-step | tests/gates.rs `closing_a_driving_gate_runs_the_native_step_first` | existing relay assertions ported, drives none vs approve |
+| REQ-cli-050 | TC-cli-close-gate-drives-native-step | tests/humans.rs, the five driving-gate tests (`a_scope_gate_runs_the_approval_once_as_the_configured_human` and others) | existing relay assertions ported, drives none vs approve |
 | REQ-cli-052 | TC-cli-advance-to-one-read | tests/advance_to.rs `advance_to_records_entries_on_one_read` | entries instead of events, one read into done |
-| REQ-cli-059 | TC-cli-ship-reviews-as-human | tests/change.rs `ship_records_review_as_the_human_then_ships` | review then ship through a stub, refusals |
+| REQ-cli-059 | TC-cli-ship-reviews-as-human | tests/change.rs `ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done`, `ship_refuses_an_unknown_human_and_stops_on_a_refused_review` | review then ship through a stub, refusals |
 | REQ-cli-061 | TC-cli-gate-record-one-driving-gate | tests/gates.rs `gate_record_runs_at_most_one_native_step` | the new refusal and stage column |
 | REQ-reporting-001 | TC-reporting-timing-from-timelines | tests/timing.rs `timing_reads_timelines_and_receipts` | segments from open and archived timelines, partial on unreadable |
 

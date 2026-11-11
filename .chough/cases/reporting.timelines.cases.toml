@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "reporting"
+
+# Plan step 9 (t38b): timing reads every session's timeline and the receipts of
+# archived stories and bugs.
+
+[[case]]
+id = "TC-reporting-timing-from-timelines"
+title = "Timing reads each open session's and story's timeline, names an unreadable story in partial, reads case runs from entries and story and bug receipts, and writes nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "FLOW-13"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "src/bugs.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::timing_reads_timelines_and_receipts passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "timing_reads_timelines_and_receipts"

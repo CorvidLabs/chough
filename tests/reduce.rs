@@ -455,6 +455,7 @@ fn bug(fixture: &Fixture, id: &str, status: &str, fixture_path: &str) {
 /// change that made them is cold: listed only by a cold archive, or committed in a cold
 /// change's cycle. Loose artifacts of current work, or named by an open bug, stay.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay() {
     let fixture = project("0");
     fixture.write(".chough/artifacts/listed-pr/out.log", "listed\n");
@@ -523,6 +524,7 @@ fn loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_sta
 /// KNOW-18, KNOW-22: a fixture named by a closed bug is no longer held in `.chough/`; it
 /// is a key item, so it moves into the vault under the bug.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn a_closed_bug_releases_its_loose_fixture() {
     let fixture = project("0");
     fixture.write(".chough/artifacts/bug-repro.log", "repro\n");
@@ -684,6 +686,7 @@ fn a_loose_folder_that_gains_a_released_file_is_still_trimmed() {
 /// The other side of the case above: a planned loose file that an open bug names partway
 /// through the apply still refuses the trim, and everything planned is restored.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn a_loose_file_protected_during_the_apply_refuses_the_trim() {
     let fixture = project("0");
     fixture.write(".chough/artifacts/x/a-first.log", "first\n");
@@ -1000,6 +1003,7 @@ fn an_identical_attachment_in_place_survives_a_refused_apply() {
 
 /// #109 review P1: an open bug whose fixture is a folder keeps the files inside it.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn an_open_bug_folder_fixture_protects_its_files() {
     let fixture = project("0");
     fixture.write(".chough/artifacts/open-repro/out.log", "repro\n");
@@ -1238,6 +1242,7 @@ fn bug_with_runs(fixture: &Fixture, id: &str, status: &str) {
 /// it, move into the vault under the bug; the rest is summarized and trimmed by the
 /// normal cold rule. The bug record keeps its status and IDs.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn a_closed_bug_moves_its_key_items_into_the_vault_and_releases_the_rest() {
     for (status, fixing_run) in [
         ("verified", true),
@@ -1429,6 +1434,7 @@ fn done_keeps_the_newest_ledger_entries_and_moves_the_rest_into_the_vault() {
 /// KNOW-23: readers see moved entries: a moved ID referenced by an open bug is still
 /// labeled pruned, its archive note still lists it, and the vault check passes.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn moved_ledger_entries_are_still_read() {
     let fixture = project("0");
     bug(&fixture, "BUG-0009", "open", "a description, not a path");
@@ -1459,6 +1465,7 @@ fn moved_ledger_entries_are_still_read() {
 /// line in both; it is read once. Here the leftover copy of old-000's entry after its
 /// restore must not make old-000 pruned again.
 #[test]
+#[ignore = "plan step 8 removes this behaviour (REQ-cli-033, 041, 045, 046, 048) and deletes this test with it"]
 fn an_interrupted_rotation_leftover_is_read_once() {
     let fixture = project("0");
     bug(&fixture, "BUG-0009", "open", "a description, not a path");
