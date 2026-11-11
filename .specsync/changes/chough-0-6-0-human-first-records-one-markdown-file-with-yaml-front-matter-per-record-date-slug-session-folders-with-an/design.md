@@ -217,7 +217,13 @@ Only a decision made at that gate is in the human's name. When an agent goes ahe
 on permission the human gave in advance, without the human answering that gate, the
 SpecSync approval names the agent and quotes the human's earlier words and where
 they said them (Leif: "The agent's (Recommended)", FLOW-24), so no record says a
-person looked at something they did not. The skill's plan, accept and lifecycle
+person looked at something they did not. Leif's standing rule of 2026-11-10 sets the
+form: the actor is `<agent>-<terminal>` (for example `kimi-code-t37b`), as `--actor`
+on an approval and `--reviewer` on a review, and the note reads like "Approved under
+Leif's standing bug-fix rule (coordinator chat, 2026-11-10): <its words>. Recorded by
+<agent> (<model>, hc <terminal>)." If SpecSync or the project's configuration refuses
+that actor, the agent stops and says so; it never retries as the human, and archived
+approvals are not edited. The skill's plan, accept and lifecycle
 references say which case applies.
 
 ## No leaks

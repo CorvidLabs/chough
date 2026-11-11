@@ -456,7 +456,7 @@ Leif approved retiring the old cleanup and vault-copy rules ("Yes, make it match
 | TC-cli-gate-record-other-session-refused | cli.gate-lists | cli-061 | its file is reworked for 0.6.0 (audit) |
 | TC-cli-one-checkpoint-store-no-aps | cli.nine-criteria-assertions | cli-007 | one store, the active session file |
 | TC-cli-bug-id-upgrade-note | cli.nine-criteria-assertions | cli-012 | the note says 0.5.x cannot read 0.6.0 records |
-| TC-cli-authority-before-approval | cli.nine-criteria-assertions | cli-029 | approval on authority given in advance names the agent and quotes the human (Q2, FLOW-24) |
+| TC-cli-authority-before-approval | cli.nine-criteria-assertions | cli-029 | approval or review on authority given in advance names the agent as `<agent>-<terminal>` and quotes the human (Q2, FLOW-24, the standing rule of 2026-11-10) |
 | TC-cli-manual-record-returns-observation-id | cli.observation-ids-60 | cli-011 | date and slug IDs (audit) |
 | TC-cli-evidence-add-returns-observation-id | cli.observation-ids-60 | cli-017 | date and slug IDs (audit) |
 | TC-cli-relay-closes-one-gate-with-four-values | cli.relayed-decisions | cli-050 | its file is reworked for 0.6.0 (audit) |

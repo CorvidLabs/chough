@@ -90,7 +90,12 @@ Answered by Leif on 2026-11-10 (coordinator chat, relayed; each is on the sessio
   design and criteria disagree, with today's answers captured (audit Q1 and Q4):
   "Yes, make it match". t37d puts that wording into #212.
 - Whose name goes on an approval given in advance (Q2): "The agent's
-  (Recommended)" (FLOW-24).
+  (Recommended)" (FLOW-24). Leif's standing rule, relayed the same day, sets the
+  form: approvals and reviews on standing permission name the agent as
+  `<agent>-<terminal>`, with a note naming the rule, where it was given and the
+  recording agent, model and terminal; only a decision Leif made at that gate is in
+  Leif's name; archived records are not edited; a refused agent actor is reported,
+  never retried as Leif.
 - Rewrite Git history to purge leaked paths: "No, clean from 0.6.0 on
   (Recommended)".
 - Release condition: "yes.. but we dog food and fix all bugs before tagging and
