@@ -1877,3 +1877,32 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
 }
+
+/// #76 in the 0.5.x layout, red on 0.5.0: right after init the next action does not
+/// name `hi check` and `chough context`. The 0.6.0 test of the same name replaces it.
+#[test]
+fn next_guides_a_fresh_agent_from_init_to_accept() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let action = &fixture.ok(&["next", "--json"])["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.contains("`hi check`") && text.contains("`chough context`"),
+        "a fresh agent is not told where to start: {text}"
+    );
+}
+
+/// BUG-0023 in the 0.5.x layout, red on 0.5.0: status does not lead with a summary.
+/// The 0.6.0 test of the same name replaces it.
+#[test]
+fn status_leads_with_the_same_summary_as_next() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let output = fixture.run(&["status"]);
+    let output = String::from_utf8(output.stdout).unwrap();
+    assert!(
+        output.starts_with("{\n  \"summary\": {"),
+        "status does not lead with a summary: {}",
+        &output[..output.len().min(120)]
+    );
+}
