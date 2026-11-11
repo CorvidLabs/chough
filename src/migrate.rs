@@ -464,6 +464,15 @@ fn apply(
             );
         }
     }
+    // The receipt is known before anything is written: one over its own bound refuses
+    // here, writing nothing (REQ-records-001, REQ-records-009).
+    let receipt = receipt_path()?;
+    let receipt_text = receipt_record(plan, digest, &consent, &removals, root).map_err(|error| {
+        anyhow::anyhow!(
+            "refused:receipt-bound: the migration receipt would exceed its {} byte bound, so nothing was written: {error:#}",
+            crate::markdown::RECEIPT_BOUND
+        )
+    })?;
     // Every refusal above wrote nothing, not even a lock file. From here the writer lock
     // is held through the writes, the removals, the archive reads and any restore, so
     // no other writer saves in between (REQ-cli-040).
@@ -480,8 +489,6 @@ fn apply(
     {
         write_planned(root, written, &mut written_now)?;
     }
-    let receipt = receipt_path()?;
-    let receipt_text = receipt_record(plan, digest, &consent, &removals, root)?;
     let receipt_local = local_path(root, &receipt)?;
     match std::fs::read_to_string(&receipt_local) {
         Ok(existing) => ensure!(
@@ -493,7 +500,12 @@ fn apply(
                 std::fs::create_dir_all(parent)?;
             }
             ensure!(
-                crate::records::write_new(root, &receipt, &receipt_text)?,
+                crate::records::write_new_bounded(
+                    root,
+                    &receipt,
+                    &receipt_text,
+                    crate::markdown::RECEIPT_BOUND
+                )?,
                 "{receipt} appeared while migrating; nothing was removed"
             );
         }
