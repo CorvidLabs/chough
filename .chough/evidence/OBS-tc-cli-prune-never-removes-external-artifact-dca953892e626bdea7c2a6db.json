@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-prune-never-removes-external-artifact-dca953892e626bdea7c2a6db",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact prune_apply_never_removes_an_external_artifact for TC-cli-prune-never-removes-external-artifact: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-prune-never-removes-external-artifact-dca953892e626bdea7c2a6db.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-prune-never-removes-external-artifact-dca953892e626bdea7c2a6db.log": "7ffd53252bb3c0ffce01ad94035047a101db6779963e20cbb5c224d1084aeb2c"
+  },
+  "observed_at_unix_seconds": 1794359792,
+  "snapshot": {
+    "revision": "0b280cb22efa7595e4528304836e22141b8875d2",
+    "dirty": true,
+    "fingerprint": "121c9e81836d49cc36cafa054de7fe931880e00298f4565eb1efd126cc6872c9",
+    "content": "11a898456da4781dbc657bbfe042817a9f39359b7c59d3b9bcf574b83ac09d34"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-prune-never-removes-external-artifact",
+      "digest": "31552805f21753113d6978e47ddbbcb539905ec3fa9a8cc9d185935959af39bd"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "prune_apply_never_removes_an_external_artifact"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 5
+}

@@ -1,0 +1,49 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794359015,
+      "digest": "e6ad7887c1d43f770dc8179cab18e31f26a0009529ffc119d7551d531764662f",
+      "note": "Leif's decision on #208 rough edge 2, 2026-11-10, relayed by coordinator Claude Code (hc t370) as his scope approval for this change: 'mark it machine-local.. also don't leak info or creds or pii.. what if my name was there'. Scope: committed records keep only a neutral external ID and the fingerprint, the path stays in git-ignored machine-local state, 'external, not checkable here' elsewhere, docs say outside files verify only on the recording machine. Recorded by the Claude Code worker (hc t37j); a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "external-artifacts-stay-machine-local-committed-records-keep-no-path-14",
+        "title": "External artifacts stay machine-local: committed records keep no path (14)",
+        "description": "External artifacts stay machine-local: committed records keep no path (14)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.external-artifacts-14.cases.toml",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "knowledge/",
+          "src/cases.rs",
+          "src/evidence.rs",
+          "tests/evidence.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "evidence add and cases record with an absolute artifact path commit only a neutral external:<16 hex> ID and the SHA-256 in the record, never the path, file name, user name or home directory; the path is kept only in the git-ignored .chough/local/external-artifacts.json; on the recording machine a changed file reads stale and an unchanged one current; where the mapping or the file is absent the observation reads external-not-checkable-here, neither current nor historical; evidence prune --apply never removes the external file; docs say outside files verify only on the recording machine."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "yes",
+          "constraints": "Leif's decision on #208, 2026-11-10, relayed by the coordinator (hc t370): 'mark it machine-local.. also don't leak info or creds or pii.. what if my name was there'. Committed records must not contain the external path at all, not even with ~; commit only the fingerprint plus a neutral id; keep the real path in git-ignored machine-local state; show 'external, not checkable here' where the mapping or file is missing; docs say outside files verify only on the recording machine. #234 tracks the general no-leak rule.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "693b461bf04343ad43e1e28d486464476830cb83abfcef9ff3f055aafbbc2797"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-006": "f56815585b87dc40717cded18bf3740e75b9f6ec872debdcd26f9961e18d0d31"
+      }
+    }
+  ],
+  "reopenings": []
+}

@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `evidence add` and `cases record` accept an artifact outside the project by absolute
+  path (#14, REQ-cli-006). It is fingerprinted in place and never copied in; the
+  committed record keeps only a neutral `external:<id>` and the SHA-256, never the
+  path, which stays in the git-ignored `.chough/local/external-artifacts.json`. It
+  verifies only on the recording machine; elsewhere the observation reads
+  `external-not-checkable-here`.
+
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
   of `recorded` (#60, REQ-cli-011, REQ-cli-017).

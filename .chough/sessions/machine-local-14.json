@@ -1,0 +1,52 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-2374ded01a923821db675a12",
+    "head": "EVT-52f8974a3f7ff0379704717a",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "External artifacts stay machine-local: committed records keep no path (#14)",
+  "intent_scope": "",
+  "modules": [],
+  "stage": {
+    "current": "intent",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": "external-artifacts-stay-machine-local-committed-records-keep-no-path-14",
+  "references": {
+    "criteria": [
+      "LIFE-7"
+    ],
+    "requirements": [
+      "REQ-cli-006"
+    ],
+    "cases": [
+      "TC-cli-external-artifact-fingerprinted-in-place",
+      "TC-cli-prune-never-removes-external-artifact"
+    ],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Scope approval recorded natively as 0xLeif from Leif's relayed words on #208 (2026-11-10, coordinator hc t370): 'mark it machine-local.. also don't leak info or creds or pii.. what if my name was there'. Implementation acceptance is still Leif's."
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [
+    "OBS-tc-cli-external-artifact-fingerprinted-in-place-987bc3d0d099b0842ea660f8",
+    "OBS-tc-cli-prune-never-removes-external-artifact-dca953892e626bdea7c2a6db",
+    "OBS-tc-cli-prune-never-removes-external-artifact-96450bfb1d06b8dc7f352cdd",
+    "OBS-tc-cli-external-artifact-fingerprinted-in-place-6924ca62f04e8faf2807086a"
+  ],
+  "bugs": [
+    "BUG-evidence-prune-apply-skips-an-eligible-observation-that-holds-an-extern-a7a34dbf0c3521c65d869422"
+  ],
+  "blockers": [],
+  "awaiting_human": [
+    "Implementation review of external-artifacts-stay-machine-local-committed-records-keep-no-path-14"
+  ],
+  "run_consents": [],
+  "next_action": "Leif: implementation acceptance of the machine-local rework (dogfood report dogfood-208-14). Then review and ship this second change on #208; the coordinator merges at 95%."
+}

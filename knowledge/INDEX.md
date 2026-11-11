@@ -43,7 +43,7 @@ Canonical prototypes:
 
 Active:
 
-- none
+- external-artifacts-stay-machine-local-committed-records-keep-no-path-14 (active; `specsync change status external-artifacts-stay-machine-local-committed-records-keep-no-path-14`)
 
 Archived changes (newest first; the newest 3 are hot):
 
@@ -99,18 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-575 recorded; most recent:
+579 recorded; most recent:
 
+- OBS-tc-cli-external-artifact-fingerprinted-in-place-6924ca62f04e8faf2807086a ProductTest Passed in local-macos-arm64 at 0b280cb22efa
+- OBS-tc-cli-prune-never-removes-external-artifact-96450bfb1d06b8dc7f352cdd ProductTest Passed in local-macos-arm64 at 0b280cb22efa
+- OBS-tc-cli-prune-never-removes-external-artifact-dca953892e626bdea7c2a6db ProductTest Failed in local-macos-arm64 at 0b280cb22efa
+- OBS-tc-cli-external-artifact-fingerprinted-in-place-987bc3d0d099b0842ea660f8 ProductTest Passed in local-macos-arm64 at 0b280cb22efa
 - OBS-tc-cli-external-artifact-fingerprinted-in-place-cb0af6f5c6adaf60f8846c2b ProductTest Passed in local-macos-arm64 at beee7540aa8d
 - OBS-tc-cli-evidence-add-returns-observation-id-55ed9087aa0df5d8693a5ef7 ProductTest Passed in local-macos-arm64 at 361a5b1a3347
 - OBS-tc-cli-manual-record-returns-observation-id-45871c5f24362ef0ce17138b ProductTest Passed in local-macos-arm64 at 361a5b1a3347
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-513e970c867a3b306088d874 ProductTest Passed in local-macos-arm64 at 26f1a0bfe079
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-e3ceaa42d7d2ca9f573093c0 ProductTest Passed in local-macos-arm64 at 26f1a0bfe079
 - OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c ProductTest Passed in local-macos-arm64 at 0b06b173afa3
-- OBS-tc-cli-external-artifact-fingerprinted-in-place-8cb117826176b09b4a202528 ProductTest Passed in local-macos-arm64 at 0c96886bd337
-- OBS-tc-history-switch-keeps-gated-finished-sessions-open-267a8deb386341d2ff15f774 ProductTest Passed in local-macos-arm64 at be1dc60a654a
-- OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f ProductTest Passed in local-macos-arm64 at e659153cdb87
-- OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d ProductTest Passed in local-macos-arm64 at 906717d6ef6b
 
 ## Briefs
 

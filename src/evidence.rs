@@ -649,16 +649,83 @@ pub(super) fn record(root: &Path, evidence: &Evidence) -> Result<String> {
     Ok(name)
 }
 
+/// The prefix of an external artifact's committed ID. A committed record keeps only
+/// this neutral ID and the fingerprint, never the file's path, which can name a person
+/// or a machine (#14, Leif 2026-11-10: "mark it machine-local.. also don't leak info").
+pub(super) const EXTERNAL_PREFIX: &str = "external:";
+/// The machine-local map from external artifact ID to path. `.chough/local/` is
+/// git-ignored, so the path stays on the recording machine.
+const EXTERNAL_MAP: &str = ".chough/local/external-artifacts.json";
+/// The most entries the machine-local map keeps.
+const EXTERNAL_MAP_LIMIT: usize = 4096;
+
+fn external_map(root: &Path) -> BTreeMap<String, String> {
+    local_path(root, EXTERNAL_MAP)
+        .ok()
+        .and_then(|path| fs::read(path).ok())
+        .and_then(|bytes| serde_json::from_slice(&bytes).ok())
+        .unwrap_or_default()
+}
+
+/// The machine-local path of an external artifact ID, when this machine recorded it.
+fn external_path(root: &Path, id: &str) -> Option<std::path::PathBuf> {
+    external_map(root).get(id).map(std::path::PathBuf::from)
+}
+
+/// Replace each absolute artifact path with a neutral `external:<16 hex>` ID, from the
+/// first bytes of its SHA-256, and remember the path only in the machine-local map.
+/// Project artifacts are returned unchanged.
+pub(super) fn bind_external(root: &Path, artifacts: &[String]) -> Result<Vec<String>> {
+    let mut map = external_map(root);
+    let mut bound = vec![];
+    let mut added = false;
+    for artifact in artifacts {
+        if !Path::new(artifact).is_absolute() {
+            bound.push(artifact.clone());
+            continue;
+        }
+        let digest = external_digest(Path::new(artifact))?;
+        let id = format!("{EXTERNAL_PREFIX}{}", &digest[..16]);
+        if map.get(&id) != Some(artifact) {
+            map.insert(id.clone(), artifact.clone());
+            added = true;
+        }
+        bound.push(id);
+    }
+    if added {
+        ensure!(
+            map.len() <= EXTERNAL_MAP_LIMIT,
+            "the machine-local external artifact map holds {EXTERNAL_MAP_LIMIT} entries; remove stale ones from {EXTERNAL_MAP}"
+        );
+        let path = local_path(root, EXTERNAL_MAP)?;
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent)?;
+            let ignore = parent.join(".gitignore");
+            if !ignore.exists() {
+                fs::write(ignore, "*\n")?;
+            }
+        }
+        let mut bytes = serde_json::to_vec_pretty(&map)?;
+        bytes.push(b'\n');
+        fs::write(&path, bytes)?;
+    }
+    Ok(bound)
+}
+
 pub(super) fn artifact_fingerprints(
     root: &Path,
     artifacts: &[String],
 ) -> Result<BTreeMap<String, String>> {
     let mut fingerprints = BTreeMap::new();
     for artifact in artifacts {
-        if Path::new(artifact).is_absolute() {
+        if let Some(path) = artifact
+            .strip_prefix(EXTERNAL_PREFIX)
+            .map(|_| external_path(root, artifact))
+        {
             // An external artifact (#14, REQ-cli-006): fingerprinted in place within
-            // the bound, never copied into the project.
-            fingerprints.insert(artifact.clone(), external_digest(Path::new(artifact))?);
+            // the bound, never copied into the project; its path stays machine-local.
+            let path = path.context("external artifact is not bound on this machine")?;
+            fingerprints.insert(artifact.clone(), external_digest(&path)?);
             continue;
         }
         ensure!(
@@ -737,7 +804,8 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
             digest,
         });
     }
-    let artifact_fingerprints = artifact_fingerprints(root, &args.artifacts)?;
+    let artifacts = bind_external(root, &args.artifacts)?;
+    let artifact_fingerprints = artifact_fingerprints(root, &artifacts)?;
     let id = match args.id {
         Some(id) => id,
         None => {
@@ -761,7 +829,7 @@ pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         outcome: args.outcome,
         environment: args.environment,
         summary: args.summary,
-        artifacts: args.artifacts,
+        artifacts,
         artifact_fingerprints,
         observed_at_unix_seconds: now()?,
         snapshot: snapshot(root)?,
@@ -925,26 +993,37 @@ impl<'a> Reads<'a> {
         }
     }
 
-    fn artifacts_current(&self, evidence: &Evidence) -> Result<bool> {
+    /// Whether the observation's artifacts still hold their recorded bytes: `Some(true)`
+    /// current, `Some(false)` changed or missing, `None` when an external artifact is
+    /// not bound on this machine (#14: it verifies only where it was recorded).
+    fn artifacts_current(&self, evidence: &Evidence) -> Result<Option<bool>> {
         let started = Instant::now();
         let result = (|| {
-            let mut current = true;
+            let mut current = Some(true);
             for artifact in &evidence.artifacts {
                 let expected = evidence
                     .artifact_fingerprints
                     .get(artifact)
                     .context("missing artifact binding")?;
                 ensure!(is_digest(expected), "invalid artifact digest");
-                let path = Path::new(artifact);
-                let digest = if path.is_absolute() {
-                    // An external artifact (#14, REQ-cli-006) is re-read in place.
-                    external_digest(path).ok()
+                let digest = if artifact.starts_with(EXTERNAL_PREFIX) {
+                    // An external artifact (#14, REQ-cli-006) is re-read in place where
+                    // this machine bound it; elsewhere it cannot be checked.
+                    match external_path(self.root, artifact).filter(|path| path.exists()) {
+                        Some(path) => external_digest(&path).ok(),
+                        None => {
+                            if current == Some(true) {
+                                current = None;
+                            }
+                            continue;
+                        }
+                    }
                 } else {
                     local_path(self.root, artifact)?;
                     file_digest(self.root, artifact).ok()
                 };
                 if digest.as_ref() != Some(expected) {
-                    current = false;
+                    current = Some(false);
                 }
             }
             Ok(current)
@@ -970,10 +1049,15 @@ impl<'a> Reads<'a> {
         Ok(match current {
             Err(_) => "unknown-revision",
             Ok(snapshot) if !same_inputs(snapshot, evidence) => "stale-revision-or-inputs",
-            Ok(_) if !artifacts_current => "stale-artifact",
+            Ok(_) if artifacts_current == Some(false) => "stale-artifact",
             Ok(_) if !cases_current => "stale-case-definition",
+            Ok(_)
+                if environment.is_some() && environment != Some(evidence.environment.as_str()) =>
+            {
+                "stale-environment"
+            }
+            Ok(_) if artifacts_current.is_none() => EXTERNAL_UNCHECKABLE,
             Ok(_) if environment.is_none() => "environment-unchecked",
-            Ok(_) if environment != Some(evidence.environment.as_str()) => "stale-environment",
             Ok(_) => "current-observation",
         })
     }
@@ -1021,10 +1105,15 @@ const WARN_BYTES: u64 = 50 * 1_048_576;
 const LEDGER_LIMIT: u64 = 16 * 1_048_576;
 const ELIGIBLE_REASON: &str = "routine automated run older than 14 days outside every protected set (checkpoint, bugs, native manifests, newest 3 and newest failure per case and environment, validation failures and first and last passes)";
 
+/// The freshness and label of an observation whose external artifact is not bound on
+/// this machine: neither current nor stale, because it cannot be checked here (#14).
+pub(super) const EXTERNAL_UNCHECKABLE: &str = "external-not-checkable-here";
+
 /// Current only when present and its bound inputs still match; when no environment was
 /// requested, the record's own environment is accepted.
 fn label_for(freshness: &str, environment: Option<&str>) -> &'static str {
     match freshness {
+        EXTERNAL_UNCHECKABLE => EXTERNAL_UNCHECKABLE,
         "current-observation" => "current",
         "environment-unchecked" if environment.is_none() => "current",
         _ => "historical",
@@ -2015,6 +2104,11 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
                 }
                 let mut candidate_changed = false;
                 for (artifact, expected) in &evidence.artifact_fingerprints {
+                    // An external artifact is never removed, only its record, so there is
+                    // nothing of it to recheck here (#14).
+                    if artifact.starts_with(EXTERNAL_PREFIX) {
+                        continue;
+                    }
                     if !file_digest(root, artifact).is_ok_and(|actual| actual == *expected) {
                         candidate_changed = true;
                         break;

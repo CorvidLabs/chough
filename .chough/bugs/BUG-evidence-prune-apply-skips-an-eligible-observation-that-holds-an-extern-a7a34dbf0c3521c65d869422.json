@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "id": "BUG-evidence-prune-apply-skips-an-eligible-observation-that-holds-an-extern-a7a34dbf0c3521c65d869422",
+  "title": "evidence prune --apply skips an eligible observation that holds an external artifact",
+  "symptom": "prune --apply refuses or skips the set: the pre-removal recheck digests the external artifact as a project file and finds it missing",
+  "trigger": "evidence prune --apply with an eligible old observation whose artifacts include an external one",
+  "expected": "The record and its .chough/artifacts log are removed; the external file is never touched (REQ-cli-006)",
+  "actual": "The observation is retained ('artifact is changed, missing or unsafe') or the apply aborts and restores",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-006"
+  ],
+  "cases": [
+    "TC-cli-prune-never-removes-external-artifact"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "0b280cb22efa7595e4528304836e22141b8875d2",
+  "steps": [
+    "Record an old routine run with an external artifact",
+    "chough consent grant retention; chough evidence prune --apply"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-prune-never-removes-external-artifact-dca953892e626bdea7c2a6db",
+    "OBS-tc-cli-prune-never-removes-external-artifact-96450bfb1d06b8dc7f352cdd"
+  ],
+  "impact": "Not yet assessed.",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "manual report",
+  "notes": [
+    {
+      "at_unix_seconds": 1794359826,
+      "text": "status: open -> verified. Passes once the prune recheck skips external IDs; found by dogfooding prune --apply.",
+      "observations": [
+        "OBS-tc-cli-prune-never-removes-external-artifact-96450bfb1d06b8dc7f352cdd"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794359805,
+  "updated_at_unix_seconds": 1794359826
+}

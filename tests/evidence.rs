@@ -2097,10 +2097,35 @@ fn an_external_artifact_is_fingerprinted_in_place() {
     ]);
     let record = added["recorded"].as_str().unwrap().to_string();
     let observation: Value = serde_json::from_str(&fixture.read(&record)).unwrap();
-    let key = external.to_str().unwrap();
-    assert_eq!(observation["artifacts"], serde_json::json!([key]));
-    let digest = observation["artifact_fingerprints"][key].as_str().unwrap();
+    // The committed record holds a neutral ID and the fingerprint, never the path,
+    // which can name a person or a machine; the path stays machine-local (#14).
+    let key = observation["artifacts"][0].as_str().unwrap().to_string();
+    assert!(
+        key.starts_with("external:") && key.len() == 25,
+        "{observation:#}"
+    );
+    let digest = observation["artifact_fingerprints"][&key].as_str().unwrap();
     assert_eq!(digest.len(), 64, "{observation:#}");
+    assert!(
+        digest.starts_with(&key["external:".len()..]),
+        "{observation:#}"
+    );
+    let bytes = fixture.read(&record);
+    let home = std::env::var("HOME").unwrap_or_default();
+    for leak in [
+        external.to_str().unwrap(),
+        "chough-14-external",
+        home.as_str(),
+    ] {
+        assert!(
+            leak.is_empty() || !bytes.contains(leak),
+            "{leak} in {bytes}"
+        );
+    }
+    let map: Value =
+        serde_json::from_str(&fixture.read(".chough/local/external-artifacts.json")).unwrap();
+    assert_eq!(map[&key], serde_json::json!(external.to_str().unwrap()));
+    assert_eq!(fixture.read(".chough/local/.gitignore").trim(), "*");
     // Nothing was copied into the project.
     assert!(!fixture.exists(".chough/artifacts"));
 
@@ -2188,6 +2213,62 @@ fn an_external_artifact_is_fingerprinted_in_place() {
     };
     assert_eq!(label(&fixture).as_deref(), Some("current"));
     std::fs::write(&external, b"different-bytes").unwrap();
-    assert_ne!(label(&fixture).as_deref(), Some("current"));
+    assert_eq!(label(&fixture).as_deref(), Some("historical"));
+    // On a machine without the mapping (or without the file), the observation is
+    // external and not checkable here, neither current nor stale.
+    std::fs::write(&external, b"png-bytes").unwrap();
+    assert_eq!(label(&fixture).as_deref(), Some("current"));
+    std::fs::remove_file(fixture.root().join(".chough/local/external-artifacts.json")).unwrap();
+    assert_eq!(
+        label(&fixture).as_deref(),
+        Some("external-not-checkable-here")
+    );
+    std::fs::remove_file(&external).unwrap();
+}
+
+/// #14: pruning an eligible observation whose artifacts include an external one removes
+/// its record and its `.chough/artifacts` log, and never touches the external file; the
+/// pre-removal recheck does not treat the neutral external ID as a missing project file.
+#[test]
+fn prune_apply_never_removes_an_external_artifact() {
+    let fixture = project();
+    for (id, age) in [("n1", 20), ("n2", 21), ("n3", 22)] {
+        write_obs(&fixture, &Obs::run(id, "TC-a", "passed", age));
+    }
+    write_obs(
+        &fixture,
+        &Obs::run("old", "TC-a", "passed", 40).with_log(".chough/artifacts/old.log", "old log\n"),
+    );
+    let external = std::env::temp_dir().join(format!("chough-14-prune-{}.png", std::process::id()));
+    std::fs::write(&external, "screenshot").unwrap();
+    let id = format!("external:{}", &digest("screenshot")[..16]);
+    let path = ".chough/evidence/old.json";
+    let mut record: Value = serde_json::from_str(&fixture.read(path)).unwrap();
+    record["artifacts"].as_array_mut().unwrap().push(json!(id));
+    record["artifact_fingerprints"][&id] = json!(digest("screenshot"));
+    fixture.write(
+        path,
+        &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+    );
+    fixture.write(
+        ".chough/local/external-artifacts.json",
+        &json!({ id.clone(): external.to_str().unwrap() }).to_string(),
+    );
+    fixture.commit("an old run with an external artifact");
+
+    let preview = fixture.ok(&["evidence", "prune"]);
+    assert_eq!(ids(&preview["eligible"]), set(["old"]), "{preview:#}");
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "retention",
+        "--source",
+        "Human: prune old routine logs",
+    ]);
+    let applied = fixture.ok(&["evidence", "prune", "--apply"]);
+    assert_eq!(applied["pruned"], json!(["old"]), "{applied:#}");
+    assert!(!fixture.exists(path));
+    assert!(!fixture.exists(".chough/artifacts/old.log"));
+    assert_eq!(std::fs::read_to_string(&external).unwrap(), "screenshot");
     std::fs::remove_file(&external).unwrap();
 }

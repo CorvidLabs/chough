@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 85
+version: 86
 status: active
 files:
   - src/main.rs
@@ -383,3 +383,4 @@ provider, runtime or hosted service.
 | 83 | 2026-11-10 | keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136: Keep observations current when the generated knowledge index is rebuilt (#136) |
 | 84 | 2026-11-10 | return-the-observation-id-from-cases-record-and-evidence-add-issue-60: Return the observation ID from cases record and evidence add (issue 60) |
 | 85 | 2026-11-10 | external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14: External evidence artifacts by recorded fingerprint, never copied into the project (#14) |
+| 86 | 2026-11-11 | external-artifacts-stay-machine-local-committed-records-keep-no-path-14: External artifacts stay machine-local: committed records keep no path (14) |

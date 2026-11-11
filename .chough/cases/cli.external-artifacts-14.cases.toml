@@ -12,9 +12,27 @@ requirements = ["REQ-cli-006"]
 paths = ["src/evidence.rs", "tests/evidence.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["evidence add with an absolute artifact path records its SHA-256 without copying it into the project; missing, directory, symlinked and over-64-MiB paths are refused by name; changing the external file makes the observation stop reading current"]
+expected = ["evidence add with an absolute artifact path records a neutral external ID and its SHA-256 with no path, file name or home directory in the record, keeps the path in the git-ignored .chough/local map and copies nothing; missing, directory, symlinked and over-64-MiB paths are refused by name; changing the external file reads historical, and without the mapping it reads external-not-checkable-here"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "evidence"
 test = "an_external_artifact_is_fingerprinted_in_place"
+
+[[case]]
+id = "TC-cli-prune-never-removes-external-artifact"
+title = "Prune removes an eligible record and its project log, never an external artifact"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-006"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["evidence prune --apply prunes an eligible old observation holding a .chough/artifacts log and an external artifact: the record and the log are removed and the external file keeps its bytes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "prune_apply_never_removes_an_external_artifact"

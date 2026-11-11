@@ -1265,6 +1265,8 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         .collect::<Vec<_>>()
         .join(", ");
     let observation = observation_id(id, requested_id)?;
+    // External artifacts keep only a neutral ID in the record (#14).
+    let artifacts = evidence::bind_external(root, &artifacts)?;
     let record = Evidence {
         schema_version: 2,
         id: observation.clone(),

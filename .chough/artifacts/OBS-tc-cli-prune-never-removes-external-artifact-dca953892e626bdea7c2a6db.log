@@ -1,0 +1,115 @@
+--- stdout ---
+
+running 1 test
+test prune_apply_never_removes_an_external_artifact ... FAILED
+
+failures:
+
+---- prune_apply_never_removes_an_external_artifact stdout ----
+
+thread 'prune_apply_never_removes_an_external_artifact' (679842891) panicked at tests/evidence.rs:2269:5:
+assertion `left == right` failed: {
+  "applied": true,
+  "authority": "run consent: Human: prune old routine logs",
+  "eligible": [
+    {
+      "age_days": 40,
+      "bytes": 1027,
+      "cases": [
+        "TC-a"
+      ],
+      "environment": "local",
+      "files": [
+        ".chough/evidence/old.json",
+        ".chough/artifacts/old.log"
+      ],
+      "id": "old",
+      "outcome": "passed",
+      "reason": "routine automated run older than 14 days outside every protected set (checkpoint, bugs, native manifests, newest 3 and newest failure per case and environment, validation failures and first and last passes)"
+    }
+  ],
+  "ledger": ".chough/pruned.jsonl",
+  "native": {
+    "detail": "No native SpecSync configuration; no native manifest protects a set.",
+    "state": "not-configured"
+  },
+  "note": "Files are removed from the working tree only; committed bytes stay recoverable from Git history. Native archives, ignore rules and history are never changed.",
+  "policy": {
+    "authority": "run consent: Human: prune old routine logs",
+    "keep_newest": 3,
+    "keep_newest_failure": true,
+    "min_age_days": 14,
+    "name": "chough-retention/1",
+    "warn_bytes": 52428800
+  },
+  "protected": [
+    {
+      "age_days": 20,
+      "cases": [
+        "TC-a"
+      ],
+      "environment": "local",
+      "id": "n1",
+      "outcome": "passed",
+      "reasons": [
+        "newest"
+      ]
+    },
+    {
+      "age_days": 21,
+      "cases": [
+        "TC-a"
+      ],
+      "environment": "local",
+      "id": "n2",
+      "outcome": "passed",
+      "reasons": [
+        "newest"
+      ]
+    },
+    {
+      "age_days": 22,
+      "cases": [
+        "TC-a"
+      ],
+      "environment": "local",
+      "id": "n3",
+      "outcome": "passed",
+      "reasons": [
+        "newest"
+      ]
+    }
+  ],
+  "pruned": [],
+  "schema_version": 1,
+  "skipped": [
+    {
+      "id": "old",
+      "reason": "artifact is changed, missing or unsafe; observation retained"
+    }
+  ],
+  "totals": {
+    "eligible": 1,
+    "evidence_bytes": 3259,
+    "protected": 3,
+    "reclaimable_bytes": 1027,
+    "sets": 4
+  },
+  "warning": null
+}
+  left: Array []
+ right: Array [String("old")]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    prune_apply_never_removes_an_external_artifact
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 32 filtered out; finished in 1.42s
+
+
+--- stderr ---
+   Compiling chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-14-external-artifacts)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.25s
+     Running tests/evidence.rs (target/debug/deps/evidence-959615feba7516c4)
+error: test failed, to rerun pass `--test evidence`
