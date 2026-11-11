@@ -1842,6 +1842,22 @@ pub(super) fn links_0_5(root: &Path) -> Result<std::collections::BTreeMap<String
         .collect())
 }
 
+/// Each 0.5.x bug's ID with the path the bug mapper writes it to (REQ-records-009),
+/// for the evidence mapper, which runs first, to alias an observation only a bug holds
+/// as a receipt. The names do not depend on where observations go.
+pub(super) fn paths_0_5(root: &Path) -> Result<std::collections::BTreeMap<String, String>> {
+    let ids: BTreeSet<String> = legacy_bugs(root)?
+        .into_iter()
+        .map(|(_, legacy)| legacy.id)
+        .collect();
+    let carried = migrate_0_5(root, &crate::migrate::ObservationHomes::default())?;
+    Ok(carried
+        .aliases
+        .into_iter()
+        .filter(|(id, _)| ids.contains(id))
+        .collect())
+}
+
 /// The files under `fixture` when it names a file or folder in the project; nothing
 /// for a description that is not a path.
 fn fixture_files(root: &Path, fixture: &str) -> Vec<String> {
