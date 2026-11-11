@@ -32,8 +32,9 @@ regenerate.sh v0.3.0   # one tag
 ```
 
 The script builds the tag in `/tmp/chough-build/<tag>` (reused if the release
-binary exists) with `cargo +1.96.0 build --release --locked` under the shared
-heavy-tests lock, drives it in `/tmp/chough-fixture/<tag>/` with stub `hi` and
+binary exists) with `cargo +1.96.0 build --release --locked` — under a shared lock when
+`CHOUGH_HEAVY_LOCK` names a lock file, directly otherwise — drives it in
+`/tmp/chough-fixture/<tag>/` with stub `hi` and
 `specsync` stand-ins, and rewrites the tag's folder here. Building from
 source requires only the repository (for `git worktree add <tag>`) and the
 1.96.0 toolchain.
@@ -48,5 +49,5 @@ those. Everything else — file layout, record kinds, the scenario — is fixed.
 
 Captures run with HOME, USER and the project under `/tmp/chough-fixture/` and
 `USER=fixture`; the script greps the result for the caller's real home, user
-name and host name and fails on any hit. The lock path in `regenerate.sh`
-itself is infrastructure, not a captured record.
+name and host name and fails on any hit. No lock path is committed; the lock location comes from the
+`CHOUGH_HEAVY_LOCK` environment variable.

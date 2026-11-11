@@ -22,7 +22,6 @@ esac
 CALLER_HOME=$HOME
 HERE=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 REPO=$(git -C "$HERE" rev-parse --show-toplevel)
-LOCK=/Users/leif/Development/_CorvidLabs/_worktrees/.locks/heavy-tests.lock
 BUILD=/tmp/chough-build/$TAG
 WORK=/tmp/chough-fixture/$TAG
 BIN=$BUILD/target/release/chough
@@ -33,9 +32,17 @@ if [ ! -x "$BIN" ]; then
   if [ ! -d "$BUILD" ]; then
     git -C "$REPO" worktree add "$BUILD" "$TAG" >/dev/null
   fi
-  echo "building $TAG (waits for the shared lock)…" >&2
-  /usr/bin/lockf -k "$LOCK" "$HOME/.cargo/bin/cargo" +1.96.0 build --release --locked \
-    --manifest-path "$BUILD/Cargo.toml" >&2
+  # When CHOUGH_HEAVY_LOCK is set, the build waits its turn on that shared
+  # lock file; unset, it builds directly.
+  if [ -n "${CHOUGH_HEAVY_LOCK:-}" ]; then
+    echo "building $TAG (waits for the shared lock)…" >&2
+    /usr/bin/lockf -k "$CHOUGH_HEAVY_LOCK" "$HOME/.cargo/bin/cargo" +1.96.0 build --release --locked \
+      --manifest-path "$BUILD/Cargo.toml" >&2
+  else
+    echo "building $TAG…" >&2
+    "$HOME/.cargo/bin/cargo" +1.96.0 build --release --locked \
+      --manifest-path "$BUILD/Cargo.toml" >&2
+  fi
 fi
 [ -x "$BIN" ] || { echo "no release binary for $TAG" >&2; exit 1; }
 
