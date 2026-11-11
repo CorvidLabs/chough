@@ -418,7 +418,7 @@ impl Linked {
 
 /// The IDs a receipt answers to: its `id` and its `aliases`, one scalar separated by
 /// commas and spaces (a lenient reader also strips `[` and `]`).
-fn receipt_names(map: &[(String, String)]) -> Vec<String> {
+pub(super) fn receipt_names(map: &[(String, String)]) -> Vec<String> {
     let mut names = vec![];
     for (key, value) in map {
         match key.as_str() {
@@ -647,7 +647,7 @@ fn legacy_observation(root: &Path, id: &str) -> Option<Linked> {
 }
 
 /// The records in `dir` that read, by file name; others are skipped.
-fn records_in(root: &Path, dir: &str, bound: u64) -> Vec<(String, Record)> {
+pub(super) fn records_in(root: &Path, dir: &str, bound: u64) -> Vec<(String, Record)> {
     let Ok(folder) = local_path(root, dir) else {
         return vec![];
     };
@@ -1584,39 +1584,98 @@ pub(super) fn open_backlog_section(root: &Path) -> Result<Section> {
     })
 }
 
-/// The recorded times of one bug, for the timing report.
-pub(super) struct BugTimes {
+/// One bug's times for the timing report (REQ-reporting-001): its creation, its
+/// earliest present linked failure and the first Log entry that records a move to
+/// verified. No retention ledger is read.
+pub(super) struct FixTimes {
     pub(super) id: String,
+    /// Its name and its aliases, which `timing --bug` accepts (REQ-cli-023).
+    pub(super) names: Vec<String>,
     pub(super) status: String,
-    pub(super) created_at_unix_seconds: u64,
-    pub(super) observations: Vec<String>,
-    /// Each Log entry's time and text, in record order; an entry whose time does not
-    /// read is left out.
-    pub(super) notes: Vec<(u64, String)>,
+    /// `None` when `created` does not read.
+    pub(super) created: Option<u64>,
+    /// The earliest linked failure with an observed time, and where it was read.
+    pub(super) reproduced: Option<(u64, String)>,
+    /// A linked ID that is missing or ambiguous, or a linked failure without an observed
+    /// time: either could be the earlier failure, so the reproduction time is unknown.
+    pub(super) unavailable: bool,
+    /// The first Log entry that records `status: <old> -> verified`.
+    pub(super) verified: Option<u64>,
 }
 
-/// One Log entry's time and text, from `- <ISO UTC> · <text>`.
+/// One Log entry's time and text, from `- <ISO UTC> · <text>`, without the ` · by
+/// <actor>` that ends an entry whose actor is known.
 fn log_entry(line: &str) -> Option<(u64, String)> {
     let (time, text) = line.strip_prefix("- ")?.split_once(" · ")?;
+    let text = text.rsplit_once(" · by ").map_or(text, |(text, _)| text);
     Some((parse_time(time).ok()?, text.to_string()))
 }
 
-/// Every bug's recorded times. A bug whose `created` time does not read is left out.
-pub(super) fn bug_times(root: &Path) -> Result<Vec<BugTimes>> {
+/// Whether a Log entry's changes (the `; `-joined `field: old -> new` entries before
+/// the first `. `, as `bug update` writes them) record a move to verified.
+fn records_verified(text: &str) -> bool {
+    let prefix = text.split(". ").next().unwrap_or_default();
+    prefix.split("; ").any(|change| {
+        change
+            .strip_prefix("status: ")
+            .and_then(|rest| rest.split_once(" -> "))
+            .is_some_and(|(old, new)| {
+                !old.is_empty() && !old.contains(' ') && new.trim_end_matches('.') == "verified"
+            })
+    })
+}
+
+/// Every bug's fix times.
+pub(super) fn fix_times(root: &Path) -> Result<Vec<FixTimes>> {
+    let evidence = Evidence::new(root);
     Ok(read_all(root)?
         .iter()
-        .filter_map(|bug| {
-            Some(BugTimes {
+        .map(|bug| {
+            let mut unavailable = false;
+            let mut earliest: Option<(u64, String)> = None;
+            for id in bug.list("evidence") {
+                match evidence.find(bug, &id) {
+                    Ok(Some(linked)) if linked.is("failed") => match linked.observed {
+                        Some(at) if earliest.as_ref().is_none_or(|(best, _)| at < *best) => {
+                            earliest = Some((at, format!("evidence {id} ({})", linked.label)));
+                        }
+                        Some(_) => {}
+                        None => unavailable = true,
+                    },
+                    Ok(Some(_)) => {}
+                    Ok(None) | Err(_) => unavailable = true,
+                }
+            }
+            let mut names = vec![bug.id().to_string()];
+            names.extend(bug.list("aliases"));
+            FixTimes {
                 id: bug.id().to_string(),
+                names,
                 status: bug.status().to_string(),
-                created_at_unix_seconds: parse_time(bug.text("created")).ok()?,
-                observations: bug.list("evidence"),
-                notes: bug
+                created: parse_time(bug.text("created")).ok(),
+                reproduced: earliest,
+                unavailable,
+                verified: bug
                     .log()
                     .iter()
                     .filter_map(|line| log_entry(line))
-                    .collect(),
-            })
+                    .find(|(_, text)| records_verified(text))
+                    .map(|(at, _)| at),
+            }
+        })
+        .collect())
+}
+
+/// Each bug's receipts (REQ-cli-012), with the bug's ID, for the timing report's case
+/// runs.
+pub(super) fn receipts(root: &Path) -> Result<Vec<(String, Vec<(String, String)>)>> {
+    Ok(read_all(root)?
+        .iter()
+        .flat_map(|bug| {
+            bug.record
+                .maps("receipts")
+                .into_iter()
+                .map(|map| (bug.id().to_string(), map))
         })
         .collect())
 }
@@ -2195,7 +2254,7 @@ mod tests {
         assert_eq!(stored.paragraph(FIX), "Not fixed yet.");
         assert_eq!(
             log_entry("- 2026-11-10T10:00:00Z · Reported (x) · by a"),
-            Some((1_794_304_800, "Reported (x) · by a".to_string()))
+            Some((1_794_304_800, "Reported (x)".to_string()))
         );
     }
 }
