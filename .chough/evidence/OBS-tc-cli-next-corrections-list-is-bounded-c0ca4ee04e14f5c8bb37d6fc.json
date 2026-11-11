@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-next-corrections-list-is-bounded-c0ca4ee04e14f5c8bb37d6fc",
+  "criteria": [
+    "LIFE-2"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test history -- --exact many_long_corrections_keep_next_within_its_bounds for TC-cli-next-corrections-list-is-bounded: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-next-corrections-list-is-bounded-c0ca4ee04e14f5c8bb37d6fc.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-next-corrections-list-is-bounded-c0ca4ee04e14f5c8bb37d6fc.log": "fb9eb41d6f1a6e6c5fe299d1d8be3718264bb28ebef0a395615c97af62f76435"
+  },
+  "observed_at_unix_seconds": 1794357214,
+  "snapshot": {
+    "revision": "673de2e066b13de7e1031d887686d979c8784955",
+    "dirty": true,
+    "fingerprint": "f36534af47ecb81210260bab448edb2e32235e0f859fff5e3eeaa9addda554b2",
+    "content": "4f0d766214be55939b8eeb33a4ead8e1584fcf63f8255edbdb0e060c5a6b862e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-next-corrections-list-is-bounded",
+      "digest": "c6ea287b41355118a6699945ea0a5d5328f03486f2610081875af5b2dd55f0a0"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "history",
+    "--",
+    "--exact",
+    "many_long_corrections_keep_next_within_its_bounds"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

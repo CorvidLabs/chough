@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-d077dfdc45be7cd6a35973df",
-    "head": null,
+    "head": "EVT-83b341b06e7381f1bd8abf3a",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "intent",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -35,11 +35,15 @@
   ],
   "observations": [
     "OBS-tc-history-correction-appends-without-rewriting-0e50bd47aff0d50f990ea05a",
-    "OBS-tc-cli-next-corrections-list-is-bounded-04768f2641f038c45fe059c8"
+    "OBS-tc-cli-next-corrections-list-is-bounded-04768f2641f038c45fe059c8",
+    "OBS-tc-history-correction-appends-without-rewriting-e5fc0d86a3b61a4812b75301",
+    "OBS-tc-cli-next-corrections-list-is-bounded-c0ca4ee04e14f5c8bb37d6fc"
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of append-only-event-corrections-with-chough-correct-never-rewriting-history-167"
+  ],
   "run_consents": [],
-  "next_action": "Leif: scope approval of #210 (approved affected_paths omit CHANGELOG.md, tests/timing coverage is in tests/history.rs), then implementation acceptance; then review, ship, push the archive and merge."
+  "next_action": "Record Leif's relayed acceptance as the review, ship, dogfood, full suite; stop before merge for the coordinator."
 }

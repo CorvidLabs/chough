@@ -140,6 +140,26 @@
         "REQ-history-015",
         "REQ-reporting-001"
       ]
+    },
+    {
+      "timestamp": 1794357162,
+      "commit": "673de2e066b13de7e1031d887686d979c8784955",
+      "contract_digest": "117a456030b12767cd1e97ae6c9aaee91dfd3502aff948d34e58d7b1d8f19fe2",
+      "execution_digest": "86dd40356a1dfba1877c91ee73cbdf3e71830834a03e6b541be63e1d48d3afeb",
+      "workspace_digest": "36149965223fb1472812451bc3cdcce296d7899c565d96207baac898063c4df9",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history --spec reporting",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-021",
+        "REQ-history-015",
+        "REQ-reporting-001"
+      ]
     }
   ]
 }

@@ -99,30 +99,18 @@ Archived lesson bundles:
 
 ## Observations
 
-591 recorded; most recent:
+586 recorded; most recent:
 
-- OBS-tc-cli-next-corrections-list-is-bounded-04768f2641f038c45fe059c8 ProductTest Passed in local-macos-arm64 at 0b64722d9da1
-- OBS-tc-history-correction-appends-without-rewriting-0e50bd47aff0d50f990ea05a ProductTest Passed in local-macos-arm64 at 0b64722d9da1
-- OBS-structural-28551a0cdbe9c0ab26005f41 Structural Passed in local-macos-arm64 at 7cf73cbe8018
-- OBS-structural-68d43a6b1e76579bb372ad1d Structural Passed in local-macos-arm64 at 4b35b15064a0
-- OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a ProductTest Passed in local-macos-arm64 at 4b35b15064a0
-- OBS-tc-cli-inventory-aliases-af56a469e54a2db6ce7b3a29 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
-- OBS-tc-cli-inventory-historical-58c5786905be80e97b73ffe0 ProductTest Failed in local-macos-arm64 at 4b35b15064a0
-- OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-- OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 ProductTest Passed in local-macos-arm64 at d9a9d92459a6
-582 recorded; most recent:
-
+- OBS-tc-cli-next-corrections-list-is-bounded-c0ca4ee04e14f5c8bb37d6fc ProductTest Passed in local-macos-arm64 at 673de2e066b1
+- OBS-tc-history-correction-appends-without-rewriting-e5fc0d86a3b61a4812b75301 ProductTest Passed in local-macos-arm64 at 673de2e066b1
 - OBS-tc-cli-evidence-add-returns-observation-id-55ed9087aa0df5d8693a5ef7 ProductTest Passed in local-macos-arm64 at 361a5b1a3347
 - OBS-tc-cli-manual-record-returns-observation-id-45871c5f24362ef0ce17138b ProductTest Passed in local-macos-arm64 at 361a5b1a3347
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-513e970c867a3b306088d874 ProductTest Passed in local-macos-arm64 at 26f1a0bfe079
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-e3ceaa42d7d2ca9f573093c0 ProductTest Passed in local-macos-arm64 at 26f1a0bfe079
 - OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c ProductTest Passed in local-macos-arm64 at 0b06b173afa3
+- OBS-tc-cli-next-corrections-list-is-bounded-04768f2641f038c45fe059c8 ProductTest Passed in local-macos-arm64 at 0b64722d9da1
+- OBS-tc-history-correction-appends-without-rewriting-0e50bd47aff0d50f990ea05a ProductTest Passed in local-macos-arm64 at 0b64722d9da1
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-267a8deb386341d2ff15f774 ProductTest Passed in local-macos-arm64 at be1dc60a654a
-- OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f ProductTest Passed in local-macos-arm64 at e659153cdb87
-- OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d ProductTest Passed in local-macos-arm64 at 906717d6ef6b
-- OBS-tc-cli-manual-record-returns-observation-id-d15d102dd6ec256479b40abd ProductTest Passed in local-macos-arm64 at 906717d6ef6b
-- OBS-tc-cli-evidence-add-returns-observation-id-3b80f0c5684eab9228a87a75 ProductTest Failed in local-macos-arm64 at 906717d6ef6b
 
 ## Briefs
 

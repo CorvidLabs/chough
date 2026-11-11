@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-correction-appends-without-rewriting-e5fc0d86a3b61a4812b75301",
+  "criteria": [
+    "LIFE-2",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-history-015"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test history -- --exact a_correction_appends_and_is_shown_without_rewriting_history for TC-history-correction-appends-without-rewriting: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-correction-appends-without-rewriting-e5fc0d86a3b61a4812b75301.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-correction-appends-without-rewriting-e5fc0d86a3b61a4812b75301.log": "0a04eab8c657c505c1ffb83ab8f15475697be370b49d9dda0f499274579e30d2"
+  },
+  "observed_at_unix_seconds": 1794357208,
+  "snapshot": {
+    "revision": "673de2e066b13de7e1031d887686d979c8784955",
+    "dirty": true,
+    "fingerprint": "f36534af47ecb81210260bab448edb2e32235e0f859fff5e3eeaa9addda554b2",
+    "content": "4f0d766214be55939b8eeb33a4ead8e1584fcf63f8255edbdb0e060c5a6b862e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-correction-appends-without-rewriting",
+      "digest": "eb5e8d796e7c0d3fe44eb3977ed66a9e2d7278610b9b3db0553b610c91279280"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "history",
+    "--",
+    "--exact",
+    "a_correction_appends_and_is_shown_without_rewriting_history"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
