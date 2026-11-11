@@ -572,6 +572,7 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
         .expect("README names the Fledge verify lane's steps in parentheses");
     // The README's words for each task in fledge.toml.
     let words = [
+        ("toolchain", "tool versions"),
         ("fmt", "format"),
         ("lint", "lint"),
         ("test", "tests"),

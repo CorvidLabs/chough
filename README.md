@@ -216,7 +216,7 @@ from 6.0.
 |---|---|
 | Hosted CI: Ubuntu, macOS | `cargo test` and a release build |
 | Hosted CI: Ubuntu, Rust 1.88.0 | `cargo test` with the minimum Rust version |
-| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the knowledge index check, the feature and bug exercise, build); the native archive check and its fixtures |
+| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (tool versions against the CI pins, format, lint, tests, HI and SpecSync checks, change audit, case definitions, the knowledge index check, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
 On Windows, install Rust, Chough, HI, SpecSync and Fledge inside Ubuntu on WSL 2, and
