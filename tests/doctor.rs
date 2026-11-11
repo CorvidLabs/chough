@@ -185,6 +185,11 @@ fn doctor_reports_an_unmigrated_checkpoint_and_never_migrates() {
     let before = snapshot(&fixture);
     let (code, report) = doctor(&fixture, &[]);
     assert_eq!(code, 1, "{report:#}");
+    assert_eq!(report["findings"][0]["kind"], "unmigrated", "{report:#}");
+    assert_eq!(
+        report["findings"][0]["target"], ".chough/session.json",
+        "{report:#}"
+    );
     assert_eq!(report["findings"][0]["fix"], "chough migrate", "{report:#}");
     let (code, fixed) = doctor(&fixture, &["--fix"]);
     assert_eq!(code, 1, "{fixed:#}");
@@ -481,4 +486,196 @@ fn next_says_when_chough_writes_are_safe_and_init_gives_the_advice() {
     );
     let init = fresh.ok(&["init"]);
     assert!(init["records_in_verification"].is_null(), "{init:#}");
+}
+
+/// The findings of `kind` in `report`.
+fn of_kind(report: &Value, kind: &str) -> Vec<Value> {
+    report["findings"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter(|finding| finding["kind"] == kind)
+        .cloned()
+        .collect()
+}
+
+/// REQ-history-012 `leak`: a committed record holding a home path is a finding by file,
+/// line and kind, never the path; `--fix` alone skips it naming `--redact`, and `--fix
+/// --redact` replaces the match in place, which is not a decision.
+#[test]
+fn doctor_reports_a_committed_leak_and_redacts_it_only_with_redact() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let story = ".chough/archive/sessions/2026-01-01-old.md";
+    let text = "---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\nRan in /Users/SYNTHETIC-person/app.\n";
+    fixture.write(story, text);
+    fixture.commit("an old story");
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    assert!(
+        !report.to_string().contains("SYNTHETIC-person"),
+        "{report:#}"
+    );
+    let leaks = of_kind(&report, "leak");
+    assert_eq!(leaks.len(), 1, "{report:#}");
+    assert_eq!(leaks[0]["target"], story);
+    assert_eq!(leaks[0]["line"], 7);
+    assert_eq!(leaks[0]["match"], "home-path");
+    assert_eq!(leaks[0]["decision"], false);
+
+    let (_, fixed) = doctor(&fixture, &["--fix"]);
+    let leak = &of_kind(&fixed, "leak")[0];
+    assert_eq!(leak["status"], "skipped", "{fixed:#}");
+    assert!(
+        leak["reason"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("--redact")
+    );
+    assert_eq!(fixture.read(story), text);
+
+    let (_, fixed) = doctor(&fixture, &["--fix", "--redact"]);
+    assert_eq!(of_kind(&fixed, "leak")[0]["status"], "fixed", "{fixed:#}");
+    assert_eq!(
+        fixture.read(story),
+        text.replace("/Users/SYNTHETIC-person/app", "<redacted:home-path>")
+    );
+    let (_, again) = doctor(&fixture, &[]);
+    assert!(of_kind(&again, "leak").is_empty(), "{again:#}");
+}
+
+/// REQ-history-012 `timeline_rewritten`: a hand-edited earlier Timeline entry is a
+/// finding naming that entry; it has no fix, so `--fix` leaves the session unchanged.
+#[test]
+fn doctor_reports_a_rewritten_timeline_entry_and_fixes_nothing() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "librarian",
+        "--reason",
+        "SYNTHETIC side trip",
+    ]);
+    fixture.ok(&["stage", "return"]);
+    fixture.commit("two timeline entries");
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let first = common::timeline(&text)
+        .into_iter()
+        .next()
+        .unwrap_or_else(|| panic!("no timeline entry: {text}"));
+    let id = first
+        .rsplit_once('^')
+        .map(|(_, anchor)| anchor.trim().to_string())
+        .unwrap_or_default();
+    let edited = text.replacen("SYNTHETIC side trip", "SYNTHETIC rewritten reason", 1);
+    assert_ne!(edited, text);
+    fixture.write(&file, &edited);
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let found = of_kind(&report, "timeline_rewritten");
+    assert_eq!(found.len(), 1, "{report:#}");
+    assert_eq!(found[0]["target"], file);
+    assert_eq!(found[0]["entries"], serde_json::json!([id]), "{report:#}");
+    let (_, fixed) = doctor(&fixture, &["--fix"]);
+    assert_eq!(
+        of_kind(&fixed, "timeline_rewritten")[0]["status"],
+        "skipped"
+    );
+    assert_eq!(fixture.read(&file), edited);
+
+    // Appending is not rewriting.
+    fixture.write(&file, &text);
+    fixture.ok(&["stage", "enter", "librarian", "--reason", "SYNTHETIC again"]);
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(
+        of_kind(&report, "timeline_rewritten").is_empty(),
+        "{report:#}"
+    );
+}
+
+/// A bug record named `id` holding `aliases`.
+fn bug_record(id: &str, aliases: &str) -> String {
+    format!(
+        "---\nkind: bug\nid: {id}\naliases: [{aliases}]\ntitle: SYNTHETIC bug {id}\nstatus: open\n---\n# SYNTHETIC bug\n"
+    )
+}
+
+/// REQ-history-012 `alias_conflict`: an alias two bugs hold is a finding naming both;
+/// it has no fix, so `--fix` leaves both unchanged.
+#[test]
+fn doctor_reports_an_alias_held_by_two_bugs_and_fixes_nothing() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let one = ".chough/bugs/2026-01-01-one.md";
+    let two = ".chough/bugs/2026-01-02-two.md";
+    fixture.write(one, &bug_record("2026-01-01-one", "BUG-0007"));
+    fixture.write(two, &bug_record("2026-01-02-two", "BUG-0007, BUG-0008"));
+    let before = snapshot(&fixture);
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let found = of_kind(&report, "alias_conflict");
+    assert_eq!(found.len(), 1, "{report:#}");
+    assert_eq!(found[0]["target"], "BUG-0007");
+    assert_eq!(found[0]["records"], serde_json::json!([one, two]));
+    let (_, fixed) = doctor(&fixture, &["--fix"]);
+    assert_eq!(of_kind(&fixed, "alias_conflict")[0]["status"], "skipped");
+    let mut after = snapshot(&fixture);
+    after.retain(|path, _| !path.starts_with(".chough/local/"));
+    let mut before = before;
+    before.retain(|path, _| !path.starts_with(".chough/local/"));
+    assert_eq!(after, before);
+}
+
+/// REQ-history-012 `oversize`: a committed bug over its bound and a screenshot over its
+/// bound are findings with the size and the bound, which the verify lane's `leaks` step
+/// fails on (#215); they have no fix.
+#[test]
+fn doctor_reports_oversized_committed_records_and_the_leaks_step_fails() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = fixture.active_id();
+    let bug = ".chough/bugs/2026-01-01-big.md";
+    fixture.write(
+        bug,
+        &format!(
+            "{}{}\n",
+            bug_record("2026-01-01-big", ""),
+            "x".repeat(70_000)
+        ),
+    );
+    let shot = format!(".chough/sessions/{id}/evidence/2026-01-01-shot.png");
+    fixture.write(&shot, &"p".repeat(600_000));
+    fixture.commit("oversized records");
+    let (code, report) = doctor(&fixture, &["--leaks"]);
+    assert_eq!(code, 1, "{report:#}");
+    let mut found: Vec<(String, u64, u64)> = of_kind(&report, "oversize")
+        .iter()
+        .map(|finding| {
+            (
+                finding["target"].as_str().unwrap_or_default().to_string(),
+                finding["bytes"].as_u64().unwrap_or_default(),
+                finding["bound"].as_u64().unwrap_or_default(),
+            )
+        })
+        .collect();
+    found.sort();
+    let bug_bytes = fixture.read(bug).len() as u64;
+    assert_eq!(
+        found,
+        vec![
+            (bug.to_string(), bug_bytes, 65_536),
+            (shot.clone(), 600_000, 524_288),
+        ],
+        "{report:#}"
+    );
+    let (_, fixed) = doctor(&fixture, &["--fix"]);
+    assert!(
+        of_kind(&fixed, "oversize")
+            .iter()
+            .all(|finding| finding["status"] == "skipped"),
+        "{fixed:#}"
+    );
+    assert_eq!(fixture.read(&shot).len(), 600_000);
 }
