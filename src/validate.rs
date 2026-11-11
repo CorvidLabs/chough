@@ -44,6 +44,50 @@ struct Run {
     started_at_unix_seconds: u64,
 }
 
+/// A 0.5.x validation run, `.chough/validation/<VAL id>.json`, as 0.5.0 wrote it: what
+/// the migration's evidence mapper reads to carry or remove it (REQ-records-009).
+#[derive(Clone, Debug)]
+#[cfg_attr(not(test), allow(dead_code))]
+pub(super) struct LegacyRun {
+    pub(super) id: String,
+    pub(super) case: String,
+    pub(super) times: u32,
+    pub(super) environment: String,
+    pub(super) state: String,
+    pub(super) completed: u32,
+    pub(super) failures: u32,
+    pub(super) not_run: u32,
+    pub(super) observations: Vec<String>,
+    pub(super) elapsed_seconds: u64,
+    pub(super) started_at_unix_seconds: u64,
+}
+
+/// Read a 0.5.x validation run from its text, refusing one that is not a schema 1 run
+/// and naming `path`.
+// The evidence mapper (t38b) calls it; until then only tests do.
+#[cfg_attr(not(test), allow(dead_code))]
+pub(super) fn legacy_run(path: &str, text: &str) -> Result<LegacyRun> {
+    let run: Run = serde_json::from_str(text)
+        .with_context(|| format!("{path} is not a 0.5.x validation run"))?;
+    ensure!(
+        run.schema_version == 1,
+        "{path} is not a schema 1 validation run"
+    );
+    Ok(LegacyRun {
+        id: run.id,
+        case: run.case,
+        times: run.times,
+        environment: run.environment,
+        state: run.state,
+        completed: run.completed,
+        failures: run.failures,
+        not_run: run.not_run,
+        observations: run.observations,
+        elapsed_seconds: run.elapsed_seconds,
+        started_at_unix_seconds: run.started_at_unix_seconds,
+    })
+}
+
 #[derive(Subcommand)]
 pub(super) enum ValidateCommand {
     /// Repeat one case a fixed number of times and record every attempt.
@@ -444,5 +488,37 @@ mod tests {
                 .len(),
             1
         );
+    }
+
+    /// The migration reads a 0.5.x run as 0.5.0 wrote it, and refuses anything else
+    /// naming its path.
+    #[test]
+    fn a_legacy_run_reads_as_written_and_refuses_naming_its_path() {
+        let path = ".chough/validation/VAL-x-000000000000000000000001.json";
+        let text = r#"{"schema_version":1,"id":"VAL-x-000000000000000000000001","case":"TC-cli-x","times":3,"interval_seconds":0,"environment":"local","authority":"standing","state":"completed","completed":3,"failures":1,"not_run":0,"observations":["OBS-a","OBS-b","OBS-c"],"bugs":[],"elapsed_seconds":12,"started_at_unix_seconds":1793527200}"#;
+        let run = legacy_run(path, text).unwrap();
+        assert_eq!(run.id, "VAL-x-000000000000000000000001");
+        assert_eq!(run.case, "TC-cli-x");
+        assert_eq!(
+            (run.times, run.completed, run.failures, run.not_run),
+            (3, 3, 1, 0)
+        );
+        assert_eq!(run.observations, ["OBS-a", "OBS-b", "OBS-c"]);
+        assert_eq!(
+            (run.elapsed_seconds, run.started_at_unix_seconds),
+            (12, 1793527200)
+        );
+        assert_eq!(
+            (run.environment.as_str(), run.state.as_str()),
+            ("local", "completed")
+        );
+        for bad in [
+            "{}",
+            "not json",
+            &text.replace("\"schema_version\":1", "\"schema_version\":2"),
+        ] {
+            let refused = format!("{:#}", legacy_run(path, bad).unwrap_err());
+            assert!(refused.contains(path), "{refused}");
+        }
     }
 }
