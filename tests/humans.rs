@@ -99,6 +99,13 @@ fn decisions(fixture: &Fixture) -> Vec<String> {
 fn a_scope_gate_runs_the_approval_once_as_the_configured_human() {
     let fixture = project();
     fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    // The gate-opened entry records what the gate holds and drives (REQ-cli-030).
+    let text = fixture.read(&fixture.session_file());
+    assert!(
+        text.contains(&format!(" · gate-opened · intent → intent · {SCOPE} ^"))
+            && text.contains("  - holds: plan\n  - drives: approve\n"),
+        "{text}"
+    );
     let gates = fixture.ok(&["next", "--json"])["gates"].clone();
     assert_eq!(
         gates,
@@ -392,5 +399,72 @@ fn a_gate_holds_only_the_stage_it_names() {
             .unwrap()
             .starts_with("Waiting for a human decision: Build go."),
         "{action}"
+    );
+}
+
+/// REQ-records-008: no source file, skill, template or document gives a person as the
+/// default human. A configured identity names a SpecSync actor; anywhere else an actor,
+/// reviewer or identity value is a placeholder, a synthetic value or an agent account.
+#[test]
+fn no_source_names_a_person_as_the_default_human() {
+    fn files(dir: &Path, out: &mut Vec<std::path::PathBuf>) {
+        for entry in std::fs::read_dir(dir).unwrap().flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                files(&path, out);
+            } else if path.extension().is_some_and(|extension| {
+                extension == "rs" || extension == "md" || extension == "toml"
+            }) {
+                out.push(path);
+            }
+        }
+    }
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let mut sources = vec![root.join("README.md")];
+    for dir in ["src", "skills", "docs"] {
+        files(&root.join(dir), &mut sources);
+    }
+    let allowed = |value: &str| {
+        let value = value.trim_matches(|c| c == '"' || c == '\'' || c == '`' || c == '\\');
+        value.is_empty()
+            || value.starts_with('<')
+            || value.starts_with('{')
+            || value.starts_with('$')
+            || value.starts_with("SYNTHETIC")
+            || value.starts_with("SIMULATED")
+            || value.starts_with('…')
+            || value.starts_with("...")
+            || ["corvid-agent", "corvid", "human.specsync_actor"].contains(&value)
+            || value.ends_with("-t382")
+    };
+    let mut problems = vec![];
+    for path in sources {
+        let text = std::fs::read_to_string(&path).unwrap();
+        for (number, line) in text.lines().enumerate() {
+            for key in [
+                "specsync_actor = ",
+                "--actor ",
+                "--reviewer ",
+                "--decided-by ",
+            ] {
+                for (at, _) in line.match_indices(key) {
+                    let value: String = line[at + key.len()..]
+                        .chars()
+                        .take_while(|c| !c.is_whitespace() && *c != ',' && *c != ')')
+                        .collect();
+                    if !allowed(&value) {
+                        problems.push(format!(
+                            "{}:{}: {key}{value}",
+                            path.strip_prefix(root).unwrap().display(),
+                            number + 1
+                        ));
+                    }
+                }
+            }
+        }
+    }
+    assert!(
+        problems.is_empty(),
+        "a person or account named as an identity: {problems:#?}"
     );
 }

@@ -1012,6 +1012,9 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             relayed_by: Some(relay.clone()),
             direct_write: None,
             actor: None,
+            holds: None,
+            drives: None,
+            corrects: None,
         };
         stage::validate_relay(&probe)
             .context("the summary digest and list are not a valid pair; nothing was saved")?;

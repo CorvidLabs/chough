@@ -106,7 +106,10 @@ enum Commands {
         #[command(subcommand)]
         command: stage::StageCommand,
     },
-    /// Immutable transition history adoption, inspection and protected retention.
+    /// Correct an earlier Timeline entry by appending a correction linked to it; history
+    /// is never rewritten (REQ-history-015).
+    Correct(history::CorrectArgs),
+    /// The active session's Timeline (REQ-history-002).
     History {
         #[command(subcommand)]
         command: history::HistoryCommand,
@@ -233,6 +236,7 @@ fn main() -> Result<()> {
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
         Commands::Stage { command } => stage::run(&root, command)?,
         Commands::History { command } => history::run(&root, command)?,
+        Commands::Correct(args) => history::correct(&root, args)?,
         Commands::Cases { command } => {
             if let Some(code) = cases::run(&root, command)? {
                 std::process::exit(code);
@@ -454,11 +458,19 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
                 }),
         ),
     };
+    // REQ-history-015: the corrected text of a corrected next action or decision.
+    let corrections = match session {
+        Session::V2(checkpoint) => history::corrections(checkpoint),
+    };
     Ok(json!({
         "schema_version": 1,
         "objective": session.objective(),
-        "session_next_action": session.next_action(),
-        "next_valid_action": assessment.action.action,
+        "session_next_action": corrections.apply(session.next_action()),
+        "next_valid_action": corrections.apply(&assessment.action.action),
+        "corrections": corrections.view(),
+        "decisions": match session {
+            Session::V2(checkpoint) => checkpoint.decisions.iter().map(|decision| corrections.decision(decision)).collect::<Vec<_>>(),
+        },
         "checkpoint": stage_report,
         "direct_writes": direct_writes::view(root, match session {
             Session::V2(checkpoint) => checkpoint.native_change.as_deref(),
@@ -732,6 +744,8 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
     };
     let change = checkpoint.and_then(|checkpoint| checkpoint.native_change.clone());
+    // REQ-history-015: corrections, and the corrected text of what they correct.
+    let corrections = checkpoint.map(history::corrections).unwrap_or_default();
     let summary = assessment
         .native
         .as_ref()
@@ -799,7 +813,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "native": native,
         "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
         "next_valid_action": {
-            "action": cut(&assessment.action.action),
+            "action": cut(&corrections.apply(&assessment.action.action)),
             "reason": cut(&assessment.action.reason),
             "command": assessment.action.command.as_deref().map(cut),
         },
@@ -816,7 +830,14 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "referenced_current": references.len() - attention.len(),
             "unreferenced": unreferenced,
         },
-        "decisions": decisions(checkpoint.map_or(&empty, |checkpoint| &checkpoint.decisions)),
+        "decisions": decisions(
+            &checkpoint
+                .map_or(&empty, |checkpoint| &checkpoint.decisions)
+                .iter()
+                .map(|decision| corrections.decision(decision))
+                .collect::<Vec<_>>(),
+        ),
+        "corrections": corrections.view(),
         "last_actor": checkpoint.and_then(history::last_actor),
         "last_failure": last_failure(root)?,
         "lessons": lessons(root, modules)?,

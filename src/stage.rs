@@ -266,7 +266,46 @@ pub(super) fn validate_direct_write(transition: &Transition) -> Result<()> {
 /// Every check of a transition's optional records.
 pub(super) fn validate_records(transition: &Transition) -> Result<()> {
     validate_relay(transition)?;
-    validate_direct_write(transition)
+    validate_direct_write(transition)?;
+    validate_gate_and_correction(transition)
+}
+
+/// `holds` and `drives` belong to gate-opened entries, and `corrects`, which a
+/// correction needs, to corrections only.
+fn validate_gate_and_correction(transition: &Transition) -> Result<()> {
+    let gate_opened = transition.kind == GATE_OPENED;
+    ensure!(
+        gate_opened || (transition.holds.is_none() && transition.drives.is_none()),
+        "invalid transition payload: holds and drives are only allowed on gate-opened, not {}",
+        transition.kind
+    );
+    if let Some(holds) = &transition.holds {
+        ensure!(
+            is_stage(holds),
+            "invalid transition payload: holds names no stage"
+        );
+    }
+    if let Some(drives) = &transition.drives {
+        ensure!(
+            crate::humans::Drives::parse(drives).is_some(),
+            "invalid transition payload: drives is approve, review or none"
+        );
+    }
+    let correction = transition.kind == CORRECTION;
+    match &transition.corrects {
+        Some(target) => ensure!(
+            correction
+                && target
+                    .strip_prefix('^')
+                    .is_some_and(crate::session_md::valid_entry_id),
+            "invalid transition payload: corrects is `^t-xxxxxx` and only allowed on a correction"
+        ),
+        None => ensure!(
+            !correction,
+            "invalid transition payload: a correction names the entry it corrects"
+        ),
+    }
+    Ok(())
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -294,9 +333,29 @@ pub(super) struct Transition {
     /// Present only on a `direct-native-write` event (REQ-history-013).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) direct_write: Option<DirectWrite>,
-    /// The acting agent, when known (REQ-records-007); an unauthenticated claim.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// The acting agent, when known (REQ-records-007): the entry's `by` field, an
+    /// unauthenticated claim.
+    #[serde(default, rename = "by", skip_serializing_if = "Option::is_none")]
     pub(super) actor: Option<crate::actor::Actor>,
+    /// On a `gate-opened` entry, the stage the gate holds and the step it drives
+    /// (REQ-cli-030).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) holds: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) drives: Option<String>,
+    /// On a `correction` entry, the entry it corrects, as `^t-xxxxxx` (REQ-history-015).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) corrects: Option<String>,
+}
+
+/// An append-only correction of an earlier entry (REQ-history-015); it starts and ends
+/// no stage segment.
+pub(super) const CORRECTION: &str = "correction";
+
+/// Whether `kind` is a Timeline entry kind (REQ-history-002).
+pub(super) fn is_kind(kind: &str) -> bool {
+    STAGE_KINDS.contains(&kind)
+        || [GATE_OPENED, GATE_CLOSED, DIRECT_WRITE, CORRECTION].contains(&kind)
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -1465,6 +1524,9 @@ fn log_transition_at(
         relayed_by,
         direct_write: None,
         actor: None,
+        holds: None,
+        drives: None,
+        corrects: None,
     };
     validate_records(&transition)?;
     // REQ-cli-060 (DRIVE-21): a stage move first records the direct lifecycle writes
@@ -1485,6 +1547,9 @@ fn log_transition_at(
                 relayed_by: None,
                 direct_write: Some(write),
                 actor: None,
+                holds: None,
+                drives: None,
+                corrects: None,
             };
             validate_records(&event)?;
             append_transition(root, session, event)?;
@@ -1531,7 +1596,16 @@ pub(super) fn log_gate(
         vec![],
         None,
         relayed_by,
-    )
+    )?;
+    // A gate-opened entry records what the gate holds and drives (REQ-cli-030).
+    if kind == GATE_OPENED {
+        let meta = crate::session_md::gate(session, gate);
+        if let Some(entry) = session.pending.last_mut() {
+            entry.holds = Some(meta.holds);
+            entry.drives = Some(meta.drives);
+        }
+    }
+    Ok(())
 }
 
 pub(super) fn recent_transitions(root: &Path, count: usize) -> Result<(Vec<Value>, bool)> {

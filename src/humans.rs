@@ -274,7 +274,7 @@ mod tests {
         std::fs::create_dir_all(root.path().join(".chough/local")).unwrap();
         std::fs::write(
             root.path().join(LOCAL_FILE),
-            "[[human]]\nname = \"SYNTHETIC Person\"\naliases = [\"synthetic\"]\nspecsync_actor = \"SYNTHETIC-actor\"\n\n[[human]]\nname = \"Other\"\naliases = [\"Shared\"]\nspecsync_actor = \"other\"\n\n[[human]]\nname = \"Third\"\naliases = [\"shared\"]\nspecsync_actor = \"third\"\n",
+            "[[human]]\nname = \"SYNTHETIC Person\"\naliases = [\"synthetic\"]\nspecsync_actor = \"SYNTHETIC-actor\"\n\n[[human]]\nname = \"Other\"\naliases = [\"Shared\"]\nspecsync_actor = \"SYNTHETIC-other\"\n\n[[human]]\nname = \"Third\"\naliases = [\"shared\"]\nspecsync_actor = \"SYNTHETIC-third\"\n",
         )
         .unwrap();
         let human = resolve(root.path(), " Synthetic ").unwrap();

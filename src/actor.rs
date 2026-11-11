@@ -16,6 +16,10 @@ pub(crate) const TERMINAL: &str = "CHOUGH_HC_TERMINAL";
 pub(crate) const CLAUDE_CODE: &str = "CLAUDECODE";
 /// Set by hc in the terminals it runs.
 pub(crate) const HC_TERMINAL: &str = "HC_TERMINAL_ID";
+/// How a `by` field names an unknown agent.
+const UNKNOWN_AGENT: &str = "unknown agent";
+/// What precedes the terminal in a `by` field.
+const HC: &str = "hc";
 /// The longest agent or model value kept.
 const VALUE_LIMIT: usize = 80;
 /// The longest terminal name kept.
@@ -110,16 +114,49 @@ impl Actor {
         ))
     }
 
-    /// One line for people: `claude-code (claude-opus-5-5) in t382`.
+    /// The actor as a Timeline entry's `by` field and as one line for people
+    /// (REQ-history-002): `claude-code (claude-opus-5-5, hc t382)`, leaving out what is
+    /// unknown; an unknown agent reads `unknown agent`.
     pub(crate) fn display(&self) -> String {
-        let mut text = self.agent.clone().unwrap_or_else(|| "an agent".to_string());
+        let mut text = self
+            .agent
+            .clone()
+            .unwrap_or_else(|| UNKNOWN_AGENT.to_string());
+        let mut known = vec![];
         if let Some(model) = &self.model {
-            text.push_str(&format!(" ({model})"));
+            known.push(model.clone());
         }
         if let Some(terminal) = &self.terminal {
-            text.push_str(&format!(" in {terminal}"));
+            known.push(format!("{HC} {terminal}"));
+        }
+        if !known.is_empty() {
+            text.push_str(&format!(" ({})", known.join(", ")));
         }
         text
+    }
+
+    /// The actor a `by` field gives, as [`Actor::display`] writes it; None when it
+    /// names nothing.
+    pub(crate) fn from_by(text: &str) -> Option<Actor> {
+        let text = text.trim();
+        let (agent, inside) = match text
+            .strip_suffix(')')
+            .and_then(|rest| rest.rsplit_once(" ("))
+        {
+            Some((agent, inside)) => (agent, Some(inside)),
+            None => (text, None),
+        };
+        let mut actor = Actor {
+            agent: (!agent.is_empty() && agent != UNKNOWN_AGENT).then(|| agent.to_string()),
+            ..Actor::default()
+        };
+        for part in inside.into_iter().flat_map(|inside| inside.split(", ")) {
+            match part.strip_prefix(&format!("{HC} ")) {
+                Some(terminal) => actor.terminal = Some(terminal.to_string()),
+                None => actor.model = Some(part.to_string()),
+            }
+        }
+        (actor != Actor::default()).then_some(actor)
     }
 
     // Plan steps 4, 5 and 6 (evidence, bugs, native approval) call it.
@@ -194,12 +231,50 @@ mod tests {
         ]);
         let found = found.unwrap();
         assert_eq!(found.account().as_deref(), Some("kimi-code-t37b"));
-        assert_eq!(found.display(), "kimi-code (kimi-k3) in t37b");
+        assert_eq!(found.display(), "kimi-code (kimi-k3, hc t37b)");
+        assert_eq!(Actor::from_by(&found.display()), Some(found.clone()));
         let (found, _) = actor(&[(CLAUDE_CODE, "1"), (HC_TERMINAL, "t382")]);
         let found = found.unwrap();
         assert_eq!(found.agent.as_deref(), Some("claude-code"));
         assert_eq!(found.model, None);
         assert_eq!(found.account().as_deref(), Some("claude-code-t382"));
+    }
+
+    #[test]
+    fn the_by_field_round_trips_whatever_is_known() {
+        for actor in [
+            Actor {
+                agent: Some("claude-code".into()),
+                model: None,
+                terminal: Some("t382".into()),
+            },
+            Actor {
+                agent: Some("claude-code".into()),
+                model: Some("m-1".into()),
+                terminal: None,
+            },
+            Actor {
+                agent: None,
+                model: None,
+                terminal: Some("t1".into()),
+            },
+            Actor {
+                agent: Some("solo".into()),
+                model: None,
+                terminal: None,
+            },
+        ] {
+            let by = actor.display();
+            assert_eq!(Actor::from_by(&by), Some(actor), "{by}");
+        }
+        assert_eq!(
+            Actor::from_by("claude-code (hc t382)")
+                .unwrap()
+                .terminal
+                .as_deref(),
+            Some("t382")
+        );
+        assert_eq!(Actor::from_by("  "), None);
     }
 
     #[test]

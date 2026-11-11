@@ -102,7 +102,8 @@ or redacting every value before it is written.
 | `HC_TERMINAL` | `HC_TERMINAL_ID`, set by hc; it names the terminal when no override does. |
 | `from_lookup` | The actor from a variable lookup, leaving out with a warning each value that leaks, is too long, or is a terminal other than a plain hc name. |
 | `account` | The agent account `<agent>-<terminal>` a native step records when an agent acts on authority given in advance. |
-| `display` | The actor as one line for people. |
+| `display` | The actor as one line for people and as a Timeline entry's `by` field: `<agent> (<model>, hc <terminal>)`, leaving out what is unknown. |
+| `from_by` | The actor a `by` field gives, as `display` writes it. |
 | `front_value` | The actor as the one flat map a record's front matter `actor` holds. |
 | `from_front` | The actor a front matter `actor` value holds, when it is one well-formed map. |
 | `set_redacting` | Records whether this command was given `--redact`. |

@@ -171,7 +171,8 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `gate list/record` | Number the open human gates, each with a one-screen summary and its digest, and record one relayed reply for listed gates only |
 | `change new/answer/check/status/ship` | Run SpecSync's change new, answer, check (with `--commit`) and status steps, passing their output, refusals and exit code through unchanged; `ship` ships after the review, closes the review gate with its relay and moves to done |
 | `stage …` | Show, advance (one stage or `--to` several), skip, iterate, back, reset, pause, resume, enter and return, and backfill a move that already happened |
-| `history show/adopt/prune` | Inspect, adopt and prune the immutable transition history |
+| `history show` | Show the active session's Timeline, or the newest archived story's |
+| `correct` | Correct an earlier Timeline entry by appending a linked correction; history is never rewritten |
 | `cases check/list/select/run/record` | Validate and list `chough-testing/1` definitions, select focused cases, record honest outcomes |
 | `evidence add` | Record an observation with its revision, inputs, environment and artifacts; freshness compares content, not the revision |
 | `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |

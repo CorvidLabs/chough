@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "history"
+
+# Plan step 7: append-only corrections (#167, folded from #210).
+
+[[case]]
+id = "TC-history-append-only-corrections"
+title = "chough correct appends one linked correction and changes no earlier byte, in a session or an archived story; bad targets and statements are refused; next lists the ten newest"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-18", "LIFE-7", "FLOW-13"]
+requirements = ["REQ-history-015"]
+paths = ["src/history.rs", "src/session_md.rs", "src/sessions.rs", "src/main.rs", "tests/correct.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the four tests in tests/correct.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "correct"]
+expect_output = ["test result: ok. 4 passed"]
+timeout_seconds = 600

@@ -34,7 +34,8 @@ their JSON.
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. Hosts that share a directory get one entry. Both report a `legacy` list for an older `.claude/skills` copy, with each file's state, and never write it. |
 | `skill remove-legacy [--host claude]` | Remove a legacy `.claude/skills` copy's files that are byte-identical to the current or a known earlier bundle, then empty directories; keeps edited and unknown files and reports `removed` and `kept`. Refuses, removing nothing, while the shared `.agents/skills` copy is missing. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
-| `history show` | The active session's Timeline, oldest first, with what could not be read; an entry that is not a valid transition is refused. With no open session it shows the newest archived story's Timeline, marked `archived`. See [Transition history](#transition-history). |
+| `history show` | The active session's Timeline, oldest first, each entry with its `id`, with what could not be read; an entry that is not a valid transition is refused. With no open session it shows the newest archived story's Timeline, marked `archived`. See [Transition history](#transition-history). |
+| `correct <entry> --reason <text>` | Appends a `correction` entry linked to `<entry>` (`^t-xxxxxx` in the active session, or `<session>#^t-xxxxxx` for any open session or archived story) and changes no earlier byte; `next` and `status` show the corrected text, marked. See [Corrections](#corrections). |
 | `session new\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions in their own folders, setting aside an unreadable one, and the subagent inbox. Starting or switching work never touches another session. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]...` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. See [Doctor](#doctor). |
 | `gate list\|record` | Numbers the open human gates, each with a one-screen summary and its digest, and records one relayed reply for listed gates only. See [Gate lists](#gate-lists). |
@@ -97,21 +98,37 @@ from the current one up to `<stage>`, as consecutive advances (REQ-cli-052, DRIV
 Every transition of a session is one entry of its `session.md`'s `## Timeline`
 (REQ-history-002): `- <time> · <kind> · <from> → <to> · <text> ^t-xxxxxx`, with its
 structured fields as indented `- key: value` lines (`native_change`, `gate`,
-`revision`, `refresh`, the backfill's `recorded_at`, `commit` and `quote`, and the
-relay and direct-write fields). The entry is written in the same atomic save as the
+`revision`, `refresh`, the backfill's `recorded_at`, `commit` and `quote`, the relay
+and direct-write fields, a gate-opened entry's `holds` and `drives`, a correction's
+`corrects`, and `by`). The entry is written in the same atomic save as the
 checkpoint change it goes with, so a refused save leaves neither. Chough only appends
 entries and never edits, reorders or removes one; an entry ID is never reused in its
 file. `history show` lists the active session's entries, or the newest archived
 story's when no session is open.
 
-An entry also records the acting agent, when known, as an `actor` field with its
-`agent`, `model` and `terminal` (REQ-records-007). `CHOUGH_ACTOR`,
+An entry also records the acting agent, when known, as its `by` field:
+`<agent> (<model>, hc <terminal>)`, leaving out what is not known
+(REQ-records-007). `CHOUGH_ACTOR`,
 `CHOUGH_ACTOR_MODEL` and `CHOUGH_HC_TERMINAL` set them; otherwise the agent is
 `claude-code` when `CLAUDECODE` is set, and the terminal is `HC_TERMINAL_ID`. A value
 that fails the leak check, or a terminal that is not a plain hc name, is left out with
 a warning, and an unknown actor writes no field; neither fails the command. `chough
 next` and `chough status` show the last actor. The actor is a claim an agent makes
 about itself, never a human decision.
+
+### Corrections
+
+History is never rewritten (REQ-history-015). `chough correct ^t-xxxxxx --reason
+"<what is true instead>"` appends one `correction` entry, `- <time> · correction ·
+<stage> → <stage> · <statement> ^t-yyyyyy`, with `- corrects: ^t-xxxxxx`, to the
+Timeline that holds the entry; every earlier byte of the file stays as it was. Name an
+entry of another open session or an archived story as `<session>#^t-xxxxxx`, by
+session ID or alias; a story gets the entry appended to its Timeline and nothing else.
+A blank statement or one over 4,096 bytes, an unknown session or entry, and a
+correction of a correction are refused with nothing written. `chough next` and
+`chough status` show a corrected next action or decision as its newest statement,
+marked `(corrected, N corrections)`, and `next` lists the 10 newest corrections, newest
+first, with their total.
 
 | Timeline limit | Bound |
 |---|---|

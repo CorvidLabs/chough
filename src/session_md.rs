@@ -341,13 +341,7 @@ pub(super) fn timeline(record: &Record) -> Result<Vec<Entry>> {
         ensure!(
             crate::stage::is_stage(&transition.from)
                 && crate::stage::is_stage(&transition.to)
-                && (crate::stage::STAGE_KINDS.contains(&transition.kind.as_str())
-                    || matches!(
-                        transition.kind.as_str(),
-                        crate::stage::GATE_OPENED
-                            | crate::stage::GATE_CLOSED
-                            | crate::stage::DIRECT_WRITE
-                    )),
+                && crate::stage::is_kind(&transition.kind),
             "invalid transition at timeline entry ^{}: unknown stage or kind",
             entry.id
         );
@@ -398,6 +392,9 @@ fn parse_head_with(head: &str, lenient: bool) -> Result<(Entry, bool)> {
                 relayed_by: None,
                 direct_write: None,
                 actor: None,
+                holds: None,
+                drives: None,
+                corrects: None,
             },
             native_change: None,
         },
@@ -480,7 +477,10 @@ fn apply_field(entry: &mut Entry, key: &str, value: String) -> Result<()> {
         }
         "relayed_by" => transition.relayed_by = Some(serde_json::from_str(&value)?),
         "direct_write" => transition.direct_write = Some(serde_json::from_str(&value)?),
-        "actor" => transition.actor = Some(serde_json::from_str(&value)?),
+        "by" => transition.actor = crate::actor::Actor::from_by(&value),
+        "holds" => transition.holds = Some(value),
+        "drives" => transition.drives = Some(value),
+        "corrects" => transition.corrects = Some(value),
         // A field a later Chough writes (`by`, corrections and so on) reads as unknown.
         _ => {}
     }
@@ -528,8 +528,17 @@ fn render_entry(transition: &Transition, native_change: Option<&str>, id: &str) 
     if let Some(write) = &transition.direct_write {
         field("direct_write", &json(write));
     }
+    if let Some(holds) = &transition.holds {
+        field("holds", holds);
+    }
+    if let Some(drives) = &transition.drives {
+        field("drives", drives);
+    }
+    if let Some(corrects) = &transition.corrects {
+        field("corrects", corrects);
+    }
     if let Some(actor) = &transition.actor {
-        field("actor", &json(actor));
+        field("by", &actor.display());
     }
     out
 }
@@ -606,6 +615,67 @@ fn one_line(text: &str) -> String {
     text.replace("\r\n", " ").replace(['\n', '\r'], " ")
 }
 
+/// Append a `correction` entry to the Timeline of the record `text` holds
+/// (REQ-history-015), leaving every existing byte as it was: the entry goes after the
+/// Timeline's last line. Refuses an unknown entry, a correction of a correction and a
+/// Timeline or entry over its bound. Returns the new text and the new entry's ID.
+pub(super) fn append_correction(
+    file: &str,
+    text: &str,
+    target: &str,
+    mut correction: Transition,
+) -> Result<(String, String)> {
+    let record = crate::markdown::parse(file, text)?;
+    let entries = timeline(&record)?;
+    let Some(corrected) = entries.iter().find(|entry| entry.id == target) else {
+        anyhow::bail!("refused: {file} has no Timeline entry ^{target}; nothing was written");
+    };
+    ensure!(
+        corrected.transition.kind != crate::stage::CORRECTION,
+        "refused: ^{target} is a correction, and a correction is not corrected; correct the entry it corrects instead; nothing was written"
+    );
+    ensure!(
+        entries.len() < MAX_ENTRIES,
+        "refused: the timeline of {file} holds {MAX_ENTRIES} entries, its bound; nothing was written"
+    );
+    let stage = record.scalar("stage").unwrap_or(&corrected.transition.to);
+    correction.from = stage.to_string();
+    correction.to = stage.to_string();
+    correction.corrects = Some(format!("^{target}"));
+    crate::stage::validate_records(&correction)?;
+    let ids: Vec<&str> = entries.iter().map(|entry| entry.id.as_str()).collect();
+    let id = loop {
+        let candidate = entry_id()?;
+        if !ids.contains(&candidate.as_str()) {
+            break candidate;
+        }
+    };
+    let entry = render_entry(&correction, None, &id);
+    ensure!(
+        entry.len() <= ENTRY_BYTES,
+        "refused: the correction entry would be {} bytes, over its bound of {ENTRY_BYTES} bytes; nothing was written",
+        entry.len()
+    );
+    // The end of the Timeline section: the next `## ` heading after it, or the end.
+    let heading = format!("## {TIMELINE}\n");
+    let start = text
+        .find(&format!("\n{heading}"))
+        .map(|at| at + 1)
+        .or_else(|| text.starts_with(&heading).then_some(0))
+        .with_context(|| format!("{file} has no `## {TIMELINE}` section"))?;
+    let end = text[start + heading.len()..]
+        .find("\n## ")
+        .map_or(text.len(), |at| start + heading.len() + at + 1);
+    let mut updated = String::with_capacity(text.len() + entry.len() + 1);
+    updated.push_str(&text[..end]);
+    if !updated.ends_with('\n') {
+        updated.push('\n');
+    }
+    updated.push_str(&entry);
+    updated.push_str(&text[end..]);
+    Ok((updated, id))
+}
+
 fn entry_id() -> Result<String> {
     let mut bytes = [0_u8; 3];
     getrandom::fill(&mut bytes)?;
@@ -615,7 +685,7 @@ fn entry_id() -> Result<String> {
     ))
 }
 
-fn valid_entry_id(id: &str) -> bool {
+pub(super) fn valid_entry_id(id: &str) -> bool {
     id.len() == 8
         && id.starts_with("t-")
         && id[2..]
@@ -698,6 +768,9 @@ mod tests {
             relayed_by: None,
             direct_write: None,
             actor: None,
+            holds: None,
+            drives: None,
+            corrects: None,
         }
     }
 
