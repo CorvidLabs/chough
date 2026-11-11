@@ -265,40 +265,29 @@ fn tests(root: &Path, session: &Value) -> (usize, usize, usize, Vec<String>) {
         .filter_map(|id| id.as_str().map(String::from))
         .collect();
     let mut latest: std::collections::BTreeMap<String, (u64, String)> = Default::default();
-    let Ok(entries) = fs::read_dir(root.join(".chough/evidence")) else {
+    // Open sessions' entries, then archived stories' and bugs' receipts (REQ-records-005,
+    // REQ-history-006).
+    let Ok(views) = crate::evidence::every_observation(root) else {
         return (0, 0, 0, vec![]);
     };
-    let mut records = vec![];
-    for entry in entries.flatten() {
-        let Ok(bytes) = fs::read(entry.path()) else {
-            continue;
-        };
-        let Ok(record) = serde_json::from_slice::<Value>(&bytes) else {
-            continue;
-        };
-        if record["id"].as_str().is_some_and(|id| named.contains(id)) {
-            for case in record["cases"].as_array().into_iter().flatten() {
-                if let Some(case) = case["id"].as_str() {
-                    wanted.insert(case.to_string());
-                }
-            }
+    for view in &views {
+        let named_here = std::iter::once(&view.id)
+            .chain(&view.aliases)
+            .any(|id| named.contains(id));
+        if named_here && let Some(case) = &view.case {
+            wanted.insert(case.clone());
         }
-        records.push(record);
     }
-    for record in records {
-        let at = record["observed_at_unix_seconds"].as_u64().unwrap_or(0);
-        let outcome = record["outcome"].as_str().unwrap_or_default().to_string();
-        for case in record["cases"].as_array().into_iter().flatten() {
-            let Some(case) = case["id"].as_str() else {
-                continue;
-            };
-            if !wanted.contains(case) {
-                continue;
-            }
-            let newer = latest.get(case).is_none_or(|(seen, _)| at >= *seen);
-            if newer {
-                latest.insert(case.to_string(), (at, outcome.clone()));
-            }
+    for view in views {
+        let Some(case) = view.case else {
+            continue;
+        };
+        if !wanted.contains(&case) {
+            continue;
+        }
+        let at = view.observed.unwrap_or(0);
+        if latest.get(&case).is_none_or(|(seen, _)| at >= *seen) {
+            latest.insert(case, (at, view.result));
         }
     }
     let mut counts = (0, 0, 0, vec![]);
