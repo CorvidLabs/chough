@@ -1,0 +1,78 @@
+profile = "chough-testing/1"
+module = "records"
+
+# #12 (REQ-records-014, t37j): Chough's records stay out of SpecSync's verification.
+# The native tests run real SpecSync at the CI pin and skip, saying so, without it.
+
+[[case]]
+id = "TC-records-untracked-receipt-keeps-verification"
+title = "With the three exclusions, an untracked record at check --commit leaves a clean clone's verification current; without them it goes stale (spec-sync #1045)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-4", "FLOW-16"]
+requirements = ["REQ-records-014"]
+paths = ["src/doctor.rs", "tests/native.rs", ".specsync/sdd.json"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native.rs::an_untracked_receipt_at_check_commit_matches_a_clean_clone passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "an_untracked_receipt_at_check_commit_matches_a_clean_clone"
+
+[[case]]
+id = "TC-records-write-after-check-keeps-verification"
+title = "With the three exclusions, checkpoint and bug writes after check --commit, then committed, leave verification current and the review records; without them they stale it (#212)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-4", "FLOW-16"]
+requirements = ["REQ-records-014"]
+paths = ["src/doctor.rs", "tests/native.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native.rs::chough_writes_after_check_commit_leave_verification_current passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "chough_writes_after_check_commit_leave_verification_current"
+
+[[case]]
+id = "TC-records-case-definitions-stay-verified"
+title = "A case definition changed after check --commit still stales verification, so nothing a change's verification needs is hidden"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-4"]
+requirements = ["REQ-records-014"]
+paths = ["tests/native.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/native.rs::a_case_definition_change_still_stales_verification passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "native"
+test = "a_case_definition_change_still_stales_verification"
+
+[[case]]
+id = "TC-records-doctor-names-missing-exclusions"
+title = "doctor reports records_in_verification naming the missing exclusions and writes nothing; next says when Chough's writes are safe and init gives the advice"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-4", "FLOW-16"]
+requirements = ["REQ-records-014"]
+paths = ["src/doctor.rs", "src/main.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the two exclusion tests in tests/doctor.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "doctor", "--", "doctor_names_the_missing_verification_exclusions", "next_says_when_chough_writes_are_safe_and_init_gives_the_advice"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600

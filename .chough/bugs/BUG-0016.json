@@ -26,12 +26,13 @@
     "bug-0016-fixed-1",
     "tc-cli-0070-1793498638",
     "tc-cli-0071-1793498642",
-    "tc-cli-0072-1793498646"
+    "tc-cli-0072-1793498646",
+    "OBS-tc-records-doctor-names-missing-exclusions-7348439622f474caf85af184"
   ],
   "impact": "Repeated verification and review rebinding",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "verified",
+  "status": "open",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -64,8 +65,15 @@
         "tc-cli-0071-1793498642",
         "tc-cli-0072-1793498646"
       ]
+    },
+    {
+      "at_unix_seconds": 1794426795,
+      "text": "status: verified -> open. Reopened as GitHub #12 recurred: an untracked evidence receipt at check --commit staled a clean clone (spec-sync #1045, 2026-11-11), and checkpoints written after check --commit staled verification on #212. Red on 0.5.0: TC-records-doctor-names-missing-exclusions failed on leif/0.6.0-12-red at c5c3bc14 (doctor names no missing exclusion; next never says when writes are safe). Fixed in the 0.6.0 change (PR #238, REQ-records-014): the three record folders go in SpecSync's verification_ignored_paths, doctor and next say when they are missing, with real-SpecSync tests for both repros.",
+      "observations": [
+        "OBS-tc-records-doctor-names-missing-exclusions-7348439622f474caf85af184"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793494673,
-  "updated_at_unix_seconds": 1793498706
+  "updated_at_unix_seconds": 1794426795
 }
