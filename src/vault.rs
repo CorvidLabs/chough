@@ -102,14 +102,19 @@ fn lesson_source(root: &Path, module: &str) -> (String, usize) {
     (context, count)
 }
 
-/// Lessons recorded in a `## Lessons` section: entries that start with a date.
+/// Lessons recorded in a `## Lessons` section: entries that start with a date, as a
+/// paragraph or as a list item.
 fn dated_lessons(text: &str) -> usize {
     text.lines()
         .skip_while(|line| line.trim_end() != "## Lessons")
         .skip(1)
         .take_while(|line| !line.starts_with("## "))
         .filter(|line| {
-            let bytes = line.as_bytes();
+            let entry = line
+                .strip_prefix("- ")
+                .or_else(|| line.strip_prefix("* "))
+                .unwrap_or(line);
+            let bytes = entry.as_bytes();
             bytes.len() > 11
                 && bytes[..4].iter().all(u8::is_ascii_digit)
                 && bytes[4] == b'-'
@@ -255,17 +260,22 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post]) -> Result<String> {
         .collect();
     // An archive that cannot be read refuses the index, with the error `chough next`
     // shows for its lesson bundles.
+    // The newest 3 archives by finalization, as `chough next` shows them: a bundle an
+    // archive lacks is named as missing, not linked.
     let bundles: Vec<String> = crate::library::archive_order(root)?
         .into_iter()
-        .filter(|archive| archive.lesson_bundle)
         .take(crate::library::HOT_ARCHIVES)
         .map(|archive| {
-            format!(
-                "[{id}]({up}{archives}/{dir}/lesson-bundle.md)",
-                id = archive.id,
+            let path = format!(
+                "{archives}/{dir}/lesson-bundle.md",
                 archives = crate::library::ARCHIVES,
                 dir = archive.dir,
-            )
+            );
+            if archive.lesson_bundle {
+                format!("[{id}]({up}{path})", id = archive.id)
+            } else {
+                format!("{id}: `{path}` (missing)", id = archive.id)
+            }
         })
         .collect();
     let mut kept = files_under(root, &format!("{dir}/briefs"))?;
@@ -318,7 +328,7 @@ Newest posts:\n\n{newest}\n\
 ## Lessons\n\n\
 Each module's lessons stay in its lesson source:\n\n{sources}\n\
 Lessons that span projects:\n\n{lessons}\n\
-Newest archived lesson bundles:\n\n{bundles}\n\
+Lesson bundles of the newest 3 archived changes:\n\n{bundles}\n\
 ## Snapshots and briefs\n\n\
 Kept as they are.\n\n{kept}",
         newest = list(newest, "none yet"),
