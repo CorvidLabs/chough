@@ -1,0 +1,216 @@
+--- stdout ---
+
+running 1 test
+test done_leaves_earlier_archived_stories_in_place ... FAILED
+
+failures:
+
+---- done_leaves_earlier_archived_stories_in_place stdout ----
+
+thread 'done_leaves_earlier_archived_stories_in_place' (876453878) panicked at tests/sessions.rs:1755:9:
+.chough/sessions/archive/earlier-0.json left its place: {
+  "applied": {
+    "checkpoint_references": {
+      "reason": "no reset time can be read, so no cycle is known to be closed",
+      "status": "skipped"
+    },
+    "from": "accept",
+    "gate": "ungated:not-configured",
+    "kind": "advance",
+    "ledger_rotation": {
+      "kept": 0,
+      "status": "unchanged"
+    },
+    "librarian_index": {
+      "index": "knowledge/INDEX.md",
+      "status": "refreshed"
+    },
+    "librarian_trim": {
+      "authority": "standing preference: librarian on by default (KNOW-13); opt out with `chough pref set retention manual`",
+      "status": "trimmed",
+      "summary": {
+        "applied": true,
+        "authority": "standing preference: librarian on by default (KNOW-13); opt out with `chough pref set retention manual`",
+        "cold": [],
+        "eligible": [],
+        "hot": [],
+        "ledger": ".chough/pruned.jsonl",
+        "native": {
+          "detail": "No native SpecSync configuration; no native manifest protects a set.",
+          "state": "not-configured"
+        },
+        "note": "Preview by default. Applying needs retention authority and no open native change; it keeps one knowledge entry per archive, removes only files committed identically at HEAD (recoverable from Git), and never edits native archives or Git history.",
+        "protected": [],
+        "pruned": [],
+        "schema_version": 1,
+        "stale_holds": [],
+        "totals": {
+          "eligible": 0,
+          "protected": 0,
+          "reclaimable_bytes": 0,
+          "uncommitted": 0
+        },
+        "uncommitted": []
+      }
+    },
+    "session_archive": {
+      "key": "current",
+      "status": "archived"
+    },
+    "session_rollup": {
+      "kept": [],
+      "moved": [
+        "earlier-0",
+        "earlier-1"
+      ],
+      "status": "rolled"
+    },
+    "to": "done"
+  },
+  "authority": "Native SpecSync status decides lifecycle gates; Chough never writes native approval or review, and a relayed decision it keeps is a claim, not authenticated.",
+  "awaiting_human": [],
+  "native_change": null,
+  "recent_transitions": [
+    {
+      "at_unix_seconds": 1794412292,
+      "from": "intent",
+      "gate": null,
+      "kind": "advance",
+      "reason": null,
+      "refresh": [],
+      "revision": "2dcaa7c3248eda809d449c2fc2a784c7f741d806",
+      "schema_version": 1,
+      "to": "design"
+    },
+    {
+      "at_unix_seconds": 1794412292,
+      "from": "design",
+      "gate": null,
+      "kind": "advance",
+      "reason": null,
+      "refresh": [],
+      "revision": "2dcaa7c3248eda809d449c2fc2a784c7f741d806",
+      "schema_version": 1,
+      "to": "plan"
+    },
+    {
+      "at_unix_seconds": 1794412292,
+      "from": "plan",
+      "gate": "ungated:not-configured",
+      "kind": "advance",
+      "reason": null,
+      "refresh": [],
+      "revision": "2dcaa7c3248eda809d449c2fc2a784c7f741d806",
+      "schema_version": 1,
+      "to": "build"
+    },
+    {
+      "at_unix_seconds": 1794412292,
+      "from": "build",
+      "gate": "ungated:not-configured",
+      "kind": "advance",
+      "reason": null,
+      "refresh": [],
+      "revision": "2dcaa7c3248eda809d449c2fc2a784c7f741d806",
+      "schema_version": 1,
+      "to": "test"
+    },
+    {
+      "at_unix_seconds": 1794412292,
+      "from": "test",
+      "gate": "ungated:not-configured",
+      "kind": "advance",
+      "reason": null,
+      "refresh": [],
+      "revision": "2dcaa7c3248eda809d449c2fc2a784c7f741d806",
+      "schema_version": 1,
+      "to": "accept"
+    },
+    {
+      "at_unix_seconds": 1794412292,
+      "from": "accept",
+      "gate": "ungated:not-configured",
+      "kind": "advance",
+      "reason": null,
+      "refresh": [],
+      "revision": "2dcaa7c3248eda809d449c2fc2a784c7f741d806",
+      "schema_version": 1,
+      "to": "done"
+    }
+  ],
+  "schema_version": 1,
+  "stage": {
+    "callers": [],
+    "current": "done",
+    "iteration": 1,
+    "status": "active"
+  },
+  "stages": [
+    {
+      "kind": "main",
+      "name": "intent"
+    },
+    {
+      "kind": "conditional",
+      "name": "design"
+    },
+    {
+      "kind": "main",
+      "name": "plan"
+    },
+    {
+      "kind": "main",
+      "name": "build"
+    },
+    {
+      "kind": "main",
+      "name": "test"
+    },
+    {
+      "kind": "main",
+      "name": "accept"
+    },
+    {
+      "kind": "terminal",
+      "name": "done"
+    },
+    {
+      "kind": "optional",
+      "name": "release"
+    },
+    {
+      "kind": "side",
+      "name": "bugs"
+    },
+    {
+      "kind": "side",
+      "name": "validate"
+    },
+    {
+      "kind": "side",
+      "name": "librarian"
+    }
+  ],
+  "transitions_partial": false,
+  "valid_transitions": [
+    "chough stage enter release --reason <request>  [needs release consent or standing preference]",
+    "chough stage iterate --note <what changed>",
+    "chough stage back --to <intent|design|plan|build|test|accept> --reason <why>",
+    "chough stage reset [--to <stage>] --reason <why>",
+    "chough stage pause --reason <why>",
+    "chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]"
+  ]
+}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    done_leaves_earlier_archived_stories_in_place
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 40 filtered out; finished in 1.56s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/sessions.rs (target/debug/deps/sessions-254bfc5249dd3bfe)
+error: test failed, to rerun pass `--test sessions`

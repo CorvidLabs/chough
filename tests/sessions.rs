@@ -1715,3 +1715,55 @@ fn a_missing_adopted_log_is_not_hidden_by_an_earlier_session_without_an_anchor()
     assert_eq!(fixture.read(".chough/sessions/legacy.json"), holder);
     assert!(!fixture.exists(".chough/transitions.jsonl"));
 }
+
+/// #165 (KNOW-34, REQ-history-006): the move into done never removes or moves another
+/// session's archived record. Seven earlier sessions are archived and `knowledge/` is
+/// not committed, as in the algochat repro of 2026-11-10; accept to done must leave every
+/// earlier archived file byte-identical in place and add only this session's own.
+/// Red on 0.5.0, whose roll-up keeps five and moves the rest into the vault. Plan step 3
+/// removes the roll-up, rewrites this test for the 0.6.0 layout and drops the ignore.
+#[test]
+#[ignore = "red until plan step 3 removes the roll-up (#165); its case runs it with --include-ignored"]
+fn done_leaves_earlier_archived_stories_in_place() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "current", "--objective", "Ship current"]);
+    let template = json(&fixture, ".chough/sessions/current.json");
+    let mut earlier = vec![];
+    for index in 0..7 {
+        let mut session = template.clone();
+        session["stage"]["current"] = Value::String("done".into());
+        session["objective"] = Value::String(format!("Earlier objective {index}"));
+        let text = serde_json::to_string_pretty(&session).unwrap() + "\n";
+        let path = format!(".chough/sessions/archive/earlier-{index}.json");
+        fixture.write(&path, &text);
+        earlier.push((path, text));
+    }
+    assert!(
+        !fixture.exists("knowledge"),
+        "the repro has no committed knowledge/"
+    );
+    fixture.commit("seven earlier archived sessions; knowledge/ not committed");
+    for _ in 0..5 {
+        fixture.ok(&["stage", "advance"]);
+    }
+    assert_eq!(
+        json(&fixture, ".chough/sessions/current.json")["stage"]["current"],
+        "accept"
+    );
+    let moved = fixture.ok(&["stage", "advance"]);
+    for (path, text) in &earlier {
+        assert!(fixture.exists(path), "{path} left its place: {moved:#}");
+        assert_eq!(&fixture.read(path), text, "{path} changed");
+    }
+    let mut archived: Vec<String> = fs::read_dir(fixture.root().join(".chough/sessions/archive"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    archived.sort();
+    let mut expected: Vec<String> = (0..7)
+        .map(|index| format!("earlier-{index}.json"))
+        .collect();
+    expected.push("current.json".into());
+    expected.sort();
+    assert_eq!(archived, expected, "{moved:#}");
+}

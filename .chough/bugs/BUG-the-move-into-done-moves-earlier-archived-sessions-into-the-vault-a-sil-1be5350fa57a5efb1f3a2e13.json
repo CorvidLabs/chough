@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "id": "BUG-the-move-into-done-moves-earlier-archived-sessions-into-the-vault-a-sil-1be5350fa57a5efb1f3a2e13",
+  "title": "The move into done moves earlier archived sessions into the vault, a silent loss where knowledge is not committed (#165)",
+  "symptom": "Advancing a session from accept to done removed an earlier archived session file from .chough/sessions/archive/ with no ledger entry.",
+  "trigger": "chough stage advance from accept to done with more than five archived sessions and the librarian on, in a project whose knowledge/ directory is not committed.",
+  "expected": "Every earlier archived session file stays in place byte for byte; done adds only the advancing session's own archive (KNOW-34, REQ-history-006).",
+  "actual": "The KNOW-29 roll-up keeps the five newest archived sessions and moves the rest into knowledge/attachments/<key>/sessions/; where knowledge/ is not committed, Git sees the earlier archived sessions as deleted (algochat release-0-7-0, 2026-11-10; GitHub #165).",
+  "criteria": [
+    "KNOW-34",
+    "KNOW-30"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "cases": [
+    "TC-history-165-earlier-archives-stay"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "24545ca7ee6e23da00aa7f7fb1414f532062995a",
+  "steps": [
+    "Create a session and write seven earlier archived sessions under .chough/sessions/archive/, leaving knowledge/ uncommitted.",
+    "Advance the session from intent to accept, then once more to done.",
+    "Check .chough/sessions/archive/: earlier-0.json and earlier-1.json are gone, moved into knowledge/attachments/."
+  ],
+  "fixture": "tests/sessions.rs done_leaves_earlier_archived_stories_in_place",
+  "observations": [
+    "OBS-tc-history-165-earlier-archives-stay-5d690dc9b4d700b32265baf0"
+  ],
+  "impact": "Silent loss of committed archived session records in adopter projects; blocks 0.6.0's keep-all archive (KNOW-34).",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "GitHub issue #165; algochat repro 2026-11-10; red regression run in plan step 1",
+  "notes": [],
+  "created_at_unix_seconds": 1794412313,
+  "updated_at_unix_seconds": 1794412313
+}
