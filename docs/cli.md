@@ -320,9 +320,9 @@ Exact legacy `BUG-NNNN` IDs and new-form IDs are both accepted for loading, list
 search, show, report, updates and evidence references. `duplicate_of` and `related`
 links resolve either form in both directions. Every legacy record remains schema 1 at
 its existing path without migration, renumbering or rewriting old observations and
-archives. Older Chough versions that accept only `BUG-NNNN` must be upgraded before
-reading, referencing or updating repositories containing new-form IDs; downgrading is
-not a migration path.
+archives. Chough 0.5.x cannot read 0.6.0 bug records or the date and slug names of any
+0.6.0 record, so upgrade every agent before a project migrates; downgrading is not a
+migration path.
 
 Creation makes one candidate ID and one atomic create-new attempt. An existing
 candidate path is refused without overwrite. A same-ID different-content result
