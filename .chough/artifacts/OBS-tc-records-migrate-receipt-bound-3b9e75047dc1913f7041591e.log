@@ -1,0 +1,40 @@
+--- stdout ---
+
+running 1 test
+test a_receipt_past_the_ordinary_record_bound_applies ... FAILED
+
+failures:
+
+---- a_receipt_past_the_ordinary_record_bound_applies stdout ----
+
+thread 'a_receipt_past_the_ordinary_record_bound_applies' (897582671) panicked at tests/common/mod.rs:154:9:
+["migrate", "--apply", "36bc763062bb298df4dabfec3428a1980f02d9f0826e7fdcd192d71c13d5988f", "--consent", "SYNTHETIC-human said migrate it (fixture)"] failed: Error: managed file exceeds 65536 bytes: .chough/archive/migrations/2026-11-11-from-0-5.md
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_receipt_past_the_ordinary_record_bound_applies
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 12.74s
+
+
+--- stderr ---
+warning: constant `EVIDENCE_DIR` is never used
+  --> src/evidence.rs:32:18
+   |
+32 | pub(super) const EVIDENCE_DIR: &str = ".chough/evidence";
+   |                  ^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `validation_run_text` is never used
+    --> src/evidence.rs:2391:15
+     |
+2391 | pub(super) fn validation_run_text(run: &ValidationRun, aliases: &[String]) -> Result<String> {
+     |               ^^^^^^^^^^^^^^^^^^^
+
+warning: `chough` (bin "chough") generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/migrate.rs (target/debug/deps/migrate-8dcd447271613cc0)
+error: test failed, to rerun pass `--test migrate`

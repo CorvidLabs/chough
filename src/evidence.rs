@@ -993,6 +993,9 @@ fn evidence_from_receipt(map: &[(String, String)]) -> Result<Evidence> {
     })
 }
 
+/// A `receipts:` map with the name of the record holding it.
+type ReceiptMaps = Vec<(String, Vec<(String, String)>)>;
+
 /// Receipts held by archived stories and bugs, as (qualified source, entry) pairs.
 fn receipt_entries(root: &Path, id: &str) -> Result<Vec<(String, Evidence)>> {
     let mut found = vec![];
@@ -1018,7 +1021,7 @@ fn receipt_entries(root: &Path, id: &str) -> Result<Vec<(String, Evidence)>> {
 }
 
 /// Every `receipts:` map in the Markdown records under a folder, with the record name.
-fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<Vec<(String, Vec<(String, String)>)>> {
+fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     let folder = local_path(root, dir)?;
     let mut found = vec![];
     let Ok(entries) = fs::read_dir(&folder) else {
@@ -1773,8 +1776,15 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
     let mut found: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for session_id in crate::sessions::open_ids(root)? {
         let file = crate::sessions::session_file(&session_id);
-        let text = read_bounded_record(&local_path(root, &file)?, markdown::SESSION_BOUND)?;
-        let record = markdown::parse(&file, &text)?;
+        // An unreadable session never stops another session's read (DRIVE-14): skip it
+        // here; `session list` still reports it.
+        let Ok(text) = read_bounded_record(&local_path(root, &file)?, markdown::SESSION_BOUND)
+        else {
+            continue;
+        };
+        let Ok(record) = markdown::parse(&file, &text) else {
+            continue;
+        };
         for id in record.list("observations") {
             found.entry(id).or_default().push(file.clone());
         }
@@ -1865,7 +1875,7 @@ pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(Stri
 /// `.chough/archive/sessions/<id>/`, created only when it has one (REQ-records-013).
 /// Only bytes committed at HEAD move (REQ-records-012); an uncommitted screenshot
 /// stays and is named in the returned list. Call with the story already written.
-#[cfg_attr(not(test), allow(dead_code))] // wired in sessions.rs at the archive point
+#[allow(dead_code)] // wired in sessions.rs at the archive point
 pub(super) fn move_screenshots_at_finish(root: &Path, session_id: &str) -> Result<Vec<String>> {
     let from = local_path(root, &evidence_dir(session_id))?;
     let mut kept = vec![];
@@ -2124,7 +2134,7 @@ fn committed_at_head(root: &Path, relative: &str) -> bool {
 
 /// Where an observation record was found.
 #[derive(Clone, Debug, PartialEq)]
-#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+#[allow(dead_code)] // step 4 seam
 pub(super) enum Found {
     /// An open session's evidence folder.
     Session(String),
@@ -2138,7 +2148,7 @@ pub(super) enum Found {
 /// verification: id, aliases, case, result, observed (Unix seconds), environment,
 /// revision, run time and where it was found.
 #[derive(Clone, Debug)]
-#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+#[allow(dead_code)] // step 4 seam
 pub(super) struct ObservationView {
     pub(super) id: String,
     pub(super) aliases: Vec<String>,
@@ -2190,7 +2200,7 @@ fn entry_view(evidence: &Evidence, session_id: &str) -> ObservationView {
 
 /// Every observation record: each open session's entries, then each archived story's
 /// and each bug's receipts. Read-only.
-#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+#[allow(dead_code)] // step 4 seam
 pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
     let mut views = vec![];
     for session_id in crate::sessions::open_ids(root)? {
@@ -2238,7 +2248,7 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
 /// Resolve an evidence ID (a bare ID, a 0.5.x alias or the qualified
 /// `<session-id>/<evidence-id>` form) through the open sessions; two records holding
 /// it refuse as ambiguous, naming the qualified form (the t38b/t382 agreement).
-#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+#[allow(dead_code)] // step 4 seam
 pub(super) fn resolve_entry(root: &Path, id: &str) -> Result<Option<(String, Evidence)>> {
     if let Some((session, entry)) = id.split_once('/') {
         let record = load_session(root, session)?
@@ -2270,7 +2280,7 @@ pub(super) fn resolve_entry(root: &Path, id: &str) -> Result<Option<(String, Evi
 
 /// The one entry for a validation run's evidence record shape (REQ-cli-023, plan
 /// delta correction 4): written by validate.rs.
-#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+#[allow(dead_code)] // step 4 seam
 /// The files written beside an entry: an optional screenshot (extension, bytes) and
 /// the raw log of an executed case (bytes, written machine-local, never committed).
 #[derive(Default)]
@@ -2295,7 +2305,7 @@ pub(super) struct ValidationRun {
 }
 
 /// Write a repeated validation run as one evidence entry (REQ-cli-023).
-#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+#[allow(dead_code)] // step 4 seam
 pub(super) fn record_validation_run(root: &Path, run: &ValidationRun) -> Result<String> {
     let session_id = active_session(root)?;
     let mut record = Record::new(&format!(

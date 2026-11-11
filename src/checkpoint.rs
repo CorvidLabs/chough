@@ -415,7 +415,8 @@ pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
         }
     }
     held.push((path, file));
-    Ok(())
+    drop(held);
+    crate::migrate::ensure_migrated_under_lock(root)
 }
 
 /// Remove `.chough/.session.json.<pid>.tmp` files: the temps `save_checkpoint` writes
@@ -1229,6 +1230,19 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// REQ-records-010 under the writer lock: a writer that takes the lock on a tree
+    /// holding a 0.5.x record refuses, so one that passed the guard before an apply
+    /// restored the 0.5.x files never writes into a mixed tree.
+    #[test]
+    fn taking_the_lock_on_an_unmigrated_tree_refuses() {
+        let root = tempfile::tempdir().unwrap();
+        fs::create_dir_all(root.path().join(".chough")).unwrap();
+        fs::write(root.path().join(".chough/session.json"), "{}\n").unwrap();
+        let error = lock_checkpoint(root.path()).unwrap_err().to_string();
+        assert!(error.contains("refused:unmigrated"), "{error}");
+        release_checkpoint_locks();
+    }
 
     /// Take `file`'s lock, waiting a bounded time (#132): a process another test thread
     /// forks inherits this process's descriptors until it execs, so a lock this test

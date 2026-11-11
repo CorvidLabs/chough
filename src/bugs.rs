@@ -71,21 +71,6 @@ const LIST_KEYS: [&str; 7] = [
     "related",
 ];
 
-/// A bug as other commands see it. `Deserialize` keeps the 0.5.x retention reader in
-/// `history.rs` compiling until integration removes it.
-#[derive(Clone, Debug, Default, Deserialize)]
-pub(super) struct Bug {
-    pub(super) id: String,
-    #[serde(default)]
-    pub(super) status: String,
-}
-
-impl Bug {
-    pub(super) fn is_open(&self) -> bool {
-        !CLOSED.contains(&self.status.as_str())
-    }
-}
-
 /// One bug record as read from `.chough/bugs/`.
 #[derive(Clone)]
 struct Stored {
@@ -125,13 +110,6 @@ impl Stored {
     /// Whether `id` is this bug's name or one of its aliases (REQ-records-003).
     fn holds(&self, id: &str) -> bool {
         self.id() == id || self.list("aliases").iter().any(|alias| alias == id)
-    }
-
-    fn bug(&self) -> Bug {
-        Bug {
-            id: self.id().to_string(),
-            status: self.status().to_string(),
-        }
     }
 
     fn paragraph(&self, label: &str) -> String {
@@ -351,10 +329,6 @@ fn read_all(root: &Path) -> Result<Vec<Stored>> {
         bugs.push(stored);
     }
     Ok(bugs)
-}
-
-pub(super) fn load_all(root: &Path) -> Result<Vec<Bug>> {
-    Ok(read_all(root)?.iter().map(Stored::bug).collect())
 }
 
 /// The bug whose name or alias is `id`; an alias two bugs hold is refused.
@@ -1566,45 +1540,6 @@ pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<Str
 /// Whether a bug status is closed: verified, duplicate, wont-fix or fixed-upstream.
 pub(super) fn is_closed_status(status: &str) -> bool {
     CLOSED.contains(&status)
-}
-
-/// A closed bug as the 0.5.x retention code sees it, until step 4 removes it.
-#[allow(dead_code)] // removed at integration (t382)
-pub(super) struct ClosedBug {
-    pub(super) id: String,
-    pub(super) title: String,
-    pub(super) status: String,
-    pub(super) linked: Vec<String>,
-    pub(super) fixture: Option<String>,
-}
-
-/// Every closed bug, by ID.
-#[allow(dead_code)] // removed at integration (t382)
-pub(super) fn closed_links(root: &Path) -> Result<Vec<ClosedBug>> {
-    let mut closed: Vec<ClosedBug> = read_all(root)?
-        .iter()
-        .filter(|bug| !bug.is_open())
-        .map(|bug| ClosedBug {
-            id: bug.id().to_string(),
-            title: bug.text("title").to_string(),
-            status: bug.status().to_string(),
-            linked: bug.linked(),
-            fixture: bug.optional("fixture"),
-        })
-        .collect();
-    closed.sort_by(|left, right| left.id.cmp(&right.id));
-    Ok(closed)
-}
-
-/// Each bug's fixture path, whatever its status, labeled `<bug-id> <status>`.
-pub(super) fn fixture_references(root: &Path) -> Result<Vec<(String, String)>> {
-    Ok(read_all(root)?
-        .iter()
-        .filter_map(|bug| {
-            let fixture = bug.optional("fixture")?;
-            Some((format!("{} {}", bug.id(), bug.status()), fixture))
-        })
-        .collect())
 }
 
 pub(super) fn open_blocking(root: &Path) -> Result<Vec<String>> {

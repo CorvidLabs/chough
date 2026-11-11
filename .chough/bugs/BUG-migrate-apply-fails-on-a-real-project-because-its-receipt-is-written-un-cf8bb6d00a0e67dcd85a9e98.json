@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "id": "BUG-migrate-apply-fails-on-a-real-project-because-its-receipt-is-written-un-cf8bb6d00a0e67dcd85a9e98",
+  "title": "migrate --apply fails on a real project because its receipt is written under the ordinary 64 KiB record bound",
+  "symptom": "Applying the migration of this repository fails with 'managed file exceeds 65536 bytes' for the receipt, after the 0.6.0 files were already written, leaving both layouts in the tree",
+  "trigger": "Preview and apply chough migrate on a project with a few hundred 0.5.x files, such as this repository in a throwaway clone",
+  "expected": "The receipt applies within its own 4,194,304-byte bound (REQ-records-001), and a receipt over that bound refuses before anything is written",
+  "actual": "The receipt is written with the 65,536-byte ordinary record bound and refuses only after the planned files were written",
+  "criteria": [
+    "DRIVE-27"
+  ],
+  "requirements": [
+    "REQ-records-009",
+    "REQ-records-001"
+  ],
+  "cases": [
+    "TC-records-migrate-receipt-bound"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "9b9152bf9d7595cd104b06e1ab11fdefdefd2819",
+  "steps": [
+    "Commit a 0.5.x project with about 400 removable files",
+    "Run chough migrate, then chough migrate --apply <digest> --consent <source>"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-records-migrate-receipt-bound-3b9e75047dc1913f7041591e",
+    "OBS-tc-records-migrate-receipt-bound-5bcd8311e4e7a9153331bc63"
+  ],
+  "impact": "No real project can migrate; a refused apply leaves the 0.6.0 files beside every 0.5.x file until it is resumed",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37j's second migration rehearsal (plan Migration step 3) at d57d3aea in a throwaway clone",
+  "notes": [
+    {
+      "at_unix_seconds": 1794439356,
+      "text": "Red on the current apply: TC-records-migrate-receipt-bound fails with 'managed file exceeds 65536 bytes' for the receipt; revision b405da6e on leif/0.6.0-receipt-bound-red.",
+      "observations": [
+        "OBS-tc-records-migrate-receipt-bound-3b9e75047dc1913f7041591e"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794439407,
+      "text": "status: open -> verified. Green on the fix: TC-records-migrate-receipt-bound passes; a 400-file project's receipt applies within the receipt bound.",
+      "observations": [
+        "OBS-tc-records-migrate-receipt-bound-5bcd8311e4e7a9153331bc63"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794439308,
+  "updated_at_unix_seconds": 1794439407
+}

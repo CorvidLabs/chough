@@ -23,7 +23,6 @@ files:
   - src/stage.rs
   - src/validate.rs
   - src/vault.rs
-  - src/attachments.rs
   - tests/cli.rs
   - tests/bugs.rs
   - tests/cases.rs
