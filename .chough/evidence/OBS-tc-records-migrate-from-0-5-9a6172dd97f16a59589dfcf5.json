@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-migrate-from-0-5-9a6172dd97f16a59589dfcf5",
+  "criteria": [
+    "DRIVE-27",
+    "LIFE-20",
+    "LIFE-21",
+    "KNOW-10",
+    "KNOW-11"
+  ],
+  "requirements": [
+    "REQ-records-009"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test migrate for TC-records-migrate-from-0-5: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-migrate-from-0-5-9a6172dd97f16a59589dfcf5.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-migrate-from-0-5-9a6172dd97f16a59589dfcf5.log": "d468f21e672a8f602aeaf732281592869fc3a5c7437423b5482644e9f0a35db8"
+  },
+  "observed_at_unix_seconds": 1794429368,
+  "snapshot": {
+    "revision": "370d221d68840f2e263e90b927a200438a7a0173",
+    "dirty": false,
+    "fingerprint": "335cc65a868ad771a63cf7b588d1749607c19950e884305e7c09cf771dfc415b",
+    "content": "843a083f60a67703f38514e1fcffa147b0e3c500ec307ca879614ca5ee672a4c"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-migrate-from-0-5",
+      "digest": "c5b17f4681d2e002e53a82f59451189eb9cf32f55b3c5e368f4725676de2cbcb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "migrate"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test result: ok.\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

@@ -176,6 +176,8 @@ fn init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only() {
         .into_iter()
         .map(|file| format!(".agents/skills/chough-workflow/{file}"))
         .chain(std::iter::once(session_rel.clone()))
+        // REQ-records-002: the records tree's reading guide, create-only.
+        .chain(std::iter::once(".chough/README.md".to_string()))
         .collect();
     assert_eq!(created, expected);
 
@@ -193,11 +195,13 @@ fn init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only() {
         );
     }
     assert!(session.contains("native_change: \"\""), "{session}");
-    let records: Vec<String> = fs::read_dir(root.join(".chough"))
+    let mut records: Vec<String> = fs::read_dir(root.join(".chough"))
         .unwrap()
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
         .collect();
-    assert_eq!(records, ["local", "sessions"]);
+    records.sort();
+    // REQ-records-002: the reading guide, the cases folder, local state and the session.
+    assert_eq!(records, ["README.md", "cases", "local", "sessions"]);
     for absent in [".specsync", "examples", "tests", "docs", ".claude"] {
         assert!(!root.join(absent).exists(), "{absent} was created");
     }

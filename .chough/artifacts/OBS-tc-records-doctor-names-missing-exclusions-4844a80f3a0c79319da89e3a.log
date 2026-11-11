@@ -1,0 +1,12 @@
+--- stdout ---
+
+running 2 tests
+test doctor_names_the_missing_verification_exclusions ... ok
+test next_says_when_chough_writes_are_safe_and_init_gives_the_advice ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 1.48s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running tests/doctor.rs (target/debug/deps/doctor-ce3474a4de923134)

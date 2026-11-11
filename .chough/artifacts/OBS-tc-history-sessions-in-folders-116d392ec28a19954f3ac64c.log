@@ -1,0 +1,26 @@
+--- stdout ---
+
+running 1 test
+test sessions_live_in_folders_and_finish_into_one_story ... FAILED
+
+failures:
+
+---- sessions_live_in_folders_and_finish_into_one_story stdout ----
+
+thread 'sessions_live_in_folders_and_finish_into_one_story' (893009982) panicked at tests/sessions.rs:1782:5:
+assertion `left == right` failed: no session folder holds a session.md
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    sessions_live_in_folders_and_finish_into_one_story
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.57s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/sessions.rs (target/debug/deps/sessions-254bfc5249dd3bfe)
+error: test failed, to rerun pass `--test sessions`

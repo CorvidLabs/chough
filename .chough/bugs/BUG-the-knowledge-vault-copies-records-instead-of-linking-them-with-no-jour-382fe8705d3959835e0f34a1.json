@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "BUG-the-knowledge-vault-copies-records-instead-of-linking-them-with-no-jour-382fe8705d3959835e0f34a1",
+  "title": "The knowledge vault copies records instead of linking them, with no journal or feed (#216)",
+  "symptom": "the move into done writes no journal post or feed, and the vault regenerates copies of archives, sessions and bugs",
+  "trigger": "Advance a session to done with the librarian on",
+  "expected": "one short journal post per finished piece of work, a feed, and an index of links that copies no record (KNOW)",
+  "actual": "no knowledge/journal/feed.xml after done",
+  "criteria": [
+    "KNOW-33",
+    "KNOW-30"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "cases": [
+    "TC-records-journal-and-feed"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "67d001e55e59fa271166d92c95ea44fac6d4f304",
+  "steps": [
+    "chough init",
+    "chough stage advance (six times, to done)"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-records-journal-and-feed-8bf0043fc731ac0f5b8c6663",
+    "OBS-tc-records-journal-and-feed-a1dff57a20a259ad7fccfaed"
+  ],
+  "impact": "Two sources of truth that drift, and churn at every done (GitHub #216)",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "GitHub issue #216; red on 0.5.0 at leif/0.6.0-batch-red 370d221d",
+  "notes": [
+    {
+      "at_unix_seconds": 1794429582,
+      "text": "status: open -> verified. Fixed by plan step 8 (PR #238): index.md links, the journal post at done and the feed; the case passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-records-journal-and-feed-a1dff57a20a259ad7fccfaed"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794429417,
+  "updated_at_unix_seconds": 1794429582
+}
