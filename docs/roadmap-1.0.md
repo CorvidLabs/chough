@@ -1,11 +1,12 @@
-# Roadmap to 1.0
+# Roadmap
 
-Source: Leif's MVP / 1.0 interview of 2026-11-10 and his same-day decisions on
-issues #14, #165, #167, #201, #234, #235 and #236 and the 2026-11-10
-design review, captured as FLOW-21 to FLOW-24, DRIVE-24 to DRIVE-28, KNOW-30 to
-KNOW-35 and LIFE-17 to LIFE-26. This
-roadmap records proposed sequencing; it is not human acceptance or proof of
-delivery. Durable intent stays in [HI](../hi/).
+Durable intent is in [HI](../hi/). This is Chough's one roadmap. It covers the path
+to 1.0 from Leif's MVP / 1.0 interview of 2026-11-10, his same-day decisions on
+issues #14, #165, #167, #201, #234, #235 and #236, and the 2026-11-10 design review
+(captured as FLOW-21 to FLOW-24, DRIVE-24 to DRIVE-28, KNOW-30 to KNOW-35 and LIFE-17
+to LIFE-26). [Delivered work](#delivered) is listed after it. The roadmap records
+proposed sequencing and delivered history; it is not human acceptance or proof of
+delivery.
 
 ## What 1.0 means
 
@@ -44,15 +45,26 @@ to crates.io. The human steps of [releasing](releasing.md) stay human steps.
 
 ## Milestones
 
-Leif decided on 2026-11-10 that the human-first redesign (M1 to M3: slug
-folders, Markdown records with date + slug names, the links-never-copies
-vault, the cleanup) ships as ONE change, **Chough 0.6.0**, dogfooded on the
-chough repository itself before any other repo updates. The 0.6.0 change
-folds in #214 (slug folders, with #207's side-effect fix), #208 (external
-artifacts), #210 (append-only corrections) and #233 (agent, model and hc
-terminal id on records); it is being planned on branch
-leif/human-first-records. Only after that dogfood passes on chough do the
-other repos pick it up (M6 order).
+Leif decided on 2026-11-10 that the human-first redesign (M1 to M3) ships as ONE
+change, **Chough 0.6.0**, dogfooded on the chough repository itself before any
+other repo updates. The redesign covers slug folders, Markdown records named by date
+and slug, the links-never-copies vault and the cleanup. It is the native change
+`chough-0-6-0-human-first-records-…` on draft PR #238 (branch
+leif/human-first-records).
+
+It folds in these issues:
+- #214: slug folders, with #207's side-effect fix;
+- #208: external artifacts;
+- #210: append-only corrections;
+- #233: agent, model and hc terminal on records;
+- #237: a gate holds only its own stage;
+- #236: a human's gate decision drives the native step as that human;
+- #234: no leaks in committed records;
+- #12: Chough's records stay out of SpecSync's verification;
+- #165: no roll-up of archived sessions.
+
+Only after that dogfood passes on chough do the other repos pick it up (M6 order). It
+has not been merged or released yet.
 
 Each milestone names the bar items it serves, what "done" means and how it is
 tested. Milestones overlap in time; the dependencies are between the issues,
@@ -60,35 +72,31 @@ not the headings.
 
 ### M1: Per-session slug folders and the record-format migration
 
-Serves bar 3 (frozen format + migrations) and bar 1 (no data-loss bugs).
+Serves bar 3 (frozen format + migrations) and bar 1 (no data-loss bugs). Ships in
+0.6.0.
 
-Scope: DRIVE-24 as settled in the 2026-11-10 design review. Every session
-gets its own unique date + slug folder; active and archived sessions are kept
-separately, mirroring SpecSync's `changes/` and `archive/`; sessions stay
-committed because handoff depends on them; parallel sessions never rewrite
-one shared file. The checkpoint (stage, next, gates) lives in `session.md`
-frontmatter with an append-only timeline in the same file, replacing
-`session.json` and `transitions.jsonl`; an `agent/` folder inside the session
-holds agent-helpful working files during the change, committed for handoff
-and removed automatically at finish. Records become human-first (DRIVE-25):
-bugs, evidence, sessions and decisions are Markdown with YAML frontmatter,
-one file per record, the file itself the source of truth, a bug's log
-append-only. Record names are a date plus a slug, never sequential numbers,
-with old sequential IDs kept as aliases (DRIVE-27). Case definitions stay
-small TOML, with one `.chough/README.md` reading guide (DRIVE-28). Includes
-the corrections command (LIFE-18; #167, scoped in #210), session identity
-recording (LIFE-17; #201, scoped in #233) and external case artifacts by
-recorded fingerprint (FLOW-22; #14 item 3, scoped in #208). The session bugs
-#181 and #113 are fixed on main (#206, #200); #207 was closed not-planned by
-design and its side-effect fix ships with #214 in 0.6.0; #237 (an open human
-gate blocking every stage advance, even for unrelated later decisions) is
-open.
+Scope: DRIVE-24 to DRIVE-28 as settled in the 2026-11-10 design review.
+- **Session folders.** Every session gets its own date + slug folder,
+  `.chough/sessions/<id>/`. Its `session.md` front matter is the checkpoint, and an
+  append-only Timeline in the same file replaces `session.json` and
+  `transitions.jsonl`.
+- **Finishing.** A finished session becomes one story in
+  `.chough/archive/sessions/`, mirroring SpecSync's `changes/` and `archive/`.
+- **Human-first records.** Bugs, evidence, sessions and decisions are Markdown with
+  YAML front matter, one file per record, and the file is the source of truth.
+  Names are a date plus a slug, never sequential numbers, with old IDs kept as
+  aliases. Case definitions stay small TOML, and `.chough/README.md` is the one
+  reading guide.
+- **Also included:** the corrections command (LIFE-18; #167, scoped in #210),
+  session identity on records (LIFE-17; #201, scoped in #233), and a gate that holds
+  only its own stage (#237).
 
-Done means: two agents can run parallel sessions in one repository, commit
-both, and merge without a hand-resolved conflict in any file Chough writes
-(DRIVE-12 stays true); a fresh agent resumes either session from the committed
-files alone (FLOW-13); sessions archived under the new layout roll up under
-KNOW-29 and KNOW-30.
+Done means:
+- two agents can run parallel sessions in one repository, commit both, and merge
+  without a hand-resolved conflict in any file Chough writes (DRIVE-12 stays true);
+- a fresh agent resumes either session from the committed files alone (FLOW-13);
+- every finished session stays one archived story, never rolled up or trimmed
+  (KNOW-34).
 
 Tested by: the migration fixtures and parallel-session cases in
 [the test plan](test-plan-1.0.md#bar-3-migration-fixtures), plus the existing
@@ -96,59 +104,69 @@ same-second and real-Git fixture acceptance runs.
 
 ### M2: Honest, small evidence
 
-Serves bar 1 and bar 3.
+Serves bar 1 and bar 3. Ships in 0.6.0.
 
-Scope: LIFE-19 (digest-committed receipts; raw logs and transcripts go to CI
-artifacts or are regenerated from seeds, matching LIFE-8), with each evidence
-entry a one-line claim plus a receipt in the DRIVE-26 form; the remaining
-case-binding fixes (FLOW-22, #14 item 3: external artifacts by recorded
-fingerprint); FLOW-23 (#236): a human's Chough gate approval drives the
-SpecSync approval as that human, never a hard-coded identity; FLOW-24:
-approval on permission given in advance is recorded in the agent's name,
-quoting the earlier permission; LIFE-26 (#234):
-committed records never leak local paths, usernames, credentials or personal
-information; and #12 (Chough records and SpecSync verification making each
-other stale). #60 and #136 are fixed on main (#204, #209).
+Scope:
+- **LIFE-19.** Raw logs are never committed: they stay in `.chough/local/logs/` and
+  in CI. Each evidence entry is a one-line claim plus a receipt: the exact command, a
+  SHA-256 fingerprint and, for a failure, the key failing lines.
+- **FLOW-22** (#14 item 3): external artifacts are fingerprinted in place.
+- **FLOW-23** (#236): a human's Chough gate decision drives the SpecSync approval or
+  review as that human, from a configured identity and never a built-in one.
+- **FLOW-24:** an approval on permission given in advance is recorded in the agent's
+  name, quoting the earlier permission.
+- **LIFE-26** (#234): committed records never leak local paths, user names,
+  credentials or personal information.
+- **#12:** Chough's records and SpecSync verification no longer make each other
+  stale.
 
-Done means: no commit to `.chough/` carries a raw transcript; every recorded
-observation is a short receipt with a content digest and the exact command;
-recording commands return the observation ID they created; evidence-only
-commits never make native verification stale (DRIVE-4 stays true).
+#60 and #136 are already fixed on main (#204, #209).
+
+Done means:
+- no commit to `.chough/` carries a raw transcript;
+- every recorded observation is a short receipt with a content digest and the exact
+  command;
+- recording commands return the observation ID they created;
+- evidence-only commits never make native verification stale (DRIVE-4 stays true).
 
 Tested by: focused cases per fix, plus a repository-size guard in CI that
 fails when a committed evidence artifact exceeds the receipt bound.
 
 ### M3: Knowledge complete, links never copies
 
-Serves bar 1.
+Serves bar 1. Ships in 0.6.0.
 
-Scope: LIFE-23: all of KNOW is in the 1.0 scope — the librarian, the roll-ups,
-the index and observations — re-scoped by the 2026-11-10 interview round 2
-(#235) and the design review: the vault holds only what has no other home
-(cross-project lessons and journal posts) and links to hi/, specs/,
-.specsync/ and .chough/ — including the bug files and session stories that
-live in .chough/ — never copies or holds them (KNOW-30, KNOW-31, KNOW-32).
-Every finished session's story stays in the archive, nothing trimmed
-(KNOW-34); proof splits: logs to CI, the record keeps the key failing lines,
-the exact command and a fingerprint, and a few small key screenshots sit
-beside the story under a size cap (KNOW-35). A module's own lessons
-stay with its spec; only cross-project lessons live in `knowledge/lessons/`
-(KNOW-31). A journal post is short and links to the archived session story,
-so nothing is written twice (KNOW-33); `knowledge/index.md` is the vault's
-reading guide (DRIVE-28). The `knowledge/intent/` and `knowledge/archives/`
-copies are removed by the cleanup change (#235 item 4, one cleanup PR per
-repo); that removal changes contracted librarian behavior (the "Project
-librarian" and "Knowledge directory built and kept current" requirements in
-specs/cli/requirements.md), so it is its own native change, not folded into a
-docs change. Includes #165 (whose first wording is superseded by KNOW-30),
-#211 (dropped: copying session records into the vault is duplication under
-#235) and the KNOW criteria still open when this milestone starts.
+Scope: LIFE-23, all of KNOW, re-scoped by the 2026-11-10 interview round 2 (#235)
+and the design review.
+- **Links, not copies.** The vault holds only what has no other home: cross-project
+  lessons and journal posts. It links to `hi/`, `specs/`, `.specsync/` and
+  `.chough/`, including the bug files and session stories in `.chough/`, and never
+  copies or holds them (KNOW-30, KNOW-31, KNOW-32).
+- **Nothing trimmed.** Every finished session's story stays in the archive (KNOW-34).
+- **Proof splits** (KNOW-35): logs go to CI; the record keeps the key failing lines,
+  the exact command and a fingerprint; and a few small key screenshots sit beside the
+  story under a size cap.
+- **Lessons.** A module's own lessons stay with its spec, and only cross-project
+  lessons live in `knowledge/lessons/` (KNOW-31).
+- **Journal.** A post is short and links the archived session story, so nothing is
+  written twice (KNOW-33). `knowledge/index.md` is the vault's reading guide
+  (DRIVE-28).
 
-Done means: the vault contains no copy of a record that has a home; every
-vault note either is original content (a cross-project lesson or a journal
-post) or links; the index regenerates byte-identical from its
-sources (KNOW-4); a fresh agent is pointed at the index at start and resume
-(KNOW-1, FLOW-13); archived session stories stay at `.chough/archive/sessions/`.
+The old `knowledge/intent/`, `archives/`, `modules/`, `bugs/`, `sessions/`,
+`attachments/` and timeline pages are removed by `chough migrate`. Removing them
+changes the contracted librarian behavior, so they go with the 0.6.0 native change
+and its requirements, not with a docs change. This milestone includes #165 (whose
+first wording is superseded by KNOW-30), #211 (dropped: copying session records into
+the vault is duplication under #235), and the KNOW criteria still open when it
+starts.
+
+Done means:
+- the vault contains no copy of a record that has a home;
+- every vault note is either original content (a cross-project lesson or a journal
+  post) or a link;
+- the index and feed regenerate byte-identical from their sources (KNOW-4);
+- a fresh agent is pointed at the index at start and resume (KNOW-1, FLOW-13);
+- archived session stories stay at `.chough/archive/sessions/`.
 
 Tested by: the vault regeneration and link-not-copy cases, exercised during
 the per-repo dogfooding runs.
@@ -215,77 +233,87 @@ last 0.x passes; all four bar items are proven; Leif approves the release.
 
 Tested by: [the test plan](test-plan-1.0.md) in full.
 
-## Session slug folders: migration design
+## Upgrading a 0.x project to 0.6.0
 
-DRIVE-24 changes the session layout from one file per session to one folder
-per session, so parallel sessions never share a file and active work is
-separated from archives exactly like SpecSync's `changes/` and `archive/`.
-DRIVE-25 to DRIVE-27 change the record format itself: sessions, decisions,
-bugs and evidence become Markdown with YAML frontmatter, one file per record,
-named by date plus slug, with old sequential IDs kept as aliases.
+0.6.0 replaces the 0.x layout with the human-first tree:
+- open sessions in `.chough/sessions/<id>/`, each with `session.md`, `evidence/` and
+  `agent/`;
+- finished sessions as `.chough/archive/sessions/<id>.md`;
+- bugs as `.chough/bugs/<id>.md`;
+- machine-only files in the Git-ignored `.chough/local/`.
 
-### From (0.x, today)
+The [README](../README.md#what-a-project-holds) shows the tree, and `.chough/README.md`
+in each project explains it.
 
-- `.chough/sessions/<slug>.json` — one JSON file per active session
-- `.chough/sessions/archive/<slug>.json` — one JSON file per archived session
-- `.chough/session.v1.json` — the frozen legacy checkpoint (the legacy anchor
-  of amended KNOW-29)
-- `.chough/transitions.jsonl` — one shared append-only transition log
-- `.chough/history/cycles/` — shared cycle history
-- `.chough/bugs/BUG-NNNN*.json`, `.chough/evidence/OBS-*.json` — sequential
-  JSON records
+The upgrade is one explicit, previewed step.
+- **Preview.** `chough migrate` reads the 0.x records, writes nothing, and prints the
+  plan with its digest.
+- **Apply.** `chough migrate --apply <digest> --consent "<who, their words, where>"`
+  applies exactly that plan. It applies only with the human's consent, never while a
+  native change is open, and only when Git holds every byte it removes.
+- **What it writes.** Every file is written by create-new and read back, followed by
+  a receipt in `.chough/archive/migrations/`. Old IDs stay as aliases, and an
+  archived SpecSync change is never left weaker than before.
 
-### To (1.0), as settled in the 2026-11-10 design review
+Fixtures from every released version, 0.1.0 to 0.5.0, migrate to the same tree. Until
+a project migrates, 0.6.0 refuses every other command with `refused:unmigrated`.
+Downgrade is not supported: Chough 0.5.x cannot read 0.6.0 records, so upgrade every
+agent before a project migrates. The receipt and Git history are the rollback.
 
-- `.chough/sessions/<date>-<slug>/` — one folder per active session:
-  `session.md` carries the checkpoint (stage, next, gates) in its YAML
-  frontmatter and an append-only timeline in the body, replacing
-  `session.json` and `transitions.jsonl`; an `agent/` subfolder holds
-  agent-helpful working files, committed for handoff and removed
-  automatically at finish (DRIVE-24)
-- `.chough/archive/sessions/<date-slug>.md` — at finish the session becomes
-  this one archived story file: the story as written plus a closing line,
-  evidence receipts folded into "What was verified", working files removed
-  with Git history keeping them (DRIVE-25); the vault links to it and never
-  moves or copies it (KNOW-30)
-- `.chough/bugs/<date>-<slug>.md`, `.chough/evidence/<date>-<slug>.md`,
-  decisions likewise — one Markdown file per record, the file itself the
-  source of truth, no JSON twin; a bug's log is append-only (DRIVE-25)
-- Case definitions stay small TOML; `.chough/README.md` is the one-screen
-  reading guide (DRIVE-28)
+## Delivered
 
-### What migrates
+| Stage | Outcome | State |
+|---|---|---|
+| First foundation | Skill, focused context, native status, bound observations | Delivered at d38aa19 (bootstrap, no native lifecycle); [hosted CI run](https://github.com/CorvidLabs/chough/actions/runs/41218954725) at that revision only |
+| Resumable stage workflow | Stages and gates, checkpoint schema 2, focused cases, local bugs, optional validation, release routing and librarian, per-host skills | Delivered: human implementation review, native archive and merge in PR #2 (4008346, 2026-10-31); BUG-0004 and BUG-0005 fixed in PR #4 (2d782c4) and recorded in PR #6 |
+| Native archive CI gate | CI fails while any native change is active or an archive fails to authenticate from history (no check is required to merge yet; see [ci.md](ci.md)) | Delivered in PR #3 (c408390, 2026-10-31) |
+| Fail-closed stage gates | Refuse moves when native approval validity, archive integrity or the SDD policy does not hold | Delivered in PR #7 (9cb1c35, 2026-10-31) |
+| Bounded external commands | Time and output limits for case bindings and native reads; validation honors a stop after waiting | Delivered: archived natively and merged in PR #8 (090460d, 2026-10-31) |
+| First release candidate | Reference-aware evidence retention, current guidance, an installable package without Chough's own records | Delivered: archived natively and merged in PR #9 (2756dc2, 2026-10-31); no tag or release was made |
+| Evidence freshness | Observations stay current across commits of Chough records and SpecSync bookkeeping; bug verification needs a pass after the failure | Delivered in PR #17 (c26bc26, 2026-11-01; D-018); fixes BUG-0014, BUG-0015 and BUG-0016 |
+| Timing report | `chough timing`: how long stages, tests, bug fixes and human gates took (LIFE-10, REQ-reporting-001, was REQ-cli-020) | Delivered in PR #15 (3ddbcca, 2026-11-01) |
+| Reporting local work | Share one root-bound case index per report and expose opt-in local phase/load attribution without caching native authorization | Delivered in merged PR #46 (134ee19, 2026-11-03), archived natively; issue #32 stays open for next/status latency and upstream native authentication latency |
+| Archive-first CI | The `Archive` job runs before every other CI job and fails while a native change is open | Delivered in PR #18 (28db18c, 2026-11-01) |
+| Bundle hygiene and actionable errors | Bundled templates pass docs gates, case bindings get their environment, colour-safe output matching, requirement and bug errors say how to fix them | Delivered in PR #16 (8b30943, 2026-11-01); fixes BUG-0018, BUG-0019 and the error half of BUG-0017 |
+| Focused next and resume guards | A bounded focused `next` view, an approved-delta guard before build, and new-cycle guidance from done | Delivered in PR #23 (99a61ec, 2026-11-01) |
+| Kimi new-cycle integration | Align the Kimi records and archived done guidance with main's REQ-cli-021 new-cycle behavior | Delivered in merged PR #24. BUG-0025 is verified by the later linked TC-cli-0105 pass; the original Kimi archived-resume record stays BUG-0024, and no fresh post-fix Kimi run is claimed |
+| Fresh-agent handoff | `chough next` shows recent decisions, the last failure and a lesson pointer, names a new cycle after archival, and the skill asks an agent to state the handoff before editing | Implementation delivered and accepted in PRs #35 and #36. The graded cold-start proof for #35 failed; #36's cold-start proof was not run by 0xLeif's decision. No passing cold-start result is claimed |
+| Parallel record identities | Curated slug case IDs and random observation, validation and snapshot identities preserve legacy records | Delivered in merged PR #33; same-second two-root and real Git fixture acceptance tests added in merged PR #48 (747a12c, 2026-11-03), archived natively. Issue #30 stays open for its remaining acceptance criteria |
+| Bounded timing native reads | Deduplicate timing queries, skip excluded native history and bound total native wait with explicit unknowns | Delivered in merged PR #34, the first slice of issue #32; next/status latency and broader measurement remain open |
+| Transition history and retention | Preserve independent branch events and resume state with bounded readers and protected-proof retention | Delivered by merged PR #37 at a788869 for issue #31; no live adoption or cleanup was performed |
+| Chough drives native tools | The current agent handles native commands and applicable existing human authorization while preserving native checks and separate acceptance | Delivered in merged PR #44 (16fe55d), archived natively as `let-chough-drive-native-tools-and-reuse-existing-human-authorization`; issue #42 is closed. No fresh-agent cold-start result is claimed |
+| Human gates and failed cases | Refuse stage advance and skip while a human gate is open, and refuse leaving test with an unlinked failed case | Delivered in merged PRs #45 (9d02fbf, #38) and #43 (3d00e44, #39) |
+| New-project setup | Document the setup path and `specsync change adopt` when SDD is off | Delivered in merged PR #47 (d839fef) |
+| CLI cleanups and checkpoint capacity | Hyphen values in `bug add`, ISO times, help and docs drift, exercise temp dir (#49); checkpoint bound 131,072 bytes and 400 observation pointers with atomic refusals (LIFE-11) | Delivered in merged PRs #50 (5568e5e) and #51 (8300b58), 2026-11-03, archived natively |
+| Older workflow approval matching | The approved-delta guard must use the approval SpecSync treats as effective for changes approved by older workflow versions | Open as BUG-0020; recorded in PR #25 (47242e9, 2026-11-01) |
+| 0.1.0 release | First published version | Published 2026-11-01: tag `v0.1.0` at c03d419 (release prep PR #22, change log PR #27), crates.io `chough` 0.1.0 and the [GitHub release](https://github.com/CorvidLabs/chough/releases/tag/v0.1.0). A clean `cargo install chough --version 0.1.0 --locked` into an empty root with cargo 1.95.0 on macOS arm64 exited 0 and `chough --version` printed `chough 0.1.0` |
+| 0.4.0 release | Parallel work without merge conflicts, old proof moved into the knowledge vault, SpecSync 6.2.0 | Published 2026-11-05: tag `v0.4.0` at 69950c7 (release prep PR #116), crates.io `chough` 0.4.0 and the [GitHub release](https://github.com/CorvidLabs/chough/releases/tag/v0.4.0). A clean `cargo install chough --version 0.4.0 --locked` into an empty root with cargo 1.95.0 on macOS arm64 exited 0 and `chough --version` printed `chough 0.4.0` |
+| 0.5.0 release | Session lifecycle and gate helpers, current-agent SpecSync steps, rebuildable Linux verification | Published 2026-11-06: tag `v0.5.0` at 455cb643 (release prep PR #185), crates.io `chough` 0.5.0 and the [GitHub release](https://github.com/CorvidLabs/chough/releases/tag/v0.5.0). A clean `cargo install chough --version 0.5.0 --locked` into an empty root with cargo 1.99.0 on macOS arm64 exited 0 and `chough --version` printed `chough 0.5.0` |
+| Human-first records (0.6.0) | Markdown records in session folders, gates that hold their own stage, approval or review as the human, no leaks, links-never-copies vault, `chough migrate` | In progress as one native change on draft PR #238; not merged, released or dogfooded yet |
+| First real project loop | Use the workflow on a real CorvidLabs feature and bug | Used once in real work, on a private CorvidLabs project; it found BUG-0015 to BUG-0019, of which BUG-0015, 0016, 0018 and 0019 are fixed and verified and BUG-0017's error half is fixed and its documented-order half is addressed by merged PR #41 (8fb0ea7, #11). More runs are needed |
+| More hosts | Exercise Cursor, Gemini and Grok discovery and cold starts. One Kimi Code CLI 0.41.0 run on macOS arm64 passed `.agents` discovery but could not safely cold-resume because of BUG-0024's stale archived-resume action and BUG-0021's guidance gap. Google Antigravity has a separate unverified narrative report in closed PR #20 | Kimi run observed 2026-11-01, with no fresh post-fix rerun; Cursor, Gemini and Grok remain proposed |
+| Observation reuse | Recognize unchanged inputs at a descendant commit | Narrower content-identity form delivered by D-018 in PR #17; the ancestry check and separate reuse label stay unapproved (the deferred proposal is in Git history and D-018) |
+| Native gate adapter | Reuse Trust where its policy fits | Proposed; needs degraded, failed, unavailable and baseline cases |
+| Checkpoint adapter | APS, if it gains file input, compare-and-set and closed schemas (Windows builds are no longer needed, D-022) | Deferred (D-010) |
+| Test runner adapter | Magpie for real-command targets with explicit assertions | Deferred until installed and qualified per mode |
+| Rune proof of concept | Optional cross-agent session bridge | Deferred; current-agent-first remains the model |
+| Monitoring sources | Project-native health and log adapters as cases | Proposed per project; no general health service assumed |
 
-- Each active `sessions/<slug>.json` becomes `sessions/<date>-<slug>/` with
-  the checkpoint fields carried into `session.md` frontmatter and its
-  timeline started from the recorded transitions; the format version is
-  bumped by the migration receipt.
-- Each archived `sessions/archive/<slug>.json` becomes
-  `archive/sessions/<date-slug>.md`, story as written plus a closing line.
-- The shared `transitions.jsonl` is partitioned: every event that names a
-  session is appended to that session's timeline list in `session.md`;
-  events that name no session stay in a committed legacy log that readers
-  still honor.
-  Nothing is deleted; the old files are removed only after their replacement
-  is committed (the KNOW-7 rule).
-- Every `BUG-NNNN` and `OBS-*` record converts to its Markdown form under its
-  creation date and slug, with the old ID recorded as an alias in the
-  frontmatter so existing links keep resolving (DRIVE-27).
-- `session.v1.json`, `history/`, `cases/`, `artifacts/` and
-  `preferences.json` do not move.
+Host-neutral, current-agent-first use is settled. Host discovery still needs real
+host-specific exercises; sequential role passes must keep working without subagents.
+Focused tests cover the affected criteria and impacted behavior, not every criterion
+on every change. More commands should follow friction observed in real use.
 
-### How a 0.x checkout upgrades
+## Open choices
 
-- The migration is explicit: `chough migrate` performs it, as with the
-  schema 1 to 2 migration; it never overwrites existing files, and it writes
-  a migration receipt with the before and after digests.
-- A 1.0 helper on an unmigrated checkout reads the old layout well enough to
-  say "run `chough migrate`" and otherwise fails closed; it never silently
-  rewrites records.
-- Migrations chain: 0.1.0 → 0.2.0 → … → 1.0, one tested step per released
-  format change, so a checkout at any 0.x tag reaches 1.0 by running the
-  steps in order.
-- Downgrade is not supported; the receipt and Git history are the rollback.
+Resolved in earlier approved changes: the test-definition format (TOML
+`chough-testing/1`, D-011) and APS (qualified and deferred, D-010). Still open:
+
+- Project preferences for optional validation and monitoring, including whether a
+  monitor may start an investigation; the default is local capture (D-013), and any
+  remediation keeps its scope and gates.
+- Project-specific release, trust and signer policies, when those optional paths are
+  actually requested or configured.
 
 ## Notes and flagged conflicts
 
@@ -301,7 +329,7 @@ named by date plus slug, with old sequential IDs kept as aliases.
   supersession note and retire with the 0.6.0 change, which removes the
   behavior, requirements and cases together; KNOW-10's never-weaken and
   KNOW-11's preview-first safeguards carry forward to the one-time upgrade.
-- The interview describes today's layout as "a single committed
+- The interview describes the layout before 0.6.0 as "a single committed
   session.json"; main has had per-session files since 0.4.0 (DRIVE-3,
   DRIVE-13). DRIVE-24 is the folder form of the same direction, not a
   reversal; the conflict-magnet evidence (peck #182) came from a project on

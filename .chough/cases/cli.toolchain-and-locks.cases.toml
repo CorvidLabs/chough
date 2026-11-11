@@ -1,0 +1,43 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# Plan step 12 (t38b): local tools must match the CI pins (BUG-0022), and the #132
+# family of lock and fork flakes gets diagnostics and a stress case.
+
+[[case]]
+id = "TC-cli-bug-0022-toolchain-matches-ci"
+title = "The toolchain task, first in the verify lane, fails naming each tool whose version differs from the CI pin, and every copy of it on PATH with its version"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-6", "FLOW-13"]
+requirements = ["REQ-cli-019"]
+paths = ["tools/toolchain.sh", "fledge.toml", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the two toolchain tests in tests/package.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "package", "--", "toolchain_task_names_a_version_that_differs", "toolchain_failure_names_each_copy_on_path_with_its_version"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-132-fork-inheritance-stress"
+title = "Lock and stand-in tests survive 200 rounds of parallel forks; a writer records its process ID in the lock file, and each failure would be recorded with its test name"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-11", "FLOW-14"]
+requirements = ["REQ-cli-040"]
+paths = ["src/records.rs", "src/checkpoint.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the stress case and the lock-holder test in tests/cli.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "cli", "--", "lock_and_stand_in_tests_survive_parallel_forks", "a_writer_records_its_process_id_in_the_lock_file"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 900

@@ -1,0 +1,36 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-9fa9e31652575eb199c5ad11",
+    "head": "EVT-f2b9b6b9907720e91cd4e0fe",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Archived work 4",
+  "intent_scope": "",
+  "modules": [],
+  "stage": {
+    "current": "design",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": null,
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [
+    "Closed without done: archived work 4 done"
+  ],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+}

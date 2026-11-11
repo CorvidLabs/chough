@@ -15,16 +15,34 @@
   "revision": "99a61ec92fe81e32f6bd7955357d23a00a0c86d7",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-bug-0020-guard-uses-effective-approval-e4e4ae20c3d4b3665a50fc19",
+    "OBS-tc-cli-bug-0020-guard-uses-effective-approval-01c9ea9bdadd02ee6d933114"
+  ],
   "impact": "Low: SpecSync 6.1.1 records workflow_version 2 or later, so only changes approved by older SpecSync versions are affected. Found in the PR #23 review; deferred by 0xLeif because fixing it changes REQ-cli-022.",
   "classification": "requirement-gap",
-  "scope": "out-of-scope",
-  "status": "open",
+  "scope": "in-scope",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "manual report",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794425596,
+      "text": "status: open -> fix-pending-verification; scope: out-of-scope -> in-scope. Red on 0.5.0: TC-cli-bug-0020-guard-uses-effective-approval failed on leif/0.6.0-0020-red at 4b783df6 (step 1's 0.5.0 code with the test): the guard compared with the latest approval and refused although the effective, digest-matching one matched. Fixed in plan step 12 (PR #238): the guard reads summary.definition_digest and compares with the approval whose digest matches.",
+      "observations": [
+        "OBS-tc-cli-bug-0020-guard-uses-effective-approval-e4e4ae20c3d4b3665a50fc19"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794426211,
+      "text": "status: fix-pending-verification -> verified. Fixed in plan step 12 (PR #238, d507cf28); the case passed after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-cli-bug-0020-guard-uses-effective-approval-01c9ea9bdadd02ee6d933114"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793558737,
-  "updated_at_unix_seconds": 1793558737
+  "updated_at_unix_seconds": 1794426211
 }

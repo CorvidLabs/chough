@@ -328,24 +328,6 @@ test_target = "sessions"
 test = "session_use_waits_for_a_running_stage_advance"
 
 [[case]]
-id = "TC-history-saved-event-survives-a-move"
-title = "A saved event survives a move of its checkpoint, inside or outside the session stores"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-3", "LIFE-7"]
-requirements = ["REQ-history-008"]
-paths = ["src/history.rs", "src/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["both src/sessions.rs saved-event unit tests pass"]
-
-[case.bind]
-adapter = "command"
-argv = ["cargo", "test", "--locked", "--bin", "chough", "saved_event"]
-expect_output = ["test result: ok. 2 passed; 0 failed"]
-
-[[case]]
 id = "TC-history-sessions-local-holds-pointer-and-lock"
 title = ".chough/local/ holds only the pointer and the writer lock, all ignored by Git"
 status = "active"

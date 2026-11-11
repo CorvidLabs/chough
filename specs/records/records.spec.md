@@ -9,6 +9,8 @@ files:
   - src/actor.rs
   - src/humans.rs
   - src/session_md.rs
+  - src/journal.rs
+  - src/migrate.rs
   - tests/ids.rs
   - tests/actor.rs
   - tests/humans.rs
@@ -120,6 +122,13 @@ or redacting every value before it is written.
 | `approval_note` | The note an approval records: the human's words, where and when, and the relaying agent. |
 | `Ran` | What a native step left: SpecSync's output and exit code. |
 | `run` | Runs a step as a human in the project root, keeping the direct-write baseline current. |
+| `Written` | One 0.6.0 file the migration writes create-new, with its bytes (REQ-records-009). |
+| `Carried` | What one mapper carries into 0.6.0: the 0.5.x sources it read, the files it writes, the aliases it keeps, the files it removes with why, the leaks it kept and the gaps it found. |
+| `SessionHome` | Where a 0.5.x session went, by its 0.5.x key: its open session folder or its archived story. |
+| `Receipt` | The receipt map of one carried observation, as a story's or a bug's `receipts:` list holds it (REQ-history-006). |
+| `ObservationHomes` | Where each 0.5.x observation went: an open session's evidence entry or a receipt; one in neither was removed. |
+| `legacy_paths` | Every 0.5.x record path in the project, sorted; any one makes the tree unmigrated (REQ-records-010). |
+| `receipt_path` | The migration receipt's path under `.chough/archive/migrations/`, fixed when the plan is built. |
 
 ## Invariants
 

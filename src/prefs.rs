@@ -26,6 +26,8 @@ const KEYS: &[(&str, &[&str], &str)] = &[
     ("library-dir", &[], "knowledge"),
     ("required-lane", &[], ""),
     ("retention", &["off", "auto", "manual"], "off"),
+    // A standing consent to `chough migrate --apply` (REQ-records-009).
+    ("migration", &["on-request", "standing"], "on-request"),
 ];
 const CONSENT_KEYS: [&str; 4] = ["repeat-validation", "monitoring", "release", "retention"];
 
@@ -165,9 +167,21 @@ pub(super) fn pref(root: &Path, command: PrefCommand) -> Result<()> {
     let mut preferences = read_preferences(root)?;
     match command {
         PrefCommand::Show => {}
-        PrefCommand::Set { key, value, source } => {
+        PrefCommand::Set {
+            key,
+            mut value,
+            mut source,
+        } => {
             ensure_text("source", &source)?;
             validate_value(&key, &value)?;
+            // REQ-records-006: preferences.json is committed; its value and source pass
+            // the leak guard, refused or redacted under --redact.
+            let local = crate::leaks::Local::current();
+            let redacted = crate::leaks::guard(local, "--source", &mut source)?
+                + crate::leaks::guard(local, "value", &mut value)?;
+            if redacted > 0 {
+                eprintln!("chough: redacted {redacted} value(s) in {PREFERENCES} (--redact)");
+            }
             preferences
                 .preferences
                 .retain(|preference| preference.key != key);

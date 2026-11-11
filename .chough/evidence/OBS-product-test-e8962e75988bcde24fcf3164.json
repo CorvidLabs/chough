@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-e8962e75988bcde24fcf3164",
+  "criteria": [
+    "KNOW-34"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Claude Code (claude-opus-5-5, hc t382) ran tests/fixtures/migrate/observe-vaulted-adopter.sh with the last build before #142 (chough 0.4.0 at 260ecc94 = 90e5de6f^, a scratch build with nothing installed) on a fresh copy of tests/fixtures/migrate/vaulted-adopter (the adopting session rolled into the vault, transitions.jsonl committed). checkpoint --awaiting-human Review exited 1: 'legacy history anchor changed; restore the recorded legacy bytes before writing events'; checkpoint --clear-awaiting-human exited 0 (that build has no --close-gate); stage advance exited 1 with the same error; transitions.jsonl unchanged.",
+  "artifacts": [],
+  "artifact_fingerprints": {},
+  "observed_at_unix_seconds": 1794429281,
+  "snapshot": {
+    "revision": "d8219edbb8e255659071fa73b25f1d7c9b71ca5f",
+    "dirty": false,
+    "fingerprint": "0da98dec5200ee23f723060592bc79294b17ab7ec3ee2b606c4672e86763dbe2",
+    "content": "e287cef970a2e70b5d716af6bc20f127df4d7275ee92871b760314f7393345e9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "limitations": [
+    "The red build is not a release: no release has this bug, since the roll-up came after 0.4.0 and the fix (#142) is in 0.5.0 (delta correction 5)."
+  ]
+}

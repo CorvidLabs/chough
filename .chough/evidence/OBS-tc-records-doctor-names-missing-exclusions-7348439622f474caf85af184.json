@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-doctor-names-missing-exclusions-7348439622f474caf85af184",
+  "criteria": [
+    "DRIVE-4",
+    "FLOW-16"
+  ],
+  "requirements": [
+    "REQ-records-014"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test doctor -- doctor_names_the_missing_verification_exclusions next_says_when_chough_writes_are_safe_and_init_gives_the_advice for TC-records-doctor-names-missing-exclusions: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-doctor-names-missing-exclusions-7348439622f474caf85af184.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-doctor-names-missing-exclusions-7348439622f474caf85af184.log": "e1418577d642ad719a597e9cbde4e5ff10ba418910d80838aff763f015ea70b7"
+  },
+  "observed_at_unix_seconds": 1794426762,
+  "snapshot": {
+    "revision": "c5c3bc148768ae4f049e4d175002fff4cfdaf3ac",
+    "dirty": false,
+    "fingerprint": "e6e3431e8b5fce67278ee57631d0dfd7ae7ed95fa468962f611ba91a3dcedaf5",
+    "content": "85140163ef66d8112a6bf1e3f70b6c49701dacf728346a37c323b07f1516bd08"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-doctor-names-missing-exclusions",
+      "digest": "8da898555c33d8eb5419b201439307ba531b7cbbe86883bc9bc3c662dd2985b4"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "doctor",
+    "--",
+    "doctor_names_the_missing_verification_exclusions",
+    "next_says_when_chough_writes_are_safe_and_init_gives_the_advice"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test result: ok. 2 passed\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

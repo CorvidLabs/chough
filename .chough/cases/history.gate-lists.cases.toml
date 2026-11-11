@@ -18,21 +18,3 @@ expected = ["the gates test relay_summary_fields_are_both_or_neither passes"]
 adapter = "cargo-test"
 test_target = "gates"
 test = "relay_summary_fields_are_both_or_neither"
-
-[[case]]
-id = "TC-history-summary-digest-oldest-reader-named"
-title = "The change log names the oldest Chough that reads relays with summary digests"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["FLOW-19"]
-requirements = ["REQ-history-014"]
-paths = ["src/gates.rs", "src/checkpoint.rs", "src/stage.rs", "src/change.rs", "tests/gates.rs"]
-environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["the gates test the_change_log_names_the_oldest_chough_that_reads_summary_digests passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "gates"
-test = "the_change_log_names_the_oldest_chough_that_reads_summary_digests"

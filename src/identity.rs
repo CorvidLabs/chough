@@ -134,6 +134,9 @@ fn allocate(prefix: &str, source: &str, fallback: &str, slug_limit: usize) -> Re
     ))
 }
 
+// Plan step 4 retired its last caller (evidence names are date and slug); only its tests
+// call it until integration removes it (t382).
+#[cfg_attr(not(test), allow(dead_code))]
 pub(crate) fn observation(source: &str) -> Result<String> {
     allocate("OBS-", source, "observation", OBSERVATION_SLUG_LIMIT)
 }

@@ -20,7 +20,9 @@ instructions; give the human outcomes and PRs.
 Use explicit prior or standing human authorization for a concrete scope. Record the
 agent actor, human source, scope and limits before native approval; do not ask again
 just to run a tool. Ask when authority is missing or exceeded. Continuation, bot
-reviews and actor labels are not human decisions; approvals are claims.
+reviews and actor labels are not human decisions; approvals are claims. A human's
+gate decision runs the native step as them; on standing authority, record it as
+`<agent>-<terminal>` ([plan](references/plan.md)).
 
 Keep native checks and separate implementation acceptance and delivery authority.
 See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
@@ -29,11 +31,11 @@ See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
 
 1. Read applicable `AGENTS.md` files. Prefer Fledge for tasks it supports.
 2. Find the checkpoint: run `chough next --environment <env>`. Without the helper,
-   read the checkpoint, transitions and preferences (see
-   [checkpoint.md](references/checkpoint.md)), open bugs in `.chough/bugs/` and
-   `chough change status <native_change>`.
+   read the active session's `session.md` (see
+   [checkpoint.md](references/checkpoint.md)), `.chough/README.md`, open bugs in
+   `.chough/bugs/` and `chough change status <native_change>`.
 3. Check what is still true: native state, evidence freshness, open blocking bugs,
-   and `awaiting_human`. A saved stage or next action is a suggestion; native status
+   and open gates. A saved stage or next action is a suggestion; native status
    decides gates.
 4. Before your first edit, state the handoff in your own message. Reading it in tool
    output is not the same as stating it. Say the goal; each recorded decision that
@@ -47,10 +49,9 @@ See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
 
 With no checkpoint, run
 `chough init --objective "<outcome>" --intent-scope <HI-family> --module <module>`; it
-never overwrites existing files (with `.chough/sessions/`, run
-`chough session new <change-id>`). Without `--host` it installs the skill for `openai`;
-any `--host` replaces it; repeat it per host, as in `--host openai --host codex`. A
-schema 1 session is migrated only with `chough migrate`.
+never overwrites existing files and creates the first session; otherwise run
+`chough session new <change-id>`. Repeat `--host` per host (default `openai`). A
+0.5.x project needs `chough migrate` ([checkpoint.md](references/checkpoint.md)).
 
 ## Stages
 
@@ -77,6 +78,8 @@ Checkpointing is mandatory in every stage: see [checkpoint.md](references/checkp
   operations as new approval questions.
 - Keep doing independent authorized work while a human gate is pending, and record
   the gate with `chough checkpoint --awaiting-human "<decision>"`.
+- Never put a local path, user or host name, email or credential in a record
+  (`refused:leak`; `--redact` replaces it).
 - Evidence states what ran, where and on which inputs. A structural pass, exit code,
   actor label or agent review is not behavioral proof, human approval or deployment.
 - Nothing is published, released or deployed as a side effect of finishing work.
@@ -87,13 +90,11 @@ Checkpointing is mandatory in every stage: see [checkpoint.md](references/checkp
 
 Chough runs in the current agent, with no provider API or runtime.
 `chough init --host <openai|claude|codex|cursor|gemini|grok>` copies this bundle into
-that host's project skill directory: openai, the default, and claude share one
-`.agents/skills` copy; gemini writes `.gemini/skills`, which no run has exercised. Kimi
-Code CLI uses `--host openai` (no `kimi` value). `chough skill status` shows whether a
-copy is current, edited or outdated; an old `.claude/skills` copy is legacy, removed
-only by `chough skill remove-legacy --host claude`. Discovery is host behavior: Claude
-Code 2.1.316 did not discover `.agents/skills` alone, so it reaches this skill through
-`CLAUDE.md` and `AGENTS.md`; Kimi Code CLI 0.41.0 found it there once on macOS; closed
-PR #20 says, unverified, that Google Antigravity did. Confirm the host lists the skill;
-otherwise give it this file. Subagents are optional: [roles.md](references/roles.md)
-also works as sequential passes.
+that host's project skill directory: openai, the default, and claude share
+`.agents/skills`; gemini writes `.gemini/skills` (unexercised); Kimi Code CLI uses
+`--host openai`. `chough skill status` shows whether a copy is current, edited or
+outdated; an old `.claude/skills` copy is legacy, removed only by
+`chough skill remove-legacy --host claude`. Discovery is host behavior: Claude Code
+reaches this skill through `CLAUDE.md` and `AGENTS.md`. Confirm the host lists the
+skill; otherwise give it this file. Subagents are optional:
+[roles.md](references/roles.md) also works as sequential passes.

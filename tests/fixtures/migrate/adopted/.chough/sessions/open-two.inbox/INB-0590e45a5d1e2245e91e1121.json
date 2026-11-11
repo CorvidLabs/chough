@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "INB-0590e45a5d1e2245e91e1121",
+  "session": "open-two",
+  "from": "subagent-1",
+  "kind": "question",
+  "text": "Keep the second run?",
+  "recorded_at_unix_seconds": 1794428178
+}

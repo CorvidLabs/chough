@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-bug-0023-status-leads-with-summary-93588cb44d8c09012f035462",
+  "criteria": [
+    "LIFE-1",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact status_leads_with_the_same_summary_as_next for TC-cli-bug-0023-status-leads-with-summary: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-bug-0023-status-leads-with-summary-93588cb44d8c09012f035462.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-bug-0023-status-leads-with-summary-93588cb44d8c09012f035462.log": "f42bcb56a687e60cb83e0f7016aaca4a46af6b7d215db254a14e1225e3e270f2"
+  },
+  "observed_at_unix_seconds": 1794426174,
+  "snapshot": {
+    "revision": "f9c0ae674c89f3a4c4a6c5b9d29057f22f7b9bf0",
+    "dirty": false,
+    "fingerprint": "284a5fb02e4edd838f449bdb1cd661f494832fe5708ce82660700c5a6fcce606",
+    "content": "4adc6e184b41d042b73284db8f143439ad1bd2bdc6fc389e3a5266068b430ba2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-bug-0023-status-leads-with-summary",
+      "digest": "c8bb64427e302bda89dff9ddffacb53aecf9787c51498ea4d5c2111ac99715b7"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "status_leads_with_the_same_summary_as_next"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

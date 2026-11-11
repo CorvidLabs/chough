@@ -1,0 +1,12 @@
+--- stdout ---
+
+running 2 tests
+test each_session_has_its_own_folder_and_timeline ... ok
+test sessions_live_in_folders_and_finish_into_one_story ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 20 filtered out; finished in 4.38s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/sessions.rs (target/debug/deps/sessions-254bfc5249dd3bfe)

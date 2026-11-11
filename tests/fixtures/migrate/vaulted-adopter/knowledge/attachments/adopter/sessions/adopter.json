@@ -1,0 +1,40 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-a62103f092fade5130504d00",
+    "head": "EVT-07f59d2e72c9a3357e6521a6",
+    "legacy": {
+      "digest": "697fe6bc4c327a3e23cde223b58484887836dbae172cf59bf8a14adba981703c",
+      "bytes": 588,
+      "lines": 3
+    }
+  },
+  "schema_version": 2,
+  "objective": "Adopted objective",
+  "intent_scope": "FIXT",
+  "modules": [
+    "fixture"
+  ],
+  "stage": {
+    "current": "done",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": null,
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+}

@@ -766,11 +766,15 @@ fn native_file(root: &Path, relative: &str) -> std::result::Result<Option<Vec<u8
     }
 }
 
-/// The `approved_delta_digests` of the latest definition approval of `change`: `None`
-/// when that approval records none, an error message when the ledger cannot be used.
+/// The `approved_delta_digests` of the effective definition approval of `change`, the
+/// one SpecSync treats as effective: the one whose `digest` matches the current
+/// definition digest, for every workflow version (BUG-0020), or the latest when status
+/// reports no definition digest or none matches. `None` when that approval records no
+/// digests, an error message when the ledger cannot be used.
 fn approved_digests(
     root: &Path,
     change: &str,
+    definition: Option<&str>,
 ) -> std::result::Result<Option<std::collections::BTreeMap<String, String>>, String> {
     let ledger_path = format!(".specsync/changes/{change}/approvals.json");
     let ledger = match native_file(root, &ledger_path)? {
@@ -783,11 +787,17 @@ fn approved_digests(
         .get("approvals")
         .and_then(Value::as_array)
         .ok_or_else(malformed)?;
-    let Some(approval) = approvals
+    let definitions: Vec<&Value> = approvals
         .iter()
-        .rev()
-        .find(|approval| approval.get("gate").and_then(Value::as_str) == Some("definition"))
-    else {
+        .filter(|approval| approval.get("gate").and_then(Value::as_str) == Some("definition"))
+        .collect();
+    let effective = definition.and_then(|digest| {
+        definitions
+            .iter()
+            .rev()
+            .find(|approval| approval.get("digest").and_then(Value::as_str) == Some(digest))
+    });
+    let Some(approval) = effective.or(definitions.last()) else {
         return Err(format!("{ledger_path} has no definition approval"));
     };
     match approval.get("approved_delta_digests") {
@@ -812,13 +822,16 @@ fn approved_digests(
     }
 }
 
-/// Compare the deltas of `change` with the digests its latest definition approval
-/// recorded, as SpecSync 6.1.1 does before verification (REQ-cli-022). It reads the
+/// Compare the deltas of `change` with the digests its effective definition approval
+/// recorded, as SpecSync 6.1.1 does before verification (REQ-cli-022, BUG-0020). It reads the
 /// native approval ledger and deltas only, starts no process and copies nothing.
 pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Deltas {
     let directory = format!(".specsync/changes/{change}");
     let ledger_path = format!("{directory}/approvals.json");
-    let approved = match approved_digests(root, change) {
+    let definition = value
+        .pointer("/summary/definition_digest")
+        .and_then(Value::as_str);
+    let approved = match approved_digests(root, change, definition) {
         Ok(approved) => approved,
         Err(reason) => return Deltas::Unverifiable(reason),
     };
@@ -891,7 +904,9 @@ pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Delta
 }
 
 /// The requirement IDs that the delta of `change` for `module` adds or modifies, taken
-/// from the same bytes whose digest matches the latest definition approval. A module
+/// from the same bytes whose digest matches the latest definition approval; this read
+/// makes no native read, so it cannot know the current definition digest that picks
+/// the effective approval (BUG-0020 covers the guard, which has it). A module
 /// outside the approval's `approved_delta_digests` resolves nothing, so an extra delta
 /// file cannot satisfy a link (REQ-cli-009).
 pub(super) fn delta_requirements(
@@ -901,7 +916,7 @@ pub(super) fn delta_requirements(
 ) -> std::result::Result<BTreeSet<String>, String> {
     let not_approved =
         || format!("its {module} delta is not among the change's verified approved deltas");
-    let digest = approved_digests(root, change)?
+    let digest = approved_digests(root, change, None)?
         .and_then(|approved| approved.get(module).cloned())
         .ok_or_else(not_approved)?;
     let relative = format!(".specsync/changes/{change}/deltas/{module}.md");
@@ -1181,10 +1196,18 @@ pub(super) fn assess(
     {
         // REQ-cli-030: only a gate holding the current stage waits here; a gate holding
         // a later stage is listed and waits there (#237).
+        let review = holding.iter().any(|gate| {
+            crate::session_md::gate(session, gate).drives() == crate::humans::Drives::Review
+        });
         Action {
             action: format!(
-                "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`. `chough stage advance` and `chough stage skip` are refused until it is closed.",
-                holding.join("; ")
+                "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`{}. `chough stage advance` and `chough stage skip` are refused until it is closed.",
+                holding.join("; "),
+                if review {
+                    ", adding their verdict as --verdict pass or --verdict block for a review, which runs the review as them"
+                } else {
+                    ""
+                }
             ),
             reason: "Only a person can close these gates.".into(),
             command: None,
@@ -1221,6 +1244,40 @@ pub(super) fn assess(
             reason: "The reset that began this cycle is not in readable history, so the archived change is neither assumed closed with this cycle nor assumed to be the previous one's.".into(),
             command: Some("chough history show".into()),
         }
+    } else if current == "intent" && session.references.criteria.is_empty() && fresh(session) {
+        // #76: a fresh agent right after init starts from the human's intent.
+        Action {
+            action: "Capture or read the intent: run `hi check` to see the human-intent criteria and their state, then `chough context` for this session's bounded context, and reference the criteria the work covers with `chough checkpoint --criterion <id>`.".into(),
+            reason: "No criteria are referenced yet; the work starts from the human's intent in HI.".into(),
+            command: Some("hi check".into()),
+        }
+    } else if current == "accept"
+        && matches!(state, NativeState::State(name, _) if name == "verifying")
+    {
+        // #76: at accept the human reviews; an agent never reviews for them.
+        let id = session.native_change.as_deref().unwrap_or("<id>");
+        let open_review = session.awaiting_human.iter().find(|gate| {
+            crate::session_md::gate(session, gate).drives() == crate::humans::Drives::Review
+        });
+        Action {
+            action: format!(
+                "The human reviews next.{} Show them `chough gate list`; record their decision with `chough checkpoint --close-gate \"<gate>\"`, the relay and `--verdict pass` or `--verdict block`, which runs the review as them; then `chough change ship {id}` with that relay ships.",
+                if open_review.is_some() {
+                    String::new()
+                } else {
+                    format!(
+                        " Open the review gate: `chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review`."
+                    )
+                }
+            ),
+            reason: "Native change is verifying: only the human's review and the ship remain, and an agent's review never stands in for theirs (FLOW-10).".into(),
+            command: Some(match open_review {
+                Some(_) => "chough gate list".into(),
+                None => format!(
+                    "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
+                ),
+            }),
+        }
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
         if archived_cycle() == Some(Ok(true)) {
             // The archive is the previous cycle's: keep the reset's guidance and name
@@ -1254,9 +1311,13 @@ pub(super) fn assess(
         }
     } else if current == "test" {
         // REQ-cli-038 (FLOW-15): native verification alone is not test evidence.
+        // #76: name how to select and run the cases, and record a failure as a bug.
         Action {
-            action: format!("Continue test: {}", session.next_action),
-            reason: "Recorded test evidence is needed before accept: run the affected cases (`chough cases list` shows them) or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
+            action: format!(
+                "Continue test: {} Select the cases this change affects with `chough cases select --requirement <id>` (or --criterion, --path), run each with `chough cases run <case-id> --environment <env>`, and record a failed run with `chough bug add`.",
+                session.next_action.trim_end()
+            ),
+            reason: "Recorded test evidence is needed before accept: run the affected cases or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
             command: Some("chough cases run <case-id> --environment <env>".into()),
         }
     } else {
@@ -1280,12 +1341,14 @@ fn done_action(
     let check_first = native_next
         .map(|text| format!(" Native next action, check it first: {text}."))
         .unwrap_or_default();
-    // A session still open at done is kept for release or for inbox entries to fold;
-    // its next piece of work still starts in a new session.
-    let closed = |action: String, reason: String| Action {
-        action,
-        reason: format!("{reason}{check_first}"),
-        command: Some(NEXT_SESSION.into()),
+    // A closed cycle's next piece of work starts in a new session, unless the move into
+    // done kept this session open; then next names what closes it (REQ-cli-021).
+    let closed = |action: String, reason: String| {
+        kept_open_action(root, session).unwrap_or(Action {
+            action,
+            reason: format!("{reason}{check_first}"),
+            command: Some(NEXT_SESSION.into()),
+        })
     };
     let done = gate_for_state(root, session, "done", state.clone());
     match (state, done) {
@@ -1622,6 +1685,65 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
 
 /// How to record a human's decision on a gate on their behalf (REQ-cli-050).
 pub(super) const CLOSE_GATE_COMMAND: &str = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
+
+/// What keeps an open session at done open (REQ-history-006), as the action that
+/// closes it (REQ-cli-021): an authorized release it has not yet entered, then
+/// unfolded inbox entries. None when nothing does.
+fn kept_open_action(root: &Path, session: &Checkpoint) -> Option<Action> {
+    let id = crate::sessions::checkpoint_path(root)
+        .ok()
+        .and_then(|relative| crate::sessions::id_of(&relative))?;
+    // The session archives itself at the move from release into done, so a release is
+    // still ahead only while the last move into done did not come from release.
+    let released = session
+        .source
+        .as_ref()
+        .map(crate::session_md::timeline)
+        .and_then(Result::ok)
+        .and_then(|entries| {
+            entries.into_iter().rev().find(|entry| {
+                entry.transition.to == "done"
+                    && STAGE_KINDS.contains(&entry.transition.kind.as_str())
+            })
+        })
+        .is_some_and(|entry| entry.transition.from == "release");
+    if !released
+        && crate::prefs::authorized(root, session, "release")
+            .ok()
+            .flatten()
+            .is_some()
+    {
+        return Some(Action {
+            action: "Release is authorized for this cycle: enter it. The session stays open for the release and archives itself at the move from release into done.".into(),
+            reason: "The move into done kept this session open because release is authorized (REQ-history-006).".into(),
+            command: Some("chough stage enter release --reason \"<request>\"".into()),
+        });
+    }
+    let count = crate::sessions::unfolded(root, &id)
+        .ok()
+        .filter(|count| *count > 0)?;
+    Some(Action {
+        action: format!(
+            "This session stays open: {count} unfolded inbox {}. Fold them with `chough inbox fold`, then run `chough doctor --fix` to archive the session, and start the next piece of work in a new session after that.",
+            if count == 1 { "entry" } else { "entries" }
+        ),
+        reason: "The move into done keeps a session open while its inbox holds unfolded entries (REQ-history-006).".into(),
+        command: Some("chough inbox fold".into()),
+    })
+}
+
+/// Whether the session is fresh from `chough init` or `session new`: no stage move on
+/// its Timeline yet (#76).
+fn fresh(session: &Checkpoint) -> bool {
+    let moved = |kind: &str| STAGE_KINDS.contains(&kind);
+    let saved = session
+        .source
+        .as_ref()
+        .map(crate::session_md::timeline)
+        .and_then(Result::ok)
+        .is_some_and(|entries| entries.iter().any(|entry| moved(&entry.transition.kind)));
+    !saved && !session.pending.iter().any(|entry| moved(&entry.kind))
+}
 
 /// How the scope of `change` is approved again (REQ-cli-022): the human's decision at
 /// a scope gate that drives the approval (REQ-cli-030, REQ-records-008), or, on

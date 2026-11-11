@@ -572,6 +572,7 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
         .expect("README names the Fledge verify lane's steps in parentheses");
     // The README's words for each task in fledge.toml.
     let words = [
+        ("toolchain", "tool versions"),
         ("fmt", "format"),
         ("lint", "lint"),
         ("test", "tests"),
@@ -580,6 +581,7 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
         ("audit", "change audit"),
         ("cases", "case definitions"),
         ("knowledge", "knowledge index"),
+        ("leaks", "leak scan"),
         ("exercise", "feature and bug exercise"),
         ("build", "build"),
     ];
@@ -968,7 +970,7 @@ fn docs_state_only_the_pinned_tool_versions() {
             [version.clone(), format!("{}.{}", parts[0], parts[1])]
         })
         .collect();
-    let history = ["docs/DECISIONS.md", "docs/ROADMAP.md"];
+    let history = ["docs/DECISIONS.md", "docs/roadmap-1.0.md"];
     let present = ["uses", "use", "pins", "follows"];
     let past = [
         "observed",

@@ -1,0 +1,1 @@
+{"schema_version":1,"cycle":"CYC-9fa9e31652575eb199c5ad11","id":"EVT-f2b9b6b9907720e91cd4e0fe","parent":null,"previous_cycle":null,"native_change":null,"transition":{"schema_version":1,"at_unix_seconds":1794428178,"kind":"advance","from":"intent","to":"design","reason":null,"gate":null,"revision":"e36139c7dcd90e01319e7b7d705166e0984e551b","refresh":[]}}

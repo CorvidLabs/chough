@@ -20,10 +20,11 @@ effective values and where each came from.
 ## Run, stop, resume
 
 `chough validate run <case> --times N [--interval S] --environment <env>` repeats an
-automated case in the foreground and records every attempt. A new run receives
-`VAL-<slug>-<24-lowercase-hex>`, with a random 96-bit suffix, and every attempt
-receives its own `OBS-<slug>-<24-lowercase-hex>` observation and inherited artifact
-path. Existing timestamps and duration fields determine chronology. The command
+automated case in the foreground and records every attempt. A run is one evidence
+entry, named `<date>-<case slug>-run`, holding each attempt with its start, result and
+duration, and a summary with the attempt and failure counts and elapsed time. Raw
+output stays in `.chough/local/logs/`. Timestamps determine chronology, never names.
+The command
 needs a `repeat-validation` run consent or the standing preference `always`; a
 `monitoring` consent or preference only allows entering the validate stage, not
 `validate run`.
@@ -32,10 +33,9 @@ needs a `repeat-validation` run consent or the standing preference `always`; a
 repetition halts before its next attempt, and any later run halts at once, until
 `chough validate resume <run>` clears the request and continues that run with the
 same stored limits after re-checking authorization. Pausing the stage
-(`chough stage pause`) pauses a run the same way. Both legacy run IDs and new VAL IDs
-load, appear in `chough validate status` and resume under their original IDs without
-migration or schema rewrite; later attempts use new OBS IDs. Stop markers, stored
-limits, counts, elapsed time and authorization behavior stay unchanged.
+(`chough stage pause`) pauses a run the same way. Run IDs from before 0.6.0 (`VAL-…`)
+stay readable and resumable as aliases. Stop markers, stored limits, counts, elapsed
+time and authorization behavior stay unchanged.
 
 Each failure is kept locally: it opens or extends a bug for that case, which stays in
 the backlog after a restart. Results are labelled as repeated runs with attempts,

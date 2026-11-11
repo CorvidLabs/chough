@@ -111,11 +111,11 @@ void with the reason.
   seeded repository beyond the installed skill and the binary on `PATH`. Runs are
   non-interactive; the operator sends nothing after the prompt. If the agent stops to
   ask a question, the run ends there and is graded on what it did.
-- Recovery that needed `git log`, `gh` or `docs/ROADMAP.md`. If the command log shows
+- Recovery that needed `git log`, `gh` or `docs/roadmap-1.0.md`. If the command log shows
   any of them, or another read of commit history (`git show <commit>`, `git reflog`,
   `git blame`, `git whatchanged`), before every pass fact was stated, the run is void.
   `git status` and `git diff` are allowed. The seeded repository has no
-  `docs/ROADMAP.md` and no remote.
+  `docs/roadmap-1.0.md` and no remote.
 - Simulated actors: no part of the run, its grading or its records comes from an
   actor standing in for the agent, the operator or 0xLeif.
 - A grader feeding answers: the grader does not supply, confirm or correct any fact

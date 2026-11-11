@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-132-fork-inheritance-stress-3fda5a4618bc1883e77587df",
+  "criteria": [
+    "DRIVE-11",
+    "FLOW-14"
+  ],
+  "requirements": [
+    "REQ-cli-040"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test cli -- lock_and_stand_in_tests_survive_parallel_forks a_writer_records_its_process_id_in_the_lock_file for TC-cli-132-fork-inheritance-stress: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-132-fork-inheritance-stress-3fda5a4618bc1883e77587df.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-132-fork-inheritance-stress-3fda5a4618bc1883e77587df.log": "1eb471a23d3efb5308fa0a34d265933ac8f8dacab27e52bc5cf50544c4f1b673"
+  },
+  "observed_at_unix_seconds": 1794428220,
+  "snapshot": {
+    "revision": "504cecba6393f6b629f83a36ec3847842055da83",
+    "dirty": false,
+    "fingerprint": "fc1bf0bd092c9cc7322d1fb87fe21353cf422ce47e89cd5161d5c412d888f9ef",
+    "content": "879f7097ade0f326c1c45b5faa86603a11ce283581e3856ab68bb56a08f1e93a"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-132-fork-inheritance-stress",
+      "digest": "cdf093c8ee539b21d81d9f838691ffdb8b63f174e01fb004b81a8644cde6cb24"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "cli",
+    "--",
+    "lock_and_stand_in_tests_survive_parallel_forks",
+    "a_writer_records_its_process_id_in_the_lock_file"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 46
+}

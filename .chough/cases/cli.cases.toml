@@ -1582,7 +1582,7 @@ test = "an_unterminated_escape_never_hides_a_second_test_result"
 
 [[case]]
 id = "TC-cli-0110"
-title = "Tool pins and the minimum Rust version agree across README, AGENTS, CI and Cargo"
+title = "Tool pins and the minimum Rust version agree across README, AGENTS, CI, Cargo and the SpecSync config comment"
 status = "active"
 track = "functional"
 method = "automated"
@@ -1591,12 +1591,12 @@ requirements = ["REQ-cli-019"]
 paths = ["README.md", "AGENTS.md", ".github/workflows/ci.yml", "Cargo.toml", "docs/ci.md", "docs/integrations.md", "tests/package.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/package.rs::tool_and_rust_version_pins_agree passes: every pin is present and equal, and a copy with one pin changed, removed or stated twice fails naming that file and tool; README's toolchain command split, chained or naming another crate fails, and an MSRV job without needs: archive-gate or cargo test --locked fails"]
+expected = ["tests/package.rs::versions_agree_across_readme_agents_ci_and_specsync_config passes: every pin is present and equal, and a copy with one pin changed, removed or stated twice fails naming that file and tool; README's toolchain command split, chained or naming another crate fails, and an MSRV job without needs: archive-gate or cargo test --locked fails"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "package"
-test = "tool_and_rust_version_pins_agree"
+test = "versions_agree_across_readme_agents_ci_and_specsync_config"
 
 [[case]]
 id = "TC-cli-0111"
@@ -1703,7 +1703,7 @@ track = "functional"
 method = "agent-assisted"
 criteria = ["FLOW-13", "FLOW-1", "LIFE-4"]
 requirements = ["REQ-cli-007", "REQ-cli-016"]
-paths = ["skills/chough-workflow/SKILL.md", ".agents/skills/chough-workflow/SKILL.md", ".claude/skills/chough-workflow/SKILL.md", "README.md", "docs/integrations.md", "docs/walkthrough.md", "docs/exercises/cold-start.md", "docs/ROADMAP.md", "specs/cli/testing.md", "specs/cli/tasks.md", ".chough/artifacts/kimi-cold-start.log"]
+paths = ["skills/chough-workflow/SKILL.md", ".agents/skills/chough-workflow/SKILL.md", ".claude/skills/chough-workflow/SKILL.md", "README.md", "docs/integrations.md", "docs/walkthrough.md", "docs/exercises/cold-start.md", "docs/roadmap-1.0.md", "specs/cli/testing.md", "specs/cli/tasks.md", ".chough/artifacts/kimi-cold-start.log"]
 environments = ["local-macos-arm64", "repository-text"]
 artifacts = ["test-log", "reviewer-note"]
 setup = ["The durable concise log .chough/artifacts/kimi-cold-start.log, base 5af3f78, and the documentation under review"]
@@ -2083,7 +2083,7 @@ track = "functional"
 method = "automated"
 criteria = ["FLOW-5", "FLOW-13", "LIFE-4", "LIFE-6", "LIFE-7"]
 requirements = ["REQ-cli-029"]
-paths = ["skills/chough-workflow", "README.md", "docs/cli.md", "docs/walkthrough.md", "docs/NEXT_CHANGE.md", "tests/workflow_authority.rs", ".agents/skills/chough-workflow", ".claude/skills/chough-workflow"]
+paths = ["skills/chough-workflow", "README.md", "docs/cli.md", "docs/walkthrough.md", "docs/roadmap-1.0.md", "tests/workflow_authority.rs", ".agents/skills/chough-workflow", ".claude/skills/chough-workflow"]
 environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
 expected = ["Native approve/review examples in the canonical skill, README and three user docs use agent actor/reviewer arguments; all four target guidance files in both installed host copies match canonical bytes"]
