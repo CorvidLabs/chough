@@ -452,14 +452,18 @@ fn checkpoint_gates_append_one_record_when_opened_and_one_when_cleared() {
     assert_eq!(opened["gate"], Value::Null);
     assert!(opened["at_unix_seconds"].as_u64().is_some());
     assert!(opened.as_object().unwrap().contains_key("revision"));
-    // The record says when, never who decided or what was decided.
+    // The record says when, and what the gate holds and drives (REQ-cli-030), never
+    // who decided or what was decided.
     let keys: Vec<&String> = opened.as_object().unwrap().keys().collect();
     assert_eq!(
         keys,
         vec![
             "at_unix_seconds",
+            "drives",
             "from",
             "gate",
+            "holds",
+            "id",
             "kind",
             "reason",
             "refresh",
@@ -467,6 +471,10 @@ fn checkpoint_gates_append_one_record_when_opened_and_one_when_cleared() {
             "schema_version",
             "to"
         ]
+    );
+    assert_eq!(
+        (&opened["holds"], &opened["drives"]),
+        (&Value::from("intent"), &Value::from("none"))
     );
 
     // Reopening a gate that is already open appends nothing.
