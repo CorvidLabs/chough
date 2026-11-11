@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-154754b3a1df48fbced93cf6",
-    "head": "EVT-1a6399820e59635ee47807c4",
+    "head": "EVT-8f88ac752bcb2b7cfbc88013",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -29,7 +29,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "0xLeif decided \"Implementation review of know-29-roll-up-copies-never-moves-tracked-session-records-165\": \"Leif ACCEPTED all four (2026-11-10): #211 (#165), #210 (#167), #208 (#14) and #233 (#201)\" (Relayed by coordinator Claude Code (hc t370) to worker hc t37j, 2026-11-10; merge held for Leif's 95% bar (dogfood + full suite), coordinator merges); recorded by claude-code (claude-opus-5-5) on hc t37j; a relayed claim, not authenticated"
+  ],
   "open_questions": [],
   "completed": [
     "Addressed corvid-agent review of #211: docs/cli.md aligned to copy semantics, regression for listing and retention of rolled sessions, hard-link note, main merged and index rebuilt. The HI capture of Leif's #165 decision is KNOW-30 in PR #212 (not amended here, to avoid a duplicate capture)."
@@ -42,9 +44,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of know-29-roll-up-copies-never-moves-tracked-session-records-165"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Record Leif's relayed acceptance as the review, ship, dogfood, full suite; stop before merge for the coordinator."
 }

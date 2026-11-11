@@ -62,15 +62,15 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-inventory-aliases-af56a469e54a2db6ce7b3a29 | failed (by cycle time) | local-macos-arm64 | TC-cli-inventory-aliases, TC-cli-inventory-bookkeeping-alias |
 | OBS-tc-cli-inventory-historical-58c5786905be80e97b73ffe0 | failed (by cycle time) | local-macos-arm64 | TC-cli-inventory-historical |
 | OBS-tc-cli-inventory-historical-6aade693da0b1ee6cfee1b3a | passed (by cycle time) | local-macos-arm64 | TC-cli-inventory-historical, TC-cli-inventory-advisory, TC-cli-inventory-strict, TC-cli-inventory-caps, TC-cli-inventory-change-key, TC-cli-inventory-legacy, TC-cli-inventory-aliases, TC-cli-inventory-bookkeeping-alias |
-| OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56 | passed (by cycle time) | local-macos-arm64 | TC-cli-release-corpus-identity |
-| OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23 | passed (by cycle time) | local-macos-arm64 | TC-cli-release-edited-preservation |
-| OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62 | passed (by cycle time) | local-macos-arm64 | TC-cli-release-host-current-missing |
-| OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314 | passed (by cycle time) | local-macos-arm64 | TC-cli-release-legacy-policy |
-| OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 | passed (by cycle time) | local-macos-arm64 | TC-cli-release-name-byte-matching |
-| OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7 | passed (by cycle time) | local-macos-arm64 | TC-cli-release-pristine-status |
-| OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b | failed (by cycle time) | local-macos-arm64 | TC-cli-release-pristine-status |
-| OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619 | passed (by cycle time) | local-macos-arm64 | TC-cli-release-pristine-update |
-| OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e | failed (by cycle time) | local-macos-arm64 | TC-cli-release-pristine-update |
+| OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-release-corpus-identity |
+| OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-release-edited-preservation |
+| OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-release-host-current-missing |
+| OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-release-legacy-policy |
+| OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-release-name-byte-matching |
+| OBS-tc-cli-release-pristine-status-3d85d0c9a5a4d2c1afd63fe7 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-release-pristine-status |
+| OBS-tc-cli-release-pristine-status-82d60293ee2debd19108f65b | failed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-release-pristine-status |
+| OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-release-pristine-update |
+| OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e | failed (pruned) (by cycle time) | local-macos-arm64 | TC-cli-release-pristine-update |
 | OBS-tc-history-earlier-null-anchor-does-not-hide-adopter-60def86f5391f035239dbf7a | passed (by cycle time) | local-macos-arm64 | TC-history-earlier-null-anchor-does-not-hide-adopter |
 | OBS-tc-history-missing-adopted-log-refuses-5513dedfa823a21f9e83f12b | passed (by cycle time) | local-macos-arm64 | TC-history-missing-adopted-log-refuses |
 | OBS-tc-history-never-adopted-log-remains-writable-7d1600adb2b9429ecbba9d0b | passed (by cycle time) | local-macos-arm64 | TC-history-never-adopted-log-remains-writable |
@@ -86,4 +86,10 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [evidence/OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56.json](../attachments/recognize-c73672b4/evidence/OBS-tc-cli-release-corpus-identity-ef1726110e673bd961ec3f56.json)
+- [evidence/OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23.json](../attachments/recognize-c73672b4/evidence/OBS-tc-cli-release-edited-preservation-0e13b37adb18b0e04c90dd23.json)
+- [evidence/OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62.json](../attachments/recognize-c73672b4/evidence/OBS-tc-cli-release-host-current-missing-ee55b3fe9e5380440663ed62.json)
+- [evidence/OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314.json](../attachments/recognize-c73672b4/evidence/OBS-tc-cli-release-legacy-policy-9aaea89ee334873bcfa7b314.json)
+- [evidence/OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3.json](../attachments/recognize-c73672b4/evidence/OBS-tc-cli-release-name-byte-matching-9218194092c97b28451038d3.json)
+- [evidence/OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619.json](../attachments/recognize-c73672b4/evidence/OBS-tc-cli-release-pristine-update-0fe36d77c0cce7dc9abb0619.json)
+- [evidence/OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e.json](../attachments/recognize-c73672b4/evidence/OBS-tc-cli-release-pristine-update-15820c959f00e33dec5a751e.json)
