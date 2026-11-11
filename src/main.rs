@@ -326,6 +326,8 @@ fn init(
         "preserved": preserved,
         "hosts": hosts,
         "library": library,
+        // REQ-records-014: the same advice `chough doctor` gives, or null.
+        "records_in_verification": doctor::exclusions(root).advice(),
     }))
 }
 
@@ -885,6 +887,8 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "last_failure": last_failure(root)?,
         "lessons": lessons(root, modules)?,
         "knowledge": library::pointer(root),
+        // REQ-records-014: when Chough's own writes are safe in the native order.
+        "chough_writes": doctor::exclusions(root).writes(),
         "environment": environment.map(cut),
         "full_view": "chough status",
         "truncated": false,
@@ -1221,6 +1225,10 @@ fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
             _ => "Knowledge index: off (librarian opted out)".into(),
         },
     );
+    lines.push(format!(
+        "Chough writes: {}",
+        text(&view["chough_writes"]["text"])
+    ));
     let bundles = &view["lessons"]["archived_bundles"];
     let shown = items(bundles);
     if let Some(note) = bundles["note"].as_str() {
