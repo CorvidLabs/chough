@@ -238,6 +238,34 @@ releasing". So:
   `chough skill update` (the audit found it still reads session.json), then other
   repositories, only at 95 percent confidence or better.
 
+## Delta corrections
+
+Corrections to the approved deltas found while building. They are collected here and
+applied together, and the human re-approves them once, before the move to test (the
+approved-delta guard, REQ-cli-022, refuses that move while a delta differs from its
+approval). Until then the approved deltas stay as they are.
+
+1. REQ-cli-021 (next after done): the move into done archives the session
+   (REQ-history-006), so there is no session left for a reset. At done, `chough next`
+   names `chough session new <key>`, unless release is authorized or unfolded inbox
+   entries keep the session open; it no longer names a reset into a new cycle.
+2. REQ-history-006 (receipts): each receipt also carries `observed`, the entry's
+   observation time (ISO UTC, REQ-cli-017), so a bug whose evidence is archived keeps
+   its verified state, which needs a pass observed after the latest failure
+   (REQ-cli-012), and timing can order case runs read from receipts (REQ-reporting-001).
+   A receipt's `aliases` is one scalar, comma-and-space separated.
+3. REQ-cli-054 (bug values), which the deltas leave unchanged: REQ-cli-012 adds
+   `fixed-upstream` as a closed status, so REQ-cli-054 becomes modified: eight
+   statuses, four of them closed (`verified`, `duplicate`, `wont-fix`,
+   `fixed-upstream`), `fixed-upstream` accepted only with `--note`, and a bug in a
+   closed status never blocks.
+4. REQ-cli-017 and REQ-cli-023 (run times): an evidence entry and its receipt also carry
+   `duration_seconds`, the run's wall-clock seconds when known, which the timing report
+   reads for case run times (REQ-reporting-001); a repeated validation run's single
+   entry also gives `state`, `started`, `completed`, `failures`, `not_run`,
+   `elapsed_seconds` and `attempts`, one flat map per attempt with `started`,
+   `observed`, `result` and `duration_seconds`.
+
 ## Risks
 
 - **Scale.** Nearly every source and test file changes. Mitigation: the record layer

@@ -1,0 +1,21 @@
+--- stdout ---
+
+running 4 tests
+test a_terminal_holding_a_home_path_is_left_out_with_a_warning ... ok
+test claude_code_and_hc_fill_in_without_overrides ... ok
+test with_nothing_set_no_entry_has_an_actor ... ok
+test the_override_variables_name_the_agent_model_and_terminal ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.95s
+
+
+running 1 test
+test bugs_record_the_acting_agent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.09s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/actor.rs (target/debug/deps/actor-6860519fe161e062)
+     Running tests/bugs.rs (target/debug/deps/bugs-24a5606d0085572f)

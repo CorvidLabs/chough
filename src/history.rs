@@ -145,7 +145,7 @@ pub(super) fn last_actor(session: &Checkpoint) -> Option<crate::actor::Actor> {
     read.records
         .iter()
         .rev()
-        .find_map(|entry| serde_json::from_value(entry.get("actor")?.clone()).ok())
+        .find_map(|entry| serde_json::from_value(entry.get("by")?.clone()).ok())
 }
 
 /// The session's transitions, oldest first, within `limit` entries and `byte_limit`
@@ -158,20 +158,33 @@ pub(super) fn selected(
     previous_cycles: bool,
 ) -> HistoryRead {
     let mut result = HistoryRead::default();
-    let saved = match session.source.as_ref().map(session_md::timeline) {
-        Some(Ok(entries)) => entries.into_iter().map(|entry| entry.transition).collect(),
-        Some(Err(error)) => {
-            result
-                .partial
-                .push(format!("the timeline cannot be read: {error:#}"));
-            return result;
-        }
-        None => vec![],
-    };
-    let transitions: Vec<&stage::Transition> = saved.iter().chain(session.pending.iter()).collect();
+    let saved: Vec<(Option<String>, stage::Transition)> =
+        match session.source.as_ref().map(session_md::timeline) {
+            Some(Ok(entries)) => entries
+                .into_iter()
+                .map(|entry| (Some(entry.id), entry.transition))
+                .collect(),
+            Some(Err(error)) => {
+                result
+                    .partial
+                    .push(format!("the timeline cannot be read: {error:#}"));
+                return result;
+            }
+            None => vec![],
+        };
+    let transitions: Vec<(Option<&str>, &stage::Transition)> = saved
+        .iter()
+        .map(|(id, transition)| (id.as_deref(), transition))
+        .chain(session.pending.iter().map(|transition| (None, transition)))
+        .collect();
     // Walk newest first so the bounds keep the newest entries.
-    for transition in transitions.into_iter().rev() {
-        let value = serde_json::to_value(transition).expect("serializable transition");
+    for (id, transition) in transitions.into_iter().rev() {
+        let mut value = serde_json::to_value(transition).expect("serializable transition");
+        // The entry ID a correction names it by (REQ-history-015); a queued entry has
+        // none until it is saved.
+        if let Some(id) = id {
+            value["id"] = json!(id);
+        }
         let bytes = value.to_string().len() as u64;
         if result.records.len() >= limit || result.bytes + bytes > byte_limit {
             result
@@ -242,6 +255,205 @@ pub(super) enum HistoryCommand {
     /// Show the active session's timeline, oldest first, with what could not be read.
     /// With no open session, it shows the newest archived story's.
     Show,
+}
+
+/// How many corrections `chough next` lists (REQ-history-015).
+const CORRECTIONS_LISTED: usize = 10;
+/// The cut of each listed correction's text.
+const CORRECTION_CUT: usize = 512;
+
+/// A session's corrections (REQ-history-015): the total, the newest listed, and for
+/// each corrected entry its text, latest statement and count.
+#[derive(Default)]
+pub(super) struct Corrections {
+    total: usize,
+    items: Vec<Value>,
+    corrected: Vec<(String, String, usize)>,
+}
+
+impl Corrections {
+    /// The total and the newest ten, newest first, each cut to 512 bytes.
+    pub(super) fn view(&self) -> Value {
+        json!({"total": self.total, "items": self.items})
+    }
+
+    /// `text` with each corrected entry's text replaced by its latest statement, marked
+    /// as corrected with the count, as a next action shows it.
+    pub(super) fn apply(&self, text: &str) -> String {
+        let mut shown = text.to_string();
+        for (original, statement, count) in &self.corrected {
+            if shown.contains(original.as_str()) {
+                shown = shown.replace(original.as_str(), &marked(statement, *count));
+            }
+        }
+        shown
+    }
+
+    /// A decision holding a corrected entry's text, shown as its latest statement,
+    /// marked as corrected with the count.
+    pub(super) fn decision(&self, text: &str) -> String {
+        self.corrected
+            .iter()
+            .find(|(original, _, _)| text.contains(original.as_str()))
+            .map_or_else(
+                || text.to_string(),
+                |(_, statement, count)| marked(statement, *count),
+            )
+    }
+}
+
+fn marked(statement: &str, count: usize) -> String {
+    format!(
+        "{statement} (corrected, {count} correction{})",
+        if count == 1 { "" } else { "s" }
+    )
+}
+
+/// The corrections on the session's Timeline; an unreadable Timeline has none to show
+/// (`history show` reports it).
+pub(super) fn corrections(session: &Checkpoint) -> Corrections {
+    let Some(Ok(entries)) = session.source.as_ref().map(session_md::timeline) else {
+        return Corrections::default();
+    };
+    let mut found: Vec<&session_md::Entry> = entries
+        .iter()
+        .filter(|entry| entry.transition.kind == stage::CORRECTION)
+        .collect();
+    found.sort_by(|left, right| {
+        (right.transition.at_unix_seconds, &right.id)
+            .cmp(&(left.transition.at_unix_seconds, &left.id))
+    });
+    let mut result = Corrections {
+        total: found.len(),
+        ..Corrections::default()
+    };
+    for entry in found.iter().take(CORRECTIONS_LISTED) {
+        let text = entry.transition.reason.clone().unwrap_or_default();
+        let mut end = text.len().min(CORRECTION_CUT);
+        while !text.is_char_boundary(end) {
+            end -= 1;
+        }
+        result.items.push(json!({
+            "entry": format!("^{}", entry.id),
+            "corrects": entry.transition.corrects,
+            "text": &text[..end],
+            "at": session_md::iso_time(entry.transition.at_unix_seconds),
+        }));
+    }
+    // Newest first, so the first statement seen for a target is its latest.
+    for entry in &found {
+        let Some(target) = entry
+            .transition
+            .corrects
+            .as_deref()
+            .and_then(|id| id.strip_prefix('^'))
+        else {
+            continue;
+        };
+        let Some(original) = entries
+            .iter()
+            .find(|other| other.id == target)
+            .and_then(|other| {
+                other
+                    .transition
+                    .reason
+                    .clone()
+                    .or_else(|| other.transition.gate.clone())
+            })
+        else {
+            continue;
+        };
+        // A very short text would match by accident; such an entry is only listed.
+        if original.trim().len() < 4 {
+            continue;
+        }
+        match result
+            .corrected
+            .iter_mut()
+            .find(|(known, _, _)| *known == original)
+        {
+            Some((_, _, count)) => *count += 1,
+            None => result.corrected.push((
+                original,
+                entry.transition.reason.clone().unwrap_or_default(),
+                1,
+            )),
+        }
+    }
+    result
+}
+
+/// The bound of a correction's statement (REQ-history-015).
+const CORRECTION_BYTES: usize = 4_096;
+
+#[derive(clap::Args)]
+pub(super) struct CorrectArgs {
+    /// The entry: `^<entry id>` in the active session, or `<session>#^<entry id>` for
+    /// any open session or archived story, by ID or alias.
+    entry: String,
+    /// What is true instead, at most 4,096 bytes.
+    #[arg(long, allow_hyphen_values = true)]
+    reason: String,
+}
+
+/// `chough correct` (REQ-history-015): append a `correction` entry linked to the entry
+/// it corrects, leaving every existing byte of the file unchanged.
+pub(super) fn correct(root: &Path, args: CorrectArgs) -> Result<()> {
+    crate::checkpoint::lock_for_update(root)?;
+    let (file, target) = match args.entry.split_once("#^") {
+        Some((session, id)) => (crate::sessions::resolve_any(root, session)?, id.to_string()),
+        None => match args.entry.strip_prefix('^') {
+            Some(id) => (crate::sessions::checkpoint_path(root)?, id.to_string()),
+            None => anyhow::bail!(
+                "refused: name the entry as ^<entry id> in the active session, or <session>#^<entry id>; got {:?}, so nothing was written",
+                args.entry
+            ),
+        },
+    };
+    ensure!(
+        session_md::valid_entry_id(&target),
+        "refused: ^{target} is not a Timeline entry ID (t- and 6 lowercase hexadecimal digits); nothing was written"
+    );
+    let mut statement = args.reason.trim().to_string();
+    ensure!(
+        !statement.is_empty(),
+        "refused: a correction needs a statement that is not blank; nothing was written"
+    );
+    ensure!(
+        statement.len() <= CORRECTION_BYTES,
+        "refused: the statement is {} bytes, over the {CORRECTION_BYTES}-byte bound; nothing was written",
+        statement.len()
+    );
+    crate::leaks::guard(crate::leaks::Local::current(), "--reason", &mut statement)?;
+    let path = local_path(root, &file)?;
+    let text = crate::records::read_bounded_record(&path, crate::checkpoint::SESSION_LIMIT)?;
+    let correction = stage::Transition {
+        schema_version: 1,
+        at_unix_seconds: crate::records::now()?,
+        kind: stage::CORRECTION.into(),
+        from: String::new(),
+        to: String::new(),
+        reason: Some(statement.clone()),
+        gate: None,
+        revision: None,
+        refresh: vec![],
+        backfill: None,
+        relayed_by: None,
+        direct_write: None,
+        actor: crate::actor::Actor::current(),
+        holds: None,
+        drives: None,
+        corrects: None,
+    };
+    let (updated, id) = session_md::append_correction(&file, &text, &target, correction)?;
+    crate::records::write_replace_bounded(root, &file, &updated, crate::checkpoint::SESSION_LIMIT)?;
+    print_json(&json!({
+        "schema_version": 1,
+        "file": file,
+        "entry": format!("^{id}"),
+        "corrects": format!("^{target}"),
+        "text": statement,
+    }))
 }
 
 pub(super) fn run(root: &Path, command: HistoryCommand) -> Result<()> {

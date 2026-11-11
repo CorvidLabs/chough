@@ -1,0 +1,12 @@
+--- stdout ---
+
+running 2 tests
+test ship_refuses_an_unknown_human_and_stops_on_a_refused_review ... ok
+test ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 1.24s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/change.rs (target/debug/deps/change-c5f0a8258a2c0971)

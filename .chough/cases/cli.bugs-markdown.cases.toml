@@ -1,0 +1,41 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# Plan step 5 (t38b): bugs are Markdown records with an append-only Log and a
+# Markdown-aware merge driver. The .gitattributes half of the merge case joins in step 11.
+
+[[case]]
+id = "TC-cli-bugs-are-markdown"
+title = "A bug is one Markdown record: front matter, a person's write-up kept byte for byte, one Log entry per update, no rename on a title change, story receipts keep verified, a 0.5.x alias resolves, fixed-upstream needs a note"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7", "KNOW-30"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::bugs_are_markdown_with_an_append_only_log passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "bugs_are_markdown_with_an_append_only_log"
+
+[[case]]
+id = "TC-cli-markdown-bug-merge"
+title = "chough bug merge unions two edits' Logs and takes one-sided edits through a real git merge; a status both sides changed stays a conflict leaving ours"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-12"]
+requirements = ["REQ-cli-047"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::bug_merge_unions_logs_and_takes_one_sided_edits passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "bug_merge_unions_logs_and_takes_one_sided_edits"

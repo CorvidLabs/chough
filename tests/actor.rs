@@ -17,7 +17,7 @@ fn iterate_with(fixture: &Fixture, environment: &[(&str, &str)]) -> (Value, Stri
     let next = fixture.run_with_env(&["next", "--json"], environment);
     assert!(next.status.success());
     let next: Value = serde_json::from_slice(&next.stdout).unwrap();
-    (newest["actor"].clone(), stderr, next)
+    (newest["by"].clone(), stderr, next)
 }
 
 #[test]
@@ -38,17 +38,17 @@ fn the_override_variables_name_the_agent_model_and_terminal() {
         json!({"agent": "SYNTHETIC-agent", "model": "SYNTHETIC-model", "terminal": "t901"});
     assert_eq!(actor, expected);
     assert_eq!(next["last_actor"], expected);
-    // The entry carries it as a one-line field in session.md.
+    // The entry carries it as its `by` field in session.md (REQ-history-002).
     let text = fixture.read(&fixture.session_file());
     let entry = timeline(&text).last().unwrap().clone();
     assert!(
-        text.contains(&format!("  - actor: {expected}\n")),
+        text.contains("  - by: SYNTHETIC-agent (SYNTHETIC-model, hc t901)\n"),
         "{entry}\n{text}"
     );
     let shown = fixture.run_with_env(&["next"], &[]);
     let shown = String::from_utf8_lossy(&shown.stdout).to_string();
     assert!(
-        shown.contains("Last actor: SYNTHETIC-agent (SYNTHETIC-model) in t901"),
+        shown.contains("Last actor: SYNTHETIC-agent (SYNTHETIC-model, hc t901)"),
         "{shown}"
     );
     let status = fixture.ok(&["status"]);
@@ -71,7 +71,7 @@ fn with_nothing_set_no_entry_has_an_actor() {
     assert_eq!(actor, Value::Null);
     assert!(!stderr.contains("actor"), "{stderr}");
     assert_eq!(next["last_actor"], Value::Null);
-    assert!(!fixture.read(&fixture.session_file()).contains("- actor:"));
+    assert!(!fixture.read(&fixture.session_file()).contains("- by:"));
     let shown = String::from_utf8_lossy(&fixture.run(&["next"]).stdout).to_string();
     assert!(!shown.contains("Last actor"), "{shown}");
 }

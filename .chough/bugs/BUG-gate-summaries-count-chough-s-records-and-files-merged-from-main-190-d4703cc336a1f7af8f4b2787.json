@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "id": "BUG-gate-summaries-count-chough-s-records-and-files-merged-from-main-190-d4703cc336a1f7af8f4b2787",
+  "title": "Gate summaries count Chough's records and files merged from main (#190)",
+  "symptom": "a gate summary's What changed line counts every Chough record, knowledge note and file merged from main since the change's base commit",
+  "trigger": "Make a one-line product edit, record evidence and knowledge, merge main into the branch, then chough gate list",
+  "expected": "the summary counts from the merge base with the default branch and leaves out .chough/, the knowledge directory and SpecSync bookkeeping: one file, named",
+  "actual": "509 files, with Chough's evidence entries among the top five",
+  "criteria": [
+    "FLOW-16",
+    "FLOW-23"
+  ],
+  "requirements": [
+    "REQ-cli-061"
+  ],
+  "cases": [
+    "TC-cli-190-gate-summary-counts-the-change"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "b27a2c9a9c687b01899de6878b062d8e1d298235",
+  "steps": [
+    "chough session new; chough checkpoint --native-change <id>",
+    "one product edit; 300 records under .chough/ and knowledge/; 200 files on main merged in",
+    "chough gate list --json"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-190-gate-summary-counts-the-change-99cf6eeb353b024999329d9c"
+  ],
+  "impact": "The human deciding a gate cannot see what the change touched (GitHub #190)",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "GitHub issue #190; red on 0.5.0 at leif/0.6.0-190-red 603456f3",
+  "notes": [],
+  "created_at_unix_seconds": 1794424802,
+  "updated_at_unix_seconds": 1794424802
+}

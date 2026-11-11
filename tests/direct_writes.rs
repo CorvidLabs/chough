@@ -206,6 +206,11 @@ fn next_and_status_show_a_pending_write_and_change_nothing() {
 #[test]
 fn a_direct_write_before_ship_is_recorded_at_the_done_move() {
     let fixture = project();
+    // The review gate drives the native review as the decided human (REQ-records-008).
+    fixture.write(
+        ".chough/local/identity.toml",
+        "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-reviewer\"\n",
+    );
     // An archived change at accept with its review gate open, as for `change ship`.
     let archive = ".specsync/archive/changes/2026-11-01-d1";
     fixture.write(

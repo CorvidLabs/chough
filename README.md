@@ -171,13 +171,15 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `gate list/record` | Number the open human gates, each with a one-screen summary and its digest, and record one relayed reply for listed gates only |
 | `change new/answer/check/status/ship` | Run SpecSync's change new, answer, check (with `--commit`) and status steps, passing their output, refusals and exit code through unchanged; `ship` ships after the review, closes the review gate with its relay and moves to done |
 | `stage …` | Show, advance (one stage or `--to` several), skip, iterate, back, reset, pause, resume, enter and return, and backfill a move that already happened |
-| `history show/adopt/prune` | Inspect, adopt and prune the immutable transition history |
+| `history show` | Show the active session's Timeline, or the newest archived story's |
+| `correct` | Correct an earlier Timeline entry by appending a linked correction; history is never rewritten |
 | `cases check/list/select/run/record` | Validate and list `chough-testing/1` definitions, select focused cases, record honest outcomes |
 | `evidence add` | Record an observation with its revision, inputs, environment and artifacts; freshness compares content, not the revision |
 | `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |
 | `bug add/update/search/list/show/report/merge` | Local-first backlog; report candidates are never posted; `merge` is the Git merge driver for bug records |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
-| `library init/snapshot/index/archive` | Project librarian, on by default in `knowledge/`; post-archive summary preview and apply; `index --check` fails when the generated notes drift |
+| `library init/index/merge` | Project librarian, on by default in `knowledge/`: `index.md` and the journal feed, regenerated from their sources; `index --check` fails when they drift; `merge` is their Git merge driver |
+| `journal add` | Write one short dated post in `knowledge/journal/` that links the records; the move into done and `session close` write one too |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
 This table documents current main. Three entries were added after the 0.5.0

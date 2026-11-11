@@ -10,6 +10,8 @@ use tempfile::TempDir;
 /// The checkpoint byte cap of REQ-cli-032 (DRIVE-14: 1 MiB, from the 2026-11-05 sizing study).
 #[allow(dead_code)]
 pub(super) const CHECKPOINT_CAP: usize = 1_048_576;
+/// Where a test's user configuration folder is, inside its project (REQ-records-008).
+pub(super) const USER_CONFIG: &str = ".user-config";
 /// The environment variables that name the acting agent (REQ-records-007).
 pub(super) const ACTOR_VARIABLES: [&str; 5] = [
     "CHOUGH_ACTOR",
@@ -139,6 +141,9 @@ impl Fixture {
         for name in ACTOR_VARIABLES {
             command.env_remove(name);
         }
+        // No test reads this machine's identity file (REQ-records-008); a test that
+        // needs a user file writes it under USER_CONFIG.
+        command.env("XDG_CONFIG_HOME", self.root().join(USER_CONFIG));
         command.envs(environment.iter().copied());
         command.output().unwrap()
     }
@@ -194,6 +199,18 @@ impl Fixture {
         let record: Value =
             serde_json::from_str(&self.read(&format!(".chough/evidence/{id}.json"))).unwrap();
         record["observed_at_unix_seconds"].as_u64().unwrap()
+    }
+
+    /// Write bug `id` as a Markdown record (REQ-cli-012) with this scope, status and
+    /// linked evidence IDs, as a hand-written fixture.
+    pub(super) fn bug_md(&self, id: &str, scope: &str, status: &str, evidence: &[&str]) {
+        self.write(
+            &format!(".chough/bugs/{id}.md"),
+            &format!(
+                "---\nkind: bug\nid: {id}\naliases: []\ntitle: Fixture bug {id}\nstatus: {status}\nclassification: product-defect\nscope: {scope}\nimpact: Not yet assessed.\ncriteria: []\nrequirements: []\ncases: []\nevidence: [{}]\nreceipts: []\nenvironment: local\nfound_by: fixture\nrelated: []\ncreated: 2026-11-10T00:00:01Z\nupdated: 2026-11-10T00:00:01Z\n---\n# Fixture bug {id}\n\n**What happened:** It breaks\nActual: It broke\n\n**Steps:** Running the probe\n\n**Expected:** It works\n\n**Why it matters:** Not yet assessed.\n\n**Fix:** Not fixed yet.\n\n## Log\n\n- 2026-11-10T00:00:01Z · Reported (fixture)\n",
+                evidence.join(", ")
+            ),
+        );
     }
 
     /// The active session's checkpoint, as `chough checkpoint` prints it.

@@ -10,23 +10,28 @@ use std::fs;
 use std::path::Path;
 
 fn assert_new_bug_id(id: &str) {
-    assert!(id.len() <= 100, "bug ID exceeds 100 bytes: {id}");
-    let rest = id.strip_prefix("BUG-").expect("new bug ID prefix");
-    let (slug, digest) = rest.rsplit_once('-').expect("new bug ID separator");
-    assert!(!slug.is_empty() && slug.len() <= 71, "invalid slug: {id}");
+    // `<YYYY-MM-DD>-<slug>`, at most 80 bytes (REQ-records-003).
+    assert!(id.len() <= 80, "bug name exceeds 80 bytes: {id}");
+    let (date, slug) = id.split_at(10);
     assert!(
-        slug.bytes()
-            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-'),
+        date.bytes()
+            .enumerate()
+            .all(|(at, byte)| if at == 4 || at == 7 {
+                byte == b'-'
+            } else {
+                byte.is_ascii_digit()
+            }),
+        "bug name does not start with a date: {id}"
+    );
+    let slug = slug.strip_prefix('-').expect("a slug after the date");
+    assert!(
+        !slug.is_empty()
+            && slug
+                .bytes()
+                .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-'),
         "slug is not lowercase ASCII: {id}"
     );
     assert!(!slug.starts_with('-') && !slug.ends_with('-') && !slug.contains("--"));
-    assert_eq!(digest.len(), 24, "digest length is not 24: {id}");
-    assert!(
-        digest
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
-        "digest is not lowercase hex: {id}"
-    );
 }
 
 #[test]
@@ -154,7 +159,7 @@ fn repeated_validation_needs_authority_honors_stop_and_persists_findings() {
     let bugs = fixture.ok(&["bug", "list"]);
     assert_eq!(bugs["bugs"].as_array().unwrap().len(), 1);
     let bug = fixture.ok(&["bug", "show", &bug_id]);
-    assert_eq!(bug["bug"]["observations"].as_array().unwrap().len(), 3);
+    assert_eq!(bug["bug"]["evidence"].as_array().unwrap().len(), 3);
     assert_eq!(bug["verification"], "reproduced");
 
     fixture.ok(&["validate", "stop"]);
@@ -177,8 +182,8 @@ fn repeated_validation_needs_authority_honors_stop_and_persists_findings() {
     assert_eq!(resumed["captured_locally"][0], bug_id);
     let appended = fixture.ok(&["bug", "show", &bug_id]);
     assert_eq!(appended["bug"]["id"], bug_id);
-    assert_eq!(appended["bug"]["observations"].as_array().unwrap().len(), 5);
-    assert!(fixture.exists(&format!(".chough/bugs/{bug_id}.json")));
+    assert_eq!(appended["bug"]["evidence"].as_array().unwrap().len(), 5);
+    assert!(fixture.exists(&format!(".chough/bugs/{bug_id}.md")));
     assert!(!fixture.exists(".chough/validation.stop"));
 
     // A new objective ends the run consent, so repetition is refused again.
@@ -424,66 +429,6 @@ fn independent_roots_and_identical_repeated_runs_allocate_distinct_validation_ru
     );
 }
 
-fn snapshot_attempt(fixture: &Fixture) -> (String, String) {
-    let snapshot = fixture.ok(&[
-        "library",
-        "snapshot",
-        "src/input.txt",
-        "--reason",
-        "Same source",
-    ]);
-    let base = snapshot["snapshot"].as_str().unwrap().to_string();
-    let id = base.strip_prefix("knowledge/snapshots/").unwrap();
-    assert_random_record_id(id, "SNAP-", "same-source", 70);
-    assert_eq!(snapshot["manifest"]["schema_version"], 1);
-    assert!(snapshot["manifest"]["created_at_unix_seconds"].is_u64());
-    let digest = snapshot["manifest"]["entries"][0]["sha256"]
-        .as_str()
-        .unwrap()
-        .to_string();
-    assert_eq!(
-        fixture.read(snapshot["manifest"]["entries"][0]["copy"].as_str().unwrap()),
-        "first version\n"
-    );
-    (id.to_string(), digest)
-}
-
-fn snapshot_fixture() -> Fixture {
-    let fixture = Fixture::new();
-    fixture.init();
-    fixture.ok(&[
-        "pref",
-        "set",
-        "librarian",
-        "on",
-        "--source",
-        "Human: retain snapshot history",
-    ]);
-    fixture
-}
-
-#[test]
-fn independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots() {
-    let first = snapshot_fixture();
-    let second = snapshot_fixture();
-    let snapshots = [
-        snapshot_attempt(&first),
-        snapshot_attempt(&first),
-        snapshot_attempt(&second),
-        snapshot_attempt(&second),
-    ];
-    let ids = snapshots
-        .iter()
-        .map(|(id, _)| id.clone())
-        .collect::<std::collections::BTreeSet<_>>();
-    assert_eq!(ids.len(), snapshots.len(), "snapshot IDs: {snapshots:?}");
-    assert!(
-        snapshots
-            .iter()
-            .all(|(_, digest)| digest == &snapshots[0].1)
-    );
-}
-
 #[test]
 fn legacy_validation_runs_resume_with_their_ids_and_schema_unchanged() {
     let fixture = validation_fixture();
@@ -552,43 +497,6 @@ fn legacy_validation_runs_resume_with_their_ids_and_schema_unchanged() {
 }
 
 #[test]
-fn snapshot_indexes_mix_legacy_and_new_ids_by_manifest_time() {
-    let fixture = snapshot_fixture();
-    let legacy_base = "knowledge/snapshots/2024-01-01-1";
-    let legacy_copy = format!("{legacy_base}/files/src/input.txt");
-    fixture.write(&legacy_copy, "first version\n");
-    let legacy = serde_json::json!({
-        "schema_version": 1,
-        "reason": "Legacy dated snapshot",
-        "revision": null,
-        "created_at_unix_seconds": 1,
-        "entries": [{
-            "source": "src/input.txt",
-            "copy": legacy_copy,
-            "sha256": format!("{:x}", Sha256::digest(b"first version\n")),
-            "bytes": 14
-        }]
-    });
-    let legacy_manifest = serde_json::to_string_pretty(&legacy).unwrap() + "\n";
-    fixture.write(&format!("{legacy_base}/manifest.json"), &legacy_manifest);
-    let (new_id, _) = snapshot_attempt(&fixture);
-    fixture.ok(&["library", "index"]);
-    let index = fixture.read("knowledge/INDEX.md");
-    assert!(index.contains("2024-01-01-1"));
-    assert!(index.contains(&new_id));
-    let new_position = index.find(&new_id).unwrap();
-    let legacy_position = index.find("2024-01-01-1").unwrap();
-    assert!(
-        new_position < legacy_position,
-        "manifest chronology must not use lexical ID order: {index}"
-    );
-    assert_eq!(
-        fixture.read(&format!("{legacy_base}/manifest.json")),
-        legacy_manifest
-    );
-}
-
-#[test]
 fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
     let fixture = Fixture::new();
     fixture.init();
@@ -613,36 +521,9 @@ fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
         "--source",
         "Human: keep a project library",
     ]);
-    fixture.write("design/prototype/COMPANION.md", "# Companion\n");
-    fixture.write("design/prototype/index.html", "<p>v1</p>\n");
+    // `library snapshot` is retired (REQ-cli-015); init builds the knowledge directory.
     fixture.ok(&["library", "init"]);
-    let source = fixture.read("design/prototype/index.html");
-    let snapshot = fixture.ok(&[
-        "library",
-        "snapshot",
-        "design/prototype/index.html",
-        "--reason",
-        "Approved version 1",
-    ]);
-    let base = snapshot["snapshot"].as_str().unwrap().to_string();
-    let entry = &snapshot["manifest"]["entries"][0];
-    assert_eq!(entry["source"], "design/prototype/index.html");
-    assert_eq!(
-        fixture.read(entry["copy"].as_str().unwrap()),
-        source,
-        "snapshot copies the original bytes"
-    );
-    assert_eq!(fixture.read("design/prototype/index.html"), source);
-    assert_eq!(entry["sha256"].as_str().unwrap().len(), 64);
-    assert!(base.starts_with("knowledge/snapshots/"));
-    for bad in ["../outside.txt", "knowledge/INDEX.md"] {
-        assert!(
-            !fixture
-                .run(&["library", "snapshot", bad, "--reason", "x"])
-                .status
-                .success()
-        );
-    }
+    assert!(fixture.exists("knowledge/index.md"));
 
     let added = fixture.ok(&[
         "bug",
@@ -665,14 +546,11 @@ fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
     let id = added["id"].as_str().unwrap();
     assert_new_bug_id(id);
     fixture.ok(&["library", "index"]);
-    let index = fixture.read("knowledge/INDEX.md");
-    assert!(index.contains(&format!("{id} Prototype focus ring missing")));
-    assert!(index.contains("[design/prototype/](../design/prototype/) with COMPANION.md"));
-    assert!(index.contains("Approved version 1"));
+    let index = fixture.read("knowledge/index.md");
     assert!(
-        fixture
-            .read("knowledge/README.md")
-            .contains("Nothing here is a second current version")
+        index.contains(&format!("- [{id}](../.chough/bugs/{id}."))
+            && index.contains(") Prototype focus ring missing ("),
+        "{index}"
     );
 
     fixture.ok(&[
@@ -683,24 +561,6 @@ fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
         "Snapshot the design",
     ]);
     assert_eq!(fixture.ok(&["stage", "return"])["applied"]["to"], "intent");
-}
-
-#[cfg(unix)]
-#[test]
-fn snapshotting_a_symlink_is_refused() {
-    let fixture = Fixture::new();
-    fixture.init();
-    fixture.ok(&["pref", "set", "librarian", "on", "--source", "Human: yes"]);
-    std::os::unix::fs::symlink(
-        fixture.root().join("INTENT.md"),
-        fixture.root().join("link.md"),
-    )
-    .unwrap();
-    assert!(
-        fixture
-            .fails(&["library", "snapshot", "link.md", "--reason", "x"])
-            .contains("symlink")
-    );
 }
 
 fn bundle_files() -> Vec<String> {
@@ -980,16 +840,17 @@ fn the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off() {
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(next["knowledge"]["librarian"], "on");
     // REQ-cli-043: init builds the knowledge directory with the librarian on.
-    assert_eq!(next["knowledge"]["index"], "knowledge/INDEX.md");
+    assert_eq!(next["knowledge"]["index"], "knowledge/index.md");
     fixture.ok(&["library", "init"]);
-    assert!(fixture.exists("knowledge/README.md"));
-    assert!(fixture.exists("knowledge/INDEX.md"));
+    assert!(fixture.exists("knowledge/index.md"));
+    assert!(fixture.exists("knowledge/journal/feed.xml"));
+    assert!(fixture.exists("knowledge/lessons"));
     assert!(!fixture.exists("library"));
     let next = fixture.ok(&["next", "--json"]);
-    assert_eq!(next["knowledge"]["index"], "knowledge/INDEX.md");
+    assert_eq!(next["knowledge"]["index"], "knowledge/index.md");
     let text = fixture.run(&["next"]);
     assert!(
-        String::from_utf8_lossy(&text.stdout).contains("Knowledge index: knowledge/INDEX.md"),
+        String::from_utf8_lossy(&text.stdout).contains("Knowledge index: knowledge/index.md"),
         "{}",
         String::from_utf8_lossy(&text.stdout)
     );

@@ -19,20 +19,3 @@ adapter = "command"
 argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "evidence::tests::at_most_eight_validity_readers_on_any_host"]
 expect_output = ["test evidence::tests::at_most_eight_validity_readers_on_any_host ... ok", "test result: ok. 1 passed"]
 
-[[case]]
-id = "TC-cli-at-most-eight-validity-reads"
-title = "With twelve affected archives no more than 8 validity reads run at once"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-10"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["the reduce test at_most_eight_validity_reads_run_at_once passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "at_most_eight_validity_reads_run_at_once"

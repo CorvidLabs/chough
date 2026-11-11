@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "id": "OBS-dry-run-9db85eed3d0c73dbd63de8b1",
+  "criteria": [
+    "FLOW-23"
+  ],
+  "requirements": [
+    "REQ-cli-029"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "dry-run",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Claude Code (claude-opus-5-5, auto mode, hc t382) ran the Chough-driven approve of plan step 6 (#236, REQ-records-008) itself: chough checkpoint --close-gate on a scope gate held at plan, built from this branch's step 6 source, in a throwaway project with real SpecSync 6.2.0 and one configured SYNTHETIC human. The permission classifier did not refuse it. Chough ran specsync change approve once with --actor SYNTHETIC-human and a note quoting the relayed words, place and recording agent; SpecSync recorded the definition approval (approved, approval_valid true); the gate closed with the relay and a decision naming the step; chough next then showed no pending direct native write.",
+  "artifacts": [],
+  "artifact_fingerprints": {},
+  "observed_at_unix_seconds": 1794422858,
+  "snapshot": {
+    "revision": "8032bb5a7d5bcabf2a67487378318f684f3a1ed1",
+    "dirty": true,
+    "fingerprint": "fc98e7cb963bfe3e4e2fe2ba402543bb204f3da0918547127a32a77ebbf16223",
+    "content": "4c37930521649a9a5b56c117602da4fcf979b379ba6e9c0c6352c833506388aa"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted",
+  "limitations": [
+    "The human was synthetic and the project a throwaway, with no real person's decision relayed. The classifier refused the direct specsync approve as 0xLeif in this repository (OBS-dry-run-e43743fac8e3ffdcf0e1dd26), so it may judge a real human's relayed decision differently. The real check runs at plan step 14, when this repository is on 0.6.0 and a decision of Leif's is relayed through the gate.",
+    "Run from a debug build of this branch's working tree before the step 6 commit, not a release build."
+  ]
+}

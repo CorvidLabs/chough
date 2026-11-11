@@ -244,26 +244,8 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
         .enumerate()
     {
         let id = format!("BUG-{:04}", index + 1);
-        let bug = json!({
-            "schema_version": 1,
-            "id": id,
-            "title": format!("Fixture bug {id}"),
-            "symptom": "It breaks",
-            "trigger": "Running the probe",
-            "expected": "It works",
-            "actual": "It broke",
-            "environment": "local",
-            "observations": ids,
-            "impact": "Not yet assessed.",
-            "classification": "unclassified",
-            "scope": scope,
-            "status": "open",
-            "regression_baseline": null,
-            "source": "fixture",
-            "created_at_unix_seconds": 1,
-            "updated_at_unix_seconds": 1,
-        });
-        fixture.write(&format!(".chough/bugs/{id}.json"), &bug.to_string());
+        let linked: Vec<&str> = ids.iter().map(String::as_str).collect();
+        fixture.bug_md(&id, scope, "open", &linked);
     }
     let added = fixture.run(&[
         "evidence",
@@ -478,6 +460,10 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
 /// done_action's new-cycle steps, shared by the archived-not-done action.
 const NEW_CYCLE: &str = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work), then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
 const RESET: &str = "chough stage reset --to intent --reason \"<why>\"";
+/// After done the session is archived, so the next piece of work starts a new session
+/// (REQ-cli-021, corrected in the 0.6.0 plan's Delta corrections).
+const NEXT_WORK: &str = "Start the next piece of work in a new session: chough session new <key> --objective \"<outcome>\", then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
+const NEXT_SESSION: &str = "chough session new <key> --objective \"<outcome>\"";
 
 /// Split a suggested command into arguments, honoring double quotes.
 fn words(command: &str) -> Vec<String> {
@@ -503,7 +489,10 @@ fn words(command: &str) -> Vec<String> {
 
 /// Run a suggested `chough ...` command with its placeholders filled.
 fn run_suggested(fixture: &Fixture, command: &str) -> Value {
-    let command = command.replace("<why>", "New work after the archive");
+    let command = command
+        .replace("<why>", "New work after the archive")
+        .replace("<key>", "next-work")
+        .replace("<outcome>", "The next piece of work");
     let arguments = words(&command);
     assert_eq!(arguments[0], "chough", "{command}");
     let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
@@ -543,28 +532,6 @@ fn archived_change_at(stage: &str, change: &str) -> Fixture {
         "specsync change check old-change --commit, then push",
     ]);
     fixture
-}
-
-fn bug(id: &str, status: &str, scope: &str) -> Value {
-    json!({
-        "schema_version": 1,
-        "id": id,
-        "title": format!("Fixture bug {id}"),
-        "symptom": "It breaks",
-        "trigger": "Running the probe",
-        "expected": "It works",
-        "actual": "It broke",
-        "environment": "local",
-        "observations": [],
-        "impact": "Not yet assessed.",
-        "classification": "unclassified",
-        "scope": scope,
-        "status": status,
-        "regression_baseline": null,
-        "source": "fixture",
-        "created_at_unix_seconds": 1,
-        "updated_at_unix_seconds": 1,
-    })
 }
 
 fn observation(id: &str, outcome: &str, observed: u64) -> Value {
@@ -650,7 +617,7 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
         );
         let expected = if stage == "accept" {
             format!(
-                "{opening}Record done first: chough stage advance (accept to done is allowed). Then: {NEW_CYCLE}"
+                "{opening}Record done first: chough stage advance (accept to done is allowed), which archives this session. Then: {NEXT_WORK}"
             )
         } else {
             format!("{opening}{NEW_CYCLE}")
@@ -703,11 +670,15 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
             let advanced = run_suggested(&fixture, command);
             assert_eq!(advanced["applied"]["to"], "done", "{advanced}");
             let done = fixture.ok(&["next", "--json"]);
-            assert_eq!(done["next_valid_action"]["action"], NEW_CYCLE);
-            assert_eq!(done["next_valid_action"]["command"], RESET);
-            let reset = run_suggested(&fixture, RESET);
-            assert_eq!(reset["applied"]["to"], "intent");
-            assert_after_reset(&fixture, "done");
+            assert_eq!(done["next_valid_action"]["action"], NEXT_WORK);
+            assert_eq!(done["next_valid_action"]["command"], NEXT_SESSION);
+            let created = run_suggested(&fixture, NEXT_SESSION);
+            assert_eq!(
+                fixture.session()["objective"],
+                "The next piece of work",
+                "{created}"
+            );
+            assert_eq!(fixture.session()["stage"]["current"], "intent");
         } else {
             let reset = run_suggested(&fixture, command);
             assert_eq!(reset["applied"]["to"], "intent", "{reset}");
@@ -774,7 +745,7 @@ fn keeps_todays_action_when_something_else_applies() {
     );
     // A blocking bug at test.
     let fixture = archived_at("test");
-    write_record(&fixture, "bugs", &bug("BUG-0001", "open", "blocking"));
+    fixture.bug_md("BUG-0001", "blocking", "open", &[]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(
         action
@@ -912,24 +883,31 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     set_mtime(&evidence.join("m-latest.json"), 1_000_000);
     set_mtime(&evidence.join("a-middle.json"), 2_000_000);
     set_mtime(&evidence.join("z-oldest.json"), 3_000_000);
-    // Four bugs link the latest failure, by observations, a note and a regression
-    // baseline; one links an older failure only.
-    let mut linked = bug("BUG-0001", "fix-pending-verification", "in-scope");
-    linked["observations"] = json!(["m-latest"]);
-    write_record(&fixture, "bugs", &linked);
-    let mut noted = bug("BUG-0002", "open", "in-scope");
-    noted["notes"] =
-        json!([{"at_unix_seconds": 5, "text": "Seen again", "observations": ["m-latest"]}]);
-    write_record(&fixture, "bugs", &noted);
-    let mut baseline = bug("BUG-0003", "verified", "in-scope");
-    baseline["regression_baseline"] = json!("m-latest");
-    write_record(&fixture, "bugs", &baseline);
-    let mut fourth = bug("BUG-0004", "open", "out-of-scope");
-    fourth["observations"] = json!(["a-middle", "m-latest"]);
-    write_record(&fixture, "bugs", &fourth);
-    let mut older = bug("BUG-0005", "open", "in-scope");
-    older["observations"] = json!(["z-oldest"]);
-    write_record(&fixture, "bugs", &older);
+    // Four bugs link the latest failure, by their evidence or a regression baseline;
+    // one links an older failure only.
+    fixture.bug_md(
+        "BUG-0001",
+        "in-scope",
+        "fix-pending-verification",
+        &["m-latest"],
+    );
+    fixture.bug_md("BUG-0002", "in-scope", "open", &["m-latest"]);
+    fixture.bug_md("BUG-0003", "in-scope", "verified", &[]);
+    let baseline = ".chough/bugs/BUG-0003.md";
+    fixture.write(
+        baseline,
+        &fixture.read(baseline).replace(
+            "receipts: []\n",
+            "receipts: []\nregression_baseline: m-latest\n",
+        ),
+    );
+    fixture.bug_md(
+        "BUG-0004",
+        "out-of-scope",
+        "open",
+        &["a-middle", "m-latest"],
+    );
+    fixture.bug_md("BUG-0005", "in-scope", "open", &["z-oldest"]);
 
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
@@ -1161,8 +1139,8 @@ fn next_surfaces_the_error_library_index_refuses_a_symlinked_archive_with() {
 }
 
 /// Issue 74: `next` names the newest 3 lesson bundles by finalization timestamp, then
-/// directory, the same archives `chough library index` marks hot (KNOW-8), not the
-/// newest by directory name.
+/// directory, the same archives whose bundles `chough library index` links (KNOW-8), not
+/// the newest by directory name.
 #[test]
 fn next_lists_the_newest_three_bundles_by_finalization_like_the_librarian() {
     let fixture = Fixture::new();
@@ -1216,22 +1194,21 @@ fn next_lists_the_newest_three_bundles_by_finalization_like_the_librarian() {
         "{shown}"
     );
 
-    // The librarian's hot archives are the same three.
+    // The knowledge index links the same three bundles, and no older one.
     fixture.ok(&["library", "index"]);
-    let index = fixture.read("knowledge/INDEX.md");
-    for (slug, status) in [
-        ("export-chats", "hot"),
-        ("search-messages", "hot"),
-        ("add-bounded-pagination", "hot"),
-        ("protect-secrets", "cold"),
-        ("preserve-history", "cold"),
-        ("enforce-rules", "cold"),
+    let index = fixture.read("knowledge/index.md");
+    for (slug, linked) in [
+        ("export-chats", true),
+        ("search-messages", true),
+        ("add-bounded-pagination", true),
+        ("protect-secrets", false),
+        ("preserve-history", false),
+        ("enforce-rules", false),
     ] {
-        assert!(
-            index.contains(&format!(
-                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
-            )),
-            "{slug} {status} in {index}"
+        assert_eq!(
+            index.contains(&format!("- [{slug}](../{})\n", path(slug))),
+            linked,
+            "{slug} in {index}"
         );
     }
 }
@@ -1297,16 +1274,20 @@ fn next_and_the_librarian_pick_the_same_hot_archives_when_a_bundle_is_missing() 
         "{shown}"
     );
 
+    // The knowledge index names the same three, d's bundle as missing, and not a.
     fixture.ok(&["library", "index"]);
-    let index = fixture.read("knowledge/INDEX.md");
-    for (slug, status) in [("d", "hot"), ("c", "hot"), ("b", "hot"), ("a", "cold")] {
+    let index = fixture.read("knowledge/index.md");
+    assert!(
+        index.contains(&format!("- d: `{base}-d/lesson-bundle.md` (missing)\n")),
+        "{index}"
+    );
+    for slug in ["c", "b"] {
         assert!(
-            index.contains(&format!(
-                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
-            )),
-            "{slug} {status} in {index}"
+            index.contains(&format!("- [{slug}](../{base}-{slug}/lesson-bundle.md)\n")),
+            "{slug} in {index}"
         );
     }
+    assert!(!index.contains(&format!("{base}-a/")), "{index}");
 }
 
 /// Render a 0.5.x-shaped checkpoint JSON into the active session's session.md
@@ -1433,10 +1414,9 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
             &observation(id, "passed", 1_700_000_000),
         );
     }
+    let linked: Vec<&str> = stale.iter().map(String::as_str).collect();
     for index in 1..=4 {
-        let mut record = bug(&format!("BUG-{index:04}"), "open", "in-scope");
-        record["observations"] = json!(stale);
-        write_record(&fixture, "bugs", &record);
+        fixture.bug_md(&format!("BUG-{index:04}"), "in-scope", "open", &linked);
     }
     // 200 more observations, 100 failed; the latest recorded failure is fail-037.
     for index in 0..100_u64 {
@@ -1456,9 +1436,12 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     }
     // 40 bugs link the latest failure.
     for index in 5..45 {
-        let mut record = bug(&format!("BUG-{index:04}"), "open", "in-scope");
-        record["observations"] = json!(["fail-037"]);
-        write_record(&fixture, "bugs", &record);
+        fixture.bug_md(
+            &format!("BUG-{index:04}"),
+            "in-scope",
+            "open",
+            &["fail-037"],
+        );
     }
     // 40 archived bundles and 16 modules.
     for index in 0..40 {

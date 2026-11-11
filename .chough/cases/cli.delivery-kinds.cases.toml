@@ -39,7 +39,7 @@ test = "every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run"
 
 [[case]]
 id = "TC-cli-delivery-kinds-kept-dry-run-not"
-title = "Delivery observations are kept as proof and moved into the vault, while a superseded dry run is not"
+title = "Delivery observations are kept as proof while a superseded dry run is not"
 status = "active"
 track = "functional"
 method = "automated"

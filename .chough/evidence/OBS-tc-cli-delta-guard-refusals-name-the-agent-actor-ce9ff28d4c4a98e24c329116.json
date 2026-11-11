@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-ce9ff28d4c4a98e24c329116",
+  "criteria": [
+    "FLOW-5",
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-022"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note for TC-cli-delta-guard-refusals-name-the-agent-actor: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-ce9ff28d4c4a98e24c329116.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-ce9ff28d4c4a98e24c329116.log": "f7fe02488f0936e38ca937589ec3886d77696ee39be9a7b050214c1aad7295ac"
+  },
+  "observed_at_unix_seconds": 1794424167,
+  "snapshot": {
+    "revision": "82a7392dda5b59925f1dad704d2c6c2778b23b8b",
+    "dirty": false,
+    "fingerprint": "6592d43dd826eb5454937a8b18135ca2b197f73dda20f3cdc3d52de41f16d6dd",
+    "content": "c0ad4a455cdd87cc042886e343d1ad1a31016c6ee2b83c35f413758823f87006"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-delta-guard-refusals-name-the-agent-actor",
+      "digest": "6341f9cbae9a52d34e19f91d571c9446e32deb9d7958aa7c328169c399133934"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

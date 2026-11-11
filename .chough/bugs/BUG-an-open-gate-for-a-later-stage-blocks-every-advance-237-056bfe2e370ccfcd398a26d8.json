@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "id": "BUG-an-open-gate-for-a-later-stage-blocks-every-advance-237-056bfe2e370ccfcd398a26d8",
+  "title": "An open gate for a later stage blocks every advance (#237)",
+  "symptom": "chough stage advance is refused with refused:awaiting-human at build while the only open gate is a release decision",
+  "trigger": "Open a human gate meant for release while the session is at build, then advance",
+  "expected": "build, test and accept advance as usual; only the move out of release waits for the gate",
+  "actual": "every advance and skip is refused while any gate is open, so a pending release or publication decision stops build, test and accept",
+  "criteria": [
+    "FLOW-3",
+    "FLOW-5"
+  ],
+  "requirements": [
+    "REQ-cli-030"
+  ],
+  "cases": [
+    "TC-cli-237-gate-holds-its-stage"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "99b2664f637137a402777a2e023ee66321ffce62",
+  "steps": [
+    "chough init",
+    "chough stage advance (three times, to build)",
+    "chough checkpoint --awaiting-human \"Publish the release\"",
+    "chough stage advance"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-237-gate-holds-its-stage-bb20e2599081ad8899140f35",
+    "OBS-tc-cli-237-gate-holds-its-stage-e67a2b8c1d138b94f8605278"
+  ],
+  "impact": "Agents clear real gates to keep working, or stall; the release decision has no place to wait (GitHub #237)",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "GitHub issue #237; red on 0.5.0 at leif/0.6.0-237-red 018412c8",
+  "notes": [
+    {
+      "at_unix_seconds": 1794423926,
+      "text": "Added despite similar reports: The verified bug is the opposite defect: gates were ignored and advance went through. This one is the fix's overreach: every gate refuses every move, including gates that hold a later stage.",
+      "observations": []
+    },
+    {
+      "at_unix_seconds": 1794424180,
+      "text": "status: open -> verified. Fixed by plan step 6 (PR #238, f70f5727): a gate holds the stage it names (--holds, default the current stage), and advance and skip are refused only out of a stage an open gate holds. TC-cli-237-gate-holds-its-stage passed on the 0.6.0 branch after its 0.5.0 failure.",
+      "observations": [
+        "OBS-tc-cli-237-gate-holds-its-stage-e67a2b8c1d138b94f8605278"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794423926,
+  "updated_at_unix_seconds": 1794424180
+}

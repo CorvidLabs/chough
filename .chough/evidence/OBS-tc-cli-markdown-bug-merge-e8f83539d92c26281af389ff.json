@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-markdown-bug-merge-e8f83539d92c26281af389ff",
+  "criteria": [
+    "DRIVE-12"
+  ],
+  "requirements": [
+    "REQ-cli-047"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact bug_merge_unions_logs_and_takes_one_sided_edits for TC-cli-markdown-bug-merge: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-markdown-bug-merge-e8f83539d92c26281af389ff.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-markdown-bug-merge-e8f83539d92c26281af389ff.log": "e1115af405221d377f47d49068392470597e39608837d90cbf1cb787ef445ce1"
+  },
+  "observed_at_unix_seconds": 1794424609,
+  "snapshot": {
+    "revision": "2e11a49df2c314f087abb61f2968cb74124a6020",
+    "dirty": false,
+    "fingerprint": "8ee2aa4d2b9f38f149e2d50a8f7a73b284faf5b9d9b06fddc3b5c4f340ea1e04",
+    "content": "cf2d6bdeab43a87c2e6354e6f42ebbedf17827e283fe58ecd3bb955fc1ec1b27"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-markdown-bug-merge",
+      "digest": "8fa7855e0d1ecd1d7fb38e56961020cb80402a31968fdc01e86dcd85711538df"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "bug_merge_unions_logs_and_takes_one_sided_edits"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

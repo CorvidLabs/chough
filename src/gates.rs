@@ -51,6 +51,13 @@ pub(super) struct RecordArgs {
     /// The agent recording the decision.
     #[arg(long, allow_hyphen_values = true)]
     recorded_by: Option<String>,
+    /// The review verdict, `pass` or `block`, for the named gate that drives review.
+    #[arg(long, value_parser = ["pass", "block"], conflicts_with = "no_native")]
+    verdict: Option<String>,
+    /// Close a gate that drives a native step without running it: the decision is
+    /// neither an approval nor a review.
+    #[arg(long)]
+    no_native: bool,
 }
 
 /// One listed gate.
@@ -61,6 +68,11 @@ pub(super) struct Listed {
     pub(super) session: String,
     pub(super) change: Option<String>,
     pub(super) gate: String,
+    /// The stage the gate holds and the native step it drives (REQ-cli-030).
+    #[serde(default)]
+    pub(super) holds: String,
+    #[serde(default)]
+    pub(super) drives: String,
     pub(super) digest: String,
     pub(super) summary: String,
 }
@@ -101,7 +113,21 @@ fn open_sessions(root: &Path) -> Result<Vec<(String, String, Value)>> {
     for id in crate::sessions::open_ids(root)? {
         let file = crate::sessions::session_file(&id);
         let session = crate::sessions::read_at(root, &file)?;
-        sessions.push((id, file, serde_json::to_value(&session)?));
+        let mut value = serde_json::to_value(&session)?;
+        // What each open gate holds and drives, which the checkpoint JSON leaves out.
+        value["gate_meta"] = session
+            .awaiting_human
+            .iter()
+            .map(|gate| {
+                let meta = crate::session_md::gate(&session, gate);
+                (
+                    gate.clone(),
+                    json!({"holds": meta.holds, "drives": meta.drives}),
+                )
+            })
+            .collect::<serde_json::Map<_, _>>()
+            .into();
+        sessions.push((id, file, value));
     }
     Ok(sessions)
 }
@@ -305,6 +331,21 @@ fn diff_link(root: &Path, base: &str, head: &str) -> String {
     }
 }
 
+/// What a gate summary's change count leaves out (#190, REQ-cli-061): Chough's
+/// records, the knowledge directory and SpecSync's lifecycle bookkeeping.
+fn left_out_of_summary(root: &Path) -> Vec<String> {
+    let knowledge = crate::prefs::effective(root, "library-dir")
+        .map(|(dir, _)| dir)
+        .unwrap_or_else(|_| "knowledge".into());
+    vec![
+        ".chough/".into(),
+        format!("{}/", knowledge.trim_end_matches('/')),
+        ".specsync/changes/".into(),
+        ".specsync/archive/".into(),
+        ".specsync/hashes.json".into(),
+    ]
+}
+
 /// The one-screen summary of `gate` in `session`: what changed, the tests, the risks
 /// and a diff link, within 24 lines and 4,096 bytes.
 pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
@@ -326,10 +367,21 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
         }
         None => lines.push("Change: none recorded".into()),
     }
-    let base = state
+    // #190 (REQ-cli-061): count from the merge base with the default branch, so work
+    // merged from main is not this change's, and from the change's base commit only
+    // when there is no merge base.
+    // Work on the default branch itself has HEAD as its merge base, so the change's
+    // base commit decides there.
+    let base_commit = state
         .as_ref()
         .and_then(|state| state["base_commit"].as_str())
         .map(String::from);
+    let base = ["origin/HEAD", "main"]
+        .iter()
+        .find_map(|branch| git(root, &["merge-base", "HEAD", branch]))
+        .filter(|merge_base| *merge_base != head)
+        .or(base_commit);
+    let left_out = left_out_of_summary(root);
     match &base {
         Some(base) => {
             let numstat =
@@ -341,6 +393,11 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                     let added = parts.next()?.parse().unwrap_or(0);
                     let deleted = parts.next()?.parse().unwrap_or(0);
                     Some((added, deleted, parts.next()?.to_string()))
+                })
+                .filter(|(_, _, path)| {
+                    !left_out
+                        .iter()
+                        .any(|prefix| path.starts_with(prefix.as_str()))
                 })
                 .collect();
             let insertions: u64 = files.iter().map(|file| file.0).sum();
@@ -415,11 +472,14 @@ fn list(root: &Path, as_json: bool) -> Result<()> {
         for gate in session["awaiting_human"].as_array().into_iter().flatten() {
             let Some(gate) = gate.as_str() else { continue };
             let text = summary(root, &session, gate);
+            let meta = &session["gate_meta"][gate];
             gates.push(Listed {
                 number: gates.len() + 1,
                 session: key.clone(),
                 change: session["native_change"].as_str().map(String::from),
                 gate: gate.to_string(),
+                holds: meta["holds"].as_str().unwrap_or_default().to_string(),
+                drives: meta["drives"].as_str().unwrap_or_default().to_string(),
                 digest: sha256(&text),
                 summary: text,
             });
@@ -458,8 +518,8 @@ fn list(root: &Path, as_json: bool) -> Result<()> {
     }
     for gate in &saved.gates {
         println!(
-            "#{} ({})\n{}\nDigest: {}\n",
-            gate.number, gate.session, gate.summary, gate.digest
+            "#{} ({}; holds {}; drives {})\n{}\nDigest: {}\n",
+            gate.number, gate.session, gate.holds, gate.drives, gate.summary, gate.digest
         );
     }
     println!(
@@ -537,7 +597,7 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
                 args.gates
             )
         })?;
-    let mut checked = vec![];
+    let mut checked: Vec<Listed> = vec![];
     for number in &numbers {
         let listed = check_listed(root, &args.list, *number)?;
         let verifying = listed
@@ -571,6 +631,44 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
             )
         })?;
     }
+    // REQ-cli-061: at most one named gate may drive a native step, and it runs first,
+    // as the decided human, before any gate is closed.
+    let drives = |listed: &Listed| {
+        crate::humans::Drives::parse(&listed.drives)
+            .unwrap_or_else(|| crate::humans::Drives::default_for(&listed.holds))
+    };
+    let driving: Vec<&Listed> = checked
+        .iter()
+        .filter(|listed| drives(listed) != crate::humans::Drives::None)
+        .collect();
+    if driving.len() > 1 && !args.no_native {
+        bail!(
+            "refused:several-native-steps: gates {} each drive a native step ({}), and one reply runs at most one, so nothing ran or was written.\nRecord them one at a time: `chough gate record {} --gates <n>` with the relay for each.",
+            driving
+                .iter()
+                .map(|listed| listed.number.to_string())
+                .collect::<Vec<_>>()
+                .join(" and "),
+            driving
+                .iter()
+                .map(|listed| drives(listed).name())
+                .collect::<Vec<_>>()
+                .join(", "),
+            args.list
+        );
+    }
+    if args.verdict.is_some()
+        && !driving
+            .iter()
+            .any(|listed| drives(listed) == crate::humans::Drives::Review)
+    {
+        bail!(
+            "refused:verdict-not-applicable: no named gate drives a review, so --verdict does not apply; nothing ran or was written.\nRun `chough gate record {} --gates {}` without --verdict.",
+            args.list,
+            args.gates
+        );
+    }
+    checked.sort_by_key(|listed| drives(listed) == crate::humans::Drives::None);
     // Close each gate as `chough checkpoint --close-gate` does, through Chough's own
     // command, so the record and its checks are exactly that command's.
     let chough = std::env::current_exe()?;
@@ -593,8 +691,18 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
             ])
             .args(["--summary-digest", &listed.digest, "--list", &args.list])
             .current_dir(root);
+        if drives(listed) != crate::humans::Drives::None {
+            if args.no_native {
+                command.arg("--no-native");
+            } else if let Some(verdict) = &args.verdict {
+                command.args(["--verdict", verdict]);
+            }
+        }
         let output = records::run_owned(&mut command, None)?;
         if !output.status.success() {
+            // A refused native step's own output stays visible (REQ-records-008).
+            use std::io::Write;
+            let _ = std::io::stdout().write_all(&output.stdout);
             let remaining: Vec<String> = checked[index..]
                 .iter()
                 .map(|listed| listed.number.to_string())

@@ -343,6 +343,11 @@ fn gate_record_refuses_unknown_unlisted_closed_or_changed_gates_with_nothing_wri
 fn a_verifying_gate_is_refused_and_closes_through_ship_with_the_list() {
     let review = "Implementation review of g1";
     let fixture = project(&[]);
+    // The review gate drives the native review as the decided human (REQ-records-008).
+    fixture.write(
+        ".chough/local/identity.toml",
+        "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-reviewer\"\n",
+    );
     let archive = ".specsync/archive/changes/2026-11-01-g1";
     fixture.write(
         &format!("{archive}/finalization.json"),
@@ -483,4 +488,43 @@ fn a_gate_of_another_open_session_is_refused_naming_session_use() {
     fixture.ok(&["session", "use", &id]);
     fixture.ok(&record(&list_id, &number, "yes"));
     assert_eq!(session(&fixture)["awaiting_human"], json!([]));
+}
+
+/// #190 (REQ-cli-061): a gate summary counts the change from the merge base with the
+/// default branch and leaves out Chough's records, the knowledge directory and SpecSync
+/// bookkeeping: a one-line product edit, 300 records and 200 files merged from main
+/// count as one file, which the summary names.
+#[test]
+fn gate_summary_counts_only_the_changes_own_files() {
+    let fixture = project(&[SCOPE]);
+    fixture.commit("the product so far, on main");
+    fixture.git(&["checkout", "-q", "-B", "main"]);
+    fixture.git(&["checkout", "-q", "-b", "feature"]);
+    fixture.write("src/product.txt", "one line\n");
+    for index in 0..150 {
+        fixture.write(
+            &format!(".chough/sessions/2026-11-11-feature/evidence/2026-11-11-entry-{index}.md"),
+            "---\nkind: evidence\n---\n",
+        );
+        fixture.write(
+            &format!("knowledge/journal/2026-11-11-post-{index}.md"),
+            "---\nkind: journal\n---\n",
+        );
+    }
+    fixture.commit("the change, with its records");
+    fixture.git(&["checkout", "-q", "main"]);
+    for index in 0..200 {
+        fixture.write(&format!("lib/merged-{index}.txt"), "from main\n");
+    }
+    fixture.commit("work on main after the base");
+    fixture.git(&["checkout", "-q", "feature"]);
+    fixture.git(&["merge", "-q", "--no-edit", "main"]);
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    assert!(
+        summary.contains("What changed: 1 files, +1 −0 since "),
+        "{summary}"
+    );
+    assert!(summary.contains("  src/product.txt +1 −0"), "{summary}");
+    assert!(!summary.contains("lib/merged-"), "{summary}");
 }

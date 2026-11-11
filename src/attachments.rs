@@ -1,7 +1,7 @@
-//! Old proof moving into the knowledge vault (REQ-cli-046, KNOW-18, KNOW-19): loose
-//! artifacts that no observation record references, the key items that move into the
-//! vault instead of being removed, and the first-commit times that attribute an unlisted
-//! artifact to a change by cycle time (KNOW-20).
+//! Retired in 0.6.0 with REQ-cli-046 (vault attachments) and REQ-cli-041 (trims): the
+//! vault no longer holds attachments. Only what `src/evidence.rs` still calls is left, and
+//! this file is deleted at integration once plan step 4 removes those calls.
+#![allow(dead_code)] // removed at integration (t382)
 
 use crate::records::local_path;
 use anyhow::Result;
@@ -162,26 +162,6 @@ pub(super) fn open_bug_fixtures(root: &Path) -> Result<Vec<(String, String)>> {
             open.contains(&id).then_some((id, fixture))
         })
         .collect())
-}
-
-/// The files under the archive's attachments folder of the knowledge directory, sorted.
-pub(super) fn attachments_of(root: &Path, dir: &str, archive: &str) -> Vec<String> {
-    let base = format!("{dir}/attachments/{}", attachment_folder(archive));
-    let Ok(path) = local_path(root, &base) else {
-        return vec![];
-    };
-    let mut files = vec![];
-    if path.is_dir() && walk(&path, &base, &mut files).is_err() {
-        return vec![];
-    }
-    // A ledger shard lives beside the attachments but is not one (KNOW-23).
-    let shard = format!("{base}/{}", crate::evidence::SHARD);
-    let unique: BTreeSet<String> = files
-        .into_iter()
-        .map(|(file, _)| file)
-        .filter(|file| *file != shard)
-        .collect();
-    unique.into_iter().collect()
 }
 
 #[cfg(test)]

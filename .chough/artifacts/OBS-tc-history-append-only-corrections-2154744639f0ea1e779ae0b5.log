@@ -1,0 +1,31 @@
+--- stdout ---
+
+running 1 test
+test a_correction_appends_one_linked_entry_and_changes_no_earlier_byte ... FAILED
+
+failures:
+
+---- a_correction_appends_one_linked_entry_and_changes_no_earlier_byte stdout ----
+
+thread 'a_correction_appends_one_linked_entry_and_changes_no_earlier_byte' (888407823) panicked at tests/correct.rs:15:5:
+no correction can be recorded: error: unrecognized subcommand 'correct'
+
+  tip: some similar subcommands exist: 'context', 'consent'
+
+Usage: chough [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_correction_appends_one_linked_entry_and_changes_no_earlier_byte
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.70s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/correct.rs (target/debug/deps/correct-947b9ace269abb12)
+error: test failed, to rerun pass `--test correct`

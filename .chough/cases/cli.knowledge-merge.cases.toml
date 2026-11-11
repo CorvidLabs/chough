@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# Plan step 8 (t37j): the generated knowledge files merge through chough library merge
+# (REQ-cli-047), so a merge never holds a union of two feeds.
+
+[[case]]
+id = "TC-cli-generated-knowledge-merge"
+title = "Two branches that each add a journal post merge clean through the chough-generated driver; the feed parses, index --check fails until library index rebuilds both; library merge keeps ours and refuses a missing file"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-12", "KNOW-33"]
+requirements = ["REQ-cli-047"]
+paths = ["src/library.rs", "src/journal.rs", ".gitattributes", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the two library merge tests in tests/journal.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "journal", "--", "two_branches_that_each_add_a_post_merge_clean_with_the_generated_driver", "library_merge_keeps_ours_and_refuses_a_missing_file"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600

@@ -266,7 +266,46 @@ pub(super) fn validate_direct_write(transition: &Transition) -> Result<()> {
 /// Every check of a transition's optional records.
 pub(super) fn validate_records(transition: &Transition) -> Result<()> {
     validate_relay(transition)?;
-    validate_direct_write(transition)
+    validate_direct_write(transition)?;
+    validate_gate_and_correction(transition)
+}
+
+/// `holds` and `drives` belong to gate-opened entries, and `corrects`, which a
+/// correction needs, to corrections only.
+fn validate_gate_and_correction(transition: &Transition) -> Result<()> {
+    let gate_opened = transition.kind == GATE_OPENED;
+    ensure!(
+        gate_opened || (transition.holds.is_none() && transition.drives.is_none()),
+        "invalid transition payload: holds and drives are only allowed on gate-opened, not {}",
+        transition.kind
+    );
+    if let Some(holds) = &transition.holds {
+        ensure!(
+            is_stage(holds),
+            "invalid transition payload: holds names no stage"
+        );
+    }
+    if let Some(drives) = &transition.drives {
+        ensure!(
+            crate::humans::Drives::parse(drives).is_some(),
+            "invalid transition payload: drives is approve, review or none"
+        );
+    }
+    let correction = transition.kind == CORRECTION;
+    match &transition.corrects {
+        Some(target) => ensure!(
+            correction
+                && target
+                    .strip_prefix('^')
+                    .is_some_and(crate::session_md::valid_entry_id),
+            "invalid transition payload: corrects is `^t-xxxxxx` and only allowed on a correction"
+        ),
+        None => ensure!(
+            !correction,
+            "invalid transition payload: a correction names the entry it corrects"
+        ),
+    }
+    Ok(())
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -294,9 +333,29 @@ pub(super) struct Transition {
     /// Present only on a `direct-native-write` event (REQ-history-013).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) direct_write: Option<DirectWrite>,
-    /// The acting agent, when known (REQ-records-007); an unauthenticated claim.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// The acting agent, when known (REQ-records-007): the entry's `by` field, an
+    /// unauthenticated claim.
+    #[serde(default, rename = "by", skip_serializing_if = "Option::is_none")]
     pub(super) actor: Option<crate::actor::Actor>,
+    /// On a `gate-opened` entry, the stage the gate holds and the step it drives
+    /// (REQ-cli-030).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) holds: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) drives: Option<String>,
+    /// On a `correction` entry, the entry it corrects, as `^t-xxxxxx` (REQ-history-015).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) corrects: Option<String>,
+}
+
+/// An append-only correction of an earlier entry (REQ-history-015); it starts and ends
+/// no stage segment.
+pub(super) const CORRECTION: &str = "correction";
+
+/// Whether `kind` is a Timeline entry kind (REQ-history-002).
+pub(super) fn is_kind(kind: &str) -> bool {
+    STAGE_KINDS.contains(&kind)
+        || [GATE_OPENED, GATE_CLOSED, DIRECT_WRITE, CORRECTION].contains(&kind)
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -593,8 +652,9 @@ fn native_gate(
             return refused(
                 "refused:native-delta-changed".into(),
                 format!(
-                    "{purpose} needs the approved semantic deltas; the delta for {} changed after the definition approval, while native status still reports approval_valid true (SpecSync 6.1.1, BUG-0002). Restore the approved delta, or resolve authority for the changed scope and record specsync change approve {change} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\", then run specsync change check {change}. Digests use SpecSync 6.1.1's {DELTA_DOMAIN} framing.",
-                    modules.join(", ")
+                    "{purpose} needs the approved semantic deltas; the delta for {} changed after the definition approval, while native status still reports approval_valid true (SpecSync 6.1.1, BUG-0002). Restore the approved delta, or have the changed scope approved: {} Digests use SpecSync 6.1.1's {DELTA_DOMAIN} framing.",
+                    modules.join(", "),
+                    reapproval(change)
                 ),
             );
         }
@@ -610,7 +670,8 @@ fn native_gate(
             return refused(
                 "refused:native-delta-unverifiable".into(),
                 format!(
-                    "{purpose} needs the approved semantic deltas, which cannot be compared: {reason}. Native next action: under applicable human authority, record specsync change approve {change} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\" to record the digests, then run specsync change check {change}; a status read cannot clear this."
+                    "{purpose} needs the approved semantic deltas, which cannot be compared: {reason}. An approval records the digests, and a status read cannot clear this: {}",
+                    reapproval(change)
                 ),
             );
         }
@@ -947,6 +1008,25 @@ fn new_cycle() -> String {
     format!("{NEW_CYCLE_STEPS}, then {NEW_CYCLE_CHANGE}, then {NEW_CYCLE_RECORD}.")
 }
 
+/// After done the session is archived into its story (REQ-history-006), so the next
+/// piece of work starts a new session, not a reset (REQ-cli-021, corrected in the
+/// plan's Delta corrections).
+const NEXT_SESSION: &str = "chough session new <key> --objective \"<outcome>\"";
+
+/// The next piece of work after done: a new session, then, with a native lifecycle, a
+/// new native change recorded in it.
+fn next_work(native: bool) -> String {
+    if native {
+        format!(
+            "Start the next piece of work in a new session: {NEXT_SESSION}, then {NEW_CYCLE_CHANGE}, then {NEW_CYCLE_RECORD}."
+        )
+    } else {
+        format!(
+            "Start the next piece of work in a new session: {NEXT_SESSION}, then chough checkpoint --next-action \"<next step>\"."
+        )
+    }
+}
+
 /// The terminal evidence validity a native status response reports.
 fn terminal_validity(state: &NativeState) -> &str {
     match state {
@@ -1009,104 +1089,6 @@ fn latest_reset_at(
     }
     let _ = root;
     Ok(history.and_then(|read| newest(read.records.iter())))
-}
-
-/// When the current cycle began: its newest reset, or None when no reset time can be
-/// read (a first cycle, or a partial history walk).
-fn current_cycle_start(root: &Path, session: &Checkpoint) -> Option<u64> {
-    let cycle = crate::history::selected(
-        session,
-        crate::history::CYCLE_EVENTS,
-        crate::history::CYCLE_BYTES,
-        // The newest reset by time, over the whole timeline: merged branches can
-        // append an older reset after a newer one.
-        true,
-    );
-    if !cycle.partial.is_empty() {
-        return None;
-    }
-    if cycle.records.iter().any(|record| record["kind"] == "reset") {
-        latest_reset_at(root, Some(&cycle)).ok().flatten()
-    } else {
-        None
-    }
-}
-
-/// REQ-cli-045 (KNOW-16, KNOW-21): on the move into done, with the librarian on, drop the
-/// checkpoint's observation references whose record was observed before the current cycle
-/// began or has no record, and every file and design reference: done closes the cycle, and
-/// the native archive and the vault keep what the change touched. Never fails: the result
-/// is `dropped`, `unchanged`, `skipped` or `refused`, so the move into done never depends
-/// on it.
-fn drop_closed_cycle_references(root: &Path, session: &mut Checkpoint) -> Value {
-    match crate::prefs::effective(root, "librarian") {
-        Ok((value, _)) if value != "on" => {
-            return json!({"status": "skipped", "reason": "the librarian is off"});
-        }
-        Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
-        Ok(_) => {}
-    }
-    let start = current_cycle_start(root, session);
-    // Only a missing record may be dropped; an existing record that cannot be read keeps
-    // every reference and refuses the step (review of #108).
-    let mut kept = vec![];
-    let mut dropped = vec![];
-    let mut unreadable = vec![];
-    if let Some(start) = start {
-        for id in &session.observations {
-            match crate::evidence::observed_at(root, id) {
-                Ok(Some(at)) if at >= start => kept.push(id.clone()),
-                Ok(_) => dropped.push(id.clone()),
-                Err(error) => unreadable.push(format!("{id}: {error:#}")),
-            }
-        }
-    } else {
-        kept.clone_from(&session.observations);
-    }
-    if !unreadable.is_empty() {
-        return json!({"status": "refused", "reason": format!(
-            "a referenced observation record cannot be read, so no reference was dropped ({})",
-            unreadable.join("; ")
-        )});
-    }
-    let dropped_files = session.references.files.clone();
-    let dropped_design = session.references.design.clone();
-    if dropped.is_empty() && dropped_files.is_empty() && dropped_design.is_empty() {
-        return match start {
-            Some(_) => json!({"status": "unchanged"}),
-            None => {
-                json!({"status": "skipped", "reason": "no reset time can be read, so no cycle is known to be closed"})
-            }
-        };
-    }
-    let before = (
-        std::mem::replace(&mut session.observations, kept),
-        std::mem::take(&mut session.references.files),
-        std::mem::take(&mut session.references.design),
-    );
-    match save_checkpoint(root, session) {
-        Ok(()) => {
-            let mut result = json!({
-                "status": "dropped",
-                "dropped": dropped,
-                "dropped_files": dropped_files,
-                "dropped_design": dropped_design,
-            });
-            if start.is_none() {
-                result["observations"] =
-                    json!("kept: no reset time can be read, so no cycle is known to be closed");
-            }
-            result
-        }
-        Err(error) => {
-            (
-                session.observations,
-                session.references.files,
-                session.references.design,
-            ) = before;
-            json!({"status": "refused", "reason": format!("{error:#}")})
-        }
-    }
 }
 
 /// Whether the recorded archived change belongs to the cycle before the latest reset:
@@ -1189,11 +1171,20 @@ pub(super) fn assess(
             reason: "A paused stage keeps its scope, preferences and gates; native state may have changed meanwhile.".into(),
             command: Some("chough stage resume".into()),
         }
-    } else if !session.awaiting_human.is_empty() {
+    } else if let holding @ [_, ..] = session
+        .awaiting_human
+        .iter()
+        .filter(|gate| crate::session_md::gate(session, gate).holds == current)
+        .map(String::as_str)
+        .collect::<Vec<_>>()
+        .as_slice()
+    {
+        // REQ-cli-030: only a gate holding the current stage waits here; a gate holding
+        // a later stage is listed and waits there (#237).
         Action {
             action: format!(
-                "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
-                session.awaiting_human.join("; ")
+                "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`. `chough stage advance` and `chough stage skip` are refused until it is closed.",
+                holding.join("; ")
             ),
             reason: "Only a person can close these gates.".into(),
             command: None,
@@ -1289,23 +1280,25 @@ fn done_action(
     let check_first = native_next
         .map(|text| format!(" Native next action, check it first: {text}."))
         .unwrap_or_default();
+    // A session still open at done is kept for release or for inbox entries to fold;
+    // its next piece of work still starts in a new session.
     let closed = |action: String, reason: String| Action {
         action,
         reason: format!("{reason}{check_first}"),
-        command: Some(NEW_CYCLE_RESET.into()),
+        command: Some(NEXT_SESSION.into()),
     };
     let done = gate_for_state(root, session, "done", state.clone());
     match (state, done) {
         (NativeState::NotConfigured | NativeState::Disabled, _) => closed(
-            format!("{NEW_CYCLE_STEPS}, then chough checkpoint --next-action \"<next step>\"."),
+            next_work(false),
             "The cycle is closed; no native lifecycle gates it.".into(),
         ),
         (NativeState::NoChange, _) => closed(
-            new_cycle(),
+            next_work(true),
             "No native change is recorded for this cycle, so it is closed.".into(),
         ),
         (NativeState::State(..), Some(gate)) if gate.allowed => closed(
-            new_cycle(),
+            next_work(true),
             format!(
                 "The cycle for {} is closed: native state archived, terminal evidence {}.",
                 session
@@ -1344,7 +1337,7 @@ fn archived_action(session: &Checkpoint, state: &NativeState, native_next: Optio
         .unwrap_or("the native change");
     let at_accept = current == "accept";
     let record_done = if at_accept {
-        "Record done first: chough stage advance (accept to done is allowed). Then: "
+        "Record done first: chough stage advance (accept to done is allowed), which archives this session. Then: "
     } else {
         ""
     };
@@ -1356,7 +1349,11 @@ fn archived_action(session: &Checkpoint, state: &NativeState, native_next: Optio
     Action {
         action: format!(
             "The recorded native change is archived while the checkpoint is at {current}, so this cycle's work is closed. {record_done}{}",
-            new_cycle()
+            if at_accept {
+                next_work(true)
+            } else {
+                new_cycle()
+            }
         ),
         reason: format!(
             "Native change {change} is archived while the checkpoint is at {current}, with terminal evidence {}; continuing {current} would work on a closed change.{check_first}",
@@ -1429,6 +1426,9 @@ fn log_transition_at(
         relayed_by,
         direct_write: None,
         actor: None,
+        holds: None,
+        drives: None,
+        corrects: None,
     };
     validate_records(&transition)?;
     // REQ-cli-060 (DRIVE-21): a stage move first records the direct lifecycle writes
@@ -1449,6 +1449,9 @@ fn log_transition_at(
                 relayed_by: None,
                 direct_write: Some(write),
                 actor: None,
+                holds: None,
+                drives: None,
+                corrects: None,
             };
             validate_records(&event)?;
             append_transition(root, session, event)?;
@@ -1495,7 +1498,16 @@ pub(super) fn log_gate(
         vec![],
         None,
         relayed_by,
-    )
+    )?;
+    // A gate-opened entry records what the gate holds and drives (REQ-cli-030).
+    if kind == GATE_OPENED {
+        let meta = crate::session_md::gate(session, gate);
+        if let Some(entry) = session.pending.last_mut() {
+            entry.holds = Some(meta.holds);
+            entry.drives = Some(meta.drives);
+        }
+    }
+    Ok(())
 }
 
 pub(super) fn recent_transitions(root: &Path, count: usize) -> Result<(Vec<Value>, bool)> {
@@ -1611,9 +1623,25 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
 /// How to record a human's decision on a gate on their behalf (REQ-cli-050).
 pub(super) const CLOSE_GATE_COMMAND: &str = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
 
-/// An open human gate holds advance and skip (REQ-cli-030); no reason bypasses it.
-fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str) -> Result<()> {
-    let gates = &session.awaiting_human;
+/// How the scope of `change` is approved again (REQ-cli-022): the human's decision at
+/// a scope gate that drives the approval (REQ-cli-030, REQ-records-008), or, on
+/// authority they gave in advance, the acting agent's approval quoting it
+/// (REQ-cli-029); never a command for the human to run.
+fn reapproval(change: &str) -> String {
+    format!(
+        "open the scope gate with `chough checkpoint --awaiting-human \"Approve the changed scope of {change}\" --drives approve`, and when the human decides, record it with `{CLOSE_GATE_COMMAND}`, which runs the approval as them; on authority they gave in advance, record specsync change approve {change} --actor \"<agent>-<terminal>\" --note \"Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>).\" instead. Then run specsync change check {change}."
+    )
+}
+
+/// An open human gate holds advance and skip out of the stage it holds (REQ-cli-030);
+/// no reason bypasses it. A gate holding a later stage does not stop a move out of an
+/// earlier one (#237). `leaving` is every stage the move leaves.
+fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str, leaving: &[&str]) -> Result<()> {
+    let gates: Vec<&String> = session
+        .awaiting_human
+        .iter()
+        .filter(|gate| leaving.contains(&crate::session_md::gate(session, gate).holds.as_str()))
+        .collect();
     if gates.is_empty() {
         return Ok(());
     }
@@ -1626,7 +1654,7 @@ fn ensure_no_open_human_gate(session: &Checkpoint, kind: &str) -> Result<()> {
         gates
             .iter()
             .take(3)
-            .map(String::as_str)
+            .map(|gate| gate.as_str())
             .collect::<Vec<_>>()
             .join("; ")
     )
@@ -1846,15 +1874,6 @@ fn forward_step(
     Ok(Some(gate.label))
 }
 
-/// The response of a native read a forward move made, for the move into done to reuse
-/// for this change's own manifest (REQ-cli-052). It never outlives the command.
-pub(super) fn read_value(read: &Option<NativeState>) -> Option<&Value> {
-    match read {
-        Some(NativeState::State(_, value)) => Some(value),
-        _ => None,
-    }
-}
-
 /// `stage advance --to <target>`: every main stage up to `target` on one native read.
 /// Every step is checked before the first transition is recorded, so a refused step
 /// records nothing (REQ-cli-052). Returns the applied move and the native read it made.
@@ -1866,7 +1885,6 @@ fn advance_to(
 ) -> Result<(Value, Option<NativeState>)> {
     ensure_active(session)?;
     ensure_main(session, "advance")?;
-    ensure_no_open_human_gate(session, "advance")?;
     let from = session.stage.current.clone();
     let start = position(&from).ok_or_else(|| {
         anyhow::anyhow!(
@@ -1882,6 +1900,8 @@ fn advance_to(
         end > start,
         "{target} is not ahead of {from}; `stage advance --to` only moves forward (use `chough stage back` or `chough stage reset` to go back)"
     );
+    // Every stage the move leaves counts (REQ-cli-030).
+    ensure_no_open_human_gate(session, "advance", &ORDER[start..end])?;
     let mut read = None;
     let mut steps = Vec::new();
     for index in start..end {
@@ -1927,8 +1947,8 @@ fn move_forward(
 ) -> Result<(Value, Option<NativeState>)> {
     ensure_active(session)?;
     ensure_main(session, kind)?;
-    ensure_no_open_human_gate(session, kind)?;
     let from = session.stage.current.clone();
+    ensure_no_open_human_gate(session, kind, &[from.as_str()])?;
     ensure!(
         backfill.is_none() || from != "release",
         "backfill refused: release to done cannot be backfilled; advance it when it happens"
@@ -2071,19 +2091,16 @@ fn move_back(
 
 pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
     let mut session = read_checkpoint(root)?;
-    // The native read a forward move made, kept for the move into done (REQ-cli-052).
-    let mut read = None;
     let mut applied = match command {
         StageCommand::Show => None,
         StageCommand::Advance { note, to } => {
             if let Some(note) = &note {
                 ensure_text("note", note)?;
             }
-            let (applied, made) = match to {
+            let (applied, _) = match to {
                 Some(target) => advance_to(root, &mut session, &target, note.as_deref())?,
                 None => move_forward(root, &mut session, "advance", note.as_deref(), None)?,
             };
-            read = made;
             Some(applied)
         }
         StageCommand::Skip { reason } => {
@@ -2116,14 +2133,13 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
                 ensure_text("note", note)?;
             }
             let backfill = backfill_evidence(root, &at, &commit, &quote)?;
-            let (applied, made) = move_forward(
+            let (applied, _) = move_forward(
                 root,
                 &mut session,
                 "advance",
                 note.as_deref(),
                 Some(backfill),
             )?;
-            read = made;
             Some(applied)
         }
         StageCommand::Back { to, reason } => {
@@ -2282,31 +2298,20 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         .as_mut()
         .filter(|applied| applied["kind"] == "advance" && applied["to"] == "done")
     {
-        // REQ-cli-045 (KNOW-16, KNOW-21): first drop the checkpoint's references from
-        // closed cycles, so they no longer protect proof the archives and vault now keep.
-        applied["checkpoint_references"] = drop_closed_cycle_references(root, &mut session);
-        // REQ-cli-052 (DRIVE-2): the trim takes this change's manifest from the gate's
-        // read instead of reading it again; every other read stays live.
-        let change = session.native_change.clone();
-        let prior = change.as_deref().zip(read_value(&read));
-        applied["librarian_trim"] = crate::library::trim_at_done(root, prior);
-        // REQ-cli-043: then refresh the knowledge directory, so the change just archived
-        // and any proof just trimmed are summarized; never undoes the move either.
-        applied["librarian_index"] = crate::library::refresh_at_done(root);
-        // REQ-cli-049 (KNOW-23): last, rotate the retention ledger into the vault.
-        // REQ-history-006 (DRIVE-13, #155): last among the steps that change a record, the
-        // session archives itself in its own change and the active pointer is cleared;
-        // never undoes the move either.
+        // REQ-history-006 (DRIVE-13, #155): the session archives itself in its own change
+        // and the active pointer is cleared; never undoes the move.
         let from = applied["from"].as_str().unwrap_or_default().to_string();
         applied["session_archive"] = crate::sessions::archive_at_done(root, &session, &from);
-        // REQ-cli-043 (KNOW-4, #191): the rotation and the self-archive change what the
-        // directory is generated from, so regenerate once more and report that pass.
-        if applied["librarian_index"]["status"] == "refreshed"
-            && (applied["ledger_rotation"]["status"] == "rotated"
-                || applied["session_archive"]["status"] == "archived")
+        // REQ-records-011: then its journal post, and REQ-cli-043: then index.md and
+        // feed.xml, regenerated once; neither undoes the move.
+        if applied["session_archive"]["status"] == "archived"
+            && let Some(id) = applied["session_archive"]["id"]
+                .as_str()
+                .map(str::to_string)
         {
-            applied["librarian_index"] = crate::library::refresh_at_done(root);
+            applied["journal_post"] = crate::journal::post_for_done(root, &id);
         }
+        applied["librarian_index"] = crate::library::refresh_at_done(root);
     }
     report(root, &session, applied)
 }

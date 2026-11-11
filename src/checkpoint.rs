@@ -613,6 +613,27 @@ pub(super) struct CheckpointArgs {
     /// The agent recording the decision.
     #[arg(long, allow_hyphen_values = true)]
     recorded_by: Option<String>,
+    /// The review verdict, `pass` or `block`, for a gate that drives review; required
+    /// there and never read from the words (REQ-records-008).
+    #[arg(long, value_parser = ["pass", "block"], requires = "close_gate", conflicts_with = "no_native")]
+    verdict: Option<String>,
+    /// Close a gate that drives a native step without running it: the human's decision
+    /// is neither an approval nor a review, such as a request for changes.
+    #[arg(long, requires = "close_gate")]
+    no_native: bool,
+    /// The native step `chough change ship` already ran for this gate, which the
+    /// decision names; nothing more runs (REQ-cli-059).
+    #[arg(long, hide = true, requires = "close_gate", conflicts_with_all = ["verdict", "no_native"])]
+    native_ran: Option<String>,
+    /// The stage the gates added by --awaiting-human hold (REQ-cli-030); by default the
+    /// current stage.
+    #[arg(long, requires = "awaiting_human")]
+    holds: Option<String>,
+    /// The native step the gates added by --awaiting-human drive when a human closes
+    /// them: approve, review or none; by default approve for a gate held at plan,
+    /// review for one held at accept and none otherwise.
+    #[arg(long, value_parser = ["approve", "review", "none"], requires = "awaiting_human")]
+    drives: Option<String>,
     /// The listed summary's digest the decision was given on (REQ-history-014), for
     /// `chough gate record` and `chough change ship --list`.
     #[arg(long, hide = true, requires_all = ["close_gate", "list"])]
@@ -746,14 +767,141 @@ pub(super) fn check_relay(
         summary_digest: None,
         list: None,
     };
-    let decision = format!(
-        "{} decided \"{gate}\": \"{}\" ({}); recorded by {}; a relayed claim, not authenticated",
-        relay.decided_by, relay.words, relay.place, relay.recorded_by
-    );
+    let decision = decision_text(gate, &relay, None);
     if decision.len() > stage::RELAY_TEXT_LIMIT {
         return Err(RelayProblem::TooLong(gate.into(), decision.len()));
     }
     Ok(Some((gate.into(), relay, decision)))
+}
+
+/// The decision a relayed gate close adds: who decided, their words, where, the
+/// recording agent and, when one ran, the native step (REQ-cli-050, REQ-records-008).
+pub(super) fn decision_text(gate: &str, relay: &stage::RelayedBy, step: Option<&str>) -> String {
+    let mut text = format!(
+        "{} decided \"{gate}\": \"{}\" ({}); recorded by {}; a relayed claim, not authenticated",
+        relay.decided_by, relay.words, relay.place, relay.recorded_by
+    );
+    if let Some(step) = step {
+        text.push_str("; ");
+        text.push_str(step);
+    }
+    text
+}
+
+/// Check the four relay values for leaks, or redact them under `--redact`, before
+/// anything runs (REQ-cli-050, REQ-records-006); returns how many were redacted.
+pub(super) fn guard_relay(relay: &mut stage::RelayedBy) -> Result<usize> {
+    use crate::leaks::{Local, guard};
+    let local = Local::current();
+    Ok(guard(local, "--decided-by", &mut relay.decided_by)?
+        + guard(local, "--words", &mut relay.words)?
+        + guard(local, "--where", &mut relay.place)?
+        + guard(local, "--recorded-by", &mut relay.recorded_by)?)
+}
+
+/// The native step a relayed gate close runs as the decided human (REQ-records-008).
+pub(super) struct NativeStep {
+    pub(super) change: String,
+    pub(super) human: crate::humans::Human,
+    pub(super) step: crate::humans::Step,
+}
+
+/// What closing `gate` with `relay` runs, checked before anything runs: the step the
+/// gate drives as the configured human, or nothing for a gate that drives nothing or a
+/// close with `--no-native`. Returns the step and the text the decision names it by.
+pub(super) fn native_step_for(
+    root: &Path,
+    session: &Checkpoint,
+    gate: &str,
+    relay: &stage::RelayedBy,
+    verdict: Option<&str>,
+    no_native: bool,
+) -> Result<(Option<NativeStep>, Option<String>)> {
+    use crate::humans::{Drives, Step};
+    let drives = crate::session_md::gate(session, gate).drives();
+    match (drives, verdict) {
+        (Drives::Review, None) if !no_native => bail!(
+            "refused:verdict-required: gate \"{gate}\" drives the native review, which needs the human's verdict as --verdict pass or --verdict block (never read from their words), so nothing ran or was saved.\nRun the same command with --verdict, or with --no-native for a decision that is neither an approval nor a review."
+        ),
+        (Drives::Approve | Drives::None, Some(_)) => bail!(
+            "refused:verdict-not-applicable: gate \"{gate}\" drives {}, not a review, so --verdict does not apply; nothing ran or was saved.\nRun the same command without --verdict.",
+            if drives == Drives::None {
+                "no native step"
+            } else {
+                "the native approval"
+            }
+        ),
+        _ => {}
+    }
+    if drives == Drives::None {
+        return Ok((None, None));
+    }
+    if no_native {
+        return Ok((
+            None,
+            Some(format!(
+                "no native {} ran (--no-native)",
+                if drives == Drives::Approve {
+                    "approval"
+                } else {
+                    "review"
+                }
+            )),
+        ));
+    }
+    let Some(change) = session.native_change.clone() else {
+        bail!(
+            "refused:no-native-change: gate \"{gate}\" drives the native {}, and the session records no native change, so nothing ran or was saved.\nRun `chough checkpoint --native-change <id>` first, or close the gate with --no-native for a decision that is neither an approval nor a review.",
+            drives.name()
+        );
+    };
+    let human = crate::humans::resolve(root, &relay.decided_by)?;
+    let step = match drives {
+        Drives::Approve => Step::Approve {
+            note: crate::humans::approval_note(
+                &human,
+                gate,
+                relay,
+                &crate::session_md::iso_time(crate::records::now()?),
+            ),
+        },
+        _ => Step::Review {
+            verdict: verdict.unwrap_or("pass").to_string(),
+        },
+    };
+    let summary = step.summary(&change, &human);
+    Ok((
+        Some(NativeStep {
+            change,
+            human,
+            step,
+        }),
+        Some(summary),
+    ))
+}
+
+/// Run a checked native step; on a SpecSync refusal pass its output and exit code
+/// through and end the process, so nothing is recorded (REQ-records-008).
+pub(super) fn run_native_step(root: &Path, native: &NativeStep) -> Result<serde_json::Value> {
+    use std::io::Write;
+    let ran = crate::humans::run(root, &native.change, &native.human, &native.step)?;
+    if ran.code != 0 {
+        let _ = std::io::stdout().write_all(&ran.stdout);
+        let _ = std::io::stdout().flush();
+        let _ = std::io::stderr().write_all(&ran.stderr);
+        let _ = std::io::stderr().flush();
+        std::process::exit(ran.code);
+    }
+    // SpecSync's own report goes to standard error, so standard output stays one JSON
+    // document.
+    let _ = std::io::stderr().write_all(&ran.stdout);
+    let _ = std::io::stderr().write_all(&ran.stderr);
+    Ok(json!({
+        "ran": native.step.summary(&native.change, &native.human),
+        "human": native.human.name,
+        "specsync_actor": native.human.specsync_actor,
+        "exit_code": ran.code,
+    }))
 }
 
 /// The gate, relay and decision `--close-gate` records, checked before anything is
@@ -800,6 +948,20 @@ fn save_with_gate_events(
     opened: &[String],
     relay_for: impl Fn(&String) -> Option<stage::RelayedBy>,
 ) -> Result<()> {
+    queue_gate_events(root, session, current_stage, cleared, opened, relay_for)?;
+    save_checkpoint(root, session)
+}
+
+/// Queue a gate-closed entry for each of `cleared` and a gate-opened entry for each of
+/// `opened` for the next save.
+fn queue_gate_events(
+    root: &Path,
+    session: &mut Checkpoint,
+    current_stage: &str,
+    cleared: &[String],
+    opened: &[String],
+    relay_for: impl Fn(&String) -> Option<stage::RelayedBy>,
+) -> Result<()> {
     for gate in cleared {
         stage::log_gate(
             root,
@@ -813,7 +975,7 @@ fn save_with_gate_events(
     for gate in opened {
         stage::log_gate(root, session, stage::GATE_OPENED, current_stage, gate, None)?;
     }
-    save_checkpoint(root, session)
+    Ok(())
 }
 
 /// Withdraw every open awaiting-human gate of the canonical checkpoint, as
@@ -850,9 +1012,45 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             relayed_by: Some(relay.clone()),
             direct_write: None,
             actor: None,
+            holds: None,
+            drives: None,
+            corrects: None,
         };
         stage::validate_relay(&probe)
             .context("the summary digest and list are not a valid pair; nothing was saved")?;
+    }
+    // REQ-records-008: the relay passes the leak guard, and the native step the gate
+    // drives is resolved, before anything runs.
+    let mut native = None;
+    let mut native_text = None;
+    let mut native_report: Option<serde_json::Value> = None;
+    if let Some((gate, relay, decision)) = relayed.as_mut() {
+        guard_relay(relay)?;
+        (native, native_text) = match &args.native_ran {
+            Some(ran) => (None, Some(ran.clone())),
+            None => native_step_for(
+                root,
+                &session,
+                gate,
+                relay,
+                args.verdict.as_deref(),
+                args.no_native,
+            )?,
+        };
+        *decision = decision_text(gate, relay, native_text.as_deref());
+        if decision.len() > stage::RELAY_TEXT_LIMIT {
+            bail!(
+                "refused:relay-too-long: the decision for gate \"{gate}\" would be {} bytes, over the {}-byte checkpoint text bound, so nothing ran or was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
+                decision.len(),
+                stage::RELAY_TEXT_LIMIT
+            );
+        }
+    }
+    if let Some(holds) = &args.holds {
+        ensure!(
+            stage::is_stage(holds),
+            "--holds must name a stage (a main stage, release or a side stage); got {holds:?}, so nothing was saved"
+        );
     }
     let mut changed = false;
     if let Some(objective) = args.objective {
@@ -919,6 +1117,29 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         session.completed.remove(position);
         changed = true;
     }
+    // REQ-cli-030: the gates added here hold --holds (by default the current stage) and
+    // drive --drives (by default that stage's step).
+    for gate in &args.awaiting_human {
+        if session.awaiting_human.contains(gate) {
+            continue;
+        }
+        let holds = args
+            .holds
+            .clone()
+            .unwrap_or_else(|| session.stage.current.clone());
+        let drives = args.drives.clone().unwrap_or_else(|| {
+            crate::humans::Drives::default_for(&holds)
+                .name()
+                .to_string()
+        });
+        session.meta.gates.retain(|meta| &meta.gate != gate);
+        session.meta.gates.push(crate::session_md::GateMeta {
+            gate: gate.clone(),
+            holds,
+            drives,
+            opened: String::new(),
+        });
+    }
     for (list, values, label) in [
         (&mut session.decisions, args.decisions, "decision"),
         (&mut session.open_questions, args.questions, "question"),
@@ -956,7 +1177,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .filter(|gate| !open_before_additions.contains(gate))
             .cloned()
             .collect();
-        save_with_gate_events(
+        queue_gate_events(
             root,
             &mut session,
             &current_stage,
@@ -964,6 +1185,13 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             &opened,
             relay_for,
         )?;
+        if let Some(native) = &native {
+            // Every check the save makes, before the native step runs, so a refused
+            // save never follows a native write.
+            render_checkpoint(&session)?;
+            native_report = Some(run_native_step(root, native)?);
+        }
+        save_checkpoint(root, &mut session)?;
     }
     let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
     if let Some((gate, relay, _)) = &relayed {
@@ -971,6 +1199,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             "gate": gate,
             "relayed_by": relay,
             "provenance": RELAY_PROVENANCE,
+            "native_step": native_report.clone().unwrap_or_else(|| json!({"ran": null, "why": native_text})),
         });
     }
     print_json(&output)

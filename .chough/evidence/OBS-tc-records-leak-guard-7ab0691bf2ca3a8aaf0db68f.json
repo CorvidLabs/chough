@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-leak-guard-7ab0691bf2ca3a8aaf0db68f",
+  "criteria": [
+    "LIFE-26",
+    "LIFE-17",
+    "FLOW-22"
+  ],
+  "requirements": [
+    "REQ-records-006"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test sessions --test bugs -- a_leak_in_a_session_value_is_refused_or_redacted bug_writes_refuse_or_redact_leaks for TC-records-leak-guard: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-leak-guard-7ab0691bf2ca3a8aaf0db68f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-leak-guard-7ab0691bf2ca3a8aaf0db68f.log": "61922d9e1304690cac541430e20c2021615b228c6451f0fdb42660219211baaf"
+  },
+  "observed_at_unix_seconds": 1794424619,
+  "snapshot": {
+    "revision": "2e11a49df2c314f087abb61f2968cb74124a6020",
+    "dirty": false,
+    "fingerprint": "8ee2aa4d2b9f38f149e2d50a8f7a73b284faf5b9d9b06fddc3b5c4f340ea1e04",
+    "content": "cf2d6bdeab43a87c2e6354e6f42ebbedf17827e283fe58ecd3bb955fc1ec1b27"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-leak-guard",
+      "digest": "650f217b5ffa289bf5ddd5b9a09efa220e215b2dde5e943dc780f69f9221cb69"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--test",
+    "bugs",
+    "--",
+    "a_leak_in_a_session_value_is_refused_or_redacted",
+    "bug_writes_refuse_or_redact_leaks"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

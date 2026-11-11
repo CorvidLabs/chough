@@ -26,7 +26,7 @@ test = "done_writes_a_short_post_and_the_feed_lists_it"
 # whole knowledge library (35 tracked files modified, 39 new).
 [[case]]
 id = "TC-records-done-touches-only-its-own-post"
-title = "The move into done changes no knowledge file except its own new post and the feed"
+title = "The move into done creates only its own post and changes only feed.xml and the newest-posts list of index.md; every other knowledge file stays byte-identical"
 status = "active"
 track = "functional"
 method = "automated"

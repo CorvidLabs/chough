@@ -10,7 +10,9 @@ mod doctor;
 mod evidence;
 mod gates;
 mod history;
+mod humans;
 mod identity;
+mod journal;
 mod leaks;
 mod library;
 mod local;  // step 4: machine-local state (wired here until the step 3 owner merges)
@@ -106,7 +108,10 @@ enum Commands {
         #[command(subcommand)]
         command: stage::StageCommand,
     },
-    /// Immutable transition history adoption, inspection and protected retention.
+    /// Correct an earlier Timeline entry by appending a correction linked to it; history
+    /// is never rewritten (REQ-history-015).
+    Correct(history::CorrectArgs),
+    /// The active session's Timeline (REQ-history-002).
     History {
         #[command(subcommand)]
         command: history::HistoryCommand,
@@ -145,6 +150,11 @@ enum Commands {
     Library {
         #[command(subcommand)]
         command: library::LibraryCommand,
+    },
+    /// The knowledge journal: short dated posts that link the records (REQ-records-011).
+    Journal {
+        #[command(subcommand)]
+        command: journal::JournalCommand,
     },
     /// Report how long stages, tests, bug fixes and human gates took, from existing
     /// records; read-only, and every duration is elapsed wall-clock time, not effort.
@@ -233,6 +243,7 @@ fn main() -> Result<()> {
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
         Commands::Stage { command } => stage::run(&root, command)?,
         Commands::History { command } => history::run(&root, command)?,
+        Commands::Correct(args) => history::correct(&root, args)?,
         Commands::Cases { command } => {
             if let Some(code) = cases::run(&root, command)? {
                 std::process::exit(code);
@@ -244,6 +255,7 @@ fn main() -> Result<()> {
         Commands::Consent { command } => prefs::consent(&root, command)?,
         Commands::Validate { command } => validate::run(&root, command)?,
         Commands::Library { command } => library::run(&root, command)?,
+        Commands::Journal { command } => journal::run(&root, command)?,
         Commands::Timing(args) => timing::run(&root, *args)?,
         Commands::Skill { command } => skill::run(&root, command)?,
         Commands::Session { command } => sessions::run(&root, command)?,
@@ -427,6 +439,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             "gate": assessment.gate.as_ref().map(|(target, gate)| json!({"to": target, "allowed": gate.allowed, "label": gate.label, "detail": gate.detail})),
             "valid_transitions": stage::valid_transitions(checkpoint),
             "awaiting_human": checkpoint.awaiting_human,
+            "gates": open_gates(checkpoint, usize::MAX),
             "blockers": checkpoint.blockers,
             "open_questions": checkpoint.open_questions,
             "references": checkpoint.references,
@@ -453,11 +466,19 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
                 }),
         ),
     };
+    // REQ-history-015: the corrected text of a corrected next action or decision.
+    let corrections = match session {
+        Session::V2(checkpoint) => history::corrections(checkpoint),
+    };
     Ok(json!({
         "schema_version": 1,
         "objective": session.objective(),
-        "session_next_action": session.next_action(),
-        "next_valid_action": assessment.action.action,
+        "session_next_action": corrections.apply(session.next_action()),
+        "next_valid_action": corrections.apply(&assessment.action.action),
+        "corrections": corrections.view(),
+        "decisions": match session {
+            Session::V2(checkpoint) => checkpoint.decisions.iter().map(|decision| corrections.decision(decision)).collect::<Vec<_>>(),
+        },
         "checkpoint": stage_report,
         "direct_writes": direct_writes::view(root, match session {
             Session::V2(checkpoint) => checkpoint.native_change.as_deref(),
@@ -537,6 +558,20 @@ fn cut(text: &str) -> String {
         end = index + character.len_utf8();
     }
     format!("{}{CUT}", &text[..end])
+}
+
+/// The first `limit` open gates with the stage each holds and the native step each
+/// drives (REQ-cli-030).
+fn open_gates(checkpoint: &checkpoint::Checkpoint, limit: usize) -> Vec<Value> {
+    checkpoint
+        .awaiting_human
+        .iter()
+        .take(limit)
+        .map(|gate| {
+            let meta = session_md::gate(checkpoint, gate);
+            json!({"gate": cut(gate), "holds": meta.holds, "drives": meta.drives})
+        })
+        .collect()
 }
 
 fn listed<'a>(items: impl ExactSizeIterator<Item = &'a String>) -> Value {
@@ -717,6 +752,8 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
     };
     let change = checkpoint.and_then(|checkpoint| checkpoint.native_change.clone());
+    // REQ-history-015: corrections, and the corrected text of what they correct.
+    let corrections = checkpoint.map(history::corrections).unwrap_or_default();
     let summary = assessment
         .native
         .as_ref()
@@ -784,12 +821,13 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "native": native,
         "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
         "next_valid_action": {
-            "action": cut(&assessment.action.action),
+            "action": cut(&corrections.apply(&assessment.action.action)),
             "reason": cut(&assessment.action.reason),
             "command": assessment.action.command.as_deref().map(cut),
         },
         "gate": assessment.gate.as_ref().map(|(to, gate)| json!({"to": to, "allowed": gate.allowed, "label": cut(&gate.label), "detail": cut(&gate.detail)})),
         "awaiting_human": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.awaiting_human).iter()),
+        "gates": checkpoint.map_or_else(Vec::new, |checkpoint| open_gates(checkpoint, LIST_LIMIT)),
         "blockers": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.blockers).iter()),
         "open_questions": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.open_questions).iter()),
         "blocking_bugs": listed(assessment.blocking.iter()),
@@ -800,7 +838,14 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "referenced_current": references.len() - attention.len(),
             "unreferenced": unreferenced,
         },
-        "decisions": decisions(checkpoint.map_or(&empty, |checkpoint| &checkpoint.decisions)),
+        "decisions": decisions(
+            &checkpoint
+                .map_or(&empty, |checkpoint| &checkpoint.decisions)
+                .iter()
+                .map(|decision| corrections.decision(decision))
+                .collect::<Vec<_>>(),
+        ),
+        "corrections": corrections.view(),
         "last_actor": checkpoint.and_then(history::last_actor),
         "last_failure": last_failure(root)?,
         "lessons": lessons(root, modules)?,
@@ -943,7 +988,26 @@ fn next_text(view: &Value) -> String {
             continue;
         }
         lines.push(format!("{title}: {total} open"));
-        lines.extend(items.iter().map(|item| format!("  - {}", text(item))));
+        lines.extend(items.iter().map(|item| {
+            // A gate shows the stage it holds and the step it drives (REQ-cli-030).
+            let held = (key == "awaiting_human")
+                .then(|| {
+                    view["gates"]
+                        .as_array()?
+                        .iter()
+                        .find(|gate| gate["gate"] == *item)
+                })
+                .flatten()
+                .map(|gate| {
+                    format!(
+                        " (holds {}; drives {})",
+                        text(&gate["holds"]),
+                        text(&gate["drives"])
+                    )
+                })
+                .unwrap_or_default();
+            format!("  - {}{held}", text(item))
+        }));
         if total > items.len() as u64 {
             lines.push(format!(
                 "  {} more; chough status",

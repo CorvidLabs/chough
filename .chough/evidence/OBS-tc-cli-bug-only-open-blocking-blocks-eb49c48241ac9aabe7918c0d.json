@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-bug-only-open-blocking-blocks-eb49c48241ac9aabe7918c0d",
+  "criteria": [
+    "FLOW-8",
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-054"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test bugs -- --exact only_an_open_blocking_bug_blocks_leaving_test for TC-cli-bug-only-open-blocking-blocks: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-bug-only-open-blocking-blocks-eb49c48241ac9aabe7918c0d.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-bug-only-open-blocking-blocks-eb49c48241ac9aabe7918c0d.log": "2f717836b6efff616d18ff91e58e45fcab8ebca22e656ad00f6193ab140c7519"
+  },
+  "observed_at_unix_seconds": 1794424622,
+  "snapshot": {
+    "revision": "2e11a49df2c314f087abb61f2968cb74124a6020",
+    "dirty": false,
+    "fingerprint": "8ee2aa4d2b9f38f149e2d50a8f7a73b284faf5b9d9b06fddc3b5c4f340ea1e04",
+    "content": "cf2d6bdeab43a87c2e6354e6f42ebbedf17827e283fe58ecd3bb955fc1ec1b27"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-bug-only-open-blocking-blocks",
+      "digest": "c9dafba98df618115f41b036fccb2b66d1057cbaf9d0ea49346aac76953a0423"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "bugs",
+    "--",
+    "--exact",
+    "only_an_open_blocking_bug_blocks_leaving_test"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

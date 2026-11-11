@@ -302,6 +302,37 @@ pub(super) fn keys_in(root: &Path, dir: &str) -> Result<Vec<String>> {
 
 /// The open session `name` names: its ID, one of its aliases, or the bare slug of
 /// exactly one open session. An alias two sessions hold is refused (REQ-records-003).
+/// The file of the open session or archived story `name` names, by ID, bare key or
+/// alias (REQ-records-003, REQ-history-015).
+pub(super) fn resolve_any(root: &Path, name: &str) -> Result<String> {
+    match resolve_open(root, name) {
+        Ok(id) => return Ok(session_file(&id)),
+        Err(error) => {
+            let message = error.to_string();
+            if message != format!("no session {name}") && !message.ends_with("is archived") {
+                return Err(error);
+            }
+        }
+    }
+    let mut found = vec![];
+    for id in archived_ids(root)? {
+        let aliases = read_at(root, &archive_file(&id))
+            .map(|session| session.meta.aliases)
+            .unwrap_or_default();
+        if id == name || id.get(11..) == Some(name) || aliases.iter().any(|alias| alias == name) {
+            found.push(id);
+        }
+    }
+    match found.as_slice() {
+        [id] => Ok(archive_file(id)),
+        [] => bail!("refused: no open session or archived story {name}; nothing was written"),
+        several => bail!(
+            "refused: {name} names several archived stories ({}); name one by its ID; nothing was written",
+            several.join(", ")
+        ),
+    }
+}
+
 pub(super) fn resolve_open(root: &Path, name: &str) -> Result<String> {
     let ids = open_ids(root)?;
     if ids.iter().any(|id| id == name) {
@@ -1057,12 +1088,17 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
     session.decisions.push(decision);
     checkpoint::validate_v2(&session)?;
     let report = archive(root, &id, &session, "closed-without-done")?;
+    // REQ-records-011: the closed session's journal post, then the index and feed.
+    let post = crate::journal::post_for_close(root, &id);
+    let index = crate::library::refresh_at_done(root);
     Ok(json!({
         "schema_version": 1,
         "closed": id,
         "archived": report.story,
         "kept": report.kept,
         "reason": reason.trim(),
+        "journal_post": post,
+        "librarian_index": index,
     }))
 }
 

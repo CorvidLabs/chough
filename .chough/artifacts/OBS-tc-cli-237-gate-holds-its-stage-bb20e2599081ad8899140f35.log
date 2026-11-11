@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test a_gate_holds_only_the_stage_it_names ... FAILED
+
+failures:
+
+---- a_gate_holds_only_the_stage_it_names stdout ----
+
+thread 'a_gate_holds_only_the_stage_it_names' (888332859) panicked at tests/humans.rs:19:5:
+a gate for a later stage stopped build from advancing: Error: advance refused (refused:awaiting-human): waiting for a human decision: Publish the release; record the human's decision on a gate with `chough checkpoint --close-gate "<gate>" --decided-by "<who>" --words "<their words>" --where "<where>" --recorded-by "<agent>"`, or withdraw gates no human decision closes with `chough checkpoint --clear-awaiting-human` (re-pass gates still waiting with --awaiting-human)
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_gate_holds_only_the_stage_it_names
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/humans.rs (target/debug/deps/humans-4b790b2ba5f9d8c7)
+error: test failed, to rerun pass `--test humans`
