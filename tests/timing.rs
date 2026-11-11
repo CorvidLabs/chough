@@ -1477,7 +1477,7 @@ fn transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identica
         .map(|index| transition(Some(T + index as u64), "reset", "intent", "intent", "x"))
         .collect();
     write_transitions(&fixture, &lines);
-    write_observation(&fixture, "a-1", Some("TC-a"), "local", "failed", T, None);
+    write_entry(&fixture, "a-1", "TC-a", "failed", T);
     write_bug(&fixture, "BUG-0001", "open", &["a-1"], json!([]));
     fixture.write(".specsync/changes/some-change/state.json", "{}\n");
     let before = record_digests(fixture.root());
