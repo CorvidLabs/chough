@@ -27,12 +27,13 @@
     "OBS-tc-records-actor-recorded-556298a33aba7c34ff56307b",
     "OBS-tc-records-actor-recorded-838ca2648f678ed5413a44a5",
     "OBS-tc-records-actor-recorded-3926d24155e0fa587813f2f6",
-    "OBS-tc-records-actor-recorded-6675479880e75161b11ac3e3"
+    "OBS-tc-records-actor-recorded-6675479880e75161b11ac3e3",
+    "OBS-tc-records-actor-recorded-9b46ed4d862ed4cb1bd0ad1f"
   ],
   "impact": "Several agents' work cannot be told apart in the history (GitHub #201, folded from PR #233)",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -58,8 +59,15 @@
       "observations": [
         "OBS-tc-records-actor-recorded-6675479880e75161b11ac3e3"
       ]
+    },
+    {
+      "at_unix_seconds": 1794440827,
+      "text": "status: open -> verified. Green on integration: TC-records-actor-recorded passes with the evidence part (5 actor tests and the bug test); Timeline entries, evidence entries, case runs and bugs name the acting agent.",
+      "observations": [
+        "OBS-tc-records-actor-recorded-9b46ed4d862ed4cb1bd0ad1f"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794424053,
-  "updated_at_unix_seconds": 1794440743
+  "updated_at_unix_seconds": 1794440827
 }
