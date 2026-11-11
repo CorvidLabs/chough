@@ -1,8 +1,9 @@
 //! `chough doctor`: find and fix the Chough debt that stops a fresh worktree from
 //! entering Chough (REQ-cli-055, REQ-history-012, DRIVE-17).
 //!
-//! It reads only `.chough/` and the archives' `finalization.json`; it never calls
-//! SpecSync and never records a human decision, approval, review or consent.
+//! It reads only `.chough/`, the archives' `finalization.json` and `.specsync/sdd.json`;
+//! it never calls SpecSync, never writes `.specsync/sdd.json`, and never records a human
+//! decision, approval, review or consent.
 
 use crate::checkpoint::{self};
 use crate::records::{local_path, print_json};
@@ -35,6 +36,7 @@ enum Kind {
     FinishedSession,
     UnfinishedSession,
     UnfinishedArchive,
+    RecordsInVerification,
 }
 
 impl Kind {
@@ -46,6 +48,7 @@ impl Kind {
             Self::FinishedSession => "finished_session",
             Self::UnfinishedSession => "unfinished_session",
             Self::UnfinishedArchive => "unfinished_archive",
+            Self::RecordsInVerification => "records_in_verification",
         }
     }
 }
@@ -59,6 +62,8 @@ struct Finding {
     reason: Option<String>,
     /// Why the fix cannot run even with `--fix`, when known before fixing.
     blocked: Option<String>,
+    /// Fields the finding adds to its JSON, such as the missing entries.
+    detail: Option<Value>,
 }
 
 impl Finding {
@@ -71,6 +76,7 @@ impl Finding {
             status: "found",
             reason: None,
             blocked: None,
+            detail: None,
         }
     }
 
@@ -89,6 +95,11 @@ impl Finding {
         });
         if let Some(reason) = &self.reason {
             value["reason"] = json!(reason);
+        }
+        if let Some(Value::Object(detail)) = &self.detail {
+            for (key, field) in detail {
+                value[key] = field.clone();
+            }
         }
         value
     }
@@ -118,10 +129,192 @@ fn legacy(root: &Path) -> Result<Option<Finding>> {
     Ok(Some(finding))
 }
 
+/// The SDD policy whose `verification_ignored_paths` keeps Chough's records out of
+/// SpecSync's verification (REQ-records-014).
+pub(super) const SDD_POLICY: &str = ".specsync/sdd.json";
+/// The folders Chough writes while work is in progress, which hold only its records.
+pub(super) const RECORD_PREFIXES: [&str; 3] =
+    [".chough/sessions/", ".chough/archive/", ".chough/bugs/"];
+/// The first SpecSync release that honours `verification_ignored_paths`.
+pub(super) const EXCLUSIONS_SINCE: &str = "6.1.2";
+
+/// What `.specsync/sdd.json` says about Chough's record folders (REQ-records-014). Chough
+/// reads the policy at full size and never writes it.
+pub(super) struct Exclusions {
+    /// No `.specsync/sdd.json`: no SDD policy, so no native verification digests them.
+    pub(super) no_policy: bool,
+    /// The policy could not be read or parsed as JSON.
+    pub(super) unreadable: Option<String>,
+    /// Record prefixes the list does not name exactly.
+    pub(super) missing: Vec<&'static str>,
+    /// Listed entries broader than a record prefix, such as `.chough/`, which also hide
+    /// case definitions and preferences that a change's verification needs.
+    pub(super) broader: Vec<String>,
+}
+
+impl Exclusions {
+    /// Whether every record folder is left out of verification, exactly or by a broader
+    /// entry, so Chough's writes after `change check --commit` stale nothing.
+    pub(super) fn in_force(&self) -> bool {
+        !self.no_policy
+            && self.unreadable.is_none()
+            && RECORD_PREFIXES.iter().all(|prefix| {
+                !self.missing.contains(prefix)
+                    || self
+                        .broader
+                        .iter()
+                        .any(|entry| prefix.starts_with(entry.as_str()))
+            })
+    }
+
+    /// The advice `chough doctor` and `chough init` give while a record prefix is not
+    /// listed exactly, or None when all three are.
+    pub(super) fn advice(&self) -> Option<String> {
+        if self.no_policy {
+            return None;
+        }
+        if let Some(error) = &self.unreadable {
+            return Some(format!(
+                "{SDD_POLICY} cannot be read ({error}), so Chough cannot tell whether {} are left out of SpecSync's verification; fix the policy in an ordinary reviewed change. Chough never writes it.",
+                RECORD_PREFIXES.join(", ")
+            ));
+        }
+        if self.missing.is_empty() {
+            return None;
+        }
+        let mut advice = format!(
+            "List {} in verification_ignored_paths in {SDD_POLICY} (SpecSync {EXCLUSIONS_SINCE} and later), so a Chough record written after `specsync change check --commit` leaves the recorded verification current; adding them is an ordinary reviewed change to {SDD_POLICY}, and Chough never writes it.",
+            self.missing.join(", ")
+        );
+        if !self.broader.is_empty() {
+            advice.push_str(&format!(
+                " {} also leaves .chough/cases/ and .chough/preferences.json out of verification, which a change's verification needs; list the three record folders instead.",
+                self.broader.join(", ")
+            ));
+        }
+        Some(advice)
+    }
+
+    /// When Chough's records are safe to write, for `chough next` (REQ-records-014).
+    pub(super) fn writes(&self) -> Value {
+        let (state, text) = if self.no_policy {
+            (
+                "any-point",
+                format!(
+                    "no {SDD_POLICY}, so no native verification digests Chough's records; they may be written and committed at any point"
+                ),
+            )
+        } else if self.in_force() {
+            (
+                "any-point",
+                format!(
+                    "{SDD_POLICY} leaves {} out of verification, so Chough's records may be written and committed at any point of the native order",
+                    RECORD_PREFIXES.join(", ")
+                ),
+            )
+        } else {
+            (
+                "commit-first",
+                format!(
+                    "commit Chough's records before `specsync change check --commit` and write nothing under .chough/ until finalize: {SDD_POLICY} does not leave {} out of verification (`chough doctor` explains)",
+                    if self.missing.is_empty() {
+                        RECORD_PREFIXES.join(", ")
+                    } else {
+                        self.missing.join(", ")
+                    }
+                ),
+            )
+        };
+        json!({"state": state, "text": text, "missing": self.missing, "policy": SDD_POLICY})
+    }
+}
+
+/// Read `.specsync/sdd.json`'s `verification_ignored_paths` (REQ-records-014).
+pub(super) fn exclusions(root: &Path) -> Exclusions {
+    let mut found = Exclusions {
+        no_policy: false,
+        unreadable: None,
+        missing: vec![],
+        broader: vec![],
+    };
+    let path = match local_path(root, SDD_POLICY) {
+        Ok(path) => path,
+        Err(error) => {
+            found.unreadable = Some(format!("{error:#}"));
+            return found;
+        }
+    };
+    if !path.exists() {
+        found.no_policy = true;
+        return found;
+    }
+    let policy = crate::records::read_native_text(&path)
+        .and_then(|text| serde_json::from_str::<Value>(&text).map_err(anyhow::Error::from));
+    let policy = match policy {
+        Ok(policy) => policy,
+        Err(error) => {
+            found.unreadable = Some(format!("{error:#}"));
+            return found;
+        }
+    };
+    let listed: Vec<String> = policy["verification_ignored_paths"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|entry| entry.as_str().map(str::to_string))
+        .collect();
+    found.missing = RECORD_PREFIXES
+        .into_iter()
+        .filter(|prefix| !listed.iter().any(|entry| entry == prefix))
+        .collect();
+    found.broader = listed
+        .into_iter()
+        .filter(|entry| {
+            RECORD_PREFIXES
+                .iter()
+                .any(|prefix| prefix.len() > entry.len() && prefix.starts_with(entry.as_str()))
+        })
+        .collect();
+    found
+}
+
+/// The verification-exclusions finding, while `.specsync/sdd.json` exists and does not
+/// list every record prefix (REQ-records-014). Doctor never writes the policy, so the
+/// finding is never fixed by `--fix`.
+fn records_in_verification(root: &Path) -> Option<Finding> {
+    let exclusions = exclusions(root);
+    let advice = exclusions.advice()?;
+    let mut finding = Finding::new(
+        Kind::RecordsInVerification,
+        SDD_POLICY,
+        format!(
+            "add {} to verification_ignored_paths in {SDD_POLICY} in a reviewed change",
+            if exclusions.missing.is_empty() {
+                RECORD_PREFIXES.join(", ")
+            } else {
+                exclusions.missing.join(", ")
+            }
+        ),
+        false,
+    );
+    finding.blocked = Some(format!(
+        "Chough never writes {SDD_POLICY}; adding the entries is an ordinary reviewed change to it"
+    ));
+    finding.detail = Some(json!({
+        "missing": exclusions.missing,
+        "specsync": format!("{EXCLUSIONS_SINCE} and later"),
+        "advice": advice,
+    }));
+    Some(finding)
+}
+
 /// Every finding, in the order the fixes run (REQ-history-012).
 fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     let mut found = vec![];
     if let Some(finding) = legacy(root)? {
+        found.push(finding);
+    }
+    if let Some(finding) = records_in_verification(root) {
         found.push(finding);
     }
     if !sessions::enabled(root)? {
@@ -228,6 +421,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
             "{} is a 0.5.x checkpoint; run `chough migrate`",
             checkpoint::SESSION
         ),
+        Kind::RecordsInVerification => bail!("Chough never writes {SDD_POLICY}"),
         Kind::StalePointer => {
             let path = local_path(root, sessions::POINTER)?;
             if path.exists() {
