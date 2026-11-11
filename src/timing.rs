@@ -10,14 +10,16 @@
 
 use crate::checkpoint::{Session, read_session};
 use crate::evidence::{self, Outcome};
+use crate::markdown::{self, Kind, Record as Front};
 use crate::records::{
     NativeJson, TIMING_BUDGET_VARIABLE, local_path, native_json_within, now, print_json,
-    read_native_text, trace_phase,
+    read_bounded_record, read_native_text, trace_phase,
 };
+use crate::session_md::parse_time;
 use crate::{bugs, stage, validate};
 use anyhow::{Result, bail};
 use serde_json::{Value, json};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::path::Path;
 use std::time::{Duration, Instant};
@@ -33,6 +35,11 @@ const HISTORY_RULE: &str =
 /// Fewer samples than this are too few to estimate.
 const MIN_SAMPLES: usize = 3;
 const ARCHIVE_DIR: &str = ".specsync/archive/changes";
+/// Archived session stories (REQ-history-006), whose timelines and receipts timing reads.
+const STORIES_DIR: &str = ".chough/archive/sessions";
+/// A correction (REQ-history-015): a known Timeline kind that starts and ends no stage
+/// segment. Plan step 7 adds it; this points at its constant once it lands.
+const CORRECTION: &str = stage::CORRECTION;
 const CHANGES_DIR: &str = ".specsync/changes";
 
 const NO_FIRST: &str = "no transition before the first record";
@@ -248,9 +255,10 @@ fn read_transitions(_root: &Path, session: &Session, all: bool) -> Result<Transi
             unreadable += 1;
             continue;
         };
-        // A direct lifecycle write (REQ-history-013, REQ-reporting-001) is a known kind
-        // that starts or ends no segment: skipped, never counted as unrecognised.
-        if kind == stage::DIRECT_WRITE {
+        // A direct lifecycle write (REQ-history-013, REQ-reporting-001) and a correction
+        // (REQ-history-015) are known kinds that start or end no segment: skipped, never
+        // counted as unrecognised.
+        if kind == stage::DIRECT_WRITE || kind == CORRECTION {
             continue;
         }
         if !stage::STAGE_KINDS.contains(&kind.as_str())
@@ -797,51 +805,129 @@ fn outcome_word(outcome: &Outcome) -> &'static str {
     }
 }
 
-fn tests_section(root: &Path, case: Option<&str>, partial: &mut Vec<Value>) -> Vec<Value> {
-    let records = match evidence::load_all(root) {
-        Ok(records) => records,
+/// One case run: from an open session's evidence entry, an archived story's or a bug's
+/// receipt (REQ-reporting-001, REQ-cli-017), or, until plan step 4's writers land, a
+/// 0.5.x observation.
+struct Run {
+    id: String,
+    cases: Vec<String>,
+    environment: String,
+    result: String,
+    observed: Option<u64>,
+    duration: Option<u64>,
+    found_in: String,
+}
+
+/// A front matter record's scalars as `(key, value)` pairs.
+fn scalars(record: &Front) -> Vec<(String, String)> {
+    record
+        .keys()
+        .into_iter()
+        .filter_map(|key| Some((key.to_string(), record.scalar(key)?.to_string())))
+        .collect()
+}
+
+/// A run from an entry's or a receipt's fields; None without an `id`.
+fn run_from(fields: &[(String, String)], found_in: String) -> Option<Run> {
+    let get = |key: &str| {
+        fields
+            .iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.clone())
+            .filter(|value| !value.is_empty())
+    };
+    Some(Run {
+        id: get("id")?,
+        cases: get("case").into_iter().collect(),
+        environment: get("environment").unwrap_or_default(),
+        result: get("result").unwrap_or_else(|| "unknown".into()),
+        observed: get("observed").and_then(|text| parse_time(&text).ok()),
+        duration: get("duration_seconds").and_then(|text| text.parse().ok()),
+        found_in,
+    })
+}
+
+/// Every case run: open sessions' entries, then archived stories' and bugs' receipts.
+/// The same run read twice, such as one receipt kept by a story and a bug, counts once.
+fn case_runs(root: &Path, stories: &[Story], partial: &mut Vec<Value>) -> Vec<Run> {
+    let mut runs = vec![];
+    for session in crate::sessions::open_ids(root).unwrap_or_default() {
+        let dir = format!("{}/{session}/evidence", crate::sessions::DIR);
+        for (_, record) in bugs::records_in(root, &dir, Kind::Evidence.bound()) {
+            runs.extend(run_from(&scalars(&record), format!("entry in {session}")));
+        }
+    }
+    for story in stories {
+        for map in story.record.maps("receipts") {
+            runs.extend(run_from(&map, format!("receipt in {}", story.id)));
+        }
+    }
+    match bugs::receipts(root) {
+        Ok(receipts) => {
+            for (bug, map) in receipts {
+                runs.extend(run_from(&map, format!("receipt in bug {bug}")));
+            }
+        }
+        Err(error) => partial.push(json!({"source": bugs::BUGS_DIR, "reason": format!("bugs unreadable, so their receipts are not shown: {error:#}")})),
+    }
+    // Transitional: `cases run` and `evidence add` still write 0.5.x observations in this
+    // build. Plan step 4's evidence reader replaces this at integration.
+    match evidence::load_all(root) {
+        Ok(records) => runs.extend(records.into_iter().map(|record| Run {
+            cases: record.cases.iter().map(|case| case.id.clone()).collect(),
+            environment: record.environment,
+            result: outcome_word(&record.outcome).to_string(),
+            observed: Some(record.observed_at_unix_seconds),
+            duration: record.duration_seconds,
+            found_in: "observation".into(),
+            id: record.id,
+        })),
         Err(error) => {
             partial.push(json!({"source": evidence::EVIDENCE_DIR, "reason": format!("observations unreadable, so none are shown: {error:#}")}));
-            return vec![];
         }
-    };
-    let mut groups: BTreeMap<(Option<String>, String), Vec<&evidence::Evidence>> = BTreeMap::new();
-    for record in &records {
-        let mut keys: Vec<Option<String>> = record
-            .cases
-            .iter()
-            .map(|case| Some(case.id.clone()))
-            .collect();
+    }
+    let mut seen = BTreeSet::new();
+    runs.retain(|run| seen.insert((run.id.clone(), run.observed, run.cases.clone())));
+    runs
+}
+
+fn tests_section(runs: &[Run], case: Option<&str>) -> Vec<Value> {
+    let mut groups: BTreeMap<(Option<String>, String), Vec<&Run>> = BTreeMap::new();
+    for run in runs {
+        let mut keys: Vec<Option<String>> = run.cases.iter().cloned().map(Some).collect();
         if keys.is_empty() {
             keys.push(None);
         }
         for key in keys {
             groups
-                .entry((key, record.environment.clone()))
+                .entry((key, run.environment.clone()))
                 .or_default()
-                .push(record);
+                .push(run);
         }
     }
     groups
         .into_iter()
         .filter(|((id, _), _)| case.is_none() || id.as_deref() == case)
-        .map(|((id, environment), mut records)| {
-            records.sort_by(|a, b| {
-                (a.observed_at_unix_seconds, &a.id).cmp(&(b.observed_at_unix_seconds, &b.id))
+        .map(|((id, environment), mut runs)| {
+            // Known times in order; a run without an observed time last, never at zero.
+            runs.sort_by(|a, b| {
+                (a.observed.is_none(), a.observed, &a.id)
+                    .cmp(&(b.observed.is_none(), b.observed, &b.id))
             });
-            let observations: Vec<Value> = records
+            let observations: Vec<Value> = runs
                 .iter()
-                .map(|record| {
-                    let run_time = record.duration_seconds.map_or_else(
+                .map(|run| {
+                    let run_time = run.duration.map_or_else(
                         || Span::Unknown("no run time recorded".into()),
                         // Whole seconds: a run under one second is recorded together.
                         |seconds| Span::Known(seconds, if seconds == 0 { TOGETHER } else { ELAPSED }),
                     );
                     json!({
-                        "id": record.id,
-                        "outcome": outcome_word(&record.outcome),
-                        "observed": Time::Known(record.observed_at_unix_seconds).to_json(),
+                        "id": run.id,
+                        "outcome": run.result,
+                        "observed": Time::of(run.observed, "no observed time").to_json(),
                         "run_time": run_time.to_json(),
+                        "found_in": run.found_in,
                     })
                 })
                 .collect();
@@ -877,102 +963,41 @@ fn validation_section(root: &Path, case: Option<&str>, partial: &mut Vec<Value>)
         .collect()
 }
 
-/// Whether a bug note's changes prefix (the `; `-joined `field: old -> new` entries
-/// before the first `. `, as `bug update` writes them) records a move to verified.
-fn records_verified(text: &str) -> bool {
-    let prefix = text.split(". ").next().unwrap_or_default();
-    prefix.split("; ").any(|change| {
-        change
-            .strip_prefix("status: ")
-            .and_then(|rest| rest.split_once(" -> "))
-            .is_some_and(|(old, new)| {
-                !old.is_empty() && !old.contains(' ') && new.trim_end_matches('.') == "verified"
-            })
-    })
-}
-
 struct BugRow {
     value: Value,
     fix_time: Option<u64>,
 }
 
+/// Each bug's creation, reproduction and verification, from its linked entries and
+/// receipts and its Log (REQ-reporting-001); no retention ledger is read.
 fn bug_rows(root: &Path, only: Option<&str>, partial: &mut Vec<Value>) -> Vec<BugRow> {
-    let bugs = match bugs::bug_times(root) {
+    let bugs = match bugs::fix_times(root) {
         Ok(bugs) => bugs,
         Err(error) => {
             partial.push(json!({"source": bugs::BUGS_DIR, "reason": format!("bugs unreadable, so none are shown: {error:#}")}));
             return vec![];
         }
     };
-    // An unreadable ledger leaves every absent observation unavailable.
-    let ledger = evidence::ledger_entries(root).ok();
     bugs.into_iter()
-        .filter(|bug| only.is_none_or(|only| bug.id == only))
+        .filter(|bug| only.is_none_or(|only| bug.names.iter().any(|name| name == only)))
         .map(|bug| {
-            let mut unavailable = false;
-            let mut earliest: Option<(u64, String)> = None;
-            for id in &bug.observations {
-                let seen = if evidence::is_present(root, id).unwrap_or(false) {
-                    evidence::load(root, id).ok().map(|record| {
-                        (
-                            record.outcome == Outcome::Failed,
-                            Some(record.observed_at_unix_seconds),
-                            format!("observation {id}"),
-                        )
-                    })
-                } else {
-                    ledger
-                        .as_ref()
-                        .and_then(|ledger| ledger.get(id))
-                        .and_then(|entry| {
-                            // An entry without a recognised outcome could be the earlier
-                            // failure, so it is unavailable like a missing one.
-                            let failed = match entry.outcome.as_deref()? {
-                                "failed" => true,
-                                "passed" | "not-run" => false,
-                                _ => return None,
-                            };
-                            Some((
-                                failed,
-                                entry.observed_at_unix_seconds,
-                                format!("retention ledger (pruned observation {id})"),
-                            ))
-                        })
-                };
-                match seen {
-                    Some((true, Some(at), source)) => {
-                        if earliest.as_ref().is_none_or(|(best, _)| at < *best) {
-                            earliest = Some((at, source));
-                        }
-                    }
-                    Some((true, None, _)) | None => unavailable = true,
-                    Some((false, _, _)) => {}
-                }
-            }
-            let (reproduced, reproduced_source) = match (unavailable, earliest) {
+            let (reproduced, reproduced_source) = match (bug.unavailable, bug.reproduced) {
                 (true, _) => (Time::Unknown("unavailable".into()), None),
                 (false, Some((at, source))) => (Time::Known(at), Some(source)),
                 (false, None) => (Time::Unknown("no linked failed observation".into()), None),
             };
-            let verified = bug
-                .notes
-                .iter()
-                .find(|(_, text)| records_verified(text))
-                .map_or_else(
-                    || Time::Unknown("no note records status -> verified".into()),
-                    |(at, _)| Time::Known(*at),
-                );
+            let verified = Time::of(bug.verified, "no Log entry records status -> verified");
             let fix_time = Span::between(&reproduced, &verified, false);
             BugRow {
                 fix_time: fix_time.seconds(),
                 value: json!({
                     "id": bug.id,
                     "status": bug.status,
-                    "created": Time::Known(bug.created_at_unix_seconds).to_json(),
+                    "created": Time::of(bug.created, "no readable created time").to_json(),
                     "reproduced": reproduced.to_json(),
                     "reproduced_source": reproduced_source,
                     "verified": verified.to_json(),
-                    "verified_source": verified.known().map(|_| "from note text"),
+                    "verified_source": verified.known().map(|_| "from the bug Log"),
                     "fix_time": fix_time.to_json(),
                 }),
             }
@@ -1424,6 +1449,210 @@ fn native_text(change: &Value) -> Vec<String> {
 }
 
 // ---------------------------------------------------------------------------
+// Every session's timeline: open sessions and archived stories.
+
+/// An archived session story: its record, for its receipts, and its checkpoint, for its
+/// timeline, when that reads.
+struct Story {
+    id: String,
+    record: Front,
+    session: Option<Session>,
+}
+
+/// Archived stories, newest name first, within the timing byte bound
+/// (REQ-reporting-001, REQ-history-003). A story that cannot be read is named in
+/// `partial`, and so is the count of older stories beyond the bound.
+fn read_stories(root: &Path, partial: &mut Vec<Value>) -> Vec<Story> {
+    let Ok(folder) = local_path(root, STORIES_DIR) else {
+        return vec![];
+    };
+    let mut names: Vec<String> = match fs::read_dir(&folder) {
+        Ok(entries) => entries
+            .filter_map(|entry| entry.ok())
+            .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_file()))
+            .filter_map(|entry| entry.file_name().into_string().ok())
+            .filter(|name| name.ends_with(".md") && !name.starts_with('.'))
+            .collect(),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return vec![],
+        Err(error) => {
+            partial.push(json!({"source": STORIES_DIR, "reason": format!("archived stories unreadable, so none are shown: {error}")}));
+            return vec![];
+        }
+    };
+    // Dated names: the newest sort last, and are read first.
+    names.sort_unstable_by(|left, right| right.cmp(left));
+    let (mut stories, mut bytes, mut skipped) = (vec![], 0_u64, 0_usize);
+    for name in names {
+        let relative = format!("{STORIES_DIR}/{name}");
+        let path = folder.join(&name);
+        let size = fs::metadata(&path).map_or(0, |metadata| metadata.len());
+        if bytes + size > TRANSITIONS_LIMIT {
+            skipped += 1;
+            continue;
+        }
+        bytes += size;
+        let read = read_bounded_record(&path, Kind::Story.bound())
+            .and_then(|text| Ok((markdown::parse(&relative, &text)?, text)));
+        let (record, text) = match read {
+            Ok(read) => read,
+            Err(error) => {
+                partial.push(json!({"source": relative, "reason": format!("story unreadable, so it is not shown: {error:#}")}));
+                continue;
+            }
+        };
+        let session = match crate::checkpoint::parse(&relative, &text) {
+            Ok(session) => Some(session),
+            Err(error) => {
+                partial.push(json!({"source": relative, "reason": format!("story timeline unreadable, so its stages are not shown: {error:#}")}));
+                None
+            }
+        };
+        stories.push(Story {
+            id: name.trim_end_matches(".md").to_string(),
+            record,
+            session,
+        });
+    }
+    if skipped > 0 {
+        partial.push(json!({"source": STORIES_DIR, "reason": format!("{skipped} older stories skipped beyond the {TRANSITIONS_LIMIT}-byte bound")}));
+    }
+    stories
+}
+
+/// One session's timeline, derived.
+struct SessionTiming {
+    id: String,
+    state: &'static str,
+    stage: String,
+    transitions: Transitions,
+    derived: Derived,
+}
+
+impl SessionTiming {
+    fn of(
+        root: &Path,
+        id: String,
+        state: &'static str,
+        session: &Session,
+        at: u64,
+    ) -> Result<Self> {
+        let transitions = read_transitions(root, session, true)?;
+        let derived = derive(&transitions, session, at);
+        let Session::V2(checkpoint) = session;
+        Ok(Self {
+            id,
+            state,
+            stage: checkpoint.stage.current.clone(),
+            transitions,
+            derived,
+        })
+    }
+}
+
+/// Every open session's and every read story's timeline (REQ-reporting-001). A session
+/// that cannot be read is named in `partial`, as is anything its timeline read skipped.
+fn session_timings(
+    root: &Path,
+    stories: &[Story],
+    selected: &str,
+    at: u64,
+    partial: &mut Vec<Value>,
+) -> Vec<SessionTiming> {
+    let mut timings = vec![];
+    let mut add = |id: String,
+                   state: &'static str,
+                   source: String,
+                   session: &Session,
+                   partial: &mut Vec<Value>| {
+        match SessionTiming::of(root, id.clone(), state, session, at) {
+            Ok(timing) => {
+                // The selected session's skips are reported at the top already.
+                if id != selected {
+                    for reason in &timing.transitions.history_partial {
+                        partial.push(json!({"source": source, "reason": reason}));
+                    }
+                    if timing.transitions.unreadable > 0 {
+                        partial.push(json!({"source": source, "reason": format!("{} unreadable timeline entries skipped", timing.transitions.unreadable)}));
+                    }
+                }
+                timings.push(timing);
+            }
+            Err(error) => partial.push(json!({"source": source, "reason": format!("timeline unreadable, so its stages are not shown: {error:#}")})),
+        }
+    };
+    for id in crate::sessions::open_ids(root).unwrap_or_default() {
+        let relative = crate::sessions::session_file(&id);
+        match crate::sessions::read_at(root, &relative) {
+            Ok(checkpoint) => add(id, "open", relative, &Session::V2(Box::new(checkpoint)), partial),
+            Err(error) => partial.push(json!({"source": relative, "reason": format!("session unreadable, so its stages are not shown: {error:#}")})),
+        }
+    }
+    for story in stories {
+        if let Some(session) = &story.session {
+            add(
+                story.id.clone(),
+                "archived",
+                format!("{STORIES_DIR}/{}.md", story.id),
+                session,
+                partial,
+            );
+        }
+    }
+    timings
+}
+
+/// One cycle as JSON, its segments and stage totals filtered to `stage_filter`.
+fn cycle_json(cycle: &Cycle, derived: &Derived, stage_filter: Option<&str>) -> Value {
+    let shows = |stage: &str| stage_filter.is_none_or(|filter| stage == filter);
+    let next_start = derived
+        .cycles
+        .iter()
+        .find(|other| other.number == cycle.number + 1)
+        .map(|other| other.start.to_json());
+    json!({
+        "number": cycle.number,
+        "start": cycle.start.to_json(),
+        "end": next_start,
+        "completed": cycle.completed,
+        "iterations": cycle.segments.iter().filter(|segment| segment.entered_by.as_deref() == Some("iterate")).count(),
+        "side_visits": cycle.segments.iter().filter(|segment| segment.side && segment.entered_by.as_deref() == Some("enter")).count(),
+        "idle": Span::sum(cycle.segments.iter().filter(|segment| segment.state == "idle").map(|segment| &segment.elapsed)).to_json(),
+        "segments": cycle.segments.iter().filter(|segment| shows(&segment.stage)).map(Segment::to_json).collect::<Vec<_>>(),
+        "stages": stage_totals(cycle).iter().filter(|total| shows(&total.stage)).map(|total| json!({
+            "stage": total.stage,
+            "side": total.side,
+            "visits": total.visits,
+            "iterations": total.iterations,
+            "stage_time": total.stage_time.to_json(),
+            "active": total.active.to_json(),
+            "waiting": total.waiting.to_json(),
+            "paused": total.paused.to_json(),
+            "backfilled": total.backfilled.to_json(),
+        })).collect::<Vec<_>>(),
+    })
+}
+
+/// One session's stage segments and gate waits, from its own timeline.
+fn session_json(
+    timing: &SessionTiming,
+    selected: &str,
+    stage_filter: Option<&str>,
+    at: u64,
+) -> Value {
+    json!({
+        "id": timing.id,
+        "state": timing.state,
+        "selected": timing.id == selected,
+        "stage": timing.stage,
+        "timeline_entries": timing.transitions.records.len(),
+        "unrecognised_kinds": timing.transitions.unrecognised,
+        "before_first_record": timing.derived.before_first.as_ref().filter(|segment| stage_filter.is_none_or(|stage| segment.stage == stage)).map(Segment::to_json),
+        "cycles": timing.derived.cycles.iter().map(|cycle| cycle_json(cycle, &timing.derived, stage_filter)).collect::<Vec<_>>(),
+        "gates": timing.derived.gates.iter().map(|gate| gate.to_json(at)).collect::<Vec<_>>(),
+    })
+}
+
+// ---------------------------------------------------------------------------
 // The report.
 
 pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
@@ -1453,13 +1682,27 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
         partial.push(json!({"source": stage::TRANSITIONS, "reason": format!("{} records of unrecognised kinds skipped", transitions.unrecognised)}));
     }
     let derived = derive(&transitions, &session, at);
+    let selected = match &session {
+        Session::V2(checkpoint) => checkpoint.meta.id.clone(),
+    };
+    let stories = read_stories(root, &mut partial);
+    let timings = session_timings(root, &stories, &selected, at, &mut partial);
     trace_phase("transitions", phase);
     let stage_filter = args.stage.as_deref();
     let shows = |segment: &Segment| stage_filter.is_none_or(|stage| segment.stage == stage);
 
-    // Estimates use every completed cycle, whatever the cycle filter shows.
+    // Estimates use every completed cycle of every session read, whatever the filters
+    // show; the selected session counts once.
+    let mut history: Vec<&Derived> = timings.iter().map(|timing| &timing.derived).collect();
+    if !timings.iter().any(|timing| timing.id == selected) {
+        history.push(&derived);
+    }
     let mut stage_samples: BTreeMap<String, Vec<u64>> = BTreeMap::new();
-    for cycle in derived.cycles.iter().filter(|cycle| cycle.completed) {
+    for cycle in history
+        .iter()
+        .flat_map(|derived| &derived.cycles)
+        .filter(|cycle| cycle.completed)
+    {
         for total in stage_totals(cycle) {
             // A stage a backfilled move bounds has a time given after the fact.
             if total.backfilled.seconds() != Some(0) {
@@ -1483,9 +1726,9 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
         })
         .collect();
     let gate_rows: Vec<Value> = derived.gates.iter().map(|gate| gate.to_json(at)).collect();
-    let mut gate_samples: Vec<u64> = derived
-        .gates
+    let mut gate_samples: Vec<u64> = history
         .iter()
+        .flat_map(|derived| &derived.gates)
         .filter(|gate| !gate.open_now)
         .filter_map(|gate| gate.waiting(at).seconds())
         .filter(|seconds| *seconds > 0)
@@ -1497,7 +1740,8 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
         .filter(|seconds| *seconds > 0)
         .collect();
     let phase = Instant::now();
-    let tests = tests_section(root, args.case.as_deref(), &mut partial);
+    let runs_read = case_runs(root, &stories, &mut partial);
+    let tests = tests_section(&runs_read, args.case.as_deref());
     trace_phase("tests", phase);
     let phase = Instant::now();
     let runs = validation_section(root, args.case.as_deref(), &mut partial);
@@ -1530,34 +1774,13 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
         .before_first
         .as_ref()
         .filter(|segment| (args.cycle == "all" || derived.cycles.is_empty()) && shows(segment));
-    let cycle_json = |cycle: &Cycle| -> Value {
-        let next_start = derived
-            .cycles
-            .iter()
-            .find(|other| other.number == cycle.number + 1)
-            .map(|other| other.start.to_json());
-        json!({
-            "number": cycle.number,
-            "start": cycle.start.to_json(),
-            "end": next_start,
-            "completed": cycle.completed,
-            "iterations": cycle.segments.iter().filter(|segment| segment.entered_by.as_deref() == Some("iterate")).count(),
-            "side_visits": cycle.segments.iter().filter(|segment| segment.side && segment.entered_by.as_deref() == Some("enter")).count(),
-            "idle": Span::sum(cycle.segments.iter().filter(|segment| segment.state == "idle").map(|segment| &segment.elapsed)).to_json(),
-            "segments": cycle.segments.iter().filter(|segment| shows(segment)).map(Segment::to_json).collect::<Vec<_>>(),
-            "stages": stage_totals(cycle).iter().filter(|total| stage_filter.is_none_or(|stage| total.stage == stage)).map(|total| json!({
-                "stage": total.stage,
-                "side": total.side,
-                "visits": total.visits,
-                "iterations": total.iterations,
-                "stage_time": total.stage_time.to_json(),
-                "active": total.active.to_json(),
-                "waiting": total.waiting.to_json(),
-                "paused": total.paused.to_json(),
-                "backfilled": total.backfilled.to_json(),
-            })).collect::<Vec<_>>(),
-        })
-    };
+    // Every session's own segments and gate waits; `--cycle current` shows the selected
+    // session only.
+    let sessions: Vec<Value> = timings
+        .iter()
+        .filter(|timing| args.cycle == "all" || timing.id == selected)
+        .map(|timing| session_json(timing, &selected, stage_filter, at))
+        .collect();
     let report = json!({
         "schema_version": 1,
         "generated_at": Time::Known(at).to_json(),
@@ -1585,7 +1808,8 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
         "transition_lineages": transitions.lineages,
         "backfilled": backfilled_moves(&transitions.records),
         "before_first_record": before_first.map(Segment::to_json),
-        "cycles": shown.iter().map(|cycle| cycle_json(cycle)).collect::<Vec<_>>(),
+        "cycles": shown.iter().map(|cycle| cycle_json(cycle, &derived, stage_filter)).collect::<Vec<_>>(),
+        "sessions": sessions,
         "gates": gate_rows,
         "tests": tests,
         "validation_runs": runs,
@@ -1723,6 +1947,34 @@ fn render(
                 .map(|segment| &segment.elapsed),
         );
         out.push_str(&format!("Idle between cycles: {}\n", idle.text()));
+    }
+    let sessions = report["sessions"].as_array().cloned().unwrap_or_default();
+    if sessions.len() > 1 {
+        out.push_str(
+            "\n## Sessions\n\nEach session's stages and gate waits, from its own timeline.\n\n",
+        );
+        for session in &sessions {
+            let stage_time = |name: &str| -> u64 {
+                session["cycles"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .flat_map(|cycle| cycle["stages"].as_array().cloned().unwrap_or_default())
+                    .filter_map(|total| total[name]["seconds"].as_u64())
+                    .sum()
+            };
+            out.push_str(&format!(
+                "- {} ({}{}), at {}: {} timeline entries; known stage time {}, waiting on a human {}; {} gate(s)\n",
+                session["id"].as_str().unwrap_or_default(),
+                session["state"].as_str().unwrap_or_default(),
+                if session["selected"] == true { ", shown above" } else { "" },
+                session["stage"].as_str().unwrap_or_default(),
+                session["timeline_entries"],
+                clock(stage_time("stage_time")),
+                clock(stage_time("waiting")),
+                session["gates"].as_array().map_or(0, Vec::len),
+            ));
+        }
     }
     let backfilled = report["backfilled"].as_array().cloned().unwrap_or_default();
     if !backfilled.is_empty() {
@@ -1925,19 +2177,6 @@ mod tests {
         let gates = [gate(10, 50), gate(30, 70), gate(200, 300)];
         assert_eq!(waiting_in(0, 100, &gates, 1_000).seconds(), Some(60));
         assert_eq!(waiting_in(60, 250, &gates, 1_000).seconds(), Some(60));
-    }
-
-    #[test]
-    fn only_a_recorded_status_change_marks_verified() {
-        assert!(records_verified("status: open -> verified"));
-        assert!(records_verified(
-            "scope: in-scope -> blocking; status: fix-pending-verification -> verified. done"
-        ));
-        assert!(!records_verified("free note mentioning verified"));
-        assert!(!records_verified(
-            "status: open -> fix-pending-verification. verified later"
-        ));
-        assert!(!records_verified("Additional evidence."));
     }
 
     #[test]

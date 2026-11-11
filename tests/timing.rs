@@ -896,79 +896,93 @@ fn write_observation(
     );
 }
 
-fn write_bug(fixture: &Fixture, id: &str, status: &str, observations: &[&str], notes: Value) {
-    let bug = json!({
-        "schema_version": 1,
-        "id": id,
-        "title": format!("Fixture bug {id}"),
-        "symptom": "It breaks",
-        "trigger": "Running the probe",
-        "expected": "It works",
-        "actual": "It broke",
-        "environment": "local",
-        "observations": observations,
-        "impact": "Not yet assessed.",
-        "classification": "unclassified",
-        "scope": "in-scope",
-        "status": status,
-        "source": "fixture",
-        "notes": notes,
-        "created_at_unix_seconds": T,
-        "updated_at_unix_seconds": T + 5_000,
-    });
+/// A Markdown bug created at `T` whose Log holds each note as a dated entry.
+fn write_bug(fixture: &Fixture, id: &str, status: &str, evidence: &[&str], notes: Value) {
+    fixture.bug_md(id, "in-scope", status, evidence);
+    let name = format!(".chough/bugs/{id}.md");
+    let mut text = fixture
+        .read(&name)
+        .replace(
+            "created: 2026-11-10T00:00:01Z",
+            &format!("created: {}", iso_of(T)),
+        )
+        .replace("- 2026-11-10T00:00:01Z · Reported (fixture)\n", "");
+    for note in notes.as_array().unwrap() {
+        text.push_str(&format!(
+            "- {} · {}\n",
+            iso_of(note["at_unix_seconds"].as_u64().unwrap()),
+            note["text"].as_str().unwrap()
+        ));
+    }
+    fixture.write(&name, &text);
+}
+
+/// An evidence entry of the active session with the fields timing reads
+/// (REQ-cli-017): case, result, environment, observed time and run time.
+fn write_entry(fixture: &Fixture, id: &str, case: &str, result: &str, observed: u64) {
     fixture.write(
-        &format!(".chough/bugs/{id}.json"),
-        &serde_json::to_string_pretty(&bug).unwrap(),
+        &format!(".chough/sessions/{}/evidence/{id}.md", fixture.active_id()),
+        &format!(
+            "---\nkind: evidence\nid: {id}\naliases: []\nclaim: SYNTHETIC claim {id}\nresult: {result}\ncase: {case}\nenvironment: local\nobserved: {}\nduration_seconds: 3\n---\n**SYNTHETIC claim {id}.**\n",
+            iso_of(observed)
+        ),
     );
 }
 
-#[test]
-fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
-    let fixture = Fixture::new();
-    fixture.init();
-    write_observation(
-        &fixture,
-        "fail-late",
-        Some("TC-a"),
-        "local",
-        "failed",
-        T + 300,
-        None,
+/// One receipt map in front matter, as an archived story or a bug holds it
+/// (REQ-history-006); `observed` is left out when None.
+fn receipt(id: &str, case: &str, result: &str, observed: Option<u64>) -> String {
+    let mut text = format!(
+        "  - id: {id}\n    aliases: OBS-{id}-000000000000000000000001\n    claim: SYNTHETIC claim {id}\n    result: {result}\n    case: {case}\n    environment: local\n"
     );
-    write_observation(
-        &fixture,
-        "fail-early",
-        Some("TC-a"),
-        "local",
-        "failed",
-        T + 200,
-        None,
-    );
-    write_observation(
-        &fixture,
-        "pass",
-        Some("TC-a"),
-        "local",
-        "passed",
-        T + 900,
-        None,
-    );
-    // A pruned failure, earlier than both present ones, is known from the ledger.
+    if let Some(observed) = observed {
+        text.push_str(&format!("    observed: {}\n", iso_of(observed)));
+    }
+    text
+}
+
+/// Close session `key` (REQ-history-006) and give its story these receipts.
+fn archive_with_receipts(fixture: &Fixture, key: &str, receipts: &[String]) -> String {
+    let id = fixture.id_of(key);
+    fixture.ok(&["session", "close", &id, "--reason", "SYNTHETIC closed"]);
+    let story = fixture.story_of(key);
+    let text = fixture.read(&story);
+    assert!(text.contains("\nreceipts: []\n"), "{text}");
     fixture.write(
-        ".chough/pruned.jsonl",
-        &format!(
-            "{}\n{}\n",
-            json!({"schema_version": 1, "id": "fail-pruned", "outcome": "failed", "observed_at_unix_seconds": T + 100, "pruned_at_unix_seconds": T + 2_000}),
-            // A pruned observation whose ledger entry records no outcome.
-            json!({"schema_version": 1, "id": "pruned-no-outcome", "observed_at_unix_seconds": T + 50, "pruned_at_unix_seconds": T + 2_000})
+        &story,
+        &text.replace(
+            "\nreceipts: []\n",
+            &format!("\nreceipts:\n{}", receipts.concat()),
         ),
     );
+    id
+}
+
+/// TC-reporting-0086, rewritten for 0.6.0 (REQ-reporting-001): a bug's reproduction is
+/// its earliest linked failure, read from an open session's entry, an archived story's
+/// receipt or the bug's own receipt; its verification is the first Log entry recording
+/// `status: <old> -> verified`; no retention ledger is read. A linked ID that is missing,
+/// or a linked failure without an observed time, leaves the reproduction unknown.
+#[test]
+fn bug_fix_times_come_from_entries_receipts_and_the_bug_log() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "old-work", "--objective", "Old work"]);
+    archive_with_receipts(
+        &fixture,
+        "old-work",
+        &[receipt("fail-archived", "TC-a", "failed", Some(T + 100))],
+    );
+    fixture.ok(&["session", "new", "now-work", "--objective", "Now work"]);
+    write_entry(&fixture, "fail-late", "TC-a", "failed", T + 300);
+    write_entry(&fixture, "fail-early", "TC-a", "failed", T + 200);
+    write_entry(&fixture, "pass", "TC-a", "passed", T + 900);
     let verified = |at: u64| {
         json!([
-            {"at_unix_seconds": T + 50, "text": "status: open -> confirmed. looked at it"},
-            {"at_unix_seconds": T + 600, "text": "free note mentioning verified"},
-            {"at_unix_seconds": at, "text": "status: confirmed -> verified; scope: in-scope -> blocking. fixed", "observations": ["pass"]},
-            {"at_unix_seconds": at + 50, "text": "status: reopened -> verified"},
+            {"at_unix_seconds": T + 50, "text": "status: open -> investigating. looked at it"},
+            {"at_unix_seconds": T + 600, "text": "free note mentioning verified · by SYNTHETIC-agent"},
+            {"at_unix_seconds": at, "text": "status: investigating -> verified; scope: in-scope -> blocking; evidence: pass · by SYNTHETIC-agent"},
+            {"at_unix_seconds": at + 50, "text": "status: deferred -> verified"},
         ])
     };
     write_bug(
@@ -982,23 +996,47 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
         &fixture,
         "BUG-0002",
         "verified",
-        &["fail-late", "fail-pruned", "pass"],
+        &[
+            "fail-late",
+            "OBS-fail-archived-000000000000000000000001",
+            "pass",
+        ],
         verified(T + 1_000),
     );
     write_bug(
         &fixture,
         "BUG-0003",
         "verified",
-        &["fail-late", "gone", "pass"],
+        &["fail-late", "gone", "pass", "fail-pruned"],
         verified(T + 1_000),
     );
     write_bug(&fixture, "BUG-0004", "open", &[], json!([]));
+    // The bug's own receipt: a failure with no observed time could be the earlier one.
     write_bug(
         &fixture,
         "BUG-0005",
         "verified",
-        &["fail-late", "pruned-no-outcome", "pass"],
+        &["fail-late", "fail-untimed", "pass"],
         verified(T + 1_000),
+    );
+    let name = ".chough/bugs/BUG-0005.md";
+    fixture.write(
+        name,
+        &fixture.read(name).replace(
+            "\nreceipts: []\n",
+            &format!(
+                "\nreceipts:\n{}",
+                receipt("fail-untimed", "TC-a", "failed", None)
+            ),
+        ),
+    );
+    // A bug with an alias answers to it in `--bug`.
+    let name = ".chough/bugs/BUG-0002.md";
+    fixture.write(
+        name,
+        &fixture
+            .read(name)
+            .replace("aliases: []", "aliases: [BUG-0099]"),
     );
     let report = timing(&fixture, &[]);
     let bug = |id: &str| -> Value {
@@ -1013,27 +1051,29 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
     let one = bug("BUG-0001");
     assert_eq!(at(&one["created"]), Some(T));
     assert_eq!(at(&one["reproduced"]), Some(T + 200));
-    assert_eq!(one["reproduced_source"], "observation fail-early");
+    assert_eq!(one["reproduced_source"], "evidence fail-early (entry)");
     assert_eq!(at(&one["verified"]), Some(T + 1_000));
-    assert_eq!(one["verified_source"], "from note text");
+    assert_eq!(one["verified_source"], "from the bug Log");
     assert_eq!(seconds(&one["fix_time"]), Some(800));
     assert_eq!(one["fix_time"]["label"], "elapsed wall-clock");
 
+    // The earlier failure is a receipt in an archived story, linked by its alias.
     let two = bug("BUG-0002");
     assert_eq!(at(&two["reproduced"]), Some(T + 100));
     assert_eq!(
         two["reproduced_source"],
-        "retention ledger (pruned observation fail-pruned)"
+        "evidence OBS-fail-archived-000000000000000000000001 (story-receipt)"
     );
     assert_eq!(seconds(&two["fix_time"]), Some(900));
 
-    // A linked observation that is neither present nor pruned could be the earlier failure.
+    // A linked ID that is neither an entry nor a receipt, such as a pruned 0.5.x
+    // observation, could be the earlier failure; no retention ledger is read.
     let three = bug("BUG-0003");
     assert_eq!(three["reproduced"]["unix_seconds"], Value::Null);
     assert_eq!(three["reproduced"]["unknown"], "unavailable");
     assert_eq!(three["fix_time"]["label"], "unknown");
 
-    // A pruned observation whose ledger entry has no outcome could be the earlier failure.
+    // A receipt failure without an observed time could be the earlier failure.
     let five = bug("BUG-0005");
     assert_eq!(five["reproduced"]["unix_seconds"], Value::Null);
     assert_eq!(five["reproduced"]["unknown"], "unavailable");
@@ -1046,7 +1086,7 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
     );
     assert_eq!(
         four["verified"]["unknown"],
-        "no note records status -> verified"
+        "no Log entry records status -> verified"
     );
     assert_eq!(four["fix_time"]["seconds"], Value::Null);
 
@@ -1058,8 +1098,211 @@ fn bug_fix_times_come_from_observations_notes_and_the_retention_ledger() {
             .unwrap()
             .starts_with("too few to estimate")
     );
-    let only = timing(&fixture, &["--bug", "BUG-0002"]);
-    assert_eq!(only["bugs"].as_array().unwrap().len(), 1);
+    for only in ["BUG-0002", "BUG-0099"] {
+        let report = timing(&fixture, &["--bug", only]);
+        assert_eq!(report["bugs"].as_array().unwrap().len(), 1, "{only}");
+        assert_eq!(report["bugs"][0]["id"], "BUG-0002", "{only}");
+    }
+}
+
+/// TC-reporting-timing-from-timelines (REQ-reporting-001): with one open session and
+/// three archived stories, one of them unreadable, the report gives each readable
+/// session's stage segments and gate waits from its own timeline and each case's runs
+/// from entries and receipts; the unreadable story is named and the report is partial;
+/// every record stays byte-identical.
+#[test]
+fn timing_reads_timelines_and_receipts() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let first = fixture.active_id();
+    let mut archived = vec![];
+    for (index, key) in ["alpha", "beta", "gamma"].into_iter().enumerate() {
+        let base = T + 10_000 * index as u64;
+        fixture.ok(&["session", "new", key, "--objective", &format!("Ship {key}")]);
+        write_transitions(
+            &fixture,
+            &[
+                transition(Some(base), "advance", "intent", "design", "intent approved"),
+                transition(
+                    Some(base + 100),
+                    "gate-opened",
+                    "design",
+                    "design",
+                    "Design review",
+                ),
+                transition(
+                    Some(base + 160),
+                    "gate-closed",
+                    "design",
+                    "design",
+                    "Design review",
+                ),
+                transition(Some(base + 200), "advance", "design", "plan", "designed"),
+            ],
+        );
+        archived.push(archive_with_receipts(
+            &fixture,
+            key,
+            &[receipt(
+                &format!("{key}-run"),
+                "TC-a",
+                "passed",
+                Some(base + 150),
+            )],
+        ));
+    }
+    // gamma's story no longer reads.
+    let gamma = fixture.story_of("gamma");
+    fixture.write(&gamma, "---\nkind: session\nbroken: [\n---\n# Gamma\n");
+    fixture.ok(&["session", "new", "delta", "--objective", "Ship delta"]);
+    write_transitions(
+        &fixture,
+        &[transition(
+            Some(T + 50_000),
+            "advance",
+            "intent",
+            "design",
+            "intent approved",
+        )],
+    );
+    write_entry(&fixture, "delta-run", "TC-a", "failed", T + 50_100);
+    fixture.bug_md("BUG-0001", "in-scope", "open", &["bug-run"]);
+    let name = ".chough/bugs/BUG-0001.md";
+    fixture.write(
+        name,
+        &fixture.read(name).replace(
+            "\nreceipts: []\n",
+            &format!(
+                "\nreceipts:\n{}",
+                receipt("bug-run", "TC-a", "failed", Some(T + 40_000))
+            ),
+        ),
+    );
+
+    let before = record_digests(fixture.root());
+    let report = timing(&fixture, &[]);
+    assert_eq!(record_digests(fixture.root()), before);
+
+    // Each readable session, open or archived, from its own timeline.
+    let sessions = report["sessions"].as_array().unwrap();
+    let find = |id: &str| -> &Value {
+        sessions
+            .iter()
+            .find(|session| session["id"] == id)
+            .unwrap_or_else(|| panic!("no session {id}: {report:#}"))
+    };
+    let delta = find(&fixture.id_of("delta"));
+    assert_eq!(delta["state"], "open");
+    assert_eq!(delta["selected"], true);
+    // The stage is the checkpoint's own; the entries above were written by hand.
+    assert_eq!(delta["stage"], "intent");
+    assert_eq!(find(&first)["state"], "open");
+    for (index, id) in archived.iter().take(2).enumerate() {
+        let base = T + 10_000 * index as u64;
+        let story = find(id);
+        assert_eq!(story["state"], "archived", "{story:#}");
+        assert_eq!(story["selected"], false, "{story:#}");
+        let segments = story["cycles"][0]["segments"].as_array().unwrap();
+        let design = segments
+            .iter()
+            .find(|segment| segment["stage"] == "design")
+            .unwrap_or_else(|| panic!("{story:#}"));
+        assert_eq!(at(&design["start"]), Some(base), "{story:#}");
+        assert_eq!(at(&design["end"]), Some(base + 200), "{story:#}");
+        assert_eq!(seconds(&design["waiting"]), Some(60), "{story:#}");
+        assert_eq!(seconds(&design["active"]), Some(140), "{story:#}");
+        assert_eq!(story["gates"][0]["gate"], "Design review", "{story:#}");
+        assert_eq!(
+            seconds(&story["gates"][0]["waiting"]),
+            Some(60),
+            "{story:#}"
+        );
+    }
+    assert!(
+        sessions.iter().all(|session| session["id"] != archived[2]),
+        "{report:#}"
+    );
+    // The unreadable story is named and the report is partial.
+    let partial = report["partial"].to_string();
+    assert!(partial.contains(&gamma), "{partial}");
+    // Two closed gates are too few to estimate, but each is a sample.
+    assert_eq!(report["estimates"]["gates"]["samples"], 2, "{report:#}");
+
+    // Each case's runs come from the open session's entry and the readable receipts.
+    let group = report["tests"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|group| group["case"] == "TC-a" && group["environment"] == "local")
+        .unwrap_or_else(|| panic!("{report:#}"));
+    let runs: Vec<(String, String)> = group["observations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|run| {
+            (
+                run["id"].as_str().unwrap().to_string(),
+                run["found_in"].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    assert_eq!(
+        runs,
+        vec![
+            (
+                "alpha-run".to_string(),
+                format!("receipt in {}", archived[0])
+            ),
+            (
+                "beta-run".to_string(),
+                format!("receipt in {}", archived[1])
+            ),
+            ("bug-run".to_string(), "receipt in bug BUG-0001".to_string()),
+            (
+                "delta-run".to_string(),
+                format!("entry in {}", fixture.id_of("delta"))
+            ),
+        ],
+        "{report:#}"
+    );
+    assert_eq!(seconds(&group["observations"][3]["run_time"]), Some(3));
+    assert_eq!(group["observations"][0]["run_time"]["seconds"], Value::Null);
+
+    // `--cycle current` shows the selected session only.
+    let current = timing(&fixture, &["--cycle", "current"]);
+    let ids: Vec<&Value> = current["sessions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|session| &session["id"])
+        .collect();
+    assert_eq!(ids, vec![&json!(fixture.id_of("delta"))]);
+}
+
+/// A correction (REQ-history-015) is a known Timeline kind: it starts and ends no stage
+/// segment and is never counted as an unrecognised kind.
+#[test]
+fn a_correction_entry_starts_no_segment_and_is_not_unrecognised() {
+    let lines = full_history(true);
+    let plain = timing(&fixture_with(&lines), &[]);
+    let mut corrected = lines.clone();
+    corrected.insert(
+        6,
+        transition(
+            Some(T + 500),
+            "correction",
+            "build",
+            "build",
+            "the second pass was a fix, not a rework",
+        ),
+    );
+    let report = timing(&fixture_with(&corrected), &[]);
+    assert_eq!(report["transitions"]["unrecognised_kinds"], 0, "{report:#}");
+    assert_eq!(report["cycles"], plain["cycles"], "{report:#}");
+    assert_eq!(
+        report["transitions"]["records"],
+        plain["transitions"]["records"]
+    );
 }
 
 #[test]

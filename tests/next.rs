@@ -244,26 +244,8 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
         .enumerate()
     {
         let id = format!("BUG-{:04}", index + 1);
-        let bug = json!({
-            "schema_version": 1,
-            "id": id,
-            "title": format!("Fixture bug {id}"),
-            "symptom": "It breaks",
-            "trigger": "Running the probe",
-            "expected": "It works",
-            "actual": "It broke",
-            "environment": "local",
-            "observations": ids,
-            "impact": "Not yet assessed.",
-            "classification": "unclassified",
-            "scope": scope,
-            "status": "open",
-            "regression_baseline": null,
-            "source": "fixture",
-            "created_at_unix_seconds": 1,
-            "updated_at_unix_seconds": 1,
-        });
-        fixture.write(&format!(".chough/bugs/{id}.json"), &bug.to_string());
+        let linked: Vec<&str> = ids.iter().map(String::as_str).collect();
+        fixture.bug_md(&id, scope, "open", &linked);
     }
     let added = fixture.run(&[
         "evidence",
@@ -552,28 +534,6 @@ fn archived_change_at(stage: &str, change: &str) -> Fixture {
     fixture
 }
 
-fn bug(id: &str, status: &str, scope: &str) -> Value {
-    json!({
-        "schema_version": 1,
-        "id": id,
-        "title": format!("Fixture bug {id}"),
-        "symptom": "It breaks",
-        "trigger": "Running the probe",
-        "expected": "It works",
-        "actual": "It broke",
-        "environment": "local",
-        "observations": [],
-        "impact": "Not yet assessed.",
-        "classification": "unclassified",
-        "scope": scope,
-        "status": status,
-        "regression_baseline": null,
-        "source": "fixture",
-        "created_at_unix_seconds": 1,
-        "updated_at_unix_seconds": 1,
-    })
-}
-
 fn observation(id: &str, outcome: &str, observed: u64) -> Value {
     json!({
         "schema_version": 2,
@@ -785,7 +745,7 @@ fn keeps_todays_action_when_something_else_applies() {
     );
     // A blocking bug at test.
     let fixture = archived_at("test");
-    write_record(&fixture, "bugs", &bug("BUG-0001", "open", "blocking"));
+    fixture.bug_md("BUG-0001", "blocking", "open", &[]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(
         action
@@ -923,24 +883,31 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     set_mtime(&evidence.join("m-latest.json"), 1_000_000);
     set_mtime(&evidence.join("a-middle.json"), 2_000_000);
     set_mtime(&evidence.join("z-oldest.json"), 3_000_000);
-    // Four bugs link the latest failure, by observations, a note and a regression
-    // baseline; one links an older failure only.
-    let mut linked = bug("BUG-0001", "fix-pending-verification", "in-scope");
-    linked["observations"] = json!(["m-latest"]);
-    write_record(&fixture, "bugs", &linked);
-    let mut noted = bug("BUG-0002", "open", "in-scope");
-    noted["notes"] =
-        json!([{"at_unix_seconds": 5, "text": "Seen again", "observations": ["m-latest"]}]);
-    write_record(&fixture, "bugs", &noted);
-    let mut baseline = bug("BUG-0003", "verified", "in-scope");
-    baseline["regression_baseline"] = json!("m-latest");
-    write_record(&fixture, "bugs", &baseline);
-    let mut fourth = bug("BUG-0004", "open", "out-of-scope");
-    fourth["observations"] = json!(["a-middle", "m-latest"]);
-    write_record(&fixture, "bugs", &fourth);
-    let mut older = bug("BUG-0005", "open", "in-scope");
-    older["observations"] = json!(["z-oldest"]);
-    write_record(&fixture, "bugs", &older);
+    // Four bugs link the latest failure, by their evidence or a regression baseline;
+    // one links an older failure only.
+    fixture.bug_md(
+        "BUG-0001",
+        "in-scope",
+        "fix-pending-verification",
+        &["m-latest"],
+    );
+    fixture.bug_md("BUG-0002", "in-scope", "open", &["m-latest"]);
+    fixture.bug_md("BUG-0003", "in-scope", "verified", &[]);
+    let baseline = ".chough/bugs/BUG-0003.md";
+    fixture.write(
+        baseline,
+        &fixture.read(baseline).replace(
+            "receipts: []\n",
+            "receipts: []\nregression_baseline: m-latest\n",
+        ),
+    );
+    fixture.bug_md(
+        "BUG-0004",
+        "out-of-scope",
+        "open",
+        &["a-middle", "m-latest"],
+    );
+    fixture.bug_md("BUG-0005", "in-scope", "open", &["z-oldest"]);
 
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
@@ -1444,10 +1411,9 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
             &observation(id, "passed", 1_700_000_000),
         );
     }
+    let linked: Vec<&str> = stale.iter().map(String::as_str).collect();
     for index in 1..=4 {
-        let mut record = bug(&format!("BUG-{index:04}"), "open", "in-scope");
-        record["observations"] = json!(stale);
-        write_record(&fixture, "bugs", &record);
+        fixture.bug_md(&format!("BUG-{index:04}"), "in-scope", "open", &linked);
     }
     // 200 more observations, 100 failed; the latest recorded failure is fail-037.
     for index in 0..100_u64 {
@@ -1467,9 +1433,12 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     }
     // 40 bugs link the latest failure.
     for index in 5..45 {
-        let mut record = bug(&format!("BUG-{index:04}"), "open", "in-scope");
-        record["observations"] = json!(["fail-037"]);
-        write_record(&fixture, "bugs", &record);
+        fixture.bug_md(
+            &format!("BUG-{index:04}"),
+            "in-scope",
+            "open",
+            &["fail-037"],
+        );
     }
     // 40 archived bundles and 16 modules.
     for index in 0..40 {
