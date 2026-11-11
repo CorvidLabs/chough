@@ -54,7 +54,8 @@
     "PR #212 open (docs+hi, stopped for Leif); milestone 'Chough 1.0' created with epic #232 and issues #213-#231, existing open issues mapped onto the milestone; dependencies linked with blocked-by",
     "Addressed corvid-agent's review of #212: merged main (resolved the issue-102 session roll-up conflict in main's favor), regenerated the knowledge vault, re-answered the native change's acceptance criteria and tasks to match the created issues; marked #187 and #196 closed in epic #232 and the PR body",
     "Review addressed: merged head green (verify lane 10 steps), change record matches the created issues, review reply posted on #212",
-    "Folded the 2026-11-10 round-2 decisions into #212: KNOW-30 rewritten (links, never moves or copies), 7 new criteria captured (KNOW-31/32, DRIVE-25/26/27, FLOW-23, LIFE-26), roadmap M1/M2/M3 and the migration design updated, #216 re-scoped, #234/#235/#236 mapped into the milestone and epic, PR body updated"
+    "Folded the 2026-11-10 round-2 decisions into #212: KNOW-30 rewritten (links, never moves or copies), 7 new criteria captured (KNOW-31/32, DRIVE-25/26/27, FLOW-23, LIFE-26), roadmap M1/M2/M3 and the migration design updated, #216 re-scoped, #234/#235/#236 mapped into the milestone and epic, PR body updated",
+    "Round-2 fold-in verified and pushed at 1badc216; PR comment posted; t370 notified"
   ],
   "observations": [],
   "bugs": [],
@@ -64,5 +65,5 @@
     "Leif: intent approval of the 13 criteria; native scope approval of the change; rulings on FLOW-17 vs FLOW-21 and KNOW-29 vs KNOW-30"
   ],
   "run_consents": [],
-  "next_action": "When the verify lane is green: commit, push, comment on #212, report to t370"
+  "next_action": "Wait for Leif's review of #212 (intent approval of 20 criteria, native scope approval, FLOW-17/FLOW-21 ruling) or the coordinator's answer on the knowledge-copies scope call"
 }
