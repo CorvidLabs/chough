@@ -473,9 +473,65 @@ pub(super) fn read_checkpoint_unlocked(root: &Path) -> Result<Checkpoint> {
     }
 }
 
-/// The session record `session` saves as, within its bound (REQ-records-001).
+/// Every value this checkpoint writes, checked for leaks or redacted under `--redact`
+/// (REQ-records-006); returns how many matches were redacted. Prose a person wrote in
+/// the body is theirs and is not rewritten.
+fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
+    use crate::leaks::{Local, guard};
+    let local = Local::current();
+    let mut count = 0;
+    count += guard(local, "objective", &mut session.objective)?;
+    count += guard(local, "intent_scope", &mut session.intent_scope)?;
+    count += guard(local, "next", &mut session.next_action)?;
+    for (name, list) in [
+        ("decision", &mut session.decisions),
+        ("completed", &mut session.completed),
+        ("question", &mut session.open_questions),
+        ("blocker", &mut session.blockers),
+        ("gate", &mut session.awaiting_human),
+    ] {
+        for value in list.iter_mut() {
+            count += guard(local, name, value)?;
+        }
+    }
+    for consent in &mut session.run_consents {
+        count += guard(local, "consent source", &mut consent.source)?;
+        count += guard(local, "consent objective", &mut consent.objective)?;
+    }
+    for alias in &mut session.meta.aliases {
+        count += guard(local, "alias", alias)?;
+    }
+    count += guard(local, "pr", &mut session.meta.pr)?;
+    for transition in &mut session.pending {
+        if let Some(reason) = transition.reason.as_mut() {
+            count += guard(local, "reason", reason)?;
+        }
+        if let Some(gate) = transition.gate.as_mut() {
+            count += guard(local, "gate", gate)?;
+        }
+        if let Some(relay) = transition.relayed_by.as_mut() {
+            count += guard(local, "decided_by", &mut relay.decided_by)?;
+            count += guard(local, "words", &mut relay.words)?;
+            count += guard(local, "where", &mut relay.place)?;
+            count += guard(local, "recorded_by", &mut relay.recorded_by)?;
+        }
+        if let Some(backfill) = transition.backfill.as_mut() {
+            count += guard(local, "quote", &mut backfill.quote)?;
+        }
+    }
+    Ok(count)
+}
+
+/// The session record `session` saves as, within its bound (REQ-records-001), with
+/// every value Chough writes checked for leaks first (REQ-records-006).
 pub(super) fn render_checkpoint(session: &Checkpoint) -> Result<crate::markdown::Record> {
     validate_v2(session)?;
+    let mut guarded = session.clone();
+    let redacted = guard_leaks(&mut guarded)?;
+    if redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in the session record (--redact)");
+    }
+    let session = &guarded;
     let record = crate::session_md::render(session, crate::records::now()?)?;
     let content = record.render();
     ensure!(

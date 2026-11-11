@@ -43,6 +43,10 @@ struct Cli {
     /// The project directory to work in.
     #[arg(long, global = true, default_value = ".")]
     root: PathBuf,
+    /// Store `<redacted:<kind>>` in place of a local path, user or host name, email or
+    /// credential in a committed record, instead of refusing the write (REQ-records-006).
+    #[arg(long, global = true)]
+    redact: bool,
     #[command(subcommand)]
     command: Commands,
 }
@@ -191,6 +195,7 @@ fn main() -> Result<()> {
     // A stop then finds orphans of what Chough started (#81, Linux; no effect elsewhere).
     records::become_subreaper();
     let cli = Cli::parse();
+    leaks::set_redacting(cli.redact);
     let root = cli.root.canonicalize().context("project root must exist")?;
     ensure!(root.is_dir(), "project root must be a directory");
     match cli.command {

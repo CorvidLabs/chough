@@ -1064,3 +1064,43 @@ fn an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix() {
     assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
     assert!(fixture.is_archived("alpha"));
 }
+
+/// REQ-records-006: a value written into the session record that holds a local path is
+/// refused as `refused:leak`, naming the field and the kind and never the text, with the
+/// file unchanged; with `--redact` it is stored as `<redacted:<kind>>`.
+#[test]
+fn a_leak_in_a_session_value_is_refused_or_redacted() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fixture.ok(&["stage", "advance"]);
+    let file = fixture.session_file();
+    let before = fixture.read(&file);
+    let refused = fixture.fails(&["checkpoint", "--decision", "Built in /Users/someone/app"]);
+    assert!(
+        refused.contains("refused:leak: decision holds home-path"),
+        "{refused}"
+    );
+    assert!(!refused.contains("/Users/someone"), "{refused}");
+    assert_eq!(fixture.read(&file), before);
+    let refused = fixture.fails(&[
+        "stage",
+        "back",
+        "--to",
+        "intent",
+        "--reason",
+        "token ghp_abcdefghijklmnopqrstuvwxyz0123456789",
+    ]);
+    assert!(refused.contains("refused:leak"), "{refused}");
+    assert_eq!(fixture.read(&file), before);
+    let output = fixture.run(&[
+        "checkpoint",
+        "--redact",
+        "--decision",
+        "Built in /Users/someone/app",
+    ]);
+    assert!(output.status.success());
+    assert!(String::from_utf8_lossy(&output.stderr).contains("redacted 1 value"));
+    let text = fixture.read(&file);
+    assert!(text.contains("- Built in <redacted:home-path>"), "{text}");
+    assert!(!text.contains("/Users/someone"), "{text}");
+}
