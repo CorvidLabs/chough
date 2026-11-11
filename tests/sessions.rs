@@ -1193,3 +1193,260 @@ fn a_leak_in_a_session_value_is_refused_or_redacted() {
     assert!(text.contains("- Built in <redacted:home-path>"), "{text}");
     assert!(!text.contains("/Users/someone"), "{text}");
 }
+
+/// The front matter keys of a Markdown record, in order.
+fn front_keys(text: &str) -> Vec<String> {
+    let front = text
+        .strip_prefix("---\n")
+        .and_then(|rest| rest.split_once("\n---\n"))
+        .map(|(front, _)| front)
+        .expect("front matter");
+    front
+        .lines()
+        .filter(|line| !line.starts_with(' ') && !line.starts_with('-'))
+        .filter_map(|line| line.split_once(':').map(|(key, _)| key.to_string()))
+        .collect()
+}
+
+/// TC-history-inbox-in-agent-folder (REQ-history-009). An entry is one Markdown record
+/// under its session's `agent/inbox/`, giving `kind`, `value`, `from` and, for an
+/// observation, `recorded`, with no approval, review, consent, gate or stage field, and
+/// adding it changes no session file. Then each acceptance criterion, by the test that
+/// proves it alone:
+/// - folding twice adds each entry once and never changes a session file;
+/// - an add racing an archive under the writer lock refuses with nothing written;
+/// - an add killed while writing leaves no partial entry, and the next save removes its
+///   temporary file;
+/// - an unrecorded observation is added with a warning and listed `recorded: false`.
+#[cfg(unix)]
+#[test]
+fn inbox_entries_live_in_the_agent_folder() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    let alpha = fixture.id_of("alpha");
+    let before = snapshot(&fixture);
+    let decision = add_entry(&fixture, "alpha", "decision", "keep the cache");
+    let observation = fixture.run(&[
+        "inbox",
+        "add",
+        "--session",
+        "alpha",
+        "--from",
+        "subagent-1",
+        "--kind",
+        "observation",
+        "--text",
+        "OBS-never-recorded",
+    ]);
+    assert!(observation.status.success());
+    let observation: Value = serde_json::from_slice(&observation.stdout).unwrap();
+    let observation = observation["id"].as_str().unwrap().to_string();
+    let inbox = format!(".chough/sessions/{alpha}/agent/inbox");
+    for (id, kind, value, recorded) in [
+        (&decision, "decision", "keep the cache", None),
+        (
+            &observation,
+            "observation",
+            "OBS-never-recorded",
+            Some("false"),
+        ),
+    ] {
+        let text = fixture.read(&format!("{inbox}/{id}.md"));
+        let keys = front_keys(&text);
+        for key in ["kind", "value", "from"] {
+            assert!(keys.iter().any(|known| known == key), "{key}: {text}");
+        }
+        assert!(text.contains(&format!("\nkind: {kind}\n")), "{text}");
+        assert!(text.contains(&format!("\nvalue: {value}\n")), "{text}");
+        assert!(text.contains("\nfrom: subagent-1\n"), "{text}");
+        match recorded {
+            Some(recorded) => assert!(text.contains(&format!("\nrecorded: {recorded}\n"))),
+            None => assert!(!keys.iter().any(|key| key == "recorded"), "{text}"),
+        }
+        for forbidden in ["approval", "review", "consent", "gate", "stage"] {
+            assert!(
+                !keys.iter().any(|key| key.contains(forbidden)),
+                "{forbidden}: {text}"
+            );
+        }
+    }
+    // Adding changed no session file: only the two entries are new.
+    let after = snapshot(&fixture);
+    let added: Vec<&String> = after
+        .keys()
+        .filter(|path| !before.contains_key(*path))
+        .collect();
+    assert_eq!(added.len(), 2, "{added:?}");
+    assert!(
+        added
+            .iter()
+            .all(|path| path.starts_with(&format!("{inbox}/"))),
+        "{added:?}"
+    );
+    for (path, bytes) in &before {
+        assert_eq!(after.get(path), Some(bytes), "{path} changed");
+    }
+
+    inbox_entries_fold_once_without_touching_the_session();
+    inbox_add_racing_an_archive_never_strands_its_entry();
+    an_inbox_add_killed_while_writing_leaves_no_partial_entry();
+    an_unrecorded_inbox_observation_is_added_with_a_warning();
+}
+
+/// TC-history-local-only-ignored (REQ-history-007). `git status` after `chough init`
+/// shows no file under `.chough/local/`; after a cycle with a case run, an external
+/// artifact and a gate list, every file under `.chough/local/` is ignored by Git, and
+/// no committed record names one of them except by a neutral ID.
+#[cfg(unix)]
+#[test]
+fn local_state_is_ignored_by_git() {
+    use std::process::Command;
+    let git = |fixture: &Fixture, args: &[&str]| -> String {
+        let output = Command::new("git")
+            .args(args)
+            .current_dir(fixture.root())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "git {args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(".gitignore", ".stub-*\n");
+    fixture.git(&["init"]);
+    fixture.init();
+    let status = git(
+        &fixture,
+        &["status", "--porcelain", "--untracked-files=all"],
+    );
+    assert!(!status.is_empty(), "init wrote nothing Git sees");
+    assert!(!status.contains(".chough/local"), "{status}");
+
+    // A case run (its raw log), an external artifact and a gate list.
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-local-state\"\ntitle = \"Local state\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"printed\"]\n[case.bind]\nadapter = \"command\"\nargv = [\"sh\", \"-c\", \"echo local-state-marker\"]\nexpect_output = [\"local-state-marker\"]\n",
+    );
+    fixture.commit("base");
+    let run = fixture.run(&[
+        "cases",
+        "run",
+        "TC-cli-local-state",
+        "--environment",
+        "local",
+    ]);
+    assert!(
+        run.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run.stderr)
+    );
+    let run: Value = serde_json::from_slice(&run.stdout).unwrap();
+    let case_entry = run["observation"].as_str().unwrap().to_string();
+    let outside = tempfile::tempdir().unwrap();
+    let external = outside.path().join("local-state-report.txt");
+    fs::write(&external, "an external report\n").unwrap();
+    let external = external.to_str().unwrap().to_string();
+    let added = fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "Read the external report",
+        "--artifact",
+        &external,
+    ]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "Copy review"]);
+    fixture.ok(&["gate", "list", "--json"]);
+
+    let mut local = vec![];
+    fn walk(root: &std::path::Path, relative: &str, out: &mut Vec<String>) {
+        for entry in fs::read_dir(root.join(relative)).unwrap() {
+            let entry = entry.unwrap();
+            let name = format!("{relative}/{}", entry.file_name().to_string_lossy());
+            if entry.path().is_dir() {
+                walk(root, &name, out);
+            } else {
+                out.push(name);
+            }
+        }
+    }
+    walk(fixture.root(), ".chough/local", &mut local);
+    local.sort();
+    for expected in [
+        format!(".chough/local/logs/{case_entry}.log"),
+        ".chough/local/external-artifacts.toml".to_string(),
+    ] {
+        assert!(local.contains(&expected), "{expected} missing: {local:?}");
+    }
+    assert!(
+        local
+            .iter()
+            .any(|path| path.starts_with(".chough/local/gate-lists/")),
+        "no gate list: {local:?}"
+    );
+    for path in &local {
+        let ignored = Command::new("git")
+            .args(["check-ignore", "-q", path])
+            .current_dir(fixture.root())
+            .status()
+            .unwrap();
+        assert!(ignored.success(), "{path} is not ignored by Git");
+    }
+
+    // Commit everything Git sees; no committed record names a local file, and the
+    // external artifact is named only by its neutral ID.
+    fixture.commit("cycle");
+    let tracked = git(&fixture, &["ls-files", "-z"]);
+    let tracked: Vec<&str> = tracked
+        .split('\0')
+        .filter(|path| !path.is_empty())
+        .collect();
+    assert!(
+        !tracked
+            .iter()
+            .any(|path| path.starts_with(".chough/local/")),
+        "{tracked:?}"
+    );
+    let mut names: Vec<String> = vec![external.clone(), "local-state-report.txt".to_string()];
+    for path in &local {
+        let inside = path.trim_start_matches(".chough/local/");
+        if inside.contains('/') {
+            names.push(path.clone());
+            names.push(inside.to_string());
+        }
+    }
+    for path in tracked.iter().filter(|path| path.starts_with(".chough/")) {
+        let text = fs::read_to_string(fixture.root().join(path)).unwrap_or_default();
+        for name in &names {
+            assert!(!text.contains(name.as_str()), "{path} names {name}");
+        }
+    }
+    let entry = fixture.read(added["recorded"].as_str().unwrap());
+    let neutral = entry
+        .lines()
+        .find_map(|line| line.strip_prefix("external: "))
+        .unwrap_or_else(|| panic!("no external ID: {entry}"));
+    assert!(
+        neutral.len() == 10
+            && neutral.starts_with("ext-")
+            && neutral[4..]
+                .bytes()
+                .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()),
+        "{neutral}"
+    );
+}
