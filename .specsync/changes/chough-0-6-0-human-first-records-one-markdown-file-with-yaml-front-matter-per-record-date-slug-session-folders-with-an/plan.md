@@ -161,12 +161,12 @@ milestone; nothing is closed yet. Read on 2026-11-11.
 | #214 Per-session slug folders | 1 | TC-history-sessions-in-folders |
 | #215 Digest-committed evidence receipts | 1 | TC-records-proof-split-and-external (receipt with command, key lines and fingerprint; no raw log), TC-history-doctor-findings-0-6 (`oversize` fails the verify lane) |
 | #216 All of KNOW: librarian, index, observations | 1 | TC-records-journal-and-feed, TC-records-tree-and-readme, and the KNOW gap list check (testing.md, Dogfood checks) |
-| #217 Flake tracker and two-week clean window | needs Leif: 4 proposed | not in this plan; the two-week window needs two weeks of CI history after the fixes |
-| #218 Host-matrix e2e harness | needs Leif: 4 proposed | not in this plan |
-| #219 integrations/ folder | needs Leif: 4 proposed | not in this plan; it depends on #218 |
-| #220 Qualify one local agent setup | needs Leif: 4 proposed | not in this plan; it depends on #218 |
+| #217 Flake tracker and two-week clean window | 4 | Leif, 2026-11-11: "ok i approve", deferring it to after 0.6.0 (coordinator chat, relayed by t370); not in this plan; the two-week window needs two weeks of CI history after the fixes |
+| #218 Host-matrix e2e harness | 4 | Leif, 2026-11-11: "ok i approve", deferring it to after 0.6.0 (coordinator chat, relayed by t370); not in this plan |
+| #219 integrations/ folder | 4 | Leif, 2026-11-11: "ok i approve", deferring it to after 0.6.0 (coordinator chat, relayed by t370); not in this plan; it depends on #218 |
+| #220 Qualify one local agent setup | 4 | Leif, 2026-11-11: "ok i approve", deferring it to after 0.6.0 (coordinator chat, relayed by t370); not in this plan; it depends on #218 |
 | #221 to #229 Dogfood other repositories | 4 | Leif, 2026-11-10: "the other repos update only after that dogfood passes" (roadmap M6) |
-| #230 Weekly 0.x releases | needs Leif: 4 proposed | a cadence that starts after 0.6.0; 0.6.0 itself waits for Leif's go |
+| #230 Weekly 0.x releases | 4 | Leif, 2026-11-11: "ok i approve", deferring it to after 0.6.0 (coordinator chat, relayed by t370); a cadence that starts after 0.6.0; 0.6.0 itself waits for Leif's go |
 | #231 Freeze the format and ship 1.0 | 4 | named by the coordinator's rule |
 | #232 Chough 1.0 epic | 4 | named by the coordinator's rule |
 | #234 Committed records must never leak | 1 | TC-records-leak-guard |
@@ -213,7 +213,8 @@ TC-records-actor-recorded.
 
 Counted: 32 items in 0.6.0 (16 issues, 12 local bugs, and 4 pull requests already
 closed on 2026-11-11 and folded into #238), 5 of them already fixed on main or upstream;
-11 after 0.6.0 (#221 to #229, #231, #232); 5 wait for Leif's word (#217 to #220, #230).
+16 after 0.6.0 (#221 to #229, #231 and #232, and #217 to #220 and #230, which Leif
+deferred on 2026-11-11).
 
 ## Release gate
 
