@@ -36,7 +36,9 @@ fn unix_of(iso: &str) -> u64 {
 fn read_evidence(fixture: &Fixture, id: &str) -> Value {
     let mut found = None;
     for session in fixture.open_ids() {
-        let dir = fixture.root().join(format!(".chough/sessions/{session}/evidence"));
+        let dir = fixture
+            .root()
+            .join(format!(".chough/sessions/{session}/evidence"));
         let Ok(entries) = fs::read_dir(&dir) else {
             continue;
         };
@@ -122,7 +124,6 @@ fn read_evidence(fixture: &Fixture, id: &str) -> Value {
     }
     found.unwrap_or_else(|| panic!("no evidence entry {id}"))
 }
-
 
 use common::Fixture;
 use serde_json::Value;
@@ -1262,12 +1263,12 @@ fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations(
         // The raw log stays machine-local and uncommitted (REQ-records-005); the entry
         // carries its fingerprint.
         let log = format!(".chough/local/logs/{id}.log");
-        let fixture = roots
-            .iter()
-            .find(|fixture| fixture.exists(&log))
-            .unwrap();
+        let fixture = roots.iter().find(|fixture| fixture.exists(&log)).unwrap();
         let record: Value = read_evidence(fixture, id);
-        assert!(record["artifacts"].as_array().unwrap().is_empty(), "{record}");
+        assert!(
+            record["artifacts"].as_array().unwrap().is_empty(),
+            "{record}"
+        );
         let bytes = fixture.read(&log);
         assert!(bytes.contains("test result: ok. 1 passed"));
         let digest = {
@@ -1628,7 +1629,11 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
         "--observation-id",
         id,
     ]);
-    assert!(first.status.success(), "{}", String::from_utf8_lossy(&first.stderr));
+    assert!(
+        first.status.success(),
+        "{}",
+        String::from_utf8_lossy(&first.stderr)
+    );
     let log = format!(".chough/local/logs/{id}.log");
     let before = fixture.read(&log);
     let output = fixture.run(&[
@@ -1647,9 +1652,13 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
     assert_eq!(fixture.read(&log), before);
     let session = fixture.active_id();
     assert_eq!(
-        std::fs::read_dir(fixture.root().join(format!(".chough/sessions/{session}/evidence")))
-            .unwrap()
-            .count(),
+        std::fs::read_dir(
+            fixture
+                .root()
+                .join(format!(".chough/sessions/{session}/evidence"))
+        )
+        .unwrap()
+        .count(),
         1,
         "a second entry was written"
     );
@@ -2432,7 +2441,10 @@ fn manual_case_record_returns_its_case_and_observation_ids() {
     let recorded = report["recorded"].as_str().unwrap();
     assert_eq!(
         recorded,
-        format!(".chough/sessions/{}/evidence/{observation}.md", fixture.active_id())
+        format!(
+            ".chough/sessions/{}/evidence/{observation}.md",
+            fixture.active_id()
+        )
     );
     let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);
@@ -2467,7 +2479,10 @@ fn evidence_add_returns_its_observation_id() {
     let recorded = report["recorded"].as_str().unwrap();
     assert_eq!(
         recorded,
-        format!(".chough/sessions/{}/evidence/{observation}.md", fixture.active_id())
+        format!(
+            ".chough/sessions/{}/evidence/{observation}.md",
+            fixture.active_id()
+        )
     );
     let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);
