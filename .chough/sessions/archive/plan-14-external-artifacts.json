@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-5f796fcbed95355c82136e47",
-    "head": "EVT-b669b89d480a5d671b0f6f72",
+    "head": "EVT-8482172b56091b2dc8cef3bf",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -26,7 +26,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "0xLeif decided \"Implementation review of external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14\": \"Leif ACCEPTED all four (2026-11-10): #211 (#165), #210 (#167), #208 (#14) and #233 (#201)\" (Relayed by coordinator Claude Code (hc t370) to worker hc t37j, 2026-11-10; merge held for Leif's 95% bar (dogfood + full suite), coordinator merges); recorded by claude-code (claude-opus-5-5) on hc t37j; a relayed claim, not authenticated"
+  ],
   "open_questions": [],
   "completed": [
     "Extended the #14 regression to the approved AC: directory, symlink and over-64-MiB refusals and the freshness flip when the external file changes; case TC-cli-external-artifact-fingerprinted-in-place; main merged"
@@ -37,9 +39,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Record Leif's relayed acceptance as the review, ship, dogfood, full suite; stop before merge for the coordinator."
 }
