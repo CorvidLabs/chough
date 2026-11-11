@@ -5,7 +5,7 @@ artifact: testing
 
 # Testing
 
-## Cases
+## Requirement evidence
 
 Each case binds one cargo test with the `cargo-test` adapter, in a case file of its
 own per module, `.chough/cases/<module>.human-first-0-6-0.cases.toml`. A case may
@@ -47,12 +47,17 @@ requirement are inside the named test, one assertion block per criterion.
 | REQ-cli-014 | TC-cli-delivery-kinds-as-receipts | tests/stages.rs `delivery_kinds_survive_as_receipts` | kinds kept in the story |
 | REQ-cli-015 | TC-cli-librarian-links-only | tests/knowledge_default.rs `the_librarian_copies_nothing` | removed commands, snapshots and briefs kept |
 | REQ-cli-017 | TC-cli-evidence-entries | tests/evidence.rs `evidence_entries_carry_their_receipt` | keys, kinds, freshness parity for receipts, response keys |
+| REQ-cli-019 | TC-cli-0110 and TC-cli-bug-0022-toolchain-matches-ci | tests/package.rs `versions_agree_across_readme_agents_ci_and_specsync_config`, `toolchain_task_names_a_version_that_differs` | the config comment joins the version check (BUG-0001); the toolchain task fails on a differing version (BUG-0022) |
 | REQ-cli-021 | TC-cli-next-reads-the-story | tests/next.rs `next_reads_decisions_and_questions_from_the_story` | existing bounds ported, lesson bundles match the index |
+| REQ-cli-022 | TC-cli-bug-0020-guard-uses-effective-approval and TC-cli-delta-guard-refusals-name-the-agent-actor (rewritten) | tests/native_check.rs `the_delta_guard_compares_with_the_effective_approval`; the ported guard tests | the effective, digest-matching approval (BUG-0020); the remedy names the scope gate, and the agent only for authority given in advance |
 | REQ-cli-023 | TC-cli-names-and-draws | tests/ids.rs `new_records_get_date_slug_names_without_retry` | existing identity assertions ported to names |
+| REQ-cli-029 | TC-cli-authority-before-approval (rewritten) | tests/workflow_authority.rs `authority_given_in_advance_names_the_agent_and_quotes_the_human` | a gate decision is the human's; authority given in advance names the agent with the quoted words (FLOW-24); the skill references agree |
 | REQ-cli-030 | TC-cli-237-gate-holds-its-stage | tests/gates.rs `a_gate_holds_only_the_stage_it_names` | the #237 regression and the ported gate assertions |
 | REQ-cli-032 | TC-cli-session-record-capacity | tests/cli.rs `the_session_record_is_bounded_at_one_mebibyte` | the 1 MiB and 400 bounds, timing at the cap |
+| REQ-cli-034 | the ported REQ-cli-034 cases | tests/cli.rs, the existing size tests | spec files read at any size; no `library snapshot` exception; the 0.6.0 record bounds |
 | REQ-cli-037 | TC-cli-active-session-folder | tests/sessions.rs `the_active_session_is_resolved_once` | pointer rules, mid-command switch, init with objective |
 | REQ-cli-040 | TC-cli-one-writer-lock | tests/cli.rs `record_writers_share_one_lock` | busy refusal, two bug notes both kept |
+| REQ-cli-042 | TC-cli-archived-finalization-over-record-bound (rewritten) | tests/cli.rs `an_archived_finalization_over_the_record_bound_still_tells_a_finished_session` | native sources read at full size by the finished-session check, timing and the index; no prune reader |
 | REQ-cli-043 | TC-cli-index-links-every-lesson | tests/vault.rs `the_index_is_a_reading_guide_that_links_every_lesson` | index contents, refresh at done, check passes after done |
 | REQ-cli-044 | TC-cli-vault-holds-only-its-own | tests/vault.rs `the_vault_holds_only_what_has_no_other_home` | allowed paths only, no copied text, links resolve |
 | REQ-cli-047 | TC-cli-markdown-bug-merge | tests/bugs.rs `bug_merge_unions_logs_and_takes_one_sided_edits` | driver, attributes, index check |
