@@ -526,12 +526,15 @@ impl<'a> Evidence<'a> {
                     .join(" and ")
             ),
         }
-        Ok(bug.record.maps("receipts").iter().find_map(|map| {
+        if let Some(receipt) = bug.record.maps("receipts").iter().find_map(|map| {
             receipt_names(map)
                 .iter()
                 .any(|name| name == id)
                 .then(|| Linked::from_fields(map, bug.id().to_string(), "bug-receipt"))
-        }))
+        }) {
+            return Ok(Some(receipt));
+        }
+        Ok(legacy_observation(self.root, id))
     }
 
     /// The linked evidence that is present: an entry or a receipt. Missing evidence never
@@ -618,6 +621,29 @@ impl<'a> Evidence<'a> {
         }
         Ok(values)
     }
+}
+
+/// Transitional, until plan step 4's evidence reader replaces [`Evidence::index`] at
+/// integration (t382): a 0.5.x observation that `cases run`, `validate run` and
+/// `evidence add` still write in this build, read only when no entry or receipt has
+/// the ID. It is removed with those writers.
+fn legacy_observation(root: &Path, id: &str) -> Option<Linked> {
+    if !crate::evidence::is_present(root, id).unwrap_or(false) {
+        return None;
+    }
+    let record = crate::evidence::load(root, id).ok()?;
+    let result = match record.outcome {
+        crate::evidence::Outcome::Passed => "passed",
+        crate::evidence::Outcome::Failed => "failed",
+        crate::evidence::Outcome::NotRun => "not-run",
+    };
+    Some(Linked {
+        result: Some(result.to_string()),
+        observed: Some(record.observed_at_unix_seconds),
+        revision: Some(record.snapshot.revision),
+        place: id.to_string(),
+        label: "observation",
+    })
 }
 
 /// The records in `dir` that read, by file name; others are skipped.
