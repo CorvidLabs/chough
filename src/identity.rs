@@ -231,12 +231,42 @@ pub(crate) fn create_named(
     bail!("refused: {second} also exists; nothing was written and no other name was drawn")
 }
 
+/// An explicit ID for a new write is a date and slug name (REQ-records-003); an
+/// old-style 0.5.x ID (OBS-, VAL- or SNAP-) is refused with the omit-ID remedy
+/// (REQ-cli-023).
 pub(crate) fn require_explicit_observation_id(id: &str) -> Result<()> {
     ensure!(
-        valid_observation_id(id),
+        !valid_observation_id(id) && !valid_validation_id(id) && !valid_snapshot_id(id),
         "old-style observation ID {id:?} cannot be used for a new write; omit the ID for automatic allocation"
     );
+    ensure!(
+        valid_dated_name(id),
+        "invalid evidence ID {id:?}: a date and slug name, such as 2026-11-10-fix-login"
+    );
     Ok(())
+}
+
+/// The `<YYYY-MM-DD>-<slug>` form of REQ-records-003, any clash suffix included.
+fn valid_dated_name(id: &str) -> bool {
+    let Some((date, rest)) = id.split_at_checked(10).and_then(|(date, rest)| {
+        rest.strip_prefix('-').map(|rest| (date, rest))
+    }) else {
+        return false;
+    };
+    let valid_date = date.len() == 10
+        && date.bytes().enumerate().all(|(index, byte)| {
+            if index == 4 || index == 7 {
+                byte == b'-'
+            } else {
+                byte.is_ascii_digit()
+            }
+        });
+    valid_date
+        && !rest.is_empty()
+        && rest.bytes().all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-')
+        && !rest.starts_with('-')
+        && !rest.ends_with('-')
+        && !rest.contains("--")
 }
 
 #[cfg(test)]
@@ -263,6 +293,23 @@ pub(crate) fn random_draws() -> usize {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn explicit_observation_ids_follow_the_date_slug_rule() {
+        use super::require_explicit_observation_id as check;
+        // A date and slug name is accepted, clash suffix included.
+        check("2026-11-10-fix-login").unwrap();
+        check("2026-11-10-fix-login-a1b2c3").unwrap();
+        // Old-style IDs are refused with the omit-ID remedy.
+        for old in ["OBS-cli-0123abcdef0123abcdef0123", "VAL-x-0123abcdef0123abcdef0123", "SNAP-x-0123abcdef0123abcdef0123"] {
+            let error = check(old).unwrap_err().to_string();
+            assert!(error.contains("omit the ID"), "{old}: {error}");
+        }
+        // Anything else is refused as not a date and slug.
+        for bad in ["fixture-observation", "2026-11-10", "2026-11-10-", "2026-11-10--x", "2026-1-1-x", "2026-11-10-Has-Upper"] {
+            assert!(check(bad).is_err(), "{bad}");
+        }
+    }
+
     use super::*;
 
     #[test]

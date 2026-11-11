@@ -581,12 +581,7 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     crate::checkpoint::read_session(root)?;
     if let Some(id) = &args.id {
         ensure!(valid_name(id), "invalid evidence ID");
-        ensure!(
-            !identity::valid_observation_id(id)
-                && !identity::valid_validation_id(id)
-                && !identity::valid_snapshot_id(id),
-            "old-style observation ID {id:?} cannot be used for a new write; omit the ID for automatic allocation"
-        );
+        identity::require_explicit_observation_id(id)?;
     }
     ensure!(
         !args.environment.trim().is_empty() && !args.summary.trim().is_empty(),
