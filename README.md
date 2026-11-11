@@ -177,7 +177,8 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |
 | `bug add/update/search/list/show/report/merge` | Local-first backlog; report candidates are never posted; `merge` is the Git merge driver for bug records |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
-| `library init/snapshot/index/archive` | Project librarian, on by default in `knowledge/`; post-archive summary preview and apply; `index --check` fails when the generated notes drift |
+| `library init/index/merge` | Project librarian, on by default in `knowledge/`: `index.md` and the journal feed, regenerated from their sources; `index --check` fails when they drift; `merge` is their Git merge driver |
+| `journal add` | Write one short dated post in `knowledge/journal/` that links the records; the move into done and `session close` write one too |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
 This table documents current main. Three entries were added after the 0.5.0
