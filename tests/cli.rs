@@ -538,7 +538,15 @@ fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str],
     // project; the comparison still covers every file, `.chough/local/` included.
     fixture.write(".chough/local/.gitignore", "*\n");
     fixture.write(".chough/local/checkpoint.lock", "");
-    let before = managed_record_bytes(fixture.root());
+    // The lock file names whichever writer last took the lock (REQ-cli-040, #132): it is
+    // lock state, not a record, so it is compared by presence, not by its process ID.
+    let lock_state = |mut records: BTreeMap<PathBuf, Vec<u8>>| {
+        if let Some(bytes) = records.get_mut(Path::new(".chough/local/checkpoint.lock")) {
+            bytes.clear();
+        }
+        records
+    };
+    let before = lock_state(managed_record_bytes(fixture.root()));
     let output = fixture.run(args);
     assert!(!output.status.success(), "{args:?} unexpectedly succeeded");
     assert!(
@@ -546,7 +554,7 @@ fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str],
         "{}",
         String::from_utf8_lossy(&output.stderr)
     );
-    let after = managed_record_bytes(fixture.root());
+    let after = lock_state(managed_record_bytes(fixture.root()));
     let changed: Vec<_> = before
         .keys()
         .chain(after.keys())
