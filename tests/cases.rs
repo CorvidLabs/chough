@@ -494,11 +494,10 @@ fn execution_records_failures_and_vacuous_runs_honestly() {
             .to_string()
             .contains("build or environment failure")
     );
-    let artifact = record("TC-cli-0002")["record"]["artifacts"][0]
-        .as_str()
-        .unwrap()
-        .to_string();
-    assert!(fixture.read(&artifact).contains("1 failed"));
+    // The raw log stays machine-local (REQ-records-005), named by the entry's ID.
+    let id = record("TC-cli-0002")["record"]["id"].as_str().unwrap().to_string();
+    let log = format!(".chough/local/logs/{id}.log");
+    assert!(fixture.read(&log).contains("1 failed"));
     assert_eq!(
         record("TC-cli-0001")["record"]["argv"],
         serde_json::json!([
@@ -537,7 +536,7 @@ fn manual_records_need_a_verdict_for_every_expected_outcome() {
     );
     fixture.init();
     fixture.commit("fixture");
-    fixture.write(".chough/artifacts/shot.png", "not really a png");
+    fixture.write("shot.png", "not really a png");
     let base = [
         "cases",
         "record",
@@ -549,7 +548,7 @@ fn manual_records_need_a_verdict_for_every_expected_outcome() {
         "--summary",
         "Compared states",
         "--artifact",
-        ".chough/artifacts/shot.png",
+        "shot.png",
     ];
     let mut partial = base.to_vec();
     partial.extend(["--verdict", "1=pass"]);
@@ -577,10 +576,9 @@ fn schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct() {
     fixture.stubs();
     fixture.init();
     fixture.commit("fixture");
-    fixture.ok(&[
+    let added = fixture.ok(&[
         "evidence",
         "add",
-        "OBS-dry-run-000000000000000000000005",
         "--criterion",
         "LIFE-1",
         "--requirement",
@@ -598,25 +596,17 @@ fn schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct() {
         "--limitation",
         "simulated adapter",
     ]);
-    let record: Value = serde_json::from_str(
-        &fixture.read(".chough/evidence/OBS-dry-run-000000000000000000000005.json"),
-    )
-    .unwrap();
+    let record = read_evidence(&fixture, added["observation"].as_str().unwrap());
     assert_eq!(record["schema_version"], 2);
     assert_eq!(record["kind"], "dry-run");
     assert_eq!(record["limitations"][0], "simulated adapter");
-    // Schema 1 records written by the bootstrap helper remain readable.
-    let mut legacy = record.clone();
-    legacy["schema_version"] = 1.into();
-    legacy["id"] = "legacy".into();
-    legacy["kind"] = "product-test".into();
-    legacy.as_object_mut().unwrap().remove("limitations");
-    fixture.write(".chough/evidence/legacy.json", &legacy.to_string());
-    let status = fixture.ok(&["status", "--environment", "staging-simulated", "--json"]);
-    assert_eq!(status["observations"].as_array().unwrap().len(), 2);
-    legacy["outcome"] = "not-run".into();
-    fixture.write(".chough/evidence/legacy.json", &legacy.to_string());
-    assert!(fixture.fails(&["status", "--json"]).contains("schema 1"));
+    // A 0.5.x JSON record in the tree is refused as unmigrated (REQ-records-010);
+    // migration reads them (step 10).
+    fixture.write(
+        ".chough/evidence/legacy.json",
+        &serde_json::to_string(&record).unwrap(),
+    );
+    assert!(fixture.fails(&["status", "--json"]).contains("unmigrated"));
 }
 
 /// A project whose cases bind the given commands, with native stand-ins on PATH.
@@ -795,7 +785,10 @@ fn output_beyond_the_per_stream_bound_is_counted_not_retained() {
     }
     let (_, report, record) = timed_run(&fixture, "TC-cli-0001");
     assert_eq!(report["outcome"], "passed", "{record}");
-    let artifact = fixture.read(record["artifacts"][0].as_str().unwrap());
+    let artifact = fixture.read(&format!(
+        ".chough/local/logs/{}.log",
+        record["id"].as_str().unwrap()
+    ));
     // The existing 1 MiB artifact bound plus the truncation notes.
     assert!(artifact.len() <= 1_048_576 + 300, "{}", artifact.len());
     assert!(artifact.contains("[truncated: captured output is limited to 1048576 bytes]"));
@@ -1109,7 +1102,10 @@ fn a_declared_variable_reaches_the_command_and_is_named_without_its_value() {
     );
     assert!(
         fixture
-            .read(record["artifacts"][0].as_str().unwrap())
+            .read(&format!(
+                ".chough/local/logs/{}.log",
+                record["id"].as_str().unwrap()
+            ))
             .contains("greeting=hello-from-the-case")
     );
 
@@ -1125,7 +1121,10 @@ fn a_declared_variable_reaches_the_command_and_is_named_without_its_value() {
     );
     assert!(
         !fixture
-            .read(record["artifacts"][0].as_str().unwrap())
+            .read(&format!(
+                ".chough/local/logs/{}.log",
+                record["id"].as_str().unwrap()
+            ))
             .contains("hello-from-the-case")
     );
 }
@@ -1168,12 +1167,10 @@ fn coloured_output_matches_its_visible_text_and_the_artifact_keeps_the_raw_bytes
         limitations(&record).contains(&ESCAPES_REMOVED.to_string()),
         "{record}"
     );
-    let artifact = std::fs::read(
-        fixture
-            .root()
-            .join(record["artifacts"][0].as_str().unwrap()),
-    )
-    .unwrap();
+    let artifact = fixture.read(&format!(
+        ".chough/local/logs/{}.log",
+        record["id"].as_str().unwrap()
+    )).into_bytes();
     let mut raw = b"--- stdout ---\n".to_vec();
     raw.extend(COLOURED);
     raw.extend(b"\n--- stderr ---\n");
@@ -1577,7 +1574,7 @@ fn old_style_explicit_observation_ids_have_an_omit_remedy_on_every_write_path() 
     assert!(!fixture.exists(".chough/evidence"));
     assert!(!fixture.exists(".chough/artifacts"));
 
-    let explicit = "OBS-tc-cli-0002-000000000000000000000011";
+    let explicit = "2020-01-01-accepted-explicit";
     let accepted = fixture.run(&[
         "cases",
         "record",
@@ -1600,7 +1597,10 @@ fn old_style_explicit_observation_ids_have_an_omit_remedy_on_every_write_path() 
         "{}",
         String::from_utf8_lossy(&accepted.stderr)
     );
-    assert!(fixture.exists(&format!(".chough/evidence/{explicit}.json")));
+    assert!(fixture.exists(&format!(
+        ".chough/sessions/{}/evidence/{explicit}.md",
+        fixture.active_id()
+    )));
 }
 
 #[test]

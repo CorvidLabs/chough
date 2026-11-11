@@ -244,7 +244,7 @@ pub(crate) fn require_explicit_observation_id(id: &str) -> Result<()> {
     );
     ensure!(
         valid_dated_name(id),
-        "invalid evidence ID {id:?}: a date and slug name, such as 2026-11-10-fix-login"
+        "invalid evidence ID {id:?} (a date and slug name, such as 2026-11-10-fix-login); omit the ID for automatic allocation"
     );
     Ok(())
 }

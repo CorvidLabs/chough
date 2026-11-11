@@ -526,7 +526,7 @@ pub(super) struct EvidenceArgs {
     method: Option<String>,
     #[arg(long)]
     track: Option<String>,
-    #[arg(long)]
+    #[arg(long = "limitation")]
     limitations: Vec<String>,
     /// Replace values that would leak with `<redacted:<kind>>` (REQ-records-006).
     #[arg(long)]
@@ -926,15 +926,132 @@ fn load_session(root: &Path, session_id: &str) -> Result<Vec<Evidence>> {
     Ok(found)
 }
 
-/// One entry by ID or alias, across the open sessions (REQ-records-003).
+/// A receipt resolved from an archived story or a bug, as a partial entry: id,
+/// aliases, result, observed and revision are what a receipt carries (the t38b/t382
+/// agreement); freshness of a receipt stays revision-bound (REQ-cli-017).
+fn evidence_from_receipt(map: &[(String, String)]) -> Result<Evidence> {
+    let get = |key: &str| {
+        map.iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.clone())
+    };
+    let id = get("id").context("a receipt lacks its id")?;
+    Ok(Evidence {
+        id,
+        explicit_id: false,
+        aliases: get("aliases")
+            .map(|text| text.split(", ").map(str::to_string).collect())
+            .unwrap_or_default(),
+        criteria: vec![],
+        requirements: vec![],
+        contracts: vec![],
+        kind: Kind::Structural,
+        outcome: Outcome::parse(&get("result").context("a receipt lacks its result")?)?,
+        environment: get("environment").unwrap_or_default(),
+        summary: get("claim").unwrap_or_default(),
+        artifacts: vec![],
+        artifact_fingerprints: BTreeMap::new(),
+        external: None,
+        screenshot: None,
+        fingerprint: get("fingerprint"),
+        raw_log: get("raw_log"),
+        observed_at_unix_seconds: get("observed")
+            .map(|text| crate::session_md::parse_time(&text))
+            .transpose()
+            .context("a receipt's observed time")?
+            .unwrap_or(0),
+        snapshot: Snapshot {
+            revision: get("revision").unwrap_or_default(),
+            dirty: false,
+            fingerprint: String::new(),
+            content: get("content"),
+            input_inventory: None,
+        },
+        cases: vec![],
+        method: None,
+        track: None,
+        argv: vec![],
+        exit_code: None,
+        tests_run: None,
+        limitations: vec![],
+        key_lines: vec![],
+        redacted: 0,
+        actor: None,
+        duration_seconds: get("duration_seconds").and_then(|text| text.parse().ok()),
+    })
+}
+
+/// Receipts held by archived stories and bugs, as (qualified source, entry) pairs.
+fn receipt_entries(root: &Path, id: &str) -> Result<Vec<(String, Evidence)>> {
+    let mut found = vec![];
+    for view_sources in [receipt_maps(root, ".chough/archive/sessions", "receipts")?, {
+        let bugs = local_path(root, crate::bugs::BUGS_DIR)?;
+        if bugs.is_dir() {
+            receipt_maps(root, crate::bugs::BUGS_DIR, "receipts")?
+        } else {
+            vec![]
+        }
+    }] {
+        for (source, map) in view_sources {
+            let entry = evidence_from_receipt(&map)?;
+            if entry.id == id || entry.aliases.iter().any(|alias| alias == id) {
+                found.push((source, entry));
+            }
+        }
+    }
+    Ok(found)
+}
+
+/// Every `receipts:` map in the Markdown records under a folder, with the record name.
+fn receipt_maps(
+    root: &Path,
+    dir: &str,
+    key: &str,
+) -> Result<Vec<(String, Vec<(String, String)>)>> {
+    let folder = local_path(root, dir)?;
+    let mut found = vec![];
+    let Ok(entries) = fs::read_dir(&folder) else {
+        return Ok(found);
+    };
+    for entry in entries.flatten() {
+        let name = entry.file_name().to_string_lossy().into_owned();
+        if !name.ends_with(".md") {
+            continue;
+        }
+        let text = read_bounded_record(&entry.path(), markdown::SESSION_BOUND)?;
+        let record = markdown::parse(&name, &text)?;
+        for map in record.maps(key) {
+            found.push((name.trim_end_matches(".md").to_string(), map));
+        }
+    }
+    Ok(found)
+}
+
+/// One entry by ID or alias: the qualified `<session-id>/<evidence-id>` form, or the
+/// bare form through open sessions' entries, then archived stories' and bugs'
+/// receipts; two records holding it refuse as ambiguous, naming the qualified form.
 pub(super) fn load(root: &Path, id: &str) -> Result<Evidence> {
+    if let Some((session, entry)) = id.split_once('/') {
+        return load_session(root, session)?
+            .into_iter()
+            .find(|evidence| evidence.id == entry || evidence.aliases.iter().any(|a| a == entry))
+            .with_context(|| format!("evidence not found: {id}"));
+    }
+    let mut found = vec![];
     for session_id in crate::sessions::open_ids(root)? {
         let dir = evidence_dir(&session_id);
         if let Some((_, record)) = markdown::resolve(root, &dir, id)? {
-            return Evidence::from_record(&record);
+            found.push(Evidence::from_record(&record)?);
         }
     }
-    bail!("evidence not found: {id}")
+    found.extend(receipt_entries(root, id)?.into_iter().map(|(_, entry)| entry));
+    match found.len() {
+        0 => bail!("evidence not found: {id}"),
+        1 => Ok(found.pop().expect("one entry")),
+        _ => bail!(
+            "refused: {id} names evidence in more than one place; qualify it as <session-id>/<evidence-id>"
+        ),
+    }
 }
 
 /// Whether an entry with this ID or alias exists in an open session.
@@ -948,7 +1065,7 @@ pub(super) fn is_present(root: &Path, id: &str) -> Result<bool> {
             return Ok(true);
         }
     }
-    Ok(false)
+    Ok(!receipt_entries(root, id)?.is_empty())
 }
 
 /// The JSON view of an entry, as `status` and the case reports show it.
