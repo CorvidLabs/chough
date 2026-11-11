@@ -248,6 +248,25 @@ impl Record {
 
     /// Append `mark` to the line of the first item `- <item>` in the `## <heading>`
     /// section: the one in-place edit of a section Chough owns (REQ-records-004).
+    /// Replace one item of a `## ` section, matched by its exact text, with `with`: for
+    /// a line Chough wrote whose target no longer exists, such as a session entry's link
+    /// once the session has finished.
+    pub(crate) fn replace_item(&mut self, heading: &str, item: &str, with: &str) -> Result<()> {
+        let (start, end) = section_span(&self.body, heading)
+            .ok_or_else(|| anyhow::anyhow!("no `## {heading}` section"))?;
+        let mut offset = start;
+        for line in self.body[start..end].split_inclusive('\n') {
+            let content = line.trim_end_matches('\n');
+            if content.strip_prefix("- ") == Some(item) {
+                self.body
+                    .replace_range(offset + 2..offset + content.len(), with);
+                return Ok(());
+            }
+            offset += line.len();
+        }
+        bail!("no item `{item}` under `## {heading}`")
+    }
+
     pub(crate) fn mark_item(&mut self, heading: &str, item: &str, mark: &str) -> Result<()> {
         let (start, end) = section_span(&self.body, heading)
             .ok_or_else(|| anyhow::anyhow!("no `## {heading}` section"))?;

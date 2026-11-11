@@ -1176,13 +1176,21 @@ fn the_session_record_is_checkpoint_and_story() {
     assert_eq!(next["decisions"]["items"][0]["text"], decision, "{next:#}");
     assert_eq!(next["open_questions"]["items"][0], question, "{next:#}");
 
-    fixture.ok(&["checkpoint", "--resolve-question", question]);
+    fixture.ok(&[
+        "checkpoint",
+        "--resolve-question",
+        question,
+        "--answer",
+        "The SYNTHETIC phone viewport",
+    ]);
     let story = body(&fixture.read(&file));
     assert!(
         section(&story, "Open threads")
             .iter()
-            .any(|line| line.contains(question)),
-        "the resolved question's line is gone: {story}"
+            .any(|line| line.contains(&format!(
+                "{question} (resolved: The SYNTHETIC phone viewport)"
+            ))),
+        "the resolved question's line does not keep its answer: {story}"
     );
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(next["open_questions"]["total"], 0, "{next:#}");
