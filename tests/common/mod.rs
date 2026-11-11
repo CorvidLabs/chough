@@ -196,6 +196,18 @@ impl Fixture {
         record["observed_at_unix_seconds"].as_u64().unwrap()
     }
 
+    /// Write bug `id` as a Markdown record (REQ-cli-012) with this scope, status and
+    /// linked evidence IDs, as a hand-written fixture.
+    pub(super) fn bug_md(&self, id: &str, scope: &str, status: &str, evidence: &[&str]) {
+        self.write(
+            &format!(".chough/bugs/{id}.md"),
+            &format!(
+                "---\nkind: bug\nid: {id}\naliases: []\ntitle: Fixture bug {id}\nstatus: {status}\nclassification: product-defect\nscope: {scope}\nimpact: Not yet assessed.\ncriteria: []\nrequirements: []\ncases: []\nevidence: [{}]\nreceipts: []\nenvironment: local\nfound_by: fixture\nrelated: []\ncreated: 2026-11-10T00:00:01Z\nupdated: 2026-11-10T00:00:01Z\n---\n# Fixture bug {id}\n\n**What happened:** It breaks\nActual: It broke\n\n**Steps:** Running the probe\n\n**Expected:** It works\n\n**Why it matters:** Not yet assessed.\n\n**Fix:** Not fixed yet.\n\n## Log\n\n- 2026-11-10T00:00:01Z · Reported (fixture)\n",
+                evidence.join(", ")
+            ),
+        );
+    }
+
     /// The active session's checkpoint, as `chough checkpoint` prints it.
     pub(super) fn session(&self) -> Value {
         self.checkpoint()
