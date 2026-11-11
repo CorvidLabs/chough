@@ -27,12 +27,16 @@
     "tc-cli-0070-1793498638",
     "tc-cli-0071-1793498642",
     "tc-cli-0072-1793498646",
-    "OBS-tc-records-doctor-names-missing-exclusions-7348439622f474caf85af184"
+    "OBS-tc-records-doctor-names-missing-exclusions-7348439622f474caf85af184",
+    "OBS-tc-records-doctor-names-missing-exclusions-4844a80f3a0c79319da89e3a",
+    "OBS-tc-records-untracked-receipt-keeps-verification-c662b9bae64eac4b34277ee5",
+    "OBS-tc-records-write-after-check-keeps-verification-915a49bf836ccd7d105306c6",
+    "OBS-tc-records-case-definitions-stay-verified-42c391cf9182f2f8ef22b328"
   ],
   "impact": "Repeated verification and review rebinding",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -72,8 +76,18 @@
       "observations": [
         "OBS-tc-records-doctor-names-missing-exclusions-7348439622f474caf85af184"
       ]
+    },
+    {
+      "at_unix_seconds": 1794428234,
+      "text": "status: open -> verified. Fixed again in the 0.6.0 change (PR #238, REQ-records-014): the four #12 cases passed after the 0.5.0 failure, the two repros with real SpecSync 6.2.0 and their controls.",
+      "observations": [
+        "OBS-tc-records-doctor-names-missing-exclusions-4844a80f3a0c79319da89e3a",
+        "OBS-tc-records-untracked-receipt-keeps-verification-c662b9bae64eac4b34277ee5",
+        "OBS-tc-records-write-after-check-keeps-verification-915a49bf836ccd7d105306c6",
+        "OBS-tc-records-case-definitions-stay-verified-42c391cf9182f2f8ef22b328"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793494673,
-  "updated_at_unix_seconds": 1794426795
+  "updated_at_unix_seconds": 1794428234
 }
