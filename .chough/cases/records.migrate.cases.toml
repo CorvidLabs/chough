@@ -87,3 +87,24 @@ expected = ["tests/migrate.rs::an_unmigrated_tree_is_refused_with_the_migrate_co
 adapter = "cargo-test"
 test_target = "migrate"
 test = "an_unmigrated_tree_is_refused_with_the_migrate_command"
+
+# t37j's second rehearsal on this repository: the receipt of a real project is far past
+# the ordinary record bound.
+
+[[case]]
+id = "TC-records-migrate-receipt-bound"
+title = "A migration receipt past the 65,536-byte ordinary record bound applies within its own 4,194,304-byte bound, listing every file"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-21"]
+requirements = ["REQ-records-009", "REQ-records-001"]
+paths = ["src/migrate.rs", "src/records.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_receipt_past_the_ordinary_record_bound_applies passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_receipt_past_the_ordinary_record_bound_applies"

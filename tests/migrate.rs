@@ -1106,3 +1106,35 @@ fn an_unmigrated_tree_is_refused_with_the_migrate_command() {
         "{report:#}"
     );
 }
+
+/// t37j's rehearsal on this repository: a real project's receipt lists thousands of
+/// files, far past the 65,536-byte bound of an ordinary record. The receipt has its own
+/// 4,194,304-byte bound (REQ-records-001), so a receipt of about 100 KB applies whole.
+#[test]
+fn a_receipt_past_the_ordinary_record_bound_applies() {
+    let artifacts: Vec<(String, String)> = (0..400)
+        .map(|index| {
+            (
+                format!(".chough/artifacts/stray/run-{index:04}.log"),
+                format!("run {index} passed\n"),
+            )
+        })
+        .collect();
+    let extra: Vec<(&str, &str)> = artifacts
+        .iter()
+        .map(|(path, text)| (path.as_str(), text.as_str()))
+        .collect();
+    let fixture = migrate_project("adopted", &extra);
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    for (path, _) in &artifacts {
+        assert!(plan["sources"].get(path).is_some(), "{path}: {plan:#}");
+        assert!(!fixture.exists(path), "{path} was not removed");
+    }
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    assert!(
+        receipt.len() > 65_536,
+        "the receipt is {} bytes",
+        receipt.len()
+    );
+    assert!(receipt.contains(".chough/artifacts/stray/run-0399.log"));
+}
