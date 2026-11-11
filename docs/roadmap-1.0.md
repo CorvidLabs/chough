@@ -1,9 +1,10 @@
 # Roadmap to 1.0
 
 Source: Leif's MVP / 1.0 interview of 2026-11-10 and his same-day decisions on
-issues #14, #165, #167 and #201, captured as FLOW-21, FLOW-22, DRIVE-24, KNOW-30
-and LIFE-17 to LIFE-25. This roadmap records proposed sequencing; it is not human
-acceptance or proof of delivery. Durable intent stays in [HI](../hi/).
+issues #14, #165, #167, #201, #234, #235 and #236, captured as FLOW-21 to
+FLOW-23, DRIVE-24 to DRIVE-27, KNOW-30 to KNOW-32 and LIFE-17 to LIFE-26. This
+roadmap records proposed sequencing; it is not human acceptance or proof of
+delivery. Durable intent stays in [HI](../hi/).
 
 ## What 1.0 means
 
@@ -53,7 +54,11 @@ Serves bar 3 (frozen format + migrations) and bar 1 (no data-loss bugs).
 Scope: DRIVE-24. Every session gets its own unique slug folder; active and
 archived sessions are kept separately, mirroring SpecSync's `changes/` and
 `archive/`; sessions stay committed because handoff depends on them; parallel
-sessions never rewrite one shared file. Includes the corrections command
+sessions never rewrite one shared file. Records become human-first
+(DRIVE-25): bugs, evidence, sessions and decisions are Markdown with YAML
+frontmatter, one file per record, the file itself the source of truth.
+Record names are a date plus a slug, never sequential numbers, with old
+sequential IDs kept as aliases (DRIVE-27). Includes the corrections command
 (LIFE-18, #167), session identity recording (LIFE-17, #201) and the open
 session bugs (#181, #113).
 
@@ -72,11 +77,15 @@ same-second and real-Git fixture acceptance runs.
 Serves bar 1 and bar 3.
 
 Scope: LIFE-19 (digest-committed receipts; raw logs and transcripts go to CI
-artifacts or are regenerated from seeds, matching LIFE-8), the remaining
+artifacts or are regenerated from seeds, matching LIFE-8), with each evidence
+entry a one-line claim plus a receipt in the DRIVE-26 form; the remaining
 case-binding fixes (FLOW-22, #14 item 3: external artifacts by recorded
-fingerprint), #60 (observation IDs from every recording command), #12 (Chough
-records and SpecSync verification making each other stale) and #136 (knowledge
-index rebuilds marking observations stale).
+fingerprint); FLOW-23 (#236): a human's Chough gate approval drives the
+SpecSync approval as that human, never a hard-coded identity; LIFE-26 (#234):
+committed records never leak local paths, usernames, credentials or personal
+information; #60 (observation IDs from every recording command), #12 (Chough
+records and SpecSync verification making each other stale) and #136
+(knowledge index rebuilds marking observations stale).
 
 Done means: no commit to `.chough/` carries a raw transcript; every recorded
 observation is a short receipt with a content digest and the exact command;
@@ -86,23 +95,31 @@ commits never make native verification stale (DRIVE-4 stays true).
 Tested by: focused cases per fix, plus a repository-size guard in CI that
 fails when a committed evidence artifact exceeds the receipt bound.
 
-### M3: Knowledge complete
+### M3: Knowledge complete, links never copies
 
 Serves bar 1.
 
-Scope: LIFE-23: all of KNOW is in the 1.0 scope — the librarian, the roll-ups
-into the knowledge vault, the index and observations. KNOW-30 (#165): the
-roll-up copies and never moves, so a tracked session record never disappears
-from the tree. Includes #165 and the KNOW criteria still open when this
-milestone starts.
+Scope: LIFE-23: all of KNOW is in the 1.0 scope — the librarian, the roll-ups,
+the index and observations — re-scoped by the 2026-11-10 interview round 2
+(#235): the vault holds only what has no other home (lessons, decisions with
+their reasons, bug write-ups and short session stories in the DRIVE-26 form)
+and links to hi/, specs/, .specsync/ and .chough/, never copies (KNOW-30,
+KNOW-31, KNOW-32). The `knowledge/intent/` and `knowledge/archives/` copies
+are removed by the cleanup change (#235 item 4, one cleanup PR per repo);
+that removal changes contracted librarian behavior (the "Project librarian"
+and "Knowledge directory built and kept current" requirements in
+specs/cli/requirements.md), so it is its own native change, not folded into a
+docs change. Includes #165 (whose first wording is superseded by KNOW-30),
+#211 (parked by #235) and the KNOW criteria still open when this milestone
+starts.
 
-Done means: `chough library` (or its successor) rolls an archived session up
-as a copy-or-link into the vault with `.chough/sessions/archive/` untouched;
-the index, module lessons pages, bug notes and the timeline regenerate
-byte-identical from their sources (KNOW-4); a fresh agent is pointed at the
-index at start and resume (KNOW-1, FLOW-13).
+Done means: the vault contains no copy of a record that has a home; every
+vault note either is original content (lesson, decision, bug write-up,
+session story) or links; the index regenerates byte-identical from its
+sources (KNOW-4); a fresh agent is pointed at the index at start and resume
+(KNOW-1, FLOW-13); `.chough/sessions/archive/` records stay where they are.
 
-Tested by: the vault regeneration and copy-not-move cases, exercised during
+Tested by: the vault regeneration and link-not-copy cases, exercised during
 the per-repo dogfooding runs.
 
 ### M4: Zero known flakes
@@ -171,41 +188,51 @@ Tested by: [the test plan](test-plan-1.0.md) in full.
 DRIVE-24 changes the session layout from one file per session to one folder
 per session, so parallel sessions never share a file and active work is
 separated from archives exactly like SpecSync's `changes/` and `archive/`.
+DRIVE-25 to DRIVE-27 change the record format itself: sessions, decisions,
+bugs and evidence become Markdown with YAML frontmatter, one file per record,
+named by date plus slug, with old sequential IDs kept as aliases.
 
 ### From (0.x, today)
 
-- `.chough/sessions/<slug>.json` — one file per active session
-- `.chough/sessions/archive/<slug>.json` — one file per archived session
+- `.chough/sessions/<slug>.json` — one JSON file per active session
+- `.chough/sessions/archive/<slug>.json` — one JSON file per archived session
 - `.chough/session.v1.json` — the frozen legacy checkpoint (the legacy anchor
   of amended KNOW-29)
 - `.chough/transitions.jsonl` — one shared append-only transition log
 - `.chough/history/cycles/` — shared cycle history
+- `.chough/bugs/BUG-NNNN*.json`, `.chough/evidence/OBS-*.json` — sequential
+  JSON records
 
 ### To (1.0)
 
-- `.chough/sessions/active/<slug>/session.json` — the session checkpoint
-- `.chough/sessions/active/<slug>/transitions.jsonl` — that session's
-  transitions, append-only
-- `.chough/sessions/active/<slug>/inbox/` — append-only subagent observations
-  for the session (DRIVE-3)
-- `.chough/sessions/archive/<slug>/` — the same files after archival, plus
-  the archive receipt; the vault roll-up copies from here and never moves
-  (KNOW-30)
+- `.chough/sessions/active/<date>-<slug>/` — one folder per active session,
+  holding its Markdown session record with YAML frontmatter, its append-only
+  transitions and an append-only inbox/ for subagent observations (DRIVE-3)
+- `.chough/sessions/archive/<date>-<slug>/` — the same after archival, plus
+  the archive receipt; the vault links to these and never moves or copies
+  them (KNOW-30)
+- `.chough/bugs/<date>-<slug>.md`, `.chough/evidence/<date>-<slug>.md`,
+  decisions likewise — one Markdown file per record, the file itself the
+  source of truth, no JSON twin (DRIVE-25)
 
 ### What migrates
 
-- Each active `sessions/<slug>.json` moves to
-  `sessions/active/<slug>/session.json` unchanged in content; the format
-  version field is bumped by the migration receipt, not by rewriting fields.
-- Each archived `sessions/archive/<slug>.json` moves to
-  `sessions/archive/<slug>/session.json`.
+- Each active `sessions/<slug>.json` becomes
+  `sessions/active/<date>-<slug>/` with its content carried into the Markdown
+  record's frontmatter and body; the format version is bumped by the
+  migration receipt.
+- Each archived `sessions/archive/<slug>.json` becomes
+  `sessions/archive/<date>-<slug>/` the same way.
 - The shared `transitions.jsonl` is partitioned: every event that names a
-  session is appended to that session folder's `transitions.jsonl`; events
-  that name no session stay in a committed legacy log that readers still
-  honor. Nothing is deleted; the old files are removed only after their bytes
-  are committed identically in the new layout (the KNOW-7 rule).
-- `session.v1.json`, `history/`, `bugs/`, `evidence/`, `cases/`,
-  `artifacts/` and `preferences.json` do not move.
+  session is appended to that session folder's transitions; events that name
+  no session stay in a committed legacy log that readers still honor.
+  Nothing is deleted; the old files are removed only after their replacement
+  is committed (the KNOW-7 rule).
+- Every `BUG-NNNN` and `OBS-*` record converts to its Markdown form under its
+  creation date and slug, with the old ID recorded as an alias in the
+  frontmatter so existing links keep resolving (DRIVE-27).
+- `session.v1.json`, `history/`, `cases/`, `artifacts/` and
+  `preferences.json` do not move.
 
 ### How a 0.x checkout upgrades
 
@@ -227,9 +254,11 @@ separated from archives exactly like SpecSync's `changes/` and `archive/`.
   wording; whether WSL stays the documented Windows path is Leif's call, and
   FLOW-17 is unchanged until then.
 - KNOW-29 says older archived sessions "roll into the knowledge vault as a
-  summary note with attachments", which reads as a move; KNOW-30 records the
-  copy-never-move decision. KNOW-29 is unchanged; the amendment is flagged
-  here for Leif.
+  summary note with attachments", which reads as a move. The 2026-11-10
+  interview round 2 (#235) resolved this: KNOW-30 now records that the vault
+  links and never moves or copies, with at most a short session story that
+  links. KNOW-29's roll-up now reads as link-and-story; the conflict is
+  closed.
 - The interview describes today's layout as "a single committed
   session.json"; main has had per-session files since 0.4.0 (DRIVE-3,
   DRIVE-13). DRIVE-24 is the folder form of the same direction, not a

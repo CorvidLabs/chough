@@ -28,6 +28,9 @@ criteria:
   - DRIVE-21
   - DRIVE-22
   - DRIVE-24
+  - DRIVE-25
+  - DRIVE-26
+  - DRIVE-27
 tags:
   - chough/intent
 ---
@@ -63,3 +66,6 @@ archived changes whose requirements trace it.
 - **DRIVE-21**: [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md), [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md)
 - **DRIVE-22**: [rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177](../archives/rebuild-the-linux-test-environment-from-the-repository-with-one-command-using-the-project-s-pinned-tool-versions-177.md)
 - **DRIVE-24**: none yet
+- **DRIVE-25**: none yet
+- **DRIVE-26**: none yet
+- **DRIVE-27**: none yet

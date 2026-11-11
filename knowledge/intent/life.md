@@ -30,6 +30,7 @@ criteria:
   - LIFE-23
   - LIFE-24
   - LIFE-25
+  - LIFE-26
 tags:
   - chough/intent
 ---
@@ -67,3 +68,4 @@ archived changes whose requirements trace it.
 - **LIFE-23**: none yet
 - **LIFE-24**: none yet
 - **LIFE-25**: none yet
+- **LIFE-26**: none yet

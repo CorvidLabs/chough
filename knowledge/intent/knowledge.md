@@ -35,6 +35,8 @@ criteria:
   - KNOW-28
   - KNOW-29
   - KNOW-30
+  - KNOW-31
+  - KNOW-32
 tags:
   - chough/intent
 ---
@@ -77,3 +79,5 @@ archived changes whose requirements trace it.
 - **KNOW-28**: none yet
 - **KNOW-29**: [after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes](../archives/after-the-move-into-done-chough-library-index-check-passes-with-no-command-in-between-session-notes-link-archive-notes.md), [keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143](../archives/keep-the-archived-session-that-holds-the-legacy-history-anchor-out-of-the-roll-up-143.md), [keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29](../archives/keep-the-five-most-recent-archived-sessions-and-roll-older-ones-into-the-knowledge-vault-know-29.md)
 - **KNOW-30**: none yet
+- **KNOW-31**: none yet
+- **KNOW-32**: none yet

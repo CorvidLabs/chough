@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "996dadc2d26b200a7f745215ef9c151304107e05",
   "created_at": 1794326164,
-  "updated_at": 1794358772,
+  "updated_at": 1794360022,
   "affected_specs": [
     "cli"
   ],
@@ -25,7 +25,7 @@
   "no_spec_change": true,
   "no_spec_change_rationale": "No requirement text changes: the PR captures Leif's 2026-11-10 interview decisions as new hi criteria (FLOW-21, FLOW-22, DRIVE-24, KNOW-30, LIFE-17 to LIFE-25) and adds roadmap and test-plan documentation. No helper behavior, stage semantics, retention or SpecSync contract changes.",
   "acceptance_criteria": [
-    "hi check passes with the 13 new criteria (FLOW-21, FLOW-22, DRIVE-24, KNOW-30, LIFE-17 to LIFE-25) and the INTENT.md index regenerated; docs/roadmap-1.0.md defines milestones to 1.0, each tied to one of the four bar items of LIFE-21 with a done definition and its test, and includes the session-slug-folder migration design; docs/test-plan-1.0.md covers the per-repo dogfood checklist, the flake tracker and two-week clean window, migration fixtures from every 0.x tag (0.1.0 to 0.5.0) and the host-matrix e2e harness design; the issues exist under the Chough 1.0 milestone: epic #232 with the 19 new issues #213 to #231 and the 14 mapped existing open issues, each with acceptance criteria and dependency links; no helper behavior, requirement text, stage semantics, retention or SpecSync contract changes"
+    "hi check passes with the 20 new criteria (FLOW-21 to FLOW-23, DRIVE-24 to DRIVE-27, KNOW-30 to KNOW-32, LIFE-17 to LIFE-26) and the INTENT.md index regenerated; docs/roadmap-1.0.md defines milestones to 1.0, each tied to one of the four bar items of LIFE-21 with a done definition and its test, includes the session-slug-folder and Markdown-record migration design, and re-scopes knowledge to links-never-copies per #235; docs/test-plan-1.0.md covers the per-repo dogfood checklist, the flake tracker and two-week clean window, migration fixtures from every 0.x tag (0.1.0 to 0.5.0) and the host-matrix e2e harness design; the issues exist under the Chough 1.0 milestone: epic #232 with the 19 new issues #213 to #231 and the mapped existing open issues, with #216 re-scoped to the #235 design; no helper behavior, requirement text, stage semantics, retention or SpecSync contract changes"
   ],
   "selected_artifacts": [
     "context",
@@ -36,7 +36,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "no",
-    "constraints": "hi IDs are never reused or renumbered (hi/AGENTS.md); existing criteria are never reworded or removed, so conflicts with FLOW-17 (Windows via WSL vs best-effort) and KNOW-29 (roll-up reads as move vs copy-never-move) are flagged in the PR body instead of edited; docs must match current main behavior (FLOW-18)",
+    "constraints": "hi IDs are never reused or renumbered (hi/AGENTS.md); existing approved criteria are never reworded or removed (KNOW-30 was this change's own unapproved draft, rewritten per Leif's #235 round-2 decision, which closes the KNOW-29 conflict); the FLOW-17 vs FLOW-21 Windows question stays open for Leif; docs must match current main behavior (FLOW-18); removing knowledge/intent and knowledge/archives is contracted librarian behavior (specs/cli/requirements.md) and stays out of this docs change, scoped to the #235 cleanup change",
     "public_contract": "no"
   }
 }
