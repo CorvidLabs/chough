@@ -11,6 +11,7 @@ files:
   - src/session_md.rs
   - src/journal.rs
   - src/migrate.rs
+  - src/evidence_migrate.rs
   - tests/ids.rs
   - tests/actor.rs
   - tests/humans.rs
@@ -126,6 +127,10 @@ or redacting every value before it is written.
 | `ObservationHomes` | Where each 0.5.x observation went: an open session's evidence entry or a receipt; one in neither was removed. |
 | `legacy_paths` | Every 0.5.x record path in the project, sorted; any one makes the tree unmigrated (REQ-records-010). |
 | `receipt_path` | The migration receipt's path under `.chough/archive/migrations/`, fixed when the plan is built. |
+| `Binary` | One binary 0.6.0 file the migration writes create-new, such as a stripped key screenshot (REQ-records-013); never redacted as text. |
+| `ensure_migrated` | Refuses a command on a tree holding any 0.5.x record as `refused:unmigrated`, naming up to 5 paths and the count of the rest (REQ-records-010). |
+| `exempt_from_guard` | Marks this process as running `migrate`, `doctor` or `skill`, which REQ-records-010 lets read a 0.5.x tree. |
+| `ensure_migrated_under_lock` | The same guard once a writer holds the checkpoint lock, unless this process is exempt, so no writer saves into a mixed tree. |
 
 ## Invariants
 
