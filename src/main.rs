@@ -11,6 +11,7 @@ mod evidence;
 mod gates;
 mod history;
 mod identity;
+mod journal;
 mod leaks;
 mod library;
 mod markdown;
@@ -145,6 +146,11 @@ enum Commands {
         #[command(subcommand)]
         command: library::LibraryCommand,
     },
+    /// The knowledge journal: short dated posts that link the records (REQ-records-011).
+    Journal {
+        #[command(subcommand)]
+        command: journal::JournalCommand,
+    },
     /// Report how long stages, tests, bug fixes and human gates took, from existing
     /// records; read-only, and every duration is elapsed wall-clock time, not effort.
     Timing(Box<timing::TimingArgs>),
@@ -243,6 +249,7 @@ fn main() -> Result<()> {
         Commands::Consent { command } => prefs::consent(&root, command)?,
         Commands::Validate { command } => validate::run(&root, command)?,
         Commands::Library { command } => library::run(&root, command)?,
+        Commands::Journal { command } => journal::run(&root, command)?,
         Commands::Timing(args) => timing::run(&root, *args)?,
         Commands::Skill { command } => skill::run(&root, command)?,
         Commands::Session { command } => sessions::run(&root, command)?,
