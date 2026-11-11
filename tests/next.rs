@@ -1979,3 +1979,135 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
 }
+
+/// #76 (REQ-cli-021): `chough next` guides a fresh agent through the stages: right after
+/// init it names `hi check` and then `chough context`; at test, `chough cases select`,
+/// `chough cases run` and `chough bug add`; at accept while the change is verifying, the
+/// human's review through `--close-gate` with `--verdict` or opening the review gate,
+/// and never `specsync change review` with an agent as reviewer.
+#[cfg(unix)]
+#[test]
+fn next_guides_a_fresh_agent_from_init_to_accept() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let action = &fixture.ok(&["next", "--json"])["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    let check = text.find("`hi check`").expect(text);
+    let context = text.find("`chough context`").expect(text);
+    assert!(check < context, "{text}");
+    assert_eq!(action["command"], "hi check");
+
+    // At test, with no native lifecycle gating the move.
+    while fixture.checkpoint()["stage"]["current"] != "test" {
+        fixture.ok(&["stage", "advance"]);
+    }
+    let action = &fixture.ok(&["next", "--json"])["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    for part in [
+        "`chough cases select --requirement <id>`",
+        "`chough cases run <case-id> --environment <env>`",
+        "`chough bug add`",
+    ] {
+        assert!(text.contains(part), "missing {part}: {text}");
+    }
+    assert_eq!(
+        action["command"],
+        "chough cases run <case-id> --environment <env>"
+    );
+
+    // At accept while the native change is verifying.
+    let fixture = approved_at_plan("verify-change");
+    while fixture.checkpoint()["stage"]["current"] != "accept" {
+        fixture.ok(&["stage", "advance"]);
+    }
+    fixture.write(".stub-state", "verifying\n");
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(text.starts_with("The human reviews next."), "{text}");
+    for part in [
+        "--close-gate",
+        "`--verdict pass` or `--verdict block`",
+        "--awaiting-human \"Implementation review of verify-change\" --holds accept --drives review",
+        "chough change ship verify-change",
+    ] {
+        assert!(text.contains(part), "missing {part}: {text}");
+    }
+    let mut found = vec![];
+    strings(&next, &mut found);
+    let status = fixture.ok(&["status", "--json"]);
+    strings(&status, &mut found);
+    assert!(
+        found
+            .iter()
+            .all(|text| !text.contains("specsync change review")),
+        "an agent-run review is named at accept"
+    );
+    // With the review gate open, the gate waits and names the verdict.
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Implementation review of verify-change",
+    ]);
+    let action = &fixture.ok(&["next", "--json"])["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Waiting for a human decision: Implementation review of verify-change.")
+            && text.contains("--verdict pass or --verdict block"),
+        "{text}"
+    );
+}
+
+/// BUG-0023 (REQ-cli-021): with 500 referenced observations (linked by 40 bugs, as the
+/// bounds test links them) and those 40 bugs, the first 40
+/// lines of `chough status` give the stage, the next action and its command, the open
+/// gates and the blockers, and its JSON starts with a `summary` holding the same next
+/// action as `chough next --json`.
+#[test]
+fn status_leads_with_the_same_summary_as_next() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let ids: Vec<String> = (0..500).map(|index| format!("OBS-{index:04}")).collect();
+    let mut args = vec!["checkpoint".to_string()];
+    for gate in ["First gate", "Second gate"] {
+        args.extend(["--awaiting-human".into(), gate.into()]);
+    }
+    args.extend(["--blocker".into(), "The staging database is down".into()]);
+    fixture.ok(&args.iter().map(String::as_str).collect::<Vec<_>>());
+    for (index, linked) in ids.chunks(13).enumerate().take(40) {
+        let linked: Vec<&str> = linked.iter().map(String::as_str).collect();
+        fixture.bug_md(
+            &format!("2026-11-10-fixture-{index:02}"),
+            "in-scope",
+            "open",
+            &linked,
+        );
+    }
+    let output = text(&fixture, &["status"]);
+    assert!(
+        output.starts_with("{\n  \"summary\": {"),
+        "{}",
+        &output[..200]
+    );
+    let head: String = output.lines().take(40).collect::<Vec<_>>().join("\n");
+    for part in [
+        "\"stage\"",
+        "\"current\": \"intent\"",
+        "\"next_valid_action\"",
+        "\"command\"",
+        "First gate",
+        "Second gate",
+        "The staging database is down",
+    ] {
+        assert!(
+            head.contains(part),
+            "missing {part} in the first 40 lines:\n{head}"
+        );
+    }
+    let status: Value = serde_json::from_str(&output).unwrap();
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        status["summary"]["next_valid_action"],
+        next["next_valid_action"]
+    );
+}

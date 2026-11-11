@@ -1196,10 +1196,18 @@ pub(super) fn assess(
     {
         // REQ-cli-030: only a gate holding the current stage waits here; a gate holding
         // a later stage is listed and waits there (#237).
+        let review = holding.iter().any(|gate| {
+            crate::session_md::gate(session, gate).drives() == crate::humans::Drives::Review
+        });
         Action {
             action: format!(
-                "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`. `chough stage advance` and `chough stage skip` are refused until it is closed.",
-                holding.join("; ")
+                "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`{}. `chough stage advance` and `chough stage skip` are refused until it is closed.",
+                holding.join("; "),
+                if review {
+                    ", adding their verdict as --verdict pass or --verdict block for a review, which runs the review as them"
+                } else {
+                    ""
+                }
             ),
             reason: "Only a person can close these gates.".into(),
             command: None,
@@ -1236,6 +1244,40 @@ pub(super) fn assess(
             reason: "The reset that began this cycle is not in readable history, so the archived change is neither assumed closed with this cycle nor assumed to be the previous one's.".into(),
             command: Some("chough history show".into()),
         }
+    } else if current == "intent" && session.references.criteria.is_empty() && fresh(session) {
+        // #76: a fresh agent right after init starts from the human's intent.
+        Action {
+            action: "Capture or read the intent: run `hi check` to see the human-intent criteria and their state, then `chough context` for this session's bounded context, and reference the criteria the work covers with `chough checkpoint --criterion <id>`.".into(),
+            reason: "No criteria are referenced yet; the work starts from the human's intent in HI.".into(),
+            command: Some("hi check".into()),
+        }
+    } else if current == "accept"
+        && matches!(state, NativeState::State(name, _) if name == "verifying")
+    {
+        // #76: at accept the human reviews; an agent never reviews for them.
+        let id = session.native_change.as_deref().unwrap_or("<id>");
+        let open_review = session.awaiting_human.iter().find(|gate| {
+            crate::session_md::gate(session, gate).drives() == crate::humans::Drives::Review
+        });
+        Action {
+            action: format!(
+                "The human reviews next.{} Show them `chough gate list`; record their decision with `chough checkpoint --close-gate \"<gate>\"`, the relay and `--verdict pass` or `--verdict block`, which runs the review as them; then `chough change ship {id}` with that relay ships.",
+                if open_review.is_some() {
+                    String::new()
+                } else {
+                    format!(
+                        " Open the review gate: `chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review`."
+                    )
+                }
+            ),
+            reason: "Native change is verifying: only the human's review and the ship remain, and an agent's review never stands in for theirs (FLOW-10).".into(),
+            command: Some(match open_review {
+                Some(_) => "chough gate list".into(),
+                None => format!(
+                    "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
+                ),
+            }),
+        }
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
         if archived_cycle() == Some(Ok(true)) {
             // The archive is the previous cycle's: keep the reset's guidance and name
@@ -1269,9 +1311,13 @@ pub(super) fn assess(
         }
     } else if current == "test" {
         // REQ-cli-038 (FLOW-15): native verification alone is not test evidence.
+        // #76: name how to select and run the cases, and record a failure as a bug.
         Action {
-            action: format!("Continue test: {}", session.next_action),
-            reason: "Recorded test evidence is needed before accept: run the affected cases (`chough cases list` shows them) or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
+            action: format!(
+                "Continue test: {} Select the cases this change affects with `chough cases select --requirement <id>` (or --criterion, --path), run each with `chough cases run <case-id> --environment <env>`, and record a failed run with `chough bug add`.",
+                session.next_action.trim_end()
+            ),
+            reason: "Recorded test evidence is needed before accept: run the affected cases or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
             command: Some("chough cases run <case-id> --environment <env>".into()),
         }
     } else {
@@ -1637,6 +1683,19 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
 
 /// How to record a human's decision on a gate on their behalf (REQ-cli-050).
 pub(super) const CLOSE_GATE_COMMAND: &str = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
+
+/// Whether the session is fresh from `chough init` or `session new`: no stage move on
+/// its Timeline yet (#76).
+fn fresh(session: &Checkpoint) -> bool {
+    let moved = |kind: &str| STAGE_KINDS.contains(&kind);
+    let saved = session
+        .source
+        .as_ref()
+        .map(crate::session_md::timeline)
+        .and_then(Result::ok)
+        .is_some_and(|entries| entries.iter().any(|entry| moved(&entry.transition.kind)));
+    !saved && !session.pending.iter().any(|entry| moved(&entry.kind))
+}
 
 /// How the scope of `change` is approved again (REQ-cli-022): the human's decision at
 /// a scope gate that drives the approval (REQ-cli-030, REQ-records-008), or, on

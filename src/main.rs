@@ -229,7 +229,7 @@ fn main() -> Result<()> {
         Commands::Status { environment, .. } => {
             let report = status(&root, environment.as_deref())?;
             let phase = std::time::Instant::now();
-            print_json(&report)?;
+            print_summary_first(&report)?;
             records::trace_phase("status.render", phase);
         }
         Commands::Next {
@@ -469,8 +469,28 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
     let corrections = match session {
         Session::V2(checkpoint) => history::corrections(checkpoint),
     };
+    // BUG-0023: status leads with the short summary `next` gives, so the first screen
+    // holds the stage, the next action and its command, the open gates and blockers.
+    let summary = match session {
+        Session::V2(checkpoint) => json!({
+            "stage": {
+                "current": checkpoint.stage.current,
+                "status": checkpoint.stage.status,
+                "iteration": checkpoint.stage.iteration,
+            },
+            "native_change": checkpoint.native_change,
+            "next_valid_action": {
+                "action": cut(&corrections.apply(&assessment.action.action)),
+                "reason": cut(&assessment.action.reason),
+                "command": assessment.action.command.as_deref().map(cut),
+            },
+            "gates": open_gates(checkpoint, LIST_LIMIT),
+            "blockers": listed(checkpoint.blockers.iter()),
+        }),
+    };
     Ok(json!({
         "schema_version": 1,
+        "summary": summary,
         "objective": session.objective(),
         "session_next_action": corrections.apply(session.next_action()),
         "next_valid_action": corrections.apply(&assessment.action.action),
@@ -557,6 +577,22 @@ fn cut(text: &str) -> String {
         end = index + character.len_utf8();
     }
     format!("{}{CUT}", &text[..end])
+}
+
+/// Print a report as pretty JSON with its `summary` first (BUG-0023), the rest in the
+/// usual key order.
+fn print_summary_first(report: &Value) -> Result<()> {
+    let mut rest = report.clone();
+    let Some(summary) = rest.as_object_mut().and_then(|map| map.remove("summary")) else {
+        return print_json(report);
+    };
+    let rest = serde_json::to_string_pretty(&rest)?;
+    let summary = serde_json::to_string_pretty(&summary)?.replace('\n', "\n  ");
+    match rest.strip_prefix("{\n") {
+        Some(body) => println!("{{\n  \"summary\": {summary},\n{body}"),
+        None => println!("{{\n  \"summary\": {summary}\n}}"),
+    }
+    Ok(())
 }
 
 /// The first `limit` open gates with the stage each holds and the native step each
