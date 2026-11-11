@@ -13,6 +13,7 @@ mod history;
 mod identity;
 mod leaks;
 mod library;
+mod local;  // step 4: machine-local state (wired here until the step 3 owner merges)
 mod markdown;
 mod native;
 mod native_check;

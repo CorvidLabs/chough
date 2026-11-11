@@ -904,8 +904,6 @@ fn bug_rows(root: &Path, only: Option<&str>, partial: &mut Vec<Value>) -> Vec<Bu
             return vec![];
         }
     };
-    // An unreadable ledger leaves every absent observation unavailable.
-    let ledger = evidence::ledger_entries(root).ok();
     bugs.into_iter()
         .filter(|bug| only.is_none_or(|only| bug.id == only))
         .map(|bug| {
@@ -921,23 +919,9 @@ fn bug_rows(root: &Path, only: Option<&str>, partial: &mut Vec<Value>) -> Vec<Bu
                         )
                     })
                 } else {
-                    ledger
-                        .as_ref()
-                        .and_then(|ledger| ledger.get(id))
-                        .and_then(|entry| {
-                            // An entry without a recognised outcome could be the earlier
-                            // failure, so it is unavailable like a missing one.
-                            let failed = match entry.outcome.as_deref()? {
-                                "failed" => true,
-                                "passed" | "not-run" => false,
-                                _ => return None,
-                            };
-                            Some((
-                                failed,
-                                entry.observed_at_unix_seconds,
-                                format!("retention ledger (pruned observation {id})"),
-                            ))
-                        })
+                    // An absent observation is unavailable (no retention ledger in
+                    // 0.6.0; REQ-cli-033).
+                    None
                 };
                 match seen {
                     Some((true, Some(at), source)) => {

@@ -1704,6 +1704,7 @@ pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Value>> {
             "content": evidence.snapshot.content,
             "fingerprint": evidence.fingerprint,
             "raw_log": evidence.raw_log,
+            "duration_seconds": evidence.duration_seconds,
             "case": evidence.cases.first().map(|case| case.id.clone()),
             "actor": evidence.actor.as_ref().map(|actor| actor.display()),
         }));
@@ -1716,27 +1717,22 @@ pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Value>> {
 // library.rs, timing.rs, main.rs, validate.rs, bugs.rs). They write nothing and go
 // when steps 3, 8 and 9 land their removals of the retired retention (REQ-cli-033).
 
+// removed at integration (t382)
 pub(super) fn auto_prune(_root: &Path) -> Value {
     json!({"status": "skipped", "reason": "retention is removed in 0.6.0 (REQ-cli-033)"})
 }
 
+// removed at integration (t382)
 pub(super) fn stale_holds(_root: &Path) -> Result<Vec<String>> {
     Ok(vec![])
 }
 
+// removed at integration (t382)
 pub(super) fn ledger_records(_root: &Path) -> Result<BTreeMap<String, Value>> {
     Ok(BTreeMap::new())
 }
 
-/// What the retired retention ledger recorded about one pruned observation.
-pub(super) struct PrunedEntry {
-    pub(super) observed_at_unix_seconds: Option<u64>,
-    pub(super) outcome: Option<String>,
-}
 
-pub(super) fn ledger_entries(_root: &Path) -> Result<BTreeMap<String, PrunedEntry>> {
-    Ok(BTreeMap::new())
-}
 
 /// One archived change as the removed post-archive summary saw it.
 #[allow(dead_code)] // fields read again when step 8 lands the vault rewiring
@@ -1749,6 +1745,7 @@ pub(super) struct ListedArchive {
     pub(super) finalized: u64,
 }
 
+// removed at integration (t382)
 pub(super) fn attributed_records(
     _root: &Path,
     _archives: &[ListedArchive],
@@ -1758,6 +1755,7 @@ pub(super) fn attributed_records(
 
 pub(super) type Prior<'a> = Option<(&'a str, &'a Value)>;
 
+// removed at integration (t382)
 pub(super) fn archive_summary(
     _root: &Path,
     _archives: &[ListedArchive],
@@ -1769,6 +1767,7 @@ pub(super) fn archive_summary(
     bail!("the post-archive summary is removed in 0.6.0 (REQ-cli-033): evidence folds into its archived story at finish (REQ-history-006)")
 }
 
+// removed at integration (t382)
 pub(super) fn retention_authority(_root: &Path, _command: &str) -> Result<String> {
     bail!("retention is removed in 0.6.0 (REQ-cli-033)")
 }
