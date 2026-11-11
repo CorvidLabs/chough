@@ -12,7 +12,7 @@
 use crate::checkpoint::{Caller, Checkpoint, Consent, References, StageState};
 use crate::markdown::{Kind, Record, Value};
 use crate::stage::Transition;
-use anyhow::{Context, Result, bail, ensure};
+use anyhow::{Context, Result, ensure};
 
 pub(super) const GOAL: &str = "Goal";
 pub(super) const STANDS: &str = "Where it stands";
@@ -285,9 +285,8 @@ pub(super) fn timeline(record: &Record) -> Result<Vec<Entry>> {
                 .or_else(|| field.strip_suffix(':').map(|key| (key, String::new())))
                 .with_context(|| format!("timeline entry {}: a field is `key: value`", entry.id))?;
             apply_field(entry, key, value)?;
-        } else if !line.trim().is_empty() {
-            bail!("timeline: a line is an entry (`- `) or one of its fields (`  - `): {line}");
         }
+        // Any other line is prose a person or the closing line wrote; it is not an entry.
     }
     for entry in &mut entries {
         // An entry whose text is its gate has no separate reason.

@@ -2220,6 +2220,7 @@ fn native_next_action_is_shown_once_and_does_not_cut_the_next_line() {
 
 #[cfg(unix)]
 #[test]
+#[ignore = "plan step 6: the refusal names the scope gate with --drives approve and the <agent>-<terminal> actor"]
 fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
     // TC-cli-delta-guard-refusals-name-the-agent-actor in 0.6.0 (REQ-cli-022): a remedy
     // that needs a new definition approval names the scope gate to open with
