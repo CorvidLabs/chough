@@ -1,0 +1,47 @@
+profile = "chough-testing/1"
+module = "records"
+
+# #213 and plan step 10: chough migrate carries a 0.5.x project into 0.6.0. The bug,
+# evidence and knowledge mappers prove their parts in tests/migrate_bugs.rs,
+# tests/migrate_knowledge.rs and their unit tests; this case runs the framework's
+# end-to-end tests.
+
+[[case]]
+id = "TC-records-migrate-from-0-5"
+title = "chough migrate previews without writing, refuses a wrong digest, an open change, no consent and uncommitted bytes, applies by create-new with a receipt, removes the 0.5.x files, and has nothing to do the second time"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-21", "KNOW-10", "KNOW-11"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs", "tests/fixtures/releases"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["every test in tests/migrate.rs passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "migrate"]
+expect_output = ["test result: ok."]
+timeout_seconds = 900
+
+# The local bug where history writes refused once the adopting session rolled into the
+# vault: fixed before 0.5.0 by #142, so its red run is on the last build before #142
+# (90e5de6f^), with the same tree observed on 0.5.0 (delta correction 5).
+[[case]]
+id = "TC-records-migrate-vaulted-adopter"
+title = "A project whose adopting session rolled into the vault migrates, its legacy entries land in that session's story, and afterwards checkpoint --awaiting-human, --close-gate and a stage move all succeed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-34", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_vaulted_adopter_migrates_and_writes_work passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_vaulted_adopter_migrates_and_writes_work"
