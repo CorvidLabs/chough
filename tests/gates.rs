@@ -159,35 +159,24 @@ fn record<'a>(list_id: &'a str, gates: &'a str, words: &'a str) -> Vec<&'a str> 
 }
 
 fn session(fixture: &Fixture) -> Value {
-    for path in [
-        format!(".chough/sessions/{KEY}.json"),
-        format!(".chough/sessions/archive/{KEY}.json"),
-    ] {
-        if fixture.exists(&path) {
-            return serde_json::from_str(&fixture.read(&path)).unwrap();
-        }
-    }
-    panic!("no session {KEY}");
+    fixture.session_json(KEY)
 }
 
-/// Every gate-closed relay in history, by gate.
+/// Every gate-closed relay on the active session's Timeline, by gate.
 fn closed_relays(fixture: &Fixture) -> BTreeMap<String, Value> {
     let mut found = BTreeMap::new();
-    let Ok(cycles) = fs::read_dir(fixture.root().join(".chough/history/cycles")) else {
-        return found;
-    };
-    for cycle in cycles {
-        for event in fs::read_dir(cycle.unwrap().path()).unwrap() {
-            let value: Value =
-                serde_json::from_str(&fs::read_to_string(event.unwrap().path()).unwrap()).unwrap();
-            let transition = &value["transition"];
-            if transition["kind"] == "gate-closed" && !transition["relayed_by"].is_null() {
-                found.insert(
-                    // Gate records keep the gate text as their reason.
-                    transition["reason"].as_str().unwrap().to_string(),
-                    transition["relayed_by"].clone(),
-                );
-            }
+    for entry in fixture.ok(&["history", "show"])["entries"]
+        .as_array()
+        .unwrap()
+    {
+        if entry["kind"] == "gate-closed" && !entry["relayed_by"].is_null() {
+            // A gate-closed entry's text is its gate (the reason stays empty).
+            let gate = entry["gate"]
+                .as_str()
+                .or(entry["reason"].as_str())
+                .unwrap()
+                .to_string();
+            found.insert(gate, entry["relayed_by"].clone());
         }
     }
     found
@@ -420,12 +409,18 @@ fn relay_summary_fields_are_both_or_neither() {
     fixture.init();
     let digest = "a".repeat(64);
     let good = json!({"decided_by": "SYNTHETIC-human", "words": "yes", "where": "chat", "recorded_by": "SYNTHETIC-agent", "summary_digest": digest, "list": "0123456789ab"});
-    let line = |relay: &Value| {
-        json!({"schema_version": 1, "at_unix_seconds": 1, "kind": "gate-closed", "from": "intent", "to": "intent", "reason": null, "gate": "Gate", "revision": null, "refresh": [], "relayed_by": relay}).to_string()
+    let entry = |relay: &Value| {
+        format!(
+            "- 2026-11-11T00:00:00Z · gate-closed · intent → intent · Gate ^t-aaaaaa\n  - relayed_by: {}\n",
+            serde_json::to_string(relay).unwrap()
+        )
     };
-    fixture.write(".chough/transitions.jsonl", &format!("{}\n", line(&good)));
-    let shown = fixture.ok(&["stage", "show"]);
-    assert_eq!(shown["recent_transitions"][0]["relayed_by"], good);
+    let file = fixture.session_file();
+    let original = fixture.read(&file);
+    fixture.write(&file, &format!("{original}\n{}", entry(&good)));
+    let shown = fixture.ok(&["history", "show"]);
+    let entries = shown["entries"].as_array().unwrap();
+    assert_eq!(entries.last().unwrap()["relayed_by"], good);
     let mut variants = vec![];
     for key in ["summary_digest", "list"] {
         let mut alone = good.clone();
@@ -439,8 +434,8 @@ fn relay_summary_fields_are_both_or_neither() {
     upper["list"] = json!("0123456789AB");
     variants.push(upper);
     for relay in variants {
-        fixture.write(".chough/transitions.jsonl", &format!("{}\n", line(&relay)));
-        let error = fixture.fails(&["stage", "show"]);
+        fixture.write(&file, &format!("{original}\n{}", entry(&relay)));
+        let error = fixture.fails(&["history", "show"]);
         assert!(error.contains("invalid transition"), "{relay}: {error}");
     }
 }
