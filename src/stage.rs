@@ -766,11 +766,15 @@ fn native_file(root: &Path, relative: &str) -> std::result::Result<Option<Vec<u8
     }
 }
 
-/// The `approved_delta_digests` of the latest definition approval of `change`: `None`
-/// when that approval records none, an error message when the ledger cannot be used.
+/// The `approved_delta_digests` of the effective definition approval of `change`, the
+/// one SpecSync treats as effective: the one whose `digest` matches the current
+/// definition digest, for every workflow version (BUG-0020), or the latest when status
+/// reports no definition digest or none matches. `None` when that approval records no
+/// digests, an error message when the ledger cannot be used.
 fn approved_digests(
     root: &Path,
     change: &str,
+    definition: Option<&str>,
 ) -> std::result::Result<Option<std::collections::BTreeMap<String, String>>, String> {
     let ledger_path = format!(".specsync/changes/{change}/approvals.json");
     let ledger = match native_file(root, &ledger_path)? {
@@ -783,11 +787,17 @@ fn approved_digests(
         .get("approvals")
         .and_then(Value::as_array)
         .ok_or_else(malformed)?;
-    let Some(approval) = approvals
+    let definitions: Vec<&Value> = approvals
         .iter()
-        .rev()
-        .find(|approval| approval.get("gate").and_then(Value::as_str) == Some("definition"))
-    else {
+        .filter(|approval| approval.get("gate").and_then(Value::as_str) == Some("definition"))
+        .collect();
+    let effective = definition.and_then(|digest| {
+        definitions
+            .iter()
+            .rev()
+            .find(|approval| approval.get("digest").and_then(Value::as_str) == Some(digest))
+    });
+    let Some(approval) = effective.or(definitions.last()) else {
         return Err(format!("{ledger_path} has no definition approval"));
     };
     match approval.get("approved_delta_digests") {
@@ -812,13 +822,16 @@ fn approved_digests(
     }
 }
 
-/// Compare the deltas of `change` with the digests its latest definition approval
-/// recorded, as SpecSync 6.1.1 does before verification (REQ-cli-022). It reads the
+/// Compare the deltas of `change` with the digests its effective definition approval
+/// recorded, as SpecSync 6.1.1 does before verification (REQ-cli-022, BUG-0020). It reads the
 /// native approval ledger and deltas only, starts no process and copies nothing.
 pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Deltas {
     let directory = format!(".specsync/changes/{change}");
     let ledger_path = format!("{directory}/approvals.json");
-    let approved = match approved_digests(root, change) {
+    let definition = value
+        .pointer("/summary/definition_digest")
+        .and_then(Value::as_str);
+    let approved = match approved_digests(root, change, definition) {
         Ok(approved) => approved,
         Err(reason) => return Deltas::Unverifiable(reason),
     };
@@ -891,7 +904,9 @@ pub(super) fn approved_deltas(root: &Path, change: &str, value: &Value) -> Delta
 }
 
 /// The requirement IDs that the delta of `change` for `module` adds or modifies, taken
-/// from the same bytes whose digest matches the latest definition approval. A module
+/// from the same bytes whose digest matches the latest definition approval; this read
+/// makes no native read, so it cannot know the current definition digest that picks
+/// the effective approval (BUG-0020 covers the guard, which has it). A module
 /// outside the approval's `approved_delta_digests` resolves nothing, so an extra delta
 /// file cannot satisfy a link (REQ-cli-009).
 pub(super) fn delta_requirements(
@@ -901,7 +916,7 @@ pub(super) fn delta_requirements(
 ) -> std::result::Result<BTreeSet<String>, String> {
     let not_approved =
         || format!("its {module} delta is not among the change's verified approved deltas");
-    let digest = approved_digests(root, change)?
+    let digest = approved_digests(root, change, None)?
         .and_then(|approved| approved.get(module).cloned())
         .ok_or_else(not_approved)?;
     let relative = format!(".specsync/changes/{change}/deltas/{module}.md");
