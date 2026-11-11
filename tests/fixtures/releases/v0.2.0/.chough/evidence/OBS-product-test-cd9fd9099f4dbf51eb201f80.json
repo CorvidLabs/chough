@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-cd9fd9099f4dbf51eb201f80",
+  "criteria": [
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-fixture-001"
+  ],
+  "contracts": [
+    "specs/fixture/fixture.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "fixture",
+  "summary": "fixture observation: the one case passes",
+  "artifacts": [
+    "artifact.txt"
+  ],
+  "artifact_fingerprints": {
+    "artifact.txt": "f8f605ba28f5e6dbef49c04d41bece946dcefd37231e723c922f5a7f68dc6368"
+  },
+  "observed_at_unix_seconds": 1794414605,
+  "snapshot": {
+    "revision": "5a317c2b4e5afeacbfde39c6f3ac293da0eb68f7",
+    "dirty": true,
+    "fingerprint": "949b8a72d9abb6a53916dbe31083cd988e8eb4db305424f1e752179fb253b950",
+    "content": "fb32a9f0b25ecf06087dd026f101568f1b59e1c9fe5fecf0ebf7bc6e5b9fa675"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "automated"
+}

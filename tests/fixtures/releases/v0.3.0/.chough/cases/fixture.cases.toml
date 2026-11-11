@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "fixture"
+
+[[case]]
+id = "TC-fixture-0001"
+title = "The fixture project's one case"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1"]
+requirements = ["REQ-fixture-001"]
+paths = ["README.md"]
+environments = ["fixture"]
+artifacts = ["test-log"]
+expected = ["the README prints its heading"]
+
+[case.bind]
+adapter = "command"
+argv = ["cat", "README.md"]
+expect_output = ["# Fixture project"]

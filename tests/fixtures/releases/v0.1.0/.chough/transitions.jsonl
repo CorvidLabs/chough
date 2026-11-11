@@ -1,0 +1,3 @@
+{"schema_version":1,"at_unix_seconds":1794414603,"kind":"iterate","from":"intent","to":"intent","reason":"fixture iteration","gate":null,"revision":"2af9d2e8d5bf0eea66d792980bd40faad9bc4036","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1794414603,"kind":"skip","from":"intent","to":"design","reason":"no visuals in a fixture","gate":null,"revision":"2af9d2e8d5bf0eea66d792980bd40faad9bc4036","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1794414604,"kind":"advance","from":"design","to":"plan","reason":null,"gate":null,"revision":"2af9d2e8d5bf0eea66d792980bd40faad9bc4036","refresh":[]}

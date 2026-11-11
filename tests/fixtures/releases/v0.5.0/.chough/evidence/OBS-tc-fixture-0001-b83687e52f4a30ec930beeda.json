@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-fixture-0001-b83687e52f4a30ec930beeda",
+  "criteria": [
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-fixture-001"
+  ],
+  "contracts": [
+    "specs/fixture/fixture.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "fixture",
+  "summary": "Ran cat README.md for TC-fixture-0001: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-fixture-0001-b83687e52f4a30ec930beeda.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-fixture-0001-b83687e52f4a30ec930beeda.log": "1001193e0144d436dc23ca3c8aec883c36000f3f7ef23fddfefbd3cd9d7d5e98"
+  },
+  "observed_at_unix_seconds": 1794414607,
+  "snapshot": {
+    "revision": "3c1b55035b94a82d072c2374b61a896e1e50d458",
+    "dirty": true,
+    "fingerprint": "6f2e7f96e1a7756ce83d57506e1edbbd68d22b192382bee8fabb15f8083be24a",
+    "content": "d431c276029e225d0bb5389d9e47facd5e6f300a6e18a8b0a864818f2b59c8b2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-fixture-0001",
+      "digest": "7759e8c4f8a1930ac0e8da842c618b34bf74f8fc62d1cc8f35e336125c5c5cdb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cat",
+    "README.md"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
