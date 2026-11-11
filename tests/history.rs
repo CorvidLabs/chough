@@ -95,7 +95,14 @@ fn entries_are_appended_in_order_and_never_rewritten() {
     let before = timeline(&fixture.read(&fixture.session_file()));
     assert_eq!(before.len(), 2, "{before:?}");
     assert!(before[1].contains(" · gate-opened · design → design · Approve the design ^t-"));
-    fixture.ok(&["stage", "back", "--to", "intent", "--reason", "Redo the intent"]);
+    fixture.ok(&[
+        "stage",
+        "back",
+        "--to",
+        "intent",
+        "--reason",
+        "Redo the intent",
+    ]);
     let after = timeline(&fixture.read(&fixture.session_file()));
     assert_eq!(&after[..2], &before[..]);
     assert!(

@@ -129,10 +129,14 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
         return Ok(found);
     }
     let pointer = sessions::pointer(root);
+    let open = sessions::open_ids(root)?;
     match &pointer {
-        Ok(Some(key)) if !local_path(root, &sessions::session_file(key))?.is_file() => found.push(
-            Finding::new(Kind::StalePointer, key, "chough doctor --fix".into(), false),
-        ),
+        Ok(Some(key)) if !open.contains(key) => found.push(Finding::new(
+            Kind::StalePointer,
+            key,
+            "chough doctor --fix".into(),
+            false,
+        )),
         Err(_) => found.push(Finding::new(
             Kind::StalePointer,
             sessions::POINTER,
@@ -177,13 +181,10 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     }
     found.extend(gates);
     found.extend(finished);
-    for key in closing {
-        sessions::ensure_key(key)?;
+    for name in closing {
+        let key = &sessions::resolve_open(root, name)
+            .map_err(|error| anyhow::anyhow!("--close {name}: {error}"))?;
         let file = sessions::session_file(key);
-        ensure!(
-            local_path(root, &file)?.is_file(),
-            "--close {key}: no open session {key}"
-        );
         let session = sessions::read_at(root, &file)?;
         ensure!(
             !sessions::finished(root, &session),

@@ -300,7 +300,7 @@ pub(super) fn keys_in(root: &Path, dir: &str) -> Result<Vec<String>> {
 
 /// The open session `name` names: its ID, one of its aliases, or the bare slug of
 /// exactly one open session. An alias two sessions hold is refused (REQ-records-003).
-fn resolve_open(root: &Path, name: &str) -> Result<String> {
+pub(super) fn resolve_open(root: &Path, name: &str) -> Result<String> {
     let ids = open_ids(root)?;
     if ids.iter().any(|id| id == name) {
         return Ok(name.to_string());

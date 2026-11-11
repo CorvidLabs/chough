@@ -3,19 +3,19 @@ module = "history"
 
 [[case]]
 id = "TC-history-doctor-fixes-session-debt"
-title = "chough doctor --fix archives finished sessions, removes a stale pointer, adopts a legacy checkpoint, keeps sessions with unfolded entries, and applies decision fixes only with --reason"
+title = "chough doctor --fix archives finished sessions into stories, removes a stale pointer, reports an unmigrated checkpoint without migrating, keeps sessions with unfolded entries, and applies decision fixes only with --reason"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-17"]
 requirements = ["REQ-history-012"]
 paths = ["src/doctor.rs", "src/sessions.rs", "src/history.rs", "src/checkpoint.rs", "tests/doctor.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
+environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["the four fix-mode doctor tests pass"]
+expected = ["the five fix-mode doctor tests pass"]
 
 [case.bind]
 adapter = "command"
-argv = ["cargo", "test", "--locked", "--test", "doctor", "--", "doctor_fix_", "doctor_decision_fixes_need_a_reason_and_record_no_human_decision"]
-expect_output = ["test result: ok. 4 passed"]
+argv = ["cargo", "test", "--locked", "--test", "doctor", "--", "doctor_fix_", "doctor_decision_fixes_need_a_reason_and_record_no_human_decision", "doctor_reports_an_unmigrated_checkpoint_and_never_migrates"]
+expect_output = ["test result: ok. 5 passed"]
 timeout_seconds = 600
