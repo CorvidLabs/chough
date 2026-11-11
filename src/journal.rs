@@ -225,7 +225,7 @@ fn cut_at_sentence(text: &str, limit: usize) -> String {
                     .is_none_or(char::is_whitespace)
         })
         .map(|(at, character)| at + character.len_utf8())
-        .last();
+        .next_back();
     if let Some(end) = sentence {
         return text[..end].to_string();
     }
