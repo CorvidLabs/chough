@@ -253,8 +253,9 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post]) -> Result<String> {
             format!("[{inside}]({inside})")
         })
         .collect();
-    let bundles: Vec<String> = crate::library::archive_order(root)
-        .unwrap_or_default()
+    // An archive that cannot be read refuses the index, with the error `chough next`
+    // shows for its lesson bundles.
+    let bundles: Vec<String> = crate::library::archive_order(root)?
         .into_iter()
         .filter(|archive| archive.lesson_bundle)
         .take(crate::library::HOT_ARCHIVES)
