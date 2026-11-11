@@ -1776,8 +1776,15 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
     let mut found: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for session_id in crate::sessions::open_ids(root)? {
         let file = crate::sessions::session_file(&session_id);
-        let text = read_bounded_record(&local_path(root, &file)?, markdown::SESSION_BOUND)?;
-        let record = markdown::parse(&file, &text)?;
+        // An unreadable session never stops another session's read (DRIVE-14): skip it
+        // here; `session list` still reports it.
+        let Ok(text) = read_bounded_record(&local_path(root, &file)?, markdown::SESSION_BOUND)
+        else {
+            continue;
+        };
+        let Ok(record) = markdown::parse(&file, &text) else {
+            continue;
+        };
         for id in record.list("observations") {
             found.entry(id).or_default().push(file.clone());
         }
