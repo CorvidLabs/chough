@@ -200,19 +200,20 @@ milestone; nothing is closed yet. Read on 2026-11-11.
 | BUG-…-timing-trace-…-cross-a-second | 2 | #172 (merged b8088923), TC-reporting-timing-trace-straddles-a-second |
 | BUG-…-verify-lane-test-step-fails-intermittently-under-load | 1 | TC-cli-132-fork-inheritance-stress |
 
-### Closed on GitHub without a fix
+### Reopened issues
 
 #12, #14, #76, #132, #165, #167, #190 and #201 were closed on 2026-11-11 by the
-`corvid-agent` account, with no comment and no fix. This plan still fixes each in
-0.6.0 with its case (testing.md): TC-cli-12-native-closeout-stays-current and the two
-#12 repro cases, TC-records-proof-split-and-external, TC-cli-76-next-guides-a-fresh-agent,
+`corvid-agent` account, with no comment and no fix, and were reopened the same day and
+put in the Chough 0.6.0 milestone. Each is disposition 1, fixed in 0.6.0 with its case
+(testing.md): TC-cli-12-native-closeout-stays-current and the two #12 repro cases,
+TC-records-proof-split-and-external, TC-cli-76-next-guides-a-fresh-agent,
 TC-cli-132-fork-inheritance-stress, TC-history-165-earlier-archives-stay,
 TC-history-append-only-corrections, TC-cli-190-gate-summary-counts-the-change and
-TC-records-actor-recorded. They belong in the milestone once reopened.
+TC-records-actor-recorded.
 
-Counted: 24 items in 0.6.0 (8 open issues, 4 pull requests, 12 local bugs), 5 of them
-already fixed on main or upstream; 11 after 0.6.0 (#221 to #229, #231, #232); 5 wait for
-Leif's word (#217 to #220, #230); and 8 closed without a fix that 0.6.0 still covers.
+Counted: 32 items in 0.6.0 (16 issues, 12 local bugs, and 4 pull requests already
+closed on 2026-11-11 and folded into #238), 5 of them already fixed on main or upstream;
+11 after 0.6.0 (#221 to #229, #231, #232); 5 wait for Leif's word (#217 to #220, #230).
 
 ## Release gate
 
