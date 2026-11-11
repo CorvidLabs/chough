@@ -124,6 +124,29 @@ fn dated_lessons(text: &str) -> usize {
         .count()
 }
 
+/// The title of the archived change in `dir`: the first `# ` heading of its `change.md`
+/// after the front matter, read at full size within SpecSync's artifact bound, never
+/// Chough's record bound (REQ-cli-042). None when the file is missing or unreadable.
+fn archive_title(root: &Path, dir: &str) -> Option<String> {
+    let text = read(
+        root,
+        &format!("{}/{dir}/change.md", crate::library::ARCHIVES),
+    )?;
+    let mut lines = text.lines().peekable();
+    if lines.peek().is_some_and(|line| line.trim_end() == "---") {
+        lines.next();
+        for line in lines.by_ref() {
+            if line.trim_end() == "---" {
+                break;
+            }
+        }
+    }
+    lines
+        .find_map(|line| line.strip_prefix("# "))
+        .map(one_line)
+        .filter(|title| !title.is_empty())
+}
+
 /// Every file under `relative`, sorted, as paths from the root.
 fn files_under(root: &Path, relative: &str) -> Result<Vec<String>> {
     let mut found = vec![];
@@ -193,7 +216,8 @@ fn list(items: Vec<String>, empty: &str) -> String {
 
 /// `index.md` for the knowledge directory `dir`, generated from its sources with
 /// identical bytes for the same sources (REQ-cli-043, KNOW-4). It links and copies no
-/// text: posts by title, bugs by ID and title, lesson sources by path and count.
+/// text: posts by title, bugs and archived changes by ID and title, lesson sources by
+/// path and count.
 pub(super) fn index(root: &Path, dir: &str, posts: &[Post]) -> Result<String> {
     let up = "../".repeat(dir.split('/').filter(|part| !part.is_empty()).count());
     let link = |path: &str| format!("[{path}]({up}{path})");
@@ -271,10 +295,14 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post]) -> Result<String> {
                 archives = crate::library::ARCHIVES,
                 dir = archive.dir,
             );
-            if archive.lesson_bundle {
+            let named = if archive.lesson_bundle {
                 format!("[{id}]({up}{path})", id = archive.id)
             } else {
                 format!("{id}: `{path}` (missing)", id = archive.id)
+            };
+            match archive_title(root, &archive.dir) {
+                Some(title) => format!("{named}, {title}"),
+                None => named,
             }
         })
         .collect();
