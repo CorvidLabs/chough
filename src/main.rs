@@ -200,10 +200,12 @@ fn main() -> Result<()> {
     ensure!(root.is_dir(), "project root must be a directory");
     // REQ-records-010: one guard before any record is read or written. Clap has already
     // answered --help and --version.
-    if !matches!(
+    if matches!(
         cli.command,
         Commands::Migrate(_) | Commands::Doctor(_) | Commands::Skill { .. }
     ) {
+        migrate::exempt_from_guard();
+    } else {
         migrate::ensure_migrated(&root)?;
     }
     match cli.command {

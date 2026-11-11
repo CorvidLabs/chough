@@ -179,6 +179,25 @@ const NAMED_LEGACY_PATHS: usize = 5;
 /// Refuse while any 0.5.x record exists, before anything is read or written
 /// (REQ-records-010). Every command but `migrate`, `doctor` and `skill` calls this once,
 /// so a mixed tree, 0.6.0 records with a 0.5.x file written later, refuses the same way.
+/// Whether this process runs a command REQ-records-010 lets read a 0.5.x tree
+/// (migrate, doctor, skill), so the guard is not repeated under the writer lock.
+static GUARD_EXEMPT: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Mark this process as running a command the unmigrated guard exempts.
+pub(crate) fn exempt_from_guard() {
+    GUARD_EXEMPT.store(true, std::sync::atomic::Ordering::SeqCst);
+}
+
+/// The guard again, once a writer holds the checkpoint lock: a writer that passed the
+/// guard in main while `migrate --apply` held the lock, and then restored the 0.5.x
+/// files after an archive read invalid, refuses instead of writing into a mixed tree.
+pub(crate) fn ensure_migrated_under_lock(root: &Path) -> Result<()> {
+    if GUARD_EXEMPT.load(std::sync::atomic::Ordering::SeqCst) {
+        return Ok(());
+    }
+    ensure_migrated(root)
+}
+
 pub(crate) fn ensure_migrated(root: &Path) -> Result<()> {
     let legacy = legacy_paths(root)?;
     if legacy.is_empty() {
@@ -445,6 +464,10 @@ fn apply(
             );
         }
     }
+    // Every refusal above wrote nothing, not even a lock file. From here the writer lock
+    // is held through the writes, the removals, the archive reads and any restore, so
+    // no other writer saves in between (REQ-cli-040).
+    crate::checkpoint::lock_checkpoint(root)?;
     // Write: create-new, or count a file an interrupted apply wrote with the planned
     // bytes as done. A path that differs only in case from a planned removal (on a
     // case-insensitive file system, one file) waits until the removals, so an
@@ -1072,6 +1095,10 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             .with_context(|| format!("{path} cannot be read, so no plan was made"))?;
         let mut value: Value = serde_json::from_str(&text)
             .with_context(|| format!("{path} is not a 0.5.x session record"))?;
+        ensure!(
+            value["schema_version"].as_u64() != Some(1),
+            "refused:schema-1: {path} is a schema 1 checkpoint, older than 0.5.x, so no plan was made. Convert it to schema 2 with Chough 0.5.x first (`chough migrate --stage <its stage>`), then run this `chough migrate` again."
+        );
         let cursor = value
             .as_object_mut()
             .and_then(|map| map.remove("history_cursor"))

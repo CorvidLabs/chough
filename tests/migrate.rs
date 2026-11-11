@@ -645,6 +645,9 @@ fn settled_files(root: &Path, receipt: &str) -> BTreeMap<String, Vec<u8>> {
         .unwrap();
     let head = String::from_utf8_lossy(&head.stdout).trim().to_string();
     let mut all = files(root);
+    // Machine-local state, such as the writer lock the apply holds, is never committed
+    // and is not part of the migrated tree (REQ-records-002).
+    all.retain(|path, _| !path.starts_with(".chough/local/"));
     if let Some(bytes) = all.get_mut(receipt) {
         let text: String = String::from_utf8_lossy(bytes)
             .lines()
