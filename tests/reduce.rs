@@ -1821,4 +1821,3 @@ fn a_session_with_release_authorized_archives_itself_after_release() {
     assert!(fixture.exists(&format!(".chough/archive/sessions/{id}.md")));
     assert!(!fixture.exists(".chough/local/active-session"));
 }
-

@@ -4,7 +4,7 @@
 mod common;
 
 use common::{Fixture, parse_session, timeline};
-use serde_json::{Value, json};
+use serde_json::json;
 use std::collections::BTreeMap;
 use std::fs;
 
@@ -565,9 +565,13 @@ fn inbox_entries_fold_once_without_touching_the_session() {
         .map(|entry| entry.unwrap().path())
         .find(|path| path.is_file())
         .unwrap();
-    let mut record: Value = serde_json::from_str(&fs::read_to_string(&entry).unwrap()).unwrap();
-    record["approval"] = Value::from("approved by Leif");
-    fs::write(&entry, record.to_string()).unwrap();
+    let text = fs::read_to_string(&entry).unwrap();
+    assert!(text.starts_with("---\nkind: observation\n"), "{text}");
+    fs::write(
+        &entry,
+        text.replacen("---\n", "---\napproval: approved by Leif\n", 1),
+    )
+    .unwrap();
     assert!(fixture.fails(&["inbox", "fold"]).contains("inbox entry"));
     assert_eq!(fixture.read(&alpha_file), after);
 }
@@ -644,7 +648,7 @@ fn inbox_add_racing_an_archive_never_strands_its_entry() {
     .map(|entries| {
         entries
             .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
-            .filter(|name| name.ends_with(".json"))
+            .filter(|name| name.ends_with(".md"))
             .collect()
     })
     .unwrap_or_default();
@@ -891,7 +895,7 @@ fn an_inbox_entry_of_exactly_16_kib_is_read_and_one_byte_more_is_refused() {
         sessions(&fixture);
         let id = add_entry(&fixture, "alpha", "decision", "a note from a subagent");
         let path = format!(
-            ".chough/sessions/{}/agent/inbox/{id}.json",
+            ".chough/sessions/{}/agent/inbox/{id}.md",
             fixture.id_of("alpha")
         );
         let text = fixture.read(&path);
