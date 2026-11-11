@@ -1,0 +1,36 @@
+{
+  "history_cursor": {
+    "cycle": "CYC-2c016567b4f28ec1dd74b2a3",
+    "head": "EVT-df330152af720d8d512bb116",
+    "legacy": null
+  },
+  "schema_version": 2,
+  "objective": "Fixture objective for v0.2.0",
+  "intent_scope": "FIXT",
+  "modules": [
+    "fixture"
+  ],
+  "stage": {
+    "current": "plan",
+    "status": "active",
+    "callers": [],
+    "iteration": 1
+  },
+  "native_change": null,
+  "references": {
+    "criteria": [],
+    "requirements": [],
+    "cases": [],
+    "design": [],
+    "files": []
+  },
+  "decisions": [],
+  "open_questions": [],
+  "completed": [],
+  "observations": [],
+  "bugs": [],
+  "blockers": [],
+  "awaiting_human": [],
+  "run_consents": [],
+  "next_action": "Read scoped intent and native status, then choose the next action within the authorized scope."
+}

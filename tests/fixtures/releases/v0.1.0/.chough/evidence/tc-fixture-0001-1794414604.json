@@ -1,0 +1,49 @@
+{
+  "schema_version": 2,
+  "id": "tc-fixture-0001-1794414604",
+  "criteria": [
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-fixture-001"
+  ],
+  "contracts": [
+    "specs/fixture/fixture.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "fixture",
+  "summary": "Ran cat README.md for TC-fixture-0001: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/tc-fixture-0001-1794414604.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/tc-fixture-0001-1794414604.log": "1001193e0144d436dc23ca3c8aec883c36000f3f7ef23fddfefbd3cd9d7d5e98"
+  },
+  "observed_at_unix_seconds": 1794414604,
+  "snapshot": {
+    "revision": "2af9d2e8d5bf0eea66d792980bd40faad9bc4036",
+    "dirty": true,
+    "fingerprint": "8ea6e98d59fa97a59386360d96e35aae7bc7e7c485560b98032f08d2fd0d6d5a",
+    "content": "aaaa2e50c50a47c3595dd3010c29a761b3ea3fd37137972835f0269bb5573311"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-fixture-0001",
+      "digest": "7759e8c4f8a1930ac0e8da842c618b34bf74f8fc62d1cc8f35e336125c5c5cdb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cat",
+    "README.md"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
