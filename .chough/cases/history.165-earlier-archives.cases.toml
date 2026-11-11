@@ -2,8 +2,7 @@ profile = "chough-testing/1"
 module = "history"
 
 # #165: the move into done never moves or removes another session's archived record.
-# Red on 0.5.0 (plan step 1); green once plan step 3 removes the roll-up. The test is
-# ignored until then, so the binding runs it with --include-ignored.
+# Red on 0.5.0 (plan step 1); plan step 3 removed the roll-up, so it now runs unignored.
 [[case]]
 id = "TC-history-165-earlier-archives-stay"
 title = "The move into done leaves every earlier archived session in place"
@@ -19,5 +18,5 @@ expected = ["tests/sessions.rs::done_leaves_earlier_archived_stories_in_place pa
 
 [case.bind]
 adapter = "command"
-argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "--exact", "done_leaves_earlier_archived_stories_in_place", "--include-ignored"]
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "--exact", "done_leaves_earlier_archived_stories_in_place"]
 expect_output = ["test result: ok. 1 passed"]

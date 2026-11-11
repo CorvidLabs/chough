@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-165-earlier-archives-stay-e355ee5b96eaa89fb762f797",
+  "criteria": [
+    "KNOW-34",
+    "KNOW-30"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact done_leaves_earlier_archived_stories_in_place for TC-history-165-earlier-archives-stay: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-165-earlier-archives-stay-e355ee5b96eaa89fb762f797.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-165-earlier-archives-stay-e355ee5b96eaa89fb762f797.log": "5019e0e31eb19f509b981a488cae9cafca16503c527dac0af38b2113b1adce16"
+  },
+  "observed_at_unix_seconds": 1794421017,
+  "snapshot": {
+    "revision": "ec8f8a6f6162b324850d551a37cfc56f9c9d5d5a",
+    "dirty": false,
+    "fingerprint": "eb73b49fd984b3135ce7d50b80f83391b00a5dc4ea6e6d886017a8a796b2d0e9",
+    "content": "3f6ba540266bffc9c15f3048cf7f301fe63daa7ddad1a87fe86edfee6920b00c"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-165-earlier-archives-stay",
+      "digest": "a3f2daf09cfe4288c7be3bb2aec33abb2536dfea4d088fe4a72cf3ee4e33aad6"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "done_leaves_earlier_archived_stories_in_place"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

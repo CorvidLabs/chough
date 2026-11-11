@@ -23,7 +23,9 @@
     "git status shows those sessions moved from .chough/sessions/ to .chough/sessions/archive/."
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-history-switch-archives-sessions-left-open-098c034bb55f6a0dff1be113"
+  ],
   "impact": "Unrelated changes carry moves of other sessions' records, which collide on a shared ledger and blur review; it is the side effect Q3 rules out.",
   "classification": "product-defect",
   "scope": "blocking",
@@ -32,7 +34,15 @@
   "duplicate_of": null,
   "related": [],
   "source": "spec-sync repository, Chough 0.5.0, worker t38b; relayed by t370 on 2026-11-11",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794421070,
+      "text": "Fixed by plan step 3 (PR #238): session new and session use touch no other session; a session archives only itself. TC-history-switch-archives-sessions-left-open passed on local-macos-arm64, including a byte-for-byte snapshot of every other session before and after. No failed Chough observation is linked yet: the reproduction was in another repository on 0.5.0, so the bug stays unverified until a red run of this case on 0.5.0 code is recorded.",
+      "observations": [
+        "OBS-tc-history-switch-archives-sessions-left-open-098c034bb55f6a0dff1be113"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794413082,
-  "updated_at_unix_seconds": 1794413082
+  "updated_at_unix_seconds": 1794421070
 }

@@ -25,17 +25,26 @@
   ],
   "fixture": "tests/sessions.rs done_leaves_earlier_archived_stories_in_place",
   "observations": [
-    "OBS-tc-history-165-earlier-archives-stay-5d690dc9b4d700b32265baf0"
+    "OBS-tc-history-165-earlier-archives-stay-5d690dc9b4d700b32265baf0",
+    "OBS-tc-history-165-earlier-archives-stay-e355ee5b96eaa89fb762f797"
   ],
   "impact": "Silent loss of committed archived session records in adopter projects; blocks 0.6.0's keep-all archive (KNOW-34).",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "GitHub issue #165; algochat repro 2026-11-10; red regression run in plan step 1",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794421042,
+      "text": "status: open -> verified. Fixed by plan step 3 (PR #238): sessions finish into one story under .chough/archive/sessions/ and there is no roll-up, so the move into done leaves every earlier story in place. TC-history-165-earlier-archives-stay passed on local-macos-arm64 with the test unignored.",
+      "observations": [
+        "OBS-tc-history-165-earlier-archives-stay-e355ee5b96eaa89fb762f797"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794412313,
-  "updated_at_unix_seconds": 1794412313
+  "updated_at_unix_seconds": 1794421042
 }
