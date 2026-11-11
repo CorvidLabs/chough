@@ -4,15 +4,14 @@
 # planes into one paragraph. Plain text keeps each plane on its own line.
 *.3md linguist-language=Text
 
-# Append-only JSON lines and changelog bullets merge by keeping both sides' lines
-# (DRIVE-12).
-.chough/pruned.jsonl merge=union
+# Changelog bullets merge by keeping both sides' lines (DRIVE-12).
 CHANGELOG.md merge=union
 
-# Bug records merge field by field. The two files `chough library index` generates keep
-# ours (`chough library merge`) and are rebuilt (`library index --check` in the verify
-# lane), DRIVE-12; posts, lessons, snapshots and briefs are not generated, so they still
-# conflict.
-.chough/bugs/*.json merge=chough-bug
+# Markdown bug records merge field by field, with the Log entry by entry
+# (`chough bug merge`). The two files `chough library index` generates keep ours
+# (`chough library merge`) and are rebuilt (`library index --check` in the verify lane),
+# DRIVE-12. Sessions, stories, posts and lessons are separate files, so they merge as
+# files; snapshots and briefs are not generated, so they still conflict.
+.chough/bugs/*.md merge=chough-bug
 knowledge/index.md merge=chough-generated
 knowledge/journal/feed.xml merge=chough-generated

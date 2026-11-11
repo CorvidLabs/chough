@@ -970,7 +970,7 @@ fn docs_state_only_the_pinned_tool_versions() {
             [version.clone(), format!("{}.{}", parts[0], parts[1])]
         })
         .collect();
-    let history = ["docs/DECISIONS.md", "docs/ROADMAP.md"];
+    let history = ["docs/DECISIONS.md", "docs/roadmap-1.0.md"];
     let present = ["uses", "use", "pins", "follows"];
     let past = [
         "observed",

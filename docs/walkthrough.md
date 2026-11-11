@@ -117,15 +117,23 @@ chough checkpoint --native-change free-shipping-at-the-threshold \
 chough stage advance        # refused: refused:awaiting-human (refused:native-draft once cleared)
 ```
 
-Once actual human authority covers the definition, the agent runs
-`specsync change approve <id> --actor "<agent-account>" --note "Human authority: <source>; covered scope: <scope>; limits: <limits>"`
-and records your decision on the gate with `chough checkpoint --close-gate "Scope
-approval of free-shipping-at-the-threshold" --decided-by "<you>" --words "<your
-words>" --where "<where and when>" --recorded-by "<agent-account>"`, a relayed claim,
-not authenticated.
-Applicable existing permission is used without another tool-specific question.
-Then `chough stage advance` enters build. The acting account and human authority
-source remain separate, as does your later implementation acceptance.
+When you decide, the agent records your decision on the gate. At plan the gate
+drives the native approval, so Chough first runs `specsync change approve` in your
+name, from the identity you configured (see the [README](../README.md#start-here)), and
+only then closes the gate with your words, a relayed claim, not authenticated:
+
+```sh
+chough checkpoint --close-gate "Scope approval of free-shipping-at-the-threshold" \
+  --decided-by "<you>" --words "<your words>" --where "<where and when>" \
+  --recorded-by "<agent>-<terminal>"
+```
+
+When earlier permission you gave already covers the definition, nobody waits on a
+gate: the agent records the approval in its own name and quotes you,
+`specsync change approve <id> --actor "<agent>-<terminal>" --note "Approved under <your words> (<where>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>)."`.
+Applicable existing permission is used without another tool-specific question. Then
+`chough stage advance` enters build. Your later implementation acceptance stays a
+separate decision.
 
 ## Build, focused tests and a bug
 
@@ -145,8 +153,9 @@ chough stage back --to build --reason "<bug-id> blocks acceptance"
 
 After the fix, rerun the focused cases, link the passing observation and mark the bug
 verified (`chough bug update <bug-id> --status verified --observation <passing>`).
-`bug add` prints the new ID in the form `BUG-<slug>-<24 hex>`, here
-`BUG-shipping-charged-at-exactly-the-free-threshold-` followed by 24 hex digits.
+`bug add` names the new bug by its date and title, here
+`.chough/bugs/<date>-shipping-charged-at-exactly-the-free-threshold.md`, and prints that
+ID.
 `chough bug report <bug-id>` prints a report candidate; nothing is posted unless you
 ask.
 
@@ -158,25 +167,29 @@ chough stage advance        # refused: refused:native-verifying
 chough next --environment local
 ```
 
-Before presenting, the agent records the gate (`chough checkpoint --awaiting-human
-"Implementation review of free-shipping-at-the-threshold"`), commits the source
-together with `.chough/`, runs `chough change check free-shipping-at-the-threshold`
-and presents the work. Your implementation review is the decision. Only after it does
-the agent run `specsync change review`, and then, on the same pull request and with
-nothing written to `.chough/` in between, one command that ships, closes the review gate
-with your decision as a relayed claim and moves to done:
+Before presenting, the agent opens the review gate (`chough checkpoint
+--awaiting-human "Implementation review of free-shipping-at-the-threshold"`, which
+holds accept and drives the native review), commits the source together with
+`.chough/`, runs `chough change check free-shipping-at-the-threshold` and presents the
+work. Your implementation review is the decision. When you accept, the agent runs one
+command on the same pull request. It records `specsync change review` in your name,
+ships, closes the review gate with your decision as a relayed claim, and moves to
+done:
 
 ```sh
 chough change ship free-shipping-at-the-threshold \
   --close-gate "Implementation review of free-shipping-at-the-threshold" \
   --decided-by "<you>" --words "<your words>" --where "<where and when>" \
-  --recorded-by "<agent-account>"
+  --recorded-by "<agent>-<terminal>"
 ```
 
-It checks the session, the stage and the relay before it runs SpecSync's `change ship`.
-If the move into done is refused after the ship, it says the change is shipped and
-names the command left to run. Then the agent commits. Pushing and observing CI
-come last, because the hosted Archive gate refuses while the change is open. See [the
+It checks the session, the stage and the relay before it runs anything. If the move
+into done is refused after the ship, it says the change is shipped and names the
+command left to run. The move into done turns the session into one story in
+`.chough/archive/sessions/` and writes a journal post. The agent commits those, then
+runs `chough doctor --fix`, which removes the session folder now that it is committed,
+and commits that. Pushing and observing CI come last, because the hosted Archive gate
+refuses while the change is open. See [the
 closeout order](lifecycle.md#acceptance-and-native-closeout). Release is a separate,
 optional request.
 
@@ -210,6 +223,6 @@ different environment makes an observation stale; rerun the case instead of reus
 the result. The revision is recorded with each observation but not compared:
 committing only `.chough/` records, an empty commit, committing edits that were
 already present when the case ran, and SpecSync's lifecycle bookkeeping (`change
-check --commit`, finalize) keep it current. A record from an earlier Chough without a
-content identity stays stale after any commit. See the [CLI reference](cli.md) for
+check --commit`, finalize) keep it current. A receipt migrated from an earlier Chough
+without a content identity stays stale after any commit. See the [CLI reference](cli.md) for
 every outcome and freshness label.
