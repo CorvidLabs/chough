@@ -1298,7 +1298,31 @@ fn a_correction_entry_starts_no_segment_and_is_not_unrecognised() {
     );
     let report = timing(&fixture_with(&corrected), &[]);
     assert_eq!(report["transitions"]["unrecognised_kinds"], 0, "{report:#}");
-    assert_eq!(report["cycles"], plain["cycles"], "{report:#}");
+    // The two reports run moments apart, so what runs to now (the open segment's end
+    // and spans, and the current cycle's totals) is left out of the comparison.
+    let settled = |cycles: &Value| {
+        let mut cycles = cycles.clone();
+        for cycle in cycles.as_array_mut().unwrap() {
+            for segment in cycle["segments"].as_array_mut().unwrap() {
+                if segment["ongoing"] == true {
+                    for key in ["end", "elapsed", "active", "waiting"] {
+                        segment[key] = Value::Null;
+                    }
+                }
+            }
+            if cycle["completed"] == false {
+                cycle["stages"] = Value::Null;
+                cycle["idle"] = Value::Null;
+            }
+        }
+        cycles
+    };
+    assert!(report["cycles"].as_array().unwrap().len() > 1, "{report:#}");
+    assert_eq!(
+        settled(&report["cycles"]),
+        settled(&plain["cycles"]),
+        "{report:#}"
+    );
     assert_eq!(
         report["transitions"]["records"],
         plain["transitions"]["records"]
