@@ -318,9 +318,8 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     session["observations"] = json!([current_id, "stale-000"]);
     session["next_action"] = json!("n".repeat(4_096));
     session["objective"] = json!("o".repeat(4_000));
-    let session_text = serde_json::to_string(&session).unwrap();
-    assert!(session_text.len() < 65_536, "{}", session_text.len());
-    fixture.write(".chough/session.json", &session_text);
+    let session_text = write_session(&fixture, &session);
+    assert!(session_text.len() <= common::CHECKPOINT_CAP, "{}", session_text.len());
 
     fixture.native_calls();
     let raw = text(&fixture, &["next", "--json"]);
@@ -437,9 +436,8 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     };
     session["awaiting_human"] = json!(list("Gate"));
     session["blockers"] = json!(list("Blocker"));
-    let session_text = serde_json::to_string(&session).unwrap();
-    assert!(session_text.len() < 65_536, "{}", session_text.len());
-    fixture.write(".chough/session.json", &session_text);
+    let session_text = write_session(&fixture, &session);
+    assert!(session_text.len() <= common::CHECKPOINT_CAP, "{}", session_text.len());
     let raw = text(&fixture, &["next", "--json"]);
     assert!(raw.len() <= NEXT_LIMIT, "JSON form is {} bytes", raw.len());
     let next: Value = serde_json::from_str(&raw).unwrap();
@@ -979,7 +977,7 @@ fn next_searches_a_context_md_larger_than_4_mib() {
     fixture.write("specs/docs/context.md", &filler);
     let mut session = fixture.session();
     session["modules"] = json!(["cli", "docs"]);
-    fixture.write(".chough/session.json", &session.to_string());
+    write_session(&fixture, &session);
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
         next["lessons"]["sources"],
@@ -1021,7 +1019,7 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
     fixture.write("specs/native/native.3md", "SECRET-LESSON-TEXT\n");
     let mut session = fixture.session();
     session["modules"] = json!(["cli", "docs", "ghost", "native"]);
-    fixture.write(".chough/session.json", &session.to_string());
+    write_session(&fixture, &session);
     // Seven archived bundles written out of order, and an archive without one.
     for day in [3, 7, 1, 5, 2, 6, 4] {
         let dir = format!(".specsync/archive/changes/2026-10-0{day}-change-{day}");
@@ -1294,6 +1292,101 @@ fn next_and_the_librarian_pick_the_same_hot_archives_when_a_bundle_is_missing() 
     }
 }
 
+
+/// Render a 0.5.x-shaped checkpoint JSON into the active session's session.md
+/// (front matter plus body sections), keeping its id and Timeline, and return the
+/// bytes written.
+fn write_session(fixture: &Fixture, session: &Value) -> String {
+    let file = fixture.session_file();
+    let existing = fixture.read(&file);
+    let text = render_session(&existing, session);
+    fixture.write(&file, &text);
+    text
+}
+
+/// The session.md bytes for a 0.5.x-shaped checkpoint JSON, given the active session's
+/// current file (its id and Timeline are kept).
+fn render_session(existing: &str, session: &Value) -> String {
+    let id = existing
+        .lines()
+        .find_map(|line| line.strip_prefix("id: "))
+        .unwrap()
+        .to_string();
+    let timeline = existing
+        .split("\n## Timeline\n")
+        .nth(1)
+        .unwrap_or("")
+        .to_string();
+    let scalar = |value: &Value| value.as_str().unwrap_or_default().to_string();
+    let list = |value: &Value| -> String {
+        let items: Vec<&str> = value
+            .as_array()
+            .map(|all| all.iter().filter_map(Value::as_str).collect())
+            .unwrap_or_default();
+        format!("[{}]", items.join(", "))
+    };
+    let mut front = format!("---\nkind: session\nid: {id}\naliases: []\n");
+    front.push_str(&format!("objective: {}\n", scalar(&session["objective"])));
+    front.push_str(&format!("intent_scope: {}\n", scalar(&session["intent_scope"])));
+    front.push_str(&format!("modules: {}\n", list(&session["modules"])));
+    let status = scalar(&session["stage"]["status"]);
+    front.push_str(&format!("stage: {}\n", scalar(&session["stage"]["current"])));
+    front.push_str(&format!(
+        "stage_status: {}\n",
+        if status.is_empty() { "active" } else { &status }
+    ));
+    front.push_str(&format!(
+        "iteration: {}\n",
+        session["stage"]["iteration"].as_u64().unwrap_or(1)
+    ));
+    front.push_str("callers: []\npr: \"\"\n");
+    front.push_str(&format!(
+        "native_change: \"{}\"\n",
+        scalar(&session["native_change"])
+    ));
+    for key in ["criteria", "requirements", "cases", "design", "files"] {
+        front.push_str(&format!("{key}: {}\n", list(&session["references"][key])));
+    }
+    for key in ["observations", "bugs", "blockers"] {
+        front.push_str(&format!("{key}: {}\n", list(&session[key])));
+    }
+    let gates = session["awaiting_human"].as_array().cloned().unwrap_or_default();
+    if gates.is_empty() {
+        front.push_str("waiting_on_human: []\n");
+    } else {
+        front.push_str("waiting_on_human:\n");
+        for gate in &gates {
+            front.push_str(&format!(
+                "  - gate: {}\n    holds: intent\n    opened: 2026-01-01T00:00:00Z\n",
+                gate.as_str().unwrap()
+            ));
+        }
+    }
+    front.push_str("run_consents: []\n");
+    front.push_str(&format!("next: {}\n", scalar(&session["next_action"])));
+    let items = |key: &str| -> String {
+        session[key]
+            .as_array()
+            .map(|all| {
+                all.iter()
+                    .filter_map(Value::as_str)
+                    .map(|item| format!("- {item}\n"))
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
+    format!(
+        "{}---\n# {}\n\n## Goal\n\n{}\n\n## Where it stands\n\n{}\n## Decisions and why\n\n{}\n## What was verified\n\n## Open threads\n\n{}\n## Timeline\n{}",
+        front,
+        scalar(&session["objective"]),
+        scalar(&session["objective"]),
+        items("completed"),
+        items("decisions"),
+        items("open_questions"),
+        timeline
+    )
+}
+
 #[cfg(unix)]
 #[test]
 fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
@@ -1384,13 +1477,12 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     session["awaiting_human"] = json!(list("Gate", 40));
     session["blockers"] = json!(list("Blocker", 40));
     session["observations"] = json!(["stale-000"]);
-    let session_text = serde_json::to_string(&session).unwrap();
+    let session_text = write_session(&fixture, &session);
     assert!(
         session_text.len() > 130 * 4_096 && session_text.len() <= common::CHECKPOINT_CAP,
         "{}",
         session_text.len()
     );
-    fixture.write(".chough/session.json", &session_text);
     fixture.write(".stub-count", "");
 
     let raw = text(&fixture, &["next", "--json"]);
@@ -1827,7 +1919,9 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
     for list in lists {
         session[list] = json!([]);
     }
-    let size = |session: &Value| serde_json::to_string(session).unwrap().len();
+    let file = fixture.session_file();
+    let existing = fixture.read(&file);
+    let size = |session: &Value| render_session(&existing, session).len();
     'fill: for list in lists {
         for index in 0..199 {
             if size(&session) + 4_200 > common::CHECKPOINT_CAP {
@@ -1839,13 +1933,13 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
                 .push(json!(format!("{list} {index:03} {}", "x".repeat(4_000))));
         }
     }
-    let compact = serde_json::to_string(&session).unwrap();
+    let compact = render_session(&existing, &session);
     let at_cap = format!(
         "{compact}{}",
         " ".repeat(common::CHECKPOINT_CAP - compact.len())
     );
     assert_eq!(at_cap.len(), common::CHECKPOINT_CAP);
-    fixture.write(".chough/session.json", &at_cap);
+    fixture.write(&file, &at_cap);
     for args in [
         &["next"][..],
         &["next", "--json"],
@@ -1872,7 +1966,7 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
             );
         }
     }
-    fixture.write(".chough/session.json", &format!("{at_cap} "));
+    fixture.write(&file, &format!("{at_cap} "));
     let output = fixture.run(&["next"]);
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
