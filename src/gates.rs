@@ -94,37 +94,15 @@ fn sha256(text: &str) -> String {
     format!("{:x}", Sha256::digest(text.as_bytes()))
 }
 
-/// Every open session: its key and checkpoint, by key. A project without sessions has
-/// its legacy checkpoint under the key `session`.
+/// Every open session: its ID, its file and its checkpoint, by ID.
 fn open_sessions(root: &Path) -> Result<Vec<(String, String, Value)>> {
-    let dir = local_path(root, ".chough/sessions")?;
+    crate::sessions::ensure_migrated(root)?;
     let mut sessions = vec![];
-    if dir.is_dir() {
-        for entry in fs::read_dir(&dir)? {
-            let path = entry?.path();
-            let Some(name) = path.file_name().and_then(|name| name.to_str()) else {
-                continue;
-            };
-            let Some(key) = name.strip_suffix(".json") else {
-                continue;
-            };
-            if !path.is_file() || name.starts_with('.') {
-                continue;
-            }
-            let value: Value = serde_json::from_slice(&fs::read(&path)?)
-                .with_context(|| format!("{} is not a checkpoint", path.display()))?;
-            sessions.push((key.to_string(), format!(".chough/sessions/{name}"), value));
-        }
-    } else if local_path(root, crate::checkpoint::SESSION)?.is_file() {
-        let value: Value =
-            serde_json::from_slice(&fs::read(local_path(root, crate::checkpoint::SESSION)?)?)?;
-        sessions.push((
-            "session".into(),
-            crate::checkpoint::SESSION.to_string(),
-            value,
-        ));
+    for id in crate::sessions::open_ids(root)? {
+        let file = crate::sessions::session_file(&id);
+        let session = crate::sessions::read_at(root, &file)?;
+        sessions.push((id, file, serde_json::to_value(&session)?));
     }
-    sessions.sort_by(|left, right| left.0.cmp(&right.0));
     Ok(sessions)
 }
 

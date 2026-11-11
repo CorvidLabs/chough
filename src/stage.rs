@@ -1499,6 +1499,14 @@ pub(super) fn recent_transitions(root: &Path, count: usize) -> Result<(Vec<Value
         crate::history::RECENT_BYTES,
         true,
     );
+    // An entry that is not a valid transition is refused, never shown as history.
+    if let Some(invalid) = read
+        .partial
+        .iter()
+        .find(|why| why.contains("invalid transition"))
+    {
+        bail!("{invalid}");
+    }
     Ok((read.records, !read.partial.is_empty()))
 }
 
