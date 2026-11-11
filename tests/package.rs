@@ -1,5 +1,7 @@
 //! Installable package and fresh installs (REQ-cli-019, LIFE-9, LIFE-4).
 
+mod common;
+
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeSet;
@@ -2225,6 +2227,140 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
         ],
     );
     problems
+}
+
+/// TC-cli-bug-0022-toolchain-matches-ci (REQ-cli-019, BUG-0022): the `toolchain` task,
+/// first in the verify lane, prints each installed tool beside the CI pin and fails
+/// naming each one that differs, and records its verdict for evidence to read. Stand-ins
+/// play every tool; nothing is installed.
+#[cfg(unix)]
+#[test]
+fn toolchain_task_names_a_version_that_differs() {
+    let fledge = fs::read_to_string(manifest_dir().join("fledge.toml")).unwrap();
+    assert!(
+        fledge
+            .lines()
+            .any(|line| line.trim() == "toolchain = \"sh tools/toolchain.sh\""),
+        "fledge.toml defines no toolchain task:\n{fledge}"
+    );
+    let verify = fledge
+        .split("[lanes.verify]")
+        .nth(1)
+        .and_then(|lane| lane.lines().find(|line| line.starts_with("steps = ")))
+        .unwrap_or_default();
+    assert!(
+        verify.starts_with("steps = [\"toolchain\", "),
+        "the verify lane does not run toolchain first: {verify}"
+    );
+
+    let pins = Command::new("sh")
+        .arg(manifest_dir().join("tools/linux/pins.sh"))
+        .output()
+        .unwrap();
+    assert!(pins.status.success());
+    let pins = String::from_utf8(pins.stdout).unwrap();
+    let pin = |tool: &str| {
+        pins.lines()
+            .find_map(|line| line.strip_prefix(&format!("{tool}=")))
+            .unwrap()
+            .to_string()
+    };
+    let (hi, specsync, fledge_pin) = (pin("human-intent"), pin("specsync"), pin("fledge"));
+
+    let directory = tempfile::tempdir().unwrap();
+    let bin = directory.path().join("bin");
+    let log = directory.path().join("logs/toolchain.log");
+    let stand_ins = |tools: &[(&str, &str)]| {
+        let _ = fs::remove_dir_all(&bin);
+        for (name, line) in tools {
+            common::stand_in(&bin, name, line);
+        }
+    };
+    let run = || {
+        Command::new("sh")
+            .arg(manifest_dir().join("tools/toolchain.sh"))
+            .env("PATH", format!("{}:/usr/bin:/bin", bin.display()))
+            .env("CHOUGH_TOOLCHAIN_LOG", &log)
+            .output()
+            .unwrap()
+    };
+    let rust = [
+        ("rustc", "rustc 1.96.0 (SYNTHETIC 2026-01-01)"),
+        ("cargo", "cargo 1.96.0 (SYNTHETIC 2026-01-01)"),
+    ];
+
+    // Fledge differs: the task fails naming Fledge, its version and the pin.
+    let mut tools = vec![
+        ("hi", format!("hi {hi}")),
+        ("specsync", format!("specsync {specsync}")),
+        ("fledge", "fledge 0.0.1".to_string()),
+    ];
+    let install = |tools: &[(&str, String)]| {
+        let mut all: Vec<(&str, &str)> = tools
+            .iter()
+            .map(|(name, line)| (*name, line.as_str()))
+            .collect();
+        all.extend(rust);
+        stand_ins(&all);
+    };
+    install(&tools);
+    let output = run();
+    let (stdout, stderr) = (
+        String::from_utf8_lossy(&output.stdout).into_owned(),
+        String::from_utf8_lossy(&output.stderr).into_owned(),
+    );
+    assert!(!output.status.success(), "{stdout}{stderr}");
+    assert!(
+        stderr.contains(&format!("Fledge 0.0.1 (CI {fledge_pin})")),
+        "{stderr}"
+    );
+    assert!(
+        !stderr.contains("HI ") && !stderr.contains("SpecSync "),
+        "{stderr}"
+    );
+    for line in [
+        format!("HI: installed {hi}, CI pins {hi}"),
+        format!("SpecSync: installed {specsync}, CI pins {specsync}"),
+        format!("Fledge: installed 0.0.1, CI pins {fledge_pin}"),
+        "Rust (rustc): installed 1.96.0, CI stable and minimum 1.88".to_string(),
+    ] {
+        assert!(stdout.contains(&line), "missing {line:?} in {stdout}");
+    }
+    let verdict = fs::read_to_string(&log).unwrap();
+    assert!(
+        verdict.starts_with(&format!("differs: Fledge 0.0.1 (CI {fledge_pin})\n")),
+        "{verdict}"
+    );
+
+    // Every tool at its pin, and a newer Rust than the minimum: the task passes.
+    tools[2].1 = format!("fledge {fledge_pin}");
+    install(&tools);
+    let output = run();
+    assert!(
+        output.status.success(),
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(String::from_utf8_lossy(&output.stdout).contains("toolchain: matches CI"));
+    assert!(fs::read_to_string(&log).unwrap().starts_with("matches\n"));
+
+    // HI missing and a Rust older than the minimum: both are named.
+    stand_ins(&[
+        ("specsync", tools[1].1.as_str()),
+        ("fledge", tools[2].1.as_str()),
+        ("rustc", "rustc 1.80.0 (SYNTHETIC 2024-01-01)"),
+        ("cargo", "cargo 1.96.0 (SYNTHETIC 2026-01-01)"),
+    ]);
+    let output = run();
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success());
+    assert!(
+        stderr.contains(&format!("HI not installed (CI {hi})"))
+            && stderr.contains("Rust (rustc) 1.80.0 (minimum 1.88)")
+            && !stderr.contains("Rust (cargo)"),
+        "{stderr}"
+    );
 }
 
 /// TC-cli-0110 (REQ-cli-019, BUG-0001): README, AGENTS.md, CI, the docs and the header

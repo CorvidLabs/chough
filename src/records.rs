@@ -1542,8 +1542,54 @@ pub(super) fn record_names(root: &Path, directory: &str) -> Result<Vec<String>> 
     Ok(names)
 }
 
+/// Where the `toolchain` task (tools/toolchain.sh) leaves its verdict, under the
+/// Git-ignored local logs (REQ-history-007, REQ-records-005).
+pub(super) const TOOLCHAIN_LOG: &str = ".chough/local/logs/toolchain.log";
+
+// Plan step 4's evidence writer calls it; until then only its tests do.
+#[cfg_attr(not(test), allow(dead_code))]
+/// The limitation evidence states when the last `toolchain` run found an installed tool
+/// that differs from the CI pins (REQ-cli-019, BUG-0022): `recorded on a toolchain that
+/// differs from CI: <each difference>`. None when it matched, never ran or cannot be read.
+pub(super) fn toolchain_limitation(root: &Path) -> Option<String> {
+    let path = local_path(root, TOOLCHAIN_LOG).ok()?;
+    let text = read_bounded_record(&path, 65_536).ok()?;
+    let differences = text.lines().next()?.strip_prefix("differs: ")?.trim();
+    (!differences.is_empty())
+        .then(|| format!("recorded on a toolchain that differs from CI: {differences}"))
+}
+
 #[cfg(test)]
 mod tests {
+    /// BUG-0022: the verdict the toolchain task records becomes an evidence limitation
+    /// only when it says the toolchain differs.
+    #[test]
+    fn a_differing_toolchain_verdict_becomes_an_evidence_limitation() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        assert_eq!(super::toolchain_limitation(root), None);
+        let log = root.join(super::TOOLCHAIN_LOG);
+        std::fs::create_dir_all(log.parent().unwrap()).unwrap();
+        for (verdict, expected) in [
+            ("matches\n2026-11-11T00:00:00Z\n", None),
+            ("differs: \n", None),
+            ("SYNTHETIC unreadable\n", None),
+            (
+                "differs: Fledge 1.7.2 (CI 1.8.0); HI not installed (CI 0.8.0)\n2026-11-11T00:00:00Z\nFledge: installed 1.7.2, CI pins 1.8.0\n",
+                Some(
+                    "recorded on a toolchain that differs from CI: Fledge 1.7.2 (CI 1.8.0); HI not installed (CI 0.8.0)",
+                ),
+            ),
+        ] {
+            std::fs::write(&log, verdict).unwrap();
+            assert_eq!(
+                super::toolchain_limitation(root).as_deref(),
+                expected,
+                "{verdict:?}"
+            );
+        }
+    }
+
     #[test]
     fn a_long_native_command_keeps_the_trace_state_and_elapsed_fields_within_the_bound() {
         let source = format!("specsync change status {} --json", "é".repeat(4_000));
