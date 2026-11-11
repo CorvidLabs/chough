@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "996dadc2d26b200a7f745215ef9c151304107e05",
   "created_at": 1794326164,
-  "updated_at": 1794360022,
+  "updated_at": 1794362141,
   "affected_specs": [
     "cli"
   ],
@@ -25,7 +25,7 @@
   "no_spec_change": true,
   "no_spec_change_rationale": "No requirement text changes: the PR captures Leif's 2026-11-10 interview decisions as new hi criteria (FLOW-21, FLOW-22, DRIVE-24, KNOW-30, LIFE-17 to LIFE-25) and adds roadmap and test-plan documentation. No helper behavior, stage semantics, retention or SpecSync contract changes.",
   "acceptance_criteria": [
-    "hi check passes with the 20 new criteria (FLOW-21 to FLOW-23, DRIVE-24 to DRIVE-27, KNOW-30 to KNOW-32, LIFE-17 to LIFE-26) and the INTENT.md index regenerated; docs/roadmap-1.0.md defines milestones to 1.0, each tied to one of the four bar items of LIFE-21 with a done definition and its test, includes the session-slug-folder and Markdown-record migration design, and re-scopes knowledge to links-never-copies per #235; docs/test-plan-1.0.md covers the per-repo dogfood checklist, the flake tracker and two-week clean window, migration fixtures from every 0.x tag (0.1.0 to 0.5.0) and the host-matrix e2e harness design; the issues exist under the Chough 1.0 milestone: epic #232 with the 19 new issues #213 to #231 and the mapped existing open issues, with #216 re-scoped to the #235 design; no helper behavior, requirement text, stage semantics, retention or SpecSync contract changes"
+    "hi check passes with the 22 new criteria (FLOW-21 to FLOW-23, DRIVE-24 to DRIVE-28, KNOW-30 to KNOW-33, LIFE-17 to LIFE-26) and the INTENT.md index regenerated; docs/roadmap-1.0.md defines milestones to 1.0, each tied to one of the four bar items of LIFE-21 with a done definition and its test, ships the human-first redesign (M1 to M3) as one change, Chough 0.6.0, dogfooded on the chough repo before any other repo updates, includes the migration design as settled in the 2026-11-10 design review (session.md frontmatter checkpoint and timeline, agent/ folder, one archived story file per finished session, Markdown records with date+slug names), and re-scopes knowledge to links-never-copies per #235; docs/test-plan-1.0.md covers the per-repo dogfood checklist, the flake tracker and two-week clean window, migration fixtures from every 0.x tag (0.1.0 to 0.5.0) and the host-matrix e2e harness design; the issues exist under the Chough 1.0 milestone: epic #232 with the 19 new issues #213 to #231 and the mapped existing open issues, with #214 and #216 scoped to the settled design; no helper behavior, requirement text, stage semantics, retention or SpecSync contract changes"
   ],
   "selected_artifacts": [
     "context",

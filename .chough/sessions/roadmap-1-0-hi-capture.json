@@ -36,7 +36,9 @@
       "DRIVE-26",
       "DRIVE-27",
       "FLOW-23",
-      "LIFE-26"
+      "LIFE-26",
+      "KNOW-33",
+      "DRIVE-28"
     ],
     "requirements": [],
     "cases": [],
@@ -56,7 +58,10 @@
     "Addressed corvid-agent's review of #212: merged main (resolved the issue-102 session roll-up conflict in main's favor), regenerated the knowledge vault, re-answered the native change's acceptance criteria and tasks to match the created issues; marked #187 and #196 closed in epic #232 and the PR body",
     "Review addressed: merged head green (verify lane 10 steps), change record matches the created issues, review reply posted on #212",
     "Folded the 2026-11-10 round-2 decisions into #212: KNOW-30 rewritten (links, never moves or copies), 7 new criteria captured (KNOW-31/32, DRIVE-25/26/27, FLOW-23, LIFE-26), roadmap M1/M2/M3 and the migration design updated, #216 re-scoped, #234/#235/#236 mapped into the milestone and epic, PR body updated",
-    "Round-2 fold-in verified and pushed at 1badc216; PR comment posted; t370 notified"
+    "Round-2 fold-in verified and pushed at 1badc216; PR comment posted; t370 notified",
+    "Folded the design-review deltas into #212: DRIVE-24 and DRIVE-25 rewritten to the approved design (session.md frontmatter checkpoint + timeline, agent/ folder, one archived story file), KNOW-30 path updated, KNOW-31 gained the lessons rule, KNOW-33 and DRIVE-28 captured, migration design and M1/M3 updated, #214 re-scoped, PR body updated",
+    "Added Leif's 0.6.0 shipping decision to the roadmap: the human-first redesign ships as one change, dogfooded on chough before any other repo updates; native change AC updated; PR body patched",
+    "Fixed the three stale bits from t370: LIFE-23 tail now points at KNOW-30's links-never-copies; PR body count corrected to 22; PR body M3 item 10 rewritten to the KNOW-30 wording with #196/#187 marked done; branch-wide wording sweep clean (only historical superseded mentions remain)"
   ],
   "observations": [],
   "bugs": [],
@@ -66,5 +71,5 @@
     "Leif: intent approval of the 13 criteria; native scope approval of the change; rulings on FLOW-17 vs FLOW-21 and KNOW-29 vs KNOW-30"
   ],
   "run_consents": [],
-  "next_action": "Hold. Fold in the coordinator's exact design-review deltas (Leif's words) when they arrive; Leif approves the intent as a whole when the design settles"
+  "next_action": "When the lane is green: commit, push, send t370 the head SHA and the plain summary for Leif"
 }

@@ -10,7 +10,7 @@ Leif's MVP / 1.0 interview of 2026-11-10 (audit file
 means, the four-part bar, the host scope, the session slug-folder design,
 digest-committed evidence, KNOW fully in scope, Herdr/Rune out of core, and the
 weekly 0.x release cadence. The same day he decided #14 (fix all four case
-bindings), #165 (roll-up copies, never moves), #167 (append-only `chough
+bindings), #165 (roll-up, first worded copy-never-move, superseded the same day by #235's links-never-copies), #167 (append-only `chough
 correct`) and #201 (record agent, model and hc terminal).
 
 This change captures those decisions as hi criteria and turns them into a

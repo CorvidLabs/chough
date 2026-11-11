@@ -1,8 +1,9 @@
 # Roadmap to 1.0
 
 Source: Leif's MVP / 1.0 interview of 2026-11-10 and his same-day decisions on
-issues #14, #165, #167, #201, #234, #235 and #236, captured as FLOW-21 to
-FLOW-23, DRIVE-24 to DRIVE-27, KNOW-30 to KNOW-32 and LIFE-17 to LIFE-26. This
+issues #14, #165, #167, #201, #234, #235 and #236 and the 2026-11-10
+design review, captured as FLOW-21 to FLOW-23, DRIVE-24 to DRIVE-28, KNOW-30 to
+KNOW-33 and LIFE-17 to LIFE-26. This
 roadmap records proposed sequencing; it is not human acceptance or proof of
 delivery. Durable intent stays in [HI](../hi/).
 
@@ -43,6 +44,12 @@ to crates.io. The human steps of [releasing](releasing.md) stay human steps.
 
 ## Milestones
 
+Leif decided on 2026-11-10 that the human-first redesign (M1 to M3: slug
+folders, Markdown records with date + slug names, the links-never-copies
+vault, the cleanup) ships as ONE change, **Chough 0.6.0**, dogfooded on the
+chough repository itself before any other repo updates. Only after that
+dogfood passes on chough do the other repos pick it up (M6 order).
+
 Each milestone names the bar items it serves, what "done" means and how it is
 tested. Milestones overlap in time; the dependencies are between the issues,
 not the headings.
@@ -51,16 +58,22 @@ not the headings.
 
 Serves bar 3 (frozen format + migrations) and bar 1 (no data-loss bugs).
 
-Scope: DRIVE-24. Every session gets its own unique slug folder; active and
-archived sessions are kept separately, mirroring SpecSync's `changes/` and
-`archive/`; sessions stay committed because handoff depends on them; parallel
-sessions never rewrite one shared file. Records become human-first
-(DRIVE-25): bugs, evidence, sessions and decisions are Markdown with YAML
-frontmatter, one file per record, the file itself the source of truth.
-Record names are a date plus a slug, never sequential numbers, with old
-sequential IDs kept as aliases (DRIVE-27). Includes the corrections command
-(LIFE-18, #167), session identity recording (LIFE-17, #201) and the open
-session bugs (#181, #113).
+Scope: DRIVE-24 as settled in the 2026-11-10 design review. Every session
+gets its own unique date + slug folder; active and archived sessions are kept
+separately, mirroring SpecSync's `changes/` and `archive/`; sessions stay
+committed because handoff depends on them; parallel sessions never rewrite
+one shared file. The checkpoint (stage, next, gates) lives in `session.md`
+frontmatter with an append-only timeline in the same file, replacing
+`session.json` and `transitions.jsonl`; an `agent/` folder inside the session
+holds agent-helpful working files during the change, committed for handoff
+and removed automatically at finish. Records become human-first (DRIVE-25):
+bugs, evidence, sessions and decisions are Markdown with YAML frontmatter,
+one file per record, the file itself the source of truth, a bug's log
+append-only. Record names are a date plus a slug, never sequential numbers,
+with old sequential IDs kept as aliases (DRIVE-27). Case definitions stay
+small TOML, with one `.chough/README.md` reading guide (DRIVE-28). Includes
+the corrections command (LIFE-18, #167), session identity recording (LIFE-17,
+#201) and the open session bugs (#181, #113).
 
 Done means: two agents can run parallel sessions in one repository, commit
 both, and merge without a hand-resolved conflict in any file Chough writes
@@ -101,13 +114,17 @@ Serves bar 1.
 
 Scope: LIFE-23: all of KNOW is in the 1.0 scope — the librarian, the roll-ups,
 the index and observations — re-scoped by the 2026-11-10 interview round 2
-(#235): the vault holds only what has no other home (lessons, decisions with
-their reasons, bug write-ups and short session stories in the DRIVE-26 form)
-and links to hi/, specs/, .specsync/ and .chough/, never copies (KNOW-30,
-KNOW-31, KNOW-32). The `knowledge/intent/` and `knowledge/archives/` copies
-are removed by the cleanup change (#235 item 4, one cleanup PR per repo);
-that removal changes contracted librarian behavior (the "Project librarian"
-and "Knowledge directory built and kept current" requirements in
+(#235) and the design review: the vault holds only what has no other home
+(lessons, decisions with their reasons, bug write-ups and short session
+stories in the DRIVE-26 form) and links to hi/, specs/, .specsync/ and
+.chough/, never copies (KNOW-30, KNOW-31, KNOW-32). A module's own lessons
+stay with its spec; only cross-project lessons live in `knowledge/lessons/`
+(KNOW-31). A journal post is short and links to the archived session story,
+so nothing is written twice (KNOW-33); `knowledge/index.md` is the vault's
+reading guide (DRIVE-28). The `knowledge/intent/` and `knowledge/archives/`
+copies are removed by the cleanup change (#235 item 4, one cleanup PR per
+repo); that removal changes contracted librarian behavior (the "Project
+librarian" and "Knowledge directory built and kept current" requirements in
 specs/cli/requirements.md), so it is its own native change, not folded into a
 docs change. Includes #165 (whose first wording is superseded by KNOW-30),
 #211 (parked by #235) and the KNOW criteria still open when this milestone
@@ -117,7 +134,7 @@ Done means: the vault contains no copy of a record that has a home; every
 vault note either is original content (lesson, decision, bug write-up,
 session story) or links; the index regenerates byte-identical from its
 sources (KNOW-4); a fresh agent is pointed at the index at start and resume
-(KNOW-1, FLOW-13); `.chough/sessions/archive/` records stay where they are.
+(KNOW-1, FLOW-13); archived session stories stay at `.chough/archive/sessions/`.
 
 Tested by: the vault regeneration and link-not-copy cases, exercised during
 the per-repo dogfooding runs.
@@ -158,9 +175,10 @@ Tested by: the harness design in
 Serves bar 1.
 
 Scope: LIFE-20. Each active CorvidLabs repo — spec-sync, site, raven,
-raven-desktop, jackdaw, peck, podo-*, algochat and fledge, with chough itself
-already dogfooding — completes at least one full Chough cycle on the release
-candidate.
+raven-desktop, jackdaw, peck, podo-*, algochat and fledge — completes at
+least one full Chough cycle on the release candidate. Order: the 0.6.0
+redesign is dogfooded on the chough repository first; the other repos update
+only after that dogfood passes (Leif, 2026-11-10).
 
 Done means: the per-repo checklist in
 [the test plan](test-plan-1.0.md#bar-1-dogfood-checklist-per-repo) is complete for every
@@ -203,29 +221,37 @@ named by date plus slug, with old sequential IDs kept as aliases.
 - `.chough/bugs/BUG-NNNN*.json`, `.chough/evidence/OBS-*.json` — sequential
   JSON records
 
-### To (1.0)
+### To (1.0), as settled in the 2026-11-10 design review
 
-- `.chough/sessions/active/<date>-<slug>/` — one folder per active session,
-  holding its Markdown session record with YAML frontmatter, its append-only
-  transitions and an append-only inbox/ for subagent observations (DRIVE-3)
-- `.chough/sessions/archive/<date>-<slug>/` — the same after archival, plus
-  the archive receipt; the vault links to these and never moves or copies
-  them (KNOW-30)
+- `.chough/sessions/<date>-<slug>/` — one folder per active session:
+  `session.md` carries the checkpoint (stage, next, gates) in its YAML
+  frontmatter and an append-only timeline in the body, replacing
+  `session.json` and `transitions.jsonl`; an `agent/` subfolder holds
+  agent-helpful working files, committed for handoff and removed
+  automatically at finish (DRIVE-24)
+- `.chough/archive/sessions/<date-slug>.md` — at finish the session becomes
+  this one archived story file: the story as written plus a closing line,
+  evidence receipts folded into "What was verified", working files removed
+  with Git history keeping them (DRIVE-25); the vault links to it and never
+  moves or copies it (KNOW-30)
 - `.chough/bugs/<date>-<slug>.md`, `.chough/evidence/<date>-<slug>.md`,
   decisions likewise — one Markdown file per record, the file itself the
-  source of truth, no JSON twin (DRIVE-25)
+  source of truth, no JSON twin; a bug's log is append-only (DRIVE-25)
+- Case definitions stay small TOML; `.chough/README.md` is the one-screen
+  reading guide (DRIVE-28)
 
 ### What migrates
 
-- Each active `sessions/<slug>.json` becomes
-  `sessions/active/<date>-<slug>/` with its content carried into the Markdown
-  record's frontmatter and body; the format version is bumped by the
-  migration receipt.
+- Each active `sessions/<slug>.json` becomes `sessions/<date>-<slug>/` with
+  the checkpoint fields carried into `session.md` frontmatter and its
+  timeline started from the recorded transitions; the format version is
+  bumped by the migration receipt.
 - Each archived `sessions/archive/<slug>.json` becomes
-  `sessions/archive/<date>-<slug>/` the same way.
+  `archive/sessions/<date-slug>.md`, story as written plus a closing line.
 - The shared `transitions.jsonl` is partitioned: every event that names a
-  session is appended to that session folder's transitions; events that name
-  no session stay in a committed legacy log that readers still honor.
+  session is appended to that session's timeline list in `session.md`;
+  events that name no session stay in a committed legacy log that readers
+  still honor.
   Nothing is deleted; the old files are removed only after their replacement
   is committed (the KNOW-7 rule).
 - Every `BUG-NNNN` and `OBS-*` record converts to its Markdown form under its

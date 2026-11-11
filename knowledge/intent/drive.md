@@ -31,6 +31,7 @@ criteria:
   - DRIVE-25
   - DRIVE-26
   - DRIVE-27
+  - DRIVE-28
 tags:
   - chough/intent
 ---
@@ -69,3 +70,4 @@ archived changes whose requirements trace it.
 - **DRIVE-25**: none yet
 - **DRIVE-26**: none yet
 - **DRIVE-27**: none yet
+- **DRIVE-28**: none yet

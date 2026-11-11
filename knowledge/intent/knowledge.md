@@ -37,6 +37,7 @@ criteria:
   - KNOW-30
   - KNOW-31
   - KNOW-32
+  - KNOW-33
 tags:
   - chough/intent
 ---
@@ -81,3 +82,4 @@ archived changes whose requirements trace it.
 - **KNOW-30**: none yet
 - **KNOW-31**: none yet
 - **KNOW-32**: none yet
+- **KNOW-33**: none yet
