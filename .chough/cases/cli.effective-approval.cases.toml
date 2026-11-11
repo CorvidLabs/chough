@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# BUG-0020: the approved-delta guard compared the deltas with the latest definition
+# approval, not the one SpecSync treats as effective.
+
+[[case]]
+id = "TC-cli-bug-0020-guard-uses-effective-approval"
+title = "The approved-delta guard compares the deltas with the definition approval whose digest matches the current definition, not the latest one"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-5", "FLOW-13"]
+requirements = ["REQ-cli-022"]
+paths = ["src/stage.rs", "tests/stages.rs", "tests/common/mod.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::the_delta_guard_compares_with_the_effective_approval passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "the_delta_guard_compares_with_the_effective_approval"

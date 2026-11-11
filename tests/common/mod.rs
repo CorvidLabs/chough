@@ -239,6 +239,7 @@ affected=$(cat .stub-affected 2>/dev/null || echo '')
 nospec=$(cat .stub-no-spec 2>/dev/null || echo true)
 fields=",\"correction_valid\":$correction"
 if [ -f .stub-verification ]; then fields="$fields,\"verification_commands\":$(cat .stub-verification)"; fi
+if [ -f .stub-definition-digest ]; then fields="$fields,\"definition_digest\":\"$(cat .stub-definition-digest)\""; fi
 if [ "$approval" != none ]; then fields="$fields,\"approval_valid\":$approval"; fi
 if [ "$state" = archived ] && [ "$validity" != none ]; then
     fields="$fields,\"terminal_evidence\":{\"validity\":\"$validity\"}"

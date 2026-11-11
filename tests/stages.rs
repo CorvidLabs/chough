@@ -4031,3 +4031,45 @@ fn one_checkpoint_store_and_no_aps_adapter_in_either_mode() {
         fixture.read(".aps-calls")
     );
 }
+/// BUG-0020 in the 0.5.x layout, red on 0.5.0 (REQ-cli-022): with three definition approvals from a SpecSync workflow
+/// version below 2, where the second matches the current definition digest and the
+/// third is the latest, the guard compares the deltas with the second, as SpecSync
+/// treats it as effective.
+#[cfg(unix)]
+#[test]
+fn the_delta_guard_compares_with_the_effective_approval() {
+    let id = "effective-change";
+    let fixture = approved_delta(id);
+    fixture.write(
+        &format!(".specsync/changes/{id}/state.json"),
+        &json!({"id": id, "state": "approved", "workflow_version": 1}).to_string(),
+    );
+    let good = delta_digest("cli", DELTA.as_bytes());
+    let stale = "0".repeat(64);
+    let ledger = |second: &str, third: &str| {
+        json!({
+            "approvals": [
+                {"gate": "definition", "actor": "SYNTHETIC", "digest": "d-first", "approved_delta_digests": {"cli": stale}},
+                {"gate": "definition", "actor": "SYNTHETIC", "digest": "d-current", "approved_delta_digests": {"cli": second}},
+                {"gate": "definition", "actor": "SYNTHETIC", "digest": "d-later", "approved_delta_digests": {"cli": third}},
+            ],
+            "reopenings": [],
+        })
+        .to_string()
+    };
+    let approvals = format!(".specsync/changes/{id}/approvals.json");
+    fixture.write(".stub-definition-digest", "d-current");
+    // The effective (second) approval matches the delta and the latest does not.
+    fixture.write(&approvals, &ledger(&good, &stale));
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "build");
+    // The other way round: the latest matches, the effective one does not.
+    fixture.ok(&["stage", "back", "--to", "plan", "--reason", "Again"]);
+    fixture.write(&approvals, &ledger(&stale, &good));
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refused.contains("refused:native-delta-changed"),
+        "{refused}"
+    );
+    assert_eq!(stage(&fixture), "plan");
+}
