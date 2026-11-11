@@ -390,7 +390,7 @@ fn active_session(root: &Path) -> Result<String> {
 pub(super) fn record(
     root: &Path,
     evidence: &Evidence,
-    screenshot: Option<(String, Vec<u8>)>,
+    files: EntryFiles,
 ) -> Result<String> {
     validate_record(evidence, &evidence.id)?;
     let session_id = active_session(root)?;
@@ -400,7 +400,7 @@ pub(super) fn record(
     // and uncommitted, REQ-records-012).
     let written_shot = std::cell::Cell::new(None);
     if evidence.explicit_id {
-        return record_explicit(root, evidence, screenshot, &session_id, &dir);
+        return record_explicit(root, evidence, files, &session_id, &dir);
     }
     let name = identity::create_named(
         root,
@@ -410,10 +410,13 @@ pub(super) fn record(
         markdown::RECORD_BOUND,
         |name| {
             let mut entry = evidence.clone();
-            if let Some((extension, bytes)) = &screenshot {
+            if let Some((extension, bytes)) = &files.screenshot {
                 let file = write_screenshot(root, &session_id, name, extension, bytes)?;
                 written_shot.set(Some(format!("{dir}/{file}")));
                 entry.screenshot = Some(file);
+            }
+            if let Some(log) = &files.log {
+                crate::local::write_log(root, name, log)?;
             }
             let mut record = entry.to_record(name);
             if leaks::redacting() {
@@ -450,7 +453,7 @@ pub(super) fn record(
 fn record_explicit(
     root: &Path,
     evidence: &Evidence,
-    screenshot: Option<(String, Vec<u8>)>,
+    files: EntryFiles,
     session_id: &str,
     dir: &str,
 ) -> Result<String> {
@@ -461,9 +464,12 @@ fn record_explicit(
         "observation identity collision: {name} already exists; record a new observation or omit the ID"
     );
     let mut entry = evidence.clone();
-    if let Some((extension, bytes)) = &screenshot {
+    if let Some((extension, bytes)) = &files.screenshot {
         let file = write_screenshot(root, session_id, &name, extension, bytes)?;
         entry.screenshot = Some(file);
+    }
+    if let Some(log) = &files.log {
+        crate::local::write_log(root, &name, log)?;
     }
     let mut record = entry.to_record(&name);
     if leaks::redacting() {
@@ -704,7 +710,14 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         actor: crate::actor::Actor::current(),
         duration_seconds: None,
     };
-    let name = record(root, &evidence, screenshot_data)?;
+    let name = record(
+        root,
+        &evidence,
+        EntryFiles {
+            screenshot: screenshot_data,
+            log: None,
+        },
+    )?;
     // The stored ID, so automation never parses it out of `recorded` (#60).
     print_json(&json!({
         "schema_version": 1,
@@ -2256,6 +2269,14 @@ pub(super) fn resolve_entry(root: &Path, id: &str) -> Result<Option<(String, Evi
 /// The one entry for a validation run's evidence record shape (REQ-cli-023, plan
 /// delta correction 4): written by validate.rs.
 #[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+/// The files written beside an entry: an optional screenshot (extension, bytes) and
+/// the raw log of an executed case (bytes, written machine-local, never committed).
+#[derive(Default)]
+pub(super) struct EntryFiles {
+    pub(super) screenshot: Option<(String, Vec<u8>)>,
+    pub(super) log: Option<Vec<u8>>,
+}
+
 pub(super) struct ValidationRun {
     pub(super) id: String,
     pub(super) case: String,

@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test bug_writes_refuse_or_redact_leaks ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.96s
+
+
+running 1 test
+test no_write_leaks_and_doctor_finds_old_leaks ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+
+
+running 1 test
+test a_leak_in_a_session_value_is_refused_or_redacted ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 21 filtered out; finished in 0.16s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/bugs.rs (target/debug/deps/bugs-24a5606d0085572f)
+     Running tests/leaks.rs (target/debug/deps/leaks-14373788d9a6418b)
+     Running tests/sessions.rs (target/debug/deps/sessions-254bfc5249dd3bfe)

@@ -24,7 +24,7 @@ pub(super) const STOP_REQUEST: &str = ".chough/validation.stop";
 /// The longest wait between checks for a stop request or pause during an interval.
 const WAIT_SLICE: Duration = Duration::from_millis(200);
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct Run {
     schema_version: u32,
@@ -80,7 +80,19 @@ fn run_path(id: &str) -> String {
 }
 
 fn save(root: &Path, run: &Run, new: bool) -> Result<()> {
-    let content = serde_json::to_string_pretty(run)? + "\n";
+    // REQ-records-006: a run record can be committed; its free text passes the leak
+    // guard, refused or redacted under --redact, before anything is written.
+    let local = crate::leaks::Local::current();
+    let mut stored = run.clone();
+    let redacted = crate::leaks::guard(local, "--environment", &mut stored.environment)?
+        + crate::leaks::guard(local, "authority", &mut stored.authority)?;
+    if redacted > 0 && new {
+        eprintln!(
+            "chough: redacted {redacted} value(s) in validation run {} (--redact)",
+            run.id
+        );
+    }
+    let content = serde_json::to_string_pretty(&stored)? + "\n";
     if new {
         ensure!(
             write_new(root, &run_path(&run.id), &content)

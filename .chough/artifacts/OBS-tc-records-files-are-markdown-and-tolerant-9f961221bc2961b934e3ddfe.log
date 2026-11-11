@@ -1,0 +1,11 @@
+--- stdout ---
+
+running 1 test
+test every_record_is_markdown_and_keeps_human_edits ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 2.11s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/records.rs (target/debug/deps/records-b1643592195e3533)

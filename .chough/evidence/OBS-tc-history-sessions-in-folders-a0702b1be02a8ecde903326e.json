@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-sessions-in-folders-a0702b1be02a8ecde903326e",
+  "criteria": [
+    "DRIVE-24",
+    "DRIVE-3",
+    "DRIVE-13"
+  ],
+  "requirements": [
+    "REQ-history-006",
+    "REQ-history-002"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test sessions -- each_session_has_its_own_folder_and_timeline sessions_live_in_folders_and_finish_into_one_story for TC-history-sessions-in-folders: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-sessions-in-folders-a0702b1be02a8ecde903326e.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-sessions-in-folders-a0702b1be02a8ecde903326e.log": "6a4283d29412197b337fbfb57e85b143a6c7745b05a35c01d3d6b4329e37daca"
+  },
+  "observed_at_unix_seconds": 1794429518,
+  "snapshot": {
+    "revision": "7b4cd3eb827f70c821255c0efb0326f17d7ca23a",
+    "dirty": false,
+    "fingerprint": "6b5b076059fc2f8bd9e28d46dc5ec5348ee0c0dc26e056ec4e0778e6fab413cd",
+    "content": "e287cef970a2e70b5d716af6bc20f127df4d7275ee92871b760314f7393345e9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-sessions-in-folders",
+      "digest": "2c0d9e9e02eb15ab6b3a49a45cba2e06c8f48945ff61d4ed05191c1d3893beff"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "each_session_has_its_own_folder_and_timeline",
+    "sessions_live_in_folders_and_finish_into_one_story"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 5
+}

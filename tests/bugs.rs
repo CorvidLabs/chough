@@ -944,9 +944,8 @@ fn two_edits_of_one_bug_merge_and_a_real_disagreement_stays_a_conflict() {
     assert_eq!(fixture.read("merge/ours.md"), ours);
 }
 
-/// REQ-cli-012, last criterion (#138, audit assertion review): the CLI documentation tells
-/// users of older Chough versions, which accept only `BUG-NNNN`, to upgrade before they use
-/// a repository with new-form bug IDs.
+/// REQ-cli-012 and REQ-cli-023 (#138, audit assertion review): the CLI documentation says
+/// in one sentence that Chough 0.5.x cannot read 0.6.0 bug records and names.
 #[test]
 fn the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/cli.md");
@@ -959,16 +958,16 @@ fn the_cli_documentation_tells_older_versions_to_upgrade_for_new_form_bug_ids() 
     let upgrade: Vec<&str> = text
         .split(". ")
         .filter(|sentence| {
-            sentence.contains("Older Chough versions")
-                && sentence.contains("`BUG-NNNN`")
-                && sentence.contains("must be upgraded")
-                && sentence.contains("new-form IDs")
+            sentence.contains("Chough 0.5.x")
+                && sentence.contains("cannot read")
+                && sentence.contains("0.6.0")
+                && sentence.contains("bug")
         })
         .collect();
     assert_eq!(
         upgrade.len(),
         1,
-        "docs/cli.md has no single upgrade note for new-form bug IDs"
+        "docs/cli.md has no single note that Chough 0.5.x cannot read 0.6.0 bug records"
     );
 }
 

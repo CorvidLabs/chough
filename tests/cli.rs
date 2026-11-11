@@ -538,7 +538,15 @@ fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str],
     // project; the comparison still covers every file, `.chough/local/` included.
     fixture.write(".chough/local/.gitignore", "*\n");
     fixture.write(".chough/local/checkpoint.lock", "");
-    let before = managed_record_bytes(fixture.root());
+    // The lock file names whichever writer last took the lock (REQ-cli-040, #132): it is
+    // lock state, not a record, so it is compared by presence, not by its process ID.
+    let lock_state = |mut records: BTreeMap<PathBuf, Vec<u8>>| {
+        if let Some(bytes) = records.get_mut(Path::new(".chough/local/checkpoint.lock")) {
+            bytes.clear();
+        }
+        records
+    };
+    let before = lock_state(managed_record_bytes(fixture.root()));
     let output = fixture.run(args);
     assert!(!output.status.success(), "{args:?} unexpectedly succeeded");
     assert!(
@@ -546,7 +554,7 @@ fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str],
         "{}",
         String::from_utf8_lossy(&output.stderr)
     );
-    let after = managed_record_bytes(fixture.root());
+    let after = lock_state(managed_record_bytes(fixture.root()));
     let changed: Vec<_> = before
         .keys()
         .chain(after.keys())
@@ -2059,6 +2067,188 @@ fn start_lock_holder(root: &Path, mode: &str) -> std::process::Child {
     holder
 }
 
+/// TC-cli-132-fork-inheritance-stress (REQ-cli-040; #132, the macOS lane's writer-lock
+/// timeout and the verify lane's intermittent failure under load). 200 rounds on 8
+/// threads that fork processes while the rest of this binary's tests run in parallel.
+/// Each round installs a fresh stand-in and runs it at once (ETXTBSY), takes and releases
+/// the project lock on a fresh descriptor in this process while other threads fork, and
+/// runs a Chough writer that waits for the lock and reports how long it waited. Every
+/// failure is collected with its round, step, environment and standard error, so the run
+/// records how many failed rather than only the first; then the test fails listing them.
+#[cfg(unix)]
+#[test]
+fn lock_and_stand_in_tests_survive_parallel_forks() {
+    use std::sync::Mutex;
+    use std::time::{Duration, Instant};
+    const ROUNDS: usize = 200;
+    const THREADS: usize = 8;
+    const BOUND: Duration = Duration::from_secs(10);
+    let fixture = Fixture::new();
+    fixture.init();
+    let lock_path = checkpoint_lock_path(fixture.root());
+    fs::create_dir_all(lock_path.parent().unwrap()).unwrap();
+    let failures: Mutex<Vec<String>> = Mutex::new(vec![]);
+    let waits: Mutex<Vec<u128>> = Mutex::new(vec![]);
+    let holder = || {
+        fs::read_to_string(&lock_path)
+            .map(|text| text.trim().to_string())
+            .unwrap_or_default()
+    };
+    // Take the lock on `file` within the bound; false when it stayed held.
+    let lock_within = |file: &fs::File| {
+        let started = Instant::now();
+        while <fs::File as fs4::FileExt>::try_lock(file).is_err() {
+            if started.elapsed() >= BOUND {
+                return false;
+            }
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        true
+    };
+    std::thread::scope(|scope| {
+        for thread in 0..THREADS {
+            let (failures, waits, lock_within, holder) = (&failures, &waits, &lock_within, &holder);
+            let (root, lock_path) = (fixture.root(), &lock_path);
+            scope.spawn(move || {
+                let bin = tempfile::tempdir().unwrap();
+                let fail = |round: usize, step: &str, detail: String| {
+                    failures
+                        .lock()
+                        .unwrap()
+                        .push(format!("round {round} (thread {thread}) {step}: {detail}"));
+                };
+                for round in (thread..ROUNDS).step_by(THREADS) {
+                    // 1. A fresh stand-in, run as soon as it is installed.
+                    let name = format!("probe-{round}");
+                    common::stand_in(bin.path(), &name, &format!("probe {round}"));
+                    match Command::new(bin.path().join(&name)).output() {
+                        Ok(output) if output.stdout == format!("probe {round}\n").as_bytes() => {}
+                        Ok(output) => fail(
+                            round,
+                            "stand-in",
+                            format!(
+                                "status {:?}, stdout {:?}, stderr {:?}",
+                                output.status.code(),
+                                String::from_utf8_lossy(&output.stdout),
+                                String::from_utf8_lossy(&output.stderr)
+                            ),
+                        ),
+                        Err(error) => fail(round, "stand-in", format!("did not start: {error}")),
+                    }
+                    // 2. The lock on a fresh descriptor while other threads fork; once
+                    // released it must come free again within the bound.
+                    let file = fs::OpenOptions::new()
+                        .read(true)
+                        .write(true)
+                        .create(true)
+                        .truncate(false)
+                        .open(lock_path)
+                        .unwrap();
+                    if lock_within(&file) {
+                        drop(file);
+                        let probe = fs::OpenOptions::new().read(true).open(lock_path).unwrap();
+                        if !lock_within(&probe) {
+                            fail(
+                                round,
+                                "lock release",
+                                format!(
+                                    "still held {BOUND:?} after release; the lock file names {:?}",
+                                    holder()
+                                ),
+                            );
+                        }
+                    } else {
+                        fail(
+                            round,
+                            "lock",
+                            format!(
+                                "not taken within {BOUND:?}; the lock file names {:?}",
+                                holder()
+                            ),
+                        );
+                    }
+                    // 3. A Chough writer that waits for the lock and says how long.
+                    let observation = format!("OBS-stress-round-{round}");
+                    let output =
+                        chough_command(root, &["checkpoint", "--observation", &observation])
+                            .env("CHOUGH_TRACE", "1")
+                            .output()
+                            .unwrap();
+                    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+                    if let Some(waited) = stderr
+                        .lines()
+                        .find_map(|line| line.split_once("checkpoint-lock waited_ms="))
+                        .and_then(|(_, rest)| rest.trim().parse::<u128>().ok())
+                    {
+                        waits.lock().unwrap().push(waited);
+                    }
+                    if !output.status.success() {
+                        fail(round, "writer", stderr);
+                    }
+                }
+            });
+        }
+    });
+    let session = fixture.session();
+    let observations = session["observations"].as_array().unwrap();
+    let mut failures = failures.into_inner().unwrap();
+    for round in 0..ROUNDS {
+        let observation = format!("OBS-stress-round-{round}");
+        if !observations
+            .iter()
+            .any(|entry| entry == observation.as_str())
+        {
+            failures.push(format!(
+                "round {round}: the writer's {observation} was lost"
+            ));
+        }
+    }
+    let waits = waits.into_inner().unwrap();
+    let environment = format!(
+        "{} {}, {} threads available, CI={}",
+        std::env::consts::OS,
+        std::env::consts::ARCH,
+        std::thread::available_parallelism().map_or(0, usize::from),
+        std::env::var("CI").unwrap_or_default()
+    );
+    assert!(
+        failures.is_empty(),
+        "{} failure(s) in {ROUNDS} rounds on {environment}; longest writer lock wait {} ms:\n{}",
+        failures.len(),
+        waits.iter().max().copied().unwrap_or(0),
+        failures.join("\n")
+    );
+    assert_eq!(waits.len(), ROUNDS, "every writer reports its lock wait");
+}
+
+/// REQ-cli-040 (#132): a writer that takes the lock records its process ID in the lock
+/// file, which a busy refusal names.
+#[test]
+fn a_writer_records_its_process_id_in_the_lock_file() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let writer = chough_command(
+        fixture.root(),
+        &["checkpoint", "--decision", "Record the writer's process"],
+    )
+    .spawn()
+    .unwrap();
+    let pid = writer.id();
+    let output = writer.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        fs::read_to_string(checkpoint_lock_path(fixture.root())).unwrap(),
+        format!("{pid}\n")
+    );
+}
+
+/// Each writer child also reports how long it waited for the lock (CHOUGH_TRACE), so a
+/// writer refused or slowed under load names what it waited on (REQ-cli-040, the macOS
+/// lane's lock timeout).
 #[test]
 fn checkpoint_writers_in_parallel_keep_every_update() {
     let fixture = Fixture::new();
@@ -2085,20 +2275,40 @@ fn checkpoint_writers_in_parallel_keep_every_update() {
                         &change,
                     ],
                 )
+                .env("CHOUGH_TRACE", "1")
                 .spawn()
                 .unwrap()
             })
             .collect();
-        for child in children {
-            let output = child.wait_with_output().unwrap();
+        let outputs: Vec<_> = children
+            .into_iter()
+            .map(|child| child.wait_with_output().unwrap())
+            .collect();
+        let waits: Vec<String> = outputs
+            .iter()
+            .map(|output| {
+                String::from_utf8_lossy(&output.stderr)
+                    .lines()
+                    .find(|line| line.contains("checkpoint-lock waited_ms="))
+                    .unwrap_or("no lock wait reported")
+                    .to_string()
+            })
+            .collect();
+        for output in outputs {
             assert!(
                 output.status.success(),
-                "{}",
+                "round {round}, writers' lock waits {waits:?}: {}",
                 String::from_utf8_lossy(&output.stderr)
             );
             let response: Value = serde_json::from_slice(&output.stdout).unwrap();
             assert_eq!(response["saved"], true);
         }
+        assert!(
+            waits
+                .iter()
+                .all(|wait| wait.contains("checkpoint-lock waited_ms=")),
+            "round {round}: a writer did not report its lock wait: {waits:?}"
+        );
         let session = fixture.session();
         for lane in 1..=lanes {
             for (list, value) in [
@@ -2548,6 +2758,32 @@ fn an_archived_finalization_over_the_record_bound_is_read() {
     let session = &list["sessions"][0];
     assert_eq!(session["finished"], true, "{list:#}");
     assert_eq!(session["fix"], "chough doctor --fix", "{list:#}");
+}
+
+/// Issue #100 (LIFE-15), REQ-cli-042: `chough library index` takes an archive's title
+/// from an archived `change.md` larger than the record bound, read at full size within
+/// SpecSync's artifact bound, and copies none of the rest of it.
+#[test]
+fn an_archived_change_md_over_the_record_bound_is_read() {
+    let fixture = Fixture::new();
+    let archive = fixture.big_archive();
+    fixture.write(&format!("{archive}/lesson-bundle.md"), "# Lessons\n");
+    let notes = "x".repeat(70_000);
+    fixture.write(
+        &format!("{archive}/change.md"),
+        &format!(
+            "---\nid: big-change\nstate: archived\n---\n\n# A large archived change\n\n## Acceptance Criteria\n\n- It is read whole\n\n## Notes\n\n{notes}\n"
+        ),
+    );
+    fixture.ok(&["library", "index"]);
+    let index = fs::read_to_string(fixture.root().join("knowledge/index.md")).unwrap();
+    assert!(
+        index.contains(&format!(
+            "- [big-change](../{archive}/lesson-bundle.md), A large archived change\n"
+        )),
+        "{index}"
+    );
+    assert!(!index.contains("It is read whole") && !index.contains("xxxx"));
 }
 
 /// Issue #100 (LIFE-15): a `.specsync/sdd.json` policy larger than the record bound is

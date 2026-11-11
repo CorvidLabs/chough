@@ -12,13 +12,19 @@ spec = "specsync check --strict --require-coverage 100 --force"
 audit = "specsync change audit"
 cases = "cargo run --quiet --locked -- cases check"
 knowledge = "cargo run --quiet --locked -- library index --check"
+# Fails on a leak or an oversized record Git tracks under .chough/ or knowledge/
+# (REQ-records-006, REQ-history-012); it changes nothing.
+leaks = "cargo run --quiet --locked -- doctor --leaks"
 exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh examples/feature-bug-loop.sh"
 ci-archive-fixtures = "python3 .github/scripts/test-specsync-archive.py"
 linux-image = "sh tools/linux/image.sh"
 linux-verify = "sh tools/linux/verify.sh"
+# Installed HI, SpecSync, Fledge and Rust beside the CI pins; fails naming each that
+# differs (REQ-cli-019, BUG-0022). First in the verify lane.
+toolchain = "sh tools/toolchain.sh"
 [lanes.ci]
 description = "Run full CI pipeline"
-steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "exercise", "build"]
+steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "leaks", "exercise", "build"]
 
 [lanes.check]
 description = "Quick quality check"
@@ -33,4 +39,4 @@ steps = ["fmt", "check", "intent", "spec", "audit"]
 
 [lanes.verify]
 description = "Product, structural, native lifecycle and case-definition verification"
-steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "exercise", "build"]
+steps = ["toolchain", "fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "leaks", "exercise", "build"]

@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-generated-knowledge-merge-6bff14219c0d6d9f386c5485",
+  "criteria": [
+    "DRIVE-12",
+    "KNOW-33"
+  ],
+  "requirements": [
+    "REQ-cli-047"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test journal -- two_branches_that_each_add_a_post_merge_clean_with_the_generated_driver library_merge_keeps_ours_and_refuses_a_missing_file for TC-cli-generated-knowledge-merge: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-generated-knowledge-merge-6bff14219c0d6d9f386c5485.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-generated-knowledge-merge-6bff14219c0d6d9f386c5485.log": "e704c41c308e09825cc13f3cf312f83c54183d7e6a4f11b97de4cb30123bea49"
+  },
+  "observed_at_unix_seconds": 1794426197,
+  "snapshot": {
+    "revision": "f9c0ae674c89f3a4c4a6c5b9d29057f22f7b9bf0",
+    "dirty": false,
+    "fingerprint": "284a5fb02e4edd838f449bdb1cd661f494832fe5708ce82660700c5a6fcce606",
+    "content": "4adc6e184b41d042b73284db8f143439ad1bd2bdc6fc389e3a5266068b430ba2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-generated-knowledge-merge",
+      "digest": "0346e0936854daca606069c14dd376226479d780570cd92c5d1aaae210d041b7"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "journal",
+    "--",
+    "two_branches_that_each_add_a_post_merge_clean_with_the_generated_driver",
+    "library_merge_keeps_ours_and_refuses_a_missing_file"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

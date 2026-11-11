@@ -18,7 +18,8 @@ records. Follow native status where it names a different next action.
 2. Run the affected cases: `chough cases run <ID> --environment <env>`, plus the
    project lanes.
 3. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.
-4. Commit the source together with `.chough/`.
+   At accept it holds accept and drives the native review by default.
+4. Commit the source together with Chough's records.
 5. Run `chough change check <id>`, which runs SpecSync's `change check <id>` with
    `--commit` (stage new source files first).
 6. Present to the human: what changed, the current verification, the relevant case
@@ -29,15 +30,17 @@ records. Follow native status where it names a different next action.
    CI is observed after finalize, below. Pushing the branch now only shows the work
    early: expect the Archive gate red and do not wait on it.
 
-Between the check in step 5 and finalize, nothing writes to `.chough/` and nothing is
-committed. Committing Chough records or SpecSync bookkeeping does not make Chough
-observations stale, but SpecSync's verification digest covers every non-ignored file,
-including `.chough/`. SpecSync 6.1.2 ships an opt-in verification exclusion,
-`verification_ignored_paths`, but Chough's own repository has not adopted it: its
-entries are directory prefixes, so covering `.chough/session.json` would also hide
-`.chough/cases/`, whose case definitions must stay verified. Unless a project lists
-only directories that are safe to leave out, any Chough write in that window forces
-another `change check`.
+Between the check in step 5 and finalize, nothing else is committed. Committing Chough
+records or SpecSync bookkeeping does not make Chough observations stale, but
+SpecSync's verification digest covers every file it does not ignore. With
+`.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` listed in
+`verification_ignored_paths` in `.specsync/sdd.json` (SpecSync 6.1.2 and later),
+Chough's records may be written in that window, and the case definitions in
+`.chough/cases/` stay verified because they sit outside those folders. Without the
+entries, write nothing under `.chough/` until finalize, or another `change check` is
+needed. `chough next` says which applies, and `chough doctor` reports
+`records_in_verification` while an entry is missing (see
+[lifecycle.md](lifecycle.md)).
 
 If native archive checks are red because review has not happened, say exactly that.
 Do not claim all checks are green and do not bypass the gate.
@@ -46,15 +49,31 @@ Do not claim all checks are green and do not bypass the gate.
 
 Only after a real implementation acceptance decision, the current agent records
 it and closes natively, following native status rather than a remembered sequence.
-The user reviews the implementation or PR; the agent handles these internal commands.
-Use the acting project agent account for the native record and retain the actual
-acceptance source separately. The actor label does not create that decision:
+The user reviews the implementation or PR; the agent handles these internal commands
+and never asks the human to run one. The human's decision at the review gate records
+the native review as that human:
 
 ```sh
-specsync change review <id> --reviewer "<agent-account>"
 chough change ship <id> --close-gate "Implementation review of <id>" \
   --decided-by "<who>" --words "<their exact words>" \
-  --where "<where and when, and who relayed it>" --recorded-by "<agent-account>"
+  --where "<where and when, and who relayed it>" --recorded-by "<agent>-<terminal>"
+```
+
+Chough runs `specsync change review` as the human configured in
+`.chough/local/identity.toml` or the user `chough/identity.toml`, with verdict pass,
+then ships. `refused:human-identity-unknown` means the human is not configured: add
+them there, and never record the review as an agent instead. A block or a request for
+changes is not a ship: close the gate with `chough checkpoint --close-gate …
+--verdict block`, or `--no-native` for a request that is not a review, and go back to
+build.
+
+Only when an applicable standing authority covers acceptance itself, and the human
+does not answer the gate, does the agent record the review in its own name,
+`<agent>-<terminal>`, quoting that authority and where it was given, and then ship.
+If SpecSync refuses that actor, stop and report it; never retry as the human:
+
+```sh
+specsync change review <id> --reviewer "<agent>-<terminal>" --verdict pass
 ```
 
 To present several gates at once, run `chough gate list`. It numbers them, each with
@@ -66,16 +85,25 @@ review gate of a change that is verifying, pass `--list <list> --gate <n>` to
 Do not commit between review and ship. `chough change ship` checks the session, the
 stage, the open gates and the relay before anything runs, then runs SpecSync's
 `change ship <id>` (which finalizes). After that it closes the gate with the
-actual acceptance source, recorded after archival so the verification window above
-holds, and moves accept to done. The gate keeps who decided, their words, where and the
-recording agent as a relayed claim, not authenticated. If a step after the ship is
-refused, the output says the change is shipped and names the command left to run.
-With the librarian on, the move into done
-also refreshes the knowledge directory; commit it with the checkpoint. Then push the
-archive commit, the checkpoint and the knowledge directory on the same pull request,
-observe hosted CI at the real tip, and merge through the repository's normal process. If several changes share a pull request, review and
-finalize them one at a time. If evidence went stale, use the recovery action that
-`chough change status` names. Finishing never enters release.
+actual acceptance source and moves accept to done. The gate keeps who decided, their
+words, where and the recording agent as a relayed claim, not authenticated. If a step
+after the ship is refused, the output says the change is shipped and names the
+command left to run.
+
+The move into done archives the session into one story,
+`.chough/archive/sessions/<id>.md`, with every evidence entry as a receipt. With the
+librarian on, it also writes a journal post and refreshes `knowledge/index.md` and its
+feed. The finish then takes two commits:
+
+1. Commit the story, the journal post and the knowledge directory with the archive.
+2. Run `chough doctor --fix`, which removes the session folder now that its bytes are
+   committed, and commit that removal.
+
+Then push both commits on the same pull request, observe hosted CI at the real tip,
+and merge through the repository's normal process. If several changes share a pull
+request, review and finalize them one at a time. If evidence went stale, use the
+recovery action that `chough change status` names. Finishing never enters release;
+ask for release before done, so the session stays open for it.
 
 ## Compounding
 

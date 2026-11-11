@@ -550,9 +550,31 @@ pub(super) fn lock_project(root: &Path) -> Result<()> {
     Ok(())
 }
 
-/// Git ignore rules for `.chough/sessions/`: the temps a session-file write uses before
-/// its rename and an inbox add before its link.
-const IGNORE: &str = ".*.tmp\n";
+/// `.chough/README.md`, the records tree's reading guide (REQ-records-002), written
+/// create-only by `chough init` and `chough migrate --apply`; an existing one is kept.
+pub(super) const README: &str = "# Chough records
+
+This folder holds Chough's records for this project. Each record is one Markdown file:
+people read its body, agents parse its front matter.
+
+- `sessions/<id>/session.md`: an open piece of work. Its front matter says where the
+  work stands; its Timeline lists every move, appended and never rewritten.
+  `evidence/` holds what was checked and `agent/` an agent's notes and inbox. The
+  folder leaves once the session's story is written and committed.
+- `archive/sessions/<id>.md`: the story of a finished session, kept for good, with its
+  key screenshots beside it in `archive/sessions/<id>/`.
+- `archive/shelved/<id>/`: a session set aside unread.
+- `archive/migrations/<id>.md`: the receipt of a migration from Chough 0.5.x.
+- `bugs/<id>.md`: one bug each, kept for good; its Log only grows.
+- `cases/*.cases.toml`: test-case definitions, which a person edits.
+- `preferences.json`: the project's standing preferences, which a person edits.
+- `artifacts/`: kept from Chough 0.5.x only for files an open bug names as its fixture.
+- `local/`: this machine's state (the active session, the writer lock, gate lists,
+  logs). It is never committed.
+
+Intent lives in [hi/](../hi/), contracts in [specs/](../specs/) and change history in
+[.specsync/archive/](../.specsync/archive/). Chough links them and copies nothing.
+";
 
 /// Whether `name` is a write temp: `.<name>.<pid>.tmp`.
 fn is_write_temp(name: &str) -> bool {
@@ -574,8 +596,12 @@ pub(super) fn remove_orphaned_temps(root: &Path) -> Result<()> {
     if !enabled(root)? {
         return Ok(());
     }
-    write_new(root, &format!("{DIR}/.gitignore"), IGNORE)?;
-    let mut dirs = vec![];
+    // Temporaries live in `.chough/local/` (records::temporary_for); older ones may
+    // still sit in a session folder or its inbox.
+    let mut dirs = vec![(
+        LOCAL.to_string(),
+        "a record write that was stopped before it saved; no record was changed by it",
+    )];
     for id in open_ids(root)? {
         dirs.push((
             format!("{DIR}/{id}"),
@@ -622,11 +648,7 @@ fn publish_entry(root: &Path, file: &str, content: &str) -> Result<bool> {
     let parent = path.parent().context("inbox entry has no parent")?;
     fs::create_dir_all(parent)?;
     local_path(root, file)?;
-    let name = path
-        .file_name()
-        .and_then(|name| name.to_str())
-        .context("inbox entry name must be UTF-8")?;
-    let temporary = parent.join(format!(".{name}.{}.tmp", std::process::id()));
+    let temporary = crate::records::temporary_for(root, file, &path)?;
     let published = (|| -> std::io::Result<bool> {
         let mut out = fs::OpenOptions::new()
             .write(true)
@@ -667,7 +689,6 @@ pub(super) fn shelve_hint(relative: &str) -> String {
 
 fn point(root: &Path, id: &str) -> Result<()> {
     write_new(root, &format!("{LOCAL}/.gitignore"), "*\n")?;
-    write_new(root, &format!("{DIR}/.gitignore"), IGNORE)?;
     write_replace_bounded(root, POINTER, &format!("{id}\n"), 512)?;
     pin(root, &session_file(id));
     Ok(())
@@ -1209,7 +1230,7 @@ fn pending(root: &Path, key: &str) -> Result<Vec<(String, Entry)>> {
 }
 
 /// The Markdown record of a new inbox entry named `name`.
-fn render_entry(
+pub(super) fn render_entry(
     name: &str,
     session: &str,
     from: &str,
@@ -1255,9 +1276,9 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
     match command {
         InboxCommand::Add {
             session,
-            from,
+            mut from,
             kind,
-            text,
+            mut text,
         } => {
             // A session archives itself under this lock only when it has no unfolded
             // entries, so taking it here means the entry is either seen by that archive
@@ -1266,6 +1287,11 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             let session = resolve_open(root, &session)
                 .map_err(|_| anyhow::anyhow!("no open session {session}"))?;
             validate_entry(&from, kind, &text)?;
+            // REQ-records-006: an inbox entry is committed with the session; its values
+            // pass the leak guard, refused or redacted under --redact.
+            let local = crate::leaks::Local::current();
+            let redacted = crate::leaks::guard(local, "--from", &mut from)?
+                + crate::leaks::guard(local, "--text", &mut text)?;
             ensure!(
                 entry_names(root, &inbox_dir(&session))?.len() < MAX_INBOX,
                 "the inbox of {session} holds {MAX_INBOX} unfolded entries; fold it first"
@@ -1306,7 +1332,11 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                     "chough: warning: observation {text} has no record in .chough/evidence yet; the entry was added and `chough inbox list` marks it recorded: false"
                 );
             }
-            print_json(&json!({"schema_version":1,"added":file,"id":id}))
+            let mut added = json!({"schema_version":1,"added":file,"id":id});
+            if redacted > 0 {
+                added["redacted"] = json!(redacted);
+            }
+            print_json(&added)
         }
         InboxCommand::List => {
             let key = active(root)?;

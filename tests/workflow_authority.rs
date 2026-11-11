@@ -492,14 +492,9 @@ fn native_writer_examples_and_installed_workflows_are_consistent() {
     let canonical = root.join("skills/chough-workflow");
     let mut sources = markdown_files(&canonical);
     sources.extend(
-        [
-            "README.md",
-            "docs/cli.md",
-            "docs/walkthrough.md",
-            "docs/NEXT_CHANGE.md",
-        ]
-        .into_iter()
-        .map(|file| root.join(file)),
+        ["README.md", "docs/cli.md", "docs/walkthrough.md"]
+            .into_iter()
+            .map(|file| root.join(file)),
     );
     let mut found = BTreeSet::new();
     let mut problems = Vec::new();
@@ -534,7 +529,6 @@ fn native_writer_examples_and_installed_workflows_are_consistent() {
         ("skills/chough-workflow/references/lifecycle.md", "review"),
         ("docs/cli.md", "approve"),
         ("docs/walkthrough.md", "approve"),
-        ("docs/NEXT_CHANGE.md", "approve"),
     ] {
         if !found.contains(&(file.into(), operation.into())) {
             problems.push(format!(
@@ -792,8 +786,8 @@ fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
 /// passing cold-start result.
 #[test]
 fn the_roadmap_claims_no_passing_cold_start_for_delivered_work() {
-    let raw =
-        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/ROADMAP.md")).unwrap();
+    let raw = fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/roadmap-1.0.md"))
+        .unwrap();
     // A Windows checkout has CRLF line endings (#131), so check both forms.
     for text in [
         raw.replace("\r\n", "\n"),

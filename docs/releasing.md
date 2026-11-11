@@ -27,8 +27,8 @@ Below, `X.Y.Z` is the version being released.
 7. Create the GitHub release for `vX.Y.Z` from the change log section.
 8. In a clean environment run `cargo install chough --version X.Y.Z --locked` and
    `chough --version`, and record what you saw as an installation observation.
-9. In a small docs pull request, add or mark the `X.Y.Z release` row of
-   [docs/ROADMAP.md](ROADMAP.md) published, with the date.
+9. In a small docs pull request, add or mark the `X.Y.Z release` row of the
+   [roadmap's delivered table](roadmap-1.0.md#delivered) published, with the date.
 
 A merge, a tag, a publish, a GitHub release and a clean install are separate
 observations; one does not imply another.

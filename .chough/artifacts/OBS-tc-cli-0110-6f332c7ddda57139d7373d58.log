@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test versions_agree_across_readme_agents_ci_and_specsync_config ... FAILED
+
+failures:
+
+---- versions_agree_across_readme_agents_ci_and_specsync_config stdout ----
+
+thread 'versions_agree_across_readme_agents_ci_and_specsync_config' (893033379) panicked at tests/package.rs:3878:5:
+the config comment names no HI or Fledge pin: # Native SpecSync configuration (writer/CI: 6.2.0)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    versions_agree_across_readme_agents_ci_and_specsync_config
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 24 filtered out; finished in 0.00s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/package.rs (target/debug/deps/package-286027b4c6749de6)
+error: test failed, to rerun pass `--test package`

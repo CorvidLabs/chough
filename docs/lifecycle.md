@@ -68,16 +68,16 @@ records, and a failing case stays failed even when others pass. See
 
 ```mermaid
 flowchart TB
-    tests["Focused cases pass; blocking bugs closed"] --> gate["Record the awaiting-human gate; commit source with .chough/"]
+    tests["Focused cases pass; blocking bugs closed"] --> gate["Open the review gate (holds accept, drives review); commit source with .chough/"]
     gate --> check["Native scoped check, committed"]
     check --> present["Present evidence, open bugs and limits"]
     present --> human{"Human implementation review"}
     human -->|"changes requested"| build["Back to build"]
     build --> tests
-    human -->|"approved"| review["specsync change review"]
-    review -->|"no commit in between"| ship["specsync change ship or finalize (same PR)"]
-    ship --> archive["Review gate: --close-gate, then stage advance; commit"]
-    archive --> push["Push; hosted CI at the archived tip"]
+    human -->|"approved"| ship["chough change ship --close-gate: SpecSync review as the human, then ship and finalize (same PR), then done"]
+    ship --> story["Commit the archived story, journal post and index"]
+    story --> cleanup["chough doctor --fix removes the committed session folder; commit"]
+    cleanup --> push["Push; hosted CI at the archived tip"]
     push --> merge["Merge through the normal process"]
     merge -. "only if authorized" .-> release["Optional release with real commands"]
 ```
@@ -89,36 +89,53 @@ Cases may link requirements the approved delta adds before materialization while
 checkpoint records that change.
 
 The order before the review is: when the delta adds or modifies requirements, run
-`specsync change check <id>` first to materialize them; `chough cases run`; record the
-gate with `chough checkpoint --awaiting-human`; commit the source together with
-`.chough/`; `chough change check <id>` (SpecSync's `change check <id> --commit`); present
-the work. After the human
-decision come `specsync change review`, then `chough change ship <id> --close-gate
-"<gate>" --decided-by ... --words ... --where ... --recorded-by ...`. That command ships
-(SpecSync's `ship`, which finalizes), and only then closes the review gate with the
-human's relayed decision and moves the session to done. Between the check and finalize, nothing
-writes to `.chough/` and nothing is committed. The closeout is archive-first: the
-hosted Archive gate refuses while a native change is open, so only after finalize and
-the done move do you commit, then push and observe hosted CI at the archived tip
-(#122). A push before the review only shows the work early: expect the Archive gate red
-and do not wait on it.
+`specsync change check <id>` first to materialize them; `chough cases run`; open the
+review gate with `chough checkpoint --awaiting-human "Implementation review of <id>"`,
+which holds accept and drives the native review by default; commit the source
+together with `.chough/`; `chough change check <id>` (SpecSync's `change check <id>
+--commit`); present the work. When the human decides,
+`chough change ship <id> --close-gate "<gate>" --decided-by "<who>" --words "<their
+words>" --where "<where>" --recorded-by "<agent>-<terminal>"` does four things in
+order:
+1. records SpecSync's review in their name, from the configured identity;
+2. ships (SpecSync's `ship`, which finalizes);
+3. closes the review gate with the human's relayed decision;
+4. moves the session to done.
 
-This order is an interim measure. Chough's observations stay current across
-commits of its own records and SpecSync's bookkeeping, because freshness compares
-content and leaves those records out. SpecSync's verification digest, however, covers
-every non-ignored file, including `.chough/`. SpecSync 6.1.2 and later ship an opt-in
-exclusion, `verification_ignored_paths` in `.specsync/sdd.json`, but this repository
-has not adopted it: its entries are directory prefixes, so covering
-`.chough/session.json` would also hide `.chough/cases/`, whose case definitions must
-stay verified. Unless a project lists only directories that are safe to leave out,
-any Chough write in that window forces another `change check`.
+A request for changes is recorded with `chough checkpoint --close-gate "<gate>" ...
+--no-native`, which runs nothing, and the work goes back to build.
+
+The move into done archives the session into one story,
+`.chough/archive/sessions/<id>.md`, writes a journal post and regenerates `knowledge/`.
+Commit those. Then run `chough doctor --fix`, which removes the session folder now that
+its bytes are committed, and commit that. The closeout is archive-first: the hosted
+Archive gate refuses while a native change is open. So only after finalize and these
+two commits do you push and observe hosted CI at the archived tip (#122). A push before
+the review only shows the work early: expect the Archive gate red and do not wait on
+it.
+
+Chough's observations stay current across commits of its own records and SpecSync's
+bookkeeping, because freshness compares content and leaves those records out.
+SpecSync's verification digest, however, covers every non-ignored file. So a project
+lists Chough's three record folders, `.chough/sessions/`, `.chough/archive/` and
+`.chough/bugs/`, in `verification_ignored_paths` in `.specsync/sdd.json` (SpecSync
+6.1.2 and later), as this repository does.
+- With those entries, Chough's records can be written and committed at any point of
+  the native order, while case definitions under `.chough/cases/` stay verified.
+- Without them, commit Chough's records before `change check --commit` and write
+  nothing under `.chough/` until finalize.
+
+`chough next` says which order applies, and `chough doctor` reports
+`records_in_verification` while an entry is missing. Chough never edits SpecSync's
+policy: adding the entries is an ordinary reviewed change to `.specsync/sdd.json`.
 
 `chough change check <id>` (SpecSync's `change check <id> --commit`) materializes the
 approved delta and records
 targeted structural verification; it does not run product tests and refuses while
 tasks are unchecked. The human implementation review happens after verification and
-before archive; the native `review` record follows a real decision only. Then
-`chough change ship` archives on the same pull request without an intervening commit.
+before archive; the native `review` record follows a real decision only, in the
+human's name through the review gate. Then `chough change ship` archives on the same
+pull request without an intervening commit.
 Every move that lands on done needs native state `archived` with authenticated
 terminal evidence: `chough stage advance` or `stage skip` from accept, `stage advance`
 or `stage skip` from release, `stage reset --to done`, and `stage return` to a caller

@@ -30,7 +30,14 @@ fn snapshot_dirs(root: &Path, dirs: &[&str]) -> BTreeMap<String, Vec<u8>> {
                 walk(base, &path, files);
             } else {
                 let name = path.strip_prefix(base).unwrap().display().to_string();
-                files.insert(name, fs::read(&path).unwrap());
+                // The lock file names whichever writer last took the lock (REQ-cli-040,
+                // #132): lock state, not a record, so only its presence is compared.
+                let bytes = if name == ".chough/local/checkpoint.lock" {
+                    vec![]
+                } else {
+                    fs::read(&path).unwrap()
+                };
+                files.insert(name, bytes);
             }
         }
     }

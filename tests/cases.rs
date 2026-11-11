@@ -63,26 +63,36 @@ fn read_evidence(fixture: &Fixture, id: &str) -> Value {
                         })
                 })
             };
+            let lines: Vec<&str> = front.lines().collect();
             let list = |key: &str| -> Vec<String> {
-                front
-                    .lines()
-                    .find_map(|line| {
-                        let (name, value) = line.split_once(':')?;
-                        if name.trim() != key {
-                            return None;
-                        }
-                        let value = value.trim();
-                        Some(
-                            value
-                                .strip_prefix('[')?
-                                .strip_suffix(']')?
-                                .split(", ")
-                                .filter(|item| !item.is_empty())
-                                .map(|item| item.trim().trim_matches('"').to_string())
-                                .collect(),
-                        )
-                    })
-                    .unwrap_or_default()
+                let at = lines.iter().position(|line| {
+                    line.split_once(':')
+                        .is_some_and(|(name, _)| name.trim() == key)
+                });
+                let Some(at) = at else {
+                    return vec![];
+                };
+                let (_, value) = lines[at].split_once(':').unwrap();
+                let value = value.trim();
+                if let Some(inner) = value.strip_prefix('[').and_then(|v| v.strip_suffix(']')) {
+                    return inner
+                        .split(", ")
+                        .filter(|item| !item.is_empty())
+                        .map(|item| item.trim().trim_matches('"').to_string())
+                        .collect();
+                }
+                // A block list: `  - item` lines follow.
+                let mut items = vec![];
+                for line in &lines[at + 1..] {
+                    if let Some(item) = line.strip_prefix("  - ") {
+                        items.push(item.trim().trim_matches('"').to_string());
+                    } else if line.starts_with("  ") {
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+                items
             };
             let entry_id = get("id").unwrap_or_default();
             let aliases = list("aliases");
@@ -561,7 +571,7 @@ fn manual_records_need_a_verdict_for_every_expected_outcome() {
     assert_eq!(value["outcome"], "failed");
     let recorded = fixture.read(value["recorded"].as_str().unwrap());
     assert!(recorded.contains("Verdicts 1=pass, 2=fail"));
-    assert!(recorded.contains("\"method\": \"agent-assisted\""));
+    assert!(recorded.contains("method: agent-assisted"));
     assert!(
         fixture
             .fails(&["cases", "run", "TC-cli-0007", "--environment", "x"])
@@ -669,9 +679,7 @@ fn timed_run(fixture: &Fixture, id: &str) -> (std::time::Duration, Value, Value)
     let report: Value = serde_json::from_slice(&fs::read(&stdout).unwrap())
         .unwrap_or_else(|_| panic!("{}", fs::read_to_string(&stderr).unwrap()));
     let observation = report["observation"].as_str().unwrap();
-    let record =
-        serde_json::from_str(&fixture.read(&format!(".chough/evidence/{observation}.json")))
-            .unwrap();
+    let record = read_evidence(fixture, observation);
     (elapsed, report, record)
 }
 
@@ -1458,7 +1466,7 @@ fn direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records()
         None,
         "Automatic from kind",
     ));
-    assert_observation_form(&automatic, "product-test");
+    assert_observation_form(&automatic, "automatic-from-kind");
     let linked = recorded_id(&add_evidence(
         &fixture,
         None,
@@ -1468,7 +1476,7 @@ fn direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records()
     ));
     assert_observation_form(&linked, "tc-cli-0001");
 
-    let explicit = "OBS-product-test-000000000000000000000010";
+    let explicit = "2020-01-01-explicit-new-form";
     assert_eq!(
         recorded_id(&add_evidence(
             &fixture,
@@ -1479,7 +1487,10 @@ fn direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records()
         )),
         explicit
     );
-    let name = format!(".chough/evidence/{explicit}.json");
+    let name = format!(
+        ".chough/sessions/{}/evidence/{explicit}.md",
+        fixture.active_id()
+    );
     let before = fixture.read(&name);
     let collision = add_evidence(
         &fixture,
@@ -1492,22 +1503,11 @@ fn direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records()
     assert!(String::from_utf8_lossy(&collision.stderr).contains("identity collision"));
     assert_eq!(fixture.read(&name), before);
 
-    let mut legacy: Value = serde_json::from_str(&before).unwrap();
-    legacy["id"] = Value::from("legacy-free-form");
-    legacy["summary"] = Value::from("Stored legacy record");
-    fixture.write(
-        ".chough/evidence/legacy-free-form.json",
-        &(serde_json::to_string_pretty(&legacy).unwrap() + "\n"),
-    );
-    let status = fixture.ok(&["status", "--environment", "local", "--json"]);
-    let ids = status["observations"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|entry| entry["record"]["id"].as_str().unwrap())
-        .collect::<Vec<_>>();
-    assert!(ids.contains(&"legacy-free-form"), "{ids:?}");
-    assert!(ids.contains(&automatic.as_str()), "{ids:?}");
+    // A 0.5.x JSON record in the tree refuses the next command as unmigrated
+    // (REQ-records-010); migration reads them (step 10).
+    fixture.write(".chough/evidence/legacy-free-form.json", &before);
+    let refused = fixture.fails(&["status", "--environment", "local", "--json"]);
+    assert!(refused.contains("unmigrated"), "{refused}");
 }
 
 #[test]
@@ -1658,13 +1658,17 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
 /// Generated records under `dir` in a fixture: relative path to bytes.
 fn generated(fixture: &Fixture) -> std::collections::BTreeMap<String, Vec<u8>> {
     let mut files = std::collections::BTreeMap::new();
-    for dir in [".chough/evidence", ".chough/artifacts", ".chough/bugs"] {
-        let Ok(entries) = std::fs::read_dir(fixture.root().join(dir)) else {
+    let mut dirs: Vec<String> = vec![".chough/bugs".to_string()];
+    for session in fixture.open_ids() {
+        dirs.push(format!(".chough/sessions/{session}/evidence"));
+    }
+    for dir in dirs {
+        let Ok(entries) = std::fs::read_dir(fixture.root().join(&dir)) else {
             continue;
         };
         for entry in entries {
             let entry = entry.unwrap();
-            let name = format!("{dir}/{}", entry.file_name().to_string_lossy());
+            let name = format!("{}/{}", dir, entry.file_name().to_string_lossy());
             files.insert(name, std::fs::read(entry.path()).unwrap());
         }
     }
@@ -1708,10 +1712,7 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
     ] {
         let run = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
         ids.push(run["observation"].as_str().unwrap().to_string());
-        fixture.write(
-            &format!(".chough/artifacts/{side}-proof.log"),
-            &format!("proof from {side}\n"),
-        );
+
         let mut args = vec![
             "evidence",
             "add",
@@ -1732,8 +1733,7 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
             "--summary",
         ];
         let summary = format!("Reviewed on branch {side}");
-        let artifact = format!(".chough/artifacts/{side}-proof.log");
-        args.extend([summary.as_str(), "--artifact", artifact.as_str()]);
+        args.extend([summary.as_str()]);
         ids.push(recorded_id(&fixture.run(&args)));
         let added = fixture.ok(&[
             "bug",
@@ -1781,7 +1781,6 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         expected,
         "a record was lost or rewritten in the merge"
     );
-    assert_eq!(a.read(".chough/artifacts/b-proof.log"), "proof from b\n");
 
     a.ok(&["cases", "check"]);
     let status = a.ok(&["status", "--environment", "local", "--json"]);
@@ -2347,6 +2346,7 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
         "delivery-observation",
         "dry-run",
     ];
+    let mut ids: Vec<(String, String)> = vec![];
     for kind in kinds.iter() {
         let report = fixture.ok(&[
             "evidence",
@@ -2370,6 +2370,7 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
         let record: Value = read_evidence(&fixture, &id);
         assert_eq!(record["schema_version"], 2, "{record:#}");
         assert_eq!(record["kind"], *kind, "{record:#}");
+        ids.push((id, kind.to_string()));
     }
     let status = fixture.ok(&["status", "--environment", "production", "--json"]);
     let reported: std::collections::BTreeMap<String, String> = status["observations"]
@@ -2384,19 +2385,16 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
         })
         .collect();
     assert_eq!(reported.len(), kinds.len(), "{status:#}");
-    for (index, kind) in kinds.iter().enumerate() {
-        assert_eq!(
-            reported.get(&format!("OBS-{kind}-{:024x}", index + 1)),
-            Some(&kind.to_string()),
-            "{status:#}"
-        );
+    for (id, kind) in &ids {
+        assert_eq!(reported.get(id), Some(kind), "{status:#}");
     }
-    let dry_runs: Vec<&String> = reported
+    let dry_runs: Vec<&String> = ids
         .iter()
-        .filter(|(id, _)| id.starts_with("OBS-dry-run-"))
-        .map(|(_, kind)| kind)
+        .filter(|(_, kind)| kind == "dry-run")
+        .map(|(id, _)| id)
+        .filter(|id| reported.get(*id).is_some())
         .collect();
-    assert_eq!(dry_runs, ["dry-run"], "a dry run read as a delivery kind");
+    assert_eq!(dry_runs.len(), 1, "a dry run read as a delivery kind");
 }
 
 /// #60: `cases record` returns the case and observation IDs that `cases run` returns,

@@ -19,16 +19,36 @@
     "chough checkpoint --awaiting-human probe"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-product-test-e8962e75988bcde24fcf3164",
+    "OBS-product-test-5628640eada77b4185bb7389",
+    "OBS-tc-records-migrate-vaulted-adopter-df0611549a339327a5e28e1d"
+  ],
   "impact": "Every open session in this repository is blocked from gate and stage writes, including closeout moves into done; a refusal names a recovery that does not recover",
   "classification": "product-defect",
   "scope": "out-of-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "ch-d7 closeout of #140, 2026-11-05 21:50 MST; reproduced on a pristine origin/main 260ecc94 build",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794429583,
+      "text": "Additional evidence.",
+      "observations": [
+        "OBS-product-test-e8962e75988bcde24fcf3164",
+        "OBS-product-test-5628640eada77b4185bb7389"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794429592,
+      "text": "status: open -> verified. Refused on the last build before #142 (OBS-product-test-e8962e75988bcde24fcf3164), writable on 0.5.0 (OBS-product-test-5628640eada77b4185bb7389); in 0.6.0 the vaulted adopter migrates and the writes succeed (TC-records-migrate-vaulted-adopter passed).",
+      "observations": [
+        "OBS-tc-records-migrate-vaulted-adopter-df0611549a339327a5e28e1d"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1793940681,
-  "updated_at_unix_seconds": 1793940681
+  "updated_at_unix_seconds": 1794429592
 }

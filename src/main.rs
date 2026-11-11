@@ -17,6 +17,7 @@ mod leaks;
 mod library;
 mod local; // step 4: machine-local state (wired here until the step 3 owner merges)
 mod markdown;
+mod migrate;
 mod native;
 mod native_check;
 mod policy;
@@ -96,11 +97,9 @@ enum Commands {
         #[arg(long)]
         json: bool,
     },
-    /// Explicitly migrate a schema 1 session, keeping its original bytes.
-    Migrate {
-        #[arg(long, default_value = "intent")]
-        stage: String,
-    },
+    /// Preview the migration of a 0.5.x project's records to 0.6.0, or apply a
+    /// previewed plan by its digest with the human's consent (REQ-records-009).
+    Migrate(migrate::MigrateArgs),
     /// Show or update the canonical checkpoint.
     Checkpoint(Box<checkpoint::CheckpointArgs>),
     /// Route between stages within native lifecycle gates.
@@ -230,16 +229,14 @@ fn main() -> Result<()> {
         Commands::Status { environment, .. } => {
             let report = status(&root, environment.as_deref())?;
             let phase = std::time::Instant::now();
-            print_json(&report)?;
+            print_summary_first(&report)?;
             records::trace_phase("status.render", phase);
         }
         Commands::Next {
             environment,
             json: as_json,
         } => print!("{}", next(&root, environment.as_deref(), as_json)?),
-        Commands::Migrate { stage: _ } => anyhow::bail!(
-            "`chough migrate` for 0.5.x projects is being rebuilt in this 0.6.0 branch (plan step 10); use a released Chough until then"
-        ),
+        Commands::Migrate(args) => migrate::run(&root, args)?,
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
         Commands::Stage { command } => stage::run(&root, command)?,
         Commands::History { command } => history::run(&root, command)?,
@@ -312,6 +309,15 @@ fn init(
         let id = sessions::create(root, &key, objective, intent_scope, modules)?;
         created.push(sessions::session_file(&id));
     }
+    // REQ-records-002: the records tree's reading guide, create-only; the cases folder
+    // and the Git-ignored local folder.
+    if write_new(root, ".chough/README.md", sessions::README)? {
+        created.push(".chough/README.md".to_string());
+    } else {
+        preserved.push(".chough/README.md".to_string());
+    }
+    std::fs::create_dir_all(local_path(root, ".chough/cases")?)?;
+    write_new(root, ".chough/local/.gitignore", "*\n")?;
     for (name, content) in files {
         if write_new(root, &name, content)? {
             created.push(name);
@@ -327,6 +333,8 @@ fn init(
         "preserved": preserved,
         "hosts": hosts,
         "library": library,
+        // REQ-records-014: the same advice `chough doctor` gives, or null.
+        "records_in_verification": doctor::exclusions(root).advice(),
     }))
 }
 
@@ -470,8 +478,28 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
     let corrections = match session {
         Session::V2(checkpoint) => history::corrections(checkpoint),
     };
+    // BUG-0023: status leads with the short summary `next` gives, so the first screen
+    // holds the stage, the next action and its command, the open gates and blockers.
+    let summary = match session {
+        Session::V2(checkpoint) => json!({
+            "stage": {
+                "current": checkpoint.stage.current,
+                "status": checkpoint.stage.status,
+                "iteration": checkpoint.stage.iteration,
+            },
+            "native_change": checkpoint.native_change,
+            "next_valid_action": {
+                "action": cut(&corrections.apply(&assessment.action.action)),
+                "reason": cut(&assessment.action.reason),
+                "command": assessment.action.command.as_deref().map(cut),
+            },
+            "gates": open_gates(checkpoint, LIST_LIMIT),
+            "blockers": listed(checkpoint.blockers.iter()),
+        }),
+    };
     Ok(json!({
         "schema_version": 1,
+        "summary": summary,
         "objective": session.objective(),
         "session_next_action": corrections.apply(session.next_action()),
         "next_valid_action": corrections.apply(&assessment.action.action),
@@ -558,6 +586,22 @@ fn cut(text: &str) -> String {
         end = index + character.len_utf8();
     }
     format!("{}{CUT}", &text[..end])
+}
+
+/// Print a report as pretty JSON with its `summary` first (BUG-0023), the rest in the
+/// usual key order.
+fn print_summary_first(report: &Value) -> Result<()> {
+    let mut rest = report.clone();
+    let Some(summary) = rest.as_object_mut().and_then(|map| map.remove("summary")) else {
+        return print_json(report);
+    };
+    let rest = serde_json::to_string_pretty(&rest)?;
+    let summary = serde_json::to_string_pretty(&summary)?.replace('\n', "\n  ");
+    match rest.strip_prefix("{\n") {
+        Some(body) => println!("{{\n  \"summary\": {summary},\n{body}"),
+        None => println!("{{\n  \"summary\": {summary}\n}}"),
+    }
+    Ok(())
 }
 
 /// The first `limit` open gates with the stage each holds and the native step each
@@ -850,6 +894,8 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "last_failure": last_failure(root)?,
         "lessons": lessons(root, modules)?,
         "knowledge": library::pointer(root),
+        // REQ-records-014: when Chough's own writes are safe in the native order.
+        "chough_writes": doctor::exclusions(root).writes(),
         "environment": environment.map(cut),
         "full_view": "chough status",
         "truncated": false,
@@ -1186,6 +1232,10 @@ fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
             _ => "Knowledge index: off (librarian opted out)".into(),
         },
     );
+    lines.push(format!(
+        "Chough writes: {}",
+        text(&view["chough_writes"]["text"])
+    ));
     let bundles = &view["lessons"]["archived_bundles"];
     let shown = items(bundles);
     if let Some(note) = bundles["note"].as_str() {

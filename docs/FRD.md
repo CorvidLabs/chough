@@ -113,24 +113,24 @@ cross-module view and its traceability without restating it.
 
 | Requirement | Observable behavior | Criteria | Verification |
 |---|---|---|---|
-| REQ-cli-007 | One schema 2 checkpoint; bounded three-way merges preserve ordered collection changes and select the current-cycle group atomically, refusing divergent group edits; explicit migration keeps schema 1 bytes | FLOW-13, LIFE-3 | tests/stages.rs; real Git merges; cold-start exercise |
+| REQ-cli-007 | One checkpoint per open session: the front matter of the active session's `session.md`, validated on every read; no checkpoint merge and no `chough-session` merge driver, since each session is its own folder; `--native-change` checks the ID with SpecSync first | FLOW-13, LIFE-3, DRIVE-24, DRIVE-25 | tests/sessions.rs, tests/stages.rs; cold-start exercise |
 | REQ-cli-008 | Stage routing with append-only history; every route into build, test, accept and done meets its native prerequisite, and unknown native state, invalid approval, unauthenticated archives or an invalid SDD policy refuse | FLOW-2, FLOW-5, FLOW-10, LIFE-1 | tests/stages.rs; feature-and-bug exercise |
 | REQ-cli-009 | `chough-testing/1` definitions with stable curated slug or exact legacy numeric IDs, global duplicate refusal and position-free digests; legacy IDs and digests do not change | FLOW-7, LIFE-2 | tests/cases.rs; TC-cli-slug-case-compatibility |
 | REQ-cli-010 | Focused selection with tracks and stated omissions | FLOW-6 | tests/cases.rs; both exercises |
 | REQ-cli-011 | Explicit case execution; stopping Chough stops the started command, on Linux including descendants that left the group, and records nothing; a grace kill and a failed revision read of Chough's own Git are said on stderr; vacuous and environment failures are not-run; optional explicit new-form observation IDs, automatic random OBS and VAL allocation, inherited artifact paths and legacy resume | FLOW-7, FLOW-9, LIFE-7, FLOW-14 | tests/cases.rs, tests/optional.rs, tests/stop.rs; slug observation and validation cases |
-| REQ-cli-012 | Local backlog with duplicate search and regression baselines; the deterministic creation-ID generator, known answers, create-once immutability, schema 1 compatibility and atomic refusal remain unchanged | FLOW-8, LIFE-5 | tests/bugs.rs; unchanged known-answer vectors; feature-and-bug exercise |
+| REQ-cli-012 | Local backlog of Markdown bugs (`.chough/bugs/<id>.md`) with an append-only `## Log`, duplicate search and regression baselines; date and slug names with `BUG-NNNN` and `BUG-<slug>-<hex>` IDs as aliases; `fixed-upstream` closes a bug fixed in another tool; Chough 0.5.x cannot read 0.6.0 bug records | FLOW-8, LIFE-5, DRIVE-25, DRIVE-27 | tests/bugs.rs, tests/migrate_bugs.rs; feature-and-bug exercise |
 | REQ-cli-054 | Bug classifications, scopes and statuses, the blocking rule, search scores (0.25 per shared ID, listed from 0.2, refused from 0.5) and the report's fields map exactly; other values, links to the bug itself or an unknown bug, and unknown bugs are refused with nothing written, naming `chough bug list --all`; reopening a mistaken duplicate clears `duplicate_of`; verified without a linked failure and later pass names `chough bug update <id> --observation <id>` | FLOW-8, LIFE-5 | tests/bugs.rs |
 | REQ-cli-013 | Standing preferences separate from run consent; the librarian on by default as REQ-cli-015 states; new and legacy validation runs retain pause, stop, authorization and resume behavior | FLOW-9, FLOW-11, FLOW-12 | tests/optional.rs, tests/stages.rs; TC-cli-slug-validation-allocation |
 | REQ-cli-014 | Release only when authorized; distinct delivery and dry-run kinds | FLOW-11, LIFE-7 | tests/stages.rs, tests/cases.rs |
-| REQ-cli-015 | Optional librarian with source-linked random SNAP snapshots, timestamp chronology and indexes mixing new and legacy dated snapshots without migration | FLOW-12 | tests/optional.rs; TC-cli-slug-snapshot-allocation |
+| REQ-cli-015 | Optional librarian, on by default, that regenerates `knowledge/index.md` and the journal feed from their sources and never moves, copies or rewrites a record; `library snapshot` and `library archive` are removed, and earlier snapshots and briefs stay as they are | FLOW-12, KNOW-30, KNOW-31 | tests/vault.rs, tests/journal.rs |
 | REQ-cli-016 | Per-host skill install; updates never replace edits | FLOW-1, LIFE-4 | tests/optional.rs; tests/package.rs; host discovery checks |
-| REQ-cli-017 | Observation schema 2 and schema 1 reads with mixed new and legacy IDs, exact inherited artifact paths and unchanged references | LIFE-2, LIFE-7, FLOW-7 | tests/cases.rs, tests/evidence.rs; TC-cli-slug-observation-allocation |
-| REQ-history-001 (was REQ-cli-018) | Reference-aware retention across mixed legacy and new IDs: preview by default, consented apply, inherited artifact paths, append-only ledger with unchanged entry shape, and current, historical, pruned and unavailable labels | LIFE-8, LIFE-2, LIFE-7, FLOW-7, FLOW-13 | tests/evidence.rs |
+| REQ-cli-017 | Each observation is one Markdown evidence entry of its session with the exact command, result, content identity and fingerprint; freshness reads an entry and a story's or bug's receipt the same way | LIFE-2, LIFE-7, FLOW-7, DRIVE-25, LIFE-19 | tests/evidence.rs, tests/cases.rs |
+| REQ-history-001 (was REQ-cli-018) | Retired in 0.6.0: evidence lives in its session and folds into the story; `chough evidence prune` and the retention ledger go, and LIFE-8's removed-not-passed rule is kept by REQ-records-009 | LIFE-8 | Retired |
 | REQ-cli-019 | Installable package without Chough's own records; new projects get the skills and an empty checkpoint; no em or en dash in the bundle | LIFE-9, LIFE-4 | tests/package.rs |
 | REQ-reporting-001 (was REQ-cli-020) | Read-only timing report across mixed legacy and new IDs, ordered by timestamps and stored durations rather than lexical IDs or random suffixes; elapsed wall-clock labels, unknowns never zero, ranges that are estimates and not targets | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
 | REQ-cli-021 | Focused `next` view within 16384 bytes, text by default and compact JSON with `--json`, one native status read shared with `status`, and a new-cycle action at a closed done stage; a reset replaces the checkpoint's next action; open questions in `next` and `status` | LIFE-3, FLOW-13, FLOW-2, LIFE-7, DRIVE-3 | tests/next.rs, tests/stages.rs, tests/sessions.rs |
 | REQ-cli-022 | Approved-delta guard: moves to build, test and accept compare SpecSync's approved-delta digests with the current deltas, read-only and bounded, refusing as delta-changed or delta-unverifiable | FLOW-5, LIFE-7, LIFE-1 | tests/stages.rs |
-| REQ-cli-023 | Shared slug normalization and random 96-bit OBS, VAL and SNAP allocation; one-candidate atomic create-new refusal without overwrite, fallback or retry; legacy reads, links and resume without migration, and unchanged non-ID record shapes | FLOW-7, FLOW-9, FLOW-12, FLOW-13, LIFE-2, LIFE-3, LIFE-7 | tests/cases.rs, tests/optional.rs, tests/evidence.rs, tests/timing.rs; four slug cases |
+| REQ-cli-023 | Every new record is named by date and slug (REQ-records-003); a clash suffix, a Timeline entry ID or a neutral external ID come from getrandom; one-candidate atomic create-new refusal without fallback or retry; 0.5.x IDs stay resolvable as aliases; Chough 0.5.x cannot read 0.6.0 names | FLOW-7, FLOW-9, FLOW-12, FLOW-13, LIFE-2, LIFE-3, LIFE-7, DRIVE-27 | tests/ids.rs, tests/cases.rs, tests/evidence.rs, tests/timing.rs |
 
 Additional native requirements:
 
@@ -138,25 +138,55 @@ Additional native requirements:
 |---|---|---|---|
 | REQ-cli-038 | `next` and `status` warn when the effective native commands are only SpecSync's own, counting configured commands it does not run; the test stage points to recorded test evidence; no gate change and no added native read | FLOW-15, FLOW-6, LIFE-7 | tests/verification.rs |
 | REQ-cli-039 | `next` shows the latest native check attempt SpecSync recorded and says when the check has not passed for this tree, with no extra native read | LIFE-7, LIFE-3 | tests/native_check.rs |
-| REQ-cli-040 | Serialized checkpoint writers with one project lock in `.chough/local/checkpoint.lock`, shared whatever the `TMPDIR`; busy refusal names the file being written; legacy writers racing adoption save or refuse | DRIVE-11, DRIVE-3 | tests/cli.rs; src/checkpoint.rs unit tests |
-| REQ-cli-041 | `stage advance` into done trims cold archived proof with the librarian on unless `retention` is `manual`, reported as `applied.librarian_trim`, never undoing the move | KNOW-13, KNOW-11, KNOW-7, KNOW-5 | tests/librarian_trim.rs |
-| REQ-cli-043 | With the librarian on, `init` creates the knowledge directory create-only and every move into done regenerates it after the trim, reported as `library` and `applied.librarian_index`, never failing init or undoing the move | KNOW-1, KNOW-4, KNOW-5, KNOW-13 | tests/knowledge_default.rs, tests/librarian_trim.rs |
-| REQ-cli-044 | The knowledge directory is an Obsidian-style vault: YAML front matter on every note, ISO dates, standard links that resolve, and module, intent and rules notes linking each archived change to the modules and HI criteria it touched, without copying source text | KNOW-14, KNOW-15, KNOW-3, KNOW-4, KNOW-12 | tests/vault.rs |
-| REQ-cli-045 | With the librarian on, the move into done drops checkpoint observation references from closed cycles and every file and design reference before the trim, reported as `applied.checkpoint_references`, never undoing the move; archived sessions' file and design references protect nothing | KNOW-16, KNOW-21, KNOW-13 | tests/reduce.rs |
-| REQ-cli-047 | Parallel pull requests merge without hand-resolved conflicts in files Chough writes: per-change case files, `library index --check` for the union-merged vault, and the `chough bug merge` driver | DRIVE-12, DRIVE-3 | tests/cases.rs, tests/vault.rs, tests/bugs.rs |
+| REQ-cli-040 | Serialized record writers with one project lock in `.chough/local/checkpoint.lock`, shared whatever the `TMPDIR`; the lock records its holder's process ID, and a busy refusal names the file being written and that process | DRIVE-11, DRIVE-3 | tests/cli.rs; src/checkpoint.rs unit tests |
+| REQ-cli-041 | Retired in 0.6.0: the move into done no longer trims proof; it archives the session into one story and writes a journal post | KNOW-34 | Retired |
+| REQ-cli-043 | With the librarian on, `init` creates `knowledge/` with `index.md`, `journal/` and `lessons/` create-only, and every move into done writes its journal post and regenerates the index and feed, reported as `applied.librarian_index`, never failing init or undoing the move | KNOW-1, KNOW-4, KNOW-5, KNOW-15, KNOW-33 | tests/knowledge_default.rs, tests/journal.rs |
+| REQ-cli-044 | The vault holds only what has no other home (the index, the journal and feed, cross-project lessons, and earlier snapshots and briefs as they are), with YAML front matter and relative links that resolve; it links and never copies | KNOW-14, KNOW-30, KNOW-31, KNOW-32 | tests/vault.rs |
+| REQ-cli-045 | Retired in 0.6.0: references end with their session, which the move into done archives into one story | KNOW-34 | Retired |
+| REQ-cli-047 | Parallel pull requests merge without hand-resolved conflicts in files Chough writes: per-change case files, `library index --check` with the `chough library merge` driver for the generated index and feed, and the `chough bug merge` driver for Markdown bugs | DRIVE-12, DRIVE-3, DRIVE-25 | tests/cases.rs, tests/vault.rs, tests/bugs.rs, tests/journal.rs |
 | REQ-cli-052 | `stage advance --to <stage>` moves through each main stage up to the target on one native read, checking every step first and recording nothing when one is refused; the move into done takes the change's own manifest from the gate's read, so it reads native status once | DRIVE-9, DRIVE-2, FLOW-2, LIFE-3 | tests/advance_to.rs |
-| REQ-cli-049 | At done the retention ledger keeps its newest 100 entries and moves older summarized ones, with their restores, into `knowledge/attachments/<archive>/pruned.jsonl`, shards first; every ledger reader reads the shards, counting an interrupted rotation's leftover once; shards union-merge | KNOW-23, KNOW-13, DRIVE-12 | tests/reduce.rs, tests/vault.rs |
-| REQ-cli-050 | `chough checkpoint --close-gate` records a human's decision at one gate on their behalf: who decided, their words, where and the recording agent, as a relayed claim, not authenticated; it closes only that gate, writes no SpecSync record and satisfies no native gate; each refusal saves nothing and names its recovery. REQ-cli-030's refusal and waiting action name it | FLOW-16, FLOW-10, FLOW-13, FLOW-3 | tests/relay.rs, tests/stages.rs |
-| REQ-history-010 | A `gate-closed` transition may carry `relayed_by` with exactly `decided_by`, `words`, `where` and `recorded_by`; it is omitted when absent and refused as an invalid payload when incomplete, over-long, extended or on another kind | FLOW-16, FLOW-13 | tests/relay.rs |
-| REQ-cli-048 | In the librarian trim, closed bugs release linked observations; their earliest failure, first fixing pass (verified) and `.chough/` fixture move into `knowledge/attachments/<bug>/`, the rest is trimmed when cold, and `bugs/<id>.md` links what moved; open bugs and `evidence prune` keep every link | KNOW-22, KNOW-18, KNOW-19, KNOW-13 | tests/reduce.rs, tests/evidence.rs |
-| REQ-cli-046 | Loose artifacts of cold changes are summarized and trimmed, and key items (non-routine observations, failed-run logs, screenshots, failure-first logs) move into the archive's folder under `knowledge/attachments/` and are linked from its note | KNOW-18, KNOW-19, KNOW-20, KNOW-9, KNOW-10 | tests/reduce.rs |
-| REQ-history-007 | `.chough/local/` holds only Git-ignored local state (the active-session pointer and the checkpoint lock); a project without sessions gains no tracked or session file | DRIVE-3, DRIVE-11 | tests/sessions.rs, tests/cli.rs |
+| REQ-cli-049 | Retired in 0.6.0 with the retention ledger: nothing rotates into the vault | KNOW-30 | Retired |
+| REQ-cli-050 | `chough checkpoint --close-gate` records a human's decision at one gate: who decided, their words, where and the recording agent, as a relayed claim, not authenticated. For a gate that drives approval or review it first runs that SpecSync step as the configured human; `--no-native` records a decision that is neither. Each refusal saves nothing and names its recovery | FLOW-16, FLOW-10, FLOW-13, FLOW-3, FLOW-23 | tests/relay.rs, tests/humans.rs, tests/stages.rs |
+| REQ-history-010 | A `gate-closed` Timeline entry may carry `decided_by`, `words`, `where` and `recorded_by` together, and `native` and `actor` when the gate drove a SpecSync step; incomplete, over-long or misplaced relay fields are refused | FLOW-16, FLOW-13, FLOW-23 | tests/relay.rs, tests/humans.rs |
+| REQ-cli-048 | Retired in 0.6.0: a closed bug keeps its record and receipts in `.chough/bugs/`, and nothing moves into the vault | KNOW-30, KNOW-31 | Retired |
+| REQ-cli-046 | Retired in 0.6.0: there are no vault attachments; key screenshots sit beside their story and logs go to CI | KNOW-35 | Retired |
+| REQ-history-007 | `.chough/local/` holds only one worktree's Git-ignored state: the active-session pointer, the writer lock, gate lists, direct-write baselines, external artifacts, logs and an optional identity file | DRIVE-3, DRIVE-11, LIFE-26 | tests/sessions.rs, tests/cli.rs |
 | REQ-reporting-002 (was REQ-cli-024) | Bounded, deduplicated timing native reads with explicit excluded/unknown history | LIFE-10, LIFE-3, LIFE-6, LIFE-7 | tests/timing.rs |
-| REQ-history-002 (was REQ-cli-025) | Explicit adoption, immutable events and a cursor in the single checkpoint/current-cycle group | LIFE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2, FLOW-13 | tests/history.rs; real Git branch fixture; schema migration regressions |
-| REQ-history-003 (was REQ-cli-026) | Bounded readers/cycles and protected whole-cycle retention with honest partial history | LIFE-3, LIFE-7, LIFE-8, LIFE-10, FLOW-13 | tests/history.rs boundary, receipt, interruption and integration fixtures |
+| REQ-history-002 (was REQ-cli-025) | Each session's transitions are entries of its `## Timeline`, appended in the same atomic save as the checkpoint change and never edited; no event files or transition log; `doctor` reports a rewritten Timeline | LIFE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2, FLOW-13, DRIVE-24 | tests/history.rs, tests/sessions.rs; real Git branch fixture |
+| REQ-history-003 (was REQ-cli-026) | Bounded Timelines: 64 KiB per entry and 4,096 entries per session, recent guidance from the last 128 entries, and timing reads within 4,096 entries and 16 MiB, reporting the rest as partial | LIFE-3, LIFE-7, LIFE-10, FLOW-13 | tests/history.rs, tests/timing.rs |
 | REQ-cli-042 | Chough's size bounds cover only its own `.chough/` records and its displays: criteria are validated against the complete HI family export; archived `finalization.json` and `change.md` and `.specsync/sdd.json` are read within SpecSync's 4 MiB bound; display cuts point to the source; the skill says a Chough bound never justifies editing HI, specs or SpecSync files | LIFE-15, LIFE-6, LIFE-11 | tests/cli.rs |
 | REQ-reporting-004 | `timing` reads native lifecycle records within SpecSync's 4 MiB bound, so a long approval ledger still gives its times | LIFE-15, LIFE-10 | tests/timing.rs |
-| REQ-history-004 (was REQ-cli-027) | Evidence cleanup revalidates references and artifact identity immediately before byte-checked removal; later failures restore earlier removals without replacing recreated files, preserve uncommitted bytes in named holds and append restored events | LIFE-2, LIFE-7, LIFE-8, FLOW-7, FLOW-13 | tests/evidence.rs and history/reference fixtures |
+| REQ-history-004 (was REQ-cli-027) | Retired in 0.6.0 with `chough evidence prune`; REQ-records-012 keeps the rule that only committed bytes ever leave the tree | LIFE-8 | Retired |
+
+Chough 0.6.0, human-first records (`specs/records/`, with the history, gate and ship
+requirements it changes):
+
+| Requirement | Observable behavior | Criteria | Verification |
+|---|---|---|---|
+| REQ-records-001 | Every record is one Markdown file with YAML front matter in a strict subset, the only source of truth; unknown keys and people's body lines are kept; bounded at 64 KiB, 1 MiB for a session or story, 4 MiB for a migration receipt | DRIVE-25, DRIVE-26, DRIVE-28, KNOW-32, LIFE-3 | tests/sessions.rs, tests/bugs.rs, tests/journal.rs |
+| REQ-records-002 | The records tree and `.chough/README.md`, its one-screen guide, written create-only | DRIVE-24, DRIVE-28, KNOW-32, KNOW-24 | tests/sessions.rs |
+| REQ-records-003 | Date and slug names with a one-time random clash suffix, never a counter; old IDs as aliases | DRIVE-27, DRIVE-12, DRIVE-25 | tests/ids.rs, tests/bugs.rs |
+| REQ-records-004 | The session record: checkpoint front matter, then Goal, Where it stands, Decisions and why, What was verified, Open threads and Timeline | DRIVE-24, DRIVE-25, DRIVE-26, FLOW-13 | tests/sessions.rs, tests/next.rs |
+| REQ-records-005 | Raw logs stay local and in CI; an entry keeps the command, a fingerprint and the key failing lines; external artifacts by fingerprint in place | KNOW-35, LIFE-19, FLOW-22, LIFE-26, LIFE-8 | tests/evidence.rs, tests/cases.rs |
+| REQ-records-006 | No local path, user or host name, email or credential in a committed record: `refused:leak`, or `--redact` | LIFE-26, LIFE-17, FLOW-22 | tests/humans.rs and the leak cases |
+| REQ-records-007 | The acting agent, model and hc terminal on Timeline entries, evidence and bugs | LIFE-17, LIFE-26, FLOW-16 | tests/actor.rs |
+| REQ-records-008 | A human's gate decision drives SpecSync's approval or review as that human, from configured identity; on authority given in advance the agent records it as `<agent>-<terminal>` | FLOW-23, FLOW-24, FLOW-16, FLOW-10, LIFE-26 | tests/humans.rs, tests/relay.rs |
+| REQ-records-009 | `chough migrate` previews, then applies only the previewed plan, with consent and no open native change, never weakening a SpecSync archive | DRIVE-27, LIFE-20, LIFE-21, LIFE-8, KNOW-10, KNOW-11, KNOW-30, KNOW-31, KNOW-34, LIFE-26 | tests/migrate.rs, tests/migrate_bugs.rs |
+| REQ-records-010 | Every other command refuses an unmigrated or mixed tree as `refused:unmigrated` | LIFE-20, DRIVE-25, LIFE-3 | tests/migrate.rs |
+| REQ-records-011 | The journal and its Atom feed, the timeline of archived changes | KNOW-33, KNOW-30, KNOW-31, KNOW-15, KNOW-4, KNOW-14 | tests/journal.rs |
+| REQ-records-012 | Only committed bytes leave the tree; archived stories are never trimmed | LIFE-20, KNOW-34, LIFE-8, DRIVE-24, DRIVE-25, KNOW-30 | tests/sessions.rs, tests/doctor.rs |
+| REQ-records-013 | Up to 5 small key screenshots per session, metadata removed, beside the story when it finishes | KNOW-35, KNOW-34, LIFE-26, DRIVE-24 | tests/evidence.rs |
+| REQ-records-014 | Chough's records stay out of SpecSync's verification through `verification_ignored_paths`; `doctor` reports `records_in_verification` and `next` says when writes are safe | DRIVE-4, FLOW-16 | tests/doctor.rs, tests/next.rs |
+| REQ-history-006 | Sessions in their own folders; a session closes only itself, into one story, and `doctor --fix` finishes the removal | DRIVE-3, DRIVE-24, DRIVE-25, KNOW-30, KNOW-34, LIFE-3, LIFE-7, DRIVE-13, DRIVE-14, DRIVE-16 | tests/sessions.rs, tests/doctor.rs |
+| REQ-history-009 | Inbox entries as Markdown records in the session's `agent/inbox/`, under the writer lock | DRIVE-3, DRIVE-24, LIFE-8 | tests/sessions.rs |
+| REQ-history-012 | Doctor findings and their fixes, in a fixed order, never replacing a file | DRIVE-17, DRIVE-16, DRIVE-13, DRIVE-3, DRIVE-4, LIFE-26, LIFE-20 | tests/doctor.rs |
+| REQ-history-015 | `chough correct` appends a correction to a Timeline entry; history is never rewritten | LIFE-18, LIFE-7, FLOW-13 | tests/correct.rs |
+| REQ-cli-030 | An open human gate holds the stage it names (`--holds`) and drives approval, review or nothing (`--drives`); only a move out of a held stage is refused | FLOW-3, FLOW-5, FLOW-13, FLOW-2, FLOW-16, FLOW-23 | tests/stages.rs, tests/gates.rs |
+
+Retired in 0.6.0, each with the behavior it described: REQ-history-001, REQ-history-004,
+REQ-history-008, REQ-history-011, REQ-cli-033, REQ-cli-041, REQ-cli-045, REQ-cli-046,
+REQ-cli-048, REQ-cli-049 and REQ-cli-051. Their HI criteria that only the removed
+behavior served are retired with `hi retire` in the same change.
 
 Skill-led behavior with no helper requirement, verified by exercises rather than
 helper tests: intent interviewing and role synthesis (FLOW-3,
@@ -253,7 +283,7 @@ See [lifecycle design](lifecycle.md), [architecture](architecture.md), and
 No hosted service, model-provider client, custom agent runtime, automatic agent
 coordination, universal slash-command parser, replacement native change state,
 automatic human authentication, or deployment engine is included. The
-[roadmap](ROADMAP.md) records proposed extensions separately.
+[roadmap](roadmap-1.0.md) records proposed extensions separately.
 
 
 ## Request-local reporting work (REQ-reporting-003, was REQ-cli-028)
@@ -302,14 +332,15 @@ Trace: DRIVE-2, DRIVE-15, LIFE-3, LIFE-6, LIFE-7, FLOW-2. Contract:
 
 Status: derived by the agent from FLOW-17 for the intent decision; not human wording.
 
-Purpose: Chough, like SpecSync from 6.0, runs on macOS and Linux. Windows users run it
-through WSL 2 with Ubuntu, so no pull request waits on a native Windows job.
+Purpose: Chough, like SpecSync from 6.0, runs on macOS and Linux. Windows is
+best-effort, through WSL 2 with Ubuntu (FLOW-21), so no pull request waits on a native
+Windows job.
 
 | Requirement | Summary | HI criteria | Native requirement |
 |---|---|---|---|
 | FR-platform-1 | Hosted CI tests and builds on Ubuntu and macOS only; MSRV, the verify lane with the feature-and-bug exercise, and the archive jobs stay on Ubuntu; no job runs on Windows | FLOW-17 | None: CI and documentation, no helper behavior |
-| FR-platform-2 | README, docs/ci.md and docs/integrations.md say macOS and Linux, Windows through WSL 2 with Ubuntu, and say exactly what the Ubuntu jobs cover for WSL and what they do not | FLOW-17 | None |
-| FR-platform-3 | No requirement or criterion promises native Windows behavior, and no Linux or macOS guarantee weakens | FLOW-17 | REQ-cli-046 and every other requirement unchanged |
+| FR-platform-2 | README, docs/ci.md and docs/integrations.md say macOS and Linux, Windows best-effort through WSL 2 with Ubuntu, and say exactly what the Ubuntu jobs cover for WSL and what they do not | FLOW-17, FLOW-21 | None |
+| FR-platform-3 | No requirement or criterion promises native Windows behavior, and no Linux or macOS guarantee weakens | FLOW-17, FLOW-21 | Every requirement unchanged; record names of at most 80 bytes (REQ-records-003) keep paths short |
 
 - In: the CI matrix, the platform statements and limitations, the testing companion's
   Windows CI lines, and a package test that keeps CI and these statements in agreement.
@@ -318,9 +349,9 @@ through WSL 2 with Ubuntu, so no pull request waits on a native Windows job.
 - Assumption: Ubuntu on WSL 2 is a Linux system with the same target and userland as
   the hosted Ubuntu jobs. WSL 1, a checkout on a Windows drive (`/mnt/c`) and
   Windows-side Git are not covered, and are documented as not covered.
-- Assumption: REQ-cli-046's short attachment folders and 220-character limit stay,
-  because they keep a repository's tracked tree checkable out by any Git client,
-  including one on Windows that does not run Chough.
+- Assumption: record names stay at most 80 bytes (REQ-records-003; before 0.6.0,
+  REQ-cli-046's short attachment folders), so a repository's tracked tree can be
+  checked out by any Git client, including one on Windows that does not run Chough.
 - Dependencies: SpecSync publishes no Windows binary as of 6.0, and its README points
   Windows users to WSL.
 

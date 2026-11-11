@@ -408,6 +408,64 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "templates/prototype/styles.css",
         "ce8f63741058cf79afa275e01fb7c6ab0c38dc242c35c87a8628c808bf386239",
     ),
+    // Released bundle files superseded by the 0.6.0 human-first records guidance:
+    // session folders, gates that hold a stage, approval or review as the human, the
+    // records kept out of verification and the two-commit finish.
+    // v0.5.0 (commit 455cb643)
+    (
+        "SKILL.md",
+        "23dcd8140f0d5bbbf77ea9a20ce37c43fde91345bf1cddf40b9336797a920a57",
+    ),
+    // v0.5.0
+    (
+        "references/plan.md",
+        "187a887f2999e2d54350a56059a739f8379a7d77305ab53652da3b3eed8caa8d",
+    ),
+    // v0.5.0
+    (
+        "references/stages.md",
+        "92a9e61abe6011473f526868e731dc003b81835db720f6f4d61d704d92c22d73",
+    ),
+    // v0.3.0 to v0.5.0
+    (
+        "references/testing.md",
+        "2e26c47b349c4138d50eb78aa557822909c586802a9dbb12a46a466438d89b3b",
+    ),
+    // v0.2.0 to v0.5.0
+    (
+        "references/bugs.md",
+        "86eb8769f03a556ce4e198b13a028821961c3f686cfbf639afda5651de696102",
+    ),
+    // v0.2.0 to v0.5.0
+    (
+        "references/validate.md",
+        "4013dc5ac116f3f32cffeb89ffcef957c3b402236000ea54c130ae41a02a96b5",
+    ),
+    // v0.1.0 to v0.5.0
+    (
+        "references/design.md",
+        "bb5d91c18199599e10195d457da0157ebcbfcb9595568b3cad743c8fc1f00908",
+    ),
+    // v0.1.0 to v0.5.0
+    (
+        "references/release.md",
+        "b3edaa0e8a58e944ab9ba82455750f8d27018ae6ca9b4b2d738a013e13ef3eed",
+    ),
+    // v0.2.0 to v0.5.0
+    (
+        "templates/cases.toml",
+        "8b9b582018094745034c033327df0093787c23c1b092c8cd706863012f748421",
+    ),
+    // v0.1.0 to v0.5.0
+    (
+        "templates/bug-report.md",
+        "2b1aabe936ec051c040820625b7665b5d26706fa5e9396ddb4bfba8425ede78a",
+    ),
+    // v0.1.0 to v0.5.0
+    (
+        "templates/prototype/COMPANION.md",
+        "a44f6812276d05332b69bac0cff237485c6aefc1973cddd77226c0ff97c66e83",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

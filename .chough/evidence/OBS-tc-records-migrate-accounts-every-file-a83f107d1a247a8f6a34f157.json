@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-migrate-accounts-every-file-a83f107d1a247a8f6a34f157",
+  "criteria": [
+    "DRIVE-27",
+    "LIFE-20",
+    "LIFE-21"
+  ],
+  "requirements": [
+    "REQ-records-009"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test migrate --test migrate_bugs -- every_legacy_file_and_artifact_is_accounted_for a_bug_of_each_id_form_carries_its_links_fixtures_and_redactions for TC-records-migrate-accounts-every-file: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-migrate-accounts-every-file-a83f107d1a247a8f6a34f157.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-migrate-accounts-every-file-a83f107d1a247a8f6a34f157.log": "49877614c0f1b6a1cff4cb9d4dd13a800ef52ee41ec3281115a98c7d90808dca"
+  },
+  "observed_at_unix_seconds": 1794430983,
+  "snapshot": {
+    "revision": "3b7320020b167169429ac03b1cadd20127ad2dac",
+    "dirty": false,
+    "fingerprint": "ba294f9e909c88331ce3d9d9926b44e64bfef68a27d80dcc910a4070eb14f284",
+    "content": "09b15daa17f6e3d61256ce5c54ee52079960e77dd026cca9af70b674fb4ac4d6"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-migrate-accounts-every-file",
+      "digest": "638713ef68023d45179b8cde9e9839c8298f0b8edfe7a4993c1aa4ca1e3b27e1"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "migrate",
+    "--test",
+    "migrate_bugs",
+    "--",
+    "every_legacy_file_and_artifact_is_accounted_for",
+    "a_bug_of_each_id_form_carries_its_links_fixtures_and_redactions"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

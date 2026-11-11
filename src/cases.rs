@@ -1056,6 +1056,7 @@ pub(super) fn run_case(
     let digest = located.digest()?;
     let argv = argv_for(binding);
     let timeout = Duration::from_secs(binding.timeout_seconds.unwrap_or(600));
+    let explicit = requested_id.is_some();
     let observation = observation_id(id, requested_id)?;
     let env: Vec<(String, String)> = binding
         .env
@@ -1181,8 +1182,6 @@ pub(super) fn run_case(
     // observation are written without running anything, and a stop that arrives
     // meanwhile ends Chough once both are saved.
     crate::records::stop_if_noted();
-    // The raw log stays machine-local and uncommitted (REQ-records-005).
-    crate::local::write_log(root, &observation, &output)?;
     let key_lines = if matches!(outcome, Outcome::Passed) {
         (vec![], 0)
     } else {
@@ -1193,7 +1192,7 @@ pub(super) fn run_case(
     }
     let record = Evidence {
         id: observation.clone(),
-        explicit_id: false,
+        explicit_id: explicit,
         aliases: vec![],
         criteria: case.criteria.clone(),
         requirements: case.requirements.clone(),
@@ -1225,7 +1224,23 @@ pub(super) fn run_case(
         limitations,
         duration_seconds: Some(duration_seconds),
     };
-    evidence::record(root, &record, None)?;
+    // The raw log stays machine-local and uncommitted, named by the entry's final
+    // name (REQ-records-005, REQ-cli-011).
+    // The stored name (with any clash suffix) is the observation ID (REQ-cli-011).
+    let recorded = evidence::record(
+        root,
+        &record,
+        evidence::EntryFiles {
+            screenshot: None,
+            log: Some(output),
+        },
+    )?;
+    let observation = recorded
+        .trim_end_matches(".md")
+        .rsplit('/')
+        .next()
+        .expect("the record path has a stem")
+        .to_string();
     Ok(RunResult {
         observation,
         outcome,
@@ -1291,11 +1306,12 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         .map(|(index, value)| format!("{index}={value}"))
         .collect::<Vec<_>>()
         .join(", ");
+    let explicit = requested_id.is_some();
     let observation = observation_id(id, requested_id)?;
     let (external, artifact_fingerprints) = evidence::bind_artifacts(root, &artifacts)?;
     let record = Evidence {
         id: observation.clone(),
-        explicit_id: false,
+        explicit_id: explicit,
         aliases: vec![],
         criteria: case.criteria.clone(),
         requirements: case.requirements.clone(),
@@ -1331,7 +1347,7 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         limitations,
         duration_seconds: None,
     };
-    let name = evidence::record(root, &record, None)?;
+    let name = evidence::record(root, &record, evidence::EntryFiles::default())?;
     // The same IDs `cases run` returns, so automation never parses a path (#60).
     Ok(json!({
         "schema_version": 1,

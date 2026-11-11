@@ -526,12 +526,18 @@ impl<'a> Evidence<'a> {
                     .join(" and ")
             ),
         }
-        if let Some(receipt) = bug.record.maps("receipts").iter().find_map(|map| {
-            receipt_names(map)
-                .iter()
-                .any(|name| name == id)
-                .then(|| Linked::from_fields(map, bug.id().to_string(), "bug-receipt"))
-        }) {
+        if let Some(receipt) = bug
+            .record
+            .maps("receipts")
+            .iter()
+            .filter(|map| removed_by(map).is_none())
+            .find_map(|map| {
+                receipt_names(map)
+                    .iter()
+                    .any(|name| name == id)
+                    .then(|| Linked::from_fields(map, bug.id().to_string(), "bug-receipt"))
+            })
+        {
             return Ok(Some(receipt));
         }
         Ok(legacy_observation(self.root, id))
@@ -612,7 +618,12 @@ impl<'a> Evidence<'a> {
                     "result": linked.result,
                     "observed": linked.observed.map(iso_time),
                 }),
-                Ok(None) => json!({"id": id, "role": role, "label": "missing"}),
+                Ok(None) => match removed_receipt(bug, &id) {
+                    Some(receipt) => {
+                        json!({"id": id, "role": role, "label": "removed", "receipt": receipt})
+                    }
+                    None => json!({"id": id, "role": role, "label": "missing"}),
+                },
                 Err(error) => {
                     json!({"id": id, "role": role, "label": "ambiguous", "reason": format!("{error:#}")})
                 }
@@ -643,6 +654,26 @@ fn legacy_observation(root: &Path, id: &str) -> Option<Linked> {
         revision: Some(record.snapshot.revision),
         place: id.to_string(),
         label: "observation",
+    })
+}
+
+/// The migration receipt a tombstone names: a receipt map `{id, removed: <receipt>}`
+/// for an observation the 0.5.x migration removed without carrying (REQ-records-009).
+/// It is never present, so it never counts as reproduced, passed or verifying.
+fn removed_by(map: &[(String, String)]) -> Option<&str> {
+    map.iter()
+        .find(|(key, _)| key == "removed")
+        .map(|(_, receipt)| receipt.as_str())
+}
+
+/// The migration receipt that removed `id`, when one of the bug's tombstones names it.
+fn removed_receipt(bug: &Stored, id: &str) -> Option<String> {
+    bug.record.maps("receipts").iter().find_map(|map| {
+        let receipt = removed_by(map)?;
+        receipt_names(map)
+            .iter()
+            .any(|name| name == id)
+            .then(|| receipt.to_string())
     })
 }
 
@@ -803,8 +834,9 @@ struct Draft {
     notes: Vec<String>,
 }
 
-/// The write-up: the title, the five paragraphs and an empty Log.
-fn write_up(draft: &Draft) -> String {
+/// The write-up: the title, the five paragraphs, with `fix` as the Fix paragraph, and an
+/// empty Log.
+fn write_up(draft: &Draft, fix: &str) -> String {
     let mut what = format!("**{WHAT_HAPPENED}:** {}", one_line(&draft.symptom));
     if draft.actual.trim() != draft.symptom.trim() {
         what.push_str(&format!("\n{ACTUAL}{}", one_line(&draft.actual)));
@@ -814,10 +846,11 @@ fn write_up(draft: &Draft) -> String {
         steps.push_str(&format!("\n{}. {}", index + 1, one_line(step)));
     }
     format!(
-        "# {title}\n\n{what}\n\n{steps}\n\n**{EXPECTED}:** {expected}\n\n**{WHY}:** {why}\n\n**{FIX}:** Not fixed yet.\n\n## {LOG}\n",
+        "# {title}\n\n{what}\n\n{steps}\n\n**{EXPECTED}:** {expected}\n\n**{WHY}:** {why}\n\n**{FIX}:** {fix}\n\n## {LOG}\n",
         title = one_line(&draft.title),
         expected = one_line(&draft.expected),
         why = one_line(&draft.impact),
+        fix = one_line(fix),
     )
 }
 
@@ -840,10 +873,19 @@ fn guard(record: &mut Record, local: &Local) -> Result<usize> {
     Ok(0)
 }
 
-/// Write a new bug named `<date>-<title slug>` by create-new (REQ-records-003); `redact`
-/// redacts leaks instead of refusing, as automatic failure capture does. Returns the
-/// stored record and how many values were redacted.
-fn create(root: &Path, draft: Draft, redact: bool) -> Result<(Stored, usize)> {
+/// The Fix paragraph of a bug no one has fixed yet.
+const NOT_FIXED: &str = "Not fixed yet.";
+
+/// The record a draft makes, reported at `at` by `actor` at `revision`, before it has a
+/// name: what `bug add`, failure capture and the 0.5.x migration all write
+/// (REQ-cli-012). Its `id` is empty until the caller names it.
+fn draft_record(
+    draft: &Draft,
+    at: u64,
+    actor: Option<&Actor>,
+    revision: Option<String>,
+    fix: &str,
+) -> Result<Record> {
     for id in &draft.criteria {
         ensure!(valid_criterion_id(id), "invalid linked ID {id}");
     }
@@ -852,10 +894,8 @@ fn create(root: &Path, draft: Draft, redact: bool) -> Result<(Stored, usize)> {
     }
     check_scope(&draft.scope)?;
     check_classification(&draft.classification)?;
-    let at = now()?;
-    let actor = Actor::current();
-    let mut record = Record::new(&write_up(&draft));
-    let found_by = match &actor {
+    let mut record = Record::new(&write_up(draft, fix));
+    let found_by = match actor {
         Some(actor) => format!("{} ({})", actor.display(), one_line(&draft.source)),
         None => one_line(&draft.source),
     };
@@ -890,11 +930,11 @@ fn create(root: &Path, draft: Draft, redact: bool) -> Result<(Stored, usize)> {
         record.set_scalar("fixture", fixture)?;
     }
     record.set_scalar("environment", &one_line(&draft.environment))?;
-    if let Some(revision) = head_revision(root) {
+    if let Some(revision) = revision {
         record.set_scalar("revision", &revision)?;
     }
     record.set_scalar("found_by", &found_by)?;
-    if let Some(actor) = &actor {
+    if let Some(actor) = actor {
         record.set("actor", actor.front_value())?;
     }
     record.set("related", Front::List(vec![]))?;
@@ -904,14 +944,19 @@ fn create(root: &Path, draft: Draft, redact: bool) -> Result<(Stored, usize)> {
     if !draft.evidence.is_empty() {
         report.push_str(&format!("; evidence: {}", draft.evidence.join(", ")));
     }
-    let mut entries = vec![log_line(at, &report, actor.as_ref())];
-    entries.extend(
-        draft
-            .notes
-            .iter()
-            .map(|note| log_line(at, note, actor.as_ref())),
-    );
+    let mut entries = vec![log_line(at, &report, actor)];
+    entries.extend(draft.notes.iter().map(|note| log_line(at, note, actor)));
     record.append_to_section(LOG, &(entries.join("\n") + "\n"))?;
+    Ok(record)
+}
+
+/// Write a new bug named `<date>-<title slug>` by create-new (REQ-records-003); `redact`
+/// redacts leaks instead of refusing, as automatic failure capture does. Returns the
+/// stored record and how many values were redacted.
+fn create(root: &Path, draft: Draft, redact: bool) -> Result<(Stored, usize)> {
+    let at = now()?;
+    let actor = Actor::current();
+    let mut record = draft_record(&draft, at, actor.as_ref(), head_revision(root), NOT_FIXED)?;
 
     // The name comes from the checked title, so a redacted title never names the file.
     let local = Local::current();
@@ -1522,7 +1567,6 @@ pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<Str
 }
 
 /// Whether a bug status is closed: verified, duplicate, wont-fix or fixed-upstream.
-#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn is_closed_status(status: &str) -> bool {
     CLOSED.contains(&status)
 }
@@ -1681,9 +1725,384 @@ pub(super) fn receipts(root: &Path) -> Result<Vec<(String, Receipt)>> {
             bug.record
                 .maps("receipts")
                 .into_iter()
+                .filter(|map| removed_by(map).is_none())
                 .map(|map| (bug.id().to_string(), map))
         })
         .collect())
+}
+
+/// A 0.5.x bug record, `.chough/bugs/<BUG-ID>.json` (schema 1), as every release from
+/// 0.1.0 to 0.5.0 wrote it. Unknown keys are ignored.
+#[derive(Deserialize)]
+struct Legacy {
+    id: String,
+    title: String,
+    symptom: String,
+    trigger: String,
+    expected: String,
+    actual: String,
+    #[serde(default)]
+    criteria: Vec<String>,
+    #[serde(default)]
+    requirements: Vec<String>,
+    #[serde(default)]
+    cases: Vec<String>,
+    environment: String,
+    #[serde(default)]
+    revision: Option<String>,
+    #[serde(default)]
+    steps: Vec<String>,
+    #[serde(default)]
+    fixture: Option<String>,
+    #[serde(default)]
+    observations: Vec<String>,
+    impact: String,
+    classification: String,
+    scope: String,
+    status: String,
+    #[serde(default)]
+    regression_baseline: Option<String>,
+    #[serde(default)]
+    duplicate_of: Option<String>,
+    #[serde(default)]
+    related: Vec<String>,
+    source: String,
+    #[serde(default)]
+    notes: Vec<LegacyNote>,
+    created_at_unix_seconds: u64,
+    updated_at_unix_seconds: u64,
+}
+
+#[derive(Deserialize)]
+struct LegacyNote {
+    at_unix_seconds: u64,
+    text: String,
+    #[serde(default)]
+    observations: Vec<String>,
+}
+
+impl Legacy {
+    /// Every observation it links, in link order: its observations, its notes'
+    /// observations and its regression baseline.
+    fn linked(&self) -> Vec<String> {
+        let mut ids: Vec<String> = vec![];
+        for id in self
+            .observations
+            .iter()
+            .chain(self.notes.iter().flat_map(|note| &note.observations))
+            .chain(&self.regression_baseline)
+        {
+            if !ids.contains(id) {
+                ids.push(id.clone());
+            }
+        }
+        ids
+    }
+
+    fn is_open(&self) -> bool {
+        !CLOSED.contains(&self.status.as_str())
+    }
+}
+
+/// The 0.5.x bound of one record file.
+const LEGACY_BOUND: u64 = 1_048_576;
+
+/// Every 0.5.x bug, `BUG-NNNN` and `BUG-<slug>-<hex>` alike, with its project-relative
+/// path, sorted by path. A file that does not read as a 0.5.x bug refuses the plan,
+/// naming it.
+fn legacy_bugs(root: &Path) -> Result<Vec<(String, Legacy)>> {
+    let folder = local_path(root, BUGS_DIR)?;
+    let entries = match std::fs::read_dir(&folder) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(vec![]),
+        Err(error) => return Err(error).with_context(|| format!("reading {BUGS_DIR}")),
+    };
+    let mut names: Vec<String> = entries
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_file()))
+        .filter_map(|entry| entry.file_name().into_string().ok())
+        .filter(|name| name.ends_with(".json"))
+        .collect();
+    names.sort();
+    let mut bugs = vec![];
+    for name in names {
+        let path = format!("{BUGS_DIR}/{name}");
+        let text = read_bounded_record(&folder.join(&name), LEGACY_BOUND)
+            .with_context(|| format!("{path} cannot be read, so no plan was made"))?;
+        let legacy: Legacy = serde_json::from_str(&text)
+            .with_context(|| format!("{path} is not a 0.5.x bug record, so no plan was made"))?;
+        bugs.push((path, legacy));
+    }
+    Ok(bugs)
+}
+
+/// Migration hook 2 (REQ-records-009): each 0.5.x bug's ID with the observation IDs it
+/// links, for the evidence mapper to place before the bug mapper runs.
+pub(super) fn links_0_5(root: &Path) -> Result<std::collections::BTreeMap<String, Vec<String>>> {
+    Ok(legacy_bugs(root)?
+        .into_iter()
+        .map(|(_, legacy)| (legacy.id.clone(), legacy.linked()))
+        .collect())
+}
+
+/// The files under `fixture` when it names a file or folder in the project; nothing
+/// for a description that is not a path.
+fn fixture_files(root: &Path, fixture: &str) -> Vec<String> {
+    fn walk(root: &Path, relative: &str, files: &mut Vec<String>) {
+        let Ok(path) = local_path(root, relative) else {
+            return;
+        };
+        if path.is_file() {
+            files.push(relative.to_string());
+        } else if let Ok(entries) = std::fs::read_dir(&path) {
+            let mut names: Vec<String> = entries
+                .filter_map(|entry| entry.ok())
+                .filter_map(|entry| entry.file_name().into_string().ok())
+                .collect();
+            names.sort();
+            for name in names {
+                walk(
+                    root,
+                    &format!("{}/{name}", relative.trim_end_matches('/')),
+                    files,
+                );
+            }
+        }
+    }
+    let mut files = vec![];
+    walk(root, fixture.trim_end_matches('/'), &mut files);
+    files
+}
+
+// The evidence mapper (t37d) calls it to keep these files; until then only tests do.
+#[cfg_attr(not(test), allow(dead_code))]
+/// The fixture files of every open 0.5.x bug, folders expanded: kept byte for byte by
+/// the migration, so the evidence mapper never lists them as removed (REQ-records-009).
+pub(super) fn open_fixtures_0_5(root: &Path) -> Result<BTreeSet<String>> {
+    Ok(open_fixture_owners_0_5(root)?.into_keys().collect())
+}
+
+/// Each fixture file of an open 0.5.x bug, folders expanded, with why the migration
+/// keeps it byte for byte, naming the bug (REQ-records-009).
+pub(super) fn open_fixture_owners_0_5(
+    root: &Path,
+) -> Result<std::collections::BTreeMap<String, String>> {
+    let mut owners = std::collections::BTreeMap::new();
+    for (_, legacy) in legacy_bugs(root)? {
+        if !legacy.is_open() {
+            continue;
+        }
+        let Some(fixture) = legacy.fixture.as_deref() else {
+            continue;
+        };
+        for file in fixture_files(root, fixture) {
+            owners.entry(file).or_insert_with(|| {
+                format!("the fixture of open bug {}, kept byte for byte", legacy.id)
+            });
+        }
+    }
+    Ok(owners)
+}
+
+/// The migration receipt this plan writes. Plan step 10's `migrate::receipt_path` gives
+/// it at integration; it is the same path.
+fn migration_receipt() -> Result<String> {
+    crate::migrate::receipt_path()
+}
+
+/// A deterministic clash suffix for a migrated bug: the first 6 hexadecimal digits of
+/// the SHA-256 of its 0.5.x ID, so a preview and its apply name every bug alike.
+fn migration_suffix(old: &str) -> String {
+    use sha2::{Digest, Sha256};
+    format!("{:x}", Sha256::digest(old.as_bytes()))[..6].to_string()
+}
+
+/// Migration hook 4 (REQ-records-009): each 0.5.x bug as the Markdown bug `bug add`
+/// writes, named by its creation date and title, its 0.5.x ID an alias. Every field,
+/// note and status change carries over with its original time. Each linked observation
+/// is a receipt when the evidence mapper made it one, an evidence link when it is an
+/// open session's entry, and otherwise a tombstone naming the migration receipt, which
+/// never counts. An open bug's fixture files are kept byte for byte, each that holds a
+/// leak listed; a closed bug's fixture files under `.chough/artifacts/` are removed.
+/// Nothing is written and nothing redacted here: the framework redacts every written
+/// file.
+pub(super) fn migrate_0_5(
+    root: &Path,
+    homes: &crate::migrate::ObservationHomes,
+) -> Result<crate::migrate::Carried> {
+    let mut carried = crate::migrate::Carried::default();
+    let receipt = migration_receipt()?;
+    // Names already taken: 0.6.0 bugs in a mixed tree, then the ones this plan writes.
+    // A 0.6.0 bug already in the tree, with the 0.5.x IDs it answers to. One that holds
+    // a migrating bug's old ID is that bug's own write from an interrupted apply, so its
+    // name is not taken from it and the plan, and its digest, stay the same.
+    let existing: Vec<(String, Vec<String>)> = records_in(root, BUGS_DIR, Kind::Bug.bound())
+        .into_iter()
+        .map(|(name, record)| {
+            (
+                name.trim_end_matches(".md").to_string(),
+                record.list("aliases"),
+            )
+        })
+        .collect();
+    let mut planned: BTreeSet<String> = BTreeSet::new();
+    let taken = |name: &str, old: &str, planned: &BTreeSet<String>| {
+        planned.contains(name)
+            || existing
+                .iter()
+                .any(|(other, aliases)| other == name && !aliases.iter().any(|alias| alias == old))
+    };
+    let local = Local::current();
+    for (source, legacy) in legacy_bugs(root)? {
+        carried.sources.insert(source.clone());
+        let linked = legacy.linked();
+        // The observations the report itself linked; later ones arrive in notes.
+        let noted: BTreeSet<&String> = legacy
+            .notes
+            .iter()
+            .flat_map(|note| &note.observations)
+            .collect();
+        let reported: Vec<String> = legacy
+            .observations
+            .iter()
+            .filter(|id| !noted.contains(id))
+            .cloned()
+            .collect();
+        let draft = Draft {
+            title: legacy.title.clone(),
+            symptom: legacy.symptom.clone(),
+            trigger: legacy.trigger.clone(),
+            expected: legacy.expected.clone(),
+            actual: legacy.actual.clone(),
+            steps: legacy.steps.clone(),
+            impact: legacy.impact.clone(),
+            classification: legacy.classification.clone(),
+            scope: legacy.scope.clone(),
+            criteria: legacy.criteria.clone(),
+            requirements: legacy.requirements.clone(),
+            cases: legacy.cases.clone(),
+            evidence: reported,
+            regression_baseline: legacy.regression_baseline.clone(),
+            fixture: legacy.fixture.clone(),
+            environment: legacy.environment.clone(),
+            source: legacy.source.clone(),
+            notes: vec![],
+        };
+        let fix = if legacy.is_open() {
+            NOT_FIXED
+        } else {
+            "Recorded before 0.6.0; the Log keeps its history."
+        };
+        let mut record = draft_record(
+            &draft,
+            legacy.created_at_unix_seconds,
+            None,
+            legacy.revision.clone(),
+            fix,
+        )
+        .with_context(|| format!("{source} does not carry into a bug record"))?;
+        record.set_scalar("status", &legacy.status)?;
+        record.set("aliases", Front::List(vec![legacy.id.clone()]))?;
+        // The evidence it links: its observations, then its notes'; the regression
+        // baseline keeps its own field.
+        let mut evidence: Vec<String> = vec![];
+        for id in legacy
+            .observations
+            .iter()
+            .chain(legacy.notes.iter().flat_map(|note| &note.observations))
+        {
+            if !evidence.contains(id) {
+                evidence.push(id.clone());
+            }
+        }
+        record.set("evidence", Front::List(evidence))?;
+        let mut receipts: Vec<Vec<(String, String)>> = vec![];
+        for id in &linked {
+            if let Some(map) = homes.receipts.get(id) {
+                if !receipts.contains(map) {
+                    receipts.push(map.clone());
+                }
+            } else if !homes.entries.contains_key(id) {
+                receipts.push(vec![
+                    ("id".to_string(), id.clone()),
+                    ("removed".to_string(), receipt.clone()),
+                ]);
+                carried.aliases.insert(id.clone(), "removed".to_string());
+            }
+        }
+        record.set("receipts", Front::Maps(receipts))?;
+        record.set("related", Front::List(legacy.related.clone()))?;
+        if let Some(original) = &legacy.duplicate_of {
+            record.set_scalar("duplicate_of", original)?;
+        }
+        record.set_scalar("updated", &iso_time(legacy.updated_at_unix_seconds))?;
+        let entries: Vec<String> = legacy
+            .notes
+            .iter()
+            .map(|note| {
+                let mut text = note.text.clone();
+                if !note.observations.is_empty() {
+                    text.push_str(&format!("; evidence: {}", note.observations.join(", ")));
+                }
+                log_line(note.at_unix_seconds, &text, None)
+            })
+            .collect();
+        if !entries.is_empty() {
+            record.append_to_section(LOG, &(entries.join("\n") + "\n"))?;
+        }
+        let title = record.scalar("title").unwrap_or_default().to_string();
+        let mut name = identity::dated_name(
+            &identity::utc_date(legacy.created_at_unix_seconds),
+            &title,
+            "bug",
+        );
+        if taken(&name, &legacy.id, &planned) {
+            name = format!("{name}-{}", migration_suffix(&legacy.id));
+            ensure!(
+                !taken(&name, &legacy.id, &planned),
+                "refused: {source} and another bug both migrate to {BUGS_DIR}/{name}.md, so no plan was made"
+            );
+        }
+        planned.insert(name.clone());
+        record.set_scalar("id", &name)?;
+        let path = format!("{BUGS_DIR}/{name}.md");
+        let stored = Stored {
+            path: path.clone(),
+            record,
+        };
+        validate(&stored).with_context(|| format!("{source} does not carry into a bug record"))?;
+        carried.written.push(crate::migrate::Written {
+            path: path.clone(),
+            bytes: stored.record.render_within(Kind::Bug)?,
+        });
+        carried.aliases.insert(legacy.id.clone(), path);
+        if let Some(fixture) = &legacy.fixture {
+            for file in fixture_files(root, fixture) {
+                if legacy.is_open() {
+                    let bytes = std::fs::read(local_path(root, &file)?)?;
+                    let mut kinds: Vec<String> =
+                        leaks::find(local, &String::from_utf8_lossy(&bytes))
+                            .iter()
+                            .map(|found| found.kind.name().to_string())
+                            .collect();
+                    kinds.sort();
+                    kinds.dedup();
+                    if !kinds.is_empty() {
+                        carried.kept_with_leaks.insert(file, kinds);
+                    }
+                } else if file.starts_with(".chough/artifacts/") {
+                    carried.removed.insert(
+                        file,
+                        format!(
+                            "the fixture of closed bug {}, which no open bug names",
+                            legacy.id
+                        ),
+                    );
+                }
+            }
+        }
+    }
+    Ok(carried)
 }
 
 pub(super) fn run(root: &Path, command: BugCommand) -> Result<()> {
@@ -2240,6 +2659,343 @@ mod tests {
         assert!(!records_verified("Additional evidence."));
     }
 
+    /// 2026-11-01T10:00:00Z, a 0.5.x bug's creation time in the migration tests.
+    const CREATED: u64 = 1_793_527_200;
+
+    fn legacy_json(id: &str, title: &str, status: &str, extra: serde_json::Value) -> String {
+        let mut value = json!({
+            "schema_version": 1,
+            "id": id,
+            "title": title,
+            "symptom": "Totals are off by one",
+            "trigger": "Any order",
+            "expected": "Exact totals",
+            "actual": "Total plus one",
+            "criteria": ["FLOW-8"],
+            "requirements": ["REQ-cli-012"],
+            "cases": ["TC-cli-0001"],
+            "environment": "local",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "steps": ["Open checkout"],
+            "fixture": null,
+            "observations": [],
+            "impact": "Every order",
+            "classification": "product-defect",
+            "scope": "in-scope",
+            "status": status,
+            "regression_baseline": null,
+            "duplicate_of": null,
+            "related": [],
+            "source": "manual report",
+            "notes": [],
+            "created_at_unix_seconds": CREATED,
+            "updated_at_unix_seconds": CREATED + 500,
+        });
+        for (key, extra) in extra.as_object().unwrap() {
+            value[key] = extra.clone();
+        }
+        serde_json::to_string_pretty(&value).unwrap()
+    }
+
+    /// TC-records-migrate-from-0-5, the bug mapper (REQ-records-009, REQ-cli-012): each
+    /// 0.5.x bug, of either ID form, becomes the Markdown bug `bug add` writes, named by
+    /// its creation date and title, its 0.5.x ID an alias, with every field, note and
+    /// status change at its original time. Linked observations become receipts, evidence
+    /// links or tombstones naming the migration receipt; an open bug's fixture is kept
+    /// and its leak listed; a closed bug's artifact fixture is removed; a same-day,
+    /// same-title clash gets the suffix its old ID derives.
+    #[test]
+    fn migrated_bugs_carry_every_field_alias_link_and_fixture() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        let write = |relative: &str, text: &str| {
+            let path = root.join(relative);
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(path, text).unwrap();
+        };
+        write(
+            ".chough/bugs/BUG-0007.json",
+            &legacy_json(
+                "BUG-0007",
+                "Totals are off by one",
+                "investigating",
+                json!({
+                    "scope": "blocking",
+                    "fixture": ".chough/artifacts/repro/",
+                    "observations": ["OBS-entry", "OBS-receipt", "OBS-gone", "OBS-later"],
+                    "related": ["BUG-closed-receipts-0123456789abcdef01234567"],
+                    "notes": [{"at_unix_seconds": CREATED + 100, "text": "status: open -> investigating. Seen again", "observations": ["OBS-later"]}],
+                }),
+            ),
+        );
+        write(
+            ".chough/artifacts/repro/case.log",
+            "failed under /Users/SYNTHETIC-user/project\n",
+        );
+        write(".chough/artifacts/repro/clean.log", "failed\n");
+        write(
+            ".chough/bugs/BUG-closed-receipts-0123456789abcdef01234567.json",
+            &legacy_json(
+                "BUG-closed-receipts-0123456789abcdef01234567",
+                "Closed receipts",
+                "verified",
+                json!({
+                    "fixture": ".chough/artifacts/closed/proof.log",
+                    "observations": ["OBS-receipt"],
+                    "notes": [{"at_unix_seconds": CREATED + 300, "text": "status: fix-pending-verification -> verified", "observations": []}],
+                }),
+            ),
+        );
+        write(".chough/artifacts/closed/proof.log", "passed\n");
+        // The same title on the same day as BUG-0007.
+        write(
+            ".chough/bugs/BUG-0008.json",
+            &legacy_json(
+                "BUG-0008",
+                "Totals are off by one",
+                "open",
+                json!({"fixture": "tests/cli.rs"}),
+            ),
+        );
+        let mut homes = crate::migrate::ObservationHomes::default();
+        homes.entries.insert(
+            "OBS-entry".into(),
+            ".chough/sessions/2026-11-01-work/evidence/2026-11-01-entry.md".into(),
+        );
+        let receipt_map = vec![
+            ("id".to_string(), "2026-11-01-receipt".to_string()),
+            ("aliases".to_string(), "OBS-receipt".to_string()),
+            ("result".to_string(), "failed".to_string()),
+            ("observed".to_string(), "2026-11-01T10:01:00Z".to_string()),
+        ];
+        homes
+            .receipts
+            .insert("OBS-receipt".into(), receipt_map.clone());
+
+        assert_eq!(
+            links_0_5(root).unwrap().get("BUG-0007"),
+            Some(&vec![
+                "OBS-entry".to_string(),
+                "OBS-receipt".to_string(),
+                "OBS-gone".to_string(),
+                "OBS-later".to_string()
+            ])
+        );
+        let carried = migrate_0_5(root, &homes).unwrap();
+        assert_eq!(
+            carried.sources.iter().cloned().collect::<Vec<_>>(),
+            vec![
+                ".chough/bugs/BUG-0007.json",
+                ".chough/bugs/BUG-0008.json",
+                ".chough/bugs/BUG-closed-receipts-0123456789abcdef01234567.json"
+            ]
+        );
+        let open = ".chough/bugs/2026-11-01-totals-are-off-by-one.md";
+        let clash = format!(
+            ".chough/bugs/2026-11-01-totals-are-off-by-one-{}.md",
+            migration_suffix("BUG-0008")
+        );
+        let closed = ".chough/bugs/2026-11-01-closed-receipts.md";
+        assert_eq!(carried.aliases.get("BUG-0007"), Some(&open.to_string()));
+        assert_eq!(carried.aliases.get("BUG-0008"), Some(&clash));
+        assert_eq!(
+            carried
+                .aliases
+                .get("BUG-closed-receipts-0123456789abcdef01234567"),
+            Some(&closed.to_string())
+        );
+        for removed in ["OBS-gone", "OBS-later"] {
+            assert_eq!(carried.aliases.get(removed), Some(&"removed".to_string()));
+        }
+        assert!(!carried.aliases.contains_key("OBS-entry"));
+        assert!(!carried.aliases.contains_key("OBS-receipt"));
+        let written = |path: &str| -> Record {
+            let file = carried
+                .written
+                .iter()
+                .find(|written| written.path == path)
+                .unwrap_or_else(|| panic!("{path} not written: {:?}", carried.written));
+            markdown::parse(path, &file.bytes).unwrap()
+        };
+
+        // The open bug: every field, its alias, its links and its Log at original times.
+        let bug = written(open);
+        let receipt = migration_receipt().unwrap();
+        assert_eq!(
+            bug.keys(),
+            vec![
+                "kind",
+                "id",
+                "aliases",
+                "title",
+                "status",
+                "classification",
+                "scope",
+                "impact",
+                "criteria",
+                "requirements",
+                "cases",
+                "evidence",
+                "receipts",
+                "fixture",
+                "environment",
+                "revision",
+                "found_by",
+                "related",
+                "created",
+                "updated"
+            ]
+        );
+        assert_eq!(bug.scalar("id"), Some("2026-11-01-totals-are-off-by-one"));
+        assert_eq!(bug.list("aliases"), vec!["BUG-0007"]);
+        assert_eq!(bug.scalar("status"), Some("investigating"));
+        assert_eq!(bug.scalar("scope"), Some("blocking"));
+        assert_eq!(
+            bug.list("evidence"),
+            vec!["OBS-entry", "OBS-receipt", "OBS-gone", "OBS-later"]
+        );
+        let tombstone = |id: &str| {
+            vec![
+                ("id".to_string(), id.to_string()),
+                ("removed".to_string(), receipt.clone()),
+            ]
+        };
+        assert_eq!(
+            bug.maps("receipts"),
+            vec![
+                receipt_map.clone(),
+                tombstone("OBS-gone"),
+                tombstone("OBS-later")
+            ]
+        );
+        assert_eq!(
+            bug.list("related"),
+            vec!["BUG-closed-receipts-0123456789abcdef01234567"]
+        );
+        assert_eq!(bug.scalar("created"), Some("2026-11-01T10:00:00Z"));
+        assert_eq!(bug.scalar("updated"), Some("2026-11-01T10:08:20Z"));
+        assert_eq!(bug.scalar("found_by"), Some("manual report"));
+        assert_eq!(bug.get("actor"), None);
+        let stored = Stored {
+            path: open.to_string(),
+            record: bug,
+        };
+        assert_eq!(
+            stored.log(),
+            vec![
+                "- 2026-11-01T10:00:00Z · Reported (manual report); evidence: OBS-entry, OBS-receipt, OBS-gone",
+                "- 2026-11-01T10:01:40Z · status: open -> investigating. Seen again; evidence: OBS-later",
+            ]
+        );
+        assert_eq!(stored.paragraph(FIX), NOT_FIXED);
+        assert_eq!(stored.symptom(), "Totals are off by one");
+        assert_eq!(stored.actual(), "Total plus one");
+        assert_eq!(stored.steps(), vec!["Open checkout"]);
+
+        // Removed links never count: they read `removed`, naming the receipt.
+        let evidence = Evidence::new(root);
+        let labels = evidence.labels(&stored).unwrap();
+        let label = |id: &str| {
+            labels
+                .iter()
+                .find(|label| label["id"] == id)
+                .cloned()
+                .unwrap()
+        };
+        assert_eq!(label("OBS-gone")["label"], "removed");
+        assert_eq!(label("OBS-gone")["receipt"], receipt.as_str());
+        assert_eq!(label("OBS-receipt")["label"], "bug-receipt");
+        assert_eq!(evidence.verification(&stored).unwrap(), "reproduced");
+        let mut gone_only = stored.clone();
+        gone_only
+            .record
+            .set("evidence", Front::List(vec!["OBS-gone".into()]))
+            .unwrap();
+        assert_eq!(evidence.verification(&gone_only).unwrap(), "unverified");
+
+        // The closed bug: its status, its Log and its Fix paragraph.
+        let closed_bug = Stored {
+            path: closed.to_string(),
+            record: written(closed),
+        };
+        assert_eq!(closed_bug.status(), "verified");
+        assert_eq!(
+            closed_bug.paragraph(FIX),
+            "Recorded before 0.6.0; the Log keeps its history."
+        );
+        assert!(
+            closed_bug
+                .log()
+                .last()
+                .unwrap()
+                .ends_with("status: fix-pending-verification -> verified")
+        );
+        assert_eq!(closed_bug.record.maps("receipts"), vec![receipt_map]);
+
+        // Fixtures: the open bug's files are kept, the one holding a leak listed; the
+        // closed bug's artifact is removed; a fixture outside the artifacts is untouched.
+        assert_eq!(
+            carried.kept_with_leaks,
+            [(
+                ".chough/artifacts/repro/case.log".to_string(),
+                vec!["home-path".to_string()]
+            )]
+            .into()
+        );
+        assert_eq!(
+            carried.removed.keys().cloned().collect::<Vec<_>>(),
+            vec![".chough/artifacts/closed/proof.log"]
+        );
+        assert!(
+            carried.removed[".chough/artifacts/closed/proof.log"]
+                .contains("BUG-closed-receipts-0123456789abcdef01234567")
+        );
+        assert_eq!(
+            open_fixtures_0_5(root)
+                .unwrap()
+                .into_iter()
+                .collect::<Vec<_>>(),
+            vec![
+                ".chough/artifacts/repro/case.log",
+                ".chough/artifacts/repro/clean.log"
+            ]
+        );
+        // The mapper writes nothing.
+        assert!(!root.join(open).exists());
+        assert!(root.join(".chough/bugs/BUG-0007.json").exists());
+    }
+
+    /// A clash of the derived suffix too refuses the plan, naming the source.
+    #[test]
+    fn a_migrated_name_taken_twice_refuses_the_plan() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        std::fs::create_dir_all(root.join(".chough/bugs")).unwrap();
+        std::fs::write(
+            root.join(".chough/bugs/BUG-0001.json"),
+            legacy_json("BUG-0001", "Same", "open", json!({})),
+        )
+        .unwrap();
+        // A 0.6.0 bug already holds both names.
+        for name in [
+            "2026-11-01-same".to_string(),
+            format!("2026-11-01-same-{}", migration_suffix("BUG-0001")),
+        ] {
+            std::fs::write(
+                root.join(format!(".chough/bugs/{name}.md")),
+                format!("---\nkind: bug\nid: {name}\n---\n# Same\n"),
+            )
+            .unwrap();
+        }
+        let error = migrate_0_5(root, &crate::migrate::ObservationHomes::default())
+            .unwrap_err()
+            .to_string();
+        assert!(
+            error.contains("refused") && error.contains("BUG-0001.json"),
+            "{error}"
+        );
+    }
+
     #[test]
     fn paragraphs_and_steps_read_back() {
         let draft = Draft {
@@ -2264,7 +3020,7 @@ mod tests {
         };
         let stored = Stored {
             path: String::new(),
-            record: Record::new(&write_up(&draft)),
+            record: Record::new(&write_up(&draft, NOT_FIXED)),
         };
         assert_eq!(stored.symptom(), "It breaks");
         assert_eq!(stored.actual(), "Broke badly");

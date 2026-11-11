@@ -389,7 +389,8 @@ impl Fixture {
 # .stub-validity (terminal evidence when archived; none omits it), .stub-next (the
 # native next action), .stub-affected (the quoted modules of change.affected_specs;
 # none omits the change object), .stub-no-spec (true or false), .stub-verification (a JSON
-# array reported as summary.verification_commands; absent omits it) and .stub-fail. When
+# array reported as summary.verification_commands; absent omits it), .stub-definition-digest
+# (summary.definition_digest; absent omits it) and .stub-fail. When
 # .stub-count exists, every call appends a line to .stub-calls. summary.id echoes the
 # requested change, as SpecSync's status reply names it.
 if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
@@ -403,6 +404,7 @@ affected=$(cat .stub-affected 2>/dev/null || echo '')
 nospec=$(cat .stub-no-spec 2>/dev/null || echo true)
 fields=",\"correction_valid\":$correction"
 if [ -f .stub-verification ]; then fields="$fields,\"verification_commands\":$(cat .stub-verification)"; fi
+if [ -f .stub-definition-digest ]; then fields="$fields,\"definition_digest\":\"$(cat .stub-definition-digest)\""; fi
 if [ "$approval" != none ]; then fields="$fields,\"approval_valid\":$approval"; fi
 if [ "$state" = archived ] && [ "$validity" != none ]; then
     fields="$fields,\"terminal_evidence\":{\"validity\":\"$validity\"}"
