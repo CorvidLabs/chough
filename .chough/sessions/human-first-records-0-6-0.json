@@ -18,7 +18,7 @@
     "callers": [],
     "iteration": 1
   },
-  "native_change": null,
+  "native_change": "chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an",
   "references": {
     "criteria": [],
     "requirements": [],
@@ -34,7 +34,9 @@
     "Ship the human-first redesign as ONE change, released as Chough 0.6.0, dogfooded on the chough repo only; update the other repos only after 0.6.0 is released at >=95% confidence, because Leif chose 'all at once for chough 0.6.0 and only use it for chough itself' (2026-11-10)",
     "Windows: FLOW-17 and FLOW-21 read together as 'Windows is best-effort, through WSL'; offered to Leif as the default with the #212 summary and not changed (2026-11-10)",
     "Leif (0xLeif) decided \"Design review of design/prototype (Artifact 1gaHcJYeiULDxWtKMGUZim)\": \"Approve the design\" (Coordinator chat with Leif (Claude Code, hc terminal t370), 2026-11-10, answer to the design approval question); recorded by claude-code (claude-opus-5-5, hc t370); a relayed claim, not authenticated",
-    "Leif (0xLeif) decided \"Intent approval of the human-first cycle as a whole (chough #212)\": \"Approve it\" (Coordinator chat with Leif (Claude Code, hc terminal t370), 2026-11-10, answer to: Do you approve this as Chough's intent? (the 10-point #212 summary, Windows read as best-effort through WSL)); recorded by claude-code (claude-opus-5-5, hc t370); a relayed claim, not authenticated"
+    "Leif (0xLeif) decided \"Intent approval of the human-first cycle as a whole (chough #212)\": \"Approve it\" (Coordinator chat with Leif (Claude Code, hc terminal t370), 2026-11-10, answer to: Do you approve this as Chough's intent? (the 10-point #212 summary, Windows read as best-effort through WSL)); recorded by claude-code (claude-opus-5-5, hc t370); a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Should all finished-session stories stay in the archive?\": \"Keep all (Recommended)\", meaning every finished session stays as one small story file in the archive and nothing is trimmed, so links never break; the retired KNOW-29 five-session bound does not come back (Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10); relayed by t370, recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated",
+    "Leif (0xLeif) decided \"Where should proof files live: failure logs and screenshots?\": \"Split them (Recommended)\", meaning logs go to CI, the record keeps the key failing lines, the exact command and a fingerprint, and a few small key screenshots are committed next to the session story with a size cap so they never expire; the cap and layout are proposed in the plan for Leif to confirm at scope approval (Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10); relayed by t370, recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated"
   ],
   "open_questions": [],
   "completed": [],
@@ -43,5 +45,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Record Leif's design and intent approvals, then plan the single native 0.6.0 change"
+  "next_action": "Write the 0.6.0 native change artifacts and deltas, then open the scope gate"
 }
