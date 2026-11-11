@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-migrate-receipt-bound-5bcd8311e4e7a9153331bc63",
+  "criteria": [
+    "DRIVE-27",
+    "LIFE-21"
+  ],
+  "requirements": [
+    "REQ-records-009",
+    "REQ-records-001"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test migrate -- --exact a_receipt_past_the_ordinary_record_bound_applies for TC-records-migrate-receipt-bound: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-migrate-receipt-bound-5bcd8311e4e7a9153331bc63.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-migrate-receipt-bound-5bcd8311e4e7a9153331bc63.log": "97bc28bcf045ea885fd71baa1482fb51826a0a7870193f8f220712720b009fd9"
+  },
+  "observed_at_unix_seconds": 1794439407,
+  "snapshot": {
+    "revision": "28093a9ab056c3fa78cc3aedcc8fd2d7d8879fa2",
+    "dirty": false,
+    "fingerprint": "9341988317233dded3f33788d758c0176021b130c0c855c86d3ada1c9253e45d",
+    "content": "9218d78334a5ddd94e2d5c42179486152591ab8c270169b953c2fbefd326b2df"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-migrate-receipt-bound",
+      "digest": "fbca3a057e623eff3f46b9c600087b1c0c57af78f92cf440dd6e162a3adcc3a9"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "migrate",
+    "--",
+    "--exact",
+    "a_receipt_past_the_ordinary_record_bound_applies"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 11
+}

@@ -1,5 +1,4 @@
 mod actor;
-mod attachments;
 mod bugs;
 mod cases;
 mod change;
@@ -1375,6 +1374,21 @@ mod tests {
         );
         git_in(&a, &["checkout", "-q", "-b", "a"]);
         git_in(&b, &["checkout", "-q", "-b", "b"]);
+        // REQ-cli-023: each root runs the case in its own session on its own branch.
+        sessions::run(
+            &b,
+            sessions::SessionCommand::New {
+                key: "second-root".into(),
+                objective: "Same-second runs, second root".into(),
+                intent_scope: String::new(),
+                modules: vec!["cli".into()],
+            },
+        )
+        .unwrap();
+        let session_of =
+            |root: &Path| sessions::id_of(&sessions::checkpoint_path(root).unwrap()).unwrap();
+        let (session_a, session_b) = (session_of(&a), session_of(&b));
+        assert_ne!(session_a, session_b);
 
         let (run_a, run_b) = records::with_native_stdout("hi", HI, || {
             records::with_pinned_clock(SECOND, || {
@@ -1384,22 +1398,22 @@ mod tests {
                 )
             })
         });
-        assert_ne!(run_a.observation, run_b.observation);
-        let record = |root: &Path, id: &str| {
-            let path = root.join(format!(".chough/evidence/{id}.json"));
-            let text = fs::read(&path).unwrap();
-            let evidence: evidence::Evidence = serde_json::from_slice(&text).unwrap();
-            (text, evidence)
-        };
-        let (text_a, evidence_a) = record(&a, &run_a.observation);
-        let (text_b, evidence_b) = record(&b, &run_b.observation);
-        assert_eq!(evidence_a.observed_at_unix_seconds, SECOND);
-        assert_eq!(evidence_b.observed_at_unix_seconds, SECOND);
-        assert_eq!(evidence_a.artifacts.len(), 1);
-        assert_eq!(evidence_b.artifacts.len(), 1);
-        assert_ne!(evidence_a.artifacts, evidence_b.artifacts);
-        let artifact_a = fs::read(a.join(&evidence_a.artifacts[0])).unwrap();
-        let artifact_b = fs::read(b.join(&evidence_b.artifacts[0])).unwrap();
+        let entry =
+            |session: &str, id: &str| format!(".chough/sessions/{session}/evidence/{id}.md");
+        let (path_a, path_b) = (
+            entry(&session_a, &run_a.observation),
+            entry(&session_b, &run_b.observation),
+        );
+        assert_ne!(path_a, path_b);
+        let text_a = fs::read(a.join(&path_a)).unwrap();
+        let text_b = fs::read(b.join(&path_b)).unwrap();
+        for text in [&text_a, &text_b] {
+            let text = String::from_utf8_lossy(text);
+            assert!(
+                text.contains(&format!("observed: {}", session_md::iso_time(SECOND))),
+                "{text}"
+            );
+        }
 
         git_in(&a, &["add", "-A"]);
         git_in(&a, &["commit", "-q", "-m", "run a"]);
@@ -1417,17 +1431,9 @@ mod tests {
             ],
         );
 
-        // Both sides survive byte for byte under their own names, and still read current.
-        assert_eq!(record(&a, &run_a.observation).0, text_a);
-        assert_eq!(record(&a, &run_b.observation).0, text_b);
-        assert_eq!(
-            fs::read(a.join(&evidence_a.artifacts[0])).unwrap(),
-            artifact_a
-        );
-        assert_eq!(
-            fs::read(a.join(&evidence_b.artifacts[0])).unwrap(),
-            artifact_b
-        );
+        // Both entries survive byte for byte at their own paths, and still read current.
+        assert_eq!(fs::read(a.join(&path_a)).unwrap(), text_a);
+        assert_eq!(fs::read(a.join(&path_b)).unwrap(), text_b);
         let merged = evidence::load_all(&a).unwrap();
         assert_eq!(merged.len(), 2);
         let current = evidence::snapshot(&a);

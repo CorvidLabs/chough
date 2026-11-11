@@ -6,7 +6,6 @@ use std::path::Path;
 
 pub(crate) const OBSERVATION_SLUG_LIMIT: usize = 71;
 pub(crate) const VALIDATION_SLUG_LIMIT: usize = 71;
-#[cfg_attr(not(test), allow(dead_code))] // removed at integration (t382)
 pub(crate) const SNAPSHOT_SLUG_LIMIT: usize = 70;
 
 #[cfg(test)]
@@ -90,7 +89,6 @@ pub(crate) fn valid_validation_id(id: &str) -> bool {
     valid_random_id("VAL-", id, VALIDATION_SLUG_LIMIT)
 }
 
-#[cfg_attr(not(test), allow(dead_code))] // removed at integration (t382)
 pub(crate) fn valid_snapshot_id(id: &str) -> bool {
     valid_random_id("SNAP-", id, SNAPSHOT_SLUG_LIMIT)
 }
@@ -123,32 +121,6 @@ fn suffix(bytes: &[u8; 12]) -> String {
         encoded.push(char::from(HEX[usize::from(byte & 0x0f)]));
     }
     encoded
-}
-
-fn allocate(prefix: &str, source: &str, fallback: &str, slug_limit: usize) -> Result<String> {
-    let bytes = fill_random()?;
-    Ok(format!(
-        "{prefix}{}-{suffix}",
-        slug(source, fallback, slug_limit),
-        suffix = suffix(&bytes)
-    ))
-}
-
-#[allow(dead_code)] // removed at integration (t382): 0.5.x OBS allocation, unused in 0.6.0
-pub(crate) fn observation(source: &str) -> Result<String> {
-    allocate("OBS-", source, "observation", OBSERVATION_SLUG_LIMIT)
-}
-
-// Step 4 retired validation-run allocation (runs are named by date and slug); the
-// integration cleanup removes it with its records spec row (t382).
-#[allow(dead_code)]
-pub(crate) fn validation(source: &str) -> Result<String> {
-    allocate("VAL-", source, "validation", VALIDATION_SLUG_LIMIT)
-}
-
-#[allow(dead_code)] // removed at integration (t382)
-pub(crate) fn snapshot(source: &str) -> Result<String> {
-    allocate("SNAP-", source, "snapshot", SNAPSHOT_SLUG_LIMIT)
 }
 
 // Plan step 3 calls these; until then only their tests do.
@@ -416,15 +388,15 @@ mod tests {
         ] {
             assert_eq!(suffix(&bytes), expected);
         }
-        let id = with_random_results(vec![Ok([0xab; 12])], || observation("TC-cli-0001").unwrap());
-        assert_eq!(id, "OBS-tc-cli-0001-abababababababababababab");
+        let name = with_random_results(vec![Ok([0xab; 12])], || suffixed("2026-11-10-x").unwrap());
+        assert_eq!(name, "2026-11-10-x-ababab");
         assert_eq!(random_draws(), 1);
     }
 
     #[test]
     fn random_source_failure_is_returned_after_one_draw_without_a_fallback() {
         let error = with_random_results(vec![Err("injected random failure")], || {
-            observation("TC-cli-0001").unwrap_err()
+            suffixed("2026-11-10-x").unwrap_err()
         });
         assert!(error.to_string().contains("injected random failure"));
         assert_eq!(random_draws(), 1);
