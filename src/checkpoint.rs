@@ -124,6 +124,19 @@ pub(super) struct Checkpoint {
     #[serde(default)]
     pub(super) run_consents: Vec<Consent>,
     pub(super) next_action: String,
+    /// The session record's ID, aliases, pull request and gate details (REQ-records-004).
+    #[allow(dead_code)]
+    #[serde(skip)]
+    pub(super) meta: crate::session_md::Meta,
+    /// The record this checkpoint was read from, so a save keeps every byte a person or
+    /// agent wrote and every key Chough does not know (REQ-records-001).
+    #[allow(dead_code)]
+    #[serde(skip)]
+    pub(super) source: Option<crate::markdown::Record>,
+    /// Transitions to append to the Timeline in the next save (REQ-history-002).
+    #[allow(dead_code)]
+    #[serde(skip)]
+    pub(super) pending: Vec<crate::stage::Transition>,
 }
 
 /// A readable session in either supported schema.
@@ -197,6 +210,9 @@ pub(super) fn new_checkpoint(
         awaiting_human: vec![],
         run_consents: vec![],
         next_action: "Read scoped intent and native status, then choose the next action within the authorized scope.".into(),
+        meta: crate::session_md::Meta::default(),
+        source: None,
+        pending: vec![],
     }
 }
 

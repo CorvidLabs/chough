@@ -224,6 +224,10 @@ impl Record {
                 if insert > 0 && !self.body[..insert].ends_with('\n') {
                     addition.push('\n');
                 }
+                // The first item of an empty section keeps a blank line after its heading.
+                if insert == start {
+                    addition.push('\n');
+                }
                 addition.push_str(&text);
                 self.body.insert_str(insert, &addition);
             }
@@ -240,6 +244,23 @@ impl Record {
             }
         }
         Ok(())
+    }
+
+    /// Append `mark` to the line of the first item `- <item>` in the `## <heading>`
+    /// section: the one in-place edit of a section Chough owns (REQ-records-004).
+    pub(crate) fn mark_item(&mut self, heading: &str, item: &str, mark: &str) -> Result<()> {
+        let (start, end) = section_span(&self.body, heading)
+            .ok_or_else(|| anyhow::anyhow!("no `## {heading}` section"))?;
+        let mut offset = start;
+        for line in self.body[start..end].split_inclusive('\n') {
+            let content = line.trim_end_matches('\n');
+            if content.strip_prefix("- ") == Some(item) {
+                self.body.insert_str(offset + content.len(), mark);
+                return Ok(());
+            }
+            offset += line.len();
+        }
+        bail!("no item `{item}` under `## {heading}`")
     }
 
     /// The whole file: front matter between two `---` lines, then the body.
@@ -324,16 +345,20 @@ impl Record {
             let Item::Entry { value, raw, .. } = item else {
                 continue;
             };
-            let changed = match value {
-                Value::Scalar(text) => redact(text),
-                Value::List(items) => items
-                    .iter_mut()
-                    .fold(false, |any, text| redact(text) || any),
-                Value::Maps(maps) => maps
-                    .iter_mut()
-                    .flatten()
-                    .fold(false, |any, (_, text)| redact(text) || any),
-            };
+            let mut changed = false;
+            match value {
+                Value::Scalar(text) => changed = redact(text),
+                Value::List(items) => {
+                    for text in items.iter_mut() {
+                        changed |= redact(text);
+                    }
+                }
+                Value::Maps(maps) => {
+                    for (_, text) in maps.iter_mut().flatten() {
+                        changed |= redact(text);
+                    }
+                }
+            }
             if changed {
                 *raw = None;
             }

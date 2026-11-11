@@ -18,6 +18,7 @@ mod native_check;
 mod policy;
 mod prefs;
 mod records;
+mod session_md;
 mod sessions;
 mod skill;
 mod stage;
