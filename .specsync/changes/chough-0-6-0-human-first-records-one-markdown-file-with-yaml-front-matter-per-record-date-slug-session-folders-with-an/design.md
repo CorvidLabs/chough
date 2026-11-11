@@ -274,6 +274,18 @@ evidence prune and the ledger, library archive and snapshot, the post-archive tr
 attachments, roll-up, session notes, archive notes, module/intent/rules/timeline
 notes, checkpoint merge, schema 1 migration.
 
+## Bug fixes
+
+testing.md lists every open Chough bug with its fix and regression case. The
+design choices among them: gates hold a stage (#237, above); gate summaries count
+from the merge base with the default branch and leave out Chough's records, the
+knowledge directory and SpecSync bookkeeping (#190); `next` gains the init, test and
+acceptance guidance and `status` leads with the `next` summary (#76, BUG-0023); a
+`toolchain` Fledge task checks local tool versions against the CI pins (BUG-0022);
+the delta guard follows SpecSync's effective approval (BUG-0020); the timing budget
+starts at the first native read; the writer lock records its holder's process ID so
+a busy refusal can name it (#132).
+
 ## Commands that go away
 
 `chough checkpoint --merge`, `chough history adopt`, `chough history prune`,

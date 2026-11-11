@@ -30,11 +30,15 @@ and 004 (evidence prune and the ledger), 008 (orphan events) and 011 (the roll-u
 ## cli
 
 Modifies 007 (checkpoint), 011 (case runs), 012 (bugs), 014 (delivery kinds), 015
-(librarian), 017 (evidence entries), 021 (next), 023 (names and draws), 030 (gates
+(librarian), 017 (evidence entries), 019 (version agreement and the toolchain check,
+BUG-0001, BUG-0022), 021 (next guidance and the status summary, #76, BUG-0023), 022
+(the delta guard's effective approval and the human-gate remedy, BUG-0020), 023 (names
+and draws), 030 (gates
 hold their stage, #237), 032 (capacity), 037 (active session), 040 (one writer
-lock), 043 (knowledge index), 044 (vault), 047 (no conflicting files, bug merge),
+lock, with the holder named for #132), 043 (knowledge index; empty change
+directories are not open changes, #148), 044 (vault), 047 (no conflicting files, bug merge),
 050 (close-gate drives the native step), 052 (one read into done), 059 (ship reviews
-as the human), 061 (gate record). Removes 033, 041, 045, 046, 048, 049 and 051 (the
+as the human), 061 (gate record, and summaries that count only the change's own files, #190). Removes 033, 041, 045, 046, 048, 049 and 051 (the
 post-archive trim, closed-cycle references, attachments, closed-bug moves, ledger
 rotation and session notes).
 
@@ -54,3 +58,15 @@ Every other requirement of cli, history and reporting keeps its wording: where i
 says transition, observation or checkpoint, 0.6.0 reads a timeline entry, an
 evidence entry and the session front matter (REQ-history-002, REQ-cli-017,
 REQ-cli-007).
+
+## Bugs
+
+Every open Chough bug is mapped to a requirement and a regression case in
+testing.md. Most fixes land in the requirements above; three need no requirement
+change: #12 (a real native closeout test under REQ-cli-004 and REQ-cli-059) and the
+two timing flakes (REQ-reporting-002 already bounds only time spent on native reads).
+
+## Requirement map
+
+plan.md lists every existing requirement with what 0.6.0 does to it, every retired
+criterion with the requirements and cases behind it, and every affected case.

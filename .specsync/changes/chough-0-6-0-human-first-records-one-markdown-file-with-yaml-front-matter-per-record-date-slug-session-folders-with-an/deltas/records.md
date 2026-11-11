@@ -100,6 +100,7 @@ Acceptance Criteria
 - Case definition files and `.chough/preferences.json` are byte-identical before and after.
 - Every transition of the selected lineage appears once, in order, in its session's timeline, and every archived session, the rolled ones included, is an archived story.
 - A bug linking an observation that was removed without being carried shows it as `removed` with the receipt named, and `chough next` never counts it as current or passed.
+- Regression for the local bug where history writes refused once the adopting session rolled into the vault: a 0.5.x fixture whose adopting session sits in `knowledge/attachments/`, with `.chough/transitions.jsonl` unchanged, migrates; the legacy entries land in that session's archived story, and afterwards `checkpoint --awaiting-human`, `--close-gate` and a stage move all succeed. The same writes are first recorded refusing on 0.5.0.
 
 ### REQUIREMENT REQ-records-010
 

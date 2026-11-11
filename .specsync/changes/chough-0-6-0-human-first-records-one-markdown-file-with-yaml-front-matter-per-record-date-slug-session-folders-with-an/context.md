@@ -25,6 +25,15 @@ hold. It also closes a real data-loss bug where finishing one session deleted an
 older archived one. Everything ships together as Chough 0.6.0 and is tried on the
 chough repository before any other project changes.
 
+The same release fixes every open Chough bug: a pending human decision no longer
+holds up unrelated steps, Chough's records and SpecSync's checks stop making each
+other look out of date, review summaries count only the change's own files, `chough
+next` guides a new agent from start to acceptance and `chough status` leads with a
+short summary, version notes and local tools are checked against CI, a leftover
+empty folder no longer looks like open work, and the intermittent test failures get
+fixes or, where they will not reproduce, the diagnostics to catch them. Two bugs that
+were really SpecSync's are already fixed there, and are closed as fixed upstream.
+
 ## What led here
 
 - Leif's 2026-11-10 interview and design review (issues #235, #234, #236, #214),
@@ -32,12 +41,20 @@ chough repository before any other project changes.
   to FLOW-23, LIFE-17 to LIFE-26. Intent approved by Leif ("Approve it"); the design
   prototype approved by Leif ("Approve the design"). Both are recorded on this
   session as relayed decisions.
-- #212 retired KNOW-2, 7, 18, 19, 22, 23, 25, 28 and 29 as superseded by the
-  link-only vault. Three of their safeguards are kept here as spec rules, as the
+- Three safeguards of those nine criteria are kept here as spec rules, as the
   coordinator asked: only committed bytes ever leave the tree (REQ-records-012, from
   KNOW-7), `knowledge/index.md` links every lesson, per module and cross-project
   (REQ-cli-043, from KNOW-25), and the journal and feed are the timeline of
   archived changes (REQ-records-011, REQ-cli-043, from KNOW-28).
+- Leif widened 0.6.0 to fix every open Chough bug (coordinator chat, 2026-11-10: he
+  picked all four groups offered and added "all bugs?"). testing.md lists each with
+  its fix and regression case. BUG-0002 and BUG-0003 describe SpecSync's behaviour; a
+  spec-sync worker found neither reproduces on spec-sync main 46f55652 (6.2.0), so
+  0.6.0 closes both as fixed upstream, citing that check.
+- #212 marks KNOW-2, 7, 18, 19, 22, 23, 25, 28 and 29 as superseded but does not retire
+  them, because live requirements and cases still depend on them. This change retires
+  all nine with `hi retire` and removes or rewrites what implements them; plan.md maps
+  every affected requirement, criterion and case.
 - Leif's two later answers, relayed by the coordinator on 2026-11-10 and captured
   here as KNOW-34 and KNOW-35: "Keep all (Recommended)" for finished-session stories
   (nothing trims the archive) and "Split them (Recommended)" for proof files (logs to
@@ -70,7 +87,7 @@ chough repository before any other project changes.
    pending release decision no longer stops build, test and accept? Recommended:
    yes (option A in design.md). The other option keeps every gate blocking every
    advance and adds a way to park later decisions.
-2. **Screenshot cap.** Is "PNG or JPEG, metadata removed, at most 512 KB each, 5 per
+2. **Screenshot cap (proposal, as Leif asked).** Is "PNG or JPEG, metadata removed, at most 512 KB each, 5 per
    piece of work and 2 MB in total, kept in a folder beside its story" the right cap?
    Recommended: yes; anything bigger stays on the machine that took it, recorded by
    fingerprint.
@@ -81,6 +98,19 @@ chough repository before any other project changes.
    20 and 21) be retired the same way, keeping their safeguards as spec rules?
    Recommended: yes. Until they are, the plan reads them as satisfied by the fold at
    finish and REQ-records-012.
+4. **Review summaries (#190).** Should a gate's "what changed" line count only the
+   change's own files, measured from where the branch left main and leaving out
+   Chough's records? Recommended: yes, rather than counting only the change's
+   declared paths, which are often broad enough to hide stray edits.
+5. **Guidance for a fresh agent (#76).** Right after `chough init`, `next` suggests
+   `hi check` and then `chough context`; at test it names the cases to select and
+   run; at acceptance it says the human reviews next and how to record their
+   decision, never suggesting an agent review. Is that wording right? Recommended: yes.
+
+Before this goes to Leif, an independent audit (chough-060-audit) classifies every
+existing issue, PR, bug, criterion, requirement, case file, doc and the skill bundle
+as keep, rework, remove, elsewhere or ask Leif; its verdicts are folded in before the
+scope gate opens.
 
 ## For a session picking this up
 
