@@ -99,7 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-582 recorded; most recent:
+583 recorded; most recent:
 
 - OBS-tc-cli-evidence-add-returns-observation-id-55ed9087aa0df5d8693a5ef7 ProductTest Passed in local-macos-arm64 at 361a5b1a3347
 - OBS-tc-cli-manual-record-returns-observation-id-45871c5f24362ef0ce17138b ProductTest Passed in local-macos-arm64 at 361a5b1a3347

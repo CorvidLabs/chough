@@ -21,5 +21,9 @@ tasks lesson of 2026-10-31):
   versus best-effort) and KNOW-29 vs KNOW-30 (roll-up move versus copy).
 - After approval: `specsync change check`, Leif's implementation review,
   native archive, merge.
-- After Leif approves the draft issue list in the PR body, the coordinator
-  creates the issues.
+
+Done since this PR opened (per Leif's direction relayed by the coordinator):
+
+- The issues are created, not drafted: milestone "Chough 1.0", epic #232, new
+  issues #213 to #231, and the 14 existing open issues mapped onto the
+  milestone. #187 and #196 have since closed on main.

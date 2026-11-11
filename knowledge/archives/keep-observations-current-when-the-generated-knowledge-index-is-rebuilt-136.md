@@ -50,10 +50,11 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-11 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+12 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
+| OBS-structural-30c52056d274ac2d72f73d5a | passed (by cycle time) | local macOS arm64 |  |
 | OBS-tc-cli-evidence-add-returns-observation-id-3b80f0c5684eab9228a87a75 | failed (by cycle time) | local-macos-arm64 | TC-cli-evidence-add-returns-observation-id |
 | OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d | passed (by cycle time) | local-macos-arm64 | TC-cli-evidence-add-returns-observation-id |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc | passed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
