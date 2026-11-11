@@ -144,11 +144,17 @@ pub(crate) fn snapshot(source: &str) -> Result<String> {
     allocate("SNAP-", source, "snapshot", SNAPSHOT_SLUG_LIMIT)
 }
 
+// Plan step 3 calls these; until then only their tests do.
+#[cfg_attr(not(test), allow(dead_code))]
+// Plan step 3 calls these; until then only their tests do.
+#[cfg_attr(not(test), allow(dead_code))]
 /// The longest a record name may be, a clash suffix included (REQ-records-003).
 pub(crate) const NAME_LIMIT: usize = 80;
 /// `-` and six hexadecimal digits.
 const CLASH_SUFFIX: usize = 7;
 
+// Plan step 3 calls these; until then only their tests do.
+#[cfg_attr(not(test), allow(dead_code))]
 /// `YYYY-MM-DD` for a Unix time, in UTC.
 pub(crate) fn utc_date(seconds: u64) -> String {
     // Days to civil date (H. Hinnant), for the proleptic Gregorian calendar.
@@ -169,6 +175,8 @@ pub(crate) fn utc_date(seconds: u64) -> String {
     format!("{year:04}-{month:02}-{day:02}")
 }
 
+// Plan step 3 calls these; until then only their tests do.
+#[cfg_attr(not(test), allow(dead_code))]
 /// `<date>-<slug>`: the slug of `source`, or `kind` when nothing is left, cut back at a
 /// hyphen so that the name with a clash suffix stays within [`NAME_LIMIT`]. It holds no
 /// number taken from a count of other records.
@@ -186,12 +194,16 @@ pub(crate) fn dated_name(date: &str, source: &str, kind: &str) -> String {
     format!("{date}-{cut}")
 }
 
+// Plan step 3 calls these; until then only their tests do.
+#[cfg_attr(not(test), allow(dead_code))]
 /// Six lowercase hexadecimal digits from 24 fresh random bits.
 fn clash_suffix() -> Result<String> {
     let bytes = fill_random()?;
     Ok(suffix(&bytes)[..6].to_string())
 }
 
+// Plan step 3 calls these; until then only their tests do.
+#[cfg_attr(not(test), allow(dead_code))]
 /// Create `<dir>/<name><extension>` by create-new with the content `render(name)`. When
 /// that file exists, add one clash suffix and try once more; when that name exists too,
 /// refuse with nothing written and draw no other suffix. Returns the name written.
