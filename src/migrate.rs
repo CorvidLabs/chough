@@ -674,6 +674,13 @@ fn plan(root: &Path) -> Result<Plan> {
     let mut carried = Carried::default();
     let (sessions, homes) = sessions_0_5(root)?;
     carried.absorb(sessions)?;
+    // REQ-records-002: the reading guide, written only when there is none.
+    if !local_path(root, ".chough/README.md")?.exists() {
+        carried.written.push(Written {
+            path: ".chough/README.md".into(),
+            bytes: crate::sessions::README.into(),
+        });
+    }
     let links = bug_links_0_5(root)?;
     let (evidence, observations) = evidence_0_5(root, &homes, &links)?;
     carried.absorb(evidence)?;
@@ -1055,9 +1062,10 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
     let mut leftovers = BTreeSet::new();
     walk_files(root, ".chough/history", &mut leftovers)?;
     walk_files(root, ".chough/sessions/shelved", &mut leftovers)?;
-    // `.chough/sessions/.gitignore` is a 0.6.0 file too (the same `.*.tmp`), so it stays.
-    if local_path(root, ".chough/transitions.jsonl")?.is_file() {
-        leftovers.insert(".chough/transitions.jsonl".to_string());
+    for path in [".chough/transitions.jsonl", ".chough/sessions/.gitignore"] {
+        if local_path(root, path)?.is_file() {
+            leftovers.insert(path.to_string());
+        }
     }
     for path in leftovers {
         if lineage_files.contains(&path) || carried.sources.contains(&path) {
@@ -1065,6 +1073,8 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
         }
         let why = if path.starts_with(".chough/sessions/shelved") {
             "a shelved 0.5.x session is not carried"
+        } else if path.ends_with(".gitignore") {
+            "0.5.x temporary-file ignore; 0.6.0 writes temporaries in .chough/local/"
         } else if path.contains("/pruned/") {
             "a 0.5.x retention receipt; there is no retention in 0.6.0"
         } else {

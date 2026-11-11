@@ -715,10 +715,26 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
     assert_eq!(ids, [kept.as_str()]);
     fixture.ok(&["status"]);
     fixture.ok(&["next", "--json"]);
+    // A record's temporary sits in the Git-ignored .chough/local/, never beside the
+    // record (REQ-records-002), and nothing is left in the inbox.
     let beta = fixture.id_of("beta");
-    let inbox = fixture
-        .root()
-        .join(format!(".chough/sessions/{beta}/agent/inbox"));
+    let in_inbox = fs::read_dir(
+        fixture
+            .root()
+            .join(format!(".chough/sessions/{beta}/agent/inbox")),
+    )
+    .unwrap()
+    .filter(|entry| {
+        entry
+            .as_ref()
+            .unwrap()
+            .file_name()
+            .to_string_lossy()
+            .ends_with(".tmp")
+    })
+    .count();
+    assert_eq!(in_inbox, 0);
+    let inbox = fixture.root().join(".chough/local");
     let temps: Vec<String> = fs::read_dir(&inbox)
         .unwrap()
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
@@ -726,7 +742,7 @@ fn an_inbox_add_killed_while_writing_leaves_no_partial_entry() {
         .collect();
     assert_eq!(temps.len(), 1, "{temps:?}");
     fixture.commit("after the killed add");
-    let temp = format!(".chough/sessions/{beta}/agent/inbox/{}", temps[0]);
+    let temp = format!(".chough/local/{}", temps[0]);
     let ignored = std::process::Command::new("git")
         .args(["check-ignore", "-q", "--no-index", &temp])
         .current_dir(fixture.root())

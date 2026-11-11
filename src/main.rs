@@ -308,6 +308,15 @@ fn init(
         let id = sessions::create(root, &key, objective, intent_scope, modules)?;
         created.push(sessions::session_file(&id));
     }
+    // REQ-records-002: the records tree's reading guide, create-only; the cases folder
+    // and the Git-ignored local folder.
+    if write_new(root, ".chough/README.md", sessions::README)? {
+        created.push(".chough/README.md".to_string());
+    } else {
+        preserved.push(".chough/README.md".to_string());
+    }
+    std::fs::create_dir_all(local_path(root, ".chough/cases")?)?;
+    write_new(root, ".chough/local/.gitignore", "*\n")?;
     for (name, content) in files {
         if write_new(root, &name, content)? {
             created.push(name);

@@ -333,11 +333,7 @@ pub(super) fn write_replace_bounded(
     let parent = path.parent().context("file has no parent")?;
     fs::create_dir_all(parent)?;
     local_path(root, relative)?;
-    let name = path
-        .file_name()
-        .and_then(|name| name.to_str())
-        .context("record name must be UTF-8")?;
-    let temporary = parent.join(format!(".{name}.{}.tmp", std::process::id()));
+    let temporary = temporary_for(root, relative, &path)?;
     let result = (|| -> Result<()> {
         let mut file = OpenOptions::new()
             .write(true)
@@ -352,6 +348,28 @@ pub(super) fn write_replace_bounded(
         let _ = fs::remove_file(&temporary);
     }
     result.with_context(|| format!("writing {relative}"))
+}
+
+/// Where a write's temporary file goes before its rename or link: for a record under
+/// `.chough/`, the Git-ignored `.chough/local/`, so no temporary ever sits beside a
+/// committed record and no ignore file is needed among them (REQ-records-002,
+/// REQ-history-007); anything else, beside its target. Both are on the project's file
+/// system, so the rename stays atomic.
+pub(super) fn temporary_for(root: &Path, relative: &str, target: &Path) -> Result<PathBuf> {
+    let name = target
+        .file_name()
+        .and_then(|name| name.to_str())
+        .context("record name must be UTF-8")?;
+    let pid = std::process::id();
+    if relative.starts_with(".chough/") && !relative.starts_with(".chough/local/") {
+        let local = local_path(root, ".chough/local")?;
+        fs::create_dir_all(&local)?;
+        let _ = write_new(root, ".chough/local/.gitignore", "*\n");
+        let digest = format!("{:x}", sha2::Sha256::digest(relative.as_bytes()));
+        return Ok(local.join(format!(".{}.{name}.{pid}.tmp", &digest[..8])));
+    }
+    let parent = target.parent().context("file has no parent")?;
+    Ok(parent.join(format!(".{name}.{pid}.tmp")))
 }
 
 /// Append one line to an append-only managed log.
