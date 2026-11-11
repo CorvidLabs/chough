@@ -63,12 +63,13 @@
     "Round-2 fold-in verified and pushed at 1badc216; PR comment posted; t370 notified",
     "Folded the design-review deltas into #212: DRIVE-24 and DRIVE-25 rewritten to the approved design (session.md frontmatter checkpoint + timeline, agent/ folder, one archived story file), KNOW-30 path updated, KNOW-31 gained the lessons rule, KNOW-33 and DRIVE-28 captured, migration design and M1/M3 updated, #214 re-scoped, PR body updated",
     "Added Leif's 0.6.0 shipping decision to the roadmap: the human-first redesign ships as one change, dogfooded on chough before any other repo updates; native change AC updated; PR body patched",
-    "Fixed the three stale bits from t370: LIFE-23 tail now points at KNOW-30's links-never-copies; PR body count corrected to 22; PR body M3 item 10 rewritten to the KNOW-30 wording with #196/#187 marked done; branch-wide wording sweep clean (only historical superseded mentions remain)"
+    "Fixed the three stale bits from t370: LIFE-23 tail now points at KNOW-30's links-never-copies; PR body count corrected to 22; PR body M3 item 10 rewritten to the KNOW-30 wording with #196/#187 marked done; branch-wide wording sweep clean (only historical superseded mentions remain)",
+    "Leif's intent approval closed both gates with his words; native approval recorded as 0xLeif citing 'Yes, merge when green'; change check --commit verified and committed; head 506ba5f9 pushed; independent review requested from t37j"
   ],
   "observations": [],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "When the lane is green: commit, push, send t370 the head SHA and the plain summary for Leif"
+  "next_action": "Wait for t37j's review; fix findings and re-request; then change ship/finalize, retitle PR, squash-merge when green"
 }
