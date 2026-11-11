@@ -24,12 +24,13 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-migrate-receipt-bound-3b9e75047dc1913f7041591e"
+    "OBS-tc-records-migrate-receipt-bound-3b9e75047dc1913f7041591e",
+    "OBS-tc-records-migrate-receipt-bound-5bcd8311e4e7a9153331bc63"
   ],
   "impact": "No real project can migrate; a refused apply leaves the 0.6.0 files beside every 0.5.x file until it is resumed",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -41,8 +42,15 @@
       "observations": [
         "OBS-tc-records-migrate-receipt-bound-3b9e75047dc1913f7041591e"
       ]
+    },
+    {
+      "at_unix_seconds": 1794439407,
+      "text": "status: open -> verified. Green on the fix: TC-records-migrate-receipt-bound passes; a 400-file project's receipt applies within the receipt bound.",
+      "observations": [
+        "OBS-tc-records-migrate-receipt-bound-5bcd8311e4e7a9153331bc63"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794439308,
-  "updated_at_unix_seconds": 1794439356
+  "updated_at_unix_seconds": 1794439407
 }
