@@ -126,7 +126,7 @@ distinct integration defect at merge `b2e2f19`. Its later linked pass
 open older-workflow approval-matching issue, not another name for either archived-resume
 defect. This integration history does not change the original cold-start verdict.
 
-Evidence and limits: see the [concise Kimi log](../../.chough/artifacts/kimi-cold-start.log)
+Evidence and limits: see the [concise Kimi log](https://github.com/CorvidLabs/chough/blob/88e53ebaee86c0346faa6c247946e4c5e51d4e3f/.chough/artifacts/kimi-cold-start.log)
 and [TC-cli-0106](../../specs/cli/testing.md). The original observation
 `tc-cli-0106-kimi-original` failed because the mapping guidance and consistent
 corrected documents were absent at base. Any later TC-cli-0106 pass is a
