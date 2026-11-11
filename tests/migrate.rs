@@ -823,22 +823,29 @@ fn a_standing_migration_preference_gives_consent_and_the_receipt_names_it() {
 
 /// The migration rehearsal on this repository (plan Migration step 2): every 0.5.x file
 /// REQ-records-009 removes is in the plan. `.chough/session.v1.json` and
-/// `.chough/pruned.jsonl` are removed with why, and a file under `.chough/artifacts/`
-/// is a source the plan carries, removes or reports as unaccounted, which the apply
-/// refuses; never silently left behind.
+/// `.chough/pruned.jsonl` are removed with why, and a file under `.chough/artifacts/` or
+/// `.chough/validation/` is a source the plan carries, removes or reports as
+/// unaccounted, which the apply refuses; never silently left behind.
 #[test]
 fn every_legacy_file_and_artifact_is_accounted_for() {
     let stray = ".chough/artifacts/stray/run.log";
+    let run = ".chough/validation/VAL-stray-000000000000000000000001.json";
     let fixture = migrate_project(
         "adopted",
         &[
             (".chough/session.v1.json", "{\"schema_version\": 1}\n"),
             (".chough/pruned.jsonl", "{\"archives\": []}\n"),
             (stray, "passed\n"),
+            (run, "{\"schema_version\": 1}\n"),
         ],
     );
     let plan = fixture.ok(&["migrate"]);
-    for path in [".chough/session.v1.json", ".chough/pruned.jsonl", stray] {
+    for path in [
+        ".chough/session.v1.json",
+        ".chough/pruned.jsonl",
+        stray,
+        run,
+    ] {
         assert!(
             plan["sources"].get(path).is_some(),
             "{path} is not in the plan's sources: {plan:#}"
@@ -880,4 +887,14 @@ fn every_legacy_file_and_artifact_is_accounted_for() {
     } else {
         assert!(plan["removed"].get(stray).is_some(), "{plan:#}");
     }
+    // A validation run is carried, removed with why, or unaccounted; never left out.
+    assert!(
+        unaccounted.contains(&run)
+            || plan["removed"].get(run).is_some()
+            || plan["aliases"]
+                .as_object()
+                .unwrap()
+                .contains_key("VAL-stray-000000000000000000000001"),
+        "{plan:#}"
+    );
 }

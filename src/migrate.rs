@@ -131,11 +131,12 @@ const LEGACY_FOLDERS: [&str; 3] = [
 ];
 const LEGACY_JSON_IN: [&str; 2] = [".chough/sessions", ".chough/bugs"];
 
-/// 0.5.x files REQ-records-009 removes that REQ-records-010 does not count as making a
-/// tree unmigrated: the schema 1 checkpoint backup, and every file under
-/// `.chough/artifacts/`, where an open bug's fixture rightly stays.
+/// 0.5.x files REQ-records-009 removes or carries that REQ-records-010 does not count
+/// as making a tree unmigrated: the schema 1 checkpoint backup, every file under
+/// `.chough/artifacts/`, where an open bug's fixture rightly stays, and the validation
+/// runs under `.chough/validation/`, whose `VAL-` IDs stay aliases (REQ-records-003).
 const ACCOUNTED_FILES: [&str; 1] = [".chough/session.v1.json"];
-const ACCOUNTED_FOLDERS: [&str; 1] = [".chough/artifacts"];
+const ACCOUNTED_FOLDERS: [&str; 2] = [".chough/artifacts", ".chough/validation"];
 
 /// Every 0.5.x record path in the project, sorted (REQ-records-010).
 pub(crate) fn legacy_paths(root: &Path) -> Result<Vec<String>> {
