@@ -259,6 +259,12 @@ fn plan(root: &Path) -> Result<Plan> {
     carried.absorb(evidence)?;
     carried.absorb(bugs_0_5(root, &observations)?)?;
     carried.absorb(knowledge_0_5(root)?)?;
+    // A file a mapper carried is never `removed without carrying`, whatever another
+    // mapper listed.
+    let carried_sources = carried.sources.clone();
+    carried
+        .removed
+        .retain(|path, _| !carried_sources.contains(path));
     carried
         .written
         .sort_by(|left, right| left.path.cmp(&right.path));
@@ -431,10 +437,28 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
     if local_path(root, ".chough/session.json")?.is_file() {
         found.push(("legacy".into(), ".chough/session.json".into(), false));
     }
-    for (folder, archived) in [
-        (".chough/sessions", false),
-        (".chough/sessions/archive", true),
-    ] {
+    // Sessions the 0.5.x roll-up moved into the vault are archived stories too
+    // (`<library-dir>/attachments/<folder>/sessions/<key>.json`).
+    let library = crate::prefs::effective(root, "library-dir")
+        .map(|(dir, _)| dir)
+        .unwrap_or_else(|_| "knowledge".into());
+    let mut folders: Vec<(String, bool)> = vec![
+        (".chough/sessions".into(), false),
+        (".chough/sessions/archive".into(), true),
+    ];
+    let attachments = format!("{}/attachments", library.trim_end_matches('/'));
+    if let Ok(entries) = std::fs::read_dir(local_path(root, &attachments)?) {
+        let mut rolled: Vec<String> = entries
+            .flatten()
+            .filter(|entry| entry.path().join("sessions").is_dir())
+            .filter_map(|entry| entry.file_name().into_string().ok())
+            .map(|folder| format!("{attachments}/{folder}/sessions"))
+            .collect();
+        rolled.sort();
+        folders.extend(rolled.into_iter().map(|folder| (folder, true)));
+    }
+    for (folder, archived) in folders {
+        let folder = folder.as_str();
         let mut names: Vec<String> = std::fs::read_dir(local_path(root, folder)?)
             .map(|entries| {
                 entries
@@ -730,6 +754,51 @@ mod tests {
                 "{tag}: transitions lost or duplicated"
             );
         }
+    }
+
+    /// A session the 0.5.x roll-up moved into the vault becomes an archived story, its
+    /// history read through its cursor as for any archived session.
+    #[test]
+    fn a_rolled_session_in_the_vault_becomes_an_archived_story() {
+        fn copy(from: &Path, to: &Path) {
+            std::fs::create_dir_all(to).unwrap();
+            for entry in std::fs::read_dir(from).unwrap().flatten() {
+                let target = to.join(entry.file_name());
+                if entry.path().is_dir() {
+                    copy(&entry.path(), &target);
+                } else {
+                    std::fs::copy(entry.path(), target).unwrap();
+                }
+            }
+        }
+        let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/releases/v0.5.0");
+        let root = tempfile::tempdir().unwrap();
+        copy(&fixture, root.path());
+        let rolled = root
+            .path()
+            .join("knowledge/attachments/fixture-second/sessions");
+        std::fs::create_dir_all(&rolled).unwrap();
+        std::fs::rename(
+            root.path()
+                .join(".chough/sessions/archive/fixture-second.json"),
+            rolled.join("fixture-second.json"),
+        )
+        .unwrap();
+        let (carried, homes) = sessions_0_5(root.path()).unwrap();
+        assert!(homes["fixture-second"].archived);
+        let story = &carried.aliases["fixture-second"];
+        assert!(story.starts_with(".chough/archive/sessions/"), "{story}");
+        assert!(
+            carried
+                .sources
+                .contains("knowledge/attachments/fixture-second/sessions/fixture-second.json")
+        );
+        let written = carried
+            .written
+            .iter()
+            .find(|written| &written.path == story)
+            .unwrap();
+        crate::session_md::read(&written.path, &written.bytes).unwrap();
     }
 
     #[test]
