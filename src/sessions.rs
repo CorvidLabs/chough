@@ -1273,9 +1273,9 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
     match command {
         InboxCommand::Add {
             session,
-            from,
+            mut from,
             kind,
-            text,
+            mut text,
         } => {
             // A session archives itself under this lock only when it has no unfolded
             // entries, so taking it here means the entry is either seen by that archive
@@ -1284,6 +1284,11 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             let session = resolve_open(root, &session)
                 .map_err(|_| anyhow::anyhow!("no open session {session}"))?;
             validate_entry(&from, kind, &text)?;
+            // REQ-records-006: an inbox entry is committed with the session; its values
+            // pass the leak guard, refused or redacted under --redact.
+            let local = crate::leaks::Local::current();
+            let redacted = crate::leaks::guard(local, "--from", &mut from)?
+                + crate::leaks::guard(local, "--text", &mut text)?;
             ensure!(
                 entry_names(root, &inbox_dir(&session))?.len() < MAX_INBOX,
                 "the inbox of {session} holds {MAX_INBOX} unfolded entries; fold it first"
@@ -1324,7 +1329,11 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                     "chough: warning: observation {text} has no record in .chough/evidence yet; the entry was added and `chough inbox list` marks it recorded: false"
                 );
             }
-            print_json(&json!({"schema_version":1,"added":file,"id":id}))
+            let mut added = json!({"schema_version":1,"added":file,"id":id});
+            if redacted > 0 {
+                added["redacted"] = json!(redacted);
+            }
+            print_json(&added)
         }
         InboxCommand::List => {
             let key = active(root)?;
