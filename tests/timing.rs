@@ -888,30 +888,25 @@ fn write_observation(
     );
 }
 
+/// A Markdown bug created at `T` whose Log holds each note as a dated entry.
 fn write_bug(fixture: &Fixture, id: &str, status: &str, observations: &[&str], notes: Value) {
-    let bug = json!({
-        "schema_version": 1,
-        "id": id,
-        "title": format!("Fixture bug {id}"),
-        "symptom": "It breaks",
-        "trigger": "Running the probe",
-        "expected": "It works",
-        "actual": "It broke",
-        "environment": "local",
-        "observations": observations,
-        "impact": "Not yet assessed.",
-        "classification": "unclassified",
-        "scope": "in-scope",
-        "status": status,
-        "source": "fixture",
-        "notes": notes,
-        "created_at_unix_seconds": T,
-        "updated_at_unix_seconds": T + 5_000,
-    });
-    fixture.write(
-        &format!(".chough/bugs/{id}.json"),
-        &serde_json::to_string_pretty(&bug).unwrap(),
-    );
+    fixture.bug_md(id, "in-scope", status, observations);
+    let name = format!(".chough/bugs/{id}.md");
+    let mut text = fixture
+        .read(&name)
+        .replace(
+            "created: 2026-11-10T00:00:01Z",
+            &format!("created: {}", iso_of(T)),
+        )
+        .replace("- 2026-11-10T00:00:01Z · Reported (fixture)\n", "");
+    for note in notes.as_array().unwrap() {
+        text.push_str(&format!(
+            "- {} · {}\n",
+            iso_of(note["at_unix_seconds"].as_u64().unwrap()),
+            note["text"].as_str().unwrap()
+        ));
+    }
+    fixture.write(&name, &text);
 }
 
 #[test]
