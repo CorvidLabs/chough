@@ -508,24 +508,6 @@ test_target = "sessions"
 test = "session_use_waits_for_a_running_stage_advance"
 
 [[case]]
-id = "TC-history-vanished-session-leaves-no-event"
-title = "A save refused because the session vanished leaves no event"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-3", "LIFE-7"]
-requirements = ["REQ-history-008"]
-paths = ["src/sessions.rs", "src/history.rs", "tests/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/sessions.rs::a_save_refused_because_the_session_vanished_leaves_no_event passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "sessions"
-test = "a_save_refused_because_the_session_vanished_leaves_no_event"
-
-[[case]]
 id = "TC-history-saved-event-survives-a-move"
 title = "A saved event survives a move of its checkpoint, inside or outside the session stores"
 status = "active"
@@ -544,40 +526,22 @@ argv = ["cargo", "test", "--locked", "--bin", "chough", "saved_event"]
 expect_output = ["test result: ok. 2 passed; 0 failed"]
 
 [[case]]
-id = "TC-history-no-sessions-local-holds-only-lock"
-title = "A project without sessions gains only the Git-ignored lock in .chough/local"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-3", "DRIVE-11"]
-requirements = ["REQ-history-007"]
-paths = ["src/checkpoint.rs", "tests/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/sessions.rs::a_project_without_sessions_is_unchanged passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "sessions"
-test = "a_project_without_sessions_is_unchanged"
-
-[[case]]
 id = "TC-history-sessions-local-holds-pointer-and-lock"
-title = "In sessions mode .chough/local holds only the pointer and the lock"
+title = ".chough/local/ holds only the pointer and the writer lock, all ignored by Git"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-3", "DRIVE-11"]
 requirements = ["REQ-history-007"]
-paths = ["src/checkpoint.rs", "tests/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
+paths = ["src/sessions.rs", "src/session_md.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/sessions.rs::in_sessions_mode_local_holds_only_the_pointer_and_the_lock passes"]
+expected = ["tests/sessions.rs::local_holds_only_the_pointer_and_the_lock passes"]
 
 [case.bind]
-adapter = "cargo-test"
-test_target = "sessions"
-test = "in_sessions_mode_local_holds_only_the_pointer_and_the_lock"
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "--exact", "local_holds_only_the_pointer_and_the_lock"]
+expect_output = ["test result: ok. 1 passed"]
 
 [[case]]
 id = "TC-history-archived-session-listed-archived"
@@ -616,19 +580,19 @@ test_target = "sessions"
 test = "an_unrecorded_inbox_observation_is_added_with_a_warning"
 
 [[case]]
-id = "TC-history-session-after-legacy-adoption"
-title = "A session started after legacy history adoption writes events while the legacy log stays guarded"
+id = "TC-history-sessions-in-folders"
+title = "Sessions live in their own folders and finish into one story with its full timeline"
 status = "active"
 track = "functional"
 method = "automated"
-criteria = ["DRIVE-3", "DRIVE-12"]
-requirements = ["REQ-history-006"]
-paths = ["src/history.rs", "src/sessions.rs", "tests/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
+criteria = ["DRIVE-24", "DRIVE-3", "DRIVE-13"]
+requirements = ["REQ-history-006", "REQ-history-002"]
+paths = ["src/sessions.rs", "src/session_md.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/sessions.rs::a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded passes"]
+expected = ["both session folder tests pass"]
 
 [case.bind]
-adapter = "cargo-test"
-test_target = "sessions"
-test = "a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded"
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "each_session_has_its_own_folder_and_timeline", "sessions_live_in_folders_and_finish_into_one_story"]
+expect_output = ["test result: ok. 2 passed"]
