@@ -442,19 +442,24 @@ fn stop_backfills() {
         fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
         fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
         fixture.no_spec_approval("add-thing");
-        // Move the log into the past so a backfill at now minus 5,000 s fits after it.
+        // Move the Timeline into the past so a backfill at now minus 5,000 s fits
+        // after it.
+        let file = fixture.session_file();
+        let mut index = 0;
         let shifted: String = fixture
-            .read(".chough/transitions.jsonl")
+            .read(&file)
             .lines()
-            .enumerate()
-            .map(|(index, line)| {
-                let mut record: Value = serde_json::from_str(line).unwrap();
-                let at = record["at_unix_seconds"].as_u64().unwrap();
-                record["at_unix_seconds"] = Value::from(at - 10_000 + 100 * index as u64);
-                format!("{record}\n")
+            .map(|line| {
+                if line.starts_with("- ") && line.contains(" · ") {
+                    index += 1;
+                    let rest = line.split_once(" · ").unwrap().1;
+                    format!("- 2026-01-01T00:00:{index:02}Z · {rest}\n")
+                } else {
+                    format!("{line}\n")
+                }
             })
             .collect();
-        fixture.write(".chough/transitions.jsonl", &shifted);
+        fixture.write(&file, &shifted);
         fixture.write(".gitignore", ".stub-*\narmed\nrunning\n");
         fixture.commit("base");
         let head = String::from_utf8(
