@@ -585,6 +585,16 @@ fn without_schema_1_content(mut evidence: Evidence, text: &str) -> Evidence {
     evidence
 }
 
+/// A fingerprint as REQ-records-005 writes it, `sha256:<64 hex>`, from a 0.5.x digest,
+/// which was bare hex.
+fn fingerprint(digest: &str) -> String {
+    if digest.starts_with("sha256:") {
+        digest.to_string()
+    } else {
+        format!("sha256:{digest}")
+    }
+}
+
 /// Every file under `relative`, project-relative and sorted.
 fn files_under(root: &Path, relative: &str) -> Result<Vec<String>> {
     fn walk(root: &Path, relative: &str, found: &mut Vec<String>) -> Result<()> {
@@ -728,7 +738,7 @@ fn carry_observation(
     evidence.aliases = vec![old.clone()];
     evidence.artifacts = artifacts.kept.clone();
     evidence.artifact_fingerprints = artifacts.kept_fingerprints.clone();
-    evidence.fingerprint = artifacts.log_digest.clone();
+    evidence.fingerprint = artifacts.log_digest.as_deref().map(fingerprint);
     match home {
         Home::Entry(session) => {
             uncarried.count(&observation.evidence, false);
@@ -752,7 +762,7 @@ fn carry_observation(
                     .iter()
                     .find(|artifact| !artifact.starts_with(&format!("{ARTIFACTS_DIR}/")))
                     .and_then(|artifact| observation.evidence.artifact_fingerprints.get(artifact))
-                    .cloned();
+                    .map(|digest| fingerprint(digest));
             }
             let alias = match story {
                 Some(story) => format!(".chough/archive/sessions/{story}.md"),
@@ -983,7 +993,8 @@ impl Screenshots {
                     kept.insert(placed.home.clone(), (count + 1, total + size));
                     let file = format!("{}.{extension}", evidence.id);
                     if evidence.fingerprint.is_none() {
-                        evidence.fingerprint = Some(format!("{:x}", Sha256::digest(&stripped)));
+                        evidence.fingerprint =
+                            Some(fingerprint(&format!("{:x}", Sha256::digest(&stripped))));
                     }
                     evidence.screenshot = Some(file.clone());
                     carried.sources.insert(source);

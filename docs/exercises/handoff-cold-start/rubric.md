@@ -16,9 +16,17 @@ recorded the same way.
 
 `sh docs/exercises/handoff-cold-start/seed.sh <empty-directory>` builds `csvsum`, a
 small Python 3 command line tool (standard library only) that summarizes one column
-of a bank-export CSV. Its HEAD is the sixth commit, dated 2026-09-08, and its Chough
-checkpoint is at stage `build`. Nothing in it is a statement by a real person; "Robin
-Ash" is the fixture's maintainer.
+of a bank-export CSV. Its first six commits, the last dated 2026-09-08, hold the
+project and its Chough 0.1.0 records. Its HEAD is the seventh commit, dated
+2026-11-11, which converts those records to Chough 0.6.0 with `chough migrate --apply`,
+as a project that upgraded would. Its session is at stage `build`. Nothing in it is a
+statement by a real person; "Robin Ash" is the fixture's maintainer.
+
+`sh docs/exercises/handoff-cold-start/seed.sh <empty-directory> --records=0.1.0` stops
+after the sixth commit and keeps the 0.1.0 records, for a binary that reads only those.
+
+The migration keeps both causes of F5: the defect is in BUG-0001's What happened and
+the binding error in its Log, beside the failed run's receipt.
 
 ## Expected facts
 
@@ -27,14 +35,14 @@ present.
 
 | # | Fact | Expected content | Where it is recorded |
 |---|---|---|---|
-| F1 | Goal | csvsum summarizes one numeric column of a bank-export CSV (count, total and mean, exact to the cent) with the Python 3 standard library only, for comma and semicolon exports | checkpoint `objective` |
-| F2 | Decision 1 (decided) | Amounts are parsed as `decimal.Decimal` after removing thousands separators, never as float, so totals match the bank statement to the cent (Robin Ash, 2026-09-01) | checkpoint `decisions` |
-| F3 | Decision 2 (rejected) | Auto-detecting the delimiter with `csv.Sniffer` was rejected (Robin Ash, 2026-09-08) | checkpoint `decisions` |
-| F4 | Reason for the rejection | A wrong guess silently gives a wrong total, so the user names the delimiter with `--delimiter` | checkpoint `decisions`, after `because` |
-| F5 | The failure | Observation `tc-csvsum-0003-before-fix`: case TC-csvsum-0003 failed on 2026-09-02 for two reasons at once, a real defect (`csvsum/summarize.py` split each line on `,`, so quoted fields such as `"1,250.00"` and `"Rent, August"` broke) and a case binding error (its `expect_output` wanted `Ran 3 tests` from `tests/test_quoting.py`, which has 2 tests) | `.chough/evidence/`, BUG-0001, the lesson |
-| F6 | Bug and status | BUG-0001, "Quoted fields with commas are split into extra columns", status `verified` (fixed with `csv.reader`; TC-csvsum-0003 passed in `tc-csvsum-0003-after-fix`) | `.chough/bugs/BUG-0001.json`, `chough bug show BUG-0001` |
+| F1 | Goal | csvsum summarizes one numeric column of a bank-export CSV (count, total and mean, exact to the cent) with the Python 3 standard library only, for comma and semicolon exports the session's `objective` and its Goal |
+| F2 | Decision 1 (decided) | Amounts are parsed as `decimal.Decimal` after removing thousands separators, never as float, so totals match the bank statement to the cent (Robin Ash, 2026-09-01) | the session's Decisions and why |
+| F3 | Decision 2 (rejected) | Auto-detecting the delimiter with `csv.Sniffer` was rejected (Robin Ash, 2026-09-08) | the session's Decisions and why |
+| F4 | Reason for the rejection | A wrong guess silently gives a wrong total, so the user names the delimiter with `--delimiter` | the session's Decisions and why, after `because` |
+| F5 | The failure | Observation `tc-csvsum-0003-before-fix`: case TC-csvsum-0003 failed on 2026-09-02 for two reasons at once, a real defect (`csvsum/summarize.py` split each line on `,`, so quoted fields such as `"1,250.00"` and `"Rent, August"` broke) and a case binding error (its `expect_output` wanted `Ran 3 tests` from `tests/test_quoting.py`, which has 2 tests) | BUG-0001 (What happened, its Log and the failed run's receipt `2026-09-02-tc-csvsum-0003`, alias `tc-csvsum-0003-before-fix`), the lesson |
+| F6 | Bug and status | BUG-0001, "Quoted fields with commas are split into extra columns", status `verified` (fixed with `csv.reader`; TC-csvsum-0003 passed in `tc-csvsum-0003-after-fix`, now the session's evidence entry `2026-09-03-tc-csvsum-0003`) | `.chough/bugs/2026-09-02-quoted-fields-with-commas-are-split-into-extra-columns.md` (alias BUG-0001), `chough bug show BUG-0001` |
 | F7 | The lesson | The `verified` lesson in `specs/csvsum/context.md` under `## Lessons`: before treating a failed case as a product defect, run its bound argv by hand and compare the output with every `expect_output` fragment; parse rows only with the standard library `csv` module (any delimiter passed to `csv.reader`), never by splitting lines by hand; a binding's expected test count must equal the tests it runs. Its limits: only comma-delimited input was tested | `specs/csvsum/context.md` |
-| F8 | Correct next task | Build REQ-csvsum-004 (`--delimiter` for semicolon exports): add `tests/test_delimiter.py` and case TC-csvsum-0004 first and see them fail, then add `--delimiter` to `python3 -m csvsum summarize` | checkpoint `next_action`, `specs/csvsum/requirements.md`, `tasks.md` |
+| F8 | Correct next task | Build REQ-csvsum-004 (`--delimiter` for semicolon exports): add `tests/test_delimiter.py` and case TC-csvsum-0004 first and see them fail, then add `--delimiter` to `python3 -m csvsum summarize` | the session's `next`, `specs/csvsum/requirements.md`, `tasks.md` |
 
 For F5, naming the observation ID or naming TC-csvsum-0003's failure with both causes
 counts; naming only one of the two causes does not. For F7, the rule about splitting
@@ -134,14 +142,18 @@ Hosts: a host other than the author's, Kimi Code CLI 0.41.0 at
 change run uses the same host and model as the baseline.
 
 1. Seed: from the Chough commit that holds the frozen pair, run
-   `sh docs/exercises/handoff-cold-start/seed.sh <new-empty-directory>` and confirm
-   the printed HEAD and tree match the hashes recorded with the frozen pair.
+   `sh docs/exercises/handoff-cold-start/seed.sh <new-empty-directory>`, adding
+   `--records=0.1.0` for the baseline, and confirm the printed HEAD and tree match the
+   hashes recorded with the frozen pair for that form.
 2. Binary and skill: build `chough` at the commit under test and install its skill in
    the seeded repository with that binary (`chough init --host openai` for Kimi, which
-   reads `.agents/skills`; add `--host codex` for Codex). It keeps the seeded
-   checkpoint. Put that `chough`, `hi` 0.8.0 and `python3` on `PATH`.
+   reads `.agents/skills`; add `--host codex` for Codex). It keeps the seeded session
+   or, on the 0.1.0 tree, the seeded checkpoint. Put that `chough`, `hi` 0.8.0 and
+   `python3` on `PATH`.
    - Baseline (mandatory, before implementation): binary and skill from main at
-     `fb6e487`.
+     `fb6e487`, on the tree `seed.sh <dir> --records=0.1.0` builds. Each binary reads
+     the record format it was built for, because the runs compare how well an agent
+     resumes, not whether a binary reads another format.
    - Change run: binary and skill from the implementation tip.
    - Real-repository run: the same host and prompt once on the Chough repository
      itself at the implementation tip (no seed).

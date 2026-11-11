@@ -19,9 +19,10 @@ from a new request. Do not rewrite intent to match the implementation.
 
 Reduce the reproduction to the smallest safe fixture and steps. Run it and record the
 result as an observation: `chough cases run <case> --environment <env>` for a bound
-case, or `chough evidence add … --outcome failed` with the saved output. A bug without
-a linked failed observation is reported as `unverified`. Avoid real credentials,
-private data or destructive production actions when a local fixture suffices.
+case, or `chough evidence add … --outcome failed --failing-lines "<key lines>"` taken
+from the saved output, which stays uncommitted. A bug without a linked failed
+observation is reported as `unverified`. Avoid real credentials, private data or
+destructive production actions when a local fixture suffices.
 
 ## Classify from evidence
 

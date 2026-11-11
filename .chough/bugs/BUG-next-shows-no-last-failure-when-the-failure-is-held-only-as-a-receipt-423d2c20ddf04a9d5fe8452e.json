@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "id": "BUG-next-shows-no-last-failure-when-the-failure-is-held-only-as-a-receipt-423d2c20ddf04a9d5fe8452e",
+  "title": "next shows no last failure when the failure is held only as a receipt",
+  "symptom": "On the migrated handoff seed, next says 'Last failure: none' although BUG-0001 holds the failed run as a receipt",
+  "trigger": "Migrate a project whose failing observation a bug links, or finish the session that held it, then run chough next",
+  "expected": "next names the latest failed observation by its recorded time, from open entries and from story and bug receipts, with the bugs that link it (REQ-cli-021)",
+  "actual": "last_failure reads only open sessions' entries, so it is null",
+  "criteria": [
+    "LIFE-1"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "cases": [
+    "TC-cli-next-last-failure-from-receipts"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "75b92a42788b86dc6669a49a11c31770c459b991",
+  "steps": [
+    "Give a bug a failed receipt and no open entries",
+    "Run chough next --json"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-next-last-failure-from-receipts-7b1c7fbab6a386220a89d52a",
+    "OBS-tc-cli-next-last-failure-from-receipts-ee676fb9ef0042aa355a9fd1"
+  ],
+  "impact": "A fresh agent resuming after a migration or a finished session is not told the last failure",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37f's seed.sh capture on the migrated 0.1.0 handoff seed",
+  "notes": [
+    {
+      "at_unix_seconds": 1794439633,
+      "text": "Red on the current next: TC-cli-next-last-failure-from-receipts fails, last_failure is null; revision e7f5b4cc on leif/0.6.0-last-failure-red.",
+      "observations": [
+        "OBS-tc-cli-next-last-failure-from-receipts-7b1c7fbab6a386220a89d52a"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794439701,
+      "text": "status: open -> verified. Green: TC-cli-next-last-failure-from-receipts passes; next names a failure held only as a bug receipt.",
+      "observations": [
+        "OBS-tc-cli-next-last-failure-from-receipts-ee676fb9ef0042aa355a9fd1"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794439607,
+  "updated_at_unix_seconds": 1794439701
+}
