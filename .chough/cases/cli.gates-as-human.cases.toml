@@ -1,0 +1,62 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# Plan step 6: a gate holds the stage it names (#237) and a human's decision at a
+# driving gate runs the native approval or review as that human (#236).
+
+[[case]]
+id = "TC-cli-237-gate-holds-its-stage"
+title = "A gate holds only the stage it names: a release gate opened at build lets build, test and accept advance, and a gate holding build stops advance --to from plan"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-3", "FLOW-5", "FLOW-13"]
+requirements = ["REQ-cli-030"]
+paths = ["src/stage.rs", "src/session_md.rs", "src/main.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_gate_holds_only_the_stage_it_names passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "humans", "--", "--exact", "a_gate_holds_only_the_stage_it_names"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-close-gate-drives-native-step"
+title = "Closing a gate runs the native step it drives first, once; a review needs --verdict; --no-native and a gate that drives nothing run none; a SpecSync refusal writes nothing; one gate record runs at most one step"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-cli-050", "REQ-cli-061"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "src/humans.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the five driving-gate tests in tests/humans.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "humans", "--", "a_scope_gate_runs_the_approval_once_as_the_configured_human", "a_review_gate_needs_a_verdict_and_runs_the_review_with_it", "no_native_closes_a_driving_gate_and_runs_nothing", "a_specsync_refusal_passes_through_and_nothing_is_written", "one_gate_record_runs_at_most_one_native_step"]
+expect_output = ["test result: ok. 5 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-ship-reviews-as-human"
+title = "change ship records the review as the decided human, then ships; an unknown human is refused before SpecSync runs, and a refused review stops the ship"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-23", "FLOW-14"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "src/humans.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the two ship-as-human tests in tests/change.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "change", "--", "ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done", "ship_refuses_an_unknown_human_and_stops_on_a_refused_review"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600
