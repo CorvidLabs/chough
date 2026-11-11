@@ -64,23 +64,18 @@ fn snapshot(root: &Path) -> BTreeMap<String, Vec<u8>> {
     files
 }
 
-/// History events of every cycle, parsed.
+/// Timeline entries of the active session, as `chough history show` reads session.md.
 fn events(fixture: &Fixture) -> Vec<Value> {
-    let mut found = vec![];
-    let cycles = fixture.root().join(".chough/history/cycles");
-    for cycle in fs::read_dir(cycles).unwrap() {
-        for event in fs::read_dir(cycle.unwrap().path()).unwrap() {
-            let path = event.unwrap().path();
-            found.push(serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap());
-        }
-    }
-    found
+    fixture.ok(&["history", "show"])["entries"]
+        .as_array()
+        .unwrap()
+        .clone()
 }
 
 fn new_history_project() -> Fixture {
     let fixture = Fixture::new();
     fixture.ok(&["init", "--objective", "Relay decisions", "--module", "cli"]);
-    assert!(fixture.session()["history_cursor"].is_object());
+    assert!(!fixture.session_file().is_empty());
     fixture
 }
 
@@ -125,20 +120,14 @@ fn a_relayed_decision_closes_only_its_gate_and_keeps_the_four_values() {
     // One gate-closed event carries the relay, byte for byte; no other event does.
     let relayed: Vec<Value> = events(&fixture)
         .into_iter()
-        .filter(|event| event["transition"].get("relayed_by").is_some())
+        .filter(|entry| entry.get("relayed_by").is_some())
         .collect();
     assert_eq!(relayed.len(), 1, "{relayed:?}");
-    assert_eq!(relayed[0]["transition"]["kind"], "gate-closed");
-    // Gate records keep the gate text in `reason`, as every gate record does.
-    assert_eq!(relayed[0]["transition"]["reason"], "Intent approval");
-    assert_eq!(relayed[0]["transition"]["relayed_by"], expected);
-    let shown = fixture.ok(&["stage", "show"]);
-    let last = shown["recent_transitions"]
-        .as_array()
-        .unwrap()
-        .last()
-        .unwrap()
-        .clone();
+    assert_eq!(relayed[0]["kind"], "gate-closed");
+    // A gate-closed entry's text is its gate, read back as the reason.
+    assert_eq!(relayed[0]["reason"], "Intent approval");
+    assert_eq!(relayed[0]["relayed_by"], expected);
+    let last = events(&fixture).last().unwrap().clone();
     assert_eq!(last["relayed_by"], expected);
 
     // A fresh process hands the decision off, marked as a claim.
@@ -297,46 +286,37 @@ fn clearing_records_no_relay_and_a_relayed_close_lets_advance_apply() {
     ]);
     fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
     assert_eq!(fixture.session()["decisions"], json!([]));
-    let lines = fixture.read(".chough/transitions.jsonl");
-    assert!(!lines.contains("relayed_by"), "{lines}");
-    assert_eq!(lines.matches("\"gate-closed\"").count(), 2, "{lines}");
+    let cleared: Vec<Value> = events(&fixture);
+    assert!(cleared.iter().all(|entry| entry.get("relayed_by").is_none()));
+    assert_eq!(
+        cleared.iter().filter(|entry| entry["kind"] == "gate-closed").count(),
+        2
+    );
 
     fixture.ok(&["checkpoint", "--awaiting-human", "Intent approval"]);
     fixture.ok(&close(
         "Intent approval",
         &relay("SYNTHETIC-human", "Approved", "chat", "SYNTHETIC-agent"),
     ));
-    let last: Value = serde_json::from_str(
-        fixture
-            .read(".chough/transitions.jsonl")
-            .lines()
-            .last()
-            .unwrap(),
-    )
-    .unwrap();
+    let all = events(&fixture);
+    let last = all.last().unwrap().clone();
     assert_eq!(last["kind"], "gate-closed");
     assert_eq!(
         last["relayed_by"],
         json!({"decided_by": "SYNTHETIC-human", "words": "Approved", "where": "chat", "recorded_by": "SYNTHETIC-agent"})
     );
-    let shown = fixture.ok(&["stage", "show"]);
-    assert_eq!(
-        shown["recent_transitions"]
-            .as_array()
-            .unwrap()
-            .last()
-            .unwrap()["relayed_by"]["words"],
-        "Approved"
-    );
     fixture.ok(&["stage", "advance"]);
     assert_eq!(fixture.session()["stage"]["current"], "design");
-    // Records without a relay keep their bytes: no relay key on any other line.
-    let lines = fixture.read(".chough/transitions.jsonl");
-    assert_eq!(lines.matches("relayed_by").count(), 1, "{lines}");
+    // Records without a relay carry none: one relayed entry in all.
+    let all = events(&fixture);
+    assert_eq!(
+        all.iter().filter(|entry| entry.get("relayed_by").is_some()).count(),
+        1
+    );
 }
 
-/// An invalid relay is an invalid transition payload, in the legacy log and in
-/// history events.
+/// An invalid relay on a Timeline entry is an invalid transition payload
+/// (REQ-history-010): a good relay reads back; each invalid variant is refused.
 #[test]
 fn invalid_relays_are_refused_as_invalid_payloads() {
     let good = json!({"decided_by": "SYNTHETIC-human", "words": "Approved", "where": "chat", "recorded_by": "SYNTHETIC-agent"});
@@ -358,73 +338,35 @@ fn invalid_relays_are_refused_as_invalid_payloads() {
     variants.push(("gate-opened", good.clone()));
     variants.push(("advance", good.clone()));
 
-    // Legacy log: a valid relay reads back; each invalid one refuses the read.
-    let fixture = Fixture::new();
-    fixture.init();
-    let line = |kind: &str, relay: &Value| {
+    let fixture = new_history_project();
+    let entry = |kind: &str, relay: &Value| {
         let (from, to) = if kind == "advance" {
             ("intent", "design")
         } else {
             ("intent", "intent")
         };
-        json!({"schema_version": 1, "at_unix_seconds": 1, "kind": kind, "from": from, "to": to, "reason": null, "gate": "Gate", "revision": null, "refresh": [], "relayed_by": relay}).to_string()
+        format!(
+            "- 2026-11-11T00:00:00Z · {kind} · {from} → {to} · Gate ^t-aaaaaa\n  - relayed_by: {}\n",
+            serde_json::to_string(relay).unwrap()
+        )
     };
+    let file = fixture.session_file();
+    let original = fixture.read(&file);
     fixture.write(
-        ".chough/transitions.jsonl",
-        &format!("{}\n", line("gate-closed", &good)),
+        &file,
+        &format!("{original}\n{}", entry("gate-closed", &good)),
     );
-    let shown = fixture.ok(&["stage", "show"]);
-    assert_eq!(shown["recent_transitions"][0]["relayed_by"], good);
+    let shown = events(&fixture);
+    assert_eq!(shown.last().unwrap()["relayed_by"], good);
     for (kind, relay) in &variants {
         fixture.write(
-            ".chough/transitions.jsonl",
-            &format!("{}\n", line(kind, relay)),
+            &file,
+            &format!("{original}\n{}", entry(kind, relay)),
         );
-        let error = fixture.fails(&["stage", "show"]);
+        let error = fixture.fails(&["history", "show"]);
         assert!(
             error.contains("invalid transition"),
             "{kind} {relay}: {error}"
         );
     }
-
-    // History events: the relayed event reads back; each invalid edit of it makes the
-    // selected history partial instead of being read.
-    let fixture = new_history_project();
-    fixture.ok(&["checkpoint", "--awaiting-human", "Gate"]);
-    fixture.ok(&close(
-        "Gate",
-        &relay("SYNTHETIC-human", "Approved", "chat", "SYNTHETIC-agent"),
-    ));
-    let cycles = fixture.root().join(".chough/history/cycles");
-    let path = fs::read_dir(&cycles)
-        .unwrap()
-        .flat_map(|cycle| fs::read_dir(cycle.unwrap().path()).unwrap())
-        .map(|event| event.unwrap().path())
-        .find(|path| fs::read_to_string(path).unwrap().contains("relayed_by"))
-        .unwrap();
-    let original_bytes = fs::read(&path).unwrap();
-    let original: Value = serde_json::from_slice(&original_bytes).unwrap();
-    assert_eq!(original["transition"]["relayed_by"], good);
-    for (kind, relay) in &variants {
-        let mut edited = original.clone();
-        edited["transition"]["kind"] = json!(kind);
-        if *kind == "advance" {
-            edited["transition"]["to"] = json!("design");
-        }
-        edited["transition"]["relayed_by"] = relay.clone();
-        fs::write(&path, edited.to_string()).unwrap();
-        let shown = fixture.ok(&["stage", "show"]);
-        assert_eq!(shown["transitions_partial"], true, "{kind} {relay}");
-        assert!(
-            shown["recent_transitions"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .all(|record| record.get("relayed_by").is_none()),
-            "{kind} {relay}: {shown}"
-        );
-    }
-    fs::write(&path, &original_bytes).unwrap();
-    let shown = fixture.ok(&["stage", "show"]);
-    assert_eq!(shown["transitions_partial"], false);
 }
