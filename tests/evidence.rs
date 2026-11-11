@@ -101,29 +101,17 @@ fn write_bug(
     observations: &[&str],
     baseline: Option<&str>,
 ) {
-    let bug = json!({
-        "schema_version": 1,
-        "id": id,
-        "title": format!("Fixture bug {id}"),
-        "symptom": "It breaks",
-        "trigger": "Running the probe",
-        "expected": "It works",
-        "actual": "It broke",
-        "environment": "local",
-        "observations": observations,
-        "impact": "Not yet assessed.",
-        "classification": "unclassified",
-        "scope": "in-scope",
-        "status": status,
-        "regression_baseline": baseline,
-        "source": "fixture",
-        "created_at_unix_seconds": 1,
-        "updated_at_unix_seconds": 1,
-    });
-    fixture.write(
-        &format!(".chough/bugs/{id}.json"),
-        &serde_json::to_string_pretty(&bug).unwrap(),
-    );
+    fixture.bug_md(id, "in-scope", status, observations);
+    if let Some(baseline) = baseline {
+        let name = format!(".chough/bugs/{id}.md");
+        fixture.write(
+            &name,
+            &fixture.read(&name).replace(
+                "receipts: []\n",
+                &format!("receipts: []\nregression_baseline: {baseline}\n"),
+            ),
+        );
+    }
 }
 
 fn write_run(fixture: &Fixture, id: &str, observations: &[&str], completed: u32, failures: u32) {
@@ -577,9 +565,10 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
             )
         })
         .collect();
-    assert_eq!(labels["old-pass"], "pruned");
-    assert_eq!(labels["old-fail"], "pruned");
-    assert_eq!(labels["never-recorded"], "unavailable");
+    // A 0.6.0 bug reads no 0.5.x observation: each reads missing (REQ-cli-012).
+    assert_eq!(labels["old-pass"], "missing");
+    assert_eq!(labels["old-fail"], "missing");
+    assert_eq!(labels["never-recorded"], "missing");
     let refused = fixture.fails(&["bug", "update", "BUG-0001", "--status", "verified"]);
     assert!(refused.contains("passed observation"), "{refused}");
     assert_eq!(
@@ -873,10 +862,14 @@ fn bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name() {
         );
     }
     write_bug(&fixture, "BUG-0001", "verified", &[], None);
-    let name = ".chough/bugs/BUG-0001.json";
-    let mut bug: Value = serde_json::from_str(&fixture.read(name)).unwrap();
-    bug["fixture"] = json!(".chough/artifacts/c3.log");
-    fixture.write(name, &serde_json::to_string_pretty(&bug).unwrap());
+    let name = ".chough/bugs/BUG-0001.md";
+    fixture.write(
+        name,
+        &fixture.read(name).replace(
+            "receipts: []\n",
+            "receipts: []\nfixture: .chough/artifacts/c3.log\n",
+        ),
+    );
     fixture.ok(&["checkpoint", "--file", ".chough/artifacts/c4.log"]);
 
     let preview = fixture.ok(&["evidence", "prune"]);
@@ -895,19 +888,21 @@ fn bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name() {
 fn bug_show_labels_note_observations_once() {
     let fixture = project();
     write_obs(&fixture, &Obs::run("seen", "TC-a", "failed", 1));
-    write_bug(&fixture, "BUG-0001", "open", &["seen"], None);
-    let name = ".chough/bugs/BUG-0001.json";
-    let mut bug: Value = serde_json::from_str(&fixture.read(name)).unwrap();
-    bug["notes"] = json!([
-        {"at_unix_seconds": 2, "text": "again", "observations": ["seen", "gone"]}
-    ]);
-    fixture.write(name, &serde_json::to_string_pretty(&bug).unwrap());
+    // A 0.6.0 bug links evidence only in its front matter, and reads no 0.5.x
+    // observation, so each linked ID is labeled once, as missing (REQ-cli-012).
+    write_bug(
+        &fixture,
+        "BUG-0001",
+        "open",
+        &["seen", "gone", "seen"],
+        None,
+    );
     let shown = fixture.ok(&["bug", "show", "BUG-0001"]);
     assert_eq!(
         shown["observation_labels"],
         json!([
-            {"id": "seen", "role": "observation", "label": "historical"},
-            {"id": "gone", "role": "note", "label": "unavailable"},
+            {"id": "seen", "role": "evidence", "label": "missing"},
+            {"id": "gone", "role": "evidence", "label": "missing"},
         ]),
         "{shown:#}"
     );
