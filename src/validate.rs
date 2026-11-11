@@ -30,7 +30,7 @@ const WAIT_SLICE: Duration = Duration::from_millis(200);
 /// A 0.5.x run file as 0.5.0 wrote it; read only by [`legacy_run`].
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-#[allow(dead_code)] // interval_seconds, authority and bugs are read only to accept the file
+#[allow(dead_code)] // bugs is read only to accept the file
 struct LegacyJson {
     schema_version: u32,
     id: String,
@@ -241,7 +241,11 @@ pub(super) struct LegacyRun {
     pub(super) id: String,
     pub(super) case: String,
     pub(super) times: u32,
+    pub(super) interval_seconds: u64,
     pub(super) environment: String,
+    /// Who authorized the run, as 0.5.x recorded it: the human's consent or a standing
+    /// preference, kept when the run is carried.
+    pub(super) authority: String,
     pub(super) state: String,
     pub(super) completed: u32,
     pub(super) failures: u32,
@@ -266,7 +270,9 @@ pub(super) fn legacy_run(path: &str, text: &str) -> Result<LegacyRun> {
         id: run.id,
         case: run.case,
         times: run.times,
+        interval_seconds: run.interval_seconds,
         environment: run.environment,
+        authority: run.authority,
         state: run.state,
         completed: run.completed,
         failures: run.failures,
