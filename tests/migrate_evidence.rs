@@ -854,10 +854,16 @@ fn names_are_deterministic_and_an_interrupted_apply_resumes() {
     fixture.commit("two observations that would take one name");
     let plan = fixture.ok(&["migrate"]);
     assert_eq!(fixture.ok(&["migrate"])["plan_digest"], plan["plan_digest"]);
-    let first = alias(&plan, PRODUCT);
-    let second = alias(&plan, twin);
+    // Named in observed-then-old-ID order: the twin's ID sorts first and keeps the
+    // name; the other takes the suffix of its own old ID.
+    let first = alias(&plan, twin);
+    let second = alias(&plan, PRODUCT);
     assert_ne!(first, second);
-    let suffix = &sha256(twin.as_bytes())[..6];
+    assert!(
+        first.ends_with("-fixture-observation-the-one-case-passes.md"),
+        "{first}"
+    );
+    let suffix = &sha256(PRODUCT.as_bytes())[..6];
     assert!(second.ends_with(&format!("-{suffix}.md")), "{second}");
 
     // The same project applied elsewhere gives the first entry's planned bytes; an
