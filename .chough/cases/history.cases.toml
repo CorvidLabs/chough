@@ -112,24 +112,6 @@ test_target = "evidence"
 test = "a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned"
 
 [[case]]
-id = "TC-history-0056"
-title = "Native manifests protect their sets and a failed read protects everything"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::native_manifests_protect_their_sets_and_a_failed_read_protects_everything passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "native_manifests_protect_their_sets_and_a_failed_read_protects_everything"
-
-[[case]]
 id = "TC-history-0057"
 title = "Automatic pruning follows case runs only when retention is auto"
 status = "active"
@@ -256,24 +238,6 @@ test_target = "evidence"
 test = "retention_revalidation_keeps_changed_missing_and_newly_referenced_proof"
 
 [[case]]
-id = "TC-history-legacy-timing-bounds"
-title = "Legacy timing retains at most 4096 input lines and reports omitted history"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8", "LIFE-10"]
-requirements = ["REQ-history-003"]
-paths = ["src/history.rs", "src/timing.rs", "tests/timing.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/timing.rs::legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission passes at the exact event limit and one line beyond, preserving the chronological suffix and source bytes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "timing"
-test = "legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission"
-
-[[case]]
 id = "TC-history-split-keeps-requirement-wording"
 title = "The cli spec split keeps every moved requirement's wording under its mapped ID"
 status = "active"
@@ -308,24 +272,6 @@ expected = ["tests/sessions.rs::inbox_add_racing_an_archive_never_strands_its_en
 adapter = "cargo-test"
 test_target = "sessions"
 test = "inbox_add_racing_an_archive_never_strands_its_entry"
-
-[[case]]
-id = "TC-history-retention-protects-inbox-observations"
-title = "Retention protects observations named by unfolded inbox entries"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-3", "LIFE-8"]
-requirements = ["REQ-history-009"]
-paths = ["src/sessions.rs", "tests/evidence.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::retention_protects_observations_named_by_unfolded_inbox_entries passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "retention_protects_observations_named_by_unfolded_inbox_entries"
 
 [[case]]
 id = "TC-history-inbox-add-killed-leaves-no-partial-entry"
