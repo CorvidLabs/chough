@@ -440,6 +440,7 @@ fn apply(
         );
     }
     prune_empty_folders(root)?;
+    prune_emptied(root, kept_bytes.iter().map(|(path, _)| path.as_str()));
     print_json(&json!({
         "schema_version": 1,
         "applied": true,
@@ -558,6 +559,25 @@ fn validity(root: &Path, ids: &[String]) -> Result<BTreeMap<String, String>> {
 /// Whether a terminal evidence validity reads as valid.
 fn is_valid(state: &str) -> bool {
     matches!(state, "authenticated-history" | "exact" | "valid")
+}
+
+/// Remove each folder a removal left empty, from the removed file's own folder up to,
+/// never including, the project root: a session rolled into the vault leaves no empty
+/// `knowledge/attachments/<folder>/sessions/` behind. A folder that still holds anything
+/// stays.
+fn prune_emptied<'a>(root: &Path, removed: impl Iterator<Item = &'a str>) {
+    for path in removed {
+        let mut folder = Path::new(path).parent();
+        while let Some(relative) = folder.filter(|folder| !folder.as_os_str().is_empty()) {
+            let Ok(local) = local_path(root, &relative.to_string_lossy()) else {
+                break;
+            };
+            if std::fs::remove_dir(local).is_err() {
+                break;
+            }
+            folder = relative.parent();
+        }
+    }
 }
 
 /// Remove the 0.5.x folders the migration emptied.
