@@ -798,7 +798,9 @@ pub(super) fn session_notes(
         let Some(text) = read(root, &format!("{dir}/{attachment}")) else {
             continue;
         };
-        let Ok(crate::checkpoint::Session::V2(session)) = crate::checkpoint::parse(&text) else {
+        let Ok(crate::checkpoint::Session::V2(session)) =
+            crate::checkpoint::parse(&format!("{dir}/{attachment}"), &text)
+        else {
             continue;
         };
         let change = session.native_change.clone();

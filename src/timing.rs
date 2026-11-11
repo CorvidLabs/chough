@@ -12,7 +12,7 @@ use crate::checkpoint::{Session, read_session};
 use crate::evidence::{self, Outcome};
 use crate::records::{
     NativeJson, TIMING_BUDGET_VARIABLE, local_path, native_json_within, now, print_json,
-    read_log_full, read_native_text, trace_phase,
+    read_native_text, trace_phase,
 };
 use crate::{bugs, stage, validate};
 use anyhow::{Result, bail};
@@ -220,32 +220,20 @@ struct Transitions {
 
 /// Read transitions leniently: a line that is not a transition is counted and skipped,
 /// and a missing or non-numeric time is unknown.
-fn read_transitions(root: &Path, session: &Session, all: bool) -> Result<Transitions> {
-    let (lines, skipped_bytes, history_partial, lineages) = if let Session::V2(checkpoint) = session
-        && let Some(cursor) = &checkpoint.history_cursor
-    {
-        let read = crate::history::timing(root, cursor, all);
+fn read_transitions(_root: &Path, session: &Session, all: bool) -> Result<Transitions> {
+    let _ = all;
+    let (lines, skipped_bytes, history_partial, lineages) = {
+        let Session::V2(checkpoint) = session;
+        let read = crate::history::timing(checkpoint);
         (
             read.records
                 .iter()
                 .map(Value::to_string)
                 .collect::<Vec<_>>(),
-            0,
+            0_u64,
             read.partial,
             read.lineages,
         )
-    } else {
-        let mut log = read_log_full(&local_path(root, stage::TRANSITIONS)?, TRANSITIONS_LIMIT)?;
-        let omitted = log.lines.len().saturating_sub(crate::history::CYCLE_EVENTS);
-        let mut partial = vec![];
-        if omitted > 0 {
-            log.lines.drain(..omitted);
-            partial.push(format!(
-                "earliest {omitted} lines skipped beyond the {}-event timing bound",
-                crate::history::CYCLE_EVENTS
-            ));
-        }
-        (log.lines, log.skipped_bytes, partial, vec![])
     };
     let mut records = vec![];
     let mut unreadable = 0;
@@ -572,7 +560,6 @@ fn derive(transitions: &Transitions, session: &Session, at: u64) -> Derived {
             checkpoint.stage.current.clone(),
             checkpoint.stage.status == "paused",
         ),
-        Session::V1(_) => (vec![], "intent".to_string(), false),
     };
     let gates = gates(&transitions.records, &awaiting);
     let moves: Vec<&Record> = transitions
@@ -1339,7 +1326,6 @@ fn native_section(
             reads.fetch(root, id);
             native_change(root, id, directory.as_deref(), reads.responses.get(id))
         }),
-        Session::V1(_) => None,
     };
     if !excluded.is_empty() {
         partial.push(json!({"source": ARCHIVE_DIR, "reason": format!("archived native history not read: excluded by {}", excluded.join(", "))}));
@@ -1448,10 +1434,7 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
     let at = now()?;
     let mut partial: Vec<Value> = vec![];
     let transitions = read_transitions(root, &session, args.cycle == "all")?;
-    let history_source = match &session {
-        Session::V2(checkpoint) if checkpoint.history_cursor.is_some() => crate::history::ROOT,
-        _ => stage::TRANSITIONS,
-    };
+    let history_source = "the session timeline";
     for reason in &transitions.history_partial {
         partial.push(json!({"source":history_source,"reason":reason}));
     }
@@ -1591,7 +1574,7 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
             "unreadable_lines": transitions.unreadable,
             "unrecognised_kinds": transitions.unrecognised,
             "bound_bytes": TRANSITIONS_LIMIT,
-            "selected_cursor": match &session { Session::V2(checkpoint) => serde_json::to_value(&checkpoint.history_cursor)?, Session::V1(_) => Value::Null },
+            "selected_session": match &session { Session::V2(checkpoint) => Value::String(checkpoint.meta.id.clone()) },
             "lineage_selection": "Only the checkpoint-selected parent chain is derived; unselected branch timelines remain separate and their durations are unknown. Inspect chough history show for other tips.",
         },
         "transition_lineages": transitions.lineages,

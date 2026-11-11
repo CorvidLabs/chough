@@ -528,7 +528,6 @@ impl<'a> DeltaLinks<'a> {
         }
         let change = match checkpoint::read_session(self.root)? {
             checkpoint::Session::V2(checkpoint) => checkpoint.native_change.clone(),
-            checkpoint::Session::V1(_) => None,
         };
         let consulted = match change {
             None => Consulted::Nothing,

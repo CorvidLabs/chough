@@ -1,24 +1,22 @@
-//! The single canonical checkpoint: `.chough/session.json`, or the active session
-//! file under `.chough/sessions/` (REQ-cli-037).
+//! The canonical checkpoint: the front matter of the active session's `session.md`
+//! (REQ-cli-037, REQ-records-004). A 0.5.x `.chough/session.json` is not read; it
+//! names `chough migrate`.
 
 use crate::records::{
     CHANGE_ID_LIMIT, ensure_text, local_path, native_json, print_json, read_bounded_record,
-    valid_change_id, valid_name, write_new_bytes, write_replace_bounded,
+    valid_change_id, valid_name, write_replace_bounded,
 };
 use crate::records::{valid_criterion_id, valid_module_name, valid_reference_id};
 use crate::stage;
 use anyhow::{Context, Result, bail, ensure};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::collections::HashSet;
 use std::fs::{self, OpenOptions};
-use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::{Mutex, PoisonError};
 use std::time::{Duration, Instant};
 
 pub(super) const SESSION: &str = ".chough/session.json";
-pub(super) const SESSION_V1_BACKUP: &str = ".chough/session.v1.json";
 /// How long a writer waits for another Chough command to release the checkpoint.
 #[cfg(not(test))]
 const LOCK_WAIT: Duration = Duration::from_secs(30);
@@ -32,18 +30,6 @@ const MAX_ITEMS: usize = 200;
 pub(super) const SESSION_LIMIT: u64 = 1_048_576;
 /// Bound of the checkpoint `observations` list; other checkpoint lists keep `MAX_ITEMS`.
 const MAX_OBSERVATIONS: usize = 400;
-
-#[derive(Clone, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-pub(super) struct SessionV1 {
-    pub(super) schema_version: u32,
-    pub(super) objective: String,
-    pub(super) intent_scope: String,
-    pub(super) modules: Vec<String>,
-    pub(super) decisions: Vec<String>,
-    pub(super) open_questions: Vec<String>,
-    pub(super) next_action: String,
-}
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -94,8 +80,6 @@ pub(super) struct Consent {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Checkpoint {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub(super) history_cursor: Option<crate::history::Cursor>,
     pub(super) schema_version: u32,
     pub(super) objective: String,
     #[serde(default)]
@@ -125,58 +109,49 @@ pub(super) struct Checkpoint {
     pub(super) run_consents: Vec<Consent>,
     pub(super) next_action: String,
     /// The session record's ID, aliases, pull request and gate details (REQ-records-004).
-    #[allow(dead_code)]
     #[serde(skip)]
     pub(super) meta: crate::session_md::Meta,
     /// The record this checkpoint was read from, so a save keeps every byte a person or
     /// agent wrote and every key Chough does not know (REQ-records-001).
-    #[allow(dead_code)]
     #[serde(skip)]
     pub(super) source: Option<crate::markdown::Record>,
     /// Transitions to append to the Timeline in the next save (REQ-history-002).
-    #[allow(dead_code)]
     #[serde(skip)]
     pub(super) pending: Vec<crate::stage::Transition>,
 }
 
-/// A readable session in either supported schema.
+/// A readable session.
 pub(super) enum Session {
-    V1(SessionV1),
     V2(Box<Checkpoint>),
 }
 
 impl Session {
     pub(super) fn objective(&self) -> &str {
         match self {
-            Self::V1(session) => &session.objective,
             Self::V2(session) => &session.objective,
         }
     }
 
     pub(super) fn intent_scope(&self) -> &str {
         match self {
-            Self::V1(session) => &session.intent_scope,
             Self::V2(session) => &session.intent_scope,
         }
     }
 
     pub(super) fn modules(&self) -> &[String] {
         match self {
-            Self::V1(session) => &session.modules,
             Self::V2(session) => &session.modules,
         }
     }
 
     pub(super) fn next_action(&self) -> &str {
         match self {
-            Self::V1(session) => &session.next_action,
             Self::V2(session) => &session.next_action,
         }
     }
 
     pub(super) fn to_value(&self) -> Result<Value> {
         Ok(match self {
-            Self::V1(session) => serde_json::to_value(session)?,
             Self::V2(session) => serde_json::to_value(session.as_ref())?,
         })
     }
@@ -188,7 +163,6 @@ pub(super) fn new_checkpoint(
     modules: Vec<String>,
 ) -> Checkpoint {
     Checkpoint {
-        history_cursor: None,
         schema_version: 2,
         objective,
         intent_scope,
@@ -232,19 +206,6 @@ fn validate_common(objective: &str, modules: &[String]) -> Result<()> {
     Ok(())
 }
 
-pub(super) fn validate_v1(session: &SessionV1) -> Result<()> {
-    ensure!(
-        session.schema_version == 1,
-        "unsupported session schema_version"
-    );
-    validate_common(&session.objective, &session.modules)?;
-    ensure!(
-        serde_json::to_vec(session)?.len() as u64 <= SESSION_LIMIT,
-        "session exceeds {SESSION_LIMIT} bytes"
-    );
-    Ok(())
-}
-
 fn ensure_ids(label: &str, values: &[String], limit: usize) -> Result<()> {
     ensure!(values.len() <= limit, "too many {label} (limit {limit})");
     // HI owns criterion IDs and SpecSync owns module IDs, which requirement and case IDs
@@ -281,9 +242,6 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
         "unsupported session schema_version"
     );
     validate_common(&session.objective, &session.modules)?;
-    if let Some(cursor) = &session.history_cursor {
-        crate::history::validate_cursor(cursor)?;
-    }
     ensure!(
         stage::is_stage(&session.stage.current),
         "unknown stage: {}",
@@ -345,33 +303,22 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
     Ok(())
 }
 
-pub(super) fn parse(content: &str) -> Result<Session> {
-    let value: Value = serde_json::from_str(content).context("invalid session record")?;
-    match value.get("schema_version").and_then(Value::as_u64) {
-        Some(1) => {
-            let session: SessionV1 =
-                serde_json::from_value(value).context("invalid schema 1 session record")?;
-            validate_v1(&session)?;
-            Ok(Session::V1(session))
-        }
-        Some(2) => {
-            let session: Checkpoint =
-                serde_json::from_value(value).context("invalid schema 2 session record")?;
-            validate_v2(&session)?;
-            Ok(Session::V2(Box::new(session)))
-        }
-        _ => bail!("unsupported session schema_version"),
-    }
+/// Read the session record at `relative` from `content`.
+pub(super) fn parse(relative: &str, content: &str) -> Result<Session> {
+    let session = crate::session_md::read(relative, content)?;
+    validate_v2(&session)?;
+    Ok(Session::V2(Box::new(session)))
 }
 
 pub(super) fn read_session(root: &Path) -> Result<Session> {
     let relative = crate::sessions::checkpoint_path(root)?;
     let path = local_path(root, &relative)?;
     if !path.exists() {
-        return Err(anyhow::anyhow!("{relative} does not exist")).context("run chough init first");
+        return Err(anyhow::anyhow!("{relative} does not exist"))
+            .context("run `chough session new <key>` first");
     }
     read_bounded_record(&path, SESSION_LIMIT)
-        .and_then(|content| parse(&content))
+        .and_then(|content| parse(&relative, &content))
         .with_context(|| crate::sessions::shelve_hint(&relative))
 }
 
@@ -504,7 +451,7 @@ fn remove_orphaned_session_temps(root: &Path) -> Result<()> {
 /// the checkpoint path is resolved, so the mode is read under the lock. Without
 /// either there is no checkpoint to update.
 pub(super) fn lock_for_update(root: &Path) -> Result<()> {
-    if local_path(root, SESSION)?.is_file() || crate::sessions::enabled(root)? {
+    if crate::sessions::enabled(root)? {
         lock_checkpoint(root)?;
     }
     Ok(())
@@ -523,303 +470,42 @@ pub(super) fn read_checkpoint(root: &Path) -> Result<Checkpoint> {
 pub(super) fn read_checkpoint_unlocked(root: &Path) -> Result<Checkpoint> {
     match read_session(root)? {
         Session::V2(session) => Ok(*session),
-        Session::V1(_) => bail!(
-            "the session uses schema 1; run `chough migrate` to keep its bytes in {SESSION_V1_BACKUP} and continue with schema 2"
-        ),
     }
 }
 
-fn serialize_checkpoint(session: &Checkpoint) -> Result<String> {
+/// The session record `session` saves as, within its bound (REQ-records-001).
+pub(super) fn render_checkpoint(session: &Checkpoint) -> Result<crate::markdown::Record> {
     validate_v2(session)?;
-    let content = serde_json::to_string_pretty(session)? + "\n";
+    let record = crate::session_md::render(session, crate::records::now()?)?;
+    let content = record.render();
     ensure!(
         content.len() as u64 <= SESSION_LIMIT,
-        "session exceeds {SESSION_LIMIT} bytes"
+        "refused: the session record would be {} bytes, over its bound of {SESSION_LIMIT} bytes; run `chough session close {} --reason <text>` and then `chough session new <key>`; the session file is unchanged",
+        content.len(),
+        session.meta.id
     );
-    Ok(content)
+    Ok(record)
 }
 
-pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
+/// Save the checkpoint and its queued Timeline entries in one atomic replace; the
+/// checkpoint then holds the record written and no queued entry.
+pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<()> {
     lock_checkpoint(root)?;
     remove_orphaned_session_temps(root)?;
+    let record = render_checkpoint(session)?;
     write_replace_bounded(
         root,
         &crate::sessions::checkpoint_path(root)?,
-        &serialize_checkpoint(session)?,
+        &record.render(),
         SESSION_LIMIT,
-    )
-}
-
-pub(super) fn migrate(root: &Path, initial_stage: &str) -> Result<()> {
-    ensure!(
-        stage::is_main(initial_stage),
-        "migration stage must be a main stage"
-    );
-    lock_for_update(root)?;
-    let path = local_path(root, &crate::sessions::checkpoint_path(root)?)?;
-    let original = read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?;
-    let session = match parse(&original)? {
-        Session::V2(_) => {
-            return print_json(
-                &json!({"schema_version": 1, "migrated": false, "reason": "session already uses schema 2"}),
-            );
-        }
-        Session::V1(session) => session,
-    };
-    ensure!(
-        !local_path(root, SESSION_V1_BACKUP)?.exists(),
-        "{SESSION_V1_BACKUP} already exists; inspect it before migrating again"
-    );
-    let mut checkpoint = new_checkpoint(
-        session.objective.clone(),
-        session.intent_scope.clone(),
-        session.modules.clone(),
-    );
-    checkpoint.stage.current = initial_stage.into();
-    checkpoint.decisions = session.decisions.clone();
-    checkpoint.open_questions = session.open_questions.clone();
-    checkpoint.next_action = session.next_action.clone();
-    validate_v2(&checkpoint)?;
-    ensure!(
-        write_new_bytes(root, SESSION_V1_BACKUP, original.as_bytes())?,
-        "{SESSION_V1_BACKUP} already exists"
-    );
-    save_checkpoint(root, &checkpoint)?;
-    print_json(&json!({
-        "schema_version": 1,
-        "migrated": true,
-        "preserved": SESSION_V1_BACKUP,
-        "stage": initial_stage,
-    }))
-}
-
-fn read_merge_operand(path: &Path) -> Result<(PathBuf, Checkpoint)> {
-    let metadata = fs::symlink_metadata(path)
-        .with_context(|| format!("reading merge operand {}", path.display()))?;
-    ensure!(
-        metadata.file_type().is_file(),
-        "merge operand must be an existing regular file whose final component is not a symbolic link: {}",
-        path.display()
-    );
-    let resolved = path.canonicalize()?;
-    let content = read_bounded_record(path, SESSION_LIMIT)?;
-    match parse(&content)? {
-        Session::V2(session) => Ok((resolved, *session)),
-        Session::V1(_) => bail!(
-            "checkpoint --merge requires schema 2 session inputs; schema 1 requires explicit migration"
-        ),
-    }
-}
-
-fn merge_strings(base: &[String], ours: &[String], theirs: &[String]) -> Vec<String> {
-    let base_members: HashSet<&str> = base.iter().map(String::as_str).collect();
-    let ours_members: HashSet<&str> = ours.iter().map(String::as_str).collect();
-    let theirs_members: HashSet<&str> = theirs.iter().map(String::as_str).collect();
-    let mut emitted = HashSet::new();
-    let mut merged = Vec::new();
-    for value in base {
-        if ours_members.contains(value.as_str())
-            && theirs_members.contains(value.as_str())
-            && emitted.insert(value.as_str())
-        {
-            merged.push(value.clone());
-        }
-    }
-    for value in ours.iter().chain(theirs) {
-        if !base_members.contains(value.as_str())
-            && (ours_members.contains(value.as_str()) || theirs_members.contains(value.as_str()))
-            && emitted.insert(value.as_str())
-        {
-            merged.push(value.clone());
-        }
-    }
-    merged
-}
-
-const CURRENT_CYCLE_FIELDS: [&str; 10] = [
-    "objective",
-    "intent_scope",
-    "modules",
-    "stage",
-    "native_change",
-    "next_action",
-    "run_consents",
-    "blockers",
-    "awaiting_human",
-    "history_cursor",
-];
-
-fn current_cycle(session: &Checkpoint) -> Value {
-    json!({
-        "history_cursor": session.history_cursor,
-        "objective": session.objective,
-        "intent_scope": session.intent_scope,
-        "modules": session.modules,
-        "stage": session.stage,
-        "native_change": session.native_change,
-        "next_action": session.next_action,
-        "run_consents": session.run_consents,
-        "blockers": session.blockers,
-        "awaiting_human": session.awaiting_human,
-    })
-}
-
-fn merge_checkpoints(operands: &[PathBuf]) -> Result<()> {
-    ensure!(
-        operands.len() == 3,
-        "checkpoint --merge needs base, ours and theirs"
-    );
-    let (base_path, base) = read_merge_operand(&operands[0])?;
-    let (ours_path, ours) = read_merge_operand(&operands[1])?;
-    let (theirs_path, theirs) = read_merge_operand(&operands[2])?;
-    let mut distinct = HashSet::new();
-    ensure!(
-        distinct.insert(&base_path) && distinct.insert(&ours_path) && distinct.insert(&theirs_path),
-        "merge operands must resolve to three distinct paths"
-    );
-
-    let base_cycle = current_cycle(&base);
-    let ours_cycle = current_cycle(&ours);
-    let theirs_cycle = current_cycle(&theirs);
-    let ours_changed = ours_cycle != base_cycle;
-    let theirs_changed = theirs_cycle != base_cycle;
-    let selected = match (ours_changed, theirs_changed) {
-        (false, false) => &base,
-        (true, false) => &ours,
-        (false, true) => &theirs,
-        (true, true) if ours_cycle == theirs_cycle => &ours,
-        (true, true) => {
-            let differing = CURRENT_CYCLE_FIELDS
-                .iter()
-                .filter(|field| ours_cycle[**field] != theirs_cycle[**field])
-                .copied()
-                .collect::<Vec<_>>()
-                .join(", ");
-            bail!("current-cycle conflict: {differing}");
-        }
-    };
-    let mut merged = selected.clone();
-    merged.references.criteria = merge_strings(
-        &base.references.criteria,
-        &ours.references.criteria,
-        &theirs.references.criteria,
-    );
-    merged.references.requirements = merge_strings(
-        &base.references.requirements,
-        &ours.references.requirements,
-        &theirs.references.requirements,
-    );
-    merged.references.cases = merge_strings(
-        &base.references.cases,
-        &ours.references.cases,
-        &theirs.references.cases,
-    );
-    merged.references.design = merge_strings(
-        &base.references.design,
-        &ours.references.design,
-        &theirs.references.design,
-    );
-    merged.references.files = merge_strings(
-        &base.references.files,
-        &ours.references.files,
-        &theirs.references.files,
-    );
-    merged.decisions = merge_strings(&base.decisions, &ours.decisions, &theirs.decisions);
-    merged.open_questions = merge_strings(
-        &base.open_questions,
-        &ours.open_questions,
-        &theirs.open_questions,
-    );
-    merged.completed = merge_strings(&base.completed, &ours.completed, &theirs.completed);
-    merged.observations =
-        merge_strings(&base.observations, &ours.observations, &theirs.observations);
-    merged.bugs = merge_strings(&base.bugs, &ours.bugs, &theirs.bugs);
-
-    validate_v2(&merged)?;
-    let serialized = serde_json::to_string_pretty(&merged)? + "\n";
-    ensure!(
-        serialized.len() as u64 <= SESSION_LIMIT,
-        "merged session exceeds {SESSION_LIMIT} bytes"
-    );
-    match parse(&serialized)? {
-        Session::V2(_) => {}
-        Session::V1(_) => bail!("merged session is not schema 2"),
-    }
-    let report = serde_json::to_string(&json!({
-        "schema_version": 1,
-        "merged": true,
-        "checkpoint": merged
-    }))?;
-    replace_merged_ours(&operands[1], &serialized)?;
-    let mut output = std::io::stdout().lock();
-    let _ = writeln!(output, "{report}");
+    )?;
+    session.source = Some(record);
+    session.pending.clear();
     Ok(())
-}
-
-fn replace_merged_ours(ours: &Path, content: &str) -> Result<()> {
-    let metadata = fs::symlink_metadata(ours)?;
-    ensure!(
-        metadata.file_type().is_file(),
-        "merge output must remain a regular non-symlink file: {}",
-        ours.display()
-    );
-    let parent = ours.parent().context("merge output has no parent")?;
-    let name = ours
-        .file_name()
-        .and_then(|name| name.to_str())
-        .context("merge output name must be UTF-8")?;
-    let temporary = parent.join(format!(".{name}.{}.chough-merge.tmp", std::process::id()));
-    let result = (|| -> Result<()> {
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&temporary)?;
-        file.write_all(content.as_bytes())?;
-        file.sync_all()?;
-        fs::rename(&temporary, ours)?;
-        Ok(())
-    })();
-    if result.is_err() {
-        let _ = fs::remove_file(&temporary);
-    }
-    result.with_context(|| format!("writing merged checkpoint {}", ours.display()))
 }
 
 #[derive(clap::Args)]
 pub(super) struct CheckpointArgs {
-    /// Three-way merge schema 2 checkpoints, replacing only ours after every check passes.
-    #[arg(
-        long,
-        num_args = 3,
-        value_names = ["BASE", "OURS", "THEIRS"],
-        conflicts_with_all = [
-            "objective",
-            "next_action",
-            "native_change",
-            "decisions",
-            "questions",
-            "resolved",
-            "completed",
-            "remove_completed",
-            "blockers",
-            "clear_blockers",
-            "awaiting_human",
-            "clear_awaiting_human",
-            "close_gate",
-            "decided_by",
-            "words",
-            "place",
-            "recorded_by",
-            "criteria",
-            "requirements",
-            "cases",
-            "design",
-            "files",
-            "observations",
-            "bugs",
-        ]
-    )]
-    merge: Option<Vec<PathBuf>>,
     /// Replace the objective; this clears run consents tied to the old objective.
     #[arg(long)]
     objective: Option<String>,
@@ -1046,9 +732,10 @@ fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Optio
     })
 }
 
-/// Save `session` with a gate-closed event for each of `cleared` and a gate-opened
-/// event for each of `opened`, sizing the cursor first so a refused save publishes no
-/// event. `checkpoint` and the doctor's gate withdrawal (REQ-history-012) share it.
+/// Save `session` with a gate-closed entry for each of `cleared` and a gate-opened entry
+/// for each of `opened`, all in the same atomic replace as the checkpoint change, so a
+/// refused save writes neither. `checkpoint` and the doctor's gate withdrawal
+/// (REQ-history-012) share it.
 fn save_with_gate_events(
     root: &Path,
     session: &mut Checkpoint,
@@ -1057,49 +744,20 @@ fn save_with_gate_events(
     opened: &[String],
     relay_for: impl Fn(&String) -> Option<stage::RelayedBy>,
 ) -> Result<()> {
-    let mut candidate = session.clone();
-    if (!cleared.is_empty() || !opened.is_empty())
-        && let Some(cursor) = candidate.history_cursor.as_mut()
-        && cursor.head.is_none()
-    {
-        // Every gate event keeps the cycle and leaves a fixed-width head.
-        // Size the final cursor before publishing any events; this ID is
-        // only a serialization placeholder and is never allocated or saved.
-        cursor.head = Some("EVT-000000000000000000000000".into());
+    for gate in cleared {
+        stage::log_gate(
+            root,
+            session,
+            stage::GATE_CLOSED,
+            current_stage,
+            gate,
+            relay_for(gate),
+        )?;
     }
-    serialize_checkpoint(&candidate)?;
-    if session.history_cursor.is_some() {
-        for gate in cleared {
-            stage::log_gate(
-                root,
-                session,
-                stage::GATE_CLOSED,
-                current_stage,
-                gate,
-                relay_for(gate),
-            )?;
-        }
-        for gate in opened {
-            stage::log_gate(root, session, stage::GATE_OPENED, current_stage, gate, None)?;
-        }
-        save_checkpoint(root, session)?;
-    } else {
-        save_checkpoint(root, session)?;
-        for gate in cleared {
-            stage::log_gate(
-                root,
-                session,
-                stage::GATE_CLOSED,
-                current_stage,
-                gate,
-                relay_for(gate),
-            )?;
-        }
-        for gate in opened {
-            stage::log_gate(root, session, stage::GATE_OPENED, current_stage, gate, None)?;
-        }
+    for gate in opened {
+        stage::log_gate(root, session, stage::GATE_OPENED, current_stage, gate, None)?;
     }
-    Ok(())
+    save_checkpoint(root, session)
 }
 
 /// Withdraw every open awaiting-human gate of the canonical checkpoint, as
@@ -1117,9 +775,6 @@ pub(super) fn withdraw_gates(root: &Path) -> Result<Vec<String>> {
 }
 
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
-    if let Some(operands) = args.merge {
-        return merge_checkpoints(&operands);
-    }
     let mut session = read_checkpoint(root)?;
     let mut relayed = relayed_decision(&session, &args)?;
     if let Some((_, relay, _)) = relayed.as_mut() {
@@ -1353,7 +1008,7 @@ mod tests {
         <fs::File as fs4::FileExt>::lock(&other).unwrap();
         let error = lock_for_update(&root).unwrap_err().to_string();
         assert!(error.starts_with("refused:checkpoint-busy"), "{error}");
-        assert!(error.contains(".chough/sessions/alpha.json"), "{error}");
+        assert!(error.contains("-alpha/session.md"), "{error}");
         assert!(!error.contains(".chough/session.json"), "{error}");
         assert!(error.contains("nothing was saved"), "{error}");
         drop(other);

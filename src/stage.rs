@@ -4,8 +4,8 @@
 use crate::checkpoint::{Caller, Checkpoint, read_checkpoint, save_checkpoint};
 use crate::policy::{Policy, sdd_policy};
 use crate::records::{
-    NATIVE_RECORD_LIMIT, NativeJson, append_line, ensure_text, head_revision, is_digest,
-    local_path, native_json, now, print_json, read_log_full, read_log_tail, read_native_record,
+    NATIVE_RECORD_LIMIT, NativeJson, ensure_text, head_revision, is_digest, local_path,
+    native_json, now, print_json, read_native_record,
 };
 use crate::{bugs, evidence, prefs};
 use anyhow::{Result, bail, ensure};
@@ -980,38 +980,8 @@ fn reached_by_reset(
             .find(|kind| STAGE_KINDS.contains(kind))
             .is_some_and(|kind| kind == "reset"));
     }
-    Ok(legacy_transitions(root)?
-        .iter()
-        .rev()
-        .filter_map(|record| record.get("kind").and_then(Value::as_str))
-        .find(|kind| STAGE_KINDS.contains(kind))
-        .is_some_and(|kind| kind == "reset"))
-}
-
-/// The bound on a legacy transition log read whole, the same 16 MiB the timing
-/// report reads it to.
-const LEGACY_TRANSITIONS_LIMIT: u64 = 16 * 1_048_576;
-
-/// Every record of the legacy transition log, read whole rather than from its 64 KiB
-/// tail, so a reset older than the tail is still found. Only a missing log reads as
-/// empty; an unreadable log, or one beyond the bound, is unknown (`Err`, with why),
-/// never read as no reset.
-fn legacy_transitions(root: &Path) -> Result<Vec<Value>, String> {
-    let path = local_path(root, TRANSITIONS).map_err(|error| format!("{TRANSITIONS}: {error}"))?;
-    // A missing log reads as empty inside `read_log_full`; any other error is unknown.
-    let log = read_log_full(&path, LEGACY_TRANSITIONS_LIMIT)
-        .map_err(|error| format!("{TRANSITIONS}: {error}"))?;
-    if log.skipped_bytes > 0 {
-        return Err(format!(
-            "{TRANSITIONS}: earliest {} bytes skipped beyond the {LEGACY_TRANSITIONS_LIMIT}-byte bound",
-            log.skipped_bytes
-        ));
-    }
-    Ok(log
-        .lines
-        .iter()
-        .filter_map(|line| serde_json::from_str::<Value>(line).ok())
-        .collect())
+    let _ = root;
+    Ok(false)
 }
 
 /// When the newest reset was recorded, if the transition log names one; an unreadable
@@ -1034,21 +1004,15 @@ fn latest_reset_at(
         }
         newest
     }
-    if let Some(read) = history {
-        return Ok(newest(read.records.iter()));
-    }
-    Ok(newest(legacy_transitions(root)?.iter()))
+    let _ = root;
+    Ok(history.and_then(|read| newest(read.records.iter())))
 }
 
 /// When the current cycle began: its newest reset, or None when no reset time can be
 /// read (a first cycle, or a partial history walk).
 fn current_cycle_start(root: &Path, session: &Checkpoint) -> Option<u64> {
-    let Some(cursor) = session.history_cursor.as_ref() else {
-        return latest_reset_at(root, None).ok().flatten();
-    };
     let cycle = crate::history::selected(
-        root,
-        cursor,
+        session,
         crate::history::CYCLE_EVENTS,
         crate::history::CYCLE_BYTES,
         false,
@@ -1058,8 +1022,6 @@ fn current_cycle_start(root: &Path, session: &Checkpoint) -> Option<u64> {
     }
     if cycle.records.iter().any(|record| record["kind"] == "reset") {
         latest_reset_at(root, Some(&cycle)).ok().flatten()
-    } else if cursor.legacy.is_some() {
-        latest_reset_at(root, None).ok().flatten()
     } else {
         None
     }
@@ -1160,11 +1122,10 @@ fn previous_cycle(
         .native_change
         .as_deref()
         .and_then(|change| crate::library::finalized_at(root, change));
-    let (reached, reset_at) = match (history, session.history_cursor.as_ref()) {
-        (Some(_), Some(cursor)) => {
+    let (reached, reset_at) = match history {
+        Some(_) => {
             let cycle = crate::history::selected(
-                root,
-                cursor,
+                session,
                 crate::history::CYCLE_EVENTS,
                 crate::history::CYCLE_BYTES,
                 false,
@@ -1172,30 +1133,12 @@ fn previous_cycle(
             if !cycle.partial.is_empty() {
                 return Err(cycle.partial.join("; "));
             }
-            let stages = cycle.records.iter().any(|record| {
-                record["kind"]
-                    .as_str()
-                    .is_some_and(|kind| STAGE_KINDS.contains(&kind))
-            });
-            let resets = cycle.records.iter().any(|record| record["kind"] == "reset");
-            // The first cycle after adoption may continue the anchored legacy log, which
-            // then holds the latest reset; it is read whole, as for a legacy project.
-            let legacy = cursor.legacy.is_some();
-            let reached = reached_by_reset(root, Some(&cycle))?
-                || (!stages && legacy && reached_by_reset(root, None)?);
-            let reset_at = if resets {
-                latest_reset_at(root, Some(&cycle))?
-            } else if legacy {
-                latest_reset_at(root, None)?
-            } else {
-                None
-            };
-            (reached, reset_at)
+            (
+                reached_by_reset(root, Some(&cycle))?,
+                latest_reset_at(root, Some(&cycle))?,
+            )
         }
-        (history, _) => (
-            reached_by_reset(root, history)?,
-            latest_reset_at(root, history)?,
-        ),
+        None => (reached_by_reset(root, None)?, latest_reset_at(root, None)?),
     };
     Ok(reached
         || finalized
@@ -1509,11 +1452,7 @@ fn log_transition_at(
 
 /// Append one transition to the session's history, or to the legacy log.
 fn append_transition(root: &Path, session: &mut Checkpoint, transition: Transition) -> Result<()> {
-    if session.history_cursor.is_some() {
-        crate::history::append(root, session, transition)
-    } else {
-        append_line(root, TRANSITIONS, &serde_json::to_string(&transition)?)
-    }
+    crate::history::append(root, session, transition)
 }
 
 /// Transition kinds that end the open stage segment and start the next one.
@@ -1553,26 +1492,14 @@ pub(super) fn log_gate(
 }
 
 pub(super) fn recent_transitions(root: &Path, count: usize) -> Result<(Vec<Value>, bool)> {
-    if let Some(cursor) = read_checkpoint(root)?.history_cursor {
-        let read = crate::history::selected(
-            root,
-            &cursor,
-            count.min(crate::history::RECENT_EVENTS),
-            crate::history::RECENT_BYTES,
-            true,
-        );
-        return Ok((read.records, !read.partial.is_empty()));
-    }
-    let (lines, partial) = read_log_tail(&local_path(root, TRANSITIONS)?, count)?;
-    let mut values = vec![];
-    for line in lines {
-        let transition: Transition = serde_json::from_str(&line)
-            .map_err(|error| anyhow::anyhow!("invalid transition record: {error}"))?;
-        validate_records(&transition)
-            .map_err(|error| anyhow::anyhow!("invalid transition record: {error}"))?;
-        values.push(serde_json::to_value(transition)?);
-    }
-    Ok((values, partial))
+    let session = read_checkpoint(root)?;
+    let read = crate::history::selected(
+        &session,
+        count.min(crate::history::RECENT_EVENTS),
+        crate::history::RECENT_BYTES,
+        true,
+    );
+    Ok((read.records, !read.partial.is_empty()))
 }
 
 /// The transitions a fresh agent may use now, as commands.
@@ -1960,11 +1887,9 @@ fn advance_to(
             label.as_deref(),
             vec![],
         ) {
-            // Leave no part of the batch behind (REQ-history-008): the events this
-            // command published are removed, and nothing is saved.
-            let removed = crate::history::discard_published(root);
+            // Entries are written only with the save, so nothing of the batch is left.
             bail!(
-                "advance {step_from} -> {step_to} could not be recorded: {error:#}; nothing was saved and the {removed} history event(s) this batch wrote were removed"
+                "advance {step_from} -> {step_to} could not be recorded: {error:#}; nothing was saved"
             );
         }
         applied_steps.push(json!({"from": step_from, "to": step_to, "gate": label}));
@@ -2327,7 +2252,7 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         }
     };
     if applied.is_some() {
-        save_checkpoint(root, &session)?;
+        save_checkpoint(root, &mut session)?;
         // REQ-cli-060: the findings are recorded, so the baseline is the records now; a
         // failed baseline write never undoes the move.
         if let Err(error) = crate::direct_writes::settle(root, session.native_change.as_deref())
@@ -2350,9 +2275,6 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         let change = session.native_change.clone();
         let prior = change.as_deref().zip(read_value(&read));
         applied["librarian_trim"] = crate::library::trim_at_done(root, prior);
-        // REQ-history-011 (KNOW-29): keep the five most recent archived sessions and roll
-        // older ones into the vault, before the refresh writes their notes.
-        applied["session_rollup"] = crate::sessions::roll_up_at_done(root);
         // REQ-cli-043: then refresh the knowledge directory, so the change just archived
         // and any proof just trimmed are summarized; never undoes the move either.
         applied["librarian_index"] = crate::library::refresh_at_done(root);
