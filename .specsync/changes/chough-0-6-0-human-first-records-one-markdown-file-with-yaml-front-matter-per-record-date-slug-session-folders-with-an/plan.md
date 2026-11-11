@@ -178,10 +178,10 @@ milestone; nothing is closed yet. Read on 2026-11-11.
 
 | Pull request | Disposition | Proof |
 |---|---|---|
-| #208 External artifacts by fingerprint (#14) | 3 | folded into REQ-records-005, the record holding a neutral ID instead of the path |
-| #210 Append-only corrections (#167) | 3 | folded into REQ-history-015 |
-| #211 Roll-up copy-never-move (#165) | 3 | superseded by KNOW-30 and KNOW-34 |
-| #233 Agent, model and terminal on records (#201) | 3 | folded into REQ-records-007 |
+| #208 External artifacts by fingerprint (#14) | 3, closed 2026-11-11, folded into #238 | folded into REQ-records-005, the record holding a neutral ID instead of the path |
+| #210 Append-only corrections (#167) | 3, closed 2026-11-11, folded into #238 | folded into REQ-history-015 |
+| #211 Roll-up copy-never-move (#165) | 3, closed 2026-11-11, folded into #238 | superseded by KNOW-30 and KNOW-34 |
+| #233 Agent, model and terminal on records (#201) | 3, closed 2026-11-11, folded into #238 | folded into REQ-records-007 |
 
 ### Open local bug records
 
