@@ -1,0 +1,552 @@
+//! The knowledge journal and its feed (REQ-records-011, KNOW-33): one short post per
+//! finished session, written by create-new and never rewritten, `chough journal add`
+//! for any other post, and an Atom feed regenerated with identical bytes.
+#![cfg(unix)]
+
+mod common;
+
+use common::Fixture;
+use serde_json::{Value, json};
+use std::collections::BTreeMap;
+use std::path::Path;
+
+const ZERO: &str = "0000000000000000000000000000000000000000000000000000000000000000";
+const PR: &str = "https://example.invalid/SYNTHETIC-org/SYNTHETIC-repo/pull/7";
+const ARCHIVE: &str = ".specsync/archive/changes/2026-05-01-c1";
+
+/// One archived native change, c1, a stub `specsync` reporting it archived and
+/// authenticated, and the checkpoint at accept on c1 with a PR, so `stage advance` moves
+/// into done. Where it stands holds a paragraph longer than a post may carry.
+fn at_accept() -> Fixture {
+    let fixture = Fixture::new();
+    fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
+    fixture.write(
+        "bin/specsync",
+        "#!/bin/sh\nprintf '{\"summary\":{\"id\":\"%s\",\"state\":\"archived\",\"approval_valid\":true,\"correction_valid\":true,\"terminal_evidence\":{\"validity\":\"authenticated-history\"}},\"acceptance_entries\":[]}\\n' \"$3\"\n",
+    );
+    fixture.executable("bin/specsync");
+    fixture.hi_stand_in();
+    fixture.write(
+        &format!("{ARCHIVE}/finalization.json"),
+        &format!(
+            "{{\"schema_version\": 2, \"change_id\": \"c1\", \"timestamp\": 100, \"implementation_commit\": \"{}\"}}\n",
+            "1".repeat(40)
+        ),
+    );
+    fixture.write(
+        &format!("{ARCHIVE}/verification.json"),
+        &serde_json::to_string_pretty(&json!({
+            "commit": "2".repeat(40),
+            "passed": true,
+            "requirement_ids": ["REQ-cli-001"],
+            "acceptance_manifest": {"schema_version": 1, "entries": [
+                {"path": "specs/cli/cli.spec.md", "kind": "file", "payload_digest": ZERO}
+            ]},
+        }))
+        .unwrap(),
+    );
+    fixture.write(
+        &format!("{ARCHIVE}/change.md"),
+        &format!(
+            "---\nid: c1\nstate: archived\nbase_commit: {}\n---\n\n# Title of c1\n\n## Intent\n\nx\n\n## Acceptance Criteria\n\n- c1 works\n",
+            "3".repeat(40)
+        ),
+    );
+    fixture.init();
+    fixture.set_front("stage", "accept");
+    fixture.set_front("native_change", "c1");
+    fixture.set_front("pr", PR);
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let long =
+        "The SYNTHETIC change shipped and every case passed on the recorded revision. ".repeat(30);
+    let stands = format!("## Where it stands\n\n{}\n\n", long.trim_end());
+    let (head, rest) = text
+        .split_once("## Where it stands\n")
+        .expect("a Where it stands section");
+    let rest = rest
+        .find("\n## ")
+        .map_or(String::new(), |at| rest[at + 1..].to_string());
+    fixture.write(&file, &format!("{head}{stands}{rest}"));
+    fixture.commit("fixture");
+    fixture
+}
+
+/// Every file under `relative`, with its bytes.
+fn tree(fixture: &Fixture, relative: &str) -> BTreeMap<String, Vec<u8>> {
+    let mut found = BTreeMap::new();
+    let mut stack = vec![fixture.root().join(relative)];
+    while let Some(folder) = stack.pop() {
+        for entry in std::fs::read_dir(&folder).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                stack.push(path);
+            } else {
+                let name = path
+                    .strip_prefix(fixture.root())
+                    .unwrap()
+                    .to_string_lossy()
+                    .into_owned();
+                found.insert(name, std::fs::read(&path).unwrap());
+            }
+        }
+    }
+    found
+}
+
+/// The front matter and body of a post.
+fn split(text: &str) -> (&str, &str) {
+    text.strip_prefix("---\n")
+        .and_then(|rest| rest.split_once("\n---\n"))
+        .expect("a post starts with front matter")
+}
+
+/// The value of a scalar front matter field, unquoted.
+fn field(front: &str, key: &str) -> String {
+    front
+        .lines()
+        .find_map(|line| line.strip_prefix(&format!("{key}: ")))
+        .map(|value| value.trim().trim_matches('"').to_string())
+        .unwrap_or_default()
+}
+
+/// The items of a list front matter field, written inline (`[a, b]`) or as a block.
+fn items(front: &str, key: &str) -> Vec<String> {
+    let inline = field(front, key);
+    if let Some(list) = inline
+        .strip_prefix('[')
+        .and_then(|rest| rest.strip_suffix(']'))
+    {
+        return list
+            .split(", ")
+            .filter(|item| !item.is_empty())
+            .map(|item| item.trim_matches('"').to_string())
+            .collect();
+    }
+    front
+        .lines()
+        .skip_while(|line| *line != format!("{key}:"))
+        .skip(1)
+        .map_while(|line| line.strip_prefix("  - "))
+        .map(|item| item.trim_matches('"').to_string())
+        .collect()
+}
+
+/// Every relative target of a Markdown link in `text`.
+fn relative_links(text: &str) -> Vec<String> {
+    text.split("](")
+        .skip(1)
+        .filter_map(|rest| rest.split_once(')').map(|(target, _)| target.to_string()))
+        .filter(|target| !target.starts_with("http://") && !target.starts_with("https://"))
+        .collect()
+}
+
+/// A small well-formedness check, since the crate takes no XML dependency: one root, every
+/// tag closed in order, attributes quoted, and text holding only escaped `&` and no `<`.
+fn well_formed(xml: &str) -> Result<(), String> {
+    let mut rest = xml
+        .strip_prefix("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
+        .ok_or("no XML declaration")?;
+    let mut open: Vec<String> = vec![];
+    let mut roots = 0;
+    while let Some(at) = rest.find('<') {
+        let text = &rest[..at];
+        for (index, _) in text.match_indices('&') {
+            let entity = &text[index..];
+            if !["&amp;", "&lt;", "&gt;", "&quot;", "&apos;"]
+                .iter()
+                .any(|known| entity.starts_with(known))
+            {
+                return Err(format!("unescaped & in {text:?}"));
+            }
+        }
+        if open.is_empty() && !text.trim().is_empty() {
+            return Err(format!("text outside the root: {text:?}"));
+        }
+        let end = rest[at..].find('>').ok_or("an unclosed tag")? + at;
+        let tag = &rest[at + 1..end];
+        if tag.contains('<') {
+            return Err(format!("< inside a tag: {tag:?}"));
+        }
+        if tag.matches('"').count() % 2 != 0 {
+            return Err(format!("an unquoted attribute: {tag:?}"));
+        }
+        if let Some(name) = tag.strip_prefix('/') {
+            if open.pop().as_deref() != Some(name) {
+                return Err(format!("</{name}> closes nothing open"));
+            }
+        } else {
+            let name = tag
+                .trim_end_matches('/')
+                .split_whitespace()
+                .next()
+                .ok_or("an empty tag")?
+                .to_string();
+            if open.is_empty() {
+                roots += 1;
+            }
+            if !tag.ends_with('/') {
+                open.push(name);
+            }
+        }
+        rest = &rest[end + 1..];
+    }
+    if !open.is_empty() || roots != 1 || !rest.trim().is_empty() {
+        return Err(format!("{roots} roots, still open: {open:?}"));
+    }
+    Ok(())
+}
+
+/// REQ-records-011, TC-records-journal-and-feed: the move into done writes one `shipped`
+/// post within 1,200 bytes that links the PR, the archived story and the change's archive
+/// folder, and the feed and index list it.
+#[test]
+fn done_writes_a_short_post_and_the_feed_lists_it() {
+    let fixture = at_accept();
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
+    let id = moved["applied"]["session_archive"]["id"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    let story = format!(".chough/archive/sessions/{id}.md");
+    assert!(fixture.exists(&story), "{moved:#}");
+    let post = &moved["applied"]["journal_post"];
+    assert_eq!(post["status"], "written", "{moved:#}");
+    let path = post["post"].as_str().unwrap_or_default().to_string();
+    assert!(
+        path.starts_with("knowledge/journal/") && path.ends_with(".md"),
+        "{moved:#}"
+    );
+    let name = path
+        .trim_start_matches("knowledge/journal/")
+        .trim_end_matches(".md")
+        .to_string();
+    let text = fixture.read(&path);
+    let (front, body) = split(&text);
+    assert_eq!(field(front, "id"), name, "{text}");
+    assert_eq!(field(front, "type"), "journal", "{text}");
+    assert_eq!(field(front, "kind"), "shipped", "{text}");
+    assert_eq!(field(front, "title"), "Ship a focused change", "{text}");
+    assert_eq!(field(front, "record"), story, "{text}");
+    assert!(name.starts_with(&field(front, "date")), "{text}");
+    assert_eq!(
+        items(front, "tags"),
+        ["chough/journal", "chough/shipped"],
+        "{text}"
+    );
+    assert_eq!(
+        items(front, "links"),
+        [PR.to_string(), story.clone(), format!("{ARCHIVE}/")],
+        "{text}"
+    );
+    // The body is short, cut at a sentence end, and the story holds the full record.
+    assert!(body.len() <= 1_200, "{} bytes: {body}", body.len());
+    let paragraph = body
+        .lines()
+        .find(|line| line.starts_with("The SYNTHETIC change"))
+        .unwrap_or_else(|| panic!("no paragraph: {body}"));
+    assert!(paragraph.ends_with("revision."), "{paragraph}");
+    assert!(
+        body.contains(&format!("[the pull request]({PR})")),
+        "{body}"
+    );
+    for target in relative_links(body) {
+        let resolved = Path::new("knowledge/journal").join(&target);
+        assert!(
+            fixture.root().join(&resolved).exists(),
+            "{target} does not resolve from the post"
+        );
+    }
+    let feed = fixture.read("knowledge/journal/feed.xml");
+    well_formed(&feed).unwrap_or_else(|error| panic!("{error}: {feed}"));
+    assert!(
+        feed.contains(&format!("<id>urn:chough:journal:{name}</id>")),
+        "{feed}"
+    );
+    assert!(
+        feed.contains("<title>Ship a focused change</title>"),
+        "{feed}"
+    );
+    let index = fixture.read("knowledge/index.md");
+    assert!(
+        index.contains(&format!("[Ship a focused change](journal/{name}.md)")),
+        "{index}"
+    );
+    assert_eq!(
+        moved["applied"]["librarian_index"]["status"], "refreshed",
+        "{moved:#}"
+    );
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// REQ-records-011, TC-records-done-touches-only-its-own-post: around the move into done,
+/// nothing under `knowledge/` changes but the new post, `feed.xml`, and `index.md`'s
+/// journal list; an earlier post a person edited, a lesson and a brief stay byte-identical.
+#[test]
+fn done_changes_no_knowledge_file_but_its_own_post_and_the_feed() {
+    let fixture = at_accept();
+    fixture.write(
+        "knowledge/journal/2026-01-02-an-earlier-post.md",
+        "---\nid: 2026-01-02-an-earlier-post\ntitle: \"An earlier post\"\ntype: journal\ntags:\n  - chough/journal\ndate: 2026-01-02\nkind: learned\nlinks: []\n---\n\n# An earlier post\n\nA person rewrote this paragraph by hand.\n",
+    );
+    fixture.write(
+        "knowledge/lessons/2026-01-03-a-lesson.md",
+        "---\nid: 2026-01-03-a-lesson\ntitle: \"A lesson\"\ntype: lesson\ntags: []\ndate: 2026-01-03\napplies_to: []\nsource: \"\"\n---\n\n# A lesson\n",
+    );
+    fixture.write("knowledge/briefs/brief.md", "A brief kept as it is.\n");
+    // An earlier finished session, so the index already links the archived stories.
+    fixture.write(
+        ".chough/archive/sessions/2026-01-01-earlier.md",
+        "---\nid: 2026-01-01-earlier\n---\n\n# Earlier\n\nClosed 2026-01-01: done.\n",
+    );
+    fixture.ok(&["library", "index"]);
+    fixture.commit("vault");
+    let before = tree(&fixture, "knowledge");
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
+    let post = moved["applied"]["journal_post"]["post"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    let after = tree(&fixture, "knowledge");
+    let created: Vec<&String> = after
+        .keys()
+        .filter(|key| !before.contains_key(*key))
+        .collect();
+    assert_eq!(created, [&post], "{moved:#}");
+    let removed: Vec<&String> = before
+        .keys()
+        .filter(|key| !after.contains_key(*key))
+        .collect();
+    assert!(removed.is_empty(), "{removed:?}");
+    let changed: Vec<&String> = before
+        .keys()
+        .filter(|key| after.get(*key).is_some_and(|bytes| *bytes != before[*key]))
+        .collect();
+    assert_eq!(
+        changed,
+        ["knowledge/index.md", "knowledge/journal/feed.xml"],
+        "{moved:#}"
+    );
+    // Only the index's list of newest posts differs.
+    let outside = |bytes: &[u8]| -> String {
+        let text = String::from_utf8_lossy(bytes).into_owned();
+        let (head, rest) = text.split_once("Newest posts:\n").expect("a journal list");
+        let tail = rest.split_once("\n## ").map_or("", |(_, tail)| tail);
+        format!("{head}{tail}")
+    };
+    assert_eq!(
+        outside(&before["knowledge/index.md"]),
+        outside(&after["knowledge/index.md"])
+    );
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// REQ-records-011: `chough journal add` writes a post of each kind, and a body over
+/// 1,200 bytes, an unknown kind or a link to nothing is refused with nothing written.
+#[test]
+fn journal_add_writes_a_post_of_each_kind_and_refuses_an_oversized_body() {
+    let fixture = Fixture::new();
+    fixture.init();
+    for kind in ["shipped", "closed", "intent", "spec", "broke", "learned"] {
+        let out = fixture.ok(&[
+            "journal",
+            "add",
+            "--kind",
+            kind,
+            "--title",
+            &format!("A SYNTHETIC {kind} post"),
+            "--body",
+            "One short paragraph.",
+            "--link",
+            "knowledge/index.md",
+            "--link",
+            PR,
+        ]);
+        let path = out["post"].as_str().unwrap_or_default().to_string();
+        let text = fixture.read(&path);
+        let (front, body) = split(&text);
+        assert_eq!(field(front, "kind"), kind, "{text}");
+        assert_eq!(field(front, "type"), "journal", "{text}");
+        assert_eq!(
+            items(front, "tags"),
+            ["chough/journal".to_string(), format!("chough/{kind}")]
+        );
+        assert_eq!(
+            items(front, "links"),
+            ["knowledge/index.md".to_string(), PR.to_string()]
+        );
+        assert!(
+            body.contains("[knowledge/index.md](../../knowledge/index.md)"),
+            "{body}"
+        );
+        assert!(
+            fixture
+                .read("knowledge/journal/feed.xml")
+                .contains(&format!("<category term=\"{kind}\"/>"))
+        );
+    }
+    let before = tree(&fixture, "knowledge");
+    let oversized = "x".repeat(1_201);
+    for (args, says) in [
+        (
+            vec![
+                "--kind", "learned", "--title", "Too long", "--body", &oversized,
+            ],
+            "1201 bytes",
+        ),
+        (
+            vec!["--kind", "news", "--title", "Unknown", "--body", "x"],
+            "not a journal kind",
+        ),
+        (
+            vec![
+                "--kind",
+                "learned",
+                "--title",
+                "Dangling",
+                "--body",
+                "x",
+                "--link",
+                "SYNTHETIC/missing.md",
+            ],
+            "neither an http(s) URL",
+        ),
+    ] {
+        let mut command = vec!["journal", "add"];
+        command.extend(args);
+        let error = fixture.fails(&command);
+        assert!(error.contains(says), "{error}");
+    }
+    let exactly = "y".repeat(1_200);
+    fixture.ok(&[
+        "journal", "add", "--kind", "learned", "--title", "Exactly", "--body", &exactly,
+    ]);
+    let mut after = tree(&fixture, "knowledge");
+    after.retain(|path, _| !path.contains("-exactly"));
+    after.insert(
+        "knowledge/index.md".into(),
+        before["knowledge/index.md"].clone(),
+    );
+    after.insert(
+        "knowledge/journal/feed.xml".into(),
+        before["knowledge/journal/feed.xml"].clone(),
+    );
+    assert_eq!(after, before, "a refused post wrote something");
+}
+
+/// REQ-records-011: a post name that already exists is never overwritten, and a person's
+/// edit to a post survives `library index`.
+#[test]
+fn an_existing_post_is_never_overwritten_and_a_persons_edit_is_kept() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let add = || {
+        fixture.ok(&[
+            "journal",
+            "add",
+            "--kind",
+            "learned",
+            "--title",
+            "Same title",
+            "--body",
+            "First.",
+        ])["post"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string()
+    };
+    let first = add();
+    let edited = fixture
+        .read(&first)
+        .replace("First.", "Edited by a person.");
+    fixture.write(&first, &edited);
+    let second = add();
+    assert_ne!(first, second);
+    assert_eq!(fixture.read(&first), edited);
+    fixture.ok(&["library", "index"]);
+    assert_eq!(fixture.read(&first), edited);
+    assert!(fixture.read(&second).contains("First."));
+}
+
+/// REQ-records-011, REQ-cli-047: the feed regenerates with identical bytes, `--check`
+/// ignores line endings, and fails naming the feed after a hand edit.
+#[test]
+fn the_feed_regenerates_identically_and_check_names_it_after_a_hand_edit() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&[
+        "journal",
+        "add",
+        "--kind",
+        "spec",
+        "--title",
+        "A & B <c>",
+        "--body",
+        "Escaped.",
+    ]);
+    let feed = "knowledge/journal/feed.xml";
+    let first = fixture.read(feed);
+    well_formed(&first).unwrap_or_else(|error| panic!("{error}: {first}"));
+    assert!(
+        first.contains("<title>A &amp; B &lt;c&gt;</title>"),
+        "{first}"
+    );
+    fixture.ok(&["library", "index"]);
+    assert_eq!(fixture.read(feed), first);
+    fixture.write(feed, &first.replace('\n', "\r\n"));
+    fixture.ok(&["library", "index", "--check"]);
+    fixture.write(feed, &first.replace("Project journal", "Edited"));
+    let error = fixture.fails(&["library", "index", "--check"]);
+    assert!(error.contains(feed), "{error}");
+    fixture.ok(&["library", "index"]);
+    assert_eq!(fixture.read(feed), first);
+}
+
+/// REQ-records-011: a session closed without done gets a `closed` post.
+#[test]
+fn a_session_closed_without_done_gets_a_closed_post() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let key = fixture.active_id();
+    let closed: Value = fixture.ok(&["session", "close", &key, "--reason", "SYNTHETIC reason"]);
+    let post = &closed["journal_post"];
+    assert_eq!(post["status"], "written", "{closed:#}");
+    let text = fixture.read(post["post"].as_str().unwrap_or_default());
+    let (front, _) = split(&text);
+    assert_eq!(field(front, "kind"), "closed", "{text}");
+    assert_eq!(
+        closed["librarian_index"]["status"], "refreshed",
+        "{closed:#}"
+    );
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// REQ-records-011: with the librarian off, neither done nor `session close` writes a post.
+#[test]
+fn the_librarian_off_writes_no_post() {
+    let fixture = at_accept();
+    fixture.ok(&[
+        "pref",
+        "set",
+        "librarian",
+        "off",
+        "--source",
+        "Human: SYNTHETIC no librarian here",
+    ]);
+    let _ = std::fs::remove_dir_all(fixture.root().join("knowledge"));
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        moved["applied"]["journal_post"]["status"], "skipped",
+        "{moved:#}"
+    );
+    assert!(!fixture.exists("knowledge"));
+    assert!(
+        fixture
+            .fails(&[
+                "journal", "add", "--kind", "learned", "--title", "x", "--body", "x"
+            ])
+            .contains("librarian is off")
+    );
+}
