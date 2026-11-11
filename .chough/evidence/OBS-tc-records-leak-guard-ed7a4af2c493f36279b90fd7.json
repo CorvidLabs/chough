@@ -1,0 +1,60 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-leak-guard-ed7a4af2c493f36279b90fd7",
+  "criteria": [
+    "LIFE-26",
+    "LIFE-17",
+    "FLOW-22"
+  ],
+  "requirements": [
+    "REQ-records-006"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test sessions --test bugs -- a_leak_in_a_session_value_is_refused_or_redacted bug_writes_refuse_or_redact_leaks for TC-records-leak-guard: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-leak-guard-ed7a4af2c493f36279b90fd7.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-leak-guard-ed7a4af2c493f36279b90fd7.log": "6066833c755b4c0d84845c5d94960964bf1d74ea45458a9abaa80a69109aa43c"
+  },
+  "observed_at_unix_seconds": 1794429384,
+  "snapshot": {
+    "revision": "370d221d68840f2e263e90b927a200438a7a0173",
+    "dirty": false,
+    "fingerprint": "335cc65a868ad771a63cf7b588d1749607c19950e884305e7c09cf771dfc415b",
+    "content": "843a083f60a67703f38514e1fcffa147b0e3c500ec307ca879614ca5ee672a4c"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-leak-guard",
+      "digest": "650f217b5ffa289bf5ddd5b9a09efa220e215b2dde5e943dc780f69f9221cb69"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--test",
+    "bugs",
+    "--",
+    "a_leak_in_a_session_value_is_refused_or_redacted",
+    "bug_writes_refuse_or_redact_leaks"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test result: ok. 1 passed\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

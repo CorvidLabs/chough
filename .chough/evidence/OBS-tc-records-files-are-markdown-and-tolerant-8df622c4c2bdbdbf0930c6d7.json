@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-files-are-markdown-and-tolerant-8df622c4c2bdbdbf0930c6d7",
+  "criteria": [
+    "DRIVE-25",
+    "DRIVE-26",
+    "KNOW-32",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-records-001"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test records -- --exact every_record_is_markdown_and_keeps_human_edits for TC-records-files-are-markdown-and-tolerant: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-files-are-markdown-and-tolerant-8df622c4c2bdbdbf0930c6d7.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-files-are-markdown-and-tolerant-8df622c4c2bdbdbf0930c6d7.log": "f7f49d9706909344a5e8f7e5cc5cda54c9731f28888b6d877e54c7c129c394f9"
+  },
+  "observed_at_unix_seconds": 1794429365,
+  "snapshot": {
+    "revision": "370d221d68840f2e263e90b927a200438a7a0173",
+    "dirty": false,
+    "fingerprint": "335cc65a868ad771a63cf7b588d1749607c19950e884305e7c09cf771dfc415b",
+    "content": "843a083f60a67703f38514e1fcffa147b0e3c500ec307ca879614ca5ee672a4c"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-files-are-markdown-and-tolerant",
+      "digest": "53f3c34cfa1df4cacf5e93820e9c30f22bde0596fcc28d6c3c1ef0fb96cde237"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "records",
+    "--",
+    "--exact",
+    "every_record_is_markdown_and_keeps_human_edits"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

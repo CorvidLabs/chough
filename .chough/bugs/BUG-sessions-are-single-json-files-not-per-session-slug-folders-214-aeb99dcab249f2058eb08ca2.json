@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "BUG-sessions-are-single-json-files-not-per-session-slug-folders-214-aeb99dcab249f2058eb08ca2",
+  "title": "Sessions are single JSON files, not per-session slug folders (#214)",
+  "symptom": "chough session new writes .chough/sessions/<key>.json; there is no folder per session for its record, evidence and agent notes",
+  "trigger": "chough session new alpha --objective <outcome>",
+  "expected": "a folder .chough/sessions/<date>-<slug>/ holding session.md, evidence/ and agent/",
+  "actual": "one JSON file, .chough/sessions/alpha.json",
+  "criteria": [
+    "DRIVE-24"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "cases": [
+    "TC-history-sessions-in-folders"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "67d001e55e59fa271166d92c95ea44fac6d4f304",
+  "steps": [
+    "chough session new alpha --objective <outcome>"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-history-sessions-in-folders-116d392ec28a19954f3ac64c"
+  ],
+  "impact": "Sessions and their proof scatter and merge badly (GitHub #214, DRIVE-24)",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "GitHub issue #214; red on 0.5.0 at leif/0.6.0-batch-red 370d221d",
+  "notes": [],
+  "created_at_unix_seconds": 1794429417,
+  "updated_at_unix_seconds": 1794429417
+}
