@@ -1767,3 +1767,53 @@ fn done_leaves_earlier_archived_stories_in_place() {
     expected.sort();
     assert_eq!(archived, expected, "{moved:#}");
 }
+
+/// Every file under `.chough/sessions/`, by project-relative path.
+fn session_files(fixture: &Fixture) -> std::collections::BTreeMap<String, Vec<u8>> {
+    fn walk(
+        root: &std::path::Path,
+        relative: &str,
+        out: &mut std::collections::BTreeMap<String, Vec<u8>>,
+    ) {
+        let Ok(entries) = fs::read_dir(root.join(relative)) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            let name = format!("{relative}/{}", entry.file_name().to_string_lossy());
+            if entry.path().is_dir() {
+                walk(root, &name, out);
+            } else {
+                out.insert(name, fs::read(entry.path()).unwrap());
+            }
+        }
+    }
+    let mut out = std::collections::BTreeMap::new();
+    walk(fixture.root(), ".chough/sessions", &mut out);
+    out
+}
+
+/// Q3 (BUG-session-new-archives-other-finished-sessions-churning-tracked-files-in-
+/// cf78a57afe8ff93b3f3dc576, reproduced by t38b on 0.5.0): starting work never touches
+/// another session's files. Red on 0.5.0, where `session new` archives a finished
+/// session left open; the 0.6.0 test of the same name replaces this one.
+#[test]
+fn starting_or_switching_never_touches_another_session() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    finish(&fixture, "alpha");
+    let before = session_files(&fixture);
+    fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    let after: std::collections::BTreeMap<String, Vec<u8>> = session_files(&fixture)
+        .into_iter()
+        .filter(|(path, _)| !path.contains("gamma"))
+        .collect();
+    let changed: Vec<&String> = before
+        .keys()
+        .filter(|path| after.get(*path) != before.get(*path))
+        .collect();
+    let added: Vec<&String> = after.keys().filter(|path| !before.contains_key(*path)).collect();
+    assert!(
+        changed.is_empty() && added.is_empty(),
+        "session new touched another session's files: changed or removed {changed:?}, added {added:?}"
+    );
+}
