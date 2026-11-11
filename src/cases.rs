@@ -1027,7 +1027,6 @@ fn observation_id(case: &str, requested: Option<String>) -> Result<String> {
     identity::observation(case)
 }
 
-
 /// The outcome of one explicit case execution, already recorded.
 pub(super) struct RunResult {
     pub(super) observation: String,
@@ -1205,10 +1204,7 @@ pub(super) fn run_case(
         artifact_fingerprints: Default::default(),
         external: None,
         screenshot: None,
-        fingerprint: Some(format!(
-            "sha256:{}",
-            crate::records::digest_bytes(&output)
-        )),
+        fingerprint: Some(format!("sha256:{}", crate::records::digest_bytes(&output))),
         raw_log: None,
         key_lines: key_lines.0,
         redacted: key_lines.1,

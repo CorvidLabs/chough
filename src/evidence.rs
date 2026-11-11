@@ -12,15 +12,13 @@
 
 use crate::identity;
 use crate::markdown::{self, Record};
-use crate::records::{
-    local_path, now, print_json, read_bounded_record, valid_name
-};
+use crate::records::{local_path, now, print_json, read_bounded_record, valid_name};
 use crate::{cases, leaks};
 use anyhow::{Context, Result, bail, ensure};
-use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 use clap::ValueEnum;
+use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::fs::File;
@@ -97,7 +95,6 @@ impl Outcome {
 
 // The value enums' FromStr.
 // The entry.
-
 
 /// One evidence entry (REQ-cli-017).
 #[derive(Clone, Debug)]
@@ -197,7 +194,11 @@ impl Evidence {
             set_list(
                 &mut record,
                 "case",
-                &self.cases.iter().map(|case| case.id.clone()).collect::<Vec<_>>(),
+                &self
+                    .cases
+                    .iter()
+                    .map(|case| case.id.clone())
+                    .collect::<Vec<_>>(),
             );
             set_list(
                 &mut record,
@@ -247,7 +248,10 @@ impl Evidence {
                         self.artifact_fingerprints
                             .iter()
                             .map(|(path, digest)| {
-                                vec![("path".into(), path.clone()), ("digest".into(), digest.clone())]
+                                vec![
+                                    ("path".into(), path.clone()),
+                                    ("digest".into(), digest.clone()),
+                                ]
                             })
                             .collect(),
                     ),
@@ -285,10 +289,9 @@ impl Evidence {
         };
         let observed = crate::session_md::parse_time(&need("observed")?)
             .context("evidence entry's observed time")?;
-        let actor = record
-            .maps("actor")
-            .first()
-            .and_then(|map| crate::actor::Actor::from_front(&markdown::Value::Maps(vec![map.clone()])));
+        let actor = record.maps("actor").first().and_then(|map| {
+            crate::actor::Actor::from_front(&markdown::Value::Maps(vec![map.clone()]))
+        });
         Ok(Evidence {
             id: need("id")?,
             aliases: record.list("aliases"),
@@ -306,7 +309,9 @@ impl Evidence {
                 .map(|map| {
                     let mut fields = map.into_iter().collect::<BTreeMap<_, _>>();
                     let path = fields.remove("path").context("artifact map lacks path")?;
-                    let digest = fields.remove("digest").context("artifact map lacks digest")?;
+                    let digest = fields
+                        .remove("digest")
+                        .context("artifact map lacks digest")?;
                     Ok((path, digest))
                 })
                 .collect::<Result<BTreeMap<_, _>>>()?,
@@ -549,7 +554,10 @@ pub(super) fn bind_artifacts(
                 local_path(root, artifact)?.is_file(),
                 "missing artifact: {artifact}"
             );
-            local.insert(artifact.clone(), crate::records::file_digest(root, artifact)?);
+            local.insert(
+                artifact.clone(),
+                crate::records::file_digest(root, artifact)?,
+            );
         }
     }
     ensure!(
@@ -703,7 +711,10 @@ pub(super) fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
         );
     }
     for digest in evidence.artifact_fingerprints.values() {
-        ensure!(crate::records::is_digest(digest), "invalid artifact digest in {name}");
+        ensure!(
+            crate::records::is_digest(digest),
+            "invalid artifact digest in {name}"
+        );
     }
     Ok(())
 }
@@ -782,7 +793,9 @@ fn read_screenshot(path: &str) -> Result<(String, Vec<u8>)> {
     } else if bytes.starts_with(b"\xff\xd8") {
         Ok(("jpg".into(), strip_jpeg(&bytes)?))
     } else {
-        bail!("the screenshot is not a PNG or JPEG; convert it, or record it by fingerprint with --artifact")
+        bail!(
+            "the screenshot is not a PNG or JPEG; convert it, or record it by fingerprint with --artifact"
+        )
     }
 }
 
@@ -891,10 +904,6 @@ pub(super) fn is_present(root: &Path, id: &str) -> Result<bool> {
     Ok(false)
 }
 
-
-
-
-
 /// The JSON view of an entry, as `status` and the case reports show it.
 impl Evidence {
     pub(super) fn to_json(&self) -> Value {
@@ -977,8 +986,6 @@ pub(super) struct CaseRef {
     pub(super) id: String,
     pub(super) digest: String,
 }
-
-
 
 pub(super) fn snapshot(root: &Path) -> Result<Snapshot> {
     let phase = Instant::now();
@@ -1162,7 +1169,6 @@ pub(super) struct RequirementMiss {
     owner: Option<String>,
 }
 
-
 impl RequirementMiss {
     fn render(&self, fix: impl Fn(&str) -> String) -> anyhow::Error {
         let found = format!(
@@ -1240,10 +1246,6 @@ pub(super) fn validate_requirements(
     Ok(Ok(()))
 }
 
-
-
-
-
 fn git(root: &Path, arguments: &[&str]) -> Result<Output> {
     let output =
         crate::records::run_owned(Command::new("git").args(arguments).current_dir(root), None)
@@ -1269,7 +1271,6 @@ enum Key {
     /// its front-matter `state:` line blanked.
     Change { key: String, change_md: bool },
 }
-
 
 fn fingerprint_key(name: &str) -> Key {
     if name.starts_with(".chough/") || name.starts_with("target/") {
@@ -1363,7 +1364,6 @@ fn canonical_path(path: &str) -> Option<String> {
     (!parts.is_empty()).then(|| parts.join("/"))
 }
 
-
 // ---------------------------------------------------------------------------
 // Freshness (REQ-cli-004).
 
@@ -1410,9 +1410,9 @@ impl<'a> Reads<'a> {
             if let Some(external) = &evidence.external {
                 match crate::local::external(self.root, external)? {
                     Some(record) => {
-                        let actual = fs::read(&record.path)
-                            .ok()
-                            .map(|bytes| format!("sha256:{}", crate::records::digest_bytes(&bytes)));
+                        let actual = fs::read(&record.path).ok().map(|bytes| {
+                            format!("sha256:{}", crate::records::digest_bytes(&bytes))
+                        });
                         if actual.as_ref() != Some(&record.fingerprint) {
                             current = false;
                         }
@@ -1541,7 +1541,10 @@ impl<'a> Labels<'a> {
         }
         let evidence = load(self.reads.root, id)?;
         Ok(
-            match self.reads.freshness(&evidence, &self.snapshot, environment)? {
+            match self
+                .reads
+                .freshness(&evidence, &self.snapshot, environment)?
+            {
                 "current-observation" => "current",
                 "environment-unchecked" => "current",
                 "stale-revision-or-inputs" => "stale",
@@ -1552,7 +1555,6 @@ impl<'a> Labels<'a> {
             },
         )
     }
-
 }
 
 impl Reads<'_> {
@@ -1644,10 +1646,7 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 /// duration_seconds and the actor, each only when known (REQ-cli-017, REQ-history-006;
 /// duration_seconds per the plan's delta correction 4). Front-matter-native maps.
 #[cfg_attr(not(test), allow(dead_code))] // step 4's seam; wired in sessions.rs
-pub(super) fn receipts_of(
-    root: &Path,
-    session_id: &str,
-) -> Result<Vec<Vec<(String, String)>>> {
+pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(String, String)>>> {
     let mut receipts = vec![];
     for evidence in load_session(root, session_id)? {
         let mut map = vec![
@@ -1729,10 +1728,6 @@ pub(super) fn stale_holds(_root: &Path) -> Result<Vec<String>> {
     Ok(vec![])
 }
 
-
-
-
-
 /// One archived change as the removed post-archive summary saw it.
 #[allow(dead_code)] // fields read again when step 8 lands the vault rewiring
 pub(super) struct ListedArchive {
@@ -1743,13 +1738,6 @@ pub(super) struct ListedArchive {
     /// removed summary, kept so its construction compiles until step 8 lands).
     pub(super) finalized: u64,
 }
-
-
-
-
-
-
-
 
 /// Top-level files SpecSync 6.1.1 writes into a change directory to record lifecycle
 /// state; `lesson-bundle.md` is generated by finalize from records already hashed.
@@ -1764,8 +1752,6 @@ const BOOKKEEPING: [&str; 9] = [
     "accepted-state.json",
     "lesson-bundle.md",
 ];
-
-
 
 /// `<id>` of an archive directory named `<YYYY-MM-DD>-<id>`.
 fn archived_id(directory: &str) -> Option<&str> {
@@ -1783,11 +1769,7 @@ fn archived_id(directory: &str) -> Option<&str> {
     (dated && !id.is_empty()).then_some(id)
 }
 
-
 const UNRESOLVED_HINT: &str = "it may be a typo, or a requirement an approved native change adds that is not yet materialized: run specsync change check <change> before running or recording cases that link it";
-
-
-
 
 fn find_id(value: &Value, id: &str) -> bool {
     match value {
@@ -2062,7 +2044,10 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
                 let text = read_bounded_record(&entry.path(), markdown::RECORD_BOUND)?;
                 let record = markdown::parse(&name, &text)?;
                 for map in record.maps("receipts") {
-                    views.push(receipt_view(&map, Found::Bug(name.trim_end_matches(".md").into())));
+                    views.push(receipt_view(
+                        &map,
+                        Found::Bug(name.trim_end_matches(".md").into()),
+                    ));
                 }
             }
         }
@@ -2127,12 +2112,7 @@ pub(super) fn record_validation_run(root: &Path, run: &ValidationRun) -> Result<
     let session_id = active_session(root)?;
     let mut record = Record::new(&format!(
         "**{}.**\n\nA repeated validation run of {}: {}, {} failed, {} not run, {} seconds.\n",
-        run.summary,
-        run.case,
-        run.state,
-        run.failures,
-        run.not_run,
-        run.elapsed_seconds
+        run.summary, run.case, run.state, run.failures, run.not_run, run.elapsed_seconds
     ));
     let set = |record: &mut Record, key: &str, value: &str| {
         record.set_scalar(key, value).expect("a scalar value")
@@ -2149,7 +2129,11 @@ pub(super) fn record_validation_run(root: &Path, run: &ValidationRun) -> Result<
     }
     set(&mut record, "failures", &run.failures.to_string());
     set(&mut record, "not_run", &run.not_run.to_string());
-    set(&mut record, "elapsed_seconds", &run.elapsed_seconds.to_string());
+    set(
+        &mut record,
+        "elapsed_seconds",
+        &run.elapsed_seconds.to_string(),
+    );
     if !run.attempts.is_empty() {
         record.set("attempts", markdown::Value::Maps(run.attempts.clone()))?;
     }

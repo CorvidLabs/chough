@@ -45,7 +45,9 @@ pub(crate) fn record_external(root: &Path, path: &str, fingerprint: &str) -> Res
         "refused: {id} is already recorded; nothing was written and no other name was drawn"
     );
     let mut content = existing;
-    content.push_str(&format!("[{id}]\npath = \"{path}\"\nfingerprint = \"{fingerprint}\"\n\n"));
+    content.push_str(&format!(
+        "[{id}]\npath = \"{path}\"\nfingerprint = \"{fingerprint}\"\n\n"
+    ));
     crate::records::write_replace(root, EXTERNAL, &content)
         .with_context(|| format!("writing {EXTERNAL}"))?;
     Ok(id)
@@ -98,7 +100,10 @@ pub(crate) fn toolchain_limitation(root: &Path) -> Option<String> {
     let path = local_path(root, &format!("{LOGS}/toolchain.log")).ok()?;
     let content = std::fs::read_to_string(path).ok()?;
     let first = content.lines().next()?;
-    first
-        .starts_with("differs")
-        .then(|| format!("recorded on a toolchain that differs from CI: {}", &content[..content.len().min(200)]))
+    first.starts_with("differs").then(|| {
+        format!(
+            "recorded on a toolchain that differs from CI: {}",
+            &content[..content.len().min(200)]
+        )
+    })
 }

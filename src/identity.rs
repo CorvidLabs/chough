@@ -251,9 +251,10 @@ pub(crate) fn require_explicit_observation_id(id: &str) -> Result<()> {
 
 /// The `<YYYY-MM-DD>-<slug>` form of REQ-records-003, any clash suffix included.
 fn valid_dated_name(id: &str) -> bool {
-    let Some((date, rest)) = id.split_at_checked(10).and_then(|(date, rest)| {
-        rest.strip_prefix('-').map(|rest| (date, rest))
-    }) else {
+    let Some((date, rest)) = id
+        .split_at_checked(10)
+        .and_then(|(date, rest)| rest.strip_prefix('-').map(|rest| (date, rest)))
+    else {
         return false;
     };
     let valid_date = date.len() == 10
@@ -266,7 +267,9 @@ fn valid_dated_name(id: &str) -> bool {
         });
     valid_date
         && !rest.is_empty()
-        && rest.bytes().all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-')
+        && rest
+            .bytes()
+            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-')
         && !rest.starts_with('-')
         && !rest.ends_with('-')
         && !rest.contains("--")
@@ -303,12 +306,23 @@ mod tests {
         check("2026-11-10-fix-login").unwrap();
         check("2026-11-10-fix-login-a1b2c3").unwrap();
         // Old-style IDs are refused with the omit-ID remedy.
-        for old in ["OBS-cli-0123abcdef0123abcdef0123", "VAL-x-0123abcdef0123abcdef0123", "SNAP-x-0123abcdef0123abcdef0123"] {
+        for old in [
+            "OBS-cli-0123abcdef0123abcdef0123",
+            "VAL-x-0123abcdef0123abcdef0123",
+            "SNAP-x-0123abcdef0123abcdef0123",
+        ] {
             let error = check(old).unwrap_err().to_string();
             assert!(error.contains("omit the ID"), "{old}: {error}");
         }
         // Anything else is refused as not a date and slug.
-        for bad in ["fixture-observation", "2026-11-10", "2026-11-10-", "2026-11-10--x", "2026-1-1-x", "2026-11-10-Has-Upper"] {
+        for bad in [
+            "fixture-observation",
+            "2026-11-10",
+            "2026-11-10-",
+            "2026-11-10--x",
+            "2026-1-1-x",
+            "2026-11-10-Has-Upper",
+        ] {
             assert!(check(bad).is_err(), "{bad}");
         }
     }
