@@ -2363,6 +2363,86 @@ fn toolchain_task_names_a_version_that_differs() {
     );
 }
 
+/// TC-cli-bug-0022-toolchain-matches-ci, a second copy on PATH (BUG-0022): when a tool
+/// differs, the failure names the copy PATH finds first, the one in use, and every
+/// other copy on PATH, each with its version, so the human knows which binary to fix.
+/// Two stand-in Fledge copies play the Homebrew 1.7.2 and the Cargo 1.8.0 found on the
+/// coordinator's Mac. The verdict's first line, which evidence quotes, holds no path.
+#[cfg(unix)]
+#[test]
+fn toolchain_failure_names_each_copy_on_path_with_its_version() {
+    let pins = Command::new("sh")
+        .arg(manifest_dir().join("tools/linux/pins.sh"))
+        .output()
+        .unwrap();
+    let pins = String::from_utf8(pins.stdout).unwrap();
+    let pin = |tool: &str| {
+        pins.lines()
+            .find_map(|line| line.strip_prefix(&format!("{tool}=")))
+            .unwrap()
+            .to_string()
+    };
+    let (hi, specsync, fledge) = (pin("human-intent"), pin("specsync"), pin("fledge"));
+    let directory = tempfile::tempdir().unwrap();
+    let first = directory.path().join("homebrew-bin");
+    let second = directory.path().join("cargo-bin");
+    for (name, line) in [
+        ("hi", format!("hi {hi}")),
+        ("specsync", format!("specsync {specsync}")),
+        ("rustc", "rustc 1.96.0 (SYNTHETIC 2026-01-01)".to_string()),
+        ("cargo", "cargo 1.96.0 (SYNTHETIC 2026-01-01)".to_string()),
+    ] {
+        common::stand_in(&second, name, &line);
+    }
+    common::stand_in(&first, "fledge", "fledge 0.0.1");
+    common::stand_in(&second, "fledge", &format!("fledge {fledge}"));
+    let log = directory.path().join("toolchain.log");
+    let run = |path: String| {
+        Command::new("sh")
+            .arg(manifest_dir().join("tools/toolchain.sh"))
+            .env("PATH", path)
+            .env("CHOUGH_TOOLCHAIN_LOG", &log)
+            .output()
+            .unwrap()
+    };
+    let output = run(format!(
+        "{}:{}:/usr/bin:/bin",
+        first.display(),
+        second.display()
+    ));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "{stderr}");
+    let used = format!("{}/fledge (0.0.1, used)", first.display());
+    let other = format!("{}/fledge ({fledge})", second.display());
+    assert!(
+        stderr.contains(&format!(
+            "Fledge on PATH, first found first: {used}, {other}"
+        )),
+        "{stderr}"
+    );
+    assert!(
+        stderr.contains(&format!(
+            "a copy at {fledge} is on PATH after the one used: put it first, or upgrade or remove {}/fledge",
+            first.display()
+        )),
+        "{stderr}"
+    );
+    // The verdict evidence quotes names no path.
+    let verdict = fs::read_to_string(&log).unwrap();
+    let first_line = verdict.lines().next().unwrap();
+    assert_eq!(first_line, format!("differs: Fledge 0.0.1 (CI {fledge})"));
+
+    // Only the old copy on PATH: the fix is to upgrade it.
+    let output = run(format!("{}:/usr/bin:/bin", first.display()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(
+        stderr.contains(&format!(
+            "Fledge on PATH, first found first: {used}; upgrade it to {fledge}"
+        )),
+        "{stderr}"
+    );
+}
+
 /// TC-cli-0110 (REQ-cli-019, BUG-0001): README, AGENTS.md, CI, the docs and the header
 /// comment of `.specsync/config.toml` name the same HI, SpecSync and Fledge versions,
 /// and Cargo.toml, README and the MSRV job the same Rust version.
