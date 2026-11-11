@@ -117,6 +117,31 @@ fn host_name() -> Option<String> {
     std::env::var("COMPUTERNAME").ok()
 }
 
+static REDACTING: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Whether this command was given `--redact`.
+pub(crate) fn set_redacting(on: bool) {
+    REDACTING.store(on, std::sync::atomic::Ordering::Relaxed);
+}
+
+pub(crate) fn redacting() -> bool {
+    REDACTING.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+/// Check `value` for `field`, or redact it in place under `--redact`; returns how many
+/// matches were redacted.
+pub(crate) fn guard(local: &Local, field: &str, value: &mut String) -> Result<usize> {
+    if redacting() {
+        let (text, found) = redact(local, value);
+        if found > 0 {
+            *value = text;
+        }
+        return Ok(found);
+    }
+    check(local, field, value)?;
+    Ok(0)
+}
+
 /// Refuse a value that leaks, naming the field and the kinds, never the text.
 pub(crate) fn check(local: &Local, field: &str, value: &str) -> Result<()> {
     let found = find(local, value);
