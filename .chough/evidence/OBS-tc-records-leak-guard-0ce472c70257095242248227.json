@@ -1,0 +1,62 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-leak-guard-0ce472c70257095242248227",
+  "criteria": [
+    "LIFE-26",
+    "LIFE-17",
+    "FLOW-22"
+  ],
+  "requirements": [
+    "REQ-records-006"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test sessions --test bugs --test leaks -- a_leak_in_a_session_value_is_refused_or_redacted bug_writes_refuse_or_redact_leaks no_write_leaks_and_doctor_finds_old_leaks for TC-records-leak-guard: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-leak-guard-0ce472c70257095242248227.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-leak-guard-0ce472c70257095242248227.log": "aea409746168d664074ab0b640a28ef383d374534b75253754fe19745099284c"
+  },
+  "observed_at_unix_seconds": 1794430393,
+  "snapshot": {
+    "revision": "dfb4a3f031cd72ef5b6acc49c27f74097392cc53",
+    "dirty": false,
+    "fingerprint": "f0a5b53d3e11c78d3182fe3ab96358d781aa21a6bba8b113842bc6c3542a0872",
+    "content": "68f8c719b2548bed818881f61eda09ac41f0c22ed9997d6091fe8df529b502d8"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-leak-guard",
+      "digest": "564b140b6b3e0dd2338910fe0f74ecf7b0eec451712704807e87d0f1d6edd3c5"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--test",
+    "bugs",
+    "--test",
+    "leaks",
+    "--",
+    "a_leak_in_a_session_value_is_refused_or_redacted",
+    "bug_writes_refuse_or_redact_leaks",
+    "no_write_leaks_and_doctor_finds_old_leaks"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 3
+}
