@@ -47,7 +47,7 @@ timing` holds one cycle for this session.
 | 9 | Timing reads timelines and receipts | M | lineage logic goes away; segment parity |
 | 10 | `chough migrate` preview and apply, fail-closed reader, doctor findings | XL | mapping 644 history events and 60 rolled sessions exactly |
 | 11 | Docs, skill bundle and installed copy, AGENTS.md, README, CHANGELOG, `.gitattributes`, version 0.6.0 | M | skill digest pins |
-| 12 | The open bugs not covered by the steps above: #12 closeout, #190, #76, BUG-0001, BUG-0020, BUG-0022, BUG-0023, #148 and the flakes (testing.md) | L | the flakes may not reproduce |
+| 12 | The open bugs not covered by the steps above: #12 (records out of SpecSync's verification, and the closeout), #190, #76, BUG-0001, BUG-0020, BUG-0022, BUG-0023, #148 and the flakes (testing.md) | L | the flakes may not reproduce |
 | 13 | Retire KNOW-2, 7, 18, 19, 22, 23, 25, 28 and 29 with `hi retire`, in the commits that remove their requirements and cases | S | none |
 | 14 | Dogfood: migrate this repository, continue this session to done in 0.6.0 | M | first real migration |
 
@@ -100,9 +100,15 @@ One agent owns the live session and every Chough record write; others report wit
 1. Keep a 0.5.0 build of this branch's base outside the working tree to drive this
    session until the migration commit, so half-built code never writes the records.
 2. When steps 1 to 13 pass, build 0.6.0 and run `chough migrate`, then
-   `chough migrate --apply`, and commit the result with the receipt.
+   `chough migrate --apply`, and commit the result with the receipt, adding
+   `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` to
+   `verification_ignored_paths` in `.specsync/sdd.json` in the same commit
+   (REQ-records-014). This change's affected paths name `.chough/cases/` and
+   `.chough/README.md` rather than all of `.chough/`, because SpecSync refuses a
+   change whose paths overlap that list.
 3. From that commit on, drive this session with the 0.6.0 build only: test, accept
-   and done in the new format. Close the bug records already fixed elsewhere with
+   and done in the new format. Every Chough write in the accept window after
+   `change check --commit` must leave verification current (the #12 path for real). Close the bug records already fixed elsewhere with
    their links (#148 via #157, BUG-0001, the history anchor via #142, the trace
    flake via #172) and BUG-0002 and BUG-0003 as `fixed-upstream` (spec-sync #823 and
    #824, re-checked by t37b on 46f55652). The move into done must write this change's story,
@@ -148,6 +154,10 @@ releasing". So:
 - **Archive validity after migration.** One probe showed no change (research.md);
   the CI archive authentication over the migrated tree is the real check and gates
   the dogfood.
+- **SpecSync's review after a committed Chough record.** Verification currency is a
+  content check only, so the exclusion covers it; whether review also binds after a
+  Chough commit is what TC-records-write-after-check-keeps-verification shows. If it
+  does not, that part goes to spec-sync and the documented order stays for commits.
 - **Older Chough on a migrated tree.** 0.5.x sees no checkpoint and may start a new
   one. Mitigation: the CHANGELOG says to upgrade every agent before migrating; only
   chough migrates in this change; `doctor` reports a stray 0.5.x file.

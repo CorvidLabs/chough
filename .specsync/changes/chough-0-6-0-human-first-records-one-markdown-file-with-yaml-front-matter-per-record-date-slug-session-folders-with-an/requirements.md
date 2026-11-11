@@ -9,13 +9,14 @@ Four modules change. The deltas are the contract; this page is the map.
 
 ## records (new module)
 
-Adds REQ-records-001 to 013: record files and tolerant reading (001), the tree and
+Adds REQ-records-001 to 014: record files and tolerant reading (001), the tree and
 `.chough/README.md` (002), date and slug names with aliases (003), the session
 record (004), proof files, logs and external evidence (005), the leak guard and scan
 (006), the acting agent (007), a human's gate decision driving approval or review as
 that human (008), migration from 0.5.x (009), failing closed on unmigrated trees
 (010), the journal and feed (011), removal only of committed bytes (012) and key
-screenshots beside the story (013). Owns `src/identity.rs` (moved from cli),
+screenshots beside the story (013), Chough's record folders kept out of SpecSync's
+verification (014). Owns `src/identity.rs` (moved from cli),
 `src/markdown.rs`, `src/leaks.rs`, `src/local.rs`, `src/humans.rs`,
 `src/migrate.rs`, `src/journal.rs` and their tests.
 
@@ -67,9 +68,11 @@ REQ-cli-007).
 ## Bugs
 
 Every open Chough bug is mapped to a requirement and a regression case in
-testing.md. Most fixes land in the requirements above; three need no requirement
-change: #12 (a real native closeout test under REQ-cli-004 and REQ-cli-059) and the
-two timing flakes (REQ-reporting-002 already bounds only time spent on native reads).
+testing.md. Most fixes land in the requirements above. #12 lands in REQ-records-014
+(Chough's record folders listed in SpecSync's `verification_ignored_paths`), with a
+real native closeout test under REQ-cli-004 and REQ-cli-059. The two timing flakes
+need no requirement change (REQ-reporting-002 already bounds only time spent on
+native reads).
 
 ## Requirement map
 

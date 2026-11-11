@@ -80,6 +80,12 @@ were really SpecSync's are already fixed there, and are closed as fixed upstream
   earlier archived session with no prune record. REQ-history-006 carries the
   regression for that exact path, recorded failing first on 0.5.0.
 - Issue #237 (a gate blocks every advance): decided at scope approval, see below.
+- Issue #12 has two new real repros, relayed by the coordinator: an untracked Chough
+  evidence receipt present at `check --commit` gave a reviewer's clean checkout stale
+  verification (spec-sync #1045, 2026-11-11), and checkpoints written after `check
+  --commit` staled verification repeatedly on #212. REQ-records-014 keeps Chough's
+  records in three folders a project lists in SpecSync's documented exclusion, with a
+  regression case for each repro (DRIVE-4).
 
 ## Leif's decisions, and the defaults he can still change
 

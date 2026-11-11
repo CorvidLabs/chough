@@ -12,7 +12,7 @@ rebase onto main once #212 has merged, so this is the only open native change.
 
 - [ ] Write the #165 regression in the 0.5.x layout (seven archived sessions, `knowledge/` neither tracked nor ignored, accept to done); it fails on 0.5.0.
 - [ ] Write the #237 regression on 0.5.0 (a gate for release refuses build to test).
-- [ ] Write the failing-first regressions of testing.md's bug table that can fail on 0.5.0: #190, #76, BUG-0020, BUG-0022, BUG-0023, the vaulted adopter and the timing budget; run the #12 closeout and the #132 stress case on 0.5.0 and keep what they show.
+- [ ] Write the failing-first regressions of testing.md's bug table that can fail on 0.5.0: #190, #76, BUG-0020, BUG-0022, BUG-0023, the vaulted adopter and the timing budget; the #12 untracked-receipt and write-after-check cases in the 0.5.x layout without the exclusion; run the #12 closeout and the #132 stress case on 0.5.0 and keep what they show.
 
 Record both failures with `chough cases run` and link each to a local bug (plain step).
 
@@ -74,7 +74,7 @@ Record both failures with `chough cases run` and link each to a local bug (plain
 
 ## 10b. The remaining bug fixes
 
-- [ ] #12: the real native closeout test with SpecSync at the CI pin; keep the documented order in the accept reference.
+- [ ] #12 (REQ-records-014): only Chough's records under `.chough/sessions/`, `archive/` and `bugs/`; the `records_in_verification` doctor finding, the `chough init` advice, the migration follow-up and the `chough next` wording; the #1045 and #212 regression cases, the case-definition control and the real native closeout test, with SpecSync at the CI pin; the accept and lifecycle references say when Chough writes are safe and keep the documented order for projects without the entries, with their doc pins updated.
 - [ ] #190: gate summaries count from the merge base, leaving out Chough's records, the knowledge directory and SpecSync bookkeeping.
 - [ ] #76 and BUG-0023: the next-action wording at init, test and accept, and the summary first in `status`.
 - [ ] BUG-0001 and BUG-0022: the config comment in the version agreement check; the `toolchain` task first in the verify lane.
@@ -103,7 +103,7 @@ Record both failures with `chough cases run` and link each to a local bug (plain
 
 ## 12. Dogfood
 
-- [ ] Migrate this repository with the 0.6.0 build, as its own commit with the receipt.
+- [ ] Migrate this repository with the 0.6.0 build, as its own commit with the receipt, adding `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` to `verification_ignored_paths` in `.specsync/sdd.json` in the same commit.
 - [ ] Close BUG-0002 and BUG-0003 as `fixed-upstream`, each note citing t37b's check on spec-sync main 46f55652 (SpecSync 6.2.0).
 
 Then, as plain steps (the release gate in plan.md applies): drive this session with the 0.6.0 build from that commit on;

@@ -67,6 +67,24 @@ regression is written in the 0.5.x layout first so it fails on 0.5.0.
 - The plan stage's lessons: a delta is frozen at approval; `change check` refuses
   unchecked `tasks.md` boxes, so human gates and case runs are plain text.
 
+## SpecSync's verification exclusion (source read at v6.2.0, the CI pin, and main 46f55652)
+
+- `verification_ignored_paths` in `.specsync/sdd.json`, since 6.1.2 (spec-sync #825,
+  REQ-change-114 and 115): directory prefixes only, at most 8 entries of at most 128
+  bytes, no pattern characters. Files under them leave the verification digest and
+  nothing else (coverage, spec scanning, acceptance digests and commit staging keep
+  them).
+- SpecSync refuses the list when an entry overlaps a change's affected paths or
+  anything `change check` reads; archived changes are exempt. Here 37 of 169
+  archived changes list `.chough` paths, and they stay exempt.
+- Verification currency is a content check only: passed, the contract digest, the
+  execution digest and the workspace digest. It has no Git ancestry walk, so a later
+  commit that touches only listed folders keeps verification current. Not checked
+  here: whether the scoped review binds after such a commit; a regression case
+  covers it.
+- This repository's policy lists no entries today, and the 0.5.x skill says why:
+  covering `session.json` would also have hidden `cases/`.
+
 ## Folded PRs, read at their heads
 
 - #233: actor fields from `CHOUGH_ACTOR`, `CHOUGH_ACTOR_MODEL`, `CHOUGH_HC_TERMINAL`,

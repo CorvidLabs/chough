@@ -307,6 +307,24 @@ evidence prune and the ledger, library archive and snapshot, the post-archive tr
 attachments, roll-up, session notes, archive notes, module/intent/rules/timeline
 notes, checkpoint merge, schema 1 migration.
 
+## Staying out of SpecSync's verification (#12)
+
+SpecSync 6.1.2 and later leave the directory prefixes listed in
+`verification_ignored_paths` (`.specsync/sdd.json`) out of the verification digest,
+and nothing else. In 0.5.x that could not be used here, because `session.json` sat
+beside `cases/`. In 0.6.0 everything Chough writes while work is in progress lives in
+three folders, `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/`, and the
+inputs a change's verification needs (`cases/`, `preferences.json`, `README.md`,
+`knowledge/`) stay outside them. A project lists the three folders, and then a
+checkpoint, an evidence entry or a bug written after `check --commit`, untracked or
+committed, leaves the verification current, including in a reviewer's clean
+checkout. Chough only reads SpecSync's policy: `doctor` reports
+`records_in_verification` while an entry is missing, `init` and the migration say
+the same, and `next` says when writes are safe. This repository adds the entries in
+its migration commit. SpecSync refuses the list while an open change's affected paths
+overlap it, so the recreated draft names `.chough/cases/` and `.chough/README.md`
+instead of `.chough/`; archived changes are exempt from that check.
+
 ## Bug fixes
 
 testing.md lists every open Chough bug with its fix and regression case. The
