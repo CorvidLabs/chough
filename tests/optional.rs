@@ -184,7 +184,7 @@ fn repeated_validation_needs_authority_honors_stop_and_persists_findings() {
     assert_eq!(appended["bug"]["id"], bug_id);
     assert_eq!(appended["bug"]["evidence"].as_array().unwrap().len(), 5);
     assert!(fixture.exists(&format!(".chough/bugs/{bug_id}.md")));
-    assert!(!fixture.exists(".chough/validation.stop"));
+    assert!(!fixture.exists(".chough/local/validation.stop"));
 
     // A new objective ends the run consent, so repetition is refused again.
     fixture.ok(&["checkpoint", "--objective", "Something else"]);
@@ -230,12 +230,11 @@ fn spawn(fixture: &Fixture, args: &[&str]) -> std::process::Child {
 #[cfg(unix)]
 fn first_attempt_recorded(fixture: &Fixture) -> String {
     for _ in 0..200 {
-        if let Ok(entries) = fs::read_dir(fixture.root().join(".chough/validation")) {
-            for entry in entries {
-                let run: Value = serde_json::from_str(
-                    &fs::read_to_string(entry.unwrap().path()).unwrap_or_default(),
-                )
-                .unwrap_or(Value::Null);
+        let output = fixture.run(&["validate", "status"]);
+        if output.status.success()
+            && let Ok(status) = serde_json::from_slice::<Value>(&output.stdout)
+        {
+            for run in status["runs"].as_array().into_iter().flatten() {
                 if run["state"] == "running" && run["completed"] == 1 {
                     return run["id"].as_str().unwrap().to_string();
                 }
@@ -321,7 +320,7 @@ fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
         "the stop took {after_stop} s to take effect"
     );
     assert!(started.elapsed().as_secs() < 25);
-    fs::remove_file(fixture.root().join(".chough/validation.stop")).unwrap();
+    fs::remove_file(fixture.root().join(".chough/local/validation.stop")).unwrap();
 
     // A pause during the interval is honored the same way.
     let child = spawn(&fixture, &repeat("3", "30"));
@@ -336,26 +335,38 @@ fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
     );
 }
 
-fn assert_random_record_id(id: &str, prefix: &str, slug: &str, slug_limit: usize) {
-    assert!(id.len() <= 100, "record ID exceeds 100 bytes: {id}");
-    let rest = id
-        .strip_prefix(prefix)
-        .unwrap_or_else(|| panic!("expected {prefix} prefix: {id}"));
-    let (actual_slug, suffix) = rest
-        .rsplit_once('-')
-        .unwrap_or_else(|| panic!("missing random suffix separator: {id}"));
-    assert_eq!(actual_slug, slug, "unexpected stable slug: {id}");
-    assert!(actual_slug.len() <= slug_limit);
-    assert_eq!(suffix.len(), 24, "suffix length is not 24: {id}");
+/// A date and slug record name (REQ-records-003): `<YYYY-MM-DD>-<slug>`, with at most
+/// one clash suffix of 6 lowercase hexadecimal digits.
+fn assert_dated_name(id: &str, slug: &str) {
+    assert!(id.len() <= 80, "record name exceeds 80 bytes: {id}");
+    let (date, rest) = id.split_at(10);
     assert!(
-        suffix
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
-        "suffix is not lowercase hex: {id}"
+        date.as_bytes()[4] == b'-' && date.as_bytes()[7] == b'-',
+        "no date: {id}"
     );
+    let rest = rest
+        .strip_prefix('-')
+        .unwrap_or_else(|| panic!("no slug: {id}"));
+    match rest.strip_prefix(slug) {
+        Some("") => {}
+        Some(suffix) => {
+            let suffix = suffix
+                .strip_prefix('-')
+                .unwrap_or_else(|| panic!("bad suffix: {id}"));
+            assert!(
+                suffix.len() == 6
+                    && suffix
+                        .bytes()
+                        .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
+                "bad clash suffix: {id}"
+            );
+        }
+        None => panic!("expected the slug {slug}: {id}"),
+    }
 }
 
-fn validation_fixture() -> Fixture {
+/// A project with case TC-cli-0001 and a run consent, in session `key`.
+fn validation_fixture(key: &str) -> Fixture {
     let fixture = Fixture::new();
     fixture.hi_stand_in();
     fixture.init();
@@ -364,6 +375,7 @@ fn validation_fixture() -> Fixture {
         "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Version probe\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"Git reports its version\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"git\", \"--version\"]\nexpect_output = [\"git version\"]\n",
     );
     fixture.commit("fixture");
+    fixture.ok(&["session", "new", key, "--objective", "Repeat the probe"]);
     fixture.ok(&[
         "consent",
         "grant",
@@ -374,6 +386,7 @@ fn validation_fixture() -> Fixture {
     fixture
 }
 
+/// One single-attempt run: its entry path and the path of its attempt's entry.
 fn validation_attempt(fixture: &Fixture) -> (String, String) {
     let run = fixture.ok(&[
         "validate",
@@ -385,115 +398,95 @@ fn validation_attempt(fixture: &Fixture) -> (String, String) {
         "local-macos-arm64",
     ]);
     let id = run["run"]["id"].as_str().unwrap().to_string();
-    assert_random_record_id(&id, "VAL-", "tc-cli-0001", 71);
+    assert_dated_name(&id, "tc-cli-0001-run");
+    let entry = run["run"]["entry"].as_str().unwrap().to_string();
+    let session = fixture.active_id();
+    assert_eq!(
+        entry,
+        format!(".chough/sessions/{session}/evidence/{id}.md")
+    );
+    assert!(fixture.read(&entry).contains("validation_run: true"));
     let observations = run["run"]["observations"].as_array().unwrap();
     assert_eq!(observations.len(), 1, "one attempt needs one observation");
     let observation = observations[0].as_str().unwrap();
-    assert_random_record_id(observation, "OBS-", "tc-cli-0001", 71);
-    let record: Value =
-        serde_json::from_str(&fixture.read(&format!(".chough/evidence/{observation}.json")))
-            .unwrap();
-    let artifact = format!(".chough/artifacts/{observation}.log");
-    assert_eq!(record["artifacts"][0], artifact);
-    assert!(fixture.read(&artifact).contains("git version"));
-    (id, observation.to_string())
+    assert_dated_name(observation, "tc-cli-0001");
+    let attempt = format!(".chough/sessions/{session}/evidence/{observation}.md");
+    assert!(fixture.exists(&attempt), "{attempt}");
+    // The raw log stays machine-local (REQ-records-005).
+    assert!(
+        fixture
+            .read(&format!(".chough/local/logs/{observation}.log"))
+            .contains("git version")
+    );
+    (entry, attempt)
 }
 
+/// REQ-cli-023: identical repeated runs of one case on one day in one session get
+/// distinct names, and two independent roots, each in its own session, never share an
+/// entry path.
 #[test]
 fn independent_roots_and_identical_repeated_runs_allocate_distinct_validation_runs() {
-    let first = validation_fixture();
-    let second = validation_fixture();
+    let first = validation_fixture("first-root");
+    let second = validation_fixture("second-root");
     let attempts = [
         validation_attempt(&first),
         validation_attempt(&first),
         validation_attempt(&second),
         validation_attempt(&second),
     ];
-    let run_ids = attempts
+    let runs = attempts
         .iter()
         .map(|(run, _)| run.clone())
         .collect::<std::collections::BTreeSet<_>>();
-    let observation_ids = attempts
+    let observations = attempts
         .iter()
         .map(|(_, observation)| observation.clone())
         .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(runs.len(), attempts.len(), "run entries: {attempts:?}");
     assert_eq!(
-        run_ids.len(),
+        observations.len(),
         attempts.len(),
-        "validation IDs: {attempts:?}"
-    );
-    assert_eq!(
-        observation_ids.len(),
-        attempts.len(),
-        "observation IDs: {attempts:?}"
+        "attempt entries: {attempts:?}"
     );
 }
 
+/// REQ-cli-023: a 0.5.x run the migration carried resumes by its old ID, which its
+/// entry keeps as an alias, with its stored limits and start time.
 #[test]
 fn legacy_validation_runs_resume_with_their_ids_and_schema_unchanged() {
-    let fixture = validation_fixture();
-    let id = "tc-cli-0001-1700000000-7";
-    let legacy = serde_json::json!({
-        "schema_version": 1,
-        "id": id,
-        "case": "TC-cli-0001",
-        "times": 1,
-        "interval_seconds": 0,
-        "environment": "local-macos-arm64",
-        "authority": "run consent: retained legacy authority",
-        "state": "stopped",
-        "completed": 0,
-        "failures": 0,
-        "not_run": 0,
-        "observations": [],
-        "bugs": [],
-        "elapsed_seconds": 9,
-        "started_at_unix_seconds": 1_700_000_000_u64
-    });
+    let fixture = validation_fixture("legacy-run");
+    let old = "tc-cli-0001-1700000000-7";
+    let id = "2023-11-14-tc-cli-0001-run";
+    let entry = format!(".chough/sessions/{}/evidence/{id}.md", fixture.active_id());
     fixture.write(
-        &format!(".chough/validation/{id}.json"),
-        &(serde_json::to_string_pretty(&legacy).unwrap() + "\n"),
+        &entry,
+        &format!(
+            "---\nkind: evidence\nid: {id}\naliases: [{old}]\nvalidation_run: true\nclaim: Repeated validation run of TC-cli-0001\nresult: not-run\nevidence_kind: structural\nrun_case: TC-cli-0001\nenvironment: local-macos-arm64\nauthority: \"run consent: retained legacy authority\"\ntimes: 1\ninterval_seconds: 0\nstate: stopped\nstarted: 2023-11-14T22:13:20Z\nfailures: 0\nnot_run: 0\nelapsed_seconds: 9\nbugs: []\nattempts: []\nobserved: 2023-11-14T22:13:20Z\nrevision: {}\n---\n**A repeated validation run of TC-cli-0001.**\n",
+            "0".repeat(40)
+        ),
     );
-    let resumed = fixture.ok(&["validate", "resume", id]);
+    let resumed = fixture.ok(&["validate", "resume", old]);
     assert_eq!(resumed["run"]["id"], id);
-    assert_eq!(resumed["run"]["schema_version"], 1);
+    assert_eq!(resumed["run"]["aliases"][0], old);
     assert_eq!(resumed["run"]["started_at_unix_seconds"], 1_700_000_000_u64);
     assert_eq!(resumed["run"]["completed"], 1);
     assert_eq!(resumed["run"]["times"], 1);
     assert_eq!(resumed["run"]["interval_seconds"], 0);
     assert_eq!(resumed["run"]["environment"], "local-macos-arm64");
     let observation = resumed["run"]["observations"][0].as_str().unwrap();
-    assert_random_record_id(observation, "OBS-", "tc-cli-0001", 71);
-    let record: Value =
-        serde_json::from_str(&fixture.read(&format!(".chough/evidence/{observation}.json")))
-            .unwrap();
-    assert_eq!(
-        record["artifacts"][0],
-        format!(".chough/artifacts/{observation}.log")
-    );
+    assert_dated_name(observation, "tc-cli-0001");
     let status = fixture.ok(&["validate", "status"]);
-    assert!(status.to_string().contains(id));
+    assert!(status.to_string().contains(old), "{status:#}");
     let timing = fixture.ok(&["timing", "--json"]);
-    assert!(timing.to_string().contains(id));
-    let preview = fixture.ok(&["evidence", "prune"]);
-    let protected = preview["protected"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .find(|entry| entry["id"] == observation)
-        .unwrap();
-    assert!(
-        protected["reasons"]
-            .as_array()
-            .unwrap()
-            .contains(&Value::from(format!("validation {id}"))),
-        "{preview:#}"
-    );
-    let stored: Value =
-        serde_json::from_str(&fixture.read(&format!(".chough/validation/{id}.json"))).unwrap();
-    assert_eq!(stored["schema_version"], 1);
-    assert_eq!(stored["id"], id);
-    assert_eq!(stored["started_at_unix_seconds"], 1_700_000_000_u64);
+    assert!(timing.to_string().contains(id), "{timing:#}");
+    let stored = fixture.read(&entry);
+    for kept in [
+        format!("aliases: [{old}]"),
+        "started: 2023-11-14T22:13:20Z".to_string(),
+        "state: complete".to_string(),
+    ] {
+        assert!(stored.contains(&kept), "{kept} missing:\n{stored}");
+    }
 }
 
 #[test]
