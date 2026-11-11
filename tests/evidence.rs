@@ -292,6 +292,94 @@ fn rebuilding_the_knowledge_index_keeps_the_observation_current() {
     assert_eq!(label(&fixture).as_deref(), Some("current"));
 }
 
+/// REQ-cli-004 (#203): an entry carries a 0.5.x diagnostic input inventory as front
+/// matter and reads it back unchanged, and it never changes freshness; an inventory
+/// edited out of #203's rule (a non-canonical or bookkeeping path, a wrong key or a
+/// digest that is not SHA-256) refuses the read as invalid evidence.
+#[cfg(unix)]
+#[test]
+fn an_entry_round_trips_its_input_inventory_and_refuses_an_invalid_one() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let added = fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "product-test",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC inventory carrier",
+    ]);
+    let file = added["recorded"].as_str().unwrap().to_string();
+    let written = fixture.read(&file);
+    // The 0.6.0 writer generates no inventory.
+    assert!(!written.contains("input_inventory"), "{written}");
+    let with = |entries: &str| {
+        let (front, body) = written
+            .strip_prefix("---\n")
+            .and_then(|rest| rest.split_once("\n---\n"))
+            .unwrap();
+        format!(
+            "---\n{front}\ninput_inventory_version: 1\ninput_inventory_complete: false\ninput_inventory:\n{entries}---\n{body}"
+        )
+    };
+    let digest = "a".repeat(64);
+    let entry = |path: &str, key: &str, digest: &str| {
+        format!("  - domain: 0\n    key: {key}\n    path: {path}\n    digest: {digest}\n")
+    };
+    fixture.write(
+        &file,
+        &with(&entry("src/input.txt", "src/input.txt", &digest)),
+    );
+    let status = fixture.ok(&["status", "--environment", "local"]);
+    let row = &status["observations"][0];
+    assert_eq!(row["freshness"], "current-observation", "{row:#}");
+    assert_eq!(
+        row["record"]["input_inventory"],
+        json!({"version": 1, "complete": false, "entries": [
+            {"domain": 0, "key": "src/input.txt", "path": "src/input.txt", "digest": digest}
+        ]}),
+        "{row:#}"
+    );
+    // An edit of the listed file stales the entry by its content identity alone.
+    fixture.write("src/input.txt", "SYNTHETIC edit\n");
+    let status = fixture.ok(&["status", "--environment", "local"]);
+    assert_eq!(
+        status["observations"][0]["freshness"],
+        "stale-revision-or-inputs"
+    );
+    for (label, bad) in [
+        (
+            "non-canonical",
+            entry("src//input.txt", "src//input.txt", &digest),
+        ),
+        (
+            "bookkeeping",
+            entry(".chough/session.json", ".chough/session.json", &digest),
+        ),
+        ("wrong key", entry("src/input.txt", "other", &digest)),
+        ("digest", entry("src/input.txt", "src/input.txt", "bad")),
+    ] {
+        fixture.write(&file, &with(&bad));
+        let refused = fixture.fails(&["status", "--environment", "local"]);
+        assert!(
+            refused.contains("invalid evidence entry"),
+            "{label}: {refused}"
+        );
+    }
+}
+
 #[cfg(unix)]
 fn knowledge_fixture() -> Fixture {
     let fixture = Fixture::new();

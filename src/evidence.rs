@@ -228,6 +228,9 @@ impl Evidence {
         if let Some(content) = &self.snapshot.content {
             set(&mut record, "content", content);
         }
+        if let Some(inventory) = &self.snapshot.input_inventory {
+            inventory.to_record(&mut record);
+        }
         set(&mut record, "environment", &self.environment);
         if let Some(fingerprint) = &self.fingerprint {
             set(&mut record, "fingerprint", fingerprint);
@@ -328,7 +331,7 @@ impl Evidence {
                 dirty: false,
                 fingerprint: String::new(),
                 content: scalar("content"),
-                input_inventory: None,
+                input_inventory: InputInventory::from_record(record)?,
             },
             cases: {
                 let ids = record.list("case");
@@ -1109,6 +1112,7 @@ impl Evidence {
             "observed_at_unix_seconds": self.observed_at_unix_seconds,
             "revision": self.snapshot.revision,
             "content": self.snapshot.content,
+            "input_inventory": self.snapshot.input_inventory,
             "cases": self.cases.iter().map(|case| json!({"id": case.id, "digest": case.digest})).collect::<Vec<_>>(),
             "method": self.method,
             "track": self.track,
@@ -1160,6 +1164,112 @@ struct InputIdentity {
     key: String,
     path: String,
     digest: String,
+}
+
+/// #203's bounds on a diagnostic input inventory.
+const INPUT_INVENTORY_ENTRIES: usize = 128;
+const INPUT_INVENTORY_BYTES: usize = 32_768;
+
+impl InputInventory {
+    /// #203's rule (REQ-cli-004): version 1, at most 128 entries and 32,768 serialized
+    /// bytes, and each entry a canonical, distinct path with a SHA-256 digest and the
+    /// domain and key the content identity gives that path. Chough records, build
+    /// output and SpecSync bookkeeping, which the identity skips, are refused.
+    fn validate(&self, name: &str) -> Result<()> {
+        ensure!(
+            self.version == 1,
+            "unsupported input inventory version: {name}"
+        );
+        ensure!(
+            self.entries.len() <= INPUT_INVENTORY_ENTRIES
+                && serde_json::to_vec(self)?.len() <= INPUT_INVENTORY_BYTES,
+            "invalid input inventory bounds: {name}"
+        );
+        let mut paths = BTreeSet::new();
+        for entry in &self.entries {
+            ensure!(
+                canonical_path(&entry.path).as_deref() == Some(entry.path.as_str()),
+                "invalid input inventory entry: {name}: path must be canonical"
+            );
+            let expected = match fingerprint_key(&entry.path) {
+                Key::Path(key) => Some((0, key)),
+                Key::Change { key, .. } => Some((1, key)),
+                Key::Skip => None,
+            };
+            ensure!(
+                crate::records::is_digest(&entry.digest)
+                    && paths.insert(entry.path.as_str())
+                    && expected == Some((entry.domain, entry.key.clone())),
+                "invalid input inventory entry: {name}"
+            );
+        }
+        Ok(())
+    }
+
+    /// The entry's front matter form: `input_inventory_version`,
+    /// `input_inventory_complete` and the `input_inventory` maps.
+    fn to_record(&self, record: &mut Record) {
+        record
+            .set_scalar("input_inventory_version", &self.version.to_string())
+            .expect("a scalar value");
+        record
+            .set_scalar("input_inventory_complete", &self.complete.to_string())
+            .expect("a scalar value");
+        record
+            .set(
+                "input_inventory",
+                markdown::Value::Maps(
+                    self.entries
+                        .iter()
+                        .map(|entry| {
+                            vec![
+                                ("domain".into(), entry.domain.to_string()),
+                                ("key".into(), entry.key.clone()),
+                                ("path".into(), entry.path.clone()),
+                                ("digest".into(), entry.digest.clone()),
+                            ]
+                        })
+                        .collect(),
+                ),
+            )
+            .expect("a maps value");
+    }
+
+    /// The inventory an entry carries, validated; none without `input_inventory_version`.
+    fn from_record(record: &Record) -> Result<Option<InputInventory>> {
+        let Some(version) = record.scalar("input_inventory_version") else {
+            return Ok(None);
+        };
+        let name = format!(
+            "invalid evidence entry {}: input inventory",
+            record.scalar("id").unwrap_or_default()
+        );
+        let invalid = || name.clone();
+        let complete = match record.scalar("input_inventory_complete") {
+            Some("true") => true,
+            Some("false") => false,
+            _ => bail!("{name}"),
+        };
+        let mut entries = vec![];
+        for map in record.maps("input_inventory") {
+            let fields: BTreeMap<String, String> = map.into_iter().collect();
+            ensure!(fields.len() == 4, "{name}");
+            let field = |key: &str| fields.get(key).cloned().with_context(invalid);
+            entries.push(InputIdentity {
+                domain: field("domain")?.parse().with_context(invalid)?,
+                key: field("key")?,
+                path: field("path")?,
+                digest: field("digest")?,
+            });
+        }
+        let inventory = InputInventory {
+            version: version.parse().with_context(invalid)?,
+            complete,
+            entries,
+        };
+        inventory.validate(&name)?;
+        Ok(Some(inventory))
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -2080,7 +2190,7 @@ impl<'de> Deserialize<'de> for Evidence {
                 dirty: legacy.snapshot.dirty,
                 fingerprint: legacy.snapshot.fingerprint,
                 content: legacy.snapshot.content,
-                input_inventory: None,
+                input_inventory: legacy.snapshot.input_inventory,
             },
             cases: legacy.cases,
             method: legacy.method,
@@ -2104,6 +2214,9 @@ struct LegacySnapshot {
     dirty: bool,
     fingerprint: String,
     content: Option<String>,
+    /// #203's diagnostic inventory: absent, null or valid, never authoritative.
+    #[serde(default)]
+    input_inventory: Option<InputInventory>,
 }
 
 /// Whether the file's bytes are committed at HEAD (as Git stores them), the
@@ -2371,9 +2484,16 @@ pub(super) fn record_validation_run(root: &Path, run: &ValidationRun) -> Result<
 // stripping, for t37d to keep or replace in place.
 
 /// Read a 0.5.x JSON observation into the entry model, naming the file on refusal
-/// (REQ-records-009). Honouring `snapshot.input_inventory` with #203's rule is t37d's.
+/// (REQ-records-009). A `snapshot.input_inventory` is read with #203's rule: absent or
+/// null is none, a valid one is carried as diagnostic metadata that never changes
+/// freshness, and an invalid one refuses (REQ-cli-004).
 pub(super) fn legacy_observation(path: &str, text: &str) -> Result<Evidence> {
-    serde_json::from_str(text).with_context(|| format!("{path}: not a 0.5.x observation"))
+    let evidence: Evidence =
+        serde_json::from_str(text).with_context(|| format!("{path}: not a 0.5.x observation"))?;
+    if let Some(inventory) = &evidence.snapshot.input_inventory {
+        inventory.validate(path)?;
+    }
+    Ok(evidence)
 }
 
 /// An entry's record text, named by its ID, within the entry bound; the migration's
