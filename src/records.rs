@@ -372,22 +372,6 @@ pub(super) fn temporary_for(root: &Path, relative: &str, target: &Path) -> Resul
     Ok(parent.join(format!(".{name}.{pid}.tmp")))
 }
 
-/// Append one line to an append-only managed log.
-#[allow(dead_code)] // removed at integration (t382): the append-only logs it wrote are gone
-pub(super) fn append_line(root: &Path, relative: &str, line: &str) -> Result<()> {
-    ensure!(
-        !line.contains('\n') && line.len() as u64 <= RECORD_LIMIT,
-        "log entries are single bounded lines"
-    );
-    let path = local_path(root, relative)?;
-    fs::create_dir_all(path.parent().context("file has no parent")?)?;
-    local_path(root, relative)?;
-    let mut file = OpenOptions::new().create(true).append(true).open(&path)?;
-    file.write_all(line.as_bytes())?;
-    file.write_all(b"\n")?;
-    Ok(())
-}
-
 pub(super) fn read_record(path: &Path) -> Result<String> {
     read_bounded_record(path, RECORD_LIMIT)
 }
@@ -1536,29 +1520,6 @@ fn cut(text: &str, limit: usize) -> String {
         end -= 1;
     }
     text[..end].to_string()
-}
-
-/// List JSON record names in a managed directory in a deterministic order.
-pub(super) fn record_names(root: &Path, directory: &str) -> Result<Vec<String>> {
-    let path = local_path(root, directory)?;
-    if !path.exists() {
-        return Ok(vec![]);
-    }
-    let mut names = vec![];
-    for entry in fs::read_dir(path)? {
-        let name = entry?
-            .file_name()
-            .to_str()
-            .context("invalid record filename")?
-            .to_string();
-        ensure!(
-            name.ends_with(".json"),
-            "unexpected file in {directory}: {name}"
-        );
-        names.push(name);
-    }
-    names.sort();
-    Ok(names)
 }
 
 /// The process ID the project's writer lock file records (REQ-cli-040): the writer

@@ -49,9 +49,6 @@ or redacting every value before it is written.
 | `valid_observation_id` | Accepts the exact new OBS form with a complete 24-digit lowercase hex suffix. |
 | `valid_validation_id` | Accepts the exact new VAL form with a complete 24-digit lowercase hex suffix. |
 | `valid_snapshot_id` | Accepts the exact new SNAP form with a complete 24-digit lowercase hex suffix. |
-| `observation` | Allocates one OBS candidate from one random 96-bit draw. |
-| `validation` | Allocates one VAL candidate from one random 96-bit draw. |
-| `snapshot` | Allocates one SNAP candidate from one random 96-bit draw. |
 | `require_explicit_observation_id` | Applies new-form explicit observation validation and the old-style omit-ID remedy. |
 | `with_random_results` | Test-only random-source seam; no production override. |
 | `random_draws` | Test-only draw-count seam used to prove there is no retry. |
