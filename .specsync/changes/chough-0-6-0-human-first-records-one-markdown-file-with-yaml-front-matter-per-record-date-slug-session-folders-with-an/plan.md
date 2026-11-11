@@ -68,19 +68,30 @@ One agent owns the live session and every Chough record write; others report wit
 
 ## Migration plan
 
-1. Write `chough migrate` against fixtures first: a legacy single checkpoint with
-   adopted history, open and archived sessions, rolled sessions in the vault, bugs
-   of each ID form, inbox entries, external and committed artifacts, and old proof.
-   Each fixture asserts the plan, the written tree, the receipt, aliases, removed IDs
-   reading `removed`, idempotence and interrupted-apply recovery.
+1. Write `chough migrate` against fixtures first: one captured from a project at
+   every released version, 0.1.0 to 0.5.0, built from its release tag (#213), and
+   synthetic ones for a legacy single checkpoint with adopted history, open and
+   archived sessions, rolled sessions in the vault (the adopter among them), bugs of
+   each ID form, inbox entries, external and committed artifacts, home-folder paths
+   in records, and old proof. Each fixture asserts the plan and its digest, the
+   written tree, the receipt, aliases, removed IDs reading `removed`, redactions,
+   idempotence, interrupted-apply recovery, and the restore-and-refuse path when an
+   archive would read invalid.
 2. Run it read-only on a fresh clone of this repository at the branch head and
-   review the plan: counts per kind, every redaction, every removal.
+   review the plan: counts per kind, every redaction (the audit counted 96 committed
+   files under `.chough/` and `knowledge/` holding home-folder paths), every removal,
+   the 60 rolled-up sessions coming back as archived stories, and the plan digest.
 3. Apply in a throwaway clone, then check: every open and archived session readable;
    every timeline entry from the selected lineage present once, in order; every bug
    alias resolving; `chough timing` over the result; `chough doctor` clean;
    `fledge lanes run verify` green; the receipt's before digests equal to the files at
    the previous commit.
-4. Apply on the branch as its own commit (step 14), so the diff is the migration. The
+4. Apply on the branch as its own commit (step 14) with `chough migrate --apply
+   <digest>` from that preview, so the diff is the migration and the archive check
+   runs against all 169 archives (at most 8 reads at once). Git history is not
+   rewritten (Leif: "No, clean from 0.6.0 on"): it keeps the old paths, which are
+   the user name and folder layout only, since a secret-pattern scan of origin/main
+   found no keys or tokens; the receipt says so. The
    76 bug records become Markdown bugs named by date and slug, each keeping its
    `BUG-NNNN` or `BUG-<slug>-<hex>` ID as an alias.
 
@@ -91,7 +102,10 @@ One agent owns the live session and every Chough record write; others report wit
 2. When steps 1 to 13 pass, build 0.6.0 and run `chough migrate`, then
    `chough migrate --apply`, and commit the result with the receipt.
 3. From that commit on, drive this session with the 0.6.0 build only: test, accept
-   and done in the new format. The move into done must write this change's story,
+   and done in the new format. Close the bug records already fixed elsewhere with
+   their links (#148 via #157, BUG-0001, the history anchor via #142, the trace
+   flake via #172) and BUG-0002 and BUG-0003 as `fixed-upstream` (spec-sync #823 and
+   #824, re-checked by t37b on 46f55652). The move into done must write this change's story,
    its journal post and feed entry, keep every earlier archived story byte-identical
    (the #165 path for real), and leave a clean `chough doctor`.
 4. Check the fail-closed path for real: the 0.6.0 build on an unmigrated clone of
@@ -100,7 +114,28 @@ One agent owns the live session and every Chough record write; others report wit
 5. Run `fledge lanes run verify` on macOS and in the Linux images
    (`fledge run linux-verify`), and let CI's archive authentication run over the
    migrated tree; record each as evidence.
-6. Touch no other repository.
+6. After the move into done, commit the story, post and index, then run
+   `chough doctor --fix` to remove the committed session folder and commit that, as
+   the skill's closeout says (a session only ever closes itself; nothing else
+   archives it, Q3).
+7. Touch no other repository.
+
+## Release gate
+
+Leif (2026-11-10): "yes.. but we dog food and fix all bugs before tagging and
+releasing". So:
+
+- No 0.6.0 tag and no release until the chough-repository dogfood above is complete.
+- Every bug found in dogfood or testing is fixed with its regression case before the
+  tag, and `chough bug list` shows zero open Chough bugs at tag time.
+- A flake that never reproduces cannot be closed as fixed. If #132 or the lock or
+  budget flakes are still open after their diagnostics and stress runs, that is
+  brought to Leif before tagging, never closed to clear the gate.
+- The release itself, the tag and crates.io publication, still waits for Leif's
+  one-line go (LIFE-25).
+- After 0.6.0 ships: refresh the shared skill copy the hc agents load with
+  `chough skill update` (the audit found it still reads session.json), then other
+  repositories, only at 95 percent confidence or better.
 
 ## Risks
 
@@ -128,8 +163,11 @@ One agent owns the live session and every Chough record write; others report wit
 - **Same-day name clash across branches.** Two branches that create the same
   date and slug in the same folder conflict on merge. It needs the same title on the
   same day in the same session; the merge shows it plainly.
-- **Gate decision.** If Leif chooses option B for #237, REQ-cli-030 is rewritten
-  before approval; nothing else changes.
+- **Gate decision.** Planned as Leif's recommended default (a pending decision
+  holds only its own step); if he overrides at scope approval, REQ-cli-030 is
+  rewritten before approval and nothing else changes.
+- **The zero-open-bugs gate and flakes.** A flake that will not reproduce cannot be
+  verified; the release gate sends that case to Leif rather than closing it.
 - **Pinned digests.** `tests/spec_split.rs` and the skill release manifest pin
   bodies and bundle bytes; both are updated naming this change.
 
@@ -148,7 +186,7 @@ only open one); Leif's decisions listed in context.md.
 
 ### Requirements
 
-Of 71 existing requirements, 32 are modified, 11 removed and 28 unchanged; the records module adds REQ-records-001 to 013 and history adds REQ-history-015. An unchanged requirement that says transition, observation or checkpoint reads, in 0.6.0, a timeline entry, an evidence entry and the session front matter.
+Of 71 existing requirements, 35 are modified, 11 removed and 25 unchanged; the records module adds REQ-records-001 to 013 and history adds REQ-history-015. An unchanged requirement that says transition, observation or checkpoint reads, in 0.6.0, a timeline entry, an evidence entry and the session front matter.
 
 | Requirement | Subject | 0.6.0 |
 |---|---|---|
@@ -173,19 +211,19 @@ Of 71 existing requirements, 32 are modified, 11 removed and 28 unchanged; the r
 | REQ-cli-021 | Focused next action | modified |
 | REQ-cli-022 | Approved-delta guard | modified |
 | REQ-cli-023 | Slug and random record identities | modified |
-| REQ-cli-029 | Agent-operated native workflow | unchanged |
+| REQ-cli-029 | Agent-operated native workflow | modified |
 | REQ-cli-030 | Open human gates hold forward moves | modified |
 | REQ-cli-031 | New-project native setup hint | unchanged |
 | REQ-cli-032 | Checkpoint capacity | modified |
 | REQ-cli-033 | Post-archive summary | removed; carried by REQ-history-006, REQ-records-012 |
-| REQ-cli-034 | Spec files have no size bound | unchanged |
+| REQ-cli-034 | Spec files have no size bound | modified |
 | REQ-cli-036 | Backfilled stage moves | unchanged |
 | REQ-cli-037 | Active session checkpoint | modified |
 | REQ-cli-038 | Native verification that runs no project command | unchanged |
 | REQ-cli-039 | Native check result in next | unchanged |
 | REQ-cli-040 | Serialized checkpoint writers | modified |
 | REQ-cli-041 | Trimming at done | removed; carried by REQ-history-006, REQ-records-011 |
-| REQ-cli-042 | Native sources are read at full size | unchanged |
+| REQ-cli-042 | Native sources are read at full size | modified |
 | REQ-cli-043 | Knowledge directory built and kept current | modified |
 | REQ-cli-044 | Knowledge vault | modified |
 | REQ-cli-045 | Closed-cycle references at done | removed; carried by REQ-history-006 |
@@ -226,31 +264,40 @@ Of 71 existing requirements, 32 are modified, 11 removed and 28 unchanged; the r
 
 ### Retired criteria
 
-Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 to KNOW-35: the vault links, never copies or moves; Chough 0.6.0 removes the behaviour"`, in the same commit that removes the requirements and cases below.
+Leif approved retiring the old cleanup and vault-copy rules ("Yes, make it match", 2026-11-10). #212 marks them superseded; this change retires each with `hi retire <ID> "Superseded by KNOW-30 to KNOW-35: the vault links, never copies or moves; Chough 0.6.0 removes the behaviour"` in the commit that removes the requirements and cases behind it. The list below is the plan's reading of that approval and is checked against #212's merged text before build; KNOW-24 is reworded rather than retired: every kind of file has a stated rule, finished stories stay for good, working files go when the work finishes, and machine-only files are never committed (REQ-records-002).
 
-| Criterion | Requirements | Cases bound to it or its requirements (each disposition is in the case map) | Safeguard kept |
+| Criterion | Requirements tracing it | Cases bound to it or those requirements (each disposition is in the case map) | Safeguard kept |
 |---|---|---|---|
-| KNOW-2 | REQ-cli-015 (rewritten, no longer traces KNOW-2) | 7: TC-cli-0035, TC-cli-0036, TC-cli-0132, TC-cli-knowledge-archive-entries, TC-cli-knowledge-entries-bounded, TC-cli-librarian-default-on-knowledge, TC-cli-slug-snapshot-allocation | none; the vault links .specsync/archive/ (KNOW-30, KNOW-31) |
-| KNOW-7 | REQ-cli-033 (removed), REQ-cli-041 (removed) | 19: TC-cli-archive-summary-apply, TC-cli-archive-summary-changed-during-check, TC-cli-archive-summary-fails-closed, TC-cli-archive-summary-no-clobber-restore, TC-cli-archive-summary-preview, TC-cli-archive-summary-protection-before-each-removal, TC-cli-archive-summary-protection-during-check, TC-cli-archive-summary-stale-holds, TC-cli-archive-summary-unfiltered-head-compare, TC-cli-at-most-eight-validity-reads, TC-cli-done-trims-cold-proof-by-default, TC-cli-open-change-keeps-proof-at-done, TC-cli-recorded-retention-off-not-trimmed-at-done, TC-cli-reduce-attributed-by-cycle-time, TC-cli-reduce-parallel-validity, TC-cli-reduce-shared-artifact-released, TC-cli-reduce-superseded-runs, TC-cli-retention-manual-opts-out-at-done, TC-cli-validity-readers-on-any-host | only committed bytes ever leave the tree: REQ-records-012 |
-| KNOW-18 | REQ-cli-046 (removed), REQ-cli-048 (removed) | 20: TC-cli-closed-bug-fixture-moves-to-vault, TC-cli-closed-bug-key-items-move-to-vault, TC-cli-failed-copy-keeps-other-writer, TC-cli-open-bug-keeps-links, TC-cli-rollback-keeps-changed-vault-copies, TC-cli-vault-attachment-path-bound, TC-cli-vault-attachment-written-mid-apply, TC-cli-vault-checkpoint-folder-reference, TC-cli-vault-closed-bug-releases-fixture, TC-cli-vault-identical-attachment-survives-restore, TC-cli-vault-key-items-move, TC-cli-vault-long-archive-short-folder, TC-cli-vault-loose-artifacts-trimmed, TC-cli-vault-loose-file-protected-mid-apply, TC-cli-vault-loose-group-gains-released-file, TC-cli-vault-mixed-age-folder-stays, TC-cli-vault-moved-key-item-mode, TC-cli-vault-occupied-attachment-kept, TC-cli-vault-open-bug-folder-fixture, TC-cli-vault-restore-keeps-mode | working files leave only once committed: REQ-records-012 |
-| KNOW-19 | REQ-cli-046 (removed), REQ-cli-048 (removed) | 20: TC-cli-closed-bug-fixture-moves-to-vault, TC-cli-closed-bug-key-items-move-to-vault, TC-cli-failed-copy-keeps-other-writer, TC-cli-open-bug-keeps-links, TC-cli-rollback-keeps-changed-vault-copies, TC-cli-vault-attachment-path-bound, TC-cli-vault-attachment-written-mid-apply, TC-cli-vault-checkpoint-folder-reference, TC-cli-vault-closed-bug-releases-fixture, TC-cli-vault-identical-attachment-survives-restore, TC-cli-vault-key-items-move, TC-cli-vault-long-archive-short-folder, TC-cli-vault-loose-artifacts-trimmed, TC-cli-vault-loose-file-protected-mid-apply, TC-cli-vault-loose-group-gains-released-file, TC-cli-vault-mixed-age-folder-stays, TC-cli-vault-moved-key-item-mode, TC-cli-vault-occupied-attachment-kept, TC-cli-vault-open-bug-folder-fixture, TC-cli-vault-restore-keeps-mode | key screenshots beside the story: REQ-records-013 (KNOW-35) |
-| KNOW-22 | REQ-cli-048 (removed) | 3: TC-cli-closed-bug-fixture-moves-to-vault, TC-cli-closed-bug-key-items-move-to-vault, TC-cli-open-bug-keeps-links | a closed bug keeps its record and receipts: REQ-cli-012 |
-| KNOW-23 | REQ-cli-049 (removed) | 4: TC-cli-ledger-keeps-newest-and-moves-the-rest, TC-cli-moved-ledger-entries-are-read, TC-cli-rotation-leftover-read-once, TC-history-session-archives-itself-at-done | none; the ledger is removed with retention |
-| KNOW-25 | none traces it | 0:  | the index links every lesson, per module and cross-project: REQ-cli-043 |
-| KNOW-28 | none traces it | 1: TC-cli-knowledge-index-bounded-timeline | the journal and feed are the timeline of archived changes: REQ-records-011, REQ-cli-043 |
-| KNOW-29 | REQ-cli-051 (removed), REQ-history-011 (removed) | 4: TC-cli-done-fresh-vault-session-links, TC-cli-session-notes-union, TC-history-keep-five-archived-sessions, TC-history-roll-up-keeps-the-anchor-holder | every archived story stays (KNOW-34): REQ-records-012, REQ-history-006 |
+| KNOW-2 | REQ-cli-015 (rewritten without it) | 7: TC-cli-0035, TC-cli-0036, TC-cli-0132, TC-cli-knowledge-archive-entries, TC-cli-knowledge-entries-bounded, TC-cli-librarian-default-on-knowledge, TC-cli-slug-snapshot-allocation | none; the vault links .specsync/archive/ |
+| KNOW-7 | REQ-cli-033 (removed), REQ-cli-041 (removed) | 19: TC-cli-archive-summary-apply, TC-cli-archive-summary-changed-during-check, TC-cli-archive-summary-fails-closed, TC-cli-archive-summary-no-clobber-restore, TC-cli-archive-summary-preview, TC-cli-archive-summary-protection-before-each-removal, TC-cli-archive-summary-protection-during-check, TC-cli-archive-summary-stale-holds, TC-cli-archive-summary-unfiltered-head-compare, TC-cli-at-most-eight-validity-reads, TC-cli-done-trims-cold-proof-by-default, TC-cli-open-change-keeps-proof-at-done, TC-cli-recorded-retention-off-not-trimmed-at-done, TC-cli-reduce-attributed-by-cycle-time, TC-cli-reduce-parallel-validity, TC-cli-reduce-shared-artifact-released, TC-cli-reduce-superseded-runs, TC-cli-retention-manual-opts-out-at-done, TC-cli-validity-readers-on-any-host | only committed bytes ever leave the tree (REQ-records-012) |
+| KNOW-8 | REQ-cli-033 (removed) | 15: TC-cli-archive-summary-apply, TC-cli-archive-summary-changed-during-check, TC-cli-archive-summary-fails-closed, TC-cli-archive-summary-no-clobber-restore, TC-cli-archive-summary-preview, TC-cli-archive-summary-protection-before-each-removal, TC-cli-archive-summary-protection-during-check, TC-cli-archive-summary-stale-holds, TC-cli-archive-summary-unfiltered-head-compare, TC-cli-at-most-eight-validity-reads, TC-cli-reduce-attributed-by-cycle-time, TC-cli-reduce-parallel-validity, TC-cli-reduce-shared-artifact-released, TC-cli-reduce-superseded-runs, TC-cli-validity-readers-on-any-host | none; no raw proof is committed (LIFE-19) |
+| KNOW-9 | REQ-cli-033 (removed), REQ-cli-046 (removed) | 32: TC-cli-archive-summary-apply, TC-cli-archive-summary-changed-during-check, TC-cli-archive-summary-fails-closed, TC-cli-archive-summary-no-clobber-restore, TC-cli-archive-summary-preview, TC-cli-archive-summary-protection-before-each-removal, TC-cli-archive-summary-protection-during-check, TC-cli-archive-summary-stale-holds, TC-cli-archive-summary-unfiltered-head-compare, TC-cli-at-most-eight-validity-reads, TC-cli-failed-copy-keeps-other-writer, TC-cli-reduce-attributed-by-cycle-time, TC-cli-reduce-parallel-validity, TC-cli-reduce-shared-artifact-released, TC-cli-reduce-superseded-runs, TC-cli-rollback-keeps-changed-vault-copies, TC-cli-validity-readers-on-any-host, TC-cli-vault-attachment-path-bound, TC-cli-vault-attachment-written-mid-apply, TC-cli-vault-checkpoint-folder-reference, TC-cli-vault-closed-bug-releases-fixture, TC-cli-vault-identical-attachment-survives-restore, TC-cli-vault-key-items-move, TC-cli-vault-long-archive-short-folder, TC-cli-vault-loose-artifacts-trimmed, TC-cli-vault-loose-file-protected-mid-apply, TC-cli-vault-loose-group-gains-released-file, TC-cli-vault-mixed-age-folder-stays, TC-cli-vault-moved-key-item-mode, TC-cli-vault-occupied-attachment-kept, TC-cli-vault-open-bug-folder-fixture, TC-cli-vault-restore-keeps-mode | the migration receipt lists every removed file with its digest (REQ-records-009) |
+| KNOW-10 | REQ-cli-033 (removed), REQ-cli-046 (removed) | 32: TC-cli-archive-summary-apply, TC-cli-archive-summary-changed-during-check, TC-cli-archive-summary-fails-closed, TC-cli-archive-summary-no-clobber-restore, TC-cli-archive-summary-preview, TC-cli-archive-summary-protection-before-each-removal, TC-cli-archive-summary-protection-during-check, TC-cli-archive-summary-stale-holds, TC-cli-archive-summary-unfiltered-head-compare, TC-cli-at-most-eight-validity-reads, TC-cli-failed-copy-keeps-other-writer, TC-cli-reduce-attributed-by-cycle-time, TC-cli-reduce-parallel-validity, TC-cli-reduce-shared-artifact-released, TC-cli-reduce-superseded-runs, TC-cli-rollback-keeps-changed-vault-copies, TC-cli-validity-readers-on-any-host, TC-cli-vault-attachment-path-bound, TC-cli-vault-attachment-written-mid-apply, TC-cli-vault-checkpoint-folder-reference, TC-cli-vault-closed-bug-releases-fixture, TC-cli-vault-identical-attachment-survives-restore, TC-cli-vault-key-items-move, TC-cli-vault-long-archive-short-folder, TC-cli-vault-loose-artifacts-trimmed, TC-cli-vault-loose-file-protected-mid-apply, TC-cli-vault-loose-group-gains-released-file, TC-cli-vault-mixed-age-folder-stays, TC-cli-vault-moved-key-item-mode, TC-cli-vault-occupied-attachment-kept, TC-cli-vault-open-bug-folder-fixture, TC-cli-vault-restore-keeps-mode | migration never weakens a SpecSync archive (REQ-records-009) |
+| KNOW-11 | REQ-cli-033 (removed), REQ-cli-041 (removed) | 19: TC-cli-archive-summary-apply, TC-cli-archive-summary-changed-during-check, TC-cli-archive-summary-fails-closed, TC-cli-archive-summary-no-clobber-restore, TC-cli-archive-summary-preview, TC-cli-archive-summary-protection-before-each-removal, TC-cli-archive-summary-protection-during-check, TC-cli-archive-summary-stale-holds, TC-cli-archive-summary-unfiltered-head-compare, TC-cli-at-most-eight-validity-reads, TC-cli-done-trims-cold-proof-by-default, TC-cli-open-change-keeps-proof-at-done, TC-cli-recorded-retention-off-not-trimmed-at-done, TC-cli-reduce-attributed-by-cycle-time, TC-cli-reduce-parallel-validity, TC-cli-reduce-shared-artifact-released, TC-cli-reduce-superseded-runs, TC-cli-retention-manual-opts-out-at-done, TC-cli-validity-readers-on-any-host | migration previews first and applies only the previewed plan (REQ-records-009) |
+| KNOW-13 | REQ-cli-041 (removed), REQ-cli-043 (rewritten without it), REQ-cli-045 (removed), REQ-cli-048 (removed), REQ-cli-049 (removed), REQ-history-011 (removed) | 27: TC-cli-archived-session-refs-protect-nothing, TC-cli-closed-bug-fixture-moves-to-vault, TC-cli-closed-bug-key-items-move-to-vault, TC-cli-done-drops-file-and-design-refs, TC-cli-done-refreshes-knowledge-after-trim, TC-cli-done-refreshes-knowledge-untrimmed, TC-cli-done-self-archive-vault-current, TC-cli-done-trims-cold-proof-by-default, TC-cli-empty-change-dir-not-open, TC-cli-init-builds-knowledge, TC-cli-init-preserves-knowledge, TC-cli-init-unbounded-knowledge-refused, TC-cli-ledger-keeps-newest-and-moves-the-rest, TC-cli-librarian-off-no-knowledge-at-done, TC-cli-librarian-off-references-skipped, TC-cli-moved-ledger-entries-are-read, TC-cli-no-reset-drops-no-observation, TC-cli-open-bug-keeps-links, TC-cli-open-change-keeps-proof-at-done, TC-cli-recorded-retention-off-not-trimmed-at-done, TC-cli-reduce-done-drops-closed-cycle-refs, TC-cli-reduce-unreadable-reference-kept, TC-cli-retention-manual-opts-out-at-done, TC-cli-rotation-leftover-read-once, TC-history-keep-five-archived-sessions, TC-history-roll-up-keeps-the-anchor-holder, TC-history-session-archives-itself-at-done | none; nothing is trimmed |
+| KNOW-16 | REQ-cli-045 (removed) | 7: TC-cli-archived-session-refs-protect-nothing, TC-cli-done-drops-file-and-design-refs, TC-cli-librarian-off-references-skipped, TC-cli-no-reset-drops-no-observation, TC-cli-reduce-done-drops-closed-cycle-refs, TC-cli-reduce-unreadable-reference-kept, TC-cli-vault-checkpoint-folder-reference | none; references end with their session |
+| KNOW-17 | REQ-cli-033 (removed) | 15: TC-cli-archive-summary-apply, TC-cli-archive-summary-changed-during-check, TC-cli-archive-summary-fails-closed, TC-cli-archive-summary-no-clobber-restore, TC-cli-archive-summary-preview, TC-cli-archive-summary-protection-before-each-removal, TC-cli-archive-summary-protection-during-check, TC-cli-archive-summary-stale-holds, TC-cli-archive-summary-unfiltered-head-compare, TC-cli-at-most-eight-validity-reads, TC-cli-reduce-attributed-by-cycle-time, TC-cli-reduce-parallel-validity, TC-cli-reduce-shared-artifact-released, TC-cli-reduce-superseded-runs, TC-cli-validity-readers-on-any-host | none |
+| KNOW-18 | REQ-cli-046 (removed), REQ-cli-048 (removed) | 20: TC-cli-closed-bug-fixture-moves-to-vault, TC-cli-closed-bug-key-items-move-to-vault, TC-cli-failed-copy-keeps-other-writer, TC-cli-open-bug-keeps-links, TC-cli-rollback-keeps-changed-vault-copies, TC-cli-vault-attachment-path-bound, TC-cli-vault-attachment-written-mid-apply, TC-cli-vault-checkpoint-folder-reference, TC-cli-vault-closed-bug-releases-fixture, TC-cli-vault-identical-attachment-survives-restore, TC-cli-vault-key-items-move, TC-cli-vault-long-archive-short-folder, TC-cli-vault-loose-artifacts-trimmed, TC-cli-vault-loose-file-protected-mid-apply, TC-cli-vault-loose-group-gains-released-file, TC-cli-vault-mixed-age-folder-stays, TC-cli-vault-moved-key-item-mode, TC-cli-vault-occupied-attachment-kept, TC-cli-vault-open-bug-folder-fixture, TC-cli-vault-restore-keeps-mode | working files leave only once committed (REQ-records-012) |
+| KNOW-19 | REQ-cli-046 (removed), REQ-cli-048 (removed) | 20: TC-cli-closed-bug-fixture-moves-to-vault, TC-cli-closed-bug-key-items-move-to-vault, TC-cli-failed-copy-keeps-other-writer, TC-cli-open-bug-keeps-links, TC-cli-rollback-keeps-changed-vault-copies, TC-cli-vault-attachment-path-bound, TC-cli-vault-attachment-written-mid-apply, TC-cli-vault-checkpoint-folder-reference, TC-cli-vault-closed-bug-releases-fixture, TC-cli-vault-identical-attachment-survives-restore, TC-cli-vault-key-items-move, TC-cli-vault-long-archive-short-folder, TC-cli-vault-loose-artifacts-trimmed, TC-cli-vault-loose-file-protected-mid-apply, TC-cli-vault-loose-group-gains-released-file, TC-cli-vault-mixed-age-folder-stays, TC-cli-vault-moved-key-item-mode, TC-cli-vault-occupied-attachment-kept, TC-cli-vault-open-bug-folder-fixture, TC-cli-vault-restore-keeps-mode | key screenshots beside the story (REQ-records-013) |
+| KNOW-20 | REQ-cli-033 (removed), REQ-cli-046 (removed) | 32: TC-cli-archive-summary-apply, TC-cli-archive-summary-changed-during-check, TC-cli-archive-summary-fails-closed, TC-cli-archive-summary-no-clobber-restore, TC-cli-archive-summary-preview, TC-cli-archive-summary-protection-before-each-removal, TC-cli-archive-summary-protection-during-check, TC-cli-archive-summary-stale-holds, TC-cli-archive-summary-unfiltered-head-compare, TC-cli-at-most-eight-validity-reads, TC-cli-failed-copy-keeps-other-writer, TC-cli-reduce-attributed-by-cycle-time, TC-cli-reduce-parallel-validity, TC-cli-reduce-shared-artifact-released, TC-cli-reduce-superseded-runs, TC-cli-rollback-keeps-changed-vault-copies, TC-cli-validity-readers-on-any-host, TC-cli-vault-attachment-path-bound, TC-cli-vault-attachment-written-mid-apply, TC-cli-vault-checkpoint-folder-reference, TC-cli-vault-closed-bug-releases-fixture, TC-cli-vault-identical-attachment-survives-restore, TC-cli-vault-key-items-move, TC-cli-vault-long-archive-short-folder, TC-cli-vault-loose-artifacts-trimmed, TC-cli-vault-loose-file-protected-mid-apply, TC-cli-vault-loose-group-gains-released-file, TC-cli-vault-mixed-age-folder-stays, TC-cli-vault-moved-key-item-mode, TC-cli-vault-occupied-attachment-kept, TC-cli-vault-open-bug-folder-fixture, TC-cli-vault-restore-keeps-mode | none |
+| KNOW-21 | REQ-cli-045 (removed) | 6: TC-cli-archived-session-refs-protect-nothing, TC-cli-done-drops-file-and-design-refs, TC-cli-librarian-off-references-skipped, TC-cli-no-reset-drops-no-observation, TC-cli-reduce-done-drops-closed-cycle-refs, TC-cli-reduce-unreadable-reference-kept | none |
+| KNOW-22 | REQ-cli-048 (removed) | 3: TC-cli-closed-bug-fixture-moves-to-vault, TC-cli-closed-bug-key-items-move-to-vault, TC-cli-open-bug-keeps-links | a closed bug keeps its record and receipts (REQ-cli-012) |
+| KNOW-23 | REQ-cli-049 (removed) | 4: TC-cli-ledger-keeps-newest-and-moves-the-rest, TC-cli-moved-ledger-entries-are-read, TC-cli-rotation-leftover-read-once, TC-history-session-archives-itself-at-done | none; no ledger |
+| KNOW-25 | none | 0 | the index links every lesson (REQ-cli-043) |
+| KNOW-26 | none | 0 | the archived story leads with goal, outcome and decisions (REQ-history-006) |
+| KNOW-27 | none | 0 | the bug file is the write-up (REQ-cli-012) |
+| KNOW-28 | none | 1: TC-cli-knowledge-index-bounded-timeline | the journal and feed are the timeline (REQ-records-011, REQ-cli-043) |
+| KNOW-29 | REQ-cli-051 (removed), REQ-history-011 (removed) | 4: TC-cli-done-fresh-vault-session-links, TC-cli-session-notes-union, TC-history-keep-five-archived-sessions, TC-history-roll-up-keeps-the-anchor-holder | every archived story stays (KNOW-34, REQ-records-012) |
 
 ### Cases
 
-283 of the repository's 426 cases are affected: 109 removed, 4 re-linked, 25 rewritten and 145 ported. A ported test keeps its function name, so its case binding does not change; a removed case goes in the same commit as the requirement or behaviour it proved, and the commit names it. Every other case links only unchanged requirements and keeps its definition.
+304 of the repository's 426 cases are affected: 102 removed, 3 re-linked, 71 rewritten and 128 ported. A ported test keeps its function name, so its case binding does not change; a removed case goes in the same commit as the requirement or behaviour it proved, and the commit names it. Every other case links only unchanged requirements and keeps its definition.
 
-#### Removed with the behaviour they prove (109)
+#### Removed with the behaviour they prove (102)
 
 | Case | File | Links | Why |
 |---|---|---|---|
 | TC-cli-rollback-keeps-changed-vault-copies | cli.attachment-rollback | cli-046, KNOW-19 | its requirement is removed |
-| TC-cli-0016 | cli | cli-007 | schema 1 migration; replaced by TC-records-migrate-from-0-5 |
-| TC-cli-0035 | cli | cli-015 | library snapshot is removed; replaced by TC-cli-librarian-links-only |
 | TC-cli-0036 | cli | cli-015 | library snapshot is removed |
 | TC-cli-slug-snapshot-allocation | cli | cli-015, cli-023 | library snapshot is removed |
 | TC-cli-checkpoint-merge-enforces-the-raised-bounds | cli | cli-007, cli-032 | checkpoint --merge is removed |
@@ -265,7 +312,6 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-cli-archive-summary-protection-before-each-removal | cli | cli-033 | its requirement is removed |
 | TC-cli-archive-summary-no-clobber-restore | cli | cli-033, KNOW-7 | its requirement is removed |
 | TC-cli-archive-summary-stale-holds | cli | cli-033 | its requirement is removed |
-| TC-cli-adopt-race-writers-save-or-refuse | cli | cli-040 | session adopt and legacy writers are removed |
 | TC-cli-done-trims-cold-proof-by-default | cli | cli-041, KNOW-7 | its requirement is removed |
 | TC-cli-retention-manual-opts-out-at-done | cli | cli-041 | its requirement is removed |
 | TC-cli-open-change-keeps-proof-at-done | cli | cli-041 | its requirement is removed |
@@ -274,12 +320,9 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-cli-vault-archive-note-properties | cli | cli-044 | no archived-change notes (KNOW-2 retired) |
 | TC-cli-vault-module-notes | cli | cli-044 | no module notes (KNOW-25 retired) |
 | TC-cli-vault-intent-notes | cli | cli-044 | no intent notes (KNOW-31) |
-| TC-cli-vault-rules-note | cli | cli-044 | no rules note (KNOW-31) |
 | TC-cli-vault-sub-criterion-ids | cli | cli-044 | Trace reading served only intent and archive notes |
 | TC-cli-vault-trace-and-family-forms | cli | cli-044 | Trace reading served only intent and archive notes |
 | TC-cli-vault-inline-trace-crlf-comments | cli | cli-044 | Trace reading served only intent and archive notes |
-| TC-cli-vault-readme-upgrade | cli | cli-044 | knowledge/README.md is no longer generated |
-| TC-cli-vault-crlf-readme-unmatched-backtick | cli | cli-044 | knowledge/README.md is no longer generated |
 | TC-cli-reduce-superseded-runs | cli | cli-033 | its requirement is removed |
 | TC-cli-reduce-attributed-by-cycle-time | cli | cli-033 | its requirement is removed |
 | TC-cli-reduce-done-drops-closed-cycle-refs | cli | cli-045 | its requirement is removed |
@@ -306,8 +349,8 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-cli-open-bug-keeps-links | cli.closed-bugs-release-proof | cli-048, KNOW-22 | its requirement is removed |
 | TC-cli-done-drops-file-and-design-refs | cli.closed-cycle-file-refs | cli-045 | its requirement is removed |
 | TC-cli-archived-session-refs-protect-nothing | cli.closed-cycle-file-refs | cli-045 | its requirement is removed |
-| TC-cli-delivery-kinds-kept-dry-run-not | cli.delivery-kinds | cli-014 | replaced by TC-cli-delivery-kinds-as-receipts |
 | TC-cli-done-fresh-vault-session-links | cli.done-vault-current | cli-051, KNOW-29 | its requirement is removed |
+| TC-cli-done-self-archive-vault-current | cli.done-vault-current | cli-043 | its file goes with the roll-up (audit); the check right after done is in TC-cli-index-links-every-lesson |
 | TC-cli-knowledge-index-bounded-timeline | cli.knowledge-index-bound | cli-044, KNOW-28 | KNOW-28 retired; the journal is the timeline, TC-records-journal-and-feed |
 | TC-cli-ledger-keeps-newest-and-moves-the-rest | cli.ledger-rotation | cli-049, KNOW-23 | its requirement is removed |
 | TC-cli-moved-ledger-entries-are-read | cli.ledger-rotation | cli-049, KNOW-23 | its requirement is removed |
@@ -317,6 +360,7 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-cli-session-notes-union | cli.session-notes | cli-051, KNOW-29 | its requirement is removed |
 | TC-cli-advance-to-single-checkpoint | cli.stage-advance-to | cli-052 | the single-checkpoint mode is removed |
 | TC-cli-failed-copy-keeps-other-writer | cli.staged-vault-copies | cli-046, KNOW-19 | its requirement is removed |
+| TC-cli-union-only-generated-notes | cli.union-generated-notes | cli-047 | generated notes and union merges go (audit); TC-cli-markdown-bug-merge covers the generated-file driver |
 | TC-cli-validity-readers-on-any-host | cli.validity-reader-ceiling | cli-033 | its requirement is removed |
 | TC-cli-at-most-eight-validity-reads | cli.validity-reader-ceiling | cli-033 | its requirement is removed |
 | TC-history-roll-up-keeps-the-anchor-holder | history.anchor-holder-stays | history-011, KNOW-29 | its requirement is removed |
@@ -330,6 +374,7 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-history-0058 | history | history-001 | its requirement is removed |
 | TC-history-0059 | history | history-001 | its requirement is removed |
 | TC-history-0060 | history | history-001 | its requirement is removed |
+| TC-history-0061 | history | history-001 | retention labels go with REQ-history-001 (audit) |
 | TC-history-adoption | history | history-002 | history adopt is removed |
 | TC-history-branches | history | history-002 | no cursors; replaced by TC-history-append-only-timeline |
 | TC-history-retention | history | history-003 | history prune is removed |
@@ -348,9 +393,6 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-history-direct-write-oldest-reader-named | history.direct-writes | history-013 | clause dropped: 0.6.0 is the oldest reader of every 0.6.0 record, in the CHANGELOG |
 | TC-history-summary-digest-oldest-reader-named | history.gate-lists | history-014 | clause dropped: 0.6.0 is the oldest reader of every 0.6.0 record, in the CHANGELOG |
 | TC-history-keep-five-archived-sessions | history.keep-five-sessions | history-011, KNOW-29 | its requirement is removed |
-| TC-history-missing-adopted-log-refuses | history.missing-log-113 | history-002, history-006 | legacy adoption is removed |
-| TC-history-never-adopted-log-remains-writable | history.missing-log-113 | history-002, history-006 | legacy adoption is removed |
-| TC-history-earlier-null-anchor-does-not-hide-adopter | history.missing-log-113 | history-002, history-006 | legacy adoption is removed |
 | TC-history-prune-capture-byte-authority | history.pr197-p1 | history-004 | its requirement is removed |
 | TC-history-prune-unsafe-restore-continuation | history.pr197-p1 | history-004 | its requirement is removed |
 | TC-history-prune-protection-race | history.prune-race | history-004 | its requirement is removed |
@@ -358,20 +400,21 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-history-prune-restores-earlier-sets | history.prune-race | history-004 | its requirement is removed |
 | TC-history-prune-restore-preserves-recreated-file | history.prune-race | history-004 | its requirement is removed |
 
-#### Kept, re-linked (4)
+#### Kept, re-linked (3)
 
 | Case | File | Links | Why |
 |---|---|---|---|
-| TC-history-0054 | history | history-001 | to REQ-records-009: removed records read removed, never passed (LIFE-8) |
-| TC-history-0061 | history | history-001 | to REQ-cli-012: bug show labels each observation once |
+| TC-history-0054 | history | history-001 | to REQ-records-009: a removed record reads removed, never passed (LIFE-8); the audit lists it with REQ-history-001, but LIFE-8 still applies to migrated IDs |
 | TC-history-session-use-waits-for-stage-advance | history | history-008 | to REQ-cli-040: session use waits for a running writer |
 | TC-history-session-archives-itself-at-done | history.session-archives-at-done | cli-049, history-006 | drops REQ-cli-049; asserts the finish into one story |
 
-#### Kept, rewritten to the 0.6.0 behaviour (25)
+#### Kept, rewritten to the 0.6.0 behaviour (71)
 
 | Case | File | Links | Why |
 |---|---|---|---|
 | TC-cli-0015 | cli | cli-007 | init --objective writes the first session folder |
+| TC-cli-0016 | cli | cli-007 | explicit migration now means 0.5.x to 0.6.0 (audit) |
+| TC-cli-0035 | cli | cli-015 | drop the snapshot half; the index still lists open bugs (audit) |
 | TC-cli-0063 | cli | cli-019 | init installs the skill and creates a session only with --objective |
 | TC-cli-0073 | cli | cli-017 | migrated receipts without a content identity keep revision-bound freshness |
 | TC-cli-0110 | cli | cli-019 | the SpecSync config comment joins the version agreement (BUG-0001) |
@@ -380,24 +423,68 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-cli-slug-validation-allocation | cli | cli-011, cli-023 | one entry per repeated validation run |
 | TC-cli-checkpoint-byte-bound-is-131072 | cli | cli-032 | the session record bound of 1 MiB |
 | TC-cli-delta-guard-refusals-name-the-agent-actor | cli | cli-022 | the remedy names the scope gate first, then the agent approval for standing authority |
+| TC-cli-adopt-race-writers-save-or-refuse | cli | cli-040 | legacy adoption becomes part of migrate (audit) |
+| TC-cli-folded-inbox-question-in-next | cli | cli-021 | the inbox lives in agent/ (audit) |
+| TC-cli-archived-finalization-over-record-bound | cli | cli-042 | re-pointed at the finished-session reader (audit, REQ-cli-042) |
+| TC-cli-vault-front-matter-on-every-note | cli | cli-044 | over index.md, journal posts and lessons (audit) |
+| TC-cli-vault-rules-note | cli | cli-044 | its links move into index.md (audit) |
+| TC-cli-vault-links-resolve | cli | cli-044 | over the new vault (audit) |
+| TC-cli-vault-regenerates-identically | cli | cli-044 | only index.md and feed.xml (audit) |
+| TC-cli-vault-readme-upgrade | cli | cli-044 | the old README folds into index.md (audit) |
+| TC-cli-vault-crlf-readme-unmatched-backtick | cli | cli-044 | the same, for a CRLF checkout (audit) |
+| TC-cli-change-ship-closes-gate-and-moves-to-done | cli.change-ship | cli-059 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-change-ship-refusal-passes-through | cli.change-ship | cli-059 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-change-ship-checks-before-running | cli.change-ship | cli-059 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-change-ship-names-remaining-step | cli.change-ship | cli-059 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-change-ship-outlives-read-bound | cli.change-ship | cli-059 | its file is reworked for 0.6.0 (audit) |
 | TC-cli-change-walkthrough-runs-chough | cli.change-ship | cli-059 | review recorded through the human gate decision |
-| TC-cli-done-self-archive-vault-current | cli.done-vault-current | cli-043 | library index --check passes right after the finish |
+| TC-cli-checkpoint-at-the-cap | cli.checkpoint-cap | cli-032 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-full-stress-shape | cli.checkpoint-cap | cli-021 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-delivery-kinds-kept-dry-run-not | cli.delivery-kinds | cli-014 | drop moved into the vault; kinds stay as receipts (audit) |
+| TC-cli-direct-write-recorded-once | cli.direct-writes |  | its file is reworked for 0.6.0 (audit) |
+| TC-cli-chough-steps-not-flagged | cli.direct-writes |  | its file is reworked for 0.6.0 (audit) |
+| TC-cli-direct-write-first-sight | cli.direct-writes |  | its file is reworked for 0.6.0 (audit) |
+| TC-cli-direct-write-shown-not-written | cli.direct-writes |  | its file is reworked for 0.6.0 (audit) |
+| TC-cli-direct-write-before-ship | cli.direct-writes |  | its file is reworked for 0.6.0 (audit) |
+| TC-cli-documented-merge-drivers-match | cli.docs-accuracy | cli-047 | the session driver goes; bug and generated-file drivers change (audit) |
+| TC-cli-doctor-report-changes-nothing | cli.doctor |  | its file is reworked for 0.6.0 (audit) |
 | TC-cli-empty-change-dir-not-open | cli.empty-change-dirs | cli-043 | every reader of open changes skips an empty change directory (#148) |
+| TC-cli-gate-list-summaries-and-digests | cli.gate-lists | cli-061 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-gate-record-listed-gates-only | cli.gate-lists | cli-061 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-gate-record-refusals-recover | cli.gate-lists | cli-061 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-gate-verifying-closes-through-ship | cli.gate-lists | cli-059, cli-061 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-gate-record-other-session-refused | cli.gate-lists | cli-061 | its file is reworked for 0.6.0 (audit) |
 | TC-cli-one-checkpoint-store-no-aps | cli.nine-criteria-assertions | cli-007 | one store, the active session file |
 | TC-cli-bug-id-upgrade-note | cli.nine-criteria-assertions | cli-012 | the note says 0.5.x cannot read 0.6.0 records |
+| TC-cli-authority-before-approval | cli.nine-criteria-assertions | cli-029 | approval on authority given in advance names the agent and quotes the human (Q2, FLOW-24) |
+| TC-cli-manual-record-returns-observation-id | cli.observation-ids-60 | cli-011 | date and slug IDs (audit) |
+| TC-cli-evidence-add-returns-observation-id | cli.observation-ids-60 | cli-017 | date and slug IDs (audit) |
+| TC-cli-relay-closes-one-gate-with-four-values | cli.relayed-decisions | cli-050 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-relay-refusals-recover | cli.relayed-decisions | cli-050 | its file is reworked for 0.6.0 (audit) |
 | TC-cli-relay-never-touches-native | cli.relayed-decisions | cli-050 | a gate that drives nothing leaves SpecSync unchanged |
-| TC-cli-union-only-generated-notes | cli.union-generated-notes | cli-047 | only index.md and feed.xml merge by union |
+| TC-cli-relay-clear-records-none | cli.relayed-decisions | cli-030, cli-050 | its file is reworked for 0.6.0 (audit) |
+| TC-cli-advance-into-done-one-read | cli.stage-advance-to | cli-052 | no trim manifest to reuse (audit) |
+| TC-cli-supported-platforms | cli.supported-platforms | cli-019 | Windows is best-effort through WSL (audit) |
 | TC-history-bounds-pinned-exactly | history.bound-pins | history-003 | timeline entry and count bounds |
+| TC-history-inbox-bounds-pinned-exactly | history.bound-pins | history-006 | its file is reworked for 0.6.0 (audit) |
 | TC-history-bounds | history | history-003 | timeline bounds |
 | TC-history-split-keeps-requirement-wording | history | history-001, history-002, history-003, history-004 | pins updated for the removed and modified bodies, naming this change |
 | TC-history-sessions-local-holds-pointer-and-lock | history | history-007 | local/ holds the listed machine state |
 | TC-history-shelve-and-robust-sessions | history.checkpoint-cap | history-006 | shelve a session folder; no --legacy |
+| TC-history-direct-write-field-only-on-its-kind | history.direct-writes | history-013 | its file is reworked for 0.6.0 (audit) |
 | TC-history-doctor-fixes-session-debt | history.doctor | history-012 | unmigrated replaces legacy_checkpoint |
+| TC-history-finished-session-archived-without-native-read | history.finished-sessions | history-006 | listed as finished; only doctor --fix archives it (Q3) |
+| TC-history-session-close-with-reason | history.finished-sessions | history-006 | its file is reworked for 0.6.0 (audit) |
+| TC-history-switch-keeps-gated-finished-sessions-open | history.gated-switch-181 | history-006, history-012 | a switch never archives another session (Q3) |
+| TC-history-missing-adopted-log-refuses | history.missing-log-113 | history-002, history-006 | a migration precondition: a missing adopted log refuses migrate, naming it (audit) |
+| TC-history-never-adopted-log-remains-writable | history.missing-log-113 | history-002, history-006 | a migration precondition (audit) |
+| TC-history-earlier-null-anchor-does-not-hide-adopter | history.missing-log-113 | history-002, history-006 | a migration precondition (audit) |
 | TC-history-relay-invalid-payloads | history.relayed-decisions | history-010 | invalid relay fields on timeline entries |
+| TC-history-switch-archives-sessions-left-open | history.session-archives-at-done | history-006 | a switch never archives another session (Q3) |
 | TC-reporting-0086 | reporting | reporting-001 | bug fix times from entries, receipts and the bug Log; no ledger |
 | TC-reporting-split-keeps-requirement-wording | reporting | reporting-001 | pin for REQ-reporting-001 updated naming this change |
 
-#### Kept, binding ported (same assertions, new layout) (145)
+#### Kept, binding ported (same assertions, new layout) (128)
 
 | Case | File | Requirements |
 |---|---|---|
@@ -456,6 +543,8 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-cli-0131 | cli | cli-019 |
 | TC-cli-0132 | cli | cli-015 |
 | TC-cli-0133 | cli | cli-021 |
+| TC-cli-agent-native-workflow-upgrade | cli | cli-029 |
+| TC-cli-native-workflow-bundle-consistency | cli | cli-029 |
 | TC-cli-bug-add-accepts-values-that-start-with-two-hyphens | cli | cli-012 |
 | TC-cli-native-next-action-is-not-repeated-in-the-next-line | cli | cli-021 |
 | TC-cli-exercise-cleanup-handles-a-relative-tmpdir | cli | cli-011 |
@@ -463,10 +552,17 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-cli-independently-added-records-merge-cleanly | cli | cli-023 |
 | TC-cli-observation-pointer-bound-is-400 | cli | cli-032 |
 | TC-cli-librarian-default-on-knowledge | cli | cli-015 |
+| TC-cli-spec-files-read-at-any-size | cli | cli-034 |
+| TC-cli-build-reference-from-main-known-outdated | cli | cli-034 |
+| TC-cli-next-searches-large-context-md | cli | cli-034 |
 | TC-cli-writers-share-the-project-lock-across-tmpdir | cli | cli-040 |
 | TC-cli-checkpoint-lock-in-project-ignored | cli | cli-040 |
 | TC-cli-next-shows-open-questions | cli | cli-021 |
-| TC-cli-folded-inbox-question-in-next | cli | cli-021 |
+| TC-cli-hi-export-over-16-kib-validates | cli | cli-042 |
+| TC-cli-archived-change-md-over-record-bound | cli | cli-042 |
+| TC-cli-sdd-policy-over-record-bound | cli | cli-042 |
+| TC-cli-display-cut-points-to-source | cli | cli-042 |
+| TC-cli-skill-bounds-never-justify-native-edits | cli | cli-042 |
 | TC-cli-stop-reaches-setsid-descendant | cli | cli-011 |
 | TC-cli-stop-reaches-orphaned-descendant | cli | cli-011 |
 | TC-cli-stop-test-leaves-other-runs-alone | cli | cli-011 |
@@ -477,51 +573,30 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-cli-init-unbounded-knowledge-refused | cli | cli-043 |
 | TC-cli-done-refreshes-knowledge-untrimmed | cli | cli-043 |
 | TC-cli-librarian-off-no-knowledge-at-done | cli | cli-043 |
-| TC-cli-vault-front-matter-on-every-note | cli | cli-044 |
-| TC-cli-vault-links-resolve | cli | cli-044 |
-| TC-cli-vault-regenerates-identically | cli | cli-044 |
-| TC-cli-change-ship-closes-gate-and-moves-to-done | cli.change-ship | cli-059 |
-| TC-cli-change-ship-refusal-passes-through | cli.change-ship | cli-059 |
-| TC-cli-change-ship-checks-before-running | cli.change-ship | cli-059 |
-| TC-cli-change-ship-names-remaining-step | cli.change-ship | cli-059 |
-| TC-cli-change-ship-outlives-read-bound | cli.change-ship | cli-059 |
-| TC-cli-checkpoint-at-the-cap | cli.checkpoint-cap | cli-032 |
-| TC-cli-full-stress-shape | cli.checkpoint-cap | cli-021 |
 | TC-cli-every-delivery-kind-recorded-as-itself | cli.delivery-kinds | cli-014, cli-017 |
 | TC-cli-readme-helper-table-covers-help | cli.docs-accuracy | cli-019 |
 | TC-cli-readme-verify-list-matches-fledge | cli.docs-accuracy | cli-019 |
 | TC-cli-documented-flags-exist | cli.docs-accuracy | cli-019 |
 | TC-cli-doc-links-resolve | cli.docs-accuracy | cli-019 |
-| TC-cli-documented-merge-drivers-match | cli.docs-accuracy | cli-047 |
 | TC-cli-docs-name-pinned-versions | cli.docs-accuracy | cli-019 |
 | TC-cli-closeout-closes-review-gate | cli.docs-accuracy | cli-050 |
 | TC-cli-skill-615b587b-known-outdated | cli.docs-accuracy | cli-019 |
 | TC-cli-cli-command-table-matches-help | cli.docs-accuracy | cli-019 |
 | TC-cli-finished-session-not-counted-open | cli.finished-sessions | cli-037 |
-| TC-cli-gate-list-summaries-and-digests | cli.gate-lists | cli-061 |
-| TC-cli-gate-record-listed-gates-only | cli.gate-lists | cli-061 |
-| TC-cli-gate-record-refusals-recover | cli.gate-lists | cli-061 |
-| TC-cli-gate-verifying-closes-through-ship | cli.gate-lists | cli-059, cli-061 |
-| TC-cli-gate-record-other-session-refused | cli.gate-lists | cli-061 |
 | TC-cli-sigterm-stops-native-process | cli.native-process-liveness | cli-059 |
+| TC-cli-claimed-approvals-open-no-gate | cli.nine-criteria-assertions | cli-029 |
+| TC-cli-skipped-cold-start-not-a-pass | cli.nine-criteria-assertions | cli-029 |
+| TC-cli-roadmap-claims-no-cold-start-pass | cli.nine-criteria-assertions | cli-029 |
 | TC-cli-cases-split-per-change | cli.no-conflicting-files | cli-047 |
 | TC-cli-knowledge-index-check | cli.no-conflicting-files | cli-047 |
 | TC-cli-bug-merge-driver | cli.no-conflicting-files | cli-047 |
-| TC-cli-manual-record-returns-observation-id | cli.observation-ids-60 | cli-011 |
-| TC-cli-evidence-add-returns-observation-id | cli.observation-ids-60 | cli-017 |
 | TC-cli-prototype-hidden-panels-stay-hidden | cli.prototype-hidden-guard | cli-019 |
 | TC-cli-prototype-styles-0-4-0-known-outdated | cli.prototype-hidden-guard | cli-019 |
-| TC-cli-relay-closes-one-gate-with-four-values | cli.relayed-decisions | cli-050 |
-| TC-cli-relay-refusals-recover | cli.relayed-decisions | cli-050 |
-| TC-cli-relay-clear-records-none | cli.relayed-decisions | cli-030, cli-050 |
 | TC-cli-skill-names-advance-to | cli.skill-advance-to | cli-052 |
 | TC-cli-advance-to-one-read-in-a-session | cli.stage-advance-to | cli-052 |
 | TC-cli-advance-to-no-prerequisite | cli.stage-advance-to | cli-052 |
 | TC-cli-advance-to-refusal-records-nothing | cli.stage-advance-to | cli-052 |
-| TC-cli-advance-into-done-one-read | cli.stage-advance-to | cli-052 |
 | TC-cli-plain-advance-unchanged | cli.stage-advance-to | cli-052 |
-| TC-cli-supported-platforms | cli.supported-platforms | cli-019 |
-| TC-history-inbox-bounds-pinned-exactly | history.bound-pins | history-006 |
 | TC-history-timing-skips-direct-writes | history.case-split-196 | history-013 |
 | TC-history-inbox-add-never-stranded-by-archive | history | history-009 |
 | TC-history-inbox-add-killed-leaves-no-partial-entry | history | history-009 |
@@ -529,12 +604,7 @@ Each criterion is retired in build with `hi retire <ID> "Superseded by KNOW-30 t
 | TC-history-unrecorded-inbox-observation-warns | history | history-006 |
 | TC-history-changelog-sessions-under-0-4-0 | history.changelog-release-placement | history-006 |
 | TC-history-changelog-111-under-0-4-0 | history.changelog-release-placement | history-006 |
-| TC-history-direct-write-field-only-on-its-kind | history.direct-writes | history-013 |
-| TC-history-finished-session-archived-without-native-read | history.finished-sessions | history-006 |
-| TC-history-session-close-with-reason | history.finished-sessions | history-006 |
 | TC-history-relay-summary-fields-both-or-neither | history.gate-lists | history-014 |
-| TC-history-switch-keeps-gated-finished-sessions-open | history.gated-switch-181 | history-006, history-012 |
-| TC-history-switch-archives-sessions-left-open | history.session-archives-at-done | history-006 |
 | TC-reporting-0080 | reporting | reporting-001 |
 | TC-reporting-0081 | reporting | reporting-001 |
 | TC-reporting-0082 | reporting | reporting-001 |

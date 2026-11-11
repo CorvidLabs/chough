@@ -80,6 +80,29 @@ regression is written in the 0.5.x layout first so it fails on 0.5.0.
   now holds a neutral ID instead of the path (#234).
 - #211: copy-never-move roll-up. Superseded by KNOW-30 and KNOW-34.
 
+## The independent alignment audit
+
+An auditor (chough-060-audit) classified 629 items against Leif's direction: 332 keep,
+191 rework, 94 remove, 2 elsewhere, 10 for Leif. It was read-only and is not
+committed here. What this plan took from it:
+
+- REQ-cli-029, 034 and 042 needed changes the first draft missed (the agent-actor
+  rule, and acceptance lines naming removed commands).
+- REQ-history-006 still archived other finished sessions on a switch, against
+  Leif's #207 decision; it no longer does.
+- Six open bug records were already fixed elsewhere (#157, #142, #172, the 6.2.0
+  config comment, spec-sync #823 and #824); they close with links.
+- 96 committed files under `.chough/` and `knowledge/` hold home-folder paths; the
+  migration redacts or drops them, and Git history keeps them (Leif: no rewrite).
+- Migration fixtures from every release; KNOW-24, 26 and 27 covered; a keep-ours
+  driver instead of union merges for generated files; one home for cli lessons; one
+  roadmap; flakes as bug files; DECISIONS.md as an index; the shared skill copy
+  refreshed after release; the upgrade warning in the changelog.
+
+Where this plan still differs from it: TC-history-0054 stays, re-linked to
+REQ-records-009, because LIFE-8's "a removed record never reads as passed" still
+applies to migrated IDs.
+
 ## Not found
 
 - No timing history to estimate from: `chough timing` has one cycle for this session

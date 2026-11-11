@@ -135,8 +135,10 @@ Names never change after creation.
 
 ## Finishing a session
 
-At the move into done (and at `session close`, `session new`/`use` for a finished
-session, and `doctor --fix`):
+A session only ever closes itself (Q3, #207): at its own move into done, with
+`chough session close --reason`, or by the explicit `chough doctor --fix`, which
+`next` names for a finished session that is still open. `session new` and
+`session use` never archive another session. The steps:
 
 1. Build the story in memory: the session's front matter with `stage: done`,
    `closed`, `outcome`, and `receipts` (one map per evidence entry, carrying every
@@ -146,8 +148,7 @@ session, and `doctor --fix`):
 3. Move screenshots beside the story.
 4. Remove the session folder, each file only when its exact bytes are committed at
    HEAD. Anything else stays and is reported; the folder counts as archived because
-   its story exists; the next `session new`, `session use` or `doctor --fix` removes
-   it after the commit.
+   its story exists; `chough doctor --fix` removes it after the commit.
 5. Write the journal post (create-new), then regenerate `index.md` and `feed.xml`.
 
 Nothing in this sequence reads, moves or rewrites another session's folder or story.
@@ -160,10 +161,21 @@ In practice the move into done is followed by one commit (story, post, index) an
 second, tiny cleanup commit that removes the committed session folder. The skill's
 closeout says so.
 
+## Merging generated files
+
+`knowledge/index.md` and `journal/feed.xml` are generated. A union merge of two Atom
+feeds can leave invalid XML in a merge commit, so they get a `chough-generated`
+merge driver (`chough library merge`) that keeps ours byte for byte and exits 0; the
+after-merge `chough library index` step and the verify lane's `--check` rebuild and
+check them from the merged sources. Journal posts, bugs and stories are separate
+files, so they merge as files.
+
 ## Gates (issue 237)
 
-Leif decides between these at scope approval. The deltas are written for option A;
-choosing B means rewriting REQ-cli-030 before approval, and nothing else.
+The deltas take option A, the recommended default the coordinator planned (audit
+Q5: a pending decision holds only its own step, and all are still listed). Leif can
+still choose B at scope approval, which means rewriting REQ-cli-030 before approval
+and nothing else.
 
 - **Option A (recommended): a gate holds a stage.** `--awaiting-human "<gate>"
   --holds <stage>`, defaulting to the current stage, so today's habit (open a gate
@@ -201,8 +213,12 @@ the gate closure, the relay and the decision. A decision that is neither, such a
 passes through and records nothing. An unknown or ambiguous `--decided-by` is refused before
 anything runs. The example above is the shape of a config file; no name is built in.
 
-This replaces the plan-stage rule in the skill that the agent approves as itself with
-the human's authority in a note; that rule stays for agents acting on their own.
+Only a decision made at that gate is in the human's name. When an agent goes ahead
+on permission the human gave in advance, without the human answering that gate, the
+SpecSync approval names the agent and quotes the human's earlier words and where
+they said them (Leif: "The agent's (Recommended)", FLOW-24), so no record says a
+person looked at something they did not. The skill's plan, accept and lifecycle
+references say which case applies.
 
 ## No leaks
 
@@ -228,7 +244,8 @@ cleans the current tree and the receipt says how many values it redacted.
 
 ## Migration
 
-`chough migrate` (preview, writes nothing) and `chough migrate --apply`:
+`chough migrate` (preview, writes nothing, ends with the plan's digest) and
+`chough migrate --apply <digest>`, which applies only the previewed plan:
 
 1. Inventory every 0.5.x file with size and SHA-256. Refuse if any file it would
    remove is uncommitted or differs from HEAD, so Git holds every removed byte.
@@ -242,7 +259,17 @@ cleans the current tree and the receipt says how many values it redacted.
    Read each back.
 4. Write the receipt: before and after (path, size, SHA-256), redactions, removed
    files with why and the commit that holds them, and the old-to-new ID map.
-5. Remove the 0.5.x files whose bytes still match.
+5. Read the native validity of every archived change whose acceptance manifest
+   lists a file to remove (at most 8 at once), remove the 0.5.x files whose bytes
+   still match, read validity again, and restore everything and refuse if any
+   archive that was valid no longer is. The old trims' two safety rules, preview
+   first and never weaken a SpecSync archive, live on here.
+
+Every rewritten file passes the leak guard with redaction, so the home-folder paths
+the audit found in 96 committed files do not survive; a file kept byte for byte that
+holds one is reported as a leak finding. Git history is not rewritten (Leif: "No,
+clean from 0.6.0 on"); the receipt says so. Fixtures from every release, 0.1.0 to
+0.5.0, prove the path (#213).
 
 A rerun after an interruption finishes the job; a rerun after success reports
 nothing to do. IDs that were removed (unreferenced old observations) resolve as

@@ -64,9 +64,13 @@ requirement are inside the named test, one assertion block per criterion.
 
 ## Every open Chough bug, with its regression case
 
-Leif widened 0.6.0 to fix every open Chough bug ("all bugs?", 2026-11-10). Each row
-is fixed in build and closed only with a passing observation of its case recorded
-after a failing one, or, for a flake, with the stress result recorded honestly.
+Leif widened 0.6.0 to fix every open Chough bug ("all bugs?", 2026-11-10). A row still
+open is fixed in build and closed only with a passing observation of its case recorded
+after a failing one, or, for a flake, with the stress result recorded honestly. A row
+already fixed elsewhere is closed with a link to the fix, and its case stays as the
+regression. The remaining Chough work is BUG-0020, BUG-0022, BUG-0023, the lock-timeout
+and timing-budget flakes, #132, and the issues #12, #14 item 3, #76, #165, #167, #190,
+#201, #234, #236 and #237.
 
 | Bug | Fix in 0.6.0 | Requirement | Case | Failing first |
 |---|---|---|---|---|
@@ -77,21 +81,22 @@ after a failing one, or, for a flake, with the stress result recorded honestly.
 | #76 next guidance for a fresh agent | items 2 and 5 are fixed on main (TC-cli-0121, TC-cli-0126 kept); items 1, 3 and 4 get the wording in REQ-cli-021 | REQ-cli-021 | TC-cli-76-next-guides-a-fresh-agent (`tests/next.rs` `next_guides_a_fresh_agent_from_init_to_accept`) | the init, test and accept actions differ on 0.5.0 |
 | #14 env, colour codes, external artifacts, field errors | items 1, 2 and 4 shipped in #16 and stay proven; item 3 is REQ-records-005 | REQ-cli-009, REQ-cli-011, REQ-cli-054, REQ-records-005 | TC-cli-0097, TC-cli-0098, TC-cli-0099, TC-cli-0092 (ported) and TC-records-proof-split-and-external | item 3 refuses an absolute artifact on 0.5.0 |
 | #132 fork and descriptor inheritance flakes | not reproduced since 2026-11-06. Stand-ins are already written through a temporary name and renamed; the lock refusal names its holder's process ID; the in-process lock test waits a bounded time for a forked child's inherited descriptor; a stress case records how often the lock and stand-in tests fail under a parallel suite | REQ-cli-040 | TC-cli-132-fork-inheritance-stress (`tests/cli.rs` `lock_and_stand_in_tests_survive_parallel_forks`) | the stress run on 0.5.0 is recorded as observed; if neither failure reproduces, the bug says so and stays open with the diagnostics in place |
-| BUG-0001 the SpecSync config comment names stale versions | the comment joins the version agreement check | REQ-cli-019 | TC-cli-0110 (rewritten) | a stale comment fails the check |
+| BUG-0001 the SpecSync config comment names stale versions | already fixed on main (the comment says 6.2.0): close the record with that link; the comment also joins the version agreement check so it cannot drift again | REQ-cli-019 | TC-cli-0110 (rewritten) | a stale comment fails the check |
 | BUG-0020 the delta guard uses the latest approval | compare with the effective approval, the digest-matching one, for every workflow version | REQ-cli-022 | TC-cli-bug-0020-guard-uses-effective-approval (`tests/native_check.rs` `the_delta_guard_compares_with_the_effective_approval`) | three old-version approvals refuse wrongly on 0.5.0 |
 | BUG-0022 local tools differ from the CI pins | a `toolchain` Fledge task, first in the verify lane, fails naming each version that differs, and evidence from a differing toolchain says so | REQ-cli-019 | TC-cli-bug-0022-toolchain-matches-ci (`tests/package.rs` `toolchain_task_names_a_version_that_differs`) | no such check exists on 0.5.0 |
 | BUG-0023 cold-start output is hard to scan | `status` leads with the same short summary as `next` | REQ-cli-021 | TC-cli-bug-0023-status-leads-with-summary (`tests/next.rs`) | the summary is missing on 0.5.0 |
-| BUG-…-empty-change-directory (#148) | fixed on main for the index; 0.6.0 makes every reader of open changes skip an empty directory | REQ-cli-043 | TC-cli-empty-change-dir-not-open (rewritten) | the case is rerun on 0.5.0 for `next`, `gate list` and `doctor` |
-| BUG-…-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault | gone with the roll-up and the legacy anchor; migration puts the legacy entries in the adopter's story | REQ-records-009 | TC-records-migrate-vaulted-adopter (`tests/migrate.rs` `a_vaulted_adopter_migrates_and_writes_work`) | gate and stage writes refuse on 0.5.0 with the adopter in the vault |
+| BUG-…-empty-change-directory (#148) | fixed by #157 for the index: close the record with that link; 0.6.0 extends the rule to every reader of open changes | REQ-cli-043 | TC-cli-empty-change-dir-not-open (rewritten) | the case is rerun on 0.5.0 for `next`, `gate list` and `doctor` |
+| BUG-…-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault | fixed by #142: close the record with that link; the roll-up and the legacy anchor also go, and migration puts the legacy entries in the adopter's story | REQ-records-009 | TC-records-migrate-vaulted-adopter (`tests/migrate.rs` `a_vaulted_adopter_migrates_and_writes_work`) | the 0.5.x fixture is built at the release before #142, where the writes refuse |
 | BUG-…-full-macos-lane-checkpoint-writer-lock-timeout | root cause unverified; same family as #132. Each writer child reports how long it waited, and the stress case runs the writer test under the full parallel suite on macOS | REQ-cli-040 | TC-cli-132-fork-inheritance-stress | as #132 |
 | BUG-…-timing-native-budget-…-no-initial-stub-call | the budget clock starts at the first native read, as REQ-reporting-002 already bounds only time spent waiting on native reads | REQ-reporting-002 | TC-reporting-budget-starts-at-first-read (`tests/timing.rs` `a_slow_record_load_does_not_spend_the_native_budget`) | a record load slower than the budget starts no read on 0.5.0 |
-| BUG-…-timing-trace-…-cross-a-second | TC-reporting-timing-trace-straddles-a-second exists on main; 0.6.0 runs it 50 times under a parallel suite and closes the bug only if all pass | REQ-reporting-002 | TC-reporting-timing-trace-straddles-a-second | the stress result is recorded as observed |
+| BUG-…-timing-trace-…-cross-a-second | fixed by #172 (TC-reporting-timing-trace-straddles-a-second): close the record with that link; the case also runs in the stress run | REQ-reporting-002 | TC-reporting-timing-trace-straddles-a-second | not needed: fixed before this change |
 
-BUG-0002 and BUG-0003 describe SpecSync's own behaviour. A spec-sync worker (t37b)
-checked both on spec-sync main 46f55652 (SpecSync 6.2.0) and neither reproduces: editing
+BUG-0002 and BUG-0003 describe SpecSync's own behaviour, fixed upstream in spec-sync
+#823 and #824 on 2026-11-01. A spec-sync worker (t37b) checked both again on spec-sync
+main 46f55652 (SpecSync 6.2.0) and neither reproduces: editing
 an approved delta turns `approval_valid` false and `change check` refuses, and a
 failing gate records `passed: false`. 0.6.0 closes both as `fixed-upstream`, citing
-that check, never as fixed or verified by Chough (REQ-cli-012). Chough ran no check of
+those PRs and that check, never as fixed or verified by Chough (REQ-cli-012). Chough ran no check of
 its own for them.
 
 ## Failing first
