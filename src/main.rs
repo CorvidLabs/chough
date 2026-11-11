@@ -58,7 +58,8 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Install the workflow skill and a schema 2 checkpoint without overwriting existing files.
+    /// Install the workflow skill and `.chough/README.md`, and with --objective open the first
+    /// session, without overwriting existing files.
     Init {
         /// The first session's objective; without it no session is created.
         #[arg(long)]
@@ -163,7 +164,7 @@ enum Commands {
         #[command(subcommand)]
         command: skill::SkillCommand,
     },
-    /// Sessions per objective or native change: new, adopt, use, list.
+    /// Sessions per objective or native change: new, use, list, close, shelve.
     Session {
         #[command(subcommand)]
         command: sessions::SessionCommand,
