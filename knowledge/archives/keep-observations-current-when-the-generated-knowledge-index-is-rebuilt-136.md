@@ -50,12 +50,13 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-11 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+12 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
 | OBS-tc-cli-evidence-add-returns-observation-id-3b80f0c5684eab9228a87a75 | failed (by cycle time) | local-macos-arm64 | TC-cli-evidence-add-returns-observation-id |
 | OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d | passed (by cycle time) | local-macos-arm64 | TC-cli-evidence-add-returns-observation-id |
+| OBS-tc-cli-external-artifact-fingerprinted-in-place-8cb117826176b09b4a202528 | passed (by cycle time) | local-macos-arm64 | TC-cli-external-artifact-fingerprinted-in-place |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-1de06628dbf05c27fc9e7edc | passed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c | passed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-5b97190bd03da89461567287 | failed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |

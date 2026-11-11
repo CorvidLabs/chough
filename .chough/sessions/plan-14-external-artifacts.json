@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-5f796fcbed95355c82136e47",
-    "head": null,
+    "head": "EVT-b669b89d480a5d671b0f6f72",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "intent",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -32,11 +32,14 @@
     "Extended the #14 regression to the approved AC: directory, symlink and over-64-MiB refusals and the freshness flip when the external file changes; case TC-cli-external-artifact-fingerprinted-in-place; main merged"
   ],
   "observations": [
-    "OBS-tc-cli-external-artifact-fingerprinted-in-place-8cb117826176b09b4a202528"
+    "OBS-tc-cli-external-artifact-fingerprinted-in-place-8cb117826176b09b4a202528",
+    "OBS-tc-cli-external-artifact-fingerprinted-in-place-cb0af6f5c6adaf60f8846c2b"
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14"
+  ],
   "run_consents": [],
-  "next_action": "Leif: implementation acceptance of #208 (#14 item 3, external artifacts by fingerprint); then review, ship, push the archive and merge."
+  "next_action": "Record Leif's relayed acceptance as the review, ship, dogfood, full suite; stop before merge for the coordinator."
 }

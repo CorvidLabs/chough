@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-external-artifact-fingerprinted-in-place-cb0af6f5c6adaf60f8846c2b",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-006"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact an_external_artifact_is_fingerprinted_in_place for TC-cli-external-artifact-fingerprinted-in-place: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-external-artifact-fingerprinted-in-place-cb0af6f5c6adaf60f8846c2b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-external-artifact-fingerprinted-in-place-cb0af6f5c6adaf60f8846c2b.log": "d2aef621cc6371fe3b00251de88ba4204aed5158f4db9ba5c44936f597c13df5"
+  },
+  "observed_at_unix_seconds": 1794356283,
+  "snapshot": {
+    "revision": "beee7540aa8d75f8949e605e3c2ad97220ad0038",
+    "dirty": false,
+    "fingerprint": "4f76e4b29f59fdb293e8a53d2418904aaaf1eaf7150b36dedc22528b2c72effc",
+    "content": "42355c1801b65c2bb6affb488dc941da622ea591c72c7efa1d34863461cd9cfa"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-external-artifact-fingerprinted-in-place",
+      "digest": "6cca4f7bc6339642c9ec938ecbed6608ff3bc2a09c192566e4255a52f61a9173"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "an_external_artifact_is_fingerprinted_in_place"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}
