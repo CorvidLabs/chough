@@ -1124,12 +1124,12 @@ pub(super) struct Snapshot {
     pub(super) content: Option<String>,
     /// Retained diagnostic metadata only; aggregate identities remain authoritative.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    input_inventory: Option<InputInventory>,
+    pub(super) input_inventory: Option<InputInventory>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct InputInventory {
+pub(super) struct InputInventory {
     version: u32,
     complete: bool,
     entries: Vec<InputIdentity>,
@@ -2330,4 +2330,62 @@ pub(super) fn record_validation_run(root: &Path, run: &ValidationRun) -> Result<
         },
     )?;
     Ok(format!("{session_id_dir}/{name}.md"))
+}
+
+// ---------------------------------------------------------------------------
+// The seams of the 0.5.x evidence mapper (src/evidence_migrate.rs, plan step 10), wired
+// for t382: thin wrappers over this module's reader, entry writer and screenshot
+// stripping, for t37d to keep or replace in place.
+
+/// Read a 0.5.x JSON observation into the entry model, naming the file on refusal
+/// (REQ-records-009). Honouring `snapshot.input_inventory` with #203's rule is t37d's.
+pub(super) fn legacy_observation(path: &str, text: &str) -> Result<Evidence> {
+    serde_json::from_str(text).with_context(|| format!("{path}: not a 0.5.x observation"))
+}
+
+/// An entry's record text, named by its ID, within the entry bound; the migration's
+/// framework redacts it (REQ-records-006).
+pub(super) fn entry_text(evidence: &Evidence) -> Result<String> {
+    evidence
+        .to_record(&evidence.id)
+        .render_within(markdown::Kind::Evidence)
+}
+
+/// A key screenshot's committed bytes: a PNG (`png`) or JPEG (`jpg`) without its
+/// metadata (REQ-records-013).
+pub(super) fn strip_screenshot(bytes: &[u8], extension: &str) -> Result<Vec<u8>> {
+    match extension {
+        "png" => strip_png(bytes),
+        _ => strip_jpeg(bytes),
+    }
+}
+
+/// A repeated validation run's entry text (REQ-cli-023), as `record_validation_run`
+/// builds it, with its aliases and without writing it; the migration plans the write.
+pub(super) fn validation_run_text(run: &ValidationRun, aliases: &[String]) -> Result<String> {
+    let mut record = Record::new(&format!(
+        "**{}.**\n\nA repeated validation run of {}: {}, {} failed, {} not run, {} seconds.\n",
+        run.summary, run.case, run.state, run.failures, run.not_run, run.elapsed_seconds
+    ));
+    record.set_scalar("kind", "evidence")?;
+    record.set_scalar("id", &run.id)?;
+    record.set("aliases", markdown::Value::List(aliases.to_vec()))?;
+    record.set_scalar("validation_run", "true")?;
+    record.set_scalar("case", &run.case)?;
+    record.set_scalar("environment", &run.environment)?;
+    record.set_scalar("state", &run.state)?;
+    record.set_scalar("started", &iso_time(run.started))?;
+    if let Some(completed) = run.completed {
+        record.set_scalar("completed", &iso_time(completed))?;
+    }
+    record.set_scalar("failures", &run.failures.to_string())?;
+    record.set_scalar("not_run", &run.not_run.to_string())?;
+    record.set_scalar("elapsed_seconds", &run.elapsed_seconds.to_string())?;
+    if !run.attempts.is_empty() {
+        record.set("attempts", markdown::Value::Maps(run.attempts.clone()))?;
+    }
+    record.set_scalar("claim", &run.summary)?;
+    record.set_scalar("result", "not-run")?;
+    record.set_scalar("evidence_kind", "structural")?;
+    record.render_within(markdown::Kind::Evidence)
 }
