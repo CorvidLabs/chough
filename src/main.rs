@@ -16,6 +16,7 @@ mod journal;
 mod leaks;
 mod library;
 mod markdown;
+mod migrate;
 mod native;
 mod native_check;
 mod policy;
@@ -95,11 +96,9 @@ enum Commands {
         #[arg(long)]
         json: bool,
     },
-    /// Explicitly migrate a schema 1 session, keeping its original bytes.
-    Migrate {
-        #[arg(long, default_value = "intent")]
-        stage: String,
-    },
+    /// Preview the migration of a 0.5.x project's records to 0.6.0, or apply a
+    /// previewed plan by its digest with the human's consent (REQ-records-009).
+    Migrate(migrate::MigrateArgs),
     /// Show or update the canonical checkpoint.
     Checkpoint(Box<checkpoint::CheckpointArgs>),
     /// Route between stages within native lifecycle gates.
@@ -236,9 +235,7 @@ fn main() -> Result<()> {
             environment,
             json: as_json,
         } => print!("{}", next(&root, environment.as_deref(), as_json)?),
-        Commands::Migrate { stage: _ } => anyhow::bail!(
-            "`chough migrate` for 0.5.x projects is being rebuilt in this 0.6.0 branch (plan step 10); use a released Chough until then"
-        ),
+        Commands::Migrate(args) => migrate::run(&root, args)?,
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
         Commands::Stage { command } => stage::run(&root, command)?,
         Commands::History { command } => history::run(&root, command)?,
