@@ -162,33 +162,41 @@ fn init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only() {
         .iter()
         .map(|path| path.as_str().unwrap().to_string())
         .collect();
-    let mut expected: BTreeSet<String> = bundle_files()
+    // init --objective creates the first session folder (TC-cli-0015).
+    let session_rel = created
+        .iter()
+        .find(|path| {
+            path.starts_with(".chough/sessions/")
+                && path.ends_with("-try-chough/session.md")
+        })
+        .unwrap_or_else(|| panic!("no session record in {created:?}"))
+        .clone();
+    let expected: BTreeSet<String> = bundle_files()
         .into_iter()
         .map(|file| format!(".agents/skills/chough-workflow/{file}"))
+        .chain(std::iter::once(session_rel.clone()))
         .collect();
-    expected.insert(".chough/session.json".to_string());
     assert_eq!(created, expected);
 
-    let session: Value =
-        serde_json::from_str(&fs::read_to_string(root.join(".chough/session.json")).unwrap())
-            .unwrap();
+    let session = fs::read_to_string(root.join(&session_rel)).unwrap();
     for empty in [
         "bugs",
         "observations",
-        "completed",
-        "decisions",
         "blockers",
-        "awaiting_human",
+        "waiting_on_human",
         "run_consents",
     ] {
-        assert_eq!(session[empty], Value::Array(vec![]), "{empty} is not empty");
+        assert!(
+            session.contains(&format!("{empty}: []")),
+            "{empty} is not empty: {session}"
+        );
     }
-    assert_eq!(session["native_change"], Value::Null);
+    assert!(session.contains("native_change: \"\""), "{session}");
     let records: Vec<String> = fs::read_dir(root.join(".chough"))
         .unwrap()
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
         .collect();
-    assert_eq!(records, ["session.json"]);
+    assert_eq!(records, ["local", "sessions"]);
     for absent in [".specsync", "examples", "tests", "docs", ".claude"] {
         assert!(!root.join(absent).exists(), "{absent} was created");
     }
