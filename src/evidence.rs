@@ -1685,26 +1685,78 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 // a session's entries as `receipts:` values.
 
 /// The evidence entries of one session as receipt values for its archived story:
-/// id, result, claim, the receipt fields and the actor (REQ-cli-017, REQ-history-006).
-#[cfg_attr(not(test), allow(dead_code))] // step 4's seam; sessions.rs wires it at done
-pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Value>> {
+/// id, result, claim, observed, revision, content, fingerprint, raw_log, case,
+/// duration_seconds and the actor, each only when known (REQ-cli-017, REQ-history-006;
+/// duration_seconds per the plan's delta correction 4). Front-matter-native maps.
+#[cfg_attr(not(test), allow(dead_code))] // step 4's seam; wired in sessions.rs
+pub(super) fn receipts_of(
+    root: &Path,
+    session_id: &str,
+) -> Result<Vec<Vec<(String, String)>>> {
     let mut receipts = vec![];
     for evidence in load_session(root, session_id)? {
-        receipts.push(json!({
-            "id": evidence.id,
-            "result": evidence.outcome.name(),
-            "claim": evidence.summary,
-            "observed": iso_time(evidence.observed_at_unix_seconds),
-            "revision": evidence.snapshot.revision,
-            "content": evidence.snapshot.content,
-            "fingerprint": evidence.fingerprint,
-            "raw_log": evidence.raw_log,
-            "duration_seconds": evidence.duration_seconds,
-            "case": evidence.cases.first().map(|case| case.id.clone()),
-            "actor": evidence.actor.as_ref().map(|actor| actor.display()),
-        }));
+        let mut map = vec![
+            ("id".into(), evidence.id.clone()),
+            ("result".into(), evidence.outcome.name().to_string()),
+            ("claim".into(), evidence.summary.clone()),
+            (
+                "observed".into(),
+                iso_time(evidence.observed_at_unix_seconds),
+            ),
+            ("revision".into(), evidence.snapshot.revision.clone()),
+        ];
+        if let Some(content) = &evidence.snapshot.content {
+            map.push(("content".into(), content.clone()));
+        }
+        if let Some(fingerprint) = &evidence.fingerprint {
+            map.push(("fingerprint".into(), fingerprint.clone()));
+        }
+        if let Some(raw_log) = &evidence.raw_log {
+            map.push(("raw_log".into(), raw_log.clone()));
+        }
+        if let Some(case) = evidence.cases.first() {
+            map.push(("case".into(), case.id.clone()));
+        }
+        if let Some(duration) = evidence.duration_seconds {
+            map.push(("duration_seconds".into(), duration.to_string()));
+        }
+        if let Some(actor) = &evidence.actor {
+            map.push(("actor".into(), actor.display()));
+        }
+        receipts.push(map);
     }
     Ok(receipts)
+}
+
+/// Move a finishing session's screenshots to the folder beside its story,
+/// `.chough/archive/sessions/<id>/`, created only when it has one (REQ-records-013).
+/// Only bytes committed at HEAD move (REQ-records-012); an uncommitted screenshot
+/// stays and is named in the returned list. Call with the story already written.
+#[cfg_attr(not(test), allow(dead_code))] // wired in sessions.rs at the archive point
+pub(super) fn move_screenshots_at_finish(root: &Path, session_id: &str) -> Result<Vec<String>> {
+    let from = local_path(root, &evidence_dir(session_id))?;
+    let mut kept = vec![];
+    let Ok(entries) = fs::read_dir(&from) else {
+        return Ok(kept);
+    };
+    let target_dir = format!(".chough/archive/sessions/{session_id}");
+    for entry in entries.flatten() {
+        let name = entry.file_name().to_string_lossy().into_owned();
+        if !name.ends_with(".png") && !name.ends_with(".jpg") {
+            continue;
+        }
+        let bytes = fs::read(entry.path())?;
+        let target = format!("{target_dir}/{name}");
+        let committed = crate::records::write_new_bytes(root, &target, &bytes)?;
+        ensure!(committed, "{target} already exists with other bytes");
+        let relative = format!("{}/{name}", evidence_dir(session_id));
+        if committed_at_head(root, &relative) {
+            fs::remove_file(entry.path())?;
+        } else {
+            kept.push(relative);
+        }
+    }
+    Ok(kept)
 }
 
 // ---------------------------------------------------------------------------
@@ -1947,4 +1999,26 @@ struct LegacySnapshot {
     dirty: bool,
     fingerprint: String,
     content: Option<String>,
+}
+
+/// Whether the file's bytes are committed at HEAD (as Git stores them), the
+/// REQ-records-012 check; the same rule sessions.rs's remove_committed uses.
+fn committed_at_head(root: &Path, relative: &str) -> bool {
+    let path = match local_path(root, relative) {
+        Ok(path) => path,
+        Err(_) => return false,
+    };
+    let bytes = match fs::read(path) {
+        Ok(bytes) => bytes,
+        Err(_) => return false,
+    };
+    // The blob as Git stores it at HEAD, compared byte for byte.
+    let show = std::process::Command::new("git")
+        .args(["show", &format!("HEAD:{relative}")])
+        .current_dir(root)
+        .output();
+    match show {
+        Ok(output) => output.status.success() && output.stdout == bytes,
+        Err(_) => false,
+    }
 }

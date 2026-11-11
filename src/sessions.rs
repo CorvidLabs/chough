@@ -870,9 +870,8 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     let date = crate::identity::utc_date(now()?);
     record.set_scalar("closed", &date)?;
     record.set_scalar("outcome", outcome)?;
-    if record.get("receipts").is_none() {
-        record.set("receipts", Value::Maps(vec![]))?;
-    }
+    let receipts = crate::evidence::receipts_of(root, id)?;
+    record.set("receipts", Value::Maps(receipts))?;
     let mut text = record.render_within(RecordKind::Story)?;
     if !text.ends_with('\n') {
         text.push('\n');
@@ -887,7 +886,8 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
         written == text,
         "{story} did not read back as written; nothing was removed"
     );
-    let kept = remove_committed(root, &format!("{DIR}/{id}"))?;
+    let mut kept = crate::evidence::move_screenshots_at_finish(root, id)?;
+    kept.extend(remove_committed(root, &format!("{DIR}/{id}"))?);
     if pointer(root).ok().flatten().as_deref() == Some(id) {
         let _ = fs::remove_file(local_path(root, POINTER)?);
     }
