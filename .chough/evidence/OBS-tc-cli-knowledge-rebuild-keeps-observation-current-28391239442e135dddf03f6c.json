@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c",
+  "criteria": [
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-cli-004"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test evidence -- --exact rebuilding_the_knowledge_index_keeps_the_observation_current for TC-cli-knowledge-rebuild-keeps-observation-current: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-knowledge-rebuild-keeps-observation-current-28391239442e135dddf03f6c.log": "a88d41a2db67b7ceebe51f1e9fe06b39612e5ff20e7d875487853de293678fe7"
+  },
+  "observed_at_unix_seconds": 1794350743,
+  "snapshot": {
+    "revision": "0b06b173afa360379d20dae3a339ab4e15bd5c47",
+    "dirty": true,
+    "fingerprint": "ba3b0967d648318352476e62d96f5d3271b4275f9a283536a1c2e361c50b1624",
+    "content": "dc736d7587379e1f27a7162bd71f195cf99b4a15711fcb579a84bd870325998f"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-knowledge-rebuild-keeps-observation-current",
+      "digest": "1a8cf4ac50403134723c7756b10d141bf8cbbac4d4351a16db275eb5f6ff9706"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "evidence",
+    "--",
+    "--exact",
+    "rebuilding_the_knowledge_index_keeps_the_observation_current"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 5
+}

@@ -67,7 +67,8 @@ The helper SHALL record with each observation a Git revision, a working content
 identity, an explicit environment, a kind, an outcome, and supporting artifacts.
 Status SHALL distinguish current observations from stale observations and environment
 mismatches. Freshness compares the content identity, which leaves out Chough's own
-records, build output and SpecSync lifecycle bookkeeping; the revision is recorded
+records, build output, the generated knowledge directory and SpecSync lifecycle
+bookkeeping; the revision is recorded
 for display and regression ancestry but not compared. An observation is an assertion
 by its recorder, not authenticated human acceptance.
 

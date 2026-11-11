@@ -1,0 +1,38 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-manual-record-returns-observation-id"
+title = "cases record returns its case and observation IDs"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-4"]
+requirements = ["REQ-cli-011"]
+paths = ["src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["cases record returns case and observation beside schema_version, recorded, outcome and provenance; observation equals the recorded file stem and the stored record id"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "manual_case_record_returns_its_case_and_observation_ids"
+
+[[case]]
+id = "TC-cli-evidence-add-returns-observation-id"
+title = "evidence add returns its observation ID"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7", "LIFE-4"]
+requirements = ["REQ-cli-017"]
+paths = ["src/evidence.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["evidence add returns observation beside schema_version, recorded and provenance; observation equals the recorded file stem and the stored record id"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "evidence_add_returns_its_observation_id"

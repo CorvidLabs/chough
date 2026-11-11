@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181",
+  "implementation_commit": "2f21c1f353efda8748ffda42ded58238d91de8c0",
+  "implementation_tree": "d6714057aa2ff9f591d597bc896597fbd7e9c963",
+  "contract_digest": "fd9c406cdfb89f072fec112fd2c6de956c3669a9e989b6f3482967d9c75aac2e",
+  "workspace_digest": "89de5362b9b6e87269c299f70af4e0618b54a4832e173e4899a2aabcd26a15c6",
+  "closing_digest": "e43d5c6df1d90b60a71cf2035a0aff9f726156a1b7f331c26411ab50b4c00b7d",
+  "review_digest": "222e3d0233a8d47c54f51f22d9bb1014fd81edd85653b26d24ed7d9926f3e27e",
+  "finalization_digest": "b31ff53708015a445f6c918030fc1f21c316402aee856c47535a2ff8c735ad0c",
+  "timestamp": 1794351933
+}

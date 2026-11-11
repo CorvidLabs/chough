@@ -1,0 +1,62 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794350667,
+      "digest": "0c6e41c469e88abe0c4c00c29bd187802ed6e207f534f0467c633265fb27a76f",
+      "note": "Leif's 2026-11-10 merge rule, relayed by coordinator Claude Code (hc t370): bug fixes that make behaviour match existing specs/requirements/hi may run the full SpecSync lifecycle with 0xLeif as approve/review actor and squash-merge once CI is green and every review thread is resolved. Covers #136 only: the generated knowledge directory leaves REQ-cli-004's working content identity so its AC2 (Chough's own writes never self-invalidate) holds. Recorded by the Claude Code worker (hc t37j); a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136",
+        "title": "Keep observations current when the generated knowledge index is rebuilt (#136)",
+        "description": "Keep observations current when the generated knowledge index is rebuilt (#136)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/lifecycle.md",
+          ".chough/cases/cli.knowledge-rebuild-136.cases.toml",
+          "CHANGELOG.md",
+          "docs/FRD.md",
+          "docs/architecture.md",
+          "docs/cli.md",
+          "knowledge/",
+          "skills/chough-workflow/references/lifecycle.md",
+          "specs/cli/cli.spec.md",
+          "src/evidence.rs",
+          "tests/evidence.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Rebuilding the knowledge index (chough library index) after recording an observation leaves that observation current: the regression records a passed case observation, confirms current, rebuilds knowledge/INDEX.md (which lists the observation) and confirms it is still current. The configured library-dir name is honored; the legacy fingerprint byte stream is unchanged for older records; .chough/, target/ and SpecSync bookkeeping exclusions behave as before."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "d0dd0d002330531a7a87ba19910272180c06b0ed06dcd327d23144b9a442d384"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-004": "eb34f35d3c39e3e12ec203313b7c8c804c75df55d8721136e0d5a0aa6df682c8"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794350878,
+      "digest": "eb8e35fa0197cf5b7d73052f060881691144cc3d237db729f0be2c683702050d",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

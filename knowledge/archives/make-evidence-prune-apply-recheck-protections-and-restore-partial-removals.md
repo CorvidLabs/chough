@@ -58,24 +58,24 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-product-test-177ef9b1ad9bc144d0b26aa4 | passed (by cycle time) | local-macos-arm64 |  |
-| OBS-product-test-1a8d3cd9e2fff7f17314bd35 | passed (by cycle time) | local-macos-arm64 |  |
-| OBS-product-test-51a832506d132b756faaf82a | passed (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-177ef9b1ad9bc144d0b26aa4 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-1a8d3cd9e2fff7f17314bd35 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-51a832506d132b756faaf82a | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-product-test-766be385e3010d3b004a21f6 | passed (by cycle time) | local-linux-aarch64 |  |
-| OBS-product-test-8596f4c916b301c4ec8853cd | passed (by cycle time) | local-macos-arm64 |  |
-| OBS-product-test-972af92fbd4cb64f5dd3094a | failed (by cycle time) | local-macos-arm64 |  |
-| OBS-product-test-cf146b8281569e3b55420c53 | not-run (by cycle time) | local-macos-arm64 |  |
-| OBS-product-test-f87bec1f3802297bc62bebe7 | failed (by cycle time) | local-linux-aarch64 |  |
+| OBS-product-test-8596f4c916b301c4ec8853cd | passed (pruned) (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-972af92fbd4cb64f5dd3094a | failed (pruned) (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-cf146b8281569e3b55420c53 | not-run (pruned) (by cycle time) | local-macos-arm64 |  |
+| OBS-product-test-f87bec1f3802297bc62bebe7 | failed (pruned) (by cycle time) | local-linux-aarch64 |  |
 | OBS-structural-01fdbe567f85ef177eeea144 | failed (by cycle time) | local-linux-aarch64 |  |
-| OBS-structural-0569129fb63cffe3aa2b53bf | failed (by cycle time) | local-linux-aarch64 |  |
-| OBS-structural-1b635c037853e3ce2f70d10b | failed (by cycle time) | local-macos-arm64 |  |
-| OBS-structural-4bb245473772e0d89afd2868 | passed (by cycle time) | local-macos-arm64 |  |
-| OBS-structural-b66cb4a28fd68f089b2a01b3 | not-run (by cycle time) | local-macos-arm64 |  |
+| OBS-structural-0569129fb63cffe3aa2b53bf | failed (pruned) (by cycle time) | local-linux-aarch64 |  |
+| OBS-structural-1b635c037853e3ce2f70d10b | failed (pruned) (by cycle time) | local-macos-arm64 |  |
+| OBS-structural-4bb245473772e0d89afd2868 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
+| OBS-structural-b66cb4a28fd68f089b2a01b3 | not-run (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-structural-ec5e908e555a15be59cc7e27 | failed (by cycle time) | local-macos-arm64 |  |
-| OBS-tc-history-prune-protection-race-d117515c4e78a708145abbbb | passed (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
-| OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820 | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restore-preserves-recreated-file |
-| OBS-tc-history-prune-restores-earlier-sets-5869e7a3e14302d5d2bac1da | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-earlier-sets |
-| OBS-tc-history-prune-restores-partial-removal-281599d68d18010c1b54cdd3 | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
+| OBS-tc-history-prune-protection-race-d117515c4e78a708145abbbb | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
+| OBS-tc-history-prune-restore-preserves-recreated-file-485fc2b3eb590a24b9ba8820 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-restore-preserves-recreated-file |
+| OBS-tc-history-prune-restores-earlier-sets-5869e7a3e14302d5d2bac1da | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-restores-earlier-sets |
+| OBS-tc-history-prune-restores-partial-removal-281599d68d18010c1b54cdd3 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
 
 ## Bugs
 
@@ -89,4 +89,5 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
-- none
+- [artifacts/issue-65-prune-race/finish/pinned/macos-before-current-check.log](../attachments/make-evidence-de83af0f/artifacts/issue-65-prune-race/finish/pinned/macos-before-current-check.log)
+- [artifacts/issue-65-prune-race/finish/restore-identity-before.log](../attachments/make-evidence-de83af0f/artifacts/issue-65-prune-race/finish/restore-identity-before.log)

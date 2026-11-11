@@ -1,0 +1,27 @@
+--- stdout ---
+
+running 1 test
+test rebuilding_the_knowledge_index_keeps_the_observation_current ... FAILED
+
+failures:
+
+---- rebuilding_the_knowledge_index_keeps_the_observation_current stdout ----
+
+thread 'rebuilding_the_knowledge_index_keeps_the_observation_current' (648910223) panicked at tests/evidence.rs:787:5:
+assertion `left == right` failed
+  left: Some("historical")
+ right: Some("current")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    rebuilding_the_knowledge_index_keeps_the_observation_current
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 30 filtered out; finished in 2.27s
+
+
+--- stderr ---
+   Compiling chough v0.5.0 (/Users/leif/Development/_CorvidLabs/_worktrees/ch-136-knowledge-staleness)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.24s
+     Running tests/evidence.rs (target/debug/deps/evidence-959615feba7516c4)
+error: test failed, to rerun pass `--test evidence`

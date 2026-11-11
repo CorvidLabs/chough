@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992",
+  "criteria": [
+    "DRIVE-16",
+    "DRIVE-17"
+  ],
+  "requirements": [
+    "REQ-history-006",
+    "REQ-history-012"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact a_finished_session_with_an_open_gate_stays_open_on_switch for TC-history-switch-keeps-gated-finished-sessions-open: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992.log": "c756d207bc0a603656228d5dbde20cd07b86622c300e59208f4c0d1a7a568982"
+  },
+  "observed_at_unix_seconds": 1794345251,
+  "snapshot": {
+    "revision": "be1dc60a654a7392c74b6626a288ba91feae8864",
+    "dirty": true,
+    "fingerprint": "e578bfc13fa2e6b07810ef0b9a853fdba87b57ae680cb2c83deeae206931e139",
+    "content": "4632416d203dd4675f9740b178cb8bfcad00a02341faff6e33e86bcb631ba3ea"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-switch-keeps-gated-finished-sessions-open",
+      "digest": "93fbec0191654753d98fa9eaf2408c91c486b9c230efa456802c7b7baaa9d78c"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "a_finished_session_with_an_open_gate_stays_open_on_switch"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}
