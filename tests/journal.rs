@@ -550,3 +550,116 @@ fn the_librarian_off_writes_no_post() {
             .contains("librarian is off")
     );
 }
+
+/// Run Git in the fixture and report whether it succeeded.
+fn git_succeeds(fixture: &Fixture, args: &[&str]) -> bool {
+    std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args([
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+        ])
+        .args(["-c", "commit.gpgsign=false"])
+        .args(args)
+        .output()
+        .unwrap()
+        .status
+        .success()
+}
+
+/// REQ-cli-047: with `merge=chough-generated` declared, two branches that each add a post
+/// conflict in `index.md` and `feed.xml` under Git's text merge, and merge clean with the
+/// driver set up: the merged feed is ours byte for byte and parses, `library index --check`
+/// fails naming both files until `library index` rebuilds them, and then lists both posts.
+#[test]
+fn two_branches_that_each_add_a_post_merge_clean_with_the_generated_driver() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write(
+        ".gitattributes",
+        "knowledge/index.md merge=chough-generated\nknowledge/journal/feed.xml merge=chough-generated\n",
+    );
+    fixture.commit("base");
+    let add = |title: &str| {
+        fixture.ok(&[
+            "journal",
+            "add",
+            "--kind",
+            "learned",
+            "--title",
+            title,
+            "--body",
+            "One line.",
+        ])["post"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string()
+    };
+    fixture.git(&["checkout", "-b", "theirs"]);
+    let theirs = add("Their SYNTHETIC post");
+    fixture.commit("their post");
+    fixture.git(&["checkout", "main"]);
+    let ours = add("Our SYNTHETIC post");
+    fixture.commit("our post");
+    let feed = "knowledge/journal/feed.xml";
+    let ours_feed = fixture.read(feed);
+
+    // Without the driver set up, Git falls back to its text merge and conflicts.
+    assert!(!git_succeeds(&fixture, &["merge", "--no-edit", "theirs"]));
+    fixture.git(&["merge", "--abort"]);
+
+    fixture.git(&[
+        "config",
+        "--local",
+        "merge.chough-generated.driver",
+        &format!("'{}' library merge %O %A %B", env!("CARGO_BIN_EXE_chough")),
+    ]);
+    fixture.git(&["merge", "--no-edit", "theirs"]);
+    assert_eq!(fixture.read(feed), ours_feed, "the driver keeps ours");
+    well_formed(&fixture.read(feed)).unwrap_or_else(|error| panic!("{error}"));
+    assert!(fixture.exists(&ours) && fixture.exists(&theirs));
+    let error = fixture.fails(&["library", "index", "--check"]);
+    assert!(
+        error.contains(feed) && error.contains("knowledge/index.md"),
+        "{error}"
+    );
+    fixture.ok(&["library", "index"]);
+    fixture.ok(&["library", "index", "--check"]);
+    let rebuilt = fixture.read(feed);
+    for post in [&ours, &theirs] {
+        let name = post
+            .trim_start_matches("knowledge/journal/")
+            .trim_end_matches(".md");
+        assert!(
+            rebuilt.contains(&format!("urn:chough:journal:{name}<")),
+            "{rebuilt}"
+        );
+    }
+    well_formed(&rebuilt).unwrap_or_else(|error| panic!("{error}"));
+}
+
+/// REQ-cli-047: the driver keeps ours byte for byte with the librarian off too, and
+/// refuses when Git did not hand it a file.
+#[test]
+fn library_merge_keeps_ours_and_refuses_a_missing_file() {
+    let fixture = Fixture::new();
+    fixture.write("base.xml", "base\n");
+    fixture.write("ours.xml", "ours\r\n");
+    fixture.write("theirs.xml", "theirs\n");
+    // Git hands the driver paths from the repository root; here they are absolute.
+    let path = |name: &str| fixture.root().join(name).to_string_lossy().into_owned();
+    let (base, ours, theirs) = (path("base.xml"), path("ours.xml"), path("theirs.xml"));
+    let out = fixture.run(&["library", "merge", &base, &ours, &theirs]);
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(out.stdout.is_empty());
+    assert_eq!(fixture.read("ours.xml"), "ours\r\n");
+    assert_eq!(fixture.read("theirs.xml"), "theirs\n");
+    let error = fixture.fails(&["library", "merge", &base, &path("gone.xml"), &theirs]);
+    assert!(error.contains("gone.xml"), "{error}");
+}

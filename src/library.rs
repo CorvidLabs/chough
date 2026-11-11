@@ -25,6 +25,15 @@ pub(super) enum LibraryCommand {
         #[arg(long)]
         check: bool,
     },
+    /// Git merge driver for the generated `index.md` and `journal/feed.xml`
+    /// (`chough library merge %O %A %B`, `merge=chough-generated`): keeps ours byte for
+    /// byte and exits 0, so a merge never holds a union of two feeds; the next
+    /// `chough library index` rebuilds both from the merged sources (REQ-cli-047).
+    Merge {
+        base: std::path::PathBuf,
+        ours: std::path::PathBuf,
+        theirs: std::path::PathBuf,
+    },
 }
 
 /// The archives whose lesson bundles the index and `chough next` show, newest first.
@@ -298,8 +307,18 @@ pub(super) fn sorted_entries(root: &Path, relative: &str) -> Result<Vec<String>>
 }
 
 pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
+    // The merge driver touches only the files Git hands it, librarian on or off.
+    if let LibraryCommand::Merge { ours, .. } = &command {
+        ensure!(
+            ours.is_file(),
+            "{} is not a file; Git runs this driver as `chough library merge %O %A %B`",
+            ours.display()
+        );
+        return Ok(());
+    }
     let dir = enabled_dir(root)?;
     match command {
+        LibraryCommand::Merge { .. } => Ok(()),
         LibraryCommand::Init => {
             let index = regenerate(root, &dir)?;
             print_json(&json!({
