@@ -1,0 +1,3 @@
+{"schema_version":1,"at_unix_seconds":1794428179,"kind":"iterate","from":"intent","to":"intent","reason":"legacy iteration","gate":null,"revision":"f12648efad53d0041e17e50cc3d4e521dda8a5c8","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1794428179,"kind":"skip","from":"intent","to":"design","reason":"legacy skip","gate":null,"revision":"f12648efad53d0041e17e50cc3d4e521dda8a5c8","refresh":[]}
+{"schema_version":1,"at_unix_seconds":1794428179,"kind":"advance","from":"design","to":"plan","reason":null,"gate":null,"revision":"f12648efad53d0041e17e50cc3d4e521dda8a5c8","refresh":[]}
