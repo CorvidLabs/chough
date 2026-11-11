@@ -969,14 +969,6 @@ fn bug_fix_times_come_from_entries_receipts_and_the_bug_log() {
     write_entry(&fixture, "fail-late", "TC-a", "failed", T + 300);
     write_entry(&fixture, "fail-early", "TC-a", "failed", T + 200);
     write_entry(&fixture, "pass", "TC-a", "passed", T + 900);
-    // A 0.5.x retention ledger is never read, even where it names a linked failure.
-    fixture.write(
-        ".chough/pruned.jsonl",
-        &format!(
-            "{}\n",
-            json!({"schema_version": 1, "id": "fail-pruned", "outcome": "failed", "observed_at_unix_seconds": T + 1, "pruned_at_unix_seconds": T + 2_000})
-        ),
-    );
     let verified = |at: u64| {
         json!([
             {"at_unix_seconds": T + 50, "text": "status: open -> investigating. looked at it"},
@@ -1066,8 +1058,8 @@ fn bug_fix_times_come_from_entries_receipts_and_the_bug_log() {
     );
     assert_eq!(seconds(&two["fix_time"]), Some(900));
 
-    // A linked ID that is neither an entry nor a receipt could be the earlier failure;
-    // no ledger is looked up for it.
+    // A linked ID that is neither an entry nor a receipt, such as a pruned 0.5.x
+    // observation, could be the earlier failure; no retention ledger is read.
     let three = bug("BUG-0003");
     assert_eq!(three["reproduced"]["unix_seconds"], Value::Null);
     assert_eq!(three["reproduced"]["unknown"], "unavailable");

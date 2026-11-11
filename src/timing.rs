@@ -2180,19 +2180,6 @@ mod tests {
     }
 
     #[test]
-    fn only_a_recorded_status_change_marks_verified() {
-        assert!(records_verified("status: open -> verified"));
-        assert!(records_verified(
-            "scope: in-scope -> blocking; status: fix-pending-verification -> verified. done"
-        ));
-        assert!(!records_verified("free note mentioning verified"));
-        assert!(!records_verified(
-            "status: open -> fix-pending-verification. verified later"
-        ));
-        assert!(!records_verified("Additional evidence."));
-    }
-
-    #[test]
     fn archive_directories_name_their_change() {
         assert_eq!(archived_id("2026-10-31-some-change"), "some-change");
         assert_eq!(archived_id("plain-change"), "plain-change");

@@ -2222,6 +2222,19 @@ mod tests {
     }
 
     #[test]
+    fn only_a_recorded_status_change_marks_verified() {
+        assert!(records_verified("status: open -> verified"));
+        assert!(records_verified(
+            "scope: in-scope -> blocking; status: fix-pending-verification -> verified. done"
+        ));
+        assert!(!records_verified("free note mentioning verified"));
+        assert!(!records_verified(
+            "status: open -> fix-pending-verification. verified later"
+        ));
+        assert!(!records_verified("Additional evidence."));
+    }
+
+    #[test]
     fn paragraphs_and_steps_read_back() {
         let draft = Draft {
             title: "T".into(),
