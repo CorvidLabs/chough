@@ -50,7 +50,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Observations
 
-11 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
+13 records that no archive lists were observed in this change's cycle and are marked "by cycle time" (KNOW-20).
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
@@ -62,6 +62,8 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f | passed (by cycle time) | local-macos-arm64 | TC-cli-knowledge-rebuild-keeps-observation-current |
 | OBS-tc-cli-manual-record-returns-observation-id-d15d102dd6ec256479b40abd | passed (by cycle time) | local-macos-arm64 | TC-cli-manual-record-returns-observation-id |
 | OBS-tc-cli-manual-record-returns-observation-id-fa94fc389aac2ff426d36b44 | failed (by cycle time) | local-macos-arm64 | TC-cli-manual-record-returns-observation-id |
+| OBS-tc-history-rolled-session-stays-listed-and-protecting-1fe8daacc8c86871977488e9 | passed (by cycle time) | local-macos-arm64 | TC-history-rolled-session-stays-listed-and-protecting |
+| OBS-tc-history-rollup-copies-and-keeps-archived-sessions-cfc1d3f5770320dbd89df7bb | passed (by cycle time) | local-macos-arm64 | TC-history-rollup-copies-and-keeps-archived-sessions |
 | OBS-tc-history-switch-keeps-gated-finished-sessions-open-1973aa42cca65e34173a3992 | failed (by cycle time) | local-macos-arm64 | TC-history-switch-keeps-gated-finished-sessions-open |
 | OBS-tc-history-switch-keeps-gated-finished-sessions-open-267a8deb386341d2ff15f774 | passed (by cycle time) | local-macos-arm64 | TC-history-switch-keeps-gated-finished-sessions-open |
 | OBS-tc-history-switch-keeps-gated-finished-sessions-open-d53f71624ec3301d1560a05e | passed (by cycle time) | local-macos-arm64 | TC-history-switch-keeps-gated-finished-sessions-open |

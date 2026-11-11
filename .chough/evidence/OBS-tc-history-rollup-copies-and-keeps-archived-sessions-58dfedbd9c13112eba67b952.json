@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-rollup-copies-and-keeps-archived-sessions-58dfedbd9c13112eba67b952",
+  "criteria": [
+    "KNOW-29"
+  ],
+  "requirements": [
+    "REQ-history-011"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault for TC-history-rollup-copies-and-keeps-archived-sessions: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-rollup-copies-and-keeps-archived-sessions-58dfedbd9c13112eba67b952.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-rollup-copies-and-keeps-archived-sessions-58dfedbd9c13112eba67b952.log": "e1d0785d49b74f42732fcc9b510a0729cdb89138a5181dff40ee1d9d895b2d48"
+  },
+  "observed_at_unix_seconds": 1794356710,
+  "snapshot": {
+    "revision": "13d002b68ba53987f540607fa44bf8ab2ce5b79b",
+    "dirty": false,
+    "fingerprint": "69a6b03d363c54ee564ff44dfdd91bb4aa24653d4d81a66038adaf80c94a917f",
+    "content": "5f9c53b8690e271da7bb69660e9cbe170a7fc684ae28a4cb04b9cfc65a2c24b4"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-rollup-copies-and-keeps-archived-sessions",
+      "digest": "79b589394b50dc978e48ab66f3b76114890cd70307016b6ba1fad6472be9f2ca"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "done_keeps_the_five_newest_archived_sessions_and_rolls_the_rest_into_the_vault"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 4
+}

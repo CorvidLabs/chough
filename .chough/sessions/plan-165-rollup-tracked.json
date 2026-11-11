@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-154754b3a1df48fbced93cf6",
-    "head": null,
+    "head": "EVT-1a6399820e59635ee47807c4",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "intent",
+    "current": "accept",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -36,11 +36,15 @@
   ],
   "observations": [
     "OBS-tc-history-rollup-copies-and-keeps-archived-sessions-cfc1d3f5770320dbd89df7bb",
-    "OBS-tc-history-rolled-session-stays-listed-and-protecting-1fe8daacc8c86871977488e9"
+    "OBS-tc-history-rolled-session-stays-listed-and-protecting-1fe8daacc8c86871977488e9",
+    "OBS-tc-history-rollup-copies-and-keeps-archived-sessions-58dfedbd9c13112eba67b952",
+    "OBS-tc-history-rolled-session-stays-listed-and-protecting-9a9adc679d5197cf73482cb6"
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [],
+  "awaiting_human": [
+    "Implementation review of know-29-roll-up-copies-never-moves-tracked-session-records-165"
+  ],
   "run_consents": [],
-  "next_action": "Leif: implementation acceptance of #211 (and #212's KNOW-30 for the HI; KNOW-29's 'only five stay' clause still contradicts copy-not-move until #212 amends or supersedes it); then review, ship, push the archive and merge."
+  "next_action": "Record Leif's relayed acceptance as the review, ship, dogfood, full suite; stop before merge for the coordinator."
 }
