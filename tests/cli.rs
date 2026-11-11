@@ -2550,6 +2550,32 @@ fn an_archived_finalization_over_the_record_bound_is_read() {
     assert_eq!(session["fix"], "chough doctor --fix", "{list:#}");
 }
 
+/// Issue #100 (LIFE-15), REQ-cli-042: `chough library index` takes an archive's title
+/// from an archived `change.md` larger than the record bound, read at full size within
+/// SpecSync's artifact bound, and copies none of the rest of it.
+#[test]
+fn an_archived_change_md_over_the_record_bound_is_read() {
+    let fixture = Fixture::new();
+    let archive = fixture.big_archive();
+    fixture.write(&format!("{archive}/lesson-bundle.md"), "# Lessons\n");
+    let notes = "x".repeat(70_000);
+    fixture.write(
+        &format!("{archive}/change.md"),
+        &format!(
+            "---\nid: big-change\nstate: archived\n---\n\n# A large archived change\n\n## Acceptance Criteria\n\n- It is read whole\n\n## Notes\n\n{notes}\n"
+        ),
+    );
+    fixture.ok(&["library", "index"]);
+    let index = fs::read_to_string(fixture.root().join("knowledge/index.md")).unwrap();
+    assert!(
+        index.contains(&format!(
+            "- [big-change](../{archive}/lesson-bundle.md), A large archived change\n"
+        )),
+        "{index}"
+    );
+    assert!(!index.contains("It is read whole") && !index.contains("xxxx"));
+}
+
 /// Issue #100 (LIFE-15): a `.specsync/sdd.json` policy larger than the record bound is
 /// SpecSync's to judge; a valid disabled policy is not refused as unreadable.
 #[test]
