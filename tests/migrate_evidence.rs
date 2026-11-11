@@ -282,7 +282,8 @@ fn reference_label(status: &Value, id: &str) -> String {
 /// in-project artifact; the archived session and the bug reference a third observation;
 /// a fourth is referenced by nothing. The case run and the product test become entries
 /// of the open session, the third a receipt of the story and of the bug, the fourth is
-/// removed, aliased `removed`. The raw log leaves and its digest is the fingerprint;
+/// removed, aliased `removed`. The raw log leaves and its digest is the fingerprint,
+/// written `sha256:<hex>` as REQ-records-005 writes it;
 /// `artifact.txt` stays the project's. Every old ID resolves after the apply.
 #[test]
 fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() {
@@ -402,7 +403,11 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
         "{text}"
     );
     assert_eq!(entry["environment"], "fixture", "{text}");
-    assert_eq!(entry["fingerprint"], LOG_DIGEST, "{text}");
+    assert_eq!(
+        entry["fingerprint"],
+        format!("sha256:{LOG_DIGEST}"),
+        "{text}"
+    );
     assert!(
         !entry.contains_key("artifacts"),
         "a raw log is never carried: {text}"
@@ -467,7 +472,11 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
     );
     // No artifacts field on a receipt: the in-project artifact's digest is its
     // fingerprint, and a gap line says the paths are not carried.
-    assert_eq!(receipt["fingerprint"], ARTIFACT_DIGEST, "{story_text}");
+    assert_eq!(
+        receipt["fingerprint"],
+        format!("sha256:{ARTIFACT_DIGEST}"),
+        "{story_text}"
+    );
     let allowed = [
         "id",
         "aliases",
@@ -705,7 +714,11 @@ fn key_screenshots_are_stripped_bounded_and_kept_beside_their_session_or_story()
                 assert!(!bytes.windows(4).any(|w| w == b"tEXt" || w == b"eXIf"));
                 assert!(bytes.len() <= 524_288);
                 assert_eq!(front(&text)["screenshot"], name, "{text}");
-                assert_eq!(front(&text)["fingerprint"], sha256(&bytes), "{text}");
+                assert_eq!(
+                    front(&text)["fingerprint"],
+                    format!("sha256:{}", sha256(&bytes)),
+                    "{text}"
+                );
             } else {
                 assert!(!front(&text).contains_key("screenshot"), "{text}");
             }
@@ -740,7 +753,11 @@ fn key_screenshots_are_stripped_bounded_and_kept_beside_their_session_or_story()
     let beside = format!(".chough/archive/sessions/{story}/{name}");
     let bytes = fs::read(fixture.root().join(&beside)).unwrap();
     assert!(!bytes.windows(4).any(|w| w == b"tEXt" || w == b"eXIf"));
-    assert_eq!(receipt["fingerprint"], sha256(&bytes), "{story_text}");
+    assert_eq!(
+        receipt["fingerprint"],
+        format!("sha256:{}", sha256(&bytes)),
+        "{story_text}"
+    );
 }
 
 /// A 0.5.x validation run (REQ-cli-023): carried like an observation under its `VAL-`
@@ -998,7 +1015,10 @@ fn rolled_observations_in_the_vault_become_receipts_of_their_story() {
     )
     .unwrap();
     assert!(!beside.windows(4).any(|w| w == b"tEXt" || w == b"eXIf"));
-    assert_eq!(receipt["fingerprint"], sha256(&beside));
+    assert_eq!(
+        receipt["fingerprint"],
+        format!("sha256:{}", sha256(&beside))
+    );
 }
 
 /// REQ-cli-017: 0.5.x compared content only for schema 2 records, so a schema 1
