@@ -1,6 +1,7 @@
 //! Retired in 0.6.0 with REQ-cli-046 (vault attachments) and REQ-cli-041 (trims): the
 //! vault no longer holds attachments. Only what `src/evidence.rs` still calls is left, and
 //! this file is deleted at integration once plan step 4 removes those calls.
+#![allow(dead_code)] // removed at integration (t382)
 
 use crate::records::local_path;
 use anyhow::Result;
