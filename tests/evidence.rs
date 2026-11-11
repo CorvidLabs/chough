@@ -195,7 +195,7 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
         .collect();
     assert_eq!(listed["old-pass"], "removed", "{next}");
     assert_eq!(listed["never-recorded"], "unavailable", "{next}");
-    assert_eq!(listed["n1"], "stale", "{next}");
+    assert_eq!(listed["n1"], "historical", "{next}");
     assert!(listed.values().all(|label| label != "current"), "{next}");
     let report = fixture.ok(&["status", "--environment", "local"]);
     let references = report["observation_references"].as_array().unwrap();
@@ -208,7 +208,7 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
     };
     assert_eq!(label("old-pass"), "removed");
     assert_eq!(label("never-recorded"), "unavailable");
-    assert_eq!(label("n1"), "stale");
+    assert_eq!(label("n1"), "historical");
     for observation in report["observations"].as_array().unwrap() {
         assert!(
             !observation["record"]["aliases"]
