@@ -308,6 +308,7 @@ files.
 
 - [Architecture](docs/architecture.md), [lifecycle](docs/lifecycle.md), [CLI reference](docs/cli.md)
 - [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [integrations and limits](docs/integrations.md)
+- [Roadmap to 1.0](docs/roadmap-1.0.md) and [the 1.0 test plan](docs/test-plan-1.0.md)
 - [Evidence-reuse proposal](docs/NEXT_CHANGE.md): addressed for content-identical
   commits by D-018; its ancestry check and reuse label remain unapproved
 - [Diagram rendering and visual verification](docs/verification.md)

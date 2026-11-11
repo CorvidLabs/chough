@@ -1,7 +1,9 @@
 # Roadmap
 
 Durable intent is in [HI](../hi/). This roadmap records delivered work and proposed
-sequencing; it is not human acceptance or proof of delivery.
+sequencing; it is not human acceptance or proof of delivery. The path to 1.0 from
+the 2026-11-10 MVP interview is in [roadmap-1.0.md](roadmap-1.0.md), with
+[its test plan](test-plan-1.0.md).
 
 | Stage | Outcome | State |
 |---|---|---|

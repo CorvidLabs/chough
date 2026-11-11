@@ -1,0 +1,51 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794363606,
+      "digest": "8db4bbe68b26edcaabf98a82a1c4b6b68548d6759f8b6e2b0d083d524fbfec59",
+      "note": "Leif approved the intent as a whole in the coordinator chat (Claude Code, hc t370), 2026-11-10: \"Approve it\", and \"Yes, merge when green\" to recording his approval on #212 and merging once checks pass. Recorded as him under FLOW-23 by the kimi-code worker (session roadmap-1-0-hi-capture).",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping",
+        "title": "Capture the 2026-11-10 MVP interview as hi criteria and add the 1.0 roadmap, test plan and draft issue mapping",
+        "description": "Capture the 2026-11-10 MVP interview as hi criteria and add the 1.0 roadmap, test plan and draft issue mapping",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "INTENT.md",
+          "README.md",
+          "docs/ROADMAP.md",
+          "docs/roadmap-1.0.md",
+          "docs/test-plan-1.0.md",
+          "hi"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "No requirement text changes: the PR captures Leif's 2026-11-10 interview decisions as new hi criteria (FLOW-21, FLOW-22, DRIVE-24, KNOW-30, LIFE-17 to LIFE-25) and adds roadmap and test-plan documentation. No helper behavior, stage semantics, retention or SpecSync contract changes.",
+        "acceptance_criteria": [
+          "hi check passes with the 22 new criteria (FLOW-21 to FLOW-23, DRIVE-24 to DRIVE-28, KNOW-30 to KNOW-33, LIFE-17 to LIFE-26) and the INTENT.md index regenerated; docs/roadmap-1.0.md defines milestones to 1.0, each tied to one of the four bar items of LIFE-21 with a done definition and its test, ships the human-first redesign (M1 to M3) as one change, Chough 0.6.0, dogfooded on the chough repo before any other repo updates, includes the migration design as settled in the 2026-11-10 design review (session.md frontmatter checkpoint and timeline, agent/ folder, one archived story file per finished session, Markdown records with date+slug names), and re-scopes knowledge to links-never-copies per #235; docs/test-plan-1.0.md covers the per-repo dogfood checklist, the flake tracker and two-week clean window, migration fixtures from every 0.x tag (0.1.0 to 0.5.0) and the host-matrix e2e harness design; the issues exist under the Chough 1.0 milestone: epic #232 with the 19 new issues #213 to #231 and the mapped existing open issues, with #214 and #216 scoped to the settled design; no helper behavior, requirement text, stage semantics, retention or SpecSync contract changes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "hi IDs are never reused or renumbered (hi/AGENTS.md); existing approved criteria are never reworded or removed (KNOW-30 was this change's own unapproved draft, rewritten per Leif's #235 round-2 decision, which closes the KNOW-29 conflict); the FLOW-17 vs FLOW-21 Windows question stays open for Leif; docs must match current main behavior (FLOW-18); removing knowledge/intent and knowledge/archives is contracted librarian behavior (specs/cli/requirements.md) and stays out of this docs change, scoped to the #235 cleanup change",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794396382,
+      "digest": "dbee7c0c11f930e07e32d35edf6e87dfa19087a6b6c6fe50a58b24939e0370e5",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

@@ -25,6 +25,10 @@ criteria:
   - FLOW-18
   - FLOW-19
   - FLOW-20
+  - FLOW-21
+  - FLOW-22
+  - FLOW-23
+  - FLOW-24
 tags:
   - chough/intent
 ---
@@ -57,3 +61,7 @@ archived changes whose requirements trace it.
 - **FLOW-18**: none yet
 - **FLOW-19**: [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md)
 - **FLOW-20**: [chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20](../archives/chough-gate-list-one-screen-gate-summaries-with-digests-and-one-reply-for-listed-gates-only-184-flow-19-flow-20.md)
+- **FLOW-21**: none yet
+- **FLOW-22**: none yet
+- **FLOW-23**: none yet
+- **FLOW-24**: none yet

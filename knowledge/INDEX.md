@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 169
+archived_changes: 170
 tags:
   - chough/index
 ---
@@ -47,17 +47,17 @@ Active:
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping](archives/capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping.md) Capture the 2026-11-10 MVP interview as hi criteria and add the 1.0 roadmap, test plan and draft issue mapping (hot)
 - [return-the-observation-id-from-cases-record-and-evidence-add-issue-60](archives/return-the-observation-id-from-cases-record-and-evidence-add-issue-60.md) Return the observation ID from cases record and evidence add (issue 60) (hot)
 - [keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181](archives/keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181.md) Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181) (hot)
-- [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](archives/keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136.md) Keep observations current when the generated knowledge index is rebuilt (#136) (hot)
+- [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](archives/keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136.md) Keep observations current when the generated knowledge index is rebuilt (#136) (cold)
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](archives/make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit.md) Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit (cold)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority (cold)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](archives/move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence.md) Move the two #192 cases into dedicated #196 files without changing definitions or evidence (cold)
 - [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](archives/refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113.md) Refuse new-session writes when the adopted frozen legacy log is missing (113) (cold)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (cold)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](archives/explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18.md) Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18) (cold)
-- [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197 (cold)
-- All 169 archived changes, by month: [timeline.md](timeline.md)
+- All 170 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping](../.specsync/archive/changes/2026-11-11-capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping/lesson-bundle.md)
 - [return-the-observation-id-from-cases-record-and-evidence-add-issue-60](../.specsync/archive/changes/2026-11-10-return-the-observation-id-from-cases-record-and-evidence-add-issue-60/lesson-bundle.md)
 - [keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181](../.specsync/archive/changes/2026-11-10-keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181/lesson-bundle.md)
 - [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](../.specsync/archive/changes/2026-11-10-keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](../.specsync/archive/changes/2026-11-10-refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113/lesson-bundle.md)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](../.specsync/archive/changes/2026-11-10-recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits/lesson-bundle.md)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](../.specsync/archive/changes/2026-11-08-explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18/lesson-bundle.md)
-- [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../.specsync/archive/changes/2026-11-07-correct-prune-capture-authority-and-unsafe-rollback-for-pr-197/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -96,11 +96,13 @@ Archived lesson bundles:
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
 - BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b timing trace test flakes under load when paired runs cross a second (open, out-of-scope, unverified)
+- BUG-verify-lane-test-step-fails-intermittently-under-load-green-on-isolated-30184d3be250a048bc85cc08 Verify lane test step fails intermittently under load, green on isolated rerun (open, in-scope, unverified)
 
 ## Observations
 
-582 recorded; most recent:
+584 recorded; most recent:
 
+- OBS-structural-d05c86d6005a4840d0ab39a4 Structural Passed in local macOS arm64 at 7e75e1741b24
 - OBS-tc-cli-evidence-add-returns-observation-id-55ed9087aa0df5d8693a5ef7 ProductTest Passed in local-macos-arm64 at 361a5b1a3347
 - OBS-tc-cli-manual-record-returns-observation-id-45871c5f24362ef0ce17138b ProductTest Passed in local-macos-arm64 at 361a5b1a3347
 - OBS-tc-history-switch-keeps-gated-finished-sessions-open-513e970c867a3b306088d874 ProductTest Passed in local-macos-arm64 at 26f1a0bfe079
@@ -110,7 +112,6 @@ Archived lesson bundles:
 - OBS-tc-cli-knowledge-rebuild-keeps-observation-current-f34b5623f2696f7c1ee5b01f ProductTest Passed in local-macos-arm64 at e659153cdb87
 - OBS-tc-cli-evidence-add-returns-observation-id-7703216ed3aa2f20b3b2661d ProductTest Passed in local-macos-arm64 at 906717d6ef6b
 - OBS-tc-cli-manual-record-returns-observation-id-d15d102dd6ec256479b40abd ProductTest Passed in local-macos-arm64 at 906717d6ef6b
-- OBS-tc-cli-evidence-add-returns-observation-id-3b80f0c5684eab9228a87a75 ProductTest Failed in local-macos-arm64 at 906717d6ef6b
 
 ## Briefs
 
