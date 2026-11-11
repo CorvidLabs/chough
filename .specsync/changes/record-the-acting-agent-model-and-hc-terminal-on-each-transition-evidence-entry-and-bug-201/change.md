@@ -14,6 +14,7 @@ Record the acting agent, model and hc terminal on each transition, evidence entr
 ## Affected Canonical Specs
 
 - `cli`
+- `history`
 
 ## Acceptance Criteria
 

@@ -10,9 +10,10 @@
   "state": "draft",
   "base_commit": "d613b415e0660869e82f25a669fc1bc4c8fd82be",
   "created_at": 1794347792,
-  "updated_at": 1794348050,
+  "updated_at": 1794359065,
   "affected_specs": [
-    "cli"
+    "cli",
+    "history"
   ],
   "affected_paths": [
     "src/actor.rs",
@@ -49,7 +50,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "yes",
-    "constraints": "Leif's #201 decision (2026-11-10, recorded by the coordinator on the issue): current-agent-first; automatic where the environment exposes it, with an env override; never fail a command when the identity is unknown; no handoff, stage ownership or dispatch. The HI criterion is LIFE-17 in PR #212 (not on main yet). The actor is an unauthenticated claim. Records keep their bytes when no actor is known; older Chough builds (deny_unknown_fields) refuse a record that carries an actor, so the change log names the first reader. Only observed markers are detected automatically (CLAUDECODE, HC_TERMINAL_ID); other hosts use CHOUGH_ACTOR.",
+    "constraints": "Leif's #201 decision (2026-11-10, recorded by the coordinator on the issue): current-agent-first; automatic where the environment exposes it, with an env override; never fail a command when the identity is unknown; no handoff, stage ownership or dispatch. The HI criterion is LIFE-17 in PR #212 (not on main yet). The actor is an unauthenticated claim. Records keep their bytes when no actor is known; older Chough builds (deny_unknown_fields) refuse a record that carries an actor, so the change log names the first reader. Only observed markers are detected automatically (CLAUDECODE, HC_TERMINAL_ID); other hosts use CHOUGH_ACTOR. Per #234, records never store a working directory, home path or username, only the agent, model and terminal id.",
     "public_contract": "yes"
   }
 }
