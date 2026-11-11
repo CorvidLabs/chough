@@ -108,8 +108,6 @@ pub(crate) type Receipt = Vec<(String, String)>;
 /// Where each 0.5.x observation went: an open session's evidence entry (its path), or
 /// a receipt (its map), by observation ID. An observation in neither was removed.
 #[derive(Clone, Debug, Default)]
-// Read by the bug mapper (t38b) when it lands; removed at integration (t382).
-#[allow(dead_code)]
 pub(crate) struct ObservationHomes {
     pub(crate) entries: BTreeMap<String, String>,
     pub(crate) receipts: BTreeMap<String, Receipt>,
@@ -1077,10 +1075,9 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
     Ok((carried, homes))
 }
 
-/// Mapper 2, each 0.5.x bug's linked observation IDs (t38b): replace this body with a
-/// call to `crate::bugs::links_0_5(root)`.
-fn bug_links_0_5(_root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
-    Ok(BTreeMap::new())
+/// Mapper 2, each 0.5.x bug's linked observation IDs (t38b).
+fn bug_links_0_5(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
+    crate::bugs::links_0_5(root)
 }
 
 /// Mapper 3, evidence (t37d): replace this body with a call to
@@ -1093,10 +1090,9 @@ fn evidence_0_5(
     Ok((Carried::default(), ObservationHomes::default()))
 }
 
-/// Mapper 4, bugs (t38b): replace this body with a call to
-/// `crate::bugs::migrate_0_5(root, observations)`.
-fn bugs_0_5(_root: &Path, _observations: &ObservationHomes) -> Result<Carried> {
-    Ok(Carried::default())
+/// Mapper 4, bugs (t38b).
+fn bugs_0_5(root: &Path, observations: &ObservationHomes) -> Result<Carried> {
+    crate::bugs::migrate_0_5(root, observations)
 }
 
 /// Mapper 5, knowledge (t37j): replace this body with a call to
