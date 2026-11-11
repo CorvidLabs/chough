@@ -17,7 +17,7 @@ use crate::records::{
 };
 use anyhow::{Context, Result, bail, ensure};
 use clap::{Subcommand, ValueEnum};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::json;
 use std::collections::HashMap;
 use std::fs;
@@ -144,18 +144,20 @@ pub(super) enum InboxCommand {
     Fold,
 }
 
-/// An inbox entry. It has no approval, review, consent, gate or stage field.
-#[derive(Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
+/// An inbox entry: one Markdown record in the session's `agent/inbox/`
+/// (REQ-history-009). It has no approval, review, consent, gate or stage field.
+#[derive(Serialize)]
 struct Entry {
-    schema_version: u32,
     id: String,
     session: String,
     from: String,
     kind: String,
     text: String,
-    recorded_at_unix_seconds: u64,
+    added: String,
 }
+
+/// Front matter keys an inbox entry may not carry (REQ-history-009).
+const FORBIDDEN_ENTRY_KEYS: [&str; 5] = ["approval", "review", "consent", "gate", "stage"];
 
 /// The session file of open session `id`.
 pub(super) fn session_file(id: &str) -> String {
@@ -639,7 +641,33 @@ fn point(root: &Path, id: &str) -> Result<()> {
 
 /// The number of unfolded entries in a session's inbox.
 pub(super) fn unfolded(root: &Path, id: &str) -> Result<usize> {
-    Ok(json_names_in(root, &inbox_dir(id))?.len())
+    Ok(entry_names(root, &inbox_dir(id))?.len())
+}
+
+/// The names (without `.md`) of the entry files directly in an inbox folder.
+fn entry_names(root: &Path, dir: &str) -> Result<Vec<String>> {
+    let mut names = vec![];
+    let entries = match fs::read_dir(local_path(root, dir)?) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(names),
+        Err(error) => return Err(error).with_context(|| format!("reading {dir}")),
+    };
+    for entry in entries {
+        let entry = entry?;
+        if !entry.file_type()?.is_file() {
+            continue;
+        }
+        if let Some(name) = entry
+            .file_name()
+            .to_str()
+            .and_then(|name| name.strip_suffix(".md"))
+            .filter(|name| !name.starts_with('.') && valid_change_id(name))
+        {
+            names.push(name.to_string());
+        }
+    }
+    names.sort();
+    Ok(names)
 }
 
 /// Create a new session for `key` and make it active, touching no other session
@@ -1051,30 +1079,62 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
     }))
 }
 
-fn random_id() -> Result<String> {
-    let mut bytes = [0u8; 12];
-    getrandom::fill(&mut bytes).map_err(|error| anyhow::anyhow!("inbox random source: {error}"))?;
-    Ok(format!(
-        "INB-{}",
-        bytes.iter().map(|b| format!("{b:02x}")).collect::<String>()
-    ))
-}
-
 fn pending(root: &Path, key: &str) -> Result<Vec<(String, Entry)>> {
     let dir = inbox_dir(key);
     let mut entries = vec![];
-    for id in json_names_in(root, &dir)? {
-        let file = format!("{dir}/{id}.json");
+    for name in entry_names(root, &dir)? {
+        let file = format!("{dir}/{name}.md");
         let content = read_bounded_record(&local_path(root, &file)?, INBOX_LIMIT)?;
-        let entry: Entry = serde_json::from_str(&content)
+        let record = crate::markdown::parse(&file, &content)
             .with_context(|| format!("invalid inbox entry {file}"))?;
+        if let Some(key) = record
+            .keys()
+            .into_iter()
+            .find(|key| FORBIDDEN_ENTRY_KEYS.contains(key))
+        {
+            bail!("invalid inbox entry {file}: an inbox entry carries no `{key}` field");
+        }
+        let field = |name: &str| record.scalar(name).unwrap_or_default().to_string();
         ensure!(
-            entry.schema_version == 1 && entry.id == id && entry.session == key,
+            field("id") == name && field("session") == key,
             "invalid inbox entry {file}"
         );
-        entries.push((file, entry));
+        entries.push((
+            file,
+            Entry {
+                id: name,
+                session: key.to_string(),
+                from: field("from"),
+                kind: field("kind"),
+                text: field("value"),
+                added: field("added"),
+            },
+        ));
     }
     Ok(entries)
+}
+
+/// The Markdown record of a new inbox entry named `name`.
+fn render_entry(
+    name: &str,
+    session: &str,
+    from: &str,
+    kind: Kind,
+    text: &str,
+    recorded: Option<bool>,
+    added: &str,
+) -> Result<String> {
+    let mut record = crate::markdown::Record::new(&format!("{text}\n"));
+    record.set_scalar("kind", kind.name())?;
+    record.set_scalar("id", name)?;
+    record.set_scalar("session", session)?;
+    record.set_scalar("from", from)?;
+    record.set_scalar("value", text)?;
+    if let Some(recorded) = recorded {
+        record.set_scalar("recorded", if recorded { "true" } else { "false" })?;
+    }
+    record.set_scalar("added", added)?;
+    record.render_within(RecordKind::Inbox)
 }
 
 /// The checks `inbox add` makes on `from` and the text, also made again by `fold`.
@@ -1113,32 +1173,43 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                 .map_err(|_| anyhow::anyhow!("no open session {session}"))?;
             validate_entry(&from, kind, &text)?;
             ensure!(
-                json_names_in(root, &inbox_dir(&session))?.len() < MAX_INBOX,
+                entry_names(root, &inbox_dir(&session))?.len() < MAX_INBOX,
                 "the inbox of {session} holds {MAX_INBOX} unfolded entries; fold it first"
             );
-            let id = random_id()?;
-            let entry = Entry {
-                schema_version: 1,
-                id: id.clone(),
-                session: session.clone(),
-                from,
-                kind: kind.name().into(),
-                text,
-                recorded_at_unix_seconds: now()?,
-            };
-            let file = format!("{}/{id}.json", inbox_dir(&session));
-            let content = serde_json::to_string_pretty(&entry)? + "\n";
-            ensure!(
-                publish_entry(root, &file, &content)?,
-                "inbox collision at {file}; no retry or overwrite"
-            );
-            if matches!(kind, Kind::Observation) && !crate::evidence::is_present(root, &entry.text)?
-            {
+            let observation = matches!(kind, Kind::Observation);
+            let recorded = observation
+                .then(|| crate::evidence::is_present(root, &text))
+                .transpose()?;
+            let at = now()?;
+            let added = crate::session_md::iso_time(at);
+            let base =
+                crate::identity::dated_name(&crate::identity::utc_date(at), &text, kind.name());
+            let dir = inbox_dir(&session);
+            // Named by date and slug; a clash draws one suffix and a second is refused
+            // (REQ-records-003). Each candidate is published whole by a link.
+            let mut id = base.clone();
+            let mut file = format!("{dir}/{id}.md");
+            if !publish_entry(
+                root,
+                &file,
+                &render_entry(&id, &session, &from, kind, &text, recorded, &added)?,
+            )? {
+                id = crate::identity::suffixed(&base)?;
+                file = format!("{dir}/{id}.md");
+                ensure!(
+                    publish_entry(
+                        root,
+                        &file,
+                        &render_entry(&id, &session, &from, kind, &text, recorded, &added)?
+                    )?,
+                    "refused: {file} also exists; nothing was written and no other name was drawn"
+                );
+            }
+            if recorded == Some(false) {
                 // Leif's choice for #84: warn, do not refuse; a subagent may report
                 // before this tree has the record.
                 eprintln!(
-                    "chough: warning: observation {} has no record in .chough/evidence yet; the entry was added and `chough inbox list` marks it recorded: false",
-                    entry.text
+                    "chough: warning: observation {text} has no record in .chough/evidence yet; the entry was added and `chough inbox list` marks it recorded: false"
                 );
             }
             print_json(&json!({"schema_version":1,"added":file,"id":id}))
@@ -1184,10 +1255,10 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                 };
                 validate_entry(&entry.from, kind, &entry.text)
                     .with_context(|| format!("invalid inbox entry {file}"))?;
-                let target = local_path(root, &format!("{folded}/{}.json", entry.id))?;
+                let target = local_path(root, &format!("{folded}/{}.md", entry.id))?;
                 ensure!(
                     !target.exists(),
-                    "{} already folded at {folded}/{}.json; nothing was folded",
+                    "{} already folded at {folded}/{}.md; nothing was folded",
                     entry.id,
                     entry.id
                 );
