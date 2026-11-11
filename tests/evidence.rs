@@ -115,9 +115,9 @@ fn write_bug(
 /// carry reads `removed`, naming the migration's receipt; an ID no record ever held reads
 /// `unavailable`; neither ever counts as current, passed or verifying evidence. On a
 /// 0.5.x project the open session references `n1`, which becomes its entry and reads
-/// stale; nothing references `old-pass`, so the migration removes it; and a bug links
-/// `old-fail`, which no file holds any more. After the migration the checkpoint
-/// references `old-pass` and `never-recorded`.
+/// historical (REQ-cli-021); nothing references `old-pass`, so the migration removes it;
+/// and a bug links `old-fail`, which no file holds any more. After the migration the
+/// checkpoint references `old-pass` and `never-recorded`.
 #[test]
 fn removed_and_missing_observations_are_labeled_and_never_count() {
     fn copy(from: &std::path::Path, to: &std::path::Path) {
