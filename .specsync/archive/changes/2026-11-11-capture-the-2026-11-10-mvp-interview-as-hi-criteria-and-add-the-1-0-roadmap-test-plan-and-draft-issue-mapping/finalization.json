@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping",
+  "implementation_commit": "068d4f9ed90f8ef8e14992a242390830e30853b4",
+  "implementation_tree": "bb213aca0ceb3f5edae4fcf352ad548810578844",
+  "contract_digest": "8db4bbe68b26edcaabf98a82a1c4b6b68548d6759f8b6e2b0d083d524fbfec59",
+  "workspace_digest": "442bb59e1d92d94d9305125f1b925a8c925e59c5bac15ead8073e9c62355286f",
+  "closing_digest": "dbee7c0c11f930e07e32d35edf6e87dfa19087a6b6c6fe50a58b24939e0370e5",
+  "review_digest": "08f32a90764e8d9714de985aca8a3327abedf31a7b851c4472f8de3584ffde8d",
+  "finalization_digest": "30f4c0758cadd8a2fb1fc5e401c629ef96b2ccf79a1e66c8eb5883ef6aab766b",
+  "timestamp": 1794396382
+}

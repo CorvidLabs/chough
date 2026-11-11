@@ -1,6 +1,6 @@
 ---
 id: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
-state: implementing
+state: archived
 type: documentation
 base_commit: 996dadc2d26b200a7f745215ef9c151304107e05
 ---
