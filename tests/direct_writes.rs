@@ -63,20 +63,13 @@ fn project() -> Fixture {
     fixture
 }
 
-/// Every history event's transition, in no particular order.
+/// Every Timeline entry of the active session, in order, as `chough history show`
+/// reads session.md.
 fn transitions(fixture: &Fixture) -> Vec<Value> {
-    let mut found = vec![];
-    let Ok(cycles) = fs::read_dir(fixture.root().join(".chough/history/cycles")) else {
-        return found;
-    };
-    for cycle in cycles {
-        for event in fs::read_dir(cycle.unwrap().path()).unwrap() {
-            let value: Value =
-                serde_json::from_str(&fs::read_to_string(event.unwrap().path()).unwrap()).unwrap();
-            found.push(value["transition"].clone());
-        }
-    }
-    found
+    fixture.ok(&["history", "show"])["entries"]
+        .as_array()
+        .unwrap()
+        .clone()
 }
 
 fn direct_writes(fixture: &Fixture) -> Vec<Value> {
@@ -251,12 +244,17 @@ fn a_direct_write_before_ship_is_recorded_at_the_done_move() {
     fixture.commit("fixture");
     // The review is recorded directly, as before slice 5.
     fixture.write(&format!("{DIR}/review.json"), "{\"verdict\": \"pass\"}\n");
+    // Ship goes through the gate list (REQ-cli-061): list, then ship with it.
+    let listed = fixture.ok(&["gate", "list", "--json"]);
+    let list_id = listed["list"].as_str().unwrap().to_string();
     let shipped = fixture.run(&[
         "change",
         "ship",
         ID,
-        "--close-gate",
-        "Implementation review of d1",
+        "--list",
+        &list_id,
+        "--gate",
+        "1",
         "--decided-by",
         "SYNTHETIC-human",
         "--words",
@@ -288,18 +286,24 @@ fn a_direct_write_field_on_another_kind_is_an_invalid_payload() {
     let fixture = Fixture::new();
     fixture.init();
     let write = json!({"change": ID, "files": [{"path": "approvals.json", "change": "changed"}], "before_state": "approved", "after_state": "approved"});
-    let line = |kind: &str| {
-        json!({"schema_version": 1, "at_unix_seconds": 1, "kind": kind, "from": "intent", "to": "intent", "reason": null, "gate": null, "revision": null, "refresh": [], "direct_write": write}).to_string()
+    let entry = |kind: &str| {
+        format!(
+            "- 2026-11-11T00:00:00Z · {kind} · intent → intent ·  ^t-aaaaaa\n  - direct_write: {}\n",
+            serde_json::to_string(&write).unwrap()
+        )
     };
+    let file = fixture.session_file();
+    let original = fixture.read(&file);
     fixture.write(
-        ".chough/transitions.jsonl",
-        &format!("{}\n", line("direct-native-write")),
+        &file,
+        &format!("{original}\n{}", entry("direct-native-write")),
     );
-    let shown = fixture.ok(&["stage", "show"]);
-    assert_eq!(shown["recent_transitions"][0]["direct_write"], write);
+    let shown = fixture.ok(&["history", "show"]);
+    let entries = shown["entries"].as_array().unwrap();
+    assert_eq!(entries.last().unwrap()["direct_write"], write);
     for kind in ["gate-closed", "iterate"] {
-        fixture.write(".chough/transitions.jsonl", &format!("{}\n", line(kind)));
-        let error = fixture.fails(&["stage", "show"]);
+        fixture.write(&file, &format!("{original}\n{}", entry(kind)));
+        let error = fixture.fails(&["history", "show"]);
         assert!(error.contains("invalid transition"), "{kind}: {error}");
     }
 }
