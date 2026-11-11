@@ -616,6 +616,10 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         Some(text) if args.outcome != Outcome::Passed => key_lines(text),
         _ => (vec![], 0),
     };
+    let mut limitations = args.limitations.clone();
+    if let Some(note) = crate::local::toolchain_limitation(root) {
+        limitations.push(note);
+    }
     let evidence = Evidence {
         id,
         aliases: vec![],
@@ -640,7 +644,7 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         argv: vec![],
         exit_code: None,
         tests_run: None,
-        limitations: args.limitations,
+        limitations,
         key_lines,
         redacted,
         actor: crate::actor::Actor::current(),
@@ -2022,4 +2026,226 @@ fn committed_at_head(root: &Path, relative: &str) -> bool {
         Ok(output) => output.status.success() && output.stdout == bytes,
         Err(_) => false,
     }
+}
+
+// ---------------------------------------------------------------------------
+// One reader over every entry and receipt (plan delta correction 4; timing and
+// bugs both call it).
+
+/// Where an observation record was found.
+#[derive(Clone, Debug, PartialEq)]
+#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+pub(super) enum Found {
+    /// An open session's evidence folder.
+    Session(String),
+    /// An archived story's receipts list.
+    Story(String),
+    /// A bug's receipts list.
+    Bug(String),
+}
+
+/// One observation record, wherever it lives, for reports (timing) and bug
+/// verification: id, aliases, case, result, observed (Unix seconds), environment,
+/// revision, run time and where it was found.
+#[derive(Clone, Debug)]
+#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+pub(super) struct ObservationView {
+    pub(super) id: String,
+    pub(super) aliases: Vec<String>,
+    pub(super) case: Option<String>,
+    pub(super) result: String,
+    pub(super) observed: Option<u64>,
+    pub(super) environment: String,
+    pub(super) revision: String,
+    pub(super) duration_seconds: Option<u64>,
+    pub(super) found: Found,
+}
+
+/// A receipt map (a story's or a bug's `receipts:` entry) as a view.
+fn receipt_view(map: &[(String, String)], found: Found) -> ObservationView {
+    let get = |key: &str| {
+        map.iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.clone())
+    };
+    ObservationView {
+        id: get("id").unwrap_or_default(),
+        aliases: get("aliases")
+            .map(|text| text.split(", ").map(str::to_string).collect())
+            .unwrap_or_default(),
+        case: get("case"),
+        result: get("result").unwrap_or_default(),
+        observed: get("observed").and_then(|text| crate::session_md::parse_time(&text).ok()),
+        environment: get("environment").unwrap_or_default(),
+        revision: get("revision").unwrap_or_default(),
+        duration_seconds: get("duration_seconds").and_then(|text| text.parse().ok()),
+        found,
+    }
+}
+
+/// An open session's entry as a view.
+fn entry_view(evidence: &Evidence, session_id: &str) -> ObservationView {
+    ObservationView {
+        id: evidence.id.clone(),
+        aliases: evidence.aliases.clone(),
+        case: evidence.cases.first().map(|case| case.id.clone()),
+        result: evidence.outcome.name().to_string(),
+        observed: Some(evidence.observed_at_unix_seconds),
+        environment: evidence.environment.clone(),
+        revision: evidence.snapshot.revision.clone(),
+        duration_seconds: evidence.duration_seconds,
+        found: Found::Session(session_id.to_string()),
+    }
+}
+
+/// Every observation record: each open session's entries, then each archived story's
+/// and each bug's receipts. Read-only.
+#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
+    let mut views = vec![];
+    for session_id in crate::sessions::open_ids(root)? {
+        for evidence in load_session(root, &session_id)? {
+            views.push(entry_view(&evidence, &session_id));
+        }
+    }
+    let archive = local_path(root, ".chough/archive/sessions")?;
+    if archive.is_dir() {
+        let mut names: Vec<String> = fs::read_dir(&archive)?
+            .filter_map(|entry| entry.ok())
+            .filter_map(|entry| entry.file_name().into_string().ok())
+            .filter(|name| name.ends_with(".md"))
+            .collect();
+        names.sort();
+        for name in names {
+            let story = name.trim_end_matches(".md").to_string();
+            let text = read_bounded_record(&archive.join(&name), markdown::SESSION_BOUND)?;
+            let record = markdown::parse(&name, &text)?;
+            for map in record.maps("receipts") {
+                views.push(receipt_view(&map, Found::Story(story.clone())));
+            }
+        }
+    }
+    let bugs = local_path(root, crate::bugs::BUGS_DIR)?;
+    if bugs.is_dir() {
+        for entry in fs::read_dir(&bugs)? {
+            let entry = entry?;
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if name.ends_with(".md") {
+                let text = read_bounded_record(&entry.path(), markdown::RECORD_BOUND)?;
+                let record = markdown::parse(&name, &text)?;
+                for map in record.maps("receipts") {
+                    views.push(receipt_view(&map, Found::Bug(name.trim_end_matches(".md").into())));
+                }
+            }
+        }
+    }
+    Ok(views)
+}
+
+/// Resolve an evidence ID (a bare ID, a 0.5.x alias or the qualified
+/// `<session-id>/<evidence-id>` form) through the open sessions; two records holding
+/// it refuse as ambiguous, naming the qualified form (the t38b/t382 agreement).
+#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+pub(super) fn resolve_entry(root: &Path, id: &str) -> Result<Option<(String, Evidence)>> {
+    if let Some((session, entry)) = id.split_once('/') {
+        let record = load_session(root, session)?
+            .into_iter()
+            .find(|evidence| evidence.id == entry || evidence.aliases.iter().any(|a| a == entry));
+        return Ok(record.map(|evidence| (id.to_string(), evidence)));
+    }
+    let mut found = vec![];
+    for session_id in crate::sessions::open_ids(root)? {
+        let dir = evidence_dir(&session_id);
+        if let Some((_, record)) = markdown::resolve(root, &dir, id)? {
+            found.push((session_id, Evidence::from_record(&record)?));
+        }
+    }
+    match found.len() {
+        0 => Ok(None),
+        _ => {
+            let first = found.pop().expect("one entry");
+            if found.is_empty() {
+                Ok(Some((format!("{}/{}", first.0, first.1.id), first.1)))
+            } else {
+                bail!(
+                    "refused: {id} names an evidence entry in more than one session; qualify it as <session-id>/<evidence-id>"
+                )
+            }
+        }
+    }
+}
+
+/// The one entry for a validation run's evidence record shape (REQ-cli-023, plan
+/// delta correction 4): written by validate.rs.
+#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+pub(super) struct ValidationRun {
+    pub(super) id: String,
+    pub(super) case: String,
+    pub(super) environment: String,
+    pub(super) state: String,
+    pub(super) started: u64,
+    pub(super) completed: Option<u64>,
+    pub(super) failures: u64,
+    pub(super) not_run: u64,
+    pub(super) elapsed_seconds: u64,
+    /// One attempt: started, observed, result and duration_seconds.
+    pub(super) attempts: Vec<Vec<(String, String)>>,
+    pub(super) summary: String,
+}
+
+/// Write a repeated validation run as one evidence entry (REQ-cli-023).
+#[cfg_attr(not(test), allow(dead_code))] // step 4 seam
+pub(super) fn record_validation_run(root: &Path, run: &ValidationRun) -> Result<String> {
+    let session_id = active_session(root)?;
+    let mut record = Record::new(&format!(
+        "**{}.**\n\nA repeated validation run of {}: {}, {} failed, {} not run, {} seconds.\n",
+        run.summary,
+        run.case,
+        run.state,
+        run.failures,
+        run.not_run,
+        run.elapsed_seconds
+    ));
+    let set = |record: &mut Record, key: &str, value: &str| {
+        record.set_scalar(key, value).expect("a scalar value")
+    };
+    set(&mut record, "kind", "evidence");
+    set(&mut record, "id", &run.id);
+    set(&mut record, "validation_run", "true");
+    set(&mut record, "case", &run.case);
+    set(&mut record, "environment", &run.environment);
+    set(&mut record, "state", &run.state);
+    set(&mut record, "started", &iso_time(run.started));
+    if let Some(completed) = run.completed {
+        set(&mut record, "completed", &iso_time(completed));
+    }
+    set(&mut record, "failures", &run.failures.to_string());
+    set(&mut record, "not_run", &run.not_run.to_string());
+    set(&mut record, "elapsed_seconds", &run.elapsed_seconds.to_string());
+    if !run.attempts.is_empty() {
+        record.set("attempts", markdown::Value::Maps(run.attempts.clone()))?;
+    }
+    set(&mut record, "claim", &run.summary);
+    set(&mut record, "result", "not-run");
+    set(&mut record, "evidence_kind", "structural");
+    set(&mut record, "revision", "");
+    let session_id_dir = evidence_dir(&session_id);
+    let name = identity::create_named(
+        root,
+        &session_id_dir,
+        &run.id,
+        ".md",
+        markdown::RECORD_BOUND,
+        |name| {
+            let mut record = record.clone();
+            record.set_scalar("id", name).expect("the id");
+            if leaks::redacting() {
+                record.redact_leaks(leaks::Local::current());
+            } else {
+                record.check_leaks(leaks::Local::current())?;
+            }
+            Ok(record.render())
+        },
+    )?;
+    Ok(format!("{session_id_dir}/{name}.md"))
 }

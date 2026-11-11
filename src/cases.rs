@@ -1188,6 +1188,9 @@ pub(super) fn run_case(
     } else {
         evidence::key_lines(&failing_text(binding, &execution, &text))
     };
+    if let Some(note) = crate::local::toolchain_limitation(root) {
+        limitations.push(note);
+    }
     let record = Evidence {
         id: observation.clone(),
         aliases: vec![],

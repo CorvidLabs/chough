@@ -90,3 +90,15 @@ fn unquote(value: &str) -> Result<String> {
         .with_context(|| format!("{EXTERNAL}: a value is not a quoted string"))?;
     Ok(inner.replace("\\\"", "\"").replace("\\\\", "\\"))
 }
+
+/// The verify lane's toolchain verdict, recorded at `.chough/local/logs/toolchain.log`
+/// by the `toolchain` Fledge task (REQ-cli-019, BUG-0022): its first line is `matches`
+/// or `differs: ...`. Returns the limitation an evidence entry then carries.
+pub(crate) fn toolchain_limitation(root: &Path) -> Option<String> {
+    let path = local_path(root, &format!("{LOGS}/toolchain.log")).ok()?;
+    let content = std::fs::read_to_string(path).ok()?;
+    let first = content.lines().next()?;
+    first
+        .starts_with("differs")
+        .then(|| format!("recorded on a toolchain that differs from CI: {}", &content[..content.len().min(200)]))
+}
