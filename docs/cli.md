@@ -46,7 +46,6 @@ edits. Machine-only files live in `.chough/local/` and are never committed. Inte
 lives in `hi/`, contracts in `specs/` and change history in `.specsync/archive/`;
 Chough links them and never copies them.
 
-<!-- depends on the .chough/README.md writer, not in this build -->
 `chough init` and `chough migrate --apply` write `.chough/README.md` create-only, and
 an existing one stays byte-identical.
 
@@ -850,7 +849,7 @@ What becomes what:
 - an open gate holds the stage its session was at;
 - case definitions and `.chough/preferences.json` stay byte-identical.
 
-<!-- depends on the migrate mappers -->
+<!-- depends on the migrate evidence mapper (step 4) -->
 Each observation an open session references becomes an evidence entry of that session;
 each one an archived session or a bug references becomes a receipt of that story or
 bug; others are removed. A small PNG or JPEG artifact of a carried observation stays
@@ -1449,7 +1448,6 @@ Earlier releases also generated `INDEX.md`, `README.md`, `rules.md`, `timeline.m
 `attachments/` here. Chough no longer writes any of them, and `chough library index`
 removes a `README.md` an earlier release generated once its bytes are committed.
 
-<!-- depends on the migrate mappers -->
 `chough migrate` removes the rest of that generated and copied content after listing
 it.
 
