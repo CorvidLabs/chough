@@ -231,13 +231,14 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
             "provenance": "fixture",
         })
     };
-    let ids: Vec<String> = (0..500).map(|index| format!("stale-{index:03}")).collect();
-    let loose: Vec<String> = (0..7).map(|index| format!("loose-{index}")).collect();
+    let ids: Vec<String> = (0..500)
+        .map(|index| format!("2026-11-10-stale-{index:03}"))
+        .collect();
+    let loose: Vec<String> = (0..7)
+        .map(|index| format!("2026-11-10-loose-{index}"))
+        .collect();
     for id in ids.iter().chain(&loose) {
-        fixture.write(
-            &format!(".chough/evidence/{id}.json"),
-            &serde_json::to_string(&stale(id)).unwrap(),
-        );
+        write_entry(&fixture, &stale(id));
     }
     for (index, scope) in ["blocking", "blocking", "in-scope", "out-of-scope"]
         .iter()
@@ -272,9 +273,11 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     );
 
     let added: Value = serde_json::from_slice(&added.stdout).unwrap();
-    let current: Value =
-        serde_json::from_str(&fixture.read(added["recorded"].as_str().unwrap())).unwrap();
-    let current_id = current["id"].as_str().unwrap();
+    let current_id = added["observation"].as_str().unwrap();
+    assert!(
+        fixture.exists(added["recorded"].as_str().unwrap()),
+        "{added}"
+    );
 
     // 40 human gates and 40 blockers. The session record is bounded at 64 KiB, so six
     // of each are 4 KiB long, the most that fits beside the rest, and they come first.
@@ -297,7 +300,7 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     };
     session["awaiting_human"] = json!(list("Gate"));
     session["blockers"] = json!(list("Blocker"));
-    session["observations"] = json!([current_id, "stale-000"]);
+    session["observations"] = json!([current_id, "2026-11-10-stale-000"]);
     session["next_action"] = json!("n".repeat(4_096));
     session["objective"] = json!("o".repeat(4_000));
     let session_text = write_session(&fixture, &session);
@@ -553,10 +556,106 @@ fn observation(id: &str, outcome: &str, observed: u64) -> Value {
     })
 }
 
-fn write_record(fixture: &Fixture, directory: &str, value: &Value) {
+/// The active session's evidence folder (REQ-cli-017).
+fn evidence_dir(fixture: &Fixture) -> std::path::PathBuf {
+    fixture
+        .root()
+        .join(format!(".chough/sessions/{}/evidence", fixture.active_id()))
+}
+
+/// A Unix time as the `YYYY-MM-DDTHH:MM:SSZ` an entry's `observed` holds.
+fn iso(seconds: u64) -> String {
+    let days = (seconds / 86_400) as i64 + 719_468;
+    let era = days.div_euclid(146_097);
+    let day_of_era = days.rem_euclid(146_097);
+    let year_of_era =
+        (day_of_era - day_of_era / 1_460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let shifted = (5 * day_of_year + 2) / 153;
+    let day = day_of_year - (153 * shifted + 2) / 5 + 1;
+    let month = if shifted < 10 {
+        shifted + 3
+    } else {
+        shifted - 9
+    };
+    let year = year_of_era + era * 400 + i64::from(month <= 2);
+    let time = seconds % 86_400;
+    format!(
+        "{year:04}-{month:02}-{day:02}T{:02}:{:02}:{:02}Z",
+        time / 3_600,
+        time % 3_600 / 60,
+        time % 60
+    )
+}
+
+/// Write an observation as an evidence entry of the active session, in the front matter
+/// `evidence add` writes (REQ-cli-017), by hand so that its recorded time, revision and
+/// inputs are the fixture's. The values are plain scalars, so none is quoted.
+fn write_entry(fixture: &Fixture, value: &Value) {
+    let id = value["id"].as_str().unwrap();
+    let field = |key: &str| value[key].as_str().unwrap().to_string();
+    let list = |key: &str, items: Vec<String>| {
+        if items.is_empty() {
+            format!("{key}: []\n")
+        } else {
+            let items: String = items.iter().map(|item| format!("  - {item}\n")).collect();
+            format!("{key}:\n{items}")
+        }
+    };
+    let strings = |key: &str| -> Vec<String> {
+        value[key].as_array().map_or_else(Vec::new, |items| {
+            items
+                .iter()
+                .map(|item| item.as_str().unwrap().to_string())
+                .collect()
+        })
+    };
+    let summary = field("summary");
+    let mut front = format!(
+        "kind: evidence\nid: {id}\naliases: []\nclaim: {summary}\nresult: {}\nevidence_kind: {}\n",
+        field("outcome"),
+        field("kind"),
+    );
+    if let Some(cases) = value["cases"].as_array().filter(|cases| !cases.is_empty()) {
+        let of = |key: &str| {
+            cases
+                .iter()
+                .map(|case| case[key].as_str().unwrap().to_string())
+                .collect()
+        };
+        front.push_str(&list("case", of("id")));
+        front.push_str(&list("case_digest", of("digest")));
+    }
+    let snapshot = &value["snapshot"];
+    front.push_str(&format!(
+        "revision: {}\n",
+        snapshot["revision"].as_str().unwrap()
+    ));
+    if let Some(content) = snapshot["content"].as_str() {
+        front.push_str(&format!("content: {content}\n"));
+    }
+    front.push_str(&format!("environment: {}\n", field("environment")));
+    let artifacts = strings("artifacts");
+    if !artifacts.is_empty() {
+        front.push_str(&list("artifacts", artifacts.clone()));
+        front.push_str("artifact_fingerprints:\n");
+        for artifact in &artifacts {
+            front.push_str(&format!(
+                "  - path: {artifact}\n    digest: {}\n",
+                value["artifact_fingerprints"][artifact].as_str().unwrap()
+            ));
+        }
+    }
+    for key in ["criteria", "requirements", "contracts"] {
+        front.push_str(&list(key, strings(key)));
+    }
+    front.push_str(&format!(
+        "limitations: []\nobserved: {}\n",
+        iso(value["observed_at_unix_seconds"].as_u64().unwrap())
+    ));
     fixture.write(
-        &format!(".chough/{directory}/{}.json", value["id"].as_str().unwrap()),
-        &serde_json::to_string(value).unwrap(),
+        &format!(".chough/sessions/{}/evidence/{id}.md", fixture.active_id()),
+        &format!("---\n{front}---\n**{summary}.**\n"),
     );
 }
 
@@ -863,72 +962,67 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     assert!(text(&fixture, &["next"]).contains("Last failure: none"));
 
     // Passed and not-run records never count, however recent.
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("passed-late", "passed", 9_000),
+        &observation("2026-11-10-passed-late", "passed", 9_000),
     );
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("not-run-late", "not-run", 9_500),
+        &observation("2026-11-10-not-run-late", "not-run", 9_500),
     );
     assert_eq!(fixture.ok(&["next", "--json"])["last_failure"], Value::Null);
 
     // Recorded times disagree with file names and modification times: the name that
     // sorts last and the newest file are the oldest failures.
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("m-latest", "failed", 3_000),
+        &observation("2026-11-10-m-latest", "failed", 3_000),
     );
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("a-middle", "failed", 2_000),
+        &observation("2026-11-10-a-middle", "failed", 2_000),
     );
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("z-oldest", "failed", 1_000),
+        &observation("2026-11-10-z-oldest", "failed", 1_000),
     );
-    let evidence = fixture.root().join(".chough/evidence");
-    set_mtime(&evidence.join("m-latest.json"), 1_000_000);
-    set_mtime(&evidence.join("a-middle.json"), 2_000_000);
-    set_mtime(&evidence.join("z-oldest.json"), 3_000_000);
+    let evidence = evidence_dir(&fixture);
+    set_mtime(&evidence.join("2026-11-10-m-latest.md"), 1_000_000);
+    set_mtime(&evidence.join("2026-11-10-a-middle.md"), 2_000_000);
+    set_mtime(&evidence.join("2026-11-10-z-oldest.md"), 3_000_000);
     // Four bugs link the latest failure, by their evidence or a regression baseline;
     // one links an older failure only.
     fixture.bug_md(
         "BUG-0001",
         "in-scope",
         "fix-pending-verification",
-        &["m-latest"],
+        &["2026-11-10-m-latest"],
     );
-    fixture.bug_md("BUG-0002", "in-scope", "open", &["m-latest"]);
+    fixture.bug_md("BUG-0002", "in-scope", "open", &["2026-11-10-m-latest"]);
     fixture.bug_md("BUG-0003", "in-scope", "verified", &[]);
     let baseline = ".chough/bugs/BUG-0003.md";
     fixture.write(
         baseline,
         &fixture.read(baseline).replace(
             "receipts: []\n",
-            "receipts: []\nregression_baseline: m-latest\n",
+            "receipts: []\nregression_baseline: 2026-11-10-m-latest\n",
         ),
     );
     fixture.bug_md(
         "BUG-0004",
         "out-of-scope",
         "open",
-        &["a-middle", "m-latest"],
+        &["2026-11-10-a-middle", "2026-11-10-m-latest"],
     );
-    fixture.bug_md("BUG-0005", "in-scope", "open", &["z-oldest"]);
+    fixture.bug_md("BUG-0005", "in-scope", "open", &["2026-11-10-z-oldest"]);
 
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
         next["last_failure"],
         json!({
-            "id": "m-latest",
+            "id": "2026-11-10-m-latest",
             "observed_at_unix_seconds": 3_000,
-            "summary": "fixture observation m-latest",
+            "summary": "fixture observation 2026-11-10-m-latest",
             "bugs": {"total": 4, "items": [
                 {"id": "BUG-0001", "status": "fix-pending-verification"},
                 {"id": "BUG-0002", "status": "open"},
@@ -938,7 +1032,7 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     );
     let shown = text(&fixture, &["next"]);
     for line in [
-        "Last failure: m-latest at 1970-01-01T00:50:00Z: fixture observation m-latest",
+        "Last failure: 2026-11-10-m-latest at 1970-01-01T00:50:00Z: fixture observation 2026-11-10-m-latest",
         "  Linked bugs: BUG-0001 fix-pending-verification, BUG-0002 open, BUG-0003 verified (3 of 4)",
     ] {
         assert!(shown.contains(line), "missing {line:?} in:\n{shown}");
@@ -946,13 +1040,13 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
 
     // A tie on recorded time goes to the greater observation ID; an unlinked failure
     // shows no bugs. A long summary is cut.
-    let mut tie = observation("n-tie", "failed", 3_000);
+    let mut tie = observation("2026-11-10-n-tie", "failed", 3_000);
     tie["summary"] = json!("s".repeat(2_000));
-    write_record(&fixture, "evidence", &tie);
-    set_mtime(&evidence.join("n-tie.json"), 10);
+    write_entry(&fixture, &tie);
+    set_mtime(&evidence.join("2026-11-10-n-tie.md"), 10);
     let next = fixture.ok(&["next", "--json"]);
     let failure = &next["last_failure"];
-    assert_eq!(failure["id"], "n-tie");
+    assert_eq!(failure["id"], "2026-11-10-n-tie");
     assert_eq!(failure["bugs"], json!({"total": 0, "items": []}));
     let summary = failure["summary"].as_str().unwrap();
     assert!(
@@ -962,7 +1056,7 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     );
     let shown = text(&fixture, &["next"]);
     assert!(
-        shown.contains("Last failure: n-tie at 1970-01-01T00:50:00Z: sss"),
+        shown.contains("Last failure: 2026-11-10-n-tie at 1970-01-01T00:50:00Z: sss"),
         "{shown}"
     );
     assert!(shown.contains("  Linked bugs: none"), "{shown}");
@@ -1419,13 +1513,11 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     fixture.commit("fixture");
 
     // 500 referenced stale observations, each referenced by four bugs.
-    let stale: Vec<String> = (0..500).map(|index| format!("stale-{index:03}")).collect();
+    let stale: Vec<String> = (0..500)
+        .map(|index| format!("2026-11-10-stale-{index:03}"))
+        .collect();
     for id in &stale {
-        write_record(
-            &fixture,
-            "evidence",
-            &observation(id, "passed", 1_700_000_000),
-        );
+        write_entry(&fixture, &observation(id, "passed", 1_700_000_000));
     }
     let linked: Vec<&str> = stale.iter().map(String::as_str).collect();
     for index in 1..=4 {
@@ -1433,19 +1525,22 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     }
     // 200 more observations, 100 failed; the latest recorded failure is fail-037.
     for index in 0..100_u64 {
-        write_record(
+        write_entry(
             &fixture,
-            "evidence",
-            &observation(&format!("pass-{index:03}"), "passed", 1_800_000_000 + index),
+            &observation(
+                &format!("2026-11-10-pass-{index:03}"),
+                "passed",
+                1_800_000_000 + index,
+            ),
         );
         let observed = if index == 37 {
             1_900_000_000
         } else {
             1_800_000_000 + index
         };
-        let mut failed = observation(&format!("fail-{index:03}"), "failed", observed);
+        let mut failed = observation(&format!("2026-11-10-fail-{index:03}"), "failed", observed);
         failed["summary"] = json!(format!("failure {index:03} {}", "f".repeat(4_000)));
-        write_record(&fixture, "evidence", &failed);
+        write_entry(&fixture, &failed);
     }
     // 40 bugs link the latest failure.
     for index in 5..45 {
@@ -1453,7 +1548,7 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
             &format!("BUG-{index:04}"),
             "in-scope",
             "open",
-            &["fail-037"],
+            &["2026-11-10-fail-037"],
         );
     }
     // 40 archived bundles and 16 modules.
@@ -1497,7 +1592,7 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     session["decisions"] = json!(list("decided:", 50));
     session["awaiting_human"] = json!(list("Gate", 40));
     session["blockers"] = json!(list("Blocker", 40));
-    session["observations"] = json!(["stale-000"]);
+    session["observations"] = json!(["2026-11-10-stale-000"]);
     let session_text = write_session(&fixture, &session);
     assert!(
         session_text.len() > 130 * 4_096 && session_text.len() <= common::CHECKPOINT_CAP,
@@ -1520,7 +1615,7 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     assert_eq!(next["schema_version"], 1);
     assert_eq!(next["truncated"], true);
     assert_eq!(next["decisions"]["total"], 50);
-    assert_eq!(next["last_failure"]["id"], "fail-037");
+    assert_eq!(next["last_failure"]["id"], "2026-11-10-fail-037");
     assert_eq!(
         next["last_failure"]["observed_at_unix_seconds"],
         1_900_000_000_u64
@@ -1551,7 +1646,7 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     for total in [
         "Decisions (",
         " of 50, newest first):",
-        "Last failure: fail-037 at 2030-03-17T17:46:40Z: failure 037",
+        "Last failure: 2026-11-10-fail-037 at 2030-03-17T17:46:40Z: failure 037",
         " of 40)",
         " of 16 modules):",
         "Archived lesson bundles (",
@@ -1564,7 +1659,14 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     assert_eq!(text(&fixture, &["next", "--json"]), raw);
     assert_eq!(text(&fixture, &["next"]), shown);
     let mut stamp = 4_000_000_u64;
-    for directory in [".chough/evidence", ".chough/bugs", ".chough"] {
+    let session_dir = format!(".chough/sessions/{}", fixture.active_id());
+    let evidence = format!("{session_dir}/evidence");
+    for directory in [
+        evidence.as_str(),
+        ".chough/bugs",
+        session_dir.as_str(),
+        ".chough",
+    ] {
         let mut entries: Vec<_> = std::fs::read_dir(fixture.root().join(directory))
             .unwrap()
             .map(|entry| entry.unwrap().path())
@@ -1588,6 +1690,10 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     assert_eq!(text(&fixture, &["next"]), shown);
     assert_eq!(fixture.native_calls(), 4, "one native read per run");
 }
+
+/// The report fixture's artifact: a raw log in the machine-local store (REQ-records-005),
+/// outside the snapshot's inputs like every `.chough/` file.
+const REPORT_INPUT: &str = ".chough/local/logs/report-input.log";
 
 /// A portable report fixture with both legacy and slug case definitions. The
 /// observations are synthetic records, so no product test or native approval is
@@ -1621,7 +1727,7 @@ expect_output = ["reported"]
         }
         fixture.write(".chough/cases/cli.cases.toml", &definitions);
     }
-    fixture.write(".chough/artifacts/report-input.log", "artifact\n");
+    fixture.write(REPORT_INPUT, "artifact\n");
     fixture.write(
         ".specsync/changes/observed/plan.md",
         "A native source artifact, without configured native tools.\n",
@@ -1641,7 +1747,7 @@ expect_output = ["reported"]
     let fingerprint = format!("{:x}", Sha256::digest(b"artifact\n"));
     let mut refs = vec!["checkpoint".to_string()];
     for index in 0..12 {
-        let id = format!("report-observation-{index}");
+        let id = format!("2026-11-10-report-observation-{index}");
         let record = json!({
             "schema_version": 2,
             "id": id,
@@ -1652,14 +1758,14 @@ expect_output = ["reported"]
             "outcome": "passed",
             "environment": "local",
             "summary": "Synthetic report input, not an executed product check",
-            "artifacts": [".chough/artifacts/report-input.log"],
-            "artifact_fingerprints": {".chough/artifacts/report-input.log": fingerprint},
+            "artifacts": [REPORT_INPUT],
+            "artifact_fingerprints": {REPORT_INPUT: fingerprint},
             "observed_at_unix_seconds": 1,
             "snapshot": snapshot,
             "provenance": "synthetic test record",
             "cases": cases,
         });
-        fixture.write(&format!(".chough/evidence/{id}.json"), &record.to_string());
+        write_entry(&fixture, &record);
         refs.extend(["--observation".to_string(), id]);
     }
     fixture.ok(&refs.iter().map(String::as_str).collect::<Vec<_>>());
@@ -1782,9 +1888,9 @@ fn report_read_context_does_not_survive_the_next_request() {
     assert_eq!(report_freshness(&fixture, "local"), "stale-case-definition");
     fixture.write(".chough/cases/cli.cases.toml", &original);
     assert_eq!(report_freshness(&fixture, "local"), "current-observation");
-    fixture.write(".chough/artifacts/report-input.log", "changed\n");
+    fixture.write(REPORT_INPUT, "changed\n");
     assert_eq!(report_freshness(&fixture, "local"), "stale-artifact");
-    fixture.write(".chough/artifacts/report-input.log", "artifact\n");
+    fixture.write(REPORT_INPUT, "artifact\n");
     assert_eq!(report_freshness(&fixture, "another"), "stale-environment");
     fixture.write("src/input.txt", "changed\n");
     assert_eq!(
