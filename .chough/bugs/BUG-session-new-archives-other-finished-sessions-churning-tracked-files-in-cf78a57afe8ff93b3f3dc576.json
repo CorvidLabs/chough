@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "BUG-session-new-archives-other-finished-sessions-churning-tracked-files-in-cf78a57afe8ff93b3f3dc576",
+  "title": "session new archives other finished sessions, churning tracked files in an unrelated change (Q3)",
+  "symptom": "Starting a new session moved nine other tracked sessions it judged done from .chough/sessions/ into .chough/sessions/archive/, byte-identical, so an unrelated change carried tracked-file churn on a shared ledger.",
+  "trigger": "chough session new <key> --objective ... --intent-scope CI --module github in a fresh worktree from origin/main of a repository whose .chough/sessions/ holds other committed sessions at done or with an archived native change.",
+  "expected": "Starting or switching work never closes another piece of work: session new and session use touch no other session's files; finished open sessions are listed with their fix, chough doctor --fix (Leif's default Q3, #207, REQ-history-006).",
+  "actual": "Chough 0.5.0 archived every other finished session as a side effect of session new (spec-sync repository, seen by the spec-sync worker t38b, relayed by the coordinator on 2026-11-11).",
+  "criteria": [
+    "DRIVE-3"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "cases": [
+    "TC-history-switch-archives-sessions-left-open"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "4998db713ff96fc43bbfbb13a21d70e2c2745158",
+  "steps": [
+    "In a repository whose .chough/sessions/ holds committed sessions that are done or whose native change is archived, create a fresh worktree from main.",
+    "Run chough session new <key> --objective <text> --intent-scope CI --module github.",
+    "git status shows those sessions moved from .chough/sessions/ to .chough/sessions/archive/."
+  ],
+  "fixture": null,
+  "observations": [],
+  "impact": "Unrelated changes carry moves of other sessions' records, which collide on a shared ledger and blur review; it is the side effect Q3 rules out.",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "spec-sync repository, Chough 0.5.0, worker t38b; relayed by t370 on 2026-11-11",
+  "notes": [],
+  "created_at_unix_seconds": 1794413082,
+  "updated_at_unix_seconds": 1794413082
+}
