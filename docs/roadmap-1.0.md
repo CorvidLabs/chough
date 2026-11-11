@@ -47,8 +47,12 @@ to crates.io. The human steps of [releasing](releasing.md) stay human steps.
 Leif decided on 2026-11-10 that the human-first redesign (M1 to M3: slug
 folders, Markdown records with date + slug names, the links-never-copies
 vault, the cleanup) ships as ONE change, **Chough 0.6.0**, dogfooded on the
-chough repository itself before any other repo updates. Only after that
-dogfood passes on chough do the other repos pick it up (M6 order).
+chough repository itself before any other repo updates. The 0.6.0 change
+folds in #214 (slug folders, with #207's side-effect fix), #208 (external
+artifacts), #210 (append-only corrections) and #233 (agent, model and hc
+terminal id on records); it is being planned on branch
+leif/human-first-records. Only after that dogfood passes on chough do the
+other repos pick it up (M6 order).
 
 Each milestone names the bar items it serves, what "done" means and how it is
 tested. Milestones overlap in time; the dependencies are between the issues,
@@ -72,8 +76,12 @@ one file per record, the file itself the source of truth, a bug's log
 append-only. Record names are a date plus a slug, never sequential numbers,
 with old sequential IDs kept as aliases (DRIVE-27). Case definitions stay
 small TOML, with one `.chough/README.md` reading guide (DRIVE-28). Includes
-the corrections command (LIFE-18, #167), session identity recording (LIFE-17,
-#201) and the open session bugs (#181, #113).
+the corrections command (LIFE-18; #167, scoped in #210), session identity
+recording (LIFE-17; #201, scoped in #233) and external case artifacts by
+recorded fingerprint (FLOW-22; #14 item 3, scoped in #208). The session bugs
+#181, #113 and #207 are fixed on main (#206, #200 and the #207 fix); #237
+(an open human gate blocking every stage advance, even for unrelated later
+decisions) is open.
 
 Done means: two agents can run parallel sessions in one repository, commit
 both, and merge without a hand-resolved conflict in any file Chough writes
@@ -96,9 +104,8 @@ case-binding fixes (FLOW-22, #14 item 3: external artifacts by recorded
 fingerprint); FLOW-23 (#236): a human's Chough gate approval drives the
 SpecSync approval as that human, never a hard-coded identity; LIFE-26 (#234):
 committed records never leak local paths, usernames, credentials or personal
-information; #60 (observation IDs from every recording command), #12 (Chough
-records and SpecSync verification making each other stale) and #136
-(knowledge index rebuilds marking observations stale).
+information; and #12 (Chough records and SpecSync verification making each
+other stale). #60 and #136 are fixed on main (#204, #209).
 
 Done means: no commit to `.chough/` carries a raw transcript; every recorded
 observation is a short receipt with a content digest and the exact command;
@@ -127,8 +134,8 @@ repo); that removal changes contracted librarian behavior (the "Project
 librarian" and "Knowledge directory built and kept current" requirements in
 specs/cli/requirements.md), so it is its own native change, not folded into a
 docs change. Includes #165 (whose first wording is superseded by KNOW-30),
-#211 (parked by #235) and the KNOW criteria still open when this milestone
-starts.
+#211 (dropped: copying session records into the vault is duplication under
+#235) and the KNOW criteria still open when this milestone starts.
 
 Done means: the vault contains no copy of a record that has a home; every
 vault note either is original content (lesson, decision, bug write-up,
