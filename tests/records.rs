@@ -98,5 +98,23 @@ fn logs_stay_local_and_failures_keep_key_lines() {
             String::from_utf8_lossy(&added.stderr).trim()
         ));
     }
+    // No machine path in the run's log: the temporary folder is named, never shown.
+    let outside_path = outside.path().to_str().unwrap().to_string();
+    let canonical = outside
+        .path()
+        .canonicalize()
+        .map(|path| path.to_str().unwrap_or_default().to_string())
+        .unwrap_or_default();
+    let problems: Vec<String> = problems
+        .into_iter()
+        .map(|problem| {
+            let problem = problem.replace(&outside_path, "<outside the project>");
+            if canonical.is_empty() {
+                problem
+            } else {
+                problem.replace(&canonical, "<outside the project>")
+            }
+        })
+        .collect();
     assert!(problems.is_empty(), "{problems:#?}");
 }
