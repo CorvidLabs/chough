@@ -25,7 +25,8 @@
   "fixture": null,
   "observations": [
     "OBS-tc-records-actor-recorded-556298a33aba7c34ff56307b",
-    "OBS-tc-records-actor-recorded-838ca2648f678ed5413a44a5"
+    "OBS-tc-records-actor-recorded-838ca2648f678ed5413a44a5",
+    "OBS-tc-records-actor-recorded-3926d24155e0fa587813f2f6"
   ],
   "impact": "Several agents' work cannot be told apart in the history (GitHub #201, folded from PR #233)",
   "classification": "product-defect",
@@ -42,8 +43,15 @@
       "observations": [
         "OBS-tc-records-actor-recorded-838ca2648f678ed5413a44a5"
       ]
+    },
+    {
+      "at_unix_seconds": 1794424630,
+      "text": "Bugs joined at integration of plan step 5 (t38b): TC-records-actor-recorded now also runs bugs_record_the_acting_agent, and passed. Evidence entries (step 4) still to join.",
+      "observations": [
+        "OBS-tc-records-actor-recorded-3926d24155e0fa587813f2f6"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794424053,
-  "updated_at_unix_seconds": 1794424180
+  "updated_at_unix_seconds": 1794424630
 }

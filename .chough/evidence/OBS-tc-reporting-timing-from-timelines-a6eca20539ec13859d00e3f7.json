@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-reporting-timing-from-timelines-a6eca20539ec13859d00e3f7",
+  "criteria": [
+    "LIFE-7",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-reporting-001"
+  ],
+  "contracts": [
+    "specs/reporting/reporting.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test timing -- --exact timing_reads_timelines_and_receipts for TC-reporting-timing-from-timelines: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-reporting-timing-from-timelines-a6eca20539ec13859d00e3f7.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-reporting-timing-from-timelines-a6eca20539ec13859d00e3f7.log": "ffb3256414010c8fce20f1321390a9a4f62bc3dbbb1b7df591e077a6806aa403"
+  },
+  "observed_at_unix_seconds": 1794424611,
+  "snapshot": {
+    "revision": "2e11a49df2c314f087abb61f2968cb74124a6020",
+    "dirty": false,
+    "fingerprint": "8ee2aa4d2b9f38f149e2d50a8f7a73b284faf5b9d9b06fddc3b5c4f340ea1e04",
+    "content": "cf2d6bdeab43a87c2e6354e6f42ebbedf17827e283fe58ecd3bb955fc1ec1b27"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-reporting-timing-from-timelines",
+      "digest": "dcf5a33ba083271aa5712c6a0e4f442ce7376d742e0fd71401ae08beb90195b4"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "timing",
+    "--",
+    "--exact",
+    "timing_reads_timelines_and_receipts"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
