@@ -1767,3 +1767,34 @@ fn done_leaves_earlier_archived_stories_in_place() {
     expected.sort();
     assert_eq!(archived, expected, "{moved:#}");
 }
+
+/// #214 in the 0.5.x layout, red on 0.5.0: a session is one JSON file, not a folder with
+/// a session.md. The 0.6.0 test of the same name replaces it.
+#[test]
+fn sessions_live_in_folders_and_finish_into_one_story() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let folders = fs::read_dir(fixture.root().join(".chough/sessions"))
+        .unwrap()
+        .flatten()
+        .filter(|entry| entry.path().join("session.md").is_file())
+        .count();
+    assert_eq!(folders, 1, "no session folder holds a session.md");
+}
+
+/// #234 in the 0.5.x layout, red on 0.5.0: a home-folder path in a session value is
+/// written into a committed record. The 0.6.0 test of the same name replaces it.
+#[test]
+fn a_leak_in_a_session_value_is_refused_or_redacted() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let output = fixture.run(&[
+        "checkpoint",
+        "--decision",
+        "Logs are in /Users/SYNTHETIC-user/logs",
+    ]);
+    assert!(
+        !output.status.success(),
+        "a home-folder path was written into a committed record"
+    );
+}

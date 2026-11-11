@@ -1,0 +1,43 @@
+profile = "chough-testing/1"
+module = "records"
+
+# Plan step 8 (knowledge links only, one journal post per finished piece of work)
+# writes tests/journal.rs with these tests.
+
+[[case]]
+id = "TC-records-journal-and-feed"
+title = "The move into done writes one short post that links the story, and the feed lists it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-33", "KNOW-30", "KNOW-31"]
+requirements = ["REQ-records-011"]
+paths = ["src/journal.rs", "src/library.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::done_writes_a_short_post_and_the_feed_lists_it passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "done_writes_a_short_post_and_the_feed_lists_it"
+
+# t38b's spec-sync repro, 2026-11-11: Chough 0.5.0's move into done regenerated the
+# whole knowledge library (35 tracked files modified, 39 new).
+[[case]]
+id = "TC-records-done-touches-only-its-own-post"
+title = "The move into done creates only its own post and changes only feed.xml and the newest-posts list of index.md; every other knowledge file stays byte-identical"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-30", "KNOW-31", "KNOW-33"]
+requirements = ["REQ-records-011"]
+paths = ["src/journal.rs", "src/library.rs", "src/stage.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::done_changes_no_knowledge_file_but_its_own_post_and_the_feed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "done_changes_no_knowledge_file_but_its_own_post_and_the_feed"

@@ -1,0 +1,26 @@
+profile = "chough-testing/1"
+module = "records"
+
+# #213 and plan step 10: chough migrate carries a 0.5.x project into 0.6.0. The bug,
+# evidence and knowledge mappers prove their parts in tests/migrate_bugs.rs,
+# tests/migrate_knowledge.rs and their unit tests; this case runs the framework's
+# end-to-end tests.
+
+[[case]]
+id = "TC-records-migrate-from-0-5"
+title = "chough migrate previews without writing, refuses a wrong digest, an open change, no consent and uncommitted bytes, applies by create-new with a receipt, removes the 0.5.x files, and has nothing to do the second time"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-21", "KNOW-10", "KNOW-11"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs", "tests/fixtures/releases"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["every test in tests/migrate.rs passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "migrate"]
+expect_output = ["test result: ok."]
+timeout_seconds = 900

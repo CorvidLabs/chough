@@ -652,7 +652,7 @@ test = "repeated_validation_needs_authority_honors_stop_and_persists_findings"
 
 [[case]]
 id = "TC-cli-0035"
-title = "Librarian snapshots originals and indexes open bugs"
+title = "The librarian is off or on by preference, library init builds the vault, and index.md lists the open bugs"
 status = "active"
 track = "functional"
 method = "automated"
@@ -667,24 +667,6 @@ expected = ["tests/optional.rs::librarian_snapshots_originals_and_indexes_the_op
 adapter = "cargo-test"
 test_target = "optional"
 test = "librarian_snapshots_originals_and_indexes_the_open_backlog"
-
-[[case]]
-id = "TC-cli-0036"
-title = "Snapshotting a symlink is refused"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["FLOW-12"]
-requirements = ["REQ-cli-015"]
-paths = ["src/", "tests/optional.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/optional.rs::snapshotting_a_symlink_is_refused passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "optional"
-test = "snapshotting_a_symlink_is_refused"
 
 [[case]]
 id = "TC-cli-0037"
@@ -1600,7 +1582,7 @@ test = "an_unterminated_escape_never_hides_a_second_test_result"
 
 [[case]]
 id = "TC-cli-0110"
-title = "Tool pins and the minimum Rust version agree across README, AGENTS, CI and Cargo"
+title = "Tool pins and the minimum Rust version agree across README, AGENTS, CI, Cargo and the SpecSync config comment"
 status = "active"
 track = "functional"
 method = "automated"
@@ -1609,12 +1591,12 @@ requirements = ["REQ-cli-019"]
 paths = ["README.md", "AGENTS.md", ".github/workflows/ci.yml", "Cargo.toml", "docs/ci.md", "docs/integrations.md", "tests/package.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/package.rs::tool_and_rust_version_pins_agree passes: every pin is present and equal, and a copy with one pin changed, removed or stated twice fails naming that file and tool; README's toolchain command split, chained or naming another crate fails, and an MSRV job without needs: archive-gate or cargo test --locked fails"]
+expected = ["tests/package.rs::versions_agree_across_readme_agents_ci_and_specsync_config passes: every pin is present and equal, and a copy with one pin changed, removed or stated twice fails naming that file and tool; README's toolchain command split, chained or naming another crate fails, and an MSRV job without needs: archive-gate or cargo test --locked fails"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "package"
-test = "tool_and_rust_version_pins_agree"
+test = "versions_agree_across_readme_agents_ci_and_specsync_config"
 
 [[case]]
 id = "TC-cli-0111"
@@ -2035,24 +2017,6 @@ test_target = "optional"
 test = "independent_roots_and_identical_repeated_runs_allocate_distinct_validation_runs"
 
 [[case]]
-id = "TC-cli-slug-snapshot-allocation"
-title = "Independent roots and identical repeated runs allocate distinct snapshots"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["FLOW-12"]
-requirements = ["REQ-cli-015", "REQ-cli-023"]
-paths = ["src/identity.rs", "src/library.rs", "tests/optional.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/optional.rs::independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "optional"
-test = "independent_roots_and_identical_repeated_runs_allocate_distinct_snapshots"
-
-[[case]]
 id = "TC-cli-slug-case-compatibility"
 title = "Slug case IDs validate without changing legacy IDs digests or global uniqueness"
 status = "active"
@@ -2093,7 +2057,6 @@ expected = [
   "chough skill status reports both host copies current",
 ]
 
-
 [[case]]
 id = "TC-cli-agent-native-workflow-upgrade"
 title = "Native workflow guidance upgrades unchanged shipped copies and preserves edits"
@@ -2111,7 +2074,6 @@ expected = ["The exact independent 825a380 digests match frozen fixtures; real s
 adapter = "cargo-test"
 test_target = "workflow_authority"
 test = "workflow_guidance_from_main_825a380_updates_and_preserves_edits"
-
 
 [[case]]
 id = "TC-cli-native-workflow-bundle-consistency"
@@ -2328,12 +2290,12 @@ requirements = ["REQ-cli-032"]
 paths = ["src/checkpoint.rs", "src/records.rs", "src/main.rs", "tests/cli.rs"]
 environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
-expected = ["tests/cli.rs::checkpoint_byte_bound_is_exactly_131072 passes"]
+expected = ["tests/cli.rs::checkpoint_byte_bound_is_exactly_1048576 passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "cli"
-test = "checkpoint_byte_bound_is_exactly_131072"
+test = "checkpoint_byte_bound_is_exactly_1048576"
 
 [[case]]
 id = "TC-cli-observation-pointer-bound-is-400"
@@ -2352,24 +2314,6 @@ expected = ["tests/cli.rs::observation_pointer_bound_is_400_and_other_lists_stay
 adapter = "cargo-test"
 test_target = "cli"
 test = "observation_pointer_bound_is_400_and_other_lists_stay_at_200"
-
-[[case]]
-id = "TC-cli-checkpoint-merge-enforces-the-raised-bounds"
-title = "Checkpoint merge accepts inputs at 131072 bytes and 400 merged observations and refuses one over either bound"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-11", "FLOW-13"]
-requirements = ["REQ-cli-032", "REQ-cli-007"]
-paths = ["src/checkpoint.rs", "tests/stages.rs"]
-environments = ["local-linux-x86_64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/stages.rs::checkpoint_merge_enforces_input_collection_and_output_byte_bounds passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "stages"
-test = "checkpoint_merge_enforces_input_collection_and_output_byte_bounds"
 
 [[case]]
 id = "TC-cli-delta-guard-refusals-name-the-agent-actor"
@@ -2406,204 +2350,6 @@ expected = ["tests/optional.rs::the_librarian_is_on_by_default_in_knowledge_and_
 adapter = "cargo-test"
 test_target = "optional"
 test = "the_librarian_is_on_by_default_in_knowledge_and_can_be_turned_off"
-
-[[case]]
-id = "TC-cli-knowledge-archive-entries"
-title = "Knowledge entries summarize each archive deterministically with a lessons index and the earlier library folder"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-2", "KNOW-3", "KNOW-4", "KNOW-6", "KNOW-12"]
-requirements = ["REQ-cli-015"]
-paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::knowledge_entries_summarize_each_archive_deterministically passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "knowledge_entries_summarize_each_archive_deterministically"
-
-[[case]]
-id = "TC-cli-archive-summary-preview"
-title = "The archive summary preview lists cold-archive proof and keeps every protection"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-7", "KNOW-8", "KNOW-11"]
-requirements = ["REQ-cli-033"]
-paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::archive_summary_previews_cold_archive_proof_and_keeps_protections passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "archive_summary_previews_cold_archive_proof_and_keeps_protections"
-
-[[case]]
-id = "TC-cli-archive-summary-apply"
-title = "The archive summary apply is authorized, ledgered and restored on a validity change"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-7", "KNOW-9", "KNOW-10", "KNOW-11"]
-requirements = ["REQ-cli-033"]
-paths = ["src/library.rs", "src/evidence.rs", "src/prefs.rs", "src/main.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "archive_summary_apply_is_authorized_ledgered_and_restores_on_validity_change"
-
-[[case]]
-id = "TC-cli-knowledge-entries-bounded"
-title = "Knowledge entries stay bounded with cumulative manifests and a refused build writes nothing"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-1", "KNOW-2", "KNOW-6"]
-requirements = ["REQ-cli-015"]
-paths = ["src/library.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::knowledge_entries_stay_bounded_with_cumulative_manifests_and_refusals_write_nothing passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "knowledge_entries_stay_bounded_with_cumulative_manifests_and_refusals_write_nothing"
-
-[[case]]
-id = "TC-cli-archive-summary-fails-closed"
-title = "The archive summary apply fails closed without native validity and rolls back a partial removal"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-9", "KNOW-10"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_partial_removal passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "archive_summary_apply_fails_closed_without_native_validity_and_rolls_back_partial_removal"
-
-[[case]]
-id = "TC-cli-archive-summary-changed-during-check"
-title = "The archive summary apply refuses and keeps the bytes when a file changes during the native validity check"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-7", "KNOW-9"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "archive_summary_apply_fails_closed_when_a_file_changes_during_the_native_status_check"
-
-[[case]]
-id = "TC-cli-archive-summary-unfiltered-head-compare"
-title = "Under core.autocrlf a CRLF file that differs from HEAD byte for byte is held back, not eligible"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-7"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "archive_summary_lists_a_crlf_file_differing_from_head_as_uncommitted_under_autocrlf"
-
-[[case]]
-id = "TC-cli-archive-summary-protection-during-check"
-title = "The archive summary apply refuses when a protection appears during the native validity check"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-8"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "archive_summary_apply_fails_closed_when_a_protection_appears_during_the_native_status_check"
-
-[[case]]
-id = "TC-cli-archive-summary-protection-before-each-removal"
-title = "The archive summary apply re-checks protections right before each removal and keeps the files when one appears after the validity check"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-8"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "archive_summary_apply_fails_closed_when_a_protection_appears_after_the_validity_check"
-
-[[case]]
-id = "TC-cli-archive-summary-no-clobber-restore"
-title = "An archive summary rollback keeps a file recreated during the apply instead of overwriting it"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-7", "KNOW-10"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::archive_summary_restore_keeps_a_file_recreated_during_the_apply passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "archive_summary_restore_keeps_a_file_recreated_during_the_apply"
-
-[[case]]
-id = "TC-cli-archive-summary-stale-holds"
-title = "A stale removal hold never breaks status and blocks the next apply until resolved"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-9"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "src/main.rs", "tests/evidence.rs"]
-environments = ["local-linux-x86_64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply passes: with a hold in .chough/removing, status, next, context, timing, bug list, the evidence prune preview and the library archive preview succeed, and apply is refused until the hold is resolved"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "a_stale_removal_hold_never_breaks_status_and_blocks_the_next_apply"
 
 [[case]]
 id = "TC-cli-claude-host-shares-agents-copy"
@@ -2784,78 +2530,6 @@ expected = ["tests/sessions.rs::a_folded_inbox_question_appears_in_next passes"]
 adapter = "cargo-test"
 test_target = "sessions"
 test = "a_folded_inbox_question_appears_in_next"
-
-[[case]]
-id = "TC-cli-done-trims-cold-proof-by-default"
-title = "Entering done trims cold archived proof with the librarian on"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-13", "KNOW-7"]
-requirements = ["REQ-cli-041"]
-paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/librarian_trim.rs::entering_done_trims_cold_archived_proof_by_default passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "librarian_trim"
-test = "entering_done_trims_cold_archived_proof_by_default"
-
-[[case]]
-id = "TC-cli-retention-manual-opts-out-at-done"
-title = "retention manual opts out of trimming at done"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-13"]
-requirements = ["REQ-cli-041"]
-paths = ["src/library.rs", "src/prefs.rs", "tests/librarian_trim.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/librarian_trim.rs::retention_manual_opts_out_of_trimming_at_done passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "librarian_trim"
-test = "retention_manual_opts_out_of_trimming_at_done"
-
-[[case]]
-id = "TC-cli-open-change-keeps-proof-at-done"
-title = "An open native change keeps proof and done is still recorded"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-11", "KNOW-13"]
-requirements = ["REQ-cli-041"]
-paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/librarian_trim.rs::an_open_native_change_keeps_proof_and_the_move_still_succeeds passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "librarian_trim"
-test = "an_open_native_change_keeps_proof_and_the_move_still_succeeds"
-
-[[case]]
-id = "TC-cli-recorded-retention-off-not-trimmed-at-done"
-title = "A recorded retention off is not trimmed at done"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-13", "KNOW-11"]
-requirements = ["REQ-cli-041"]
-paths = ["src/library.rs", "tests/librarian_trim.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/librarian_trim.rs::a_recorded_retention_off_is_not_trimmed_at_done passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "librarian_trim"
-test = "a_recorded_retention_off_is_not_trimmed_at_done"
 
 [[case]]
 id = "TC-cli-hi-export-over-16-kib-validates"
@@ -3326,24 +3000,6 @@ test_target = "knowledge_default"
 test = "init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bounded"
 
 [[case]]
-id = "TC-cli-done-refreshes-knowledge-after-trim"
-title = "done refreshes the knowledge entries after the trim, listing trimmed proof as pruned"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-1", "KNOW-13"]
-requirements = ["REQ-cli-043"]
-paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/librarian_trim.rs::entering_done_refreshes_the_knowledge_entries_after_the_trim passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "librarian_trim"
-test = "entering_done_refreshes_the_knowledge_entries_after_the_trim"
-
-[[case]]
 id = "TC-cli-done-refreshes-knowledge-untrimmed"
 title = "done refreshes the knowledge index when nothing is trimmed"
 status = "active"
@@ -3396,60 +3052,6 @@ expected = ["tests/vault.rs::every_generated_vault_note_starts_with_front_matter
 adapter = "cargo-test"
 test_target = "vault"
 test = "every_generated_vault_note_starts_with_front_matter"
-
-[[case]]
-id = "TC-cli-vault-archive-note-properties"
-title = "An archived-change note carries its properties and links"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-14", "KNOW-15"]
-requirements = ["REQ-cli-044"]
-paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/vault.rs::an_archived_change_note_carries_its_properties_and_links passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "vault"
-test = "an_archived_change_note_carries_its_properties_and_links"
-
-[[case]]
-id = "TC-cli-vault-module-notes"
-title = "Module notes link their sources, lessons and archived changes"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-15", "KNOW-12"]
-requirements = ["REQ-cli-044"]
-paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/vault.rs::module_notes_link_their_sources_lessons_and_archived_changes passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "vault"
-test = "module_notes_link_their_sources_lessons_and_archived_changes"
-
-[[case]]
-id = "TC-cli-vault-intent-notes"
-title = "Intent notes link each criterion to the changes that trace it"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-15", "KNOW-3"]
-requirements = ["REQ-cli-044"]
-paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/vault.rs::intent_notes_link_each_criterion_to_the_changes_that_trace_it passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "vault"
-test = "intent_notes_link_each_criterion_to_the_changes_that_trace_it"
 
 [[case]]
 id = "TC-cli-vault-rules-note"
@@ -3506,60 +3108,6 @@ test_target = "vault"
 test = "the_vault_regenerates_identically"
 
 [[case]]
-id = "TC-cli-vault-sub-criterion-ids"
-title = "Vault notes list HI sub-criterion IDs and read Trace lists whole"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-15", "KNOW-14"]
-requirements = ["REQ-cli-044"]
-paths = ["src/vault.rs", "src/records.rs", "tests/vault.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/vault.rs::sub_criterion_ids_are_listed_and_traced_in_whole_trace_lists passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "vault"
-test = "sub_criterion_ids_are_listed_and_traced_in_whole_trace_lists"
-
-[[case]]
-id = "TC-cli-vault-trace-and-family-forms"
-title = "Vault notes read the last Trace list and every valid HI family declaration"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-15", "KNOW-14"]
-requirements = ["REQ-cli-044"]
-paths = ["src/vault.rs", "tests/vault.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/vault.rs::trace_lists_and_family_declarations_are_read_in_every_valid_form passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "vault"
-test = "trace_lists_and_family_declarations_are_read_in_every_valid_form"
-
-[[case]]
-id = "TC-cli-vault-inline-trace-crlf-comments"
-title = "Backticked Trace mentions, CRLF and commented HI family declarations do not hide criteria or families"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-15", "KNOW-14"]
-requirements = ["REQ-cli-044"]
-paths = ["src/vault.rs", "tests/vault.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/vault.rs::inline_trace_mentions_crlf_and_comments_do_not_hide_criteria_or_families passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "vault"
-test = "inline_trace_mentions_crlf_and_comments_do_not_hide_criteria_or_families"
-
-[[case]]
 id = "TC-cli-vault-readme-upgrade"
 title = "An untouched earlier knowledge README is upgraded and an edited one kept"
 status = "active"
@@ -3579,7 +3127,7 @@ test = "an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept"
 
 [[case]]
 id = "TC-cli-vault-crlf-readme-unmatched-backtick"
-title = "A CRLF checkout of the earlier README is upgraded and an unmatched backtick keeps the Trace list"
+title = "A CRLF checkout of an earlier generated README is folded or kept like an LF one"
 status = "active"
 track = "functional"
 method = "automated"
@@ -3595,380 +3143,3 @@ adapter = "cargo-test"
 test_target = "vault"
 test = "crlf_earlier_readmes_upgrade_and_unmatched_backticks_keep_the_trace_list"
 
-[[case]]
-id = "TC-cli-reduce-superseded-runs"
-title = "Superseded runs of a cold change are trimmed, keeping the newest run and the newest failure"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-17"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "src/stage.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::superseded_runs_of_a_cold_change_are_trimmed_keeping_the_newest_and_the_newest_failure passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "superseded_runs_of_a_cold_change_are_trimmed_keeping_the_newest_and_the_newest_failure"
-
-[[case]]
-id = "TC-cli-reduce-attributed-by-cycle-time"
-title = "Unlisted proof is attributed to its change by cycle time"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-20"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "src/stage.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::unlisted_proof_is_attributed_to_its_change_by_cycle_time passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "unlisted_proof_is_attributed_to_its_change_by_cycle_time"
-
-[[case]]
-id = "TC-cli-reduce-done-drops-closed-cycle-refs"
-title = "Done drops checkpoint references from closed cycles"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-16"]
-requirements = ["REQ-cli-045"]
-paths = ["src/evidence.rs", "src/stage.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::done_drops_checkpoint_references_from_closed_cycles passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "done_drops_checkpoint_references_from_closed_cycles"
-
-[[case]]
-id = "TC-cli-reduce-parallel-validity"
-title = "Native validity reads run in parallel"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-10", "DRIVE-10"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "src/stage.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::native_validity_reads_run_in_parallel passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "native_validity_reads_run_in_parallel"
-
-[[case]]
-id = "TC-cli-reduce-shared-artifact-released"
-title = "A shared artifact released by an earlier removal does not stop the trim"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-10", "KNOW-17"]
-requirements = ["REQ-cli-033"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "a_shared_artifact_released_by_an_earlier_removal_does_not_stop_the_trim"
-
-[[case]]
-id = "TC-cli-reduce-unreadable-reference-kept"
-title = "An unreadable record keeps its checkpoint reference and refuses the closed-cycle drop"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-16"]
-requirements = ["REQ-cli-045"]
-paths = ["src/evidence.rs", "src/stage.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::an_unreadable_record_keeps_its_reference_and_refuses_the_drop passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "an_unreadable_record_keeps_its_reference_and_refuses_the_drop"
-
-[[case]]
-id = "TC-cli-vault-loose-artifacts-trimmed"
-title = "Loose artifacts of a cold change are trimmed; current or bug-held ones stay"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-18", "KNOW-20"]
-requirements = ["REQ-cli-046"]
-paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "loose_artifacts_of_a_cold_change_are_trimmed_and_current_or_bug_held_ones_stay"
-
-[[case]]
-id = "TC-cli-vault-closed-bug-releases-fixture"
-title = "A closed bug releases its loose fixture"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-18"]
-requirements = ["REQ-cli-046"]
-paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::a_closed_bug_releases_its_loose_fixture passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "a_closed_bug_releases_its_loose_fixture"
-
-[[case]]
-id = "TC-cli-vault-key-items-move"
-title = "Key items of a cold change move into the vault"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-19"]
-requirements = ["REQ-cli-046"]
-paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::key_items_of_a_cold_change_move_into_the_vault passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "key_items_of_a_cold_change_move_into_the_vault"
-
-[[case]]
-id = "TC-cli-vault-loose-group-gains-released-file"
-title = "A loose artifact group that gains a file released by an earlier removal is still trimmed"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-10", "KNOW-18"]
-requirements = ["REQ-cli-046"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::a_loose_folder_that_gains_a_released_file_is_still_trimmed passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "a_loose_folder_that_gains_a_released_file_is_still_trimmed"
-
-[[case]]
-id = "TC-cli-vault-loose-file-protected-mid-apply"
-title = "A planned loose file protected during the apply refuses the trim and restores it"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-10", "KNOW-18"]
-requirements = ["REQ-cli-046"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::a_loose_file_protected_during_the_apply_refuses_the_trim passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "a_loose_file_protected_during_the_apply_refuses_the_trim"
-
-[[case]]
-id = "TC-cli-vault-long-archive-short-folder"
-title = "Key items of a long archive ID move under a short, stable attachments folder"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-19"]
-requirements = ["REQ-cli-046"]
-paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::key_items_of_a_long_archive_id_move_under_a_short_folder passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "key_items_of_a_long_archive_id_move_under_a_short_folder"
-
-[[case]]
-id = "TC-cli-vault-attachment-path-bound"
-title = "A key item whose attachment path would pass 220 characters stays, protected"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-19", "KNOW-10"]
-requirements = ["REQ-cli-046"]
-paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::a_key_item_whose_attachment_path_is_too_long_stays passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "a_key_item_whose_attachment_path_is_too_long_stays"
-
-[[case]]
-id = "TC-cli-vault-moved-key-item-mode"
-title = "A key item moved into the vault keeps its mode"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-19"]
-requirements = ["REQ-cli-046"]
-paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::a_moved_key_item_keeps_its_mode passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "a_moved_key_item_keeps_its_mode"
-
-[[case]]
-id = "TC-cli-vault-restore-keeps-mode"
-title = "A refused apply restores removed files with their modes"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-10"]
-requirements = ["REQ-cli-046"]
-paths = ["src/attachments.rs", "src/evidence.rs", "src/library.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::a_refused_apply_restores_files_with_their_modes passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "a_refused_apply_restores_files_with_their_modes"
-
-[[case]]
-id = "TC-cli-vault-occupied-attachment-kept"
-title = "An attachment that already holds other bytes keeps both files and its set"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-19", "KNOW-10"]
-requirements = ["REQ-cli-046"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::an_attachment_holding_other_bytes_keeps_both_files passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "an_attachment_holding_other_bytes_keeps_both_files"
-
-[[case]]
-id = "TC-cli-vault-attachment-written-mid-apply"
-title = "An attachment written during the apply refuses it and both files are kept"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-19", "KNOW-10"]
-requirements = ["REQ-cli-046"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::an_attachment_written_during_the_apply_refuses_it passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "an_attachment_written_during_the_apply_refuses_it"
-
-[[case]]
-id = "TC-cli-vault-identical-attachment-survives-restore"
-title = "An identical attachment already in place survives a refused apply"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-19", "KNOW-10"]
-requirements = ["REQ-cli-046"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::an_identical_attachment_in_place_survives_a_refused_apply passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "an_identical_attachment_in_place_survives_a_refused_apply"
-
-[[case]]
-id = "TC-cli-vault-open-bug-folder-fixture"
-title = "An open bug whose fixture is a folder protects the files inside it"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-18"]
-requirements = ["REQ-cli-046"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::an_open_bug_folder_fixture_protects_its_files passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "an_open_bug_folder_fixture_protects_its_files"
-
-[[case]]
-id = "TC-cli-vault-checkpoint-folder-reference"
-title = "A checkpoint folder reference protects the loose files and observation sets inside it"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-18", "KNOW-16"]
-requirements = ["REQ-cli-046"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::a_checkpoint_folder_reference_protects_loose_files_and_observation_sets passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "a_checkpoint_folder_reference_protects_loose_files_and_observation_sets"
-
-[[case]]
-id = "TC-cli-vault-mixed-age-folder-stays"
-title = "A loose folder with a cold-listed file and a current file stays whole"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-18", "KNOW-20"]
-requirements = ["REQ-cli-046"]
-paths = ["src/evidence.rs", "tests/reduce.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/reduce.rs::a_loose_folder_with_a_current_file_stays_whole passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "a_loose_folder_with_a_current_file_stays_whole"

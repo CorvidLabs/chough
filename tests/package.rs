@@ -3864,3 +3864,19 @@ a { color: var(--proto-accent); }
   .surface { margin: 0; border-radius: 0; border-left: 0; border-right: 0; }
 }
 "##;
+
+/// BUG-0001 in the 0.5.x layout, red on 0.5.0: the SpecSync config comment names only
+/// SpecSync's pin, not HI's and Fledge's, so the pin check cannot read it. The 0.6.0
+/// test of the same name replaces it.
+#[test]
+fn versions_agree_across_readme_agents_ci_and_specsync_config() {
+    let config = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(".specsync/config.toml"),
+    )
+    .unwrap();
+    let first = config.lines().next().unwrap_or_default();
+    assert!(
+        first.contains("HI ") && first.contains("Fledge "),
+        "the config comment names no HI or Fledge pin: {first}"
+    );
+}

@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "records"
+
+# #234: no committed record holds a local path, user or host name, email or
+# credential. Evidence (step 4) and the doctor scan join this case at integration.
+
+[[case]]
+id = "TC-records-leak-guard"
+title = "A session value or bug write that leaks is refused naming the field and kind, or redacted under --redact, with every file byte-identical on refusal"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-17", "FLOW-22"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "src/checkpoint.rs", "src/bugs.rs", "tests/sessions.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the session and bug leak tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--test", "bugs", "--", "a_leak_in_a_session_value_is_refused_or_redacted", "bug_writes_refuse_or_redact_leaks"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
