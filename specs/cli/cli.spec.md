@@ -13,7 +13,6 @@ files:
   - src/gates.rs
   - src/direct_writes.rs
   - src/evidence.rs
-  - src/identity.rs
   - src/library.rs
   - src/native.rs
   - src/native_check.rs
@@ -146,25 +145,8 @@ evidence, bug, pref, consent, validate, library, skill and timing.
 Internal modules under src/ make their entry points visible to the crate root only.
 They are implementation details of the binary, not exports or library promises, and
 command behavior is specified under Behavioral Examples and in docs/cli.md rather
-than presented as Rust API symbols to the structural checker. The following table
-covers the crate-internal identity boundary without creating a public Rust API.
-
-| Internal symbol | Structural behavior |
-|---|---|
-| `OBSERVATION_SLUG_LIMIT` | Limits an observation slug so the complete OBS ID fits 100 bytes. |
-| `VALIDATION_SLUG_LIMIT` | Limits a validation slug so the complete VAL ID fits 100 bytes. |
-| `SNAPSHOT_SLUG_LIMIT` | Limits a snapshot slug so the complete SNAP ID fits 100 bytes. |
-| `slug` | Normalizes bounded nonempty lowercase ASCII slugs with caller-selected fallbacks. |
-| `valid_case_id` | Accepts curated slug and exact legacy numeric case IDs with the module-aware bound. |
-| `valid_observation_id` | Accepts the exact new OBS form with a complete 24-digit lowercase hex suffix. |
-| `valid_validation_id` | Accepts the exact new VAL form with a complete 24-digit lowercase hex suffix. |
-| `valid_snapshot_id` | Accepts the exact new SNAP form with a complete 24-digit lowercase hex suffix. |
-| `observation` | Allocates one OBS candidate from one random 96-bit draw. |
-| `validation` | Allocates one VAL candidate from one random 96-bit draw. |
-| `snapshot` | Allocates one SNAP candidate from one random 96-bit draw. |
-| `require_explicit_observation_id` | Applies new-form explicit observation validation and the old-style omit-ID remedy. |
-| `with_random_results` | Test-only random-source seam; no production override. |
-| `random_draws` | Test-only draw-count seam used to prove there is no retry. |
+than presented as Rust API symbols to the structural checker. The record identity
+boundary moved to the records module with `src/identity.rs` in Chough 0.6.0.
 
 ## Invariants
 

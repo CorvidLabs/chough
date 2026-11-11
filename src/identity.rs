@@ -1,6 +1,8 @@
-//! Shared normalized slugs and random-suffix record identities.
+//! Shared normalized slugs and random-suffix record identities, and the date and slug
+//! names of 0.6.0 records with their clash suffix (REQ-records-003).
 
-use anyhow::{Result, ensure};
+use anyhow::{Result, bail, ensure};
+use std::path::Path;
 
 pub(crate) const OBSERVATION_SLUG_LIMIT: usize = 71;
 pub(crate) const VALIDATION_SLUG_LIMIT: usize = 71;
@@ -142,6 +144,77 @@ pub(crate) fn snapshot(source: &str) -> Result<String> {
     allocate("SNAP-", source, "snapshot", SNAPSHOT_SLUG_LIMIT)
 }
 
+/// The longest a record name may be, a clash suffix included (REQ-records-003).
+pub(crate) const NAME_LIMIT: usize = 80;
+/// `-` and six hexadecimal digits.
+const CLASH_SUFFIX: usize = 7;
+
+/// `YYYY-MM-DD` for a Unix time, in UTC.
+pub(crate) fn utc_date(seconds: u64) -> String {
+    // Days to civil date (H. Hinnant), for the proleptic Gregorian calendar.
+    let days = i64::try_from(seconds / 86_400).unwrap_or(i64::MAX / 2) + 719_468;
+    let era = days.div_euclid(146_097);
+    let day_of_era = days.rem_euclid(146_097);
+    let year_of_era =
+        (day_of_era - day_of_era / 1_460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let shifted_month = (5 * day_of_year + 2) / 153;
+    let day = day_of_year - (153 * shifted_month + 2) / 5 + 1;
+    let month = if shifted_month < 10 {
+        shifted_month + 3
+    } else {
+        shifted_month - 9
+    };
+    let year = year_of_era + era * 400 + i64::from(month <= 2);
+    format!("{year:04}-{month:02}-{day:02}")
+}
+
+/// `<date>-<slug>`: the slug of `source`, or `kind` when nothing is left, cut back at a
+/// hyphen so that the name with a clash suffix stays within [`NAME_LIMIT`]. It holds no
+/// number taken from a count of other records.
+pub(crate) fn dated_name(date: &str, source: &str, kind: &str) -> String {
+    let limit = NAME_LIMIT - CLASH_SUFFIX - date.len() - 1;
+    let full = slug(source, kind, usize::MAX);
+    let cut = if full.len() <= limit {
+        full.as_str()
+    } else if full.as_bytes()[limit] == b'-' {
+        &full[..limit]
+    } else {
+        let prefix = &full[..limit];
+        prefix.rfind('-').map_or(prefix, |at| &prefix[..at])
+    };
+    format!("{date}-{cut}")
+}
+
+/// Six lowercase hexadecimal digits from 24 fresh random bits.
+fn clash_suffix() -> Result<String> {
+    let bytes = fill_random()?;
+    Ok(suffix(&bytes)[..6].to_string())
+}
+
+/// Create `<dir>/<name><extension>` by create-new with the content `render(name)`. When
+/// that file exists, add one clash suffix and try once more; when that name exists too,
+/// refuse with nothing written and draw no other suffix. Returns the name written.
+pub(crate) fn create_named(
+    root: &Path,
+    dir: &str,
+    name: &str,
+    extension: &str,
+    bound: u64,
+    render: impl Fn(&str) -> Result<String>,
+) -> Result<String> {
+    let first = format!("{dir}/{name}{extension}");
+    if crate::records::write_new_bounded(root, &first, &render(name)?, bound)? {
+        return Ok(name.to_string());
+    }
+    let suffixed = format!("{name}-{}", clash_suffix()?);
+    let second = format!("{dir}/{suffixed}{extension}");
+    if crate::records::write_new_bounded(root, &second, &render(&suffixed)?, bound)? {
+        return Ok(suffixed);
+    }
+    bail!("refused: {second} also exists; nothing was written and no other name was drawn")
+}
+
 pub(crate) fn require_explicit_observation_id(id: &str) -> Result<()> {
     ensure!(
         valid_observation_id(id),
@@ -175,6 +248,59 @@ pub(crate) fn random_draws() -> usize {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn utc_dates_follow_the_calendar() {
+        for (seconds, date) in [
+            (0, "1970-01-01"),
+            (951_782_400, "2000-02-29"),
+            (1_709_164_800, "2024-02-29"),
+            (1_735_689_599, "2024-12-31"),
+            (1_735_689_600, "2025-01-01"),
+        ] {
+            assert_eq!(utc_date(seconds), date, "{seconds}");
+        }
+    }
+
+    #[test]
+    fn dated_names_are_bounded_slugs_without_counters() {
+        assert_eq!(
+            dated_name("2026-11-10", "  Fix   LOGIN... now!  ", "bug"),
+            "2026-11-10-fix-login-now"
+        );
+        assert_eq!(dated_name("2026-11-10", "!!! ...", "bug"), "2026-11-10-bug");
+        let long = dated_name("2026-11-10", &"word ".repeat(40), "bug");
+        assert!(long.len() + CLASH_SUFFIX <= NAME_LIMIT, "{long}");
+        assert!(!long.ends_with('-'), "{long}");
+        assert!(long.starts_with("2026-11-10-word-word"), "{long}");
+        let unbroken = dated_name("2026-11-10", &"a".repeat(200), "bug");
+        assert_eq!(unbroken.len() + CLASH_SUFFIX, NAME_LIMIT, "{unbroken}");
+    }
+
+    #[test]
+    fn a_clash_gets_one_suffix_and_a_second_clash_is_refused_without_another_draw() {
+        let root = tempfile::tempdir().unwrap();
+        let render = |name: &str| Ok(format!("---\nid: {name}\n---\n"));
+        let first = create_named(root.path(), "b", "2026-11-10-x", ".md", 1_000, render).unwrap();
+        assert_eq!(first, "2026-11-10-x");
+        let second = with_random_results(vec![Ok([0xab; 12])], || {
+            create_named(root.path(), "b", "2026-11-10-x", ".md", 1_000, render).unwrap()
+        });
+        assert_eq!(second, "2026-11-10-x-ababab");
+        assert_eq!(
+            std::fs::read_to_string(root.path().join("b/2026-11-10-x-ababab.md")).unwrap(),
+            "---\nid: 2026-11-10-x-ababab\n---\n"
+        );
+        let (error, draws) = with_random_results(vec![Ok([0xab; 12]), Ok([0xcd; 12])], || {
+            let error = create_named(root.path(), "b", "2026-11-10-x", ".md", 1_000, render)
+                .unwrap_err()
+                .to_string();
+            (error, random_draws())
+        });
+        assert!(error.contains("also exists"), "{error}");
+        assert_eq!(draws, 1);
+        assert_eq!(std::fs::read_dir(root.path().join("b")).unwrap().count(), 2);
+    }
 
     #[test]
     fn normalization_is_ascii_bounded_and_nonempty() {
