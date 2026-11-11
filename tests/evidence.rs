@@ -565,7 +565,7 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
             )
         })
         .collect();
-    // A 0.6.0 bug reads no 0.5.x observation: each reads missing (REQ-cli-012).
+    // An observation that is no longer present reads missing (REQ-cli-012).
     assert_eq!(labels["old-pass"], "missing");
     assert_eq!(labels["old-fail"], "missing");
     assert_eq!(labels["never-recorded"], "missing");
@@ -888,8 +888,8 @@ fn bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name() {
 fn bug_show_labels_note_observations_once() {
     let fixture = project();
     write_obs(&fixture, &Obs::run("seen", "TC-a", "failed", 1));
-    // A 0.6.0 bug links evidence only in its front matter, and reads no 0.5.x
-    // observation, so each linked ID is labeled once, as missing (REQ-cli-012).
+    // A 0.6.0 bug links evidence only in its front matter; each linked ID is labeled
+    // once, by where it reads, or missing (REQ-cli-012).
     write_bug(
         &fixture,
         "BUG-0001",
@@ -898,12 +898,24 @@ fn bug_show_labels_note_observations_once() {
         None,
     );
     let shown = fixture.ok(&["bug", "show", "BUG-0001"]);
+    let labels: Vec<(&str, &str, &str)> = shown["observation_labels"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|entry| {
+            (
+                entry["id"].as_str().unwrap(),
+                entry["role"].as_str().unwrap(),
+                entry["label"].as_str().unwrap(),
+            )
+        })
+        .collect();
     assert_eq!(
-        shown["observation_labels"],
-        json!([
-            {"id": "seen", "role": "evidence", "label": "missing"},
-            {"id": "gone", "role": "evidence", "label": "missing"},
-        ]),
+        labels,
+        vec![
+            ("seen", "evidence", "observation"),
+            ("gone", "evidence", "missing")
+        ],
         "{shown:#}"
     );
 }
