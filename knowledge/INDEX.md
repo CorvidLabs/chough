@@ -96,6 +96,7 @@ Archived lesson bundles:
 - BUG-history-writes-refuse-once-the-adopting-session-rolls-into-the-vault-03573996cc41022e6d12572f history writes refuse once the adopting session rolls into the vault (open, out-of-scope, unverified)
 - BUG-timing-native-budget-regression-sometimes-records-no-initial-stub-call-1d6cba28a1515f6745b80fea Timing native-budget regression sometimes records no initial stub call on MSRV (open, out-of-scope, reproduced-and-later-passed)
 - BUG-timing-trace-test-flakes-under-load-when-paired-runs-cross-a-second-281cc64e4a699ad097f7b97b timing trace test flakes under load when paired runs cross a second (open, out-of-scope, unverified)
+- BUG-verify-lane-test-step-fails-intermittently-under-load-green-on-isolated-30184d3be250a048bc85cc08 Verify lane test step fails intermittently under load, green on isolated rerun (open, in-scope, unverified)
 
 ## Observations
 
