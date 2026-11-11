@@ -173,9 +173,45 @@ pub(super) fn selected(
     result
 }
 
-/// The timeline a timing report reads: the whole of the active session's timeline.
+/// The timeline a timing report reads: the whole of the session's timeline, read
+/// leniently (REQ-reporting-001): an unreadable time is unknown and an unreadable entry
+/// is passed on as its line for timing to count, within the timing bounds.
 pub(super) fn timing(session: &Checkpoint) -> HistoryRead {
-    selected(session, CYCLE_EVENTS, CYCLE_BYTES, true)
+    let mut result = HistoryRead::default();
+    let mut values: Vec<Value> = session
+        .source
+        .as_ref()
+        .map(session_md::timeline_for_timing)
+        .unwrap_or_default();
+    values.extend(
+        session
+            .pending
+            .iter()
+            .map(|transition| serde_json::to_value(transition).expect("serializable transition")),
+    );
+    let skip = values.len().saturating_sub(CYCLE_EVENTS);
+    if skip > 0 {
+        result.partial.push(format!(
+            "earliest {skip} entries skipped beyond the {CYCLE_EVENTS}-entry timing bound"
+        ));
+    }
+    for value in values.into_iter().skip(skip) {
+        let bytes = value.to_string().len() as u64;
+        if result.bytes + bytes > CYCLE_BYTES {
+            result
+                .partial
+                .push("the timeline exceeds the 16 MiB timing bound".into());
+            break;
+        }
+        result.bytes += bytes;
+        result.records.push(value);
+    }
+    result.lineages.push(json!({
+        "session": session.meta.id,
+        "selection": "session timeline",
+        "durations": "derived from this session's timeline"
+    }));
+    result
 }
 
 #[derive(Subcommand)]

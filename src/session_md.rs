@@ -314,6 +314,12 @@ pub(super) fn timeline(record: &Record) -> Result<Vec<Entry>> {
 }
 
 fn parse_head(head: &str) -> Result<Entry> {
+    parse_head_with(head, false).map(|(entry, _)| entry)
+}
+
+/// The entry of a head line; with `lenient`, a time that cannot be read is unknown
+/// (`false` beside the entry) instead of an error.
+fn parse_head_with(head: &str, lenient: bool) -> Result<(Entry, bool)> {
     let (body, id) = head
         .rsplit_once(" ^")
         .filter(|(_, id)| valid_entry_id(id))
@@ -326,24 +332,78 @@ fn parse_head(head: &str) -> Result<Entry> {
     let (from, to) = stages
         .split_once(" → ")
         .context("timeline entry stages are `<from> → <to>`")?;
-    Ok(Entry {
-        id: id.to_string(),
-        transition: Transition {
-            schema_version: 1,
-            at_unix_seconds: parse_time(time)?,
-            kind: kind.to_string(),
-            from: from.to_string(),
-            to: to.to_string(),
-            reason: (!text.is_empty()).then(|| text.to_string()),
-            gate: None,
-            revision: None,
-            refresh: vec![],
-            backfill: None,
-            relayed_by: None,
-            direct_write: None,
+    let at = match parse_time(time) {
+        Ok(at) => Some(at),
+        Err(_) if lenient => None,
+        Err(error) => return Err(error),
+    };
+    Ok((
+        Entry {
+            id: id.to_string(),
+            transition: Transition {
+                schema_version: 1,
+                at_unix_seconds: at.unwrap_or_default(),
+                kind: kind.to_string(),
+                from: from.to_string(),
+                to: to.to_string(),
+                reason: (!text.is_empty()).then(|| text.to_string()),
+                gate: None,
+                revision: None,
+                refresh: vec![],
+                backfill: None,
+                relayed_by: None,
+                direct_write: None,
+            },
+            native_change: None,
         },
-        native_change: None,
-    })
+        at.is_some(),
+    ))
+}
+
+/// Every Timeline entry as a transition value, for the read-only timing report
+/// (REQ-reporting-001): an entry whose time cannot be read has no `at_unix_seconds`, so
+/// its time is unknown and never zero, and an entry that cannot be read at all is its
+/// raw line, which timing counts as unreadable and skips. Every other reader refuses
+/// such an entry.
+pub(super) fn timeline_for_timing(record: &Record) -> Vec<serde_json::Value> {
+    let Some(section) = record.section(TIMELINE) else {
+        return vec![];
+    };
+    let mut groups: Vec<(String, Vec<String>)> = vec![];
+    for line in section.lines() {
+        if let Some(head) = line.strip_prefix("- ") {
+            groups.push((head.to_string(), vec![]));
+        } else if let Some(field) = line.strip_prefix("  - ")
+            && let Some((_, fields)) = groups.last_mut()
+        {
+            fields.push(field.to_string());
+        }
+    }
+    groups
+        .into_iter()
+        .map(|(head, fields)| {
+            let read = || -> Result<serde_json::Value> {
+                let (mut entry, known) = parse_head_with(&head, true)?;
+                for field in &fields {
+                    let (key, value) = field
+                        .split_once(": ")
+                        .map(|(key, value)| (key, value.to_string()))
+                        .or_else(|| field.strip_suffix(':').map(|key| (key, String::new())))
+                        .context("a field is `key: value`")?;
+                    apply_field(&mut entry, key, value)?;
+                }
+                if entry.transition.reason.as_deref() == entry.transition.gate.as_deref() {
+                    entry.transition.reason = None;
+                }
+                let mut value = serde_json::to_value(&entry.transition)?;
+                if !known && let Some(object) = value.as_object_mut() {
+                    object.remove("at_unix_seconds");
+                }
+                Ok(value)
+            };
+            read().unwrap_or(serde_json::Value::String(head))
+        })
+        .collect()
 }
 
 fn apply_field(entry: &mut Entry, key: &str, value: String) -> Result<()> {
