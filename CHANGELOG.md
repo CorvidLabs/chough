@@ -13,7 +13,10 @@ Chough 0.6.0 changes the record format. Chough 0.5.x cannot read 0.6.0 records, 
 agent that works in a project before that project migrates. Then, with no native
 change open, run `chough migrate` to preview the conversion and, with the human's
 consent, `chough migrate --apply <digest> --consent "<who, their words, where>"` to
-apply it once. The release date and the dogfood results are added when 0.6.0 ships.
+apply it once. Run both on the same machine and account: the plan's redactions depend
+on the host and user name, so a plan previewed in CI or by another user has another
+digest and does not apply. The release date and the dogfood results are added when
+0.6.0 ships.
 
 - **Every record is one Markdown file** with YAML front matter, and the file is the
   record: no JSON twin, cache or index is read in its place (REQ-records-001). Chough

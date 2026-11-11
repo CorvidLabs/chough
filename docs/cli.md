@@ -811,13 +811,19 @@ story's receipts. Until step 4, `receipts` is an empty list.
 - `writes`: each 0.6.0 file it would write;
 - `redactions`: every value it would redact, by file, field and kind;
 - `removed`: every file it would remove without carrying it, with why;
+- `kept`: each open bug's fixture under `.chough/artifacts/`, kept byte for byte, with
+  the bug that keeps it;
 - `kept_with_leaks`: files it keeps byte for byte (an open bug's fixture, a `library/`
   snapshot or brief) that hold a leak, listed for a person to fix and never changed;
 - `unaccounted`, `aliases` (old ID to new), `follow_ups` and `git_history`;
 - `plan_digest`, the plan's SHA-256, and the exact apply command.
 
 `chough migrate --apply <digest> --consent "<who consented, their words and where>"`
-applies exactly that plan. The consent is recorded in the receipt as a relayed claim;
+applies exactly that plan. Run the preview and the apply on the same machine and
+account. The plan's redactions depend on the local host and user name, so its digest
+differs between machines and accounts: a plan previewed in CI or by another user does
+not apply here and is refused as `refused:plan-digest`. The consent is recorded in the
+receipt as a relayed claim;
 a standing `migration` preference (`chough pref set migration standing --source
 "<their words>"`) gives it instead. Chough never infers consent from the digest or
 another record. Before writing anything, `--apply` refuses:
