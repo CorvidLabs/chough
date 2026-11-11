@@ -253,7 +253,7 @@ See [lifecycle design](lifecycle.md), [architecture](architecture.md), and
 No hosted service, model-provider client, custom agent runtime, automatic agent
 coordination, universal slash-command parser, replacement native change state,
 automatic human authentication, or deployment engine is included. The
-[roadmap](ROADMAP.md) records proposed extensions separately.
+[roadmap](roadmap-1.0.md) records proposed extensions separately.
 
 
 ## Request-local reporting work (REQ-reporting-003, was REQ-cli-028)

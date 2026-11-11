@@ -194,7 +194,8 @@ case's definition digest. Any of those changing makes the observation stale, whi
 committing only Chough records, an empty commit or SpecSync bookkeeping does not.
 Records without a content identity keep the earlier revision-bound comparison. This
 narrow form of reuse is D-018, which supersedes the deferral in D-016; the broader
-[proposal](NEXT_CHANGE.md) with ancestry checks and a separate label stays unapproved.
+proposal with ancestry checks and a separate label stays unapproved, and Git history
+holds it.
 
 The observation kind says what was observed, not how trustworthy it is. Recording
 `human-observation` does not authenticate a person, `deployment-observation` does

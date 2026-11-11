@@ -282,10 +282,8 @@ through the native SpecSync lifecycle; the policy requires a change for meaningf
 files.
 
 - [Architecture](docs/architecture.md), [lifecycle](docs/lifecycle.md), [CLI reference](docs/cli.md)
-- [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [integrations and limits](docs/integrations.md)
-- [Roadmap to 1.0](docs/roadmap-1.0.md) and [the 1.0 test plan](docs/test-plan-1.0.md)
-- [Evidence-reuse proposal](docs/NEXT_CHANGE.md): addressed for content-identical
-  commits by D-018; its ancestry check and reuse label remain unapproved
+- [Decisions](docs/DECISIONS.md) and [integrations and limits](docs/integrations.md)
+- [Roadmap](docs/roadmap-1.0.md), with delivered work, and [the 1.0 test plan](docs/test-plan-1.0.md)
 - [Diagram rendering and visual verification](docs/verification.md)
 - [Release steps](docs/releasing.md) and the [change log](CHANGELOG.md)
 
