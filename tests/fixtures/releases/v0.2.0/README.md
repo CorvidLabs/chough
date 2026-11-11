@@ -1,0 +1,4 @@
+# Fixture project
+
+A tiny project captured with an old chough release for the 0.6.0 migration
+tests.
