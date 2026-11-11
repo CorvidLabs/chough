@@ -235,7 +235,7 @@ pub(super) fn consent(root: &Path, command: ConsentCommand) -> Result<()> {
                 objective: session.objective.clone(),
                 granted_at_unix_seconds: now()?,
             });
-            save_checkpoint(root, &session)?;
+            save_checkpoint(root, &mut session)?;
         }
         ConsentCommand::Revoke { key } => {
             let before = session.run_consents.len();
@@ -243,7 +243,7 @@ pub(super) fn consent(root: &Path, command: ConsentCommand) -> Result<()> {
             if session.run_consents.len() == before {
                 bail!("no run consent for {key}");
             }
-            save_checkpoint(root, &session)?;
+            save_checkpoint(root, &mut session)?;
         }
     }
     print_json(&json!({

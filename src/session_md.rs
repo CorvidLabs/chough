@@ -9,10 +9,6 @@
 //! items and never edits or removes an entry; it marks a withdrawn completed item and a
 //! resolved question on their own lines, the one in-place edit REQ-records-004 allows.
 
-// The next step 3 commit reads and writes every session through this module and
-// removes this allowance.
-#![allow(dead_code)]
-
 use crate::checkpoint::{Caller, Checkpoint, Consent, References, StageState};
 use crate::markdown::{Kind, Record, Value};
 use crate::stage::Transition;

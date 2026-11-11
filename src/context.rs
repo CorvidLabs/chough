@@ -78,10 +78,14 @@ pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
             sections.push(file_section(root, &format!("{base}/context.md"))?);
         }
     }
-    if let Session::V2(checkpoint) = session {
+    {
+        let Session::V2(checkpoint) = session;
         let (transitions, partial) = stage::recent_transitions(root, 20)?;
         sections.push(Section {
-            source: stage::TRANSITIONS.into(),
+            source: format!(
+                "{} (Timeline)",
+                crate::sessions::checkpoint_path(root).unwrap_or_default()
+            ),
             state: if transitions.is_empty() {
                 "empty".into()
             } else if partial {

@@ -1516,34 +1516,6 @@ fn native_manifests(root: &Path, prior: Prior<'_>) -> Result<Native> {
     })
 }
 
-/// Native acceptance paths shared with history retention. Unavailable native
-/// protection is an error, so a maintenance preview cannot invent eligibility.
-pub(super) fn retention_protection(root: &Path) -> Result<Vec<String>> {
-    if !local_path(root, ".specsync/config.toml")?.is_file()
-        && !local_path(root, ".specsync/config.json")?.is_file()
-    {
-        return Ok(vec![]);
-    }
-    let mut ids: BTreeSet<String> = change_dirs(root, ".specsync/changes")
-        .map_err(anyhow::Error::msg)?
-        .into_iter()
-        .collect();
-    for directory in change_dirs(root, ".specsync/archive/changes").map_err(anyhow::Error::msg)? {
-        let path = format!(".specsync/archive/changes/{directory}/finalization.json");
-        let value: Value = serde_json::from_str(&read_native_text(&local_path(root, &path)?)?)?;
-        let id = value["change_id"]
-            .as_str()
-            .filter(|id| directory.ends_with(id))
-            .context("unavailable archived manifest identity")?;
-        ids.insert(id.to_string());
-    }
-    let mut paths = BTreeSet::new();
-    for id in ids {
-        paths.extend(manifest(root, &id, None).map_err(anyhow::Error::msg)?);
-    }
-    Ok(paths.into_iter().collect())
-}
-
 /// Why a record is not a routine automated run, if it is not.
 fn non_routine(evidence: &Evidence) -> Option<String> {
     if !matches!(
@@ -3403,10 +3375,6 @@ pub(super) fn retention_authority(root: &Path, command: &str) -> Result<String> 
     let session = read_session(root)?;
     let authorized = match &session {
         Session::V2(checkpoint) => prefs::authorized(root, checkpoint, "retention")?,
-        Session::V1(_) => {
-            let (value, origin) = prefs::effective(root, "retention")?;
-            (value == "auto").then_some(origin)
-        }
     };
     match authorized {
         Some(authority) => Ok(authority),
@@ -3425,10 +3393,6 @@ pub(super) fn prune(root: &Path, apply: bool) -> Result<()> {
     let authority = if apply {
         let authorized = match &session {
             Session::V2(checkpoint) => prefs::authorized(root, checkpoint, "retention")?,
-            Session::V1(_) => {
-                let (value, origin) = prefs::effective(root, "retention")?;
-                (value == "auto").then_some(origin)
-            }
         };
         if authorized.is_none() {
             let (value, origin) = prefs::effective(root, "retention")?;
@@ -3825,9 +3789,12 @@ mod tests {
 
     fn prune_fixture(entries: &[(&str, &[(&str, &str)])]) -> tempfile::TempDir {
         let root = tempfile::tempdir().unwrap();
-        crate::checkpoint::save_checkpoint(
+        crate::sessions::create(
             root.path(),
-            &crate::checkpoint::new_checkpoint("Prune fixture".into(), String::new(), vec![]),
+            "prune",
+            "Prune fixture".into(),
+            String::new(),
+            vec![],
         )
         .unwrap();
         for (id, age) in [("keep-a", 20), ("keep-b", 21), ("keep-c", 22)] {

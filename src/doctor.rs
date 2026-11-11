@@ -4,8 +4,8 @@
 //! It reads only `.chough/` and the archives' `finalization.json`; it never calls
 //! SpecSync and never records a human decision, approval, review or consent.
 
-use crate::checkpoint::{self, Session};
-use crate::records::{local_path, print_json, read_bounded_record, valid_change_id};
+use crate::checkpoint::{self};
+use crate::records::{local_path, print_json};
 use crate::sessions;
 use anyhow::{Result, bail, ensure};
 use serde_json::{Value, json};
@@ -100,81 +100,22 @@ fn archived(root: &Path, change: Option<&str>) -> bool {
     change.is_some_and(|change| crate::library::finalized_at(root, change).is_some())
 }
 
-/// The legacy checkpoint finding, if `.chough/session.json` exists.
-fn legacy(root: &Path, adopt_as: Option<&str>) -> Result<Option<Finding>> {
-    let path = local_path(root, checkpoint::SESSION)?;
-    if !path.exists() {
+/// The 0.5.x checkpoint finding, if `.chough/session.json` exists: the project is not
+/// migrated (REQ-records-010). Doctor never migrates; the finding names the command.
+fn legacy(root: &Path, _adopt_as: Option<&str>) -> Result<Option<Finding>> {
+    let target = checkpoint::SESSION;
+    if !local_path(root, target)?.exists() {
         return Ok(None);
     }
-    let target = checkpoint::SESSION;
-    let session = read_bounded_record(&path, checkpoint::SESSION_LIMIT)
-        .ok()
-        .and_then(|bytes| checkpoint::parse(&bytes).ok());
-    let mut finding = match session {
-        Some(Session::V2(session)) => {
-            let key = adopt_as.map(str::to_string).or_else(|| {
-                session
-                    .native_change
-                    .clone()
-                    .filter(|change| valid_change_id(change))
-            });
-            let adopt_history = session.history_cursor.is_none();
-            match key {
-                Some(key) => {
-                    let fix = if adopt_history {
-                        format!("chough history adopt --apply && chough session adopt {key}")
-                    } else {
-                        format!("chough session adopt {key}")
-                    };
-                    let mut finding = Finding::new(Kind::LegacyCheckpoint, target, fix, false);
-                    if adopt_history && sessions::enabled(root)? {
-                        finding.blocked = Some(format!(
-                            "{target} has no history cursor and {} exists, so history cannot be adopted for it; adopt it before opening sessions",
-                            sessions::DIR
-                        ));
-                    }
-                    finding
-                }
-                None => {
-                    let mut finding = Finding::new(
-                        Kind::LegacyCheckpoint,
-                        target,
-                        "chough doctor --fix --adopt-as <key>".to_string(),
-                        false,
-                    );
-                    finding.blocked = Some(format!(
-                        "{target} names no native change; name its session with --adopt-as <key>"
-                    ));
-                    finding
-                }
-            }
-        }
-        Some(Session::V1(_)) => {
-            let mut finding = Finding::new(
-                Kind::LegacyCheckpoint,
-                target,
-                "chough migrate".into(),
-                false,
-            );
-            finding.blocked = Some(format!(
-                "{target} uses schema 1; run `chough migrate` first"
-            ));
-            finding
-        }
-        None => {
-            let mut finding = Finding::new(
-                Kind::LegacyCheckpoint,
-                target,
-                "chough session shelve --legacy".into(),
-                false,
-            );
-            finding.blocked = Some(sessions::shelve_hint(target));
-            finding
-        }
-    };
-    if finding.blocked.is_none() && adopt_as.is_some_and(|key| !valid_change_id(key)) {
-        finding.blocked = Some("--adopt-as must be a valid session key".into());
-    }
+    let mut finding = Finding::new(
+        Kind::LegacyCheckpoint,
+        target,
+        "chough migrate".into(),
+        false,
+    );
+    finding.blocked = Some(format!(
+        "{target} is a 0.5.x checkpoint; run `chough migrate`, which doctor never runs itself"
+    ));
     Ok(Some(finding))
 }
 
@@ -259,28 +200,12 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
 }
 
 /// Apply one finding's fix (REQ-history-012).
-fn apply(root: &Path, finding: &Finding, args: &DoctorArgs, reason: Option<&str>) -> Result<()> {
+fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str>) -> Result<()> {
     match finding.kind {
-        Kind::LegacyCheckpoint => {
-            let session = checkpoint::parse(&read_bounded_record(
-                &local_path(root, checkpoint::SESSION)?,
-                checkpoint::SESSION_LIMIT,
-            )?)?;
-            let Session::V2(session) = session else {
-                bail!("{} uses schema 1", checkpoint::SESSION);
-            };
-            let key = args
-                .adopt_as
-                .clone()
-                .or(session.native_change.clone())
-                .unwrap_or_default();
-            if session.history_cursor.is_none() {
-                crate::history::adopt(root, true)?;
-                sessions::unpin(root);
-            }
-            sessions::adopt(root, &key)?;
-            sessions::unpin(root);
-        }
+        Kind::LegacyCheckpoint => bail!(
+            "{} is a 0.5.x checkpoint; run `chough migrate`",
+            checkpoint::SESSION
+        ),
         Kind::StalePointer => {
             let path = local_path(root, sessions::POINTER)?;
             if path.exists() {

@@ -27,10 +27,10 @@ mod validate;
 mod vault;
 
 use anyhow::{Context, Result, ensure};
-use checkpoint::{SESSION, Session, new_checkpoint, read_session};
+use checkpoint::{Session, read_session};
 use clap::{Parser, Subcommand};
 use records::valid_module_name;
-use records::{NativeJson, local_path, native_json, print_json, write_new, write_new_bounded};
+use records::{NativeJson, local_path, native_json, print_json, write_new};
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 
@@ -51,11 +51,12 @@ struct Cli {
 enum Commands {
     /// Install the workflow skill and a schema 2 checkpoint without overwriting existing files.
     Init {
-        #[arg(
-            long,
-            default_value = "Describe the current objective before beginning work."
-        )]
-        objective: String,
+        /// The first session's objective; without it no session is created.
+        #[arg(long)]
+        objective: Option<String>,
+        /// The first session's key; the objective's slug when omitted.
+        #[arg(long = "session")]
+        session: Option<String>,
         #[arg(long, default_value = "")]
         intent_scope: String,
         #[arg(long = "module")]
@@ -195,20 +196,14 @@ fn main() -> Result<()> {
     match cli.command {
         Commands::Init {
             objective,
+            session,
             intent_scope,
             modules,
             hosts,
-        } => init(&root, objective, intent_scope, modules, hosts)?,
+        } => init(&root, objective, session, intent_scope, modules, hosts)?,
         Commands::Context { json: as_json } => {
             let session = read_session(&root)?;
-            let mut sections = context::context(&root, &session)?;
-            if matches!(&session, Session::V2(checkpoint) if checkpoint.history_cursor.is_some()) {
-                for section in &mut sections {
-                    if section.source == stage::TRANSITIONS {
-                        section.source = history::ROOT.into();
-                    }
-                }
-            }
+            let sections = context::context(&root, &session)?;
             let session_value = session.to_value()?;
             if as_json {
                 print_json(
@@ -237,7 +232,9 @@ fn main() -> Result<()> {
             environment,
             json: as_json,
         } => print!("{}", next(&root, environment.as_deref(), as_json)?),
-        Commands::Migrate { stage } => checkpoint::migrate(&root, &stage)?,
+        Commands::Migrate { stage: _ } => anyhow::bail!(
+            "`chough migrate` for 0.5.x projects is being rebuilt in this 0.6.0 branch (plan step 10); use a released Chough until then"
+        ),
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
         Commands::Stage { command } => stage::run(&root, command)?,
         Commands::History { command } => history::run(&root, command)?,
@@ -277,16 +274,13 @@ fn main() -> Result<()> {
 
 fn init(
     root: &Path,
-    objective: String,
+    objective: Option<String>,
+    session_key: Option<String>,
     intent_scope: String,
     modules: Vec<String>,
     hosts: Vec<String>,
 ) -> Result<()> {
-    ensure!(!objective.trim().is_empty(), "objective must not be blank");
-    ensure!(
-        !sessions::enabled(root)?,
-        "the project uses sessions mode; run `chough session new <key>`"
-    );
+    sessions::ensure_migrated(root)?;
     ensure!(
         modules.iter().all(|module| valid_module_name(module)),
         "invalid module name: use a module ID SpecSync accepts, such as cli or chat.service"
@@ -296,43 +290,22 @@ fn init(
     } else {
         hosts
     };
-    let mut session = new_checkpoint(objective, intent_scope, modules);
-    let initialize_history =
-        !local_path(root, SESSION)?.exists() && !local_path(root, stage::TRANSITIONS)?.exists();
-    if initialize_history {
-        // A valid same-size placeholder permits the complete checkpoint and all
-        // destination paths to be checked before randomness or directory writes.
-        session.history_cursor = Some(history::Cursor {
-            cycle: "CYC-000000000000000000000000".into(),
-            head: None,
-            legacy: None,
-        });
-    }
-    checkpoint::validate_v2(&session)?;
-    let mut files = vec![(
-        SESSION.to_string(),
-        serde_json::to_string_pretty(&session)? + "\n",
-    )];
-    for (name, content) in skill::planned_files(&hosts)? {
-        files.push((name, content.to_string()));
-    }
+    let files = skill::planned_files(&hosts)?;
     for (name, _) in &files {
         local_path(root, name)?;
     }
-    if initialize_history {
-        local_path(root, &format!("{}/cycles", history::ROOT))?;
-        session.history_cursor = Some(history::new_cursor(root)?);
-        files[0].1 = serde_json::to_string_pretty(&session)? + "\n";
-    }
     let mut created = vec![];
     let mut preserved = vec![];
+    // REQ-cli (0.6.0): `--objective` creates the first session as `chough session new`
+    // would, keyed by `--session` or the objective's slug; without it, none.
+    if let Some(objective) = objective {
+        ensure!(!objective.trim().is_empty(), "objective must not be blank");
+        let key = session_key.unwrap_or_else(|| identity::slug(&objective, "session", 64));
+        let id = sessions::create(root, &key, objective, intent_scope, modules)?;
+        created.push(sessions::session_file(&id));
+    }
     for (name, content) in files {
-        let written = if name == SESSION {
-            write_new_bounded(root, &name, &content, checkpoint::SESSION_LIMIT)?
-        } else {
-            write_new(root, &name, &content)?
-        };
-        if written {
+        if write_new(root, &name, content)? {
             created.push(name);
         } else {
             preserved.push(name);
@@ -378,24 +351,20 @@ fn assess(root: &Path) -> Result<Assessment> {
     let session = read_session(root)?;
     let checkpoint = match &session {
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
-        Session::V1(_) => None,
     };
     let change = checkpoint.and_then(|checkpoint| checkpoint.native_change.as_deref());
     let native = native_read(root, change)?;
     let open_bugs = bugs::open_backlog(root)?;
     let blocking = bugs::open_blocking(root)?;
-    let history_read = checkpoint
-        .and_then(|checkpoint| checkpoint.history_cursor.as_ref())
-        .map(|cursor| {
-            history::selected(
-                root,
-                cursor,
-                history::RECENT_EVENTS,
-                history::RECENT_BYTES,
-                cursor.head.is_none(),
-            )
-        });
-    let history = history_read.as_ref().map(|read| json!({"partial":read.partial,"events_read":read.records.len(),"bytes_read":read.bytes,"source":history::ROOT}));
+    let history_read = checkpoint.map(|checkpoint| {
+        history::selected(
+            checkpoint,
+            history::RECENT_EVENTS,
+            history::RECENT_BYTES,
+            true,
+        )
+    });
+    let history = history_read.as_ref().map(|read| json!({"partial":read.partial,"events_read":read.records.len(),"bytes_read":read.bytes,"source":"the session timeline"}));
     let (gate, mut action, deltas) = match checkpoint {
         None => (
             None,
@@ -455,9 +424,6 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
     let observation_references = reads.reference_labels(&current, environment)?;
     records::trace_phase("status.references", phase);
     let stage_report = match session {
-        Session::V1(_) => {
-            json!({"schema": 1, "migration": "Run `chough migrate` to adopt the schema 2 checkpoint; the original bytes are kept."})
-        }
         Session::V2(checkpoint) => json!({
             "schema": 2,
             "stage": checkpoint.stage,
@@ -499,7 +465,6 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "checkpoint": stage_report,
         "direct_writes": direct_writes::view(root, match session {
             Session::V2(checkpoint) => checkpoint.native_change.as_deref(),
-            Session::V1(_) => None,
         }),
         "transition_history": assessment.history,
         "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
@@ -751,7 +716,6 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     let session = &assessment.session;
     let checkpoint = match session {
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
-        Session::V1(_) => None,
     };
     let change = checkpoint.and_then(|checkpoint| checkpoint.native_change.clone());
     let summary = assessment
@@ -805,7 +769,6 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     let empty = vec![];
     let modules = match session {
         Session::V2(checkpoint) => &checkpoint.modules,
-        Session::V1(session) => &session.modules,
     };
     let view = json!({
         "schema_version": 1,
@@ -1253,7 +1216,8 @@ mod tests {
         git_in(&a, &["init", "-q"]);
         init(
             &a,
-            "Same-second runs".into(),
+            Some("Same-second runs".into()),
+            None,
             String::new(),
             vec!["cli".into()],
             vec![],

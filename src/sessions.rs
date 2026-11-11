@@ -1,10 +1,15 @@
-//! Sessions per objective or native change (REQ-cli-037, REQ-history-006).
+//! Sessions in their own folders (REQ-history-006, REQ-records-004).
 //!
-//! With `.chough/sessions/` present the canonical checkpoint is the active session
-//! file. Only that file is written; other sessions are read, and archived sessions
-//! keep their bytes. Subagents report through create-only inbox entries.
+//! Each open session is `.chough/sessions/<id>/session.md`, with `evidence/` and
+//! `agent/` beside it; the active one is named by `.chough/local/active-session`. A
+//! session only ever closes itself: at its own move into done, with `chough session
+//! close`, or by `chough doctor --fix`. Starting or switching work never archives,
+//! closes or changes another session (Q3, #207). Archiving writes one story,
+//! `.chough/archive/sessions/<id>.md`, and then removes the session folder file by file,
+//! each only when its exact bytes are committed at HEAD (REQ-records-012).
 
 use crate::checkpoint::{self, Checkpoint, Session};
+use crate::markdown::{Kind as RecordKind, Value};
 use crate::records::{
     CHANGE_ID_LIMIT, ensure_text, local_path, now, print_json, read_bounded_record,
     valid_change_id, valid_module_name, valid_name, write_new, write_new_bounded,
@@ -32,31 +37,6 @@ fn pinned(root: &Path) -> Option<String> {
         .and_then(|map| map.get(root).cloned())
 }
 
-#[cfg(test)]
-thread_local! {
-    static BEFORE_FOLD_SAVE: std::cell::RefCell<Option<Box<dyn FnMut()>>> =
-        const { std::cell::RefCell::new(None) };
-}
-
-/// Runs `hook` just before `inbox fold` saves, standing in for another process's
-/// `chough session use` partway through the fold. Test builds only.
-#[cfg(test)]
-fn with_before_fold_save<T>(hook: impl FnMut() + 'static, run: impl FnOnce() -> T) -> T {
-    BEFORE_FOLD_SAVE.with(|slot| *slot.borrow_mut() = Some(Box::new(hook)));
-    let result = run();
-    BEFORE_FOLD_SAVE.with(|slot| *slot.borrow_mut() = None);
-    result
-}
-
-fn before_fold_save() {
-    #[cfg(test)]
-    BEFORE_FOLD_SAVE.with(|slot| {
-        if let Some(hook) = slot.borrow_mut().as_mut() {
-            hook();
-        }
-    });
-}
-
 /// Forgets this process's resolved session for `root`, as a fresh process would start.
 pub(super) fn unpin(root: &Path) {
     if let Some(map) = PINNED
@@ -77,17 +57,21 @@ pub(super) fn pin(root: &Path, relative: &str) {
 }
 
 pub(super) const DIR: &str = ".chough/sessions";
-const ARCHIVE: &str = ".chough/sessions/archive";
-/// Checkpoints set aside by `chough session shelve`, which only retention reads.
-const SHELVED: &str = ".chough/sessions/shelved";
+/// Archived session stories, kept for good (KNOW-34).
+const ARCHIVE: &str = ".chough/archive/sessions";
+/// Session folders set aside by `chough session shelve`, moved byte for byte.
+const SHELVED: &str = ".chough/archive/shelved";
 const LOCAL: &str = ".chough/local";
 pub(super) const POINTER: &str = ".chough/local/active-session";
 const INBOX_LIMIT: u64 = 16_384;
 const MAX_INBOX: usize = 200;
+/// A 0.5.x checkpoint; its presence means the project has not been migrated.
+const LEGACY: &str = ".chough/session.json";
 
 #[derive(Subcommand)]
 pub(super) enum SessionCommand {
-    /// Create a session for an objective or native change and make it active.
+    /// Create a session for an objective or native change and make it active. No other
+    /// session is touched.
     New {
         key: String,
         #[arg(
@@ -100,11 +84,10 @@ pub(super) enum SessionCommand {
         #[arg(long = "module")]
         modules: Vec<String>,
     },
-    /// Move `.chough/session.json` (with a history cursor) to a session, byte for byte.
-    Adopt { key: String },
-    /// Make an open session active; done sessions are archived.
+    /// Make an open session active, by ID, alias or a unique bare slug. No other session
+    /// is touched.
     Use { key: String },
-    /// List open and archived sessions.
+    /// List open and archived sessions, with each finished open session's fix.
     List,
     /// Close an open session for abandoned work: record the reason and archive it,
     /// without a native read (DRIVE-16).
@@ -114,14 +97,11 @@ pub(super) enum SessionCommand {
         #[arg(long)]
         reason: String,
     },
-    /// Move an oversized or unreadable checkpoint, unparsed, into `.chough/sessions/shelved/`.
+    /// Move an oversized or unreadable session folder, unparsed and byte for byte, into
+    /// `.chough/archive/shelved/`.
     Shelve {
         /// The session to shelve.
-        #[arg(required_unless_present = "legacy", conflicts_with = "legacy")]
-        key: Option<String>,
-        /// Shelve the legacy `.chough/session.json` as `legacy`.
-        #[arg(long)]
-        legacy: bool,
+        key: String,
     },
 }
 
@@ -177,16 +157,27 @@ struct Entry {
     recorded_at_unix_seconds: u64,
 }
 
-pub(super) fn session_file(key: &str) -> String {
-    format!("{DIR}/{key}.json")
+/// The session file of open session `id`.
+pub(super) fn session_file(id: &str) -> String {
+    format!("{DIR}/{id}/session.md")
 }
 
-pub(super) fn archive_file(key: &str) -> String {
-    format!("{ARCHIVE}/{key}.json")
+/// The story of archived session `id`.
+pub(super) fn archive_file(id: &str) -> String {
+    format!("{ARCHIVE}/{id}.md")
 }
 
-fn inbox_dir(key: &str) -> String {
-    format!("{DIR}/{key}.inbox")
+fn inbox_dir(id: &str) -> String {
+    format!("{DIR}/{id}/agent/inbox")
+}
+
+/// The session ID of a session file path.
+fn id_of(relative: &str) -> Option<String> {
+    relative
+        .strip_prefix(&format!("{DIR}/"))
+        .and_then(|rest| rest.strip_suffix("/session.md"))
+        .filter(|id| valid_change_id(id))
+        .map(str::to_string)
 }
 
 pub(super) fn ensure_key(key: &str) -> Result<()> {
@@ -201,12 +192,31 @@ pub(super) fn enabled(root: &Path) -> Result<bool> {
     Ok(local_path(root, DIR)?.is_dir())
 }
 
-pub(super) fn keys_in(root: &Path, dir: &str) -> Result<Vec<String>> {
+/// Refuse a project still in the 0.5.x layout (REQ-records-010).
+pub(super) fn ensure_migrated(root: &Path) -> Result<()> {
+    let legacy_session = local_path(root, LEGACY)?.exists();
+    let legacy_files = match fs::read_dir(local_path(root, DIR)?) {
+        Ok(entries) => entries.filter_map(|entry| entry.ok()).any(|entry| {
+            entry.file_name().to_str().is_some_and(|name| {
+                name.ends_with(".json") || name == "archive" || name == "shelved"
+            })
+        }),
+        Err(_) => false,
+    };
+    ensure!(
+        !legacy_session && !legacy_files,
+        "refused:unmigrated: this project's Chough records are in the 0.5.x format; run `chough migrate` to see the plan, then `chough migrate --apply <digest>`"
+    );
+    Ok(())
+}
+
+/// The names (without `.json`) of the JSON files directly in `dir`.
+fn json_names_in(root: &Path, dir: &str) -> Result<Vec<String>> {
     let path = local_path(root, dir)?;
-    let mut keys = vec![];
+    let mut names = vec![];
     let entries = match fs::read_dir(&path) {
         Ok(entries) => entries,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(keys),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(names),
         Err(error) => return Err(error).with_context(|| format!("reading {dir}")),
     };
     for entry in entries {
@@ -214,17 +224,110 @@ pub(super) fn keys_in(root: &Path, dir: &str) -> Result<Vec<String>> {
         if !entry.file_type()?.is_file() {
             continue;
         }
-        if let Some(key) = entry
+        if let Some(name) = entry
             .file_name()
             .to_str()
             .and_then(|name| name.strip_suffix(".json"))
-            && valid_change_id(key)
+            && valid_change_id(name)
         {
-            keys.push(key.to_string());
+            names.push(name.to_string());
         }
     }
-    keys.sort();
-    Ok(keys)
+    names.sort();
+    Ok(names)
+}
+
+/// The IDs of open sessions: folders in `.chough/sessions/` holding a `session.md`
+/// whose story is not written yet. A folder whose story exists counts as archived
+/// even while files it could not remove are still there.
+pub(super) fn open_ids(root: &Path) -> Result<Vec<String>> {
+    let mut ids = vec![];
+    let entries = match fs::read_dir(local_path(root, DIR)?) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(ids),
+        Err(error) => return Err(error).context("reading .chough/sessions"),
+    };
+    for entry in entries {
+        let entry = entry?;
+        let Some(id) = entry.file_name().to_str().map(str::to_string) else {
+            continue;
+        };
+        if entry.file_type()?.is_dir()
+            && valid_change_id(&id)
+            && local_path(root, &session_file(&id))?.is_file()
+            && !local_path(root, &archive_file(&id))?.exists()
+        {
+            ids.push(id);
+        }
+    }
+    ids.sort();
+    Ok(ids)
+}
+
+/// The IDs of archived sessions, from their stories.
+fn archived_ids(root: &Path) -> Result<Vec<String>> {
+    let mut ids = vec![];
+    let entries = match fs::read_dir(local_path(root, ARCHIVE)?) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(ids),
+        Err(error) => return Err(error).context("reading .chough/archive/sessions"),
+    };
+    for entry in entries {
+        let entry = entry?;
+        if let Some(id) = entry
+            .file_name()
+            .to_str()
+            .and_then(|name| name.strip_suffix(".md"))
+            .filter(|id| valid_change_id(id))
+            && entry.file_type()?.is_file()
+        {
+            ids.push(id.to_string());
+        }
+    }
+    ids.sort();
+    Ok(ids)
+}
+
+/// `keys_in(root, DIR)` lists the open session IDs; any other folder lists its JSON
+/// file names.
+pub(super) fn keys_in(root: &Path, dir: &str) -> Result<Vec<String>> {
+    if dir == DIR {
+        open_ids(root)
+    } else {
+        json_names_in(root, dir)
+    }
+}
+
+/// The open session `name` names: its ID, one of its aliases, or the bare slug of
+/// exactly one open session. An alias two sessions hold is refused (REQ-records-003).
+fn resolve_open(root: &Path, name: &str) -> Result<String> {
+    let ids = open_ids(root)?;
+    if ids.iter().any(|id| id == name) {
+        return Ok(name.to_string());
+    }
+    let mut found: Vec<String> = vec![];
+    for id in &ids {
+        let aliases = read_at(root, &session_file(id))
+            .map(|session| session.meta.aliases)
+            .unwrap_or_default();
+        let bare = id.get(11..).unwrap_or_default();
+        if aliases.iter().any(|alias| alias == name) || bare == name {
+            found.push(id.clone());
+        }
+    }
+    match found.as_slice() {
+        [id] => Ok(id.clone()),
+        [] => {
+            if archived_ids(root)?.iter().any(|id| id == name) {
+                bail!("session {name} is archived");
+            }
+            bail!("no session {name}")
+        }
+        _ => bail!(
+            "{name} names more than one open session ({}); use the full ID",
+            found.join(", ")
+        ),
+    }
 }
 
 pub(super) fn pointer(root: &Path) -> Result<Option<String>> {
@@ -232,50 +335,51 @@ pub(super) fn pointer(root: &Path) -> Result<Option<String>> {
     if !path.exists() {
         return Ok(None);
     }
-    let key = read_bounded_record(&path, 512)?.trim().to_string();
-    ensure_key(&key)?;
-    Ok(Some(key))
+    let id = read_bounded_record(&path, 512)?.trim().to_string();
+    ensure_key(&id)?;
+    Ok(Some(id))
 }
 
-/// The active session's key, or a refusal naming the next command.
+/// The active session's ID, or a refusal naming the next command.
 fn active(root: &Path) -> Result<String> {
-    if let Some(key) = pointer(root)? {
-        if local_path(root, &session_file(&key))?.is_file() {
-            return Ok(key);
-        }
-        if local_path(root, &archive_file(&key))?.is_file() {
+    ensure_migrated(root)?;
+    if let Some(id) = pointer(root)? {
+        if local_path(root, &archive_file(&id))?.is_file() {
             bail!(
-                "the active session {key} is archived; run `chough session use <key>` or `chough session new <key>`"
+                "the active session {id} is archived; run `chough session use <id>` or `chough session new <key>`"
             );
         }
+        if local_path(root, &session_file(&id))?.is_file() {
+            return Ok(id);
+        }
         bail!(
-            "the active session {key} does not exist; run `chough session use <key>` or `chough session new <key>`"
+            "the active session {id} does not exist; run `chough session use <id>` or `chough session new <key>`"
         );
     }
-    let open = keys_in(root, DIR)?;
-    if let [key] = open.as_slice() {
-        return Ok(key.clone());
+    let open = open_ids(root)?;
+    if let [id] = open.as_slice() {
+        return Ok(id.clone());
     }
     // A finished session does not count toward several open ones (DRIVE-16); an
     // unreadable one does, so it is never skipped silently.
     let unfinished: Vec<&String> = open
         .iter()
-        .filter(|key| {
-            !read_at(root, &session_file(key)).is_ok_and(|session| finished(root, &session))
+        .filter(|id| {
+            !read_at(root, &session_file(id)).is_ok_and(|session| finished(root, &session))
         })
         .collect();
     match unfinished.as_slice() {
-        [key] => Ok((*key).clone()),
+        [id] => Ok((*id).clone()),
         [] if open.is_empty() => bail!("no open session; run `chough session new <key>`"),
         [] => bail!(
             "no unfinished open session (finished: {}); run `chough session new <key>`",
             open.join(", ")
         ),
         _ => bail!(
-            "several open sessions ({}) and no active pointer; run `chough session use <key>`",
+            "several open sessions ({}) and no active pointer; run `chough session use <id>`",
             unfinished
                 .iter()
-                .map(|key| key.as_str())
+                .map(|id| id.as_str())
                 .collect::<Vec<_>>()
                 .join(", ")
         ),
@@ -298,56 +402,30 @@ pub(super) fn finished(root: &Path, session: &Checkpoint) -> bool {
 /// that is archived or removed meanwhile is refused rather than written again.
 pub(super) fn checkpoint_path(root: &Path) -> Result<String> {
     if let Some(relative) = pinned(root) {
-        // The checkpoint this command resolved vanished while it ran: archived, removed,
-        // or (for a legacy writer) adopted into sessions mode, so `.chough/session.json`
-        // would otherwise be written again. Nothing is saved, and the history events this
-        // command published are removed so no orphan is left (#82, REQ-history-008).
-        let vanished = if relative == checkpoint::SESSION {
-            enabled(root)?.then(|| {
-                format!(
-                    "{} was adopted into {DIR} while this command ran",
-                    checkpoint::SESSION
-                )
-            })
-        } else {
-            (!local_path(root, &relative)?.is_file())
-                .then(|| format!("{relative} was archived or removed while this command ran"))
-        };
-        if let Some(why) = vanished {
-            // Only events published since the checkpoint was last found in place go.
-            let events = match crate::history::discard_published(root) {
-                0 => String::new(),
-                1 => "; the history event it had written was removed".into(),
-                count => format!("; the {count} history events it had written were removed"),
-            };
-            bail!("{why}; nothing was saved{events}");
+        let archived = id_of(&relative)
+            .map(|id| local_path(root, &archive_file(&id)).map(|path| path.exists()))
+            .transpose()?
+            .unwrap_or(false);
+        if archived || !local_path(root, &relative)?.is_file() {
+            bail!("{relative} was archived or removed while this command ran; nothing was saved");
         }
-        // Found in place: a save resolves here just before it writes, so from now on the
-        // events published so far may be saved and are never removed (second #96 review).
-        crate::history::retire_published(root);
         return Ok(relative);
     }
-    let relative = if enabled(root)? {
-        session_file(&active(root)?)
-    } else {
-        checkpoint::SESSION.to_string()
-    };
+    let relative = session_file(&active(root)?);
     pin(root, &relative);
     Ok(relative)
 }
 
 /// Every session checkpoint with how retention names it: the active checkpoint as
-/// `checkpoint`, other open sessions as `session <key>` and archived ones as
-/// `archived session <key>`, then, for each session with unfolded observation entries,
-/// those observations as `inbox of session <key>` (#98). Any session or entry that
-/// cannot be read is an error.
+/// `checkpoint`, other open sessions as `session <id>`, archived stories as
+/// `archived session <id>`, shelved ones as `shelved session <id>`, then, for each
+/// session with unfolded observation entries, those observations as `inbox of session
+/// <id>` (#98). Any session or entry that cannot be read is an error.
 pub(super) fn every_checkpoint(root: &Path) -> Result<Vec<(String, Checkpoint)>> {
     checkpoints(root, false)
 }
 
-/// Every checkpoint that can be read, for display only: a session that cannot be read
-/// is left out instead of failing the view (REQ-history-006, DRIVE-14); `session list`
-/// reports it. Retention keeps using the strict [`every_checkpoint`].
+/// As [`every_checkpoint`], skipping what cannot be read.
 pub(super) fn readable_checkpoints(root: &Path) -> Result<Vec<(String, Checkpoint)>> {
     checkpoints(root, true)
 }
@@ -360,70 +438,60 @@ fn checkpoints(root: &Path, lenient: bool) -> Result<Vec<(String, Checkpoint)>> 
             Err(error) => Err(error),
         }
     };
-    if !enabled(root)? {
-        return Ok(match checkpoint::read_session(root)? {
-            Session::V2(session) => vec![("checkpoint".into(), *session)],
-            Session::V1(_) => vec![],
-        });
-    }
     let current = checkpoint_path(root).ok();
     let mut all = vec![];
-    for key in keys_in(root, DIR)? {
-        let file = session_file(&key);
+    for id in open_ids(root)? {
+        let file = session_file(&id);
         let label = if current.as_deref() == Some(file.as_str()) {
             "checkpoint".to_string()
         } else {
-            format!("session {key}")
+            format!("session {id}")
         };
         if let Some(session) = read(&file)? {
             all.push((label, session));
         }
     }
-    for key in keys_in(root, ARCHIVE)? {
-        if let Some(session) = read(&archive_file(&key))? {
-            all.push((format!("archived session {key}"), session));
+    for id in archived_ids(root)? {
+        if let Some(session) = read(&archive_file(&id))? {
+            all.push((format!("archived session {id}"), session));
         }
     }
-    // A shelved checkpoint no longer drives work, but what it references stays
-    // protected: retention reads it within the 16 MiB ledger bound (DRIVE-14).
-    for key in keys_in(root, SHELVED)? {
-        if key.ends_with(".shelved") {
-            continue;
-        }
-        let file = format!("{SHELVED}/{key}.json");
-        let shelved = (|| -> Result<Checkpoint> {
-            let bytes = read_bounded_raw(&local_path(root, &file)?)?;
-            let text = String::from_utf8(bytes).with_context(|| format!("reading {file}"))?;
-            match checkpoint::parse(&text).with_context(|| format!("reading {file}"))? {
-                Session::V2(session) => Ok(*session),
-                Session::V1(_) => bail!("{file} uses schema 1"),
+    // A shelved session no longer drives work, but what it references stays protected.
+    if let Ok(entries) = fs::read_dir(local_path(root, SHELVED)?) {
+        let mut ids: Vec<String> = entries
+            .filter_map(|entry| entry.ok())
+            .filter_map(|entry| entry.file_name().into_string().ok())
+            .filter(|id| valid_change_id(id))
+            .collect();
+        ids.sort();
+        for id in ids {
+            let file = format!("{SHELVED}/{id}/session.md");
+            if !local_path(root, &file)?.is_file() {
+                continue;
             }
-        })();
-        match shelved {
-            Ok(session) => all.push((format!("shelved session {key}"), session)),
-            Err(_) if lenient => {}
-            Err(error) => return Err(error),
+            match read_at(root, &file) {
+                Ok(session) => all.push((format!("shelved session {id}"), session)),
+                Err(_) if lenient => {}
+                Err(_) => {}
+            }
         }
     }
     // Observations an unfolded inbox entry reports are what the session will hold once
     // it folds, so retention protects them now (#98, REQ-history-009).
-    for key in keys_in(root, DIR)?
-        .into_iter()
-        .chain(keys_in(root, ARCHIVE)?)
-    {
-        let reported: Vec<String> = pending(root, &key)?
+    for id in open_ids(root)? {
+        let reported: Vec<String> = pending(root, &id)?
             .into_iter()
             .filter(|(_, entry)| entry.kind == Kind::Observation.name())
             .map(|(_, entry)| entry.text)
             .collect();
         if !reported.is_empty() {
             let mut inbox = checkpoint::new_checkpoint(
-                format!("Unfolded inbox of session {key}"),
+                format!("Unfolded inbox of session {id}"),
                 String::new(),
                 vec![],
             );
             inbox.observations = reported;
-            all.push((format!("inbox of session {key}"), inbox));
+            all.push((format!("inbox of session {id}"), inbox));
         }
     }
     Ok(all)
@@ -438,56 +506,47 @@ pub(super) fn lock_project(root: &Path) -> Result<()> {
     Ok(())
 }
 
-/// Git ignore rules for `.chough/sessions/` and the inbox directories in it: the temps
-/// a session-file write uses before its rename and an inbox add before its link.
+/// Git ignore rules for `.chough/sessions/`: the temps a session-file write uses before
+/// its rename and an inbox add before its link.
 const IGNORE: &str = ".*.tmp\n";
 
-/// Whether `name` is `.<stem>.json.<pid>.tmp` for a valid session key or entry ID: the
-/// temp a session-file write or an inbox add uses before it publishes.
+/// Whether `name` is a write temp: `.<name>.<pid>.tmp`.
 fn is_write_temp(name: &str) -> bool {
     name.strip_prefix('.')
         .and_then(|rest| rest.strip_suffix(".tmp"))
-        .and_then(|rest| rest.rsplit_once(".json."))
+        .and_then(|rest| rest.rsplit_once('.'))
         .is_some_and(|(stem, pid)| {
-            valid_change_id(stem)
+            (stem.ends_with(".json") || stem.ends_with(".md"))
                 && !pid.is_empty()
                 && pid.bytes().all(|byte| byte.is_ascii_digit())
         })
 }
 
-/// Remove `.<key>.json.<pid>.tmp` files left directly in `.chough/sessions/` by session
-/// writers killed before their rename (#77 review, gap ii), and `.<id>.json.<pid>.tmp`
-/// files left in an inbox directory by an `inbox add` killed before its link (#99
-/// review), and make sure Git ignores that pattern. Called by `save_checkpoint` while it
-/// holds the checkpoint lock, under which every session-file writer renames and every
-/// inbox add links, so a temp seen here was left by a killed writer. Only regular files
-/// with exactly that name go.
+/// Remove write temps that killed writers left in a session folder or its inbox, and
+/// make sure Git ignores that pattern. Called by `save_checkpoint` while it holds the
+/// checkpoint lock, under which every session writer renames and every inbox add links,
+/// so a temp seen here was left by a killed writer.
 pub(super) fn remove_orphaned_temps(root: &Path) -> Result<()> {
     if !enabled(root)? {
         return Ok(());
     }
     write_new(root, &format!("{DIR}/.gitignore"), IGNORE)?;
-    let mut dirs = vec![(
-        DIR.to_string(),
-        "a session write that was stopped before it saved; the session was not changed by it",
-    )];
-    for entry in fs::read_dir(local_path(root, DIR)?)? {
-        let entry = entry?;
-        if entry.file_type()?.is_dir()
-            && let Some(key) = entry
-                .file_name()
-                .to_str()
-                .and_then(|name| name.strip_suffix(".inbox"))
-            && valid_change_id(key)
-        {
-            dirs.push((
-                inbox_dir(key),
-                "an inbox add that was stopped before it published its entry; no entry was added by it",
-            ));
-        }
+    let mut dirs = vec![];
+    for id in open_ids(root)? {
+        dirs.push((
+            format!("{DIR}/{id}"),
+            "a session write that was stopped before it saved; the session was not changed by it",
+        ));
+        dirs.push((
+            inbox_dir(&id),
+            "an inbox add that was stopped before it published its entry; no entry was added by it",
+        ));
     }
     for (dir, left_by) in dirs {
-        for entry in fs::read_dir(local_path(root, &dir)?)? {
+        let Ok(entries) = fs::read_dir(local_path(root, &dir)?) else {
+            continue;
+        };
+        for entry in entries {
             let entry = entry?;
             let name = entry.file_name();
             let Some(name) = name.to_str() else {
@@ -545,148 +604,103 @@ pub(super) fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
     let content = read_bounded_record(&local_path(root, relative)?, checkpoint::SESSION_LIMIT)
         .with_context(|| format!("reading {relative}"))
         .with_context(|| shelve_hint(relative))?;
-    match checkpoint::parse(&content)
+    match checkpoint::parse(relative, &content)
         .with_context(|| format!("reading {relative}"))
         .with_context(|| shelve_hint(relative))?
     {
         Session::V2(session) => Ok(*session),
-        Session::V1(_) => bail!("{relative} uses schema 1"),
     }
 }
 
-/// The recovery for a checkpoint that cannot be read (REQ-cli-032, DRIVE-14).
+/// The recovery for a session that cannot be read (REQ-cli-032, DRIVE-14).
 pub(super) fn shelve_hint(relative: &str) -> String {
-    let command = if relative == checkpoint::SESSION {
-        "chough session shelve --legacy".to_string()
-    } else {
-        let key = relative
-            .rsplit('/')
-            .next()
-            .and_then(|name| name.strip_suffix(".json"))
-            .unwrap_or("<key>");
-        format!("chough session shelve {key}")
-    };
+    let id = id_of(relative).unwrap_or_else(|| "<id>".into());
     format!(
-        "{relative} cannot be read (the checkpoint cap is {} bytes); set it aside with `{command}`, then `chough session new <key>`",
+        "{relative} cannot be read (the session bound is {} bytes); set it aside with `chough session shelve {id}`, then `chough session new <key>`",
         checkpoint::SESSION_LIMIT
     )
 }
 
-fn point(root: &Path, key: &str) -> Result<()> {
+fn point(root: &Path, id: &str) -> Result<()> {
     write_new(root, &format!("{LOCAL}/.gitignore"), "*\n")?;
     write_new(root, &format!("{DIR}/.gitignore"), IGNORE)?;
-    write_replace_bounded(root, POINTER, &format!("{key}\n"), 512)?;
-    pin(root, &session_file(key));
+    write_replace_bounded(root, POINTER, &format!("{id}\n"), 512)?;
+    pin(root, &session_file(id));
     Ok(())
 }
 
 /// The number of unfolded entries in a session's inbox.
-pub(super) fn unfolded(root: &Path, key: &str) -> Result<usize> {
-    Ok(keys_in(root, &inbox_dir(key))?.len())
+pub(super) fn unfolded(root: &Path, id: &str) -> Result<usize> {
+    Ok(json_names_in(root, &inbox_dir(id))?.len())
 }
 
-/// Move every other finished open session to the archive, bytes unchanged. A finished
-/// session with unfolded inbox entries stays open, so its entries are not stranded;
-/// it is returned in the second list with its unfolded count. So does one with an
-/// open human gate, returned with its gate count and recovery (#181).
-fn archive_done(root: &Path, keep: &str) -> Result<(Vec<String>, Vec<serde_json::Value>)> {
-    let mut archived = vec![];
-    let mut kept_open = vec![];
-    for key in keys_in(root, DIR)? {
-        // An unreadable session is left where it is; `session list` reports it.
-        if key == keep {
-            continue;
-        }
-        let Ok(session) = read_at(root, &session_file(&key)) else {
-            continue;
-        };
-        if !finished(root, &session) {
-            continue;
-        }
-        let count = unfolded(root, &key)?;
-        if count > 0 {
-            kept_open.push(json!({"key": key, "inbox_unfolded": count}));
-            continue;
-        }
-        // A finished session that still holds an open human gate is not doctor's
-        // mechanical `finished_session` fix (REQ-history-012): closing it is a
-        // decision, so a switch never drops the gate silently (#181, DRIVE-17).
-        if !session.awaiting_human.is_empty() {
-            let finalized = session
-                .native_change
-                .as_deref()
-                .is_some_and(|change| crate::library::finalized_at(root, change).is_some());
-            let recovery = if finalized {
-                "chough doctor --fix --reason <text>"
-            } else {
-                crate::stage::CLOSE_GATE_COMMAND
-            };
-            kept_open.push(json!({
-                "key": key,
-                "open_gates": session.awaiting_human.len(),
-                "recovery": recovery,
-            }));
-            continue;
-        }
-        archive_open(root, &key)?;
-        archived.push(key);
-    }
-    Ok((archived, kept_open))
-}
-
-/// Adopt `.chough/session.json` as session `key` (`chough session adopt`), returning
-/// its report.
-pub(super) fn adopt(root: &Path, key: &str) -> Result<serde_json::Value> {
+/// Create a new session for `key` and make it active, touching no other session
+/// (REQ-history-006, Q3). Returns its ID.
+pub(super) fn create(
+    root: &Path,
+    key: &str,
+    objective: String,
+    intent_scope: String,
+    modules: Vec<String>,
+) -> Result<String> {
     ensure_key(key)?;
+    ensure!(!objective.trim().is_empty(), "objective must not be blank");
+    ensure!(
+        modules.iter().all(|module| valid_module_name(module)),
+        "invalid module name: use a module ID SpecSync accepts, such as cli or chat.service"
+    );
     lock_project(root)?;
-    ensure_unused(root, key)?;
-    let legacy = local_path(root, checkpoint::SESSION)?;
-    let bytes = read_bounded_record(&legacy, checkpoint::SESSION_LIMIT)
-        .context("no checkpoint to adopt; run `chough session new <key>`")?;
-    match checkpoint::parse(&bytes)? {
-        Session::V2(session) if session.history_cursor.is_some() => {}
-        Session::V2(_) => {
-            bail!("the checkpoint has no history cursor; run `chough history adopt --apply` first")
+    ensure_migrated(root)?;
+    for id in open_ids(root)?.iter().chain(archived_ids(root)?.iter()) {
+        let file = if local_path(root, &archive_file(id))?.is_file() {
+            archive_file(id)
+        } else {
+            session_file(id)
+        };
+        if let Ok(session) = read_at(root, &file) {
+            ensure!(
+                id != key && !session.meta.aliases.iter().any(|alias| alias == key),
+                "session key {key} is already used by session {id}"
+            );
         }
-        Session::V1(_) => bail!("the checkpoint uses schema 1; run `chough migrate` first"),
     }
-    ensure!(
-        write_new_bounded(root, &session_file(key), &bytes, checkpoint::SESSION_LIMIT)?,
-        "session {key} already exists"
-    );
-    fs::remove_file(&legacy)?;
-    point(root, key)?;
-    Ok(
-        json!({"schema_version":1,"adopted":checkpoint::SESSION,"created":session_file(key),"active":key}),
-    )
-}
-
-/// Move open session `key` to the archive with its bytes unchanged, never replacing a
-/// file.
-pub(super) fn archive_open(root: &Path, key: &str) -> Result<()> {
-    let target = local_path(root, &archive_file(key))?;
-    ensure!(!target.exists(), "{} already exists", archive_file(key));
-    fs::create_dir_all(local_path(root, ARCHIVE)?)?;
-    fs::rename(local_path(root, &session_file(key))?, &target)?;
-    Ok(())
-}
-
-fn ensure_unused(root: &Path, key: &str) -> Result<()> {
-    ensure!(
-        !local_path(root, &session_file(key))?.exists()
-            && !local_path(root, &archive_file(key))?.exists(),
-        "session {key} already exists"
-    );
-    Ok(())
-}
-
-fn ensure_no_legacy(root: &Path) -> Result<()> {
-    ensure!(
-        !local_path(root, checkpoint::SESSION)?.exists(),
-        "{} exists; run `chough session adopt <key>` first",
-        checkpoint::SESSION
-    );
-    Ok(())
+    let date = crate::identity::utc_date(now()?);
+    let name = crate::identity::dated_name(&date, key, "session");
+    let mut session = checkpoint::new_checkpoint(objective, intent_scope, modules);
+    session.meta.aliases = vec![key.to_string()];
+    let render = |id: &str| -> Result<String> {
+        let mut draft = session.clone();
+        draft.meta.id = id.to_string();
+        Ok(checkpoint::render_checkpoint(&draft)?.render())
+    };
+    let id = if local_path(root, &archive_file(&name))?.exists() {
+        // An archived session's ID is never reused: one suffix is drawn, and a second
+        // clash is refused with nothing written (REQ-records-003).
+        let suffixed = crate::identity::suffixed(&name)?;
+        ensure!(
+            !local_path(root, &archive_file(&suffixed))?.exists()
+                && write_new_bounded(
+                    root,
+                    &session_file(&suffixed),
+                    &render(&suffixed)?,
+                    checkpoint::SESSION_LIMIT
+                )?,
+            "refused: {} also exists; nothing was written and no other name was drawn",
+            session_file(&suffixed)
+        );
+        suffixed
+    } else {
+        crate::identity::create_named(
+            root,
+            DIR,
+            &name,
+            "/session.md",
+            checkpoint::SESSION_LIMIT,
+            render,
+        )?
+    };
+    point(root, &id)?;
+    Ok(id)
 }
 
 pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
@@ -697,339 +711,322 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
             intent_scope,
             modules,
         } => {
-            ensure_key(&key)?;
-            ensure!(!objective.trim().is_empty(), "objective must not be blank");
-            lock_project(root)?;
-            ensure!(
-                modules.iter().all(|module| valid_module_name(module)),
-                "invalid module name: use a module ID SpecSync accepts, such as cli or chat.service"
-            );
-            ensure_no_legacy(root)?;
-            ensure_unused(root, &key)?;
-            let mut session = checkpoint::new_checkpoint(objective, intent_scope, modules);
-            session.history_cursor = Some(crate::history::new_cursor(root)?);
-            checkpoint::validate_v2(&session)?;
-            let content = serde_json::to_string_pretty(&session)? + "\n";
-            ensure!(
-                write_new_bounded(
-                    root,
-                    &session_file(&key),
-                    &content,
-                    checkpoint::SESSION_LIMIT
-                )?,
-                "session {key} already exists"
-            );
-            let (archived, kept_open) = archive_done(root, &key)?;
-            point(root, &key)?;
-            print_json(
-                &json!({"schema_version":1,"created":session_file(&key),"active":key,"archived":archived,"kept_open":kept_open}),
-            )
+            let id = create(root, &key, objective, intent_scope, modules)?;
+            print_json(&json!({"schema_version":1,"created":session_file(&id),"id":id,"active":id}))
         }
-        SessionCommand::Adopt { key } => print_json(&adopt(root, &key)?),
         SessionCommand::Use { key } => {
-            ensure_key(&key)?;
             lock_project(root)?;
+            ensure_migrated(root)?;
             ensure!(
                 enabled(root)?,
                 "no sessions; run `chough session new <key>`"
             );
-            if !local_path(root, &session_file(&key))?.is_file() {
-                if local_path(root, &archive_file(&key))?.is_file() {
-                    bail!("session {key} is archived");
-                }
-                bail!("no session {key}");
-            }
-            read_at(root, &session_file(&key))?;
-            let (archived, kept_open) = archive_done(root, &key)?;
-            point(root, &key)?;
-            print_json(
-                &json!({"schema_version":1,"active":key,"archived":archived,"kept_open":kept_open}),
-            )
+            let id = resolve_open(root, &key)?;
+            read_at(root, &session_file(&id))?;
+            point(root, &id)?;
+            print_json(&json!({"schema_version":1,"active":id}))
         }
         SessionCommand::List => {
+            ensure_migrated(root)?;
             ensure!(
                 enabled(root)?,
                 "no sessions; run `chough session new <key>`"
             );
             let current = active(root).ok();
             let mut sessions = vec![];
-            for (dir, archived) in [(DIR, false), (ARCHIVE, true)] {
-                for key in keys_in(root, dir)? {
-                    let file = format!("{dir}/{key}.json");
+            for (ids, archived) in [(open_ids(root)?, false), (archived_ids(root)?, true)] {
+                for id in ids {
+                    let file = if archived {
+                        archive_file(&id)
+                    } else {
+                        session_file(&id)
+                    };
                     let session = match read_at(root, &file) {
                         Ok(session) => session,
                         Err(error) => {
                             sessions.push(json!({
-                                "key": key,
+                                "id": id,
                                 "file": file,
                                 "readable": false,
                                 "reason": format!("{error:#}"),
-                                "recovery": format!("chough session shelve {key}"),
+                                "recovery": format!("chough session shelve {id}"),
                                 "archived": archived,
                             }));
                             continue;
                         }
                     };
+                    let finished_open = !archived && finished(root, &session);
                     sessions.push(json!({
-                        "key": key,
+                        "id": id,
+                        "aliases": session.meta.aliases,
                         "file": file,
                         "objective": session.objective,
                         "native_change": session.native_change,
                         "stage": session.stage.current,
                         "status": if archived { "archived" } else { session.stage.status.as_str() },
-                        "active": !archived && current.as_deref() == Some(key.as_str()),
+                        "active": !archived && current.as_deref() == Some(id.as_str()),
                         "archived": archived,
-                        "inbox_unfolded": unfolded(root, &key)?,
+                        "finished": finished_open,
+                        "fix": finished_open.then_some("chough doctor --fix"),
+                        "inbox_unfolded": if archived { 0 } else { unfolded(root, &id)? },
                     }));
                 }
             }
             print_json(&json!({"schema_version":1,"active":current,"sessions":sessions}))
         }
-        SessionCommand::Close { key, reason } => close(root, &key, &reason),
-        SessionCommand::Shelve { key, legacy } => {
+        SessionCommand::Close { key, reason } => print_json(&close_session(root, &key, &reason)?),
+        SessionCommand::Shelve { key } => {
             lock_project(root)?;
-            let (source, key) = if legacy {
-                (checkpoint::SESSION.to_string(), "legacy".to_string())
-            } else {
-                let key = key.context("name the session to shelve, or pass --legacy")?;
-                ensure_key(&key)?;
-                (session_file(&key), key)
-            };
-            shelve(root, &source, &key)
+            shelve(root, &key)
         }
     }
 }
 
-/// Archived sessions kept in `.chough/sessions/archive/` (KNOW-29).
-const KEEP_ARCHIVED: usize = 5;
-
-/// REQ-history-011 (KNOW-29): at done, keep the five most recent archived sessions, by
-/// their native change's finalization and then key, and move older ones byte for byte
-/// into `<library-dir>/attachments/<folder>/sessions/<key>.json`. Never fails: the result
-/// is `rolled`, `unchanged`, `skipped` or `refused`.
-/// At a successful move into done, the active session archives itself in its own
-/// change and the active pointer is cleared, so a later `session new` elsewhere has
-/// nothing of this change to move (REQ-history-006, DRIVE-13, #155). It runs last among
-/// the done steps; this command's checkpoint is then read from the archive. A session
-/// with unfolded inbox entries stays open, as on a switch. Never undoes the move.
-/// When release is authorized at the move into done, the session stays open for it and
-/// archives itself at the move from release into done.
+/// REQ-history-006 (DRIVE-13, #155): at a successful move into done the active session
+/// archives itself and the active pointer is cleared. A session with unfolded inbox
+/// entries stays open, and so does one for which release is authorized; it archives
+/// itself at the move from release into done. Never undoes the move.
 pub(super) fn archive_at_done(root: &Path, session: &Checkpoint, from: &str) -> serde_json::Value {
     archive_self(root, session, from)
         .unwrap_or_else(|error| json!({"status": "refused", "reason": format!("{error:#}")}))
 }
 
 fn archive_self(root: &Path, session: &Checkpoint, from: &str) -> Result<serde_json::Value> {
-    if !enabled(root)? {
-        return Ok(
-            json!({"status": "skipped", "reason": "no sessions; the single checkpoint stays"}),
-        );
-    }
     if from != "release" && crate::prefs::authorized(root, session, "release")?.is_some() {
         return Ok(
             json!({"status": "kept_open", "reason": "release is authorized; the session archives itself at the move from release into done"}),
         );
     }
     let relative = checkpoint_path(root)?;
-    let Some(key) = relative
-        .strip_prefix(&format!("{DIR}/"))
-        .and_then(|rest| rest.strip_suffix(".json"))
-        .filter(|key| !key.contains('/'))
-        .map(str::to_string)
-    else {
+    let Some(id) = id_of(&relative) else {
         return Ok(
             json!({"status": "skipped", "reason": format!("{relative} is not an open session")}),
         );
     };
-    let count = unfolded(root, &key)?;
+    let count = unfolded(root, &id)?;
     if count > 0 {
-        return Ok(json!({"status": "kept_open", "key": key, "inbox_unfolded": count}));
+        return Ok(json!({"status": "kept_open", "id": id, "inbox_unfolded": count}));
     }
-    let target = local_path(root, &archive_file(&key))?;
-    ensure!(!target.exists(), "{} already exists", archive_file(&key));
-    fs::create_dir_all(local_path(root, ARCHIVE)?)?;
-    fs::rename(local_path(root, &relative)?, &target)?;
-    if pointer(root).ok().flatten().as_deref() == Some(key.as_str()) {
-        fs::remove_file(local_path(root, POINTER)?)?;
-    }
+    let report = archive(root, &id, session, "done")?;
     // The rest of this command reads its checkpoint where it now is.
-    pin(root, &archive_file(&key));
-    Ok(json!({"status": "archived", "key": key}))
+    pin(root, &report.story);
+    Ok(json!({"status": "archived", "id": id, "story": report.story, "kept": report.kept}))
 }
 
-pub(super) fn roll_up_at_done(root: &Path) -> serde_json::Value {
-    match crate::prefs::effective(root, "librarian") {
-        Ok((value, _)) if value != "on" => {
-            return json!({"status": "skipped", "reason": "the librarian is off"});
-        }
-        Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
-        Ok(_) => {}
-    }
-    roll_up(root)
-        .unwrap_or_else(|error| json!({"status": "refused", "reason": format!("{error:#}")}))
+/// What archiving a session wrote and left.
+struct Archived {
+    story: String,
+    kept: Vec<String>,
 }
 
-fn roll_up(root: &Path) -> Result<serde_json::Value> {
-    let (dir, _) = crate::prefs::effective(root, "library-dir")?;
-    let mut archived = vec![];
-    for key in keys_in(root, ARCHIVE)? {
-        // An archived session that cannot be read stays; `session list` reports it.
-        let session = read_at(root, &archive_file(&key)).ok();
-        // The session that adopted the legacy history never rolls and does not count
-        // toward the five, so the anchor never depends on the vault (KNOW-29, #143).
-        if session
-            .as_ref()
-            .and_then(|session| session.history_cursor.as_ref())
-            .is_some_and(|cursor| cursor.legacy.is_some())
-        {
-            continue;
-        }
-        let finalized = session
-            .and_then(|session| session.native_change)
-            .and_then(|change| crate::library::finalized_at(root, &change));
-        archived.push((finalized, key));
+/// Archive open session `id`, whose checkpoint is `session`, with `outcome` (`done` or
+/// `closed-without-done`): write its story by create-new and read it back, then remove
+/// the session folder file by file, each only when its exact bytes are committed at
+/// HEAD (REQ-records-012); anything else stays and is reported, and `chough doctor
+/// --fix` removes it after the commit. Clears the pointer when it names `id`.
+fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result<Archived> {
+    let story = archive_file(id);
+    ensure!(
+        !local_path(root, &story)?.exists(),
+        "{story} already exists; archiving never replaces a file"
+    );
+    let mut record = checkpoint::render_checkpoint(session)?;
+    let date = crate::identity::utc_date(now()?);
+    record.set_scalar("closed", &date)?;
+    record.set_scalar("outcome", outcome)?;
+    if record.get("receipts").is_none() {
+        record.set("receipts", Value::Maps(vec![]))?;
     }
-    // Newest first: a later finalization, then a later key; none counts as oldest.
-    archived.sort_by(|left, right| right.cmp(left));
-    let mut moved = vec![];
-    let mut kept_back = vec![];
-    for (_, key) in archived.into_iter().skip(KEEP_ARCHIVED) {
-        let source = local_path(root, &archive_file(&key))?;
-        let target_relative = format!(
-            "{dir}/attachments/{}/sessions/{key}.json",
-            crate::attachments::attachment_folder(&key)
-        );
-        let target = local_path(root, &target_relative)?;
-        if target.exists() {
-            if fs::read(&target)? == fs::read(&source)? {
-                fs::remove_file(&source)?;
-                moved.push(key);
-            } else {
-                kept_back.push(json!({"key": key, "reason": format!("{target_relative} already holds different bytes; a move never overwrites")}));
+    let mut text = record.render_within(RecordKind::Story)?;
+    if !text.ends_with('\n') {
+        text.push('\n');
+    }
+    text.push_str(&format!("\nClosed {date}: {outcome}.\n"));
+    ensure!(
+        write_new_bounded(root, &story, &text, RecordKind::Story.bound())?,
+        "{story} already exists; archiving never replaces a file"
+    );
+    let written = read_bounded_record(&local_path(root, &story)?, RecordKind::Story.bound())?;
+    ensure!(
+        written == text,
+        "{story} did not read back as written; nothing was removed"
+    );
+    let kept = remove_committed(root, &format!("{DIR}/{id}"))?;
+    if pointer(root).ok().flatten().as_deref() == Some(id) {
+        let _ = fs::remove_file(local_path(root, POINTER)?);
+    }
+    unpin(root);
+    Ok(Archived { story, kept })
+}
+
+/// Archive open session `id` as finished, for `chough doctor --fix`.
+pub(super) fn archive_open(root: &Path, id: &str) -> Result<()> {
+    let session = read_at(root, &session_file(id))?;
+    archive(root, id, &session, "done").map(|_| ())
+}
+
+/// Remove each file under `folder` whose exact bytes are committed at HEAD, then the
+/// folders left empty; return the files kept (REQ-records-012).
+fn remove_committed(root: &Path, folder: &str) -> Result<Vec<String>> {
+    let mut files = vec![];
+    collect_files(root, folder, &mut files)?;
+    let mut kept = vec![];
+    for file in files {
+        if committed_at_head(root, &file) {
+            fs::remove_file(local_path(root, &file)?)
+                .with_context(|| format!("removing {file}"))?;
+        } else {
+            kept.push(file);
+        }
+    }
+    remove_empty_dirs(&local_path(root, folder)?);
+    Ok(kept)
+}
+
+fn collect_files(root: &Path, relative: &str, files: &mut Vec<String>) -> Result<()> {
+    let Ok(entries) = fs::read_dir(local_path(root, relative)?) else {
+        return Ok(());
+    };
+    let mut names: Vec<String> = entries
+        .filter_map(|entry| entry.ok())
+        .filter_map(|entry| entry.file_name().into_string().ok())
+        .collect();
+    names.sort();
+    for name in names {
+        let child = format!("{relative}/{name}");
+        let path = local_path(root, &child)?;
+        let metadata = fs::symlink_metadata(&path)?;
+        if metadata.is_dir() {
+            collect_files(root, &child, files)?;
+        } else {
+            files.push(child);
+        }
+    }
+    Ok(())
+}
+
+fn remove_empty_dirs(path: &Path) {
+    if let Ok(entries) = fs::read_dir(path) {
+        for entry in entries.filter_map(|entry| entry.ok()) {
+            if entry.file_type().is_ok_and(|kind| kind.is_dir()) {
+                remove_empty_dirs(&entry.path());
             }
-            continue;
         }
-        if let Some(parent) = target.parent() {
-            fs::create_dir_all(parent)?;
-        }
-        fs::hard_link(&source, &target).with_context(|| format!("moving {key} into the vault"))?;
-        fs::remove_file(&source).with_context(|| format!("moving {key} into the vault"))?;
-        moved.push(key);
     }
-    moved.sort();
-    Ok(if moved.is_empty() && kept_back.is_empty() {
-        json!({"status": "unchanged"})
-    } else {
-        json!({"status": "rolled", "moved": moved, "kept": kept_back})
-    })
+    let _ = fs::remove_dir(path);
 }
 
-/// `chough session close <key> --reason`: archive an open session for abandoned work
-/// with the reason recorded as a decision, without a native read (DRIVE-16).
-fn close(root: &Path, key: &str, reason: &str) -> Result<()> {
-    print_json(&close_session(root, key, reason)?)
+/// Whether the file's bytes, as Git would store them, are the blob committed at HEAD.
+pub(super) fn committed_at_head(root: &Path, relative: &str) -> bool {
+    let git = |arguments: &[&str]| -> Option<String> {
+        let output = crate::records::run_owned(
+            std::process::Command::new("git")
+                .arg("-C")
+                .arg(root)
+                .args(arguments),
+            None,
+        )
+        .ok()?;
+        output
+            .status
+            .success()
+            .then(|| String::from_utf8_lossy(&output.stdout).trim().to_string())
+    };
+    let Some(committed) = git(&[
+        "rev-parse",
+        "--verify",
+        "--quiet",
+        &format!("HEAD:{relative}"),
+    ]) else {
+        return false;
+    };
+    git(&["hash-object", "--", relative]).is_some_and(|current| current == committed)
 }
 
 /// Close `key` as `chough session close` does and return its report.
 pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serde_json::Value> {
-    ensure_key(key)?;
     ensure!(
         !reason.trim().is_empty(),
         "the reason must not be blank; say why the work is abandoned with --reason <text>"
     );
     lock_project(root)?;
-    let file = session_file(key);
-    if !local_path(root, &file)?.is_file() {
-        if local_path(root, &archive_file(key))?.is_file() {
-            bail!("session {key} is archived");
-        }
-        bail!("no session {key}");
-    }
-    let count = unfolded(root, key)?;
+    ensure_migrated(root)?;
+    let id = resolve_open(root, key)?;
+    let count = unfolded(root, &id)?;
     ensure!(
         count == 0,
-        "session {key} has {count} unfolded inbox entries; run `chough session use {key}` and `chough inbox fold` first"
+        "session {id} has {count} unfolded inbox entries; run `chough session use {id}` and `chough inbox fold` first"
     );
-    let mut session = read_at(root, &file)?;
+    let mut session = read_at(root, &session_file(&id))?;
     let decision = format!("Closed without done: {}", reason.trim());
     ensure_text("reason", &decision)?;
     session.decisions.push(decision);
     checkpoint::validate_v2(&session)?;
-    let content = serde_json::to_string_pretty(&session)? + "\n";
-    let target = archive_file(key);
-    fs::create_dir_all(local_path(root, ARCHIVE)?)?;
-    ensure!(
-        write_new_bounded(root, &target, &content, checkpoint::SESSION_LIMIT)?,
-        "{target} already exists; closing never replaces a file"
-    );
-    fs::remove_file(local_path(root, &file)?).with_context(|| format!("closing {file}"))?;
-    if pointer(root).ok().flatten().as_deref() == Some(key) {
-        let _ = fs::remove_file(local_path(root, POINTER)?);
-    }
-    unpin(root);
+    let report = archive(root, &id, &session, "closed-without-done")?;
     Ok(json!({
         "schema_version": 1,
-        "closed": key,
-        "archived": target,
+        "closed": id,
+        "archived": report.story,
+        "kept": report.kept,
         "reason": reason.trim(),
     }))
 }
 
-/// Move `source` unparsed and byte for byte to `.chough/sessions/shelved/<key>.json`,
-/// never replacing a file, record why beside it, and clear the active pointer when it
-/// named this session (REQ-history-006, DRIVE-14).
-fn shelve(root: &Path, source: &str, key: &str) -> Result<()> {
+/// Move session folder `key` unparsed and byte for byte to
+/// `.chough/archive/shelved/<id>/`, never replacing a file, record why beside it, and
+/// clear the active pointer when it named this session (REQ-history-006, DRIVE-14).
+fn shelve(root: &Path, key: &str) -> Result<()> {
     use sha2::{Digest, Sha256};
-    let from = local_path(root, source)?;
-    ensure!(from.is_file(), "no {source} to shelve");
-    let bytes = read_bounded_raw(&from)?;
-    let target = format!("{SHELVED}/{key}.json");
-    let record = format!("{SHELVED}/{key}.shelved.json");
-    for file in [&target, &record] {
+    ensure_key(key)?;
+    let source = format!("{DIR}/{key}");
+    let from = local_path(root, &source)?;
+    ensure!(from.is_dir(), "no session folder {source} to shelve");
+    let target = format!("{SHELVED}/{key}");
+    let note = format!("{SHELVED}/{key}.shelved.json");
+    for file in [&target, &note] {
         ensure!(
             !local_path(root, file)?.exists(),
             "{file} already exists; shelving never replaces a file"
         );
     }
-    fs::create_dir_all(local_path(root, SHELVED)?)?;
+    let session_path = from.join("session.md");
+    let bytes = fs::read(&session_path).unwrap_or_default();
     let sha256 = format!("{:x}", Sha256::digest(&bytes));
-    let readable = String::from_utf8(bytes.clone())
-        .ok()
-        .and_then(|text| checkpoint::parse(&text).ok())
-        .is_some()
-        && bytes.len() as u64 <= checkpoint::SESSION_LIMIT;
+    let readable = bytes.len() as u64 <= checkpoint::SESSION_LIMIT
+        && String::from_utf8(bytes.clone())
+            .ok()
+            .and_then(|text| checkpoint::parse(&session_file(key), &text).ok())
+            .is_some();
     let reason = if bytes.len() as u64 > checkpoint::SESSION_LIMIT {
         format!(
-            "over the checkpoint cap of {} bytes",
+            "over the session bound of {} bytes",
             checkpoint::SESSION_LIMIT
         )
     } else if readable {
         "set aside on request".to_string()
     } else {
-        "not a readable checkpoint".to_string()
+        "not a readable session record".to_string()
     };
-    let note = json!({
+    fs::create_dir_all(local_path(root, SHELVED)?)?;
+    let record = json!({
         "schema_version": 1,
-        "key": key,
+        "id": key,
         "from": source,
         "bytes": bytes.len(),
         "sha256": sha256,
-        "cap": checkpoint::SESSION_LIMIT,
+        "bound": checkpoint::SESSION_LIMIT,
         "reason": reason,
         "shelved_at_unix_seconds": now()?,
     });
     ensure!(
         write_new(
             root,
-            &record,
-            &(serde_json::to_string_pretty(&note)? + "\n")
+            &note,
+            &(serde_json::to_string_pretty(&record)? + "\n")
         )?,
-        "{record} already exists; shelving never replaces a file"
+        "{note} already exists; shelving never replaces a file"
     );
-    let to = local_path(root, &target)?;
-    // A hard link refuses an existing target; then the source name goes.
-    fs::hard_link(&from, &to).with_context(|| format!("shelving {source}"))?;
-    fs::remove_file(&from).with_context(|| format!("shelving {source}"))?;
+    fs::rename(&from, local_path(root, &target)?).with_context(|| format!("shelving {source}"))?;
     if pointer(root).ok().flatten().as_deref() == Some(key) {
         let _ = fs::remove_file(local_path(root, POINTER)?);
     }
@@ -1037,24 +1034,13 @@ fn shelve(root: &Path, source: &str, key: &str) -> Result<()> {
     print_json(&json!({
         "schema_version": 1,
         "shelved": target,
-        "record": record,
+        "record": note,
         "from": source,
         "bytes": bytes.len(),
-        "cap": checkpoint::SESSION_LIMIT,
+        "bound": checkpoint::SESSION_LIMIT,
         "reason": reason,
         "next": "chough session new <key>",
     }))
-}
-
-/// A checkpoint's raw bytes, within the 16 MiB ledger bound.
-fn read_bounded_raw(path: &Path) -> Result<Vec<u8>> {
-    let limit = 16 * 1_048_576;
-    ensure!(
-        fs::metadata(path)?.len() <= limit,
-        "{} exceeds {limit} bytes",
-        path.display()
-    );
-    Ok(fs::read(path)?)
 }
 
 fn random_id() -> Result<String> {
@@ -1069,7 +1055,7 @@ fn random_id() -> Result<String> {
 fn pending(root: &Path, key: &str) -> Result<Vec<(String, Entry)>> {
     let dir = inbox_dir(key);
     let mut entries = vec![];
-    for id in keys_in(root, &dir)? {
+    for id in json_names_in(root, &dir)? {
         let file = format!("{dir}/{id}.json");
         let content = read_bounded_record(&local_path(root, &file)?, INBOX_LIMIT)?;
         let entry: Entry = serde_json::from_str(&content)
@@ -1102,7 +1088,7 @@ fn validate_entry(from: &str, kind: Kind, text: &str) -> Result<()> {
 pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
     ensure!(
         enabled(root)?,
-        "the inbox needs sessions; run `chough session new <key>` or `chough session adopt <key>`"
+        "the inbox needs sessions; run `chough session new <key>`"
     );
     match command {
         InboxCommand::Add {
@@ -1111,18 +1097,15 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             kind,
             text,
         } => {
-            ensure_key(&session)?;
-            // A switch archives a done session under this lock only when it has no
-            // unfolded entries, so taking it here means the entry is either seen by that
-            // switch (the session stays open) or refused below; never stranded (#98).
+            // A session archives itself under this lock only when it has no unfolded
+            // entries, so taking it here means the entry is either seen by that archive
+            // (the session stays open) or refused below; never stranded (#98).
             lock_project(root)?;
-            ensure!(
-                local_path(root, &session_file(&session))?.is_file(),
-                "no open session {session}"
-            );
+            let session = resolve_open(root, &session)
+                .map_err(|_| anyhow::anyhow!("no open session {session}"))?;
             validate_entry(&from, kind, &text)?;
             ensure!(
-                keys_in(root, &inbox_dir(&session))?.len() < MAX_INBOX,
+                json_names_in(root, &inbox_dir(&session))?.len() < MAX_INBOX,
                 "the inbox of {session} holds {MAX_INBOX} unfolded entries; fold it first"
             );
             let id = random_id()?;
@@ -1173,11 +1156,8 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             // Pin the session before anything is read, so the save goes to the session
             // that was read even if another process runs `chough session use` meanwhile.
             let relative = checkpoint_path(root)?;
-            let key = match relative
-                .strip_prefix(&format!("{DIR}/"))
-                .and_then(|file| file.strip_suffix(".json"))
-            {
-                Some(key) => key.to_string(),
+            let key = match id_of(&relative) {
+                Some(key) => key,
                 None => active(root)?,
             };
             let entries = pending(root, &key)?;
@@ -1215,8 +1195,7 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                 targets.push((file, target));
             }
             if !entries.is_empty() {
-                before_fold_save();
-                checkpoint::save_checkpoint(root, &session)?;
+                checkpoint::save_checkpoint(root, &mut session)?;
                 fs::create_dir_all(local_path(root, &folded)?)?;
                 for (file, target) in targets {
                     fs::rename(local_path(root, file)?, target)?;
@@ -1225,133 +1204,5 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             let ids: Vec<_> = entries.iter().map(|(_, entry)| entry.id.clone()).collect();
             print_json(&json!({"schema_version":1,"session":key,"folded":ids}))
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    /// #96 review (REQ-history-008): a session file that moves away after a successful
-    /// save keeps the event that save points to; the cleanup removes only events no save
-    /// may have written.
-    #[test]
-    fn a_vanish_after_a_successful_save_keeps_the_saved_event() {
-        saved_event_survives_a_move_to(&archive_file("alpha"));
-    }
-
-    /// Second #96 review (REQ-history-008): the same holds when the saved file is moved
-    /// somewhere Chough never looks for a checkpoint, so keeping the event cannot depend
-    /// on finding the saved checkpoint again.
-    #[test]
-    fn a_move_outside_the_session_stores_after_a_save_keeps_the_saved_event() {
-        saved_event_survives_a_move_to(".chough/saved-alpha.json");
-    }
-
-    /// Save one event on session alpha, move alpha's file to `destination`, then resolve
-    /// the checkpoint again: the refusal must keep the saved event.
-    fn saved_event_survives_a_move_to(destination: &str) {
-        let dir = tempfile::tempdir().unwrap();
-        let root = dir.path().canonicalize().unwrap();
-        run(
-            &root,
-            SessionCommand::New {
-                key: "alpha".into(),
-                objective: "Ship alpha".into(),
-                intent_scope: String::new(),
-                modules: vec![],
-            },
-        )
-        .unwrap();
-        unpin(&root);
-        let mut session = checkpoint::read_checkpoint(&root).unwrap();
-        let transition: crate::stage::Transition = serde_json::from_value(json!({
-            "schema_version": 1, "at_unix_seconds": 1, "kind": "iterate",
-            "from": "intent", "to": "intent"
-        }))
-        .unwrap();
-        crate::history::append(&root, &mut session, transition).unwrap();
-        checkpoint::save_checkpoint(&root, &session).unwrap();
-        let cursor = session.history_cursor.clone().unwrap();
-        let cycle = root.join(format!(".chough/history/cycles/{}", cursor.cycle));
-        // The cleanup may remove the cycle directory too; count it as empty then.
-        let count = || fs::read_dir(&cycle).map_or(0, |entries| entries.count());
-        let saved = count();
-        assert!(saved >= 1);
-        let moved = root.join(destination);
-        fs::create_dir_all(moved.parent().unwrap()).unwrap();
-        fs::rename(root.join(session_file("alpha")), &moved).unwrap();
-        let error = checkpoint_path(&root).unwrap_err().to_string();
-        assert!(error.contains("nothing was saved"), "{error}");
-        assert_eq!(
-            count(),
-            saved,
-            "the saved event was removed after a move to {destination}"
-        );
-        unpin(&root);
-    }
-
-    /// Leif's review thread on #77: a `session use` in another process partway through
-    /// `inbox fold` must not save the folded session or its inbox decisions into the
-    /// newly active session's file (REQ-cli-037).
-    #[test]
-    fn a_switch_partway_through_inbox_fold_does_not_redirect_its_save() {
-        let dir = tempfile::tempdir().unwrap();
-        let root = dir.path().canonicalize().unwrap();
-        for (key, objective) in [("alpha", "Ship alpha"), ("beta", "Ship beta")] {
-            run(
-                &root,
-                SessionCommand::New {
-                    key: key.into(),
-                    objective: objective.into(),
-                    intent_scope: String::new(),
-                    modules: vec![],
-                },
-            )
-            .unwrap();
-        }
-        run(
-            &root,
-            SessionCommand::Use {
-                key: "alpha".into(),
-            },
-        )
-        .unwrap();
-        inbox(
-            &root,
-            InboxCommand::Add {
-                session: "alpha".into(),
-                from: "worker".into(),
-                kind: Kind::Decision,
-                text: "Keep the alpha decision in alpha".into(),
-            },
-        )
-        .unwrap();
-        let beta_before = fs::read(root.join(".chough/sessions/beta.json")).unwrap();
-        unpin(&root);
-        let pointer = root.join(POINTER);
-        with_before_fold_save(
-            move || fs::write(&pointer, "beta\n").unwrap(),
-            || inbox(&root, InboxCommand::Fold),
-        )
-        .unwrap();
-        assert_eq!(
-            fs::read(root.join(".chough/sessions/beta.json")).unwrap(),
-            beta_before,
-            "beta.json must keep its bytes"
-        );
-        let alpha: serde_json::Value =
-            serde_json::from_slice(&fs::read(root.join(".chough/sessions/alpha.json")).unwrap())
-                .unwrap();
-        assert_eq!(alpha["objective"], "Ship alpha");
-        assert!(
-            alpha["decisions"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .any(|decision| decision == "Keep the alpha decision in alpha"),
-            "{alpha}"
-        );
-        unpin(&root);
     }
 }

@@ -203,6 +203,11 @@ fn clash_suffix() -> Result<String> {
 
 // Plan step 3 calls these; until then only their tests do.
 #[cfg_attr(not(test), allow(dead_code))]
+/// `<name>-<6 hex>`, from one fresh draw of 24 random bits.
+pub(crate) fn suffixed(name: &str) -> Result<String> {
+    Ok(format!("{name}-{}", clash_suffix()?))
+}
+
 /// Create `<dir>/<name><extension>` by create-new with the content `render(name)`. When
 /// that file exists, add one clash suffix and try once more; when that name exists too,
 /// refuse with nothing written and draw no other suffix. Returns the name written.
