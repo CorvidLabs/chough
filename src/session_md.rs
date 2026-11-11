@@ -360,7 +360,20 @@ fn apply_field(entry: &mut Entry, key: &str, value: String) -> Result<()> {
                 .map(str::to_string)
                 .collect()
         }
-        "backfill" => transition.backfill = Some(serde_json::from_str(&value)?),
+        "recorded_at" | "commit" | "quote" => {
+            let backfill = transition
+                .backfill
+                .get_or_insert_with(|| crate::stage::Backfill {
+                    recorded_at_unix_seconds: 0,
+                    commit: String::new(),
+                    quote: String::new(),
+                });
+            match key {
+                "recorded_at" => backfill.recorded_at_unix_seconds = parse_time(&value)?,
+                "commit" => backfill.commit = value,
+                _ => backfill.quote = value,
+            }
+        }
         "relayed_by" => transition.relayed_by = Some(serde_json::from_str(&value)?),
         "direct_write" => transition.direct_write = Some(serde_json::from_str(&value)?),
         // A field a later Chough writes (`by`, corrections and so on) reads as unknown.
@@ -399,7 +412,10 @@ fn render_entry(transition: &Transition, native_change: Option<&str>, id: &str) 
     }
     let json = |value: &dyn erased_json::ToJson| value.to_json();
     if let Some(backfill) = &transition.backfill {
-        field("backfill", &json(backfill));
+        // REQ-history-005: the original record time, the commit and the quoted evidence.
+        field("recorded_at", &iso_time(backfill.recorded_at_unix_seconds));
+        field("commit", &backfill.commit);
+        field("quote", &backfill.quote);
     }
     if let Some(relayed) = &transition.relayed_by {
         field("relayed_by", &json(relayed));

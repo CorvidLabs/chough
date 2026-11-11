@@ -626,7 +626,7 @@ pub(super) fn read_at(root: &Path, relative: &str) -> Result<Checkpoint> {
 pub(super) fn shelve_hint(relative: &str) -> String {
     let id = id_of(relative).unwrap_or_else(|| "<id>".into());
     format!(
-        "{relative} cannot be read (the session bound is {} bytes); set it aside with `chough session shelve {id}`, then `chough session new <key>`",
+        "{relative} cannot be read: fix the line named below by hand, or set the session aside with `chough session shelve {id}` and run `chough session new <key>` (a session record is at most {} bytes)",
         checkpoint::SESSION_LIMIT
     )
 }
@@ -893,6 +893,29 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     }
     unpin(root);
     Ok(Archived { story, kept })
+}
+
+/// The newest archived story's checkpoint, by its `closed` date and then its ID.
+pub(super) fn newest_archived(root: &Path) -> Result<Option<Session>> {
+    ensure_migrated(root)?;
+    let mut newest: Option<(String, String, Checkpoint)> = None;
+    for id in archived_ids(root)? {
+        let Ok(session) = read_at(root, &archive_file(&id)) else {
+            continue;
+        };
+        let closed = session
+            .source
+            .as_ref()
+            .and_then(|record| record.scalar("closed").map(str::to_string))
+            .unwrap_or_default();
+        if newest
+            .as_ref()
+            .is_none_or(|(date, known, _)| (&closed, &id) > (date, known))
+        {
+            newest = Some((closed, id, session));
+        }
+    }
+    Ok(newest.map(|(_, _, session)| Session::V2(Box::new(session))))
 }
 
 /// Session folders whose story exists but which still hold files (REQ-history-012).

@@ -1015,7 +1015,9 @@ fn current_cycle_start(root: &Path, session: &Checkpoint) -> Option<u64> {
         session,
         crate::history::CYCLE_EVENTS,
         crate::history::CYCLE_BYTES,
-        false,
+        // The newest reset by time, over the whole timeline: merged branches can
+        // append an older reset after a newer one.
+        true,
     );
     if !cycle.partial.is_empty() {
         return None;
@@ -1128,7 +1130,7 @@ fn previous_cycle(
                 session,
                 crate::history::CYCLE_EVENTS,
                 crate::history::CYCLE_BYTES,
-                false,
+                true,
             );
             if !cycle.partial.is_empty() {
                 return Err(cycle.partial.join("; "));
