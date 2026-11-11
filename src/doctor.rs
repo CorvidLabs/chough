@@ -37,6 +37,7 @@ enum Kind {
     StaleGates,
     FinishedSession,
     UnfinishedSession,
+    UnfinishedArchive,
 }
 
 impl Kind {
@@ -47,6 +48,7 @@ impl Kind {
             Self::StaleGates => "stale_gates",
             Self::FinishedSession => "finished_session",
             Self::UnfinishedSession => "unfinished_session",
+            Self::UnfinishedArchive => "unfinished_archive",
         }
     }
 }
@@ -181,6 +183,28 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     }
     found.extend(gates);
     found.extend(finished);
+    // REQ-history-012: a session folder whose story exists still holds files the
+    // archive could not remove because they were not committed (REQ-records-012).
+    for id in sessions::unfinished_archives(root)? {
+        let mut finding = Finding::new(
+            Kind::UnfinishedArchive,
+            &id,
+            "chough doctor --fix".into(),
+            false,
+        );
+        let uncommitted = sessions::uncommitted_files(root, &id)?;
+        if !uncommitted.is_empty() {
+            finding.fix = format!(
+                "commit {}, then chough doctor --fix",
+                uncommitted.join(", ")
+            );
+            finding.blocked = Some(format!(
+                "{} not committed at HEAD; commit it first, so Git holds every byte removed",
+                uncommitted.join(", ")
+            ));
+        }
+        found.push(finding);
+    }
     for name in closing {
         let key = &sessions::resolve_open(root, name)
             .map_err(|error| anyhow::anyhow!("--close {name}: {error}"))?;
@@ -220,6 +244,14 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
             result?;
         }
         Kind::FinishedSession => sessions::archive_open(root, &finding.target)?,
+        Kind::UnfinishedArchive => {
+            let kept = sessions::remove_archived_folder(root, &finding.target)?;
+            ensure!(
+                kept.is_empty(),
+                "{} changed since it was checked; commit it, then run chough doctor --fix again",
+                kept.join(", ")
+            );
+        }
         Kind::UnfinishedSession => {
             sessions::close_session(root, &finding.target, reason.unwrap_or_default())?;
         }

@@ -4,7 +4,7 @@
 mod common;
 
 use common::{Fixture, parse_session, timeline};
-use serde_json::json;
+use serde_json::{Value, json};
 use std::collections::BTreeMap;
 use std::fs;
 
@@ -1023,4 +1023,44 @@ fn session_use_waits_for_a_running_stage_advance() {
         before + 1,
         "exactly the advance's entry"
     );
+}
+
+/// REQ-history-006, REQ-records-012: an uncommitted file in `agent/` keeps the session
+/// folder after the move into done, which reports it; `next` does not count the folder
+/// as open; `chough doctor` names the commit to make, and after it `doctor --fix`
+/// removes the folder.
+#[test]
+fn an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    advance_to(&fixture, "accept");
+    let id = fixture.id_of("alpha");
+    fixture.commit("alpha at accept");
+    fixture.write(
+        &format!(".chough/sessions/{id}/agent/scratch.md"),
+        "draft\n",
+    );
+    let moved = fixture.ok(&["stage", "advance"]);
+    let kept = moved["applied"]["session_archive"]["kept"].to_string();
+    assert!(kept.contains("agent/scratch.md"), "{moved:#}");
+    assert!(fixture.exists(&format!(".chough/sessions/{id}/agent/scratch.md")));
+    assert!(
+        fixture
+            .fails(&["next"])
+            .contains("chough session new <key>")
+    );
+    let blocked = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&blocked.stdout).unwrap();
+    assert_eq!(
+        report["findings"][0]["kind"], "unfinished_archive",
+        "{report:#}"
+    );
+    assert_eq!(report["findings"][0]["status"], "skipped", "{report:#}");
+    assert!(fixture.exists(&format!(".chough/sessions/{id}")));
+    fixture.commit("the story and the leftovers");
+    let fixed = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&fixed.stdout).unwrap();
+    assert_eq!(report["findings"][0]["status"], "fixed", "{report:#}");
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+    assert!(fixture.is_archived("alpha"));
 }

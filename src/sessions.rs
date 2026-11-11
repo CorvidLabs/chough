@@ -895,6 +895,38 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     Ok(Archived { story, kept })
 }
 
+/// Session folders whose story exists but which still hold files (REQ-history-012).
+pub(super) fn unfinished_archives(root: &Path) -> Result<Vec<String>> {
+    let mut ids = vec![];
+    for id in archived_ids(root)? {
+        let folder = local_path(root, &format!("{DIR}/{id}"))?;
+        if folder.is_dir() {
+            ids.push(id);
+        }
+    }
+    Ok(ids)
+}
+
+/// The files of archived session `id`'s folder that are not committed at HEAD as they are.
+pub(super) fn uncommitted_files(root: &Path, id: &str) -> Result<Vec<String>> {
+    let mut files = vec![];
+    collect_files(root, &format!("{DIR}/{id}"), &mut files)?;
+    Ok(files
+        .into_iter()
+        .filter(|file| !committed_at_head(root, file))
+        .collect())
+}
+
+/// Remove an archived session's folder, each file only when committed at HEAD; returns
+/// the files kept (REQ-records-012).
+pub(super) fn remove_archived_folder(root: &Path, id: &str) -> Result<Vec<String>> {
+    ensure!(
+        local_path(root, &archive_file(id))?.is_file(),
+        "session {id} has no story; it is not archived"
+    );
+    remove_committed(root, &format!("{DIR}/{id}"))
+}
+
 /// Archive open session `id` as finished, for `chough doctor --fix`.
 pub(super) fn archive_open(root: &Path, id: &str) -> Result<()> {
     let session = read_at(root, &session_file(id))?;
