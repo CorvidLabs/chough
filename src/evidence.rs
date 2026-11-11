@@ -228,6 +228,9 @@ impl Evidence {
         if let Some(content) = &self.snapshot.content {
             set(&mut record, "content", content);
         }
+        if let Some(inventory) = &self.snapshot.input_inventory {
+            inventory.to_record(&mut record);
+        }
         set(&mut record, "environment", &self.environment);
         if let Some(fingerprint) = &self.fingerprint {
             set(&mut record, "fingerprint", fingerprint);
@@ -328,7 +331,7 @@ impl Evidence {
                 dirty: false,
                 fingerprint: String::new(),
                 content: scalar("content"),
-                input_inventory: None,
+                input_inventory: InputInventory::from_record(record)?,
             },
             cases: {
                 let ids = record.list("case");
@@ -996,30 +999,6 @@ fn evidence_from_receipt(map: &[(String, String)]) -> Result<Evidence> {
 /// A `receipts:` map with the name of the record holding it.
 type ReceiptMaps = Vec<(String, Vec<(String, String)>)>;
 
-/// Receipts held by archived stories and bugs, as (qualified source, entry) pairs.
-fn receipt_entries(root: &Path, id: &str) -> Result<Vec<(String, Evidence)>> {
-    let mut found = vec![];
-    for view_sources in [
-        receipt_maps(root, ".chough/archive/sessions", "receipts")?,
-        {
-            let bugs = local_path(root, crate::bugs::BUGS_DIR)?;
-            if bugs.is_dir() {
-                receipt_maps(root, crate::bugs::BUGS_DIR, "receipts")?
-            } else {
-                vec![]
-            }
-        },
-    ] {
-        for (source, map) in view_sources {
-            let entry = evidence_from_receipt(&map)?;
-            if entry.id == id || entry.aliases.iter().any(|alias| alias == id) {
-                found.push((source, entry));
-            }
-        }
-    }
-    Ok(found)
-}
-
 /// Every `receipts:` map in the Markdown records under a folder, with the record name.
 fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     let folder = local_path(root, dir)?;
@@ -1027,12 +1006,14 @@ fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     let Ok(entries) = fs::read_dir(&folder) else {
         return Ok(found);
     };
-    for entry in entries.flatten() {
-        let name = entry.file_name().to_string_lossy().into_owned();
-        if !name.ends_with(".md") {
-            continue;
-        }
-        let text = read_bounded_record(&entry.path(), markdown::SESSION_BOUND)?;
+    let mut names: Vec<String> = entries
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .filter(|name| name.ends_with(".md"))
+        .collect();
+    names.sort();
+    for name in names {
+        let text = read_bounded_record(&folder.join(&name), markdown::SESSION_BOUND)?;
         let record = markdown::parse(&name, &text)?;
         for map in record.maps(key) {
             found.push((name.trim_end_matches(".md").to_string(), map));
@@ -1041,49 +1022,286 @@ fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     Ok(found)
 }
 
-/// One entry by ID or alias: the qualified `<session-id>/<evidence-id>` form, or the
-/// bare form through open sessions' entries, then archived stories' and bugs'
-/// receipts; two records holding it refuse as ambiguous, naming the qualified form.
-pub(super) fn load(root: &Path, id: &str) -> Result<Evidence> {
-    if let Some((session, entry)) = id.split_once('/') {
-        return load_session(root, session)?
+/// The migration receipt a tombstone names: a receipt map `{id, removed: <receipt>}`
+/// for an observation the 0.5.x migration removed without carrying (REQ-records-009).
+/// A tombstone is never a receipt.
+fn tombstone_of(map: &[(String, String)]) -> Option<&str> {
+    map.iter()
+        .find(|(key, _)| key == "removed")
+        .map(|(_, receipt)| receipt.as_str())
+}
+
+/// The names a receipt map answers to: its ID, then each alias.
+fn receipt_names(map: &[(String, String)]) -> Vec<String> {
+    let get = |key: &str| {
+        map.iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.as_str())
+    };
+    let mut names: Vec<String> = get("id").into_iter().map(str::to_string).collect();
+    names.extend(
+        get("aliases")
             .into_iter()
-            .find(|evidence| evidence.id == entry || evidence.aliases.iter().any(|a| a == entry))
-            .with_context(|| format!("evidence not found: {id}"));
-    }
-    let mut found = vec![];
-    for session_id in crate::sessions::open_ids(root)? {
-        let dir = evidence_dir(&session_id);
-        if let Some((_, record)) = markdown::resolve(root, &dir, id)? {
-            found.push(Evidence::from_record(&record)?);
-        }
-    }
-    found.extend(
-        receipt_entries(root, id)?
-            .into_iter()
-            .map(|(_, entry)| entry),
+            .flat_map(|aliases| aliases.split(", "))
+            .filter(|alias| !alias.is_empty())
+            .map(str::to_string),
     );
-    match found.len() {
-        0 => bail!("evidence not found: {id}"),
-        1 => Ok(found.pop().expect("one entry")),
-        _ => bail!(
-            "refused: {id} names evidence in more than one place; qualify it as <session-id>/<evidence-id>"
-        ),
+    names
+}
+
+/// The folder of the migration receipts (REQ-records-009).
+const MIGRATIONS_DIR: &str = ".chough/archive/migrations";
+
+/// What an evidence ID names (REQ-records-003, REQ-records-009).
+pub(super) enum Resolved {
+    /// An open session's entry, or an archived story's or a bug's receipt read as one.
+    Present(Box<Evidence>),
+    /// An observation the 0.5.x migration removed, with the receipt that records it.
+    Removed(String),
+    /// Nothing holds it.
+    Missing,
+}
+
+/// One record that can hold an evidence ID.
+struct Holder {
+    /// The session of an entry, or the story or bug of a receipt.
+    place: String,
+    names: Vec<String>,
+    held: Held,
+}
+
+enum Held {
+    Entry(Box<Record>),
+    Receipt(Vec<(String, String)>),
+}
+
+impl Holder {
+    fn evidence(&self) -> Result<Evidence> {
+        match &self.held {
+            Held::Entry(record) => Evidence::from_record(record),
+            Held::Receipt(map) => evidence_from_receipt(map),
+        }
     }
 }
 
-/// Whether an entry with this ID or alias exists in an open session.
+/// Every record an evidence ID can name, read once per command: the open sessions'
+/// entries, the archived stories' and the bugs' receipts, and the IDs the 0.5.x
+/// migration removed, from the tombstones and the migration receipts' aliases. An
+/// entry or receipt is read as evidence only when an ID names it.
+#[derive(Default)]
+pub(super) struct Index {
+    /// Entries and story receipts, which resolve first.
+    first: Vec<Holder>,
+    /// Bug receipts, which resolve after them.
+    bugs: Vec<Holder>,
+    by_name: BTreeMap<String, Vec<(bool, usize)>>,
+    removed: BTreeMap<String, String>,
+}
+
+impl Index {
+    pub(super) fn build(root: &Path) -> Result<Index> {
+        let mut index = Index::default();
+        for session_id in crate::sessions::open_ids(root)? {
+            let dir = evidence_dir(&session_id);
+            let folder = local_path(root, &dir)?;
+            let Ok(entries) = fs::read_dir(&folder) else {
+                continue;
+            };
+            let mut names: Vec<String> = entries
+                .filter_map(|entry| entry.ok())
+                .filter_map(|entry| entry.file_name().into_string().ok())
+                .filter(|name| name.ends_with(".md"))
+                .collect();
+            names.sort();
+            for name in names {
+                let relative = format!("{dir}/{name}");
+                let text = read_bounded_record(&folder.join(&name), markdown::RECORD_BOUND)
+                    .with_context(|| format!("reading {relative}"))?;
+                let record = markdown::parse(&relative, &text)?;
+                let mut names: Vec<String> = record
+                    .scalar("id")
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect();
+                names.extend(record.list("aliases"));
+                index.first.push(Holder {
+                    place: session_id.clone(),
+                    names,
+                    held: Held::Entry(Box::new(record)),
+                });
+            }
+        }
+        let bugs_dir = local_path(root, crate::bugs::BUGS_DIR)?;
+        let bug_maps = if bugs_dir.is_dir() {
+            receipt_maps(root, crate::bugs::BUGS_DIR, "receipts")?
+        } else {
+            vec![]
+        };
+        for (in_bugs, maps) in [
+            (
+                false,
+                receipt_maps(root, ".chough/archive/sessions", "receipts")?,
+            ),
+            (true, bug_maps),
+        ] {
+            for (place, map) in maps {
+                let names = receipt_names(&map);
+                if let Some(receipt) = tombstone_of(&map) {
+                    for name in names {
+                        index
+                            .removed
+                            .entry(name)
+                            .or_insert_with(|| receipt.to_string());
+                    }
+                    continue;
+                }
+                let holder = Holder {
+                    place,
+                    names,
+                    held: Held::Receipt(map),
+                };
+                if in_bugs {
+                    index.bugs.push(holder);
+                } else {
+                    index.first.push(holder);
+                }
+            }
+        }
+        index.read_migration_aliases(root)?;
+        for (in_bugs, holders) in [(false, &index.first), (true, &index.bugs)] {
+            for (position, holder) in holders.iter().enumerate() {
+                for name in &holder.names {
+                    index
+                        .by_name
+                        .entry(name.clone())
+                        .or_default()
+                        .push((in_bugs, position));
+                }
+            }
+        }
+        Ok(index)
+    }
+
+    /// The IDs each migration receipt's `## Aliases` maps to `removed`.
+    fn read_migration_aliases(&mut self, root: &Path) -> Result<()> {
+        let folder = local_path(root, MIGRATIONS_DIR)?;
+        let Ok(entries) = fs::read_dir(&folder) else {
+            return Ok(());
+        };
+        let mut names: Vec<String> = entries
+            .filter_map(|entry| entry.ok())
+            .filter_map(|entry| entry.file_name().into_string().ok())
+            .filter(|name| name.ends_with(".md"))
+            .collect();
+        names.sort();
+        for name in names {
+            let relative = format!("{MIGRATIONS_DIR}/{name}");
+            let text = read_bounded_record(&folder.join(&name), markdown::Kind::Receipt.bound())
+                .with_context(|| format!("reading {relative}"))?;
+            let record = markdown::parse(&relative, &text)?;
+            let Some(aliases) = record.section("Aliases") else {
+                continue;
+            };
+            for line in aliases.lines() {
+                let mut quoted = line.split('`').skip(1).step_by(2);
+                if let (Some(old), Some("removed")) = (quoted.next(), quoted.next()) {
+                    self.removed
+                        .entry(old.to_string())
+                        .or_insert_with(|| relative.clone());
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// The holders named `name` in one tier, kept to `place` when the ID is qualified.
+    fn named(&self, name: &str, place: Option<&str>, in_bugs: bool) -> Vec<&Holder> {
+        let tier = if in_bugs { &self.bugs } else { &self.first };
+        self.by_name
+            .get(name)
+            .into_iter()
+            .flatten()
+            .filter(|(bugs, _)| *bugs == in_bugs)
+            .map(|(_, position)| &tier[*position])
+            .filter(|holder| place.is_none_or(|place| holder.place == place))
+            .collect()
+    }
+
+    /// Whether any entry or receipt holds the ID.
+    pub(super) fn holds(&self, id: &str) -> bool {
+        let (place, name) = split_qualified(id);
+        !self.named(name, place, false).is_empty() || !self.named(name, place, true).is_empty()
+    }
+
+    /// Resolve an ID (bare, a 0.5.x alias, or qualified as `<place>/<id>`) as bugs.rs
+    /// does: an open session's entry or an archived story's receipt first, where two
+    /// holding it are ambiguous; then the bugs' receipts, where copies of one receipt
+    /// are one; then the migration's removals.
+    pub(super) fn resolve(&self, id: &str) -> Result<Resolved> {
+        let (place, name) = split_qualified(id);
+        match self.named(name, place, false).as_slice() {
+            [one] => return Ok(Resolved::Present(Box::new(one.evidence()?))),
+            [] => {}
+            many => bail!(
+                "refused: {id} names evidence in more than one place ({}); qualify it as <session-id>/<evidence-id>",
+                many.iter()
+                    .map(|holder| holder.place.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+        }
+        let bugs = self.named(name, place, true);
+        if let Some(first) = bugs.first() {
+            let same = bugs.iter().all(|holder| match (&holder.held, &first.held) {
+                (Held::Receipt(map), Held::Receipt(other)) => map == other,
+                _ => false,
+            });
+            ensure!(
+                same,
+                "refused: {id} names differing receipts in bugs {}; qualify it as <bug-id>/<evidence-id>",
+                bugs.iter()
+                    .map(|holder| holder.place.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            );
+            return Ok(Resolved::Present(Box::new(first.evidence()?)));
+        }
+        if place.is_none()
+            && let Some(receipt) = self.removed.get(name)
+        {
+            return Ok(Resolved::Removed(receipt.clone()));
+        }
+        Ok(Resolved::Missing)
+    }
+}
+
+/// `<place>/<id>` as (place, id); a bare ID has no place.
+fn split_qualified(id: &str) -> (Option<&str>, &str) {
+    match id.split_once('/') {
+        Some((place, name)) => (Some(place), name),
+        None => (None, id),
+    }
+}
+
+/// One entry by ID or alias, resolved as [`Index::resolve`] resolves it; a removed or
+/// missing ID is an error.
+pub(super) fn load(root: &Path, id: &str) -> Result<Evidence> {
+    match Index::build(root)?.resolve(id)? {
+        Resolved::Present(evidence) => Ok(*evidence),
+        Resolved::Removed(receipt) => {
+            bail!("evidence {id} was removed by the 0.5.x migration, as {receipt} records")
+        }
+        Resolved::Missing => bail!("evidence not found: {id}"),
+    }
+}
+
+/// Whether an entry or a receipt with this ID or alias exists.
 pub(super) fn is_present(root: &Path, id: &str) -> Result<bool> {
-    if !valid_name(id) {
+    let (place, name) = split_qualified(id);
+    if !valid_name(name) || place.is_some_and(|place| !valid_name(place)) {
         return Ok(false);
     }
-    for session_id in crate::sessions::open_ids(root)? {
-        let dir = evidence_dir(&session_id);
-        if markdown::resolve(root, &dir, id)?.is_some() {
-            return Ok(true);
-        }
-    }
-    Ok(!receipt_entries(root, id)?.is_empty())
+    Ok(Index::build(root)?.holds(id))
 }
 
 /// The JSON view of an entry, as `status` and the case reports show it.
@@ -1109,6 +1327,7 @@ impl Evidence {
             "observed_at_unix_seconds": self.observed_at_unix_seconds,
             "revision": self.snapshot.revision,
             "content": self.snapshot.content,
+            "input_inventory": self.snapshot.input_inventory,
             "cases": self.cases.iter().map(|case| json!({"id": case.id, "digest": case.digest})).collect::<Vec<_>>(),
             "method": self.method,
             "track": self.track,
@@ -1160,6 +1379,112 @@ struct InputIdentity {
     key: String,
     path: String,
     digest: String,
+}
+
+/// #203's bounds on a diagnostic input inventory.
+const INPUT_INVENTORY_ENTRIES: usize = 128;
+const INPUT_INVENTORY_BYTES: usize = 32_768;
+
+impl InputInventory {
+    /// #203's rule (REQ-cli-004): version 1, at most 128 entries and 32,768 serialized
+    /// bytes, and each entry a canonical, distinct path with a SHA-256 digest and the
+    /// domain and key the content identity gives that path. Chough records, build
+    /// output and SpecSync bookkeeping, which the identity skips, are refused.
+    fn validate(&self, name: &str) -> Result<()> {
+        ensure!(
+            self.version == 1,
+            "unsupported input inventory version: {name}"
+        );
+        ensure!(
+            self.entries.len() <= INPUT_INVENTORY_ENTRIES
+                && serde_json::to_vec(self)?.len() <= INPUT_INVENTORY_BYTES,
+            "invalid input inventory bounds: {name}"
+        );
+        let mut paths = BTreeSet::new();
+        for entry in &self.entries {
+            ensure!(
+                canonical_path(&entry.path).as_deref() == Some(entry.path.as_str()),
+                "invalid input inventory entry: {name}: path must be canonical"
+            );
+            let expected = match fingerprint_key(&entry.path) {
+                Key::Path(key) => Some((0, key)),
+                Key::Change { key, .. } => Some((1, key)),
+                Key::Skip => None,
+            };
+            ensure!(
+                crate::records::is_digest(&entry.digest)
+                    && paths.insert(entry.path.as_str())
+                    && expected == Some((entry.domain, entry.key.clone())),
+                "invalid input inventory entry: {name}"
+            );
+        }
+        Ok(())
+    }
+
+    /// The entry's front matter form: `input_inventory_version`,
+    /// `input_inventory_complete` and the `input_inventory` maps.
+    fn to_record(&self, record: &mut Record) {
+        record
+            .set_scalar("input_inventory_version", &self.version.to_string())
+            .expect("a scalar value");
+        record
+            .set_scalar("input_inventory_complete", &self.complete.to_string())
+            .expect("a scalar value");
+        record
+            .set(
+                "input_inventory",
+                markdown::Value::Maps(
+                    self.entries
+                        .iter()
+                        .map(|entry| {
+                            vec![
+                                ("domain".into(), entry.domain.to_string()),
+                                ("key".into(), entry.key.clone()),
+                                ("path".into(), entry.path.clone()),
+                                ("digest".into(), entry.digest.clone()),
+                            ]
+                        })
+                        .collect(),
+                ),
+            )
+            .expect("a maps value");
+    }
+
+    /// The inventory an entry carries, validated; none without `input_inventory_version`.
+    fn from_record(record: &Record) -> Result<Option<InputInventory>> {
+        let Some(version) = record.scalar("input_inventory_version") else {
+            return Ok(None);
+        };
+        let name = format!(
+            "invalid evidence entry {}: input inventory",
+            record.scalar("id").unwrap_or_default()
+        );
+        let invalid = || name.clone();
+        let complete = match record.scalar("input_inventory_complete") {
+            Some("true") => true,
+            Some("false") => false,
+            _ => bail!("{name}"),
+        };
+        let mut entries = vec![];
+        for map in record.maps("input_inventory") {
+            let fields: BTreeMap<String, String> = map.into_iter().collect();
+            ensure!(fields.len() == 4, "{name}");
+            let field = |key: &str| fields.get(key).cloned().with_context(invalid);
+            entries.push(InputIdentity {
+                domain: field("domain")?.parse().with_context(invalid)?,
+                key: field("key")?,
+                path: field("path")?,
+                digest: field("digest")?,
+            });
+        }
+        let inventory = InputInventory {
+            version: version.parse().with_context(invalid)?,
+            complete,
+            entries,
+        };
+        inventory.validate(&name)?;
+        Ok(Some(inventory))
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -2080,7 +2405,7 @@ impl<'de> Deserialize<'de> for Evidence {
                 dirty: legacy.snapshot.dirty,
                 fingerprint: legacy.snapshot.fingerprint,
                 content: legacy.snapshot.content,
-                input_inventory: None,
+                input_inventory: legacy.snapshot.input_inventory,
             },
             cases: legacy.cases,
             method: legacy.method,
@@ -2104,6 +2429,9 @@ struct LegacySnapshot {
     dirty: bool,
     fingerprint: String,
     content: Option<String>,
+    /// #203's diagnostic inventory: absent, null or valid, never authoritative.
+    #[serde(default)]
+    input_inventory: Option<InputInventory>,
 }
 
 /// Whether the file's bytes are committed at HEAD (as Git stores them), the
@@ -2221,7 +2549,9 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
             let text = read_bounded_record(&archive.join(&name), markdown::SESSION_BOUND)?;
             let record = markdown::parse(&name, &text)?;
             for map in record.maps("receipts") {
-                views.push(receipt_view(&map, Found::Story(story.clone())));
+                if tombstone_of(&map).is_none() {
+                    views.push(receipt_view(&map, Found::Story(story.clone())));
+                }
             }
         }
     }
@@ -2234,10 +2564,12 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
                 let text = read_bounded_record(&entry.path(), markdown::RECORD_BOUND)?;
                 let record = markdown::parse(&name, &text)?;
                 for map in record.maps("receipts") {
-                    views.push(receipt_view(
-                        &map,
-                        Found::Bug(name.trim_end_matches(".md").into()),
-                    ));
+                    if tombstone_of(&map).is_none() {
+                        views.push(receipt_view(
+                            &map,
+                            Found::Bug(name.trim_end_matches(".md").into()),
+                        ));
+                    }
                 }
             }
         }
@@ -2371,9 +2703,16 @@ pub(super) fn record_validation_run(root: &Path, run: &ValidationRun) -> Result<
 // stripping, for t37d to keep or replace in place.
 
 /// Read a 0.5.x JSON observation into the entry model, naming the file on refusal
-/// (REQ-records-009). Honouring `snapshot.input_inventory` with #203's rule is t37d's.
+/// (REQ-records-009). A `snapshot.input_inventory` is read with #203's rule: absent or
+/// null is none, a valid one is carried as diagnostic metadata that never changes
+/// freshness, and an invalid one refuses (REQ-cli-004).
 pub(super) fn legacy_observation(path: &str, text: &str) -> Result<Evidence> {
-    serde_json::from_str(text).with_context(|| format!("{path}: not a 0.5.x observation"))
+    let evidence: Evidence =
+        serde_json::from_str(text).with_context(|| format!("{path}: not a 0.5.x observation"))?;
+    if let Some(inventory) = &evidence.snapshot.input_inventory {
+        inventory.validate(path)?;
+    }
+    Ok(evidence)
 }
 
 /// An entry's record text, named by its ID, within the entry bound; the migration's
