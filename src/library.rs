@@ -140,11 +140,20 @@ const GENERATED_READMES: &[&str] = &[
 /// Every generated knowledge file, built and bounded in memory before anything is
 /// written: `index.md` and `journal/feed.xml`.
 fn build(root: &Path, dir: &str) -> Result<Vec<(String, String)>> {
+    build_pending(root, dir, &crate::vault::Pending::default())
+}
+
+/// [`build`], as the tree will be once a migration plan applies (REQ-records-009).
+fn build_pending(
+    root: &Path,
+    dir: &str,
+    pending: &crate::vault::Pending,
+) -> Result<Vec<(String, String)>> {
     let posts = crate::journal::posts(root, dir)?;
     let files = vec![
         (
             format!("{dir}/index.md"),
-            crate::vault::index(root, dir, &posts)?,
+            crate::vault::index(root, dir, &posts, pending)?,
         ),
         (
             format!("{}/{}", crate::journal::dir_of(dir), crate::journal::FEED),
@@ -193,6 +202,174 @@ pub(super) fn regenerate(root: &Path, dir: &str) -> Result<String> {
     Ok(format!("{dir}/index.md"))
 }
 
+/// Whether `bytes` are a README an earlier release generated, read with CRLF as LF.
+fn generated_readme(bytes: &[u8]) -> bool {
+    let text = String::from_utf8_lossy(bytes).replace("\r\n", "\n");
+    let digest = format!("{:x}", sha2::Sha256::digest(text.as_bytes()));
+    GENERATED_READMES.contains(&digest.as_str())
+}
+
+/// The folders of notes 0.5.x `library index` generated, one note per record or month.
+const GENERATED_FOLDERS: [&str; 6] = [
+    "archives", "modules", "intent", "bugs", "sessions", "timeline",
+];
+
+/// What `chough migrate` does with one file of a 0.5.x knowledge directory, by its path
+/// inside the directory: None when 0.6.0 keeps it byte for byte (lessons, snapshots,
+/// briefs, anything a person wrote), Some(why) when it is removed (REQ-cli-044), and
+/// Some("") for a rolled session, which the session mapper carries.
+fn disposition_0_5(inside: &str, bytes: &[u8]) -> Option<&'static str> {
+    let parts: Vec<&str> = inside.split('/').collect();
+    match parts.as_slice() {
+        ["INDEX.md"] => Some(
+            "the index 0.5.x `chough library index` generated; 0.6.0 writes index.md, the vault's reading guide, instead (REQ-cli-043)",
+        ),
+        ["README.md"] if generated_readme(bytes) => Some(
+            "the README an earlier release generated, unedited; index.md is the vault's reading guide now (REQ-cli-044)",
+        ),
+        ["rules.md"] | ["timeline.md"] => Some(
+            "a note 0.5.x `chough library index` generated; 0.6.0 generates no rules.md or timeline.md and links the sources from index.md (REQ-cli-044)",
+        ),
+        [folder, .., name] if GENERATED_FOLDERS.contains(folder) && name.ends_with(".md") => Some(
+            "a note 0.5.x `chough library index` generated; 0.6.0 generates no per-change, module, intent, bug, session or timeline note and links the sources from index.md (REQ-cli-044)",
+        ),
+        ["attachments", _, "sessions", name] if name.ends_with(".json") => Some(""),
+        ["attachments", .., "pruned.jsonl"] => Some(
+            "a shard of the 0.5.x retention ledger, retired in 0.6.0 (REQ-cli-049); Git keeps its bytes",
+        ),
+        ["attachments", ..] => Some(
+            "moved into the vault by the 0.5.x trim at done, retired in 0.6.0 (REQ-cli-046); a story or bug that references it carries it as a receipt, and Git keeps its bytes",
+        ),
+        ["snapshots", staging, ..] if staging.starts_with(".staging-") => Some(
+            "the staging copy of an interrupted 0.5.x snapshot; `library snapshot` is retired (REQ-cli-015)",
+        ),
+        _ => None,
+    }
+}
+
+/// Every entry under `relative` that is not a folder, as project-relative paths with
+/// whether it is a symbolic link; links are listed, never followed.
+fn files_0_5(root: &Path, relative: &str, found: &mut Vec<(String, bool)>) -> Result<()> {
+    let Ok(entries) = fs::read_dir(local_path(root, relative)?) else {
+        return Ok(());
+    };
+    for entry in entries {
+        let entry = entry?;
+        let name = format!("{relative}/{}", entry.file_name().to_string_lossy());
+        let kind = entry.file_type()?;
+        if kind.is_dir() {
+            files_0_5(root, &name, found)?;
+        } else {
+            found.push((name, kind.is_symlink()));
+        }
+    }
+    Ok(())
+}
+
+/// A vault file's bytes; a link is not read, so nothing outside the tree is.
+fn bytes_0_5(root: &Path, path: &str, link: bool) -> Result<Vec<u8>> {
+    if link {
+        return Ok(vec![]);
+    }
+    Ok(fs::read(local_path(root, path)?)?)
+}
+
+/// Mapper 5 of `chough migrate` (REQ-records-009, REQ-cli-044): the 0.5.x knowledge
+/// directory's generated and copied content is removed with why; lessons, snapshots,
+/// briefs, an earlier `library/` folder and anything a person wrote are kept byte for
+/// byte, each one holding a leak listed with its kinds; and, with the librarian on,
+/// `index.md` and `journal/feed.xml` are written as `chough library index` builds them
+/// once the plan applies, given what the earlier mappers carry (`earlier`). Rolled
+/// sessions under `attachments/*/sessions/` are the session mapper's. It reads only.
+pub(crate) fn migrate_0_5(
+    root: &Path,
+    earlier: &crate::migrate::Carried,
+) -> Result<crate::migrate::Carried> {
+    let mut carried = crate::migrate::Carried::default();
+    let dir = prefs::effective(root, "library-dir")?.0;
+    let local = crate::leaks::Local::current();
+    let mut files = vec![];
+    files_0_5(root, &dir, &mut files)?;
+    let mut kept = vec![];
+    for (path, link) in files {
+        let bytes = bytes_0_5(root, &path, link)?;
+        let inside = path.strip_prefix(&format!("{dir}/")).unwrap_or(&path);
+        match disposition_0_5(inside, &bytes) {
+            Some("") => {}
+            Some(why) => {
+                // Removed without carrying: the framework digests and removes every
+                // `removed` path, so it is not also a source.
+                carried.removed.insert(path, why.to_string());
+            }
+            None => kept.push((path, bytes)),
+        }
+    }
+    if dir != "library" {
+        let mut earlier_library = vec![];
+        files_0_5(root, "library", &mut earlier_library)?;
+        for (path, link) in earlier_library {
+            let bytes = bytes_0_5(root, &path, link)?;
+            kept.push((path, bytes));
+        }
+    }
+    for (path, bytes) in kept {
+        let mut kinds: Vec<String> = crate::leaks::find(local, &String::from_utf8_lossy(&bytes))
+            .into_iter()
+            .map(|found| found.kind.name().to_string())
+            .collect();
+        kinds.sort();
+        kinds.dedup();
+        if !kinds.is_empty() {
+            carried.kept_with_leaks.insert(path, kinds);
+        }
+    }
+    if librarian_dir(root)?.is_some() {
+        let mut pending = crate::vault::Pending {
+            migrating: true,
+            ..Default::default()
+        };
+        pending.present = earlier
+            .written
+            .iter()
+            .map(|file| file.path.clone())
+            .collect();
+        pending.gone = earlier
+            .sources
+            .iter()
+            .chain(earlier.removed.keys())
+            .chain(carried.sources.iter())
+            .cloned()
+            .collect();
+        for file in &earlier.written {
+            let Some(name) = file
+                .path
+                .strip_prefix(&format!("{}/", crate::bugs::BUGS_DIR))
+            else {
+                continue;
+            };
+            if name.contains('/') || !name.ends_with(".md") {
+                continue;
+            }
+            let record = crate::markdown::parse(&file.path, &file.bytes)?;
+            let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
+            if !crate::bugs::is_closed_status(&field("status")) {
+                pending.bugs.push((
+                    file.path.clone(),
+                    field("id"),
+                    field("title"),
+                    field("status"),
+                ));
+            }
+        }
+        for (path, bytes) in build_pending(root, &dir, &pending)? {
+            carried
+                .written
+                .push(crate::migrate::Written { path, bytes });
+        }
+    }
+    Ok(carried)
+}
+
 /// Remove `<dir>/README.md` when it is exactly a README an earlier release generated;
 /// `index.md` is the vault's reading guide now (REQ-cli-044). An edited one is kept, and
 /// so is an untouched one whose bytes are not committed at HEAD (REQ-records-012).
@@ -201,8 +378,7 @@ fn fold_generated_readme(root: &Path, dir: &str) -> Result<serde_json::Value> {
     let Some(text) = current_text(root, &relative) else {
         return Ok(json!({"status": "none"}));
     };
-    let digest = format!("{:x}", sha2::Sha256::digest(text.as_bytes()));
-    if !GENERATED_READMES.contains(&digest.as_str()) {
+    if !generated_readme(text.as_bytes()) {
         return Ok(json!({"status": "kept", "path": relative, "reason": "a person edited it"}));
     }
     if !crate::sessions::committed_at_head(root, &relative) {
@@ -365,4 +541,106 @@ pub(super) fn pointer(root: &Path) -> serde_json::Value {
         "dir": dir,
         "index": present.then_some(index),
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::migrate::{Carried, Written};
+
+    fn bug(id: &str, title: &str, status: &str) -> Written {
+        Written {
+            path: format!(".chough/bugs/{id}.md"),
+            bytes: format!(
+                "---\nkind: bug\nid: {id}\ntitle: {title}\nstatus: {status}\n---\n\n# {title}\n"
+            ),
+        }
+    }
+
+    /// REQ-records-009: the planned index is the tree's once every earlier mapper's plan
+    /// applies: the stories, `.chough/README.md` and open bugs they write count, a bug
+    /// they remove or close does not, and a 0.5.x JSON bug is left to the bug mapper.
+    #[test]
+    fn the_planned_index_counts_what_the_earlier_mappers_write_and_remove() {
+        let folder = tempfile::tempdir().unwrap();
+        let root = folder.path();
+        fs::create_dir_all(root.join(".chough/bugs")).unwrap();
+        fs::write(root.join(".chough/bugs/BUG-0001.json"), "{}\n").unwrap();
+        fs::write(
+            root.join(".chough/bugs/2026-01-01-gone.md"),
+            bug(
+                "2026-01-01-gone",
+                "A SYNTHETIC bug the plan removes",
+                "open",
+            )
+            .bytes,
+        )
+        .unwrap();
+        let mut earlier = Carried::default();
+        earlier.written.push(Written {
+            path: ".chough/README.md".into(),
+            bytes: "# Records\n".into(),
+        });
+        earlier.written.push(Written {
+            path: ".chough/archive/sessions/2026-01-02-old.md".into(),
+            bytes: "---\nid: 2026-01-02-old\n---\n".into(),
+        });
+        earlier
+            .written
+            .push(bug("2026-01-03-open-one", "An open SYNTHETIC bug", "open"));
+        earlier.written.push(bug(
+            "2026-01-04-closed-one",
+            "A closed SYNTHETIC bug",
+            "verified",
+        ));
+        earlier
+            .sources
+            .insert(".chough/bugs/2026-01-01-gone.md".into());
+        let carried = migrate_0_5(root, &earlier).unwrap();
+        let index = &carried
+            .written
+            .iter()
+            .find(|file| file.path == "knowledge/index.md")
+            .unwrap()
+            .bytes;
+        for expected in [
+            "Chough's records: [.chough/README.md](../.chough/README.md)",
+            "Finished sessions: [.chough/archive/sessions/](../.chough/archive/sessions/)",
+            "- [2026-01-03-open-one](../.chough/bugs/2026-01-03-open-one.md) An open SYNTHETIC bug (open)",
+        ] {
+            assert!(index.contains(expected), "missing {expected:?} in\n{index}");
+        }
+        assert!(
+            !index.contains("closed-one") && !index.contains("2026-01-01-gone"),
+            "{index}"
+        );
+        assert!(!index.contains("BUG-0001"), "{index}");
+    }
+
+    #[test]
+    fn a_vault_file_is_removed_kept_or_left_to_the_session_mapper() {
+        let readme = include_str!("../tests/fixtures/knowledge-readme-at-8fbbbe7.md");
+        let crlf = readme.replace('\n', "\r\n");
+        assert!(disposition_0_5("README.md", readme.as_bytes()).is_some());
+        assert!(disposition_0_5("README.md", crlf.as_bytes()).is_some());
+        let edited = format!("{readme}\nOur own note.\n");
+        assert!(disposition_0_5("README.md", edited.as_bytes()).is_none());
+        assert_eq!(
+            disposition_0_5("attachments/k/sessions/k.json", b"{}"),
+            Some("")
+        );
+        assert!(
+            disposition_0_5("attachments/k/evidence/OBS-a.json", b"{}")
+                .is_some_and(|why| !why.is_empty())
+        );
+        for kept in [
+            "lessons/a.md",
+            "briefs/b.md",
+            "snapshots/SNAP-x/manifest.json",
+            "index.md",
+            "archives/notes.txt",
+        ] {
+            assert!(disposition_0_5(kept, b"x").is_none(), "{kept}");
+        }
+    }
 }

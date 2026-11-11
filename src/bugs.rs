@@ -1567,7 +1567,6 @@ pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<Str
 }
 
 /// Whether a bug status is closed: verified, duplicate, wont-fix or fixed-upstream.
-#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn is_closed_status(status: &str) -> bool {
     CLOSED.contains(&status)
 }

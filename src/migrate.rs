@@ -685,7 +685,10 @@ fn plan(root: &Path) -> Result<Plan> {
     let (evidence, observations) = evidence_0_5(root, &homes, &links)?;
     carried.absorb(evidence)?;
     carried.absorb(bugs_0_5(root, &observations)?)?;
-    carried.absorb(knowledge_0_5(root)?)?;
+    // Knowledge runs last: its index.md is the one the tree has once every other
+    // mapper's plan applies.
+    let knowledge = knowledge_0_5(root, &carried)?;
+    carried.absorb(knowledge)?;
     // A file a mapper carried is never `removed without carrying`, whatever another
     // mapper listed.
     let carried_sources = carried.sources.clone();
@@ -1105,10 +1108,9 @@ fn bugs_0_5(root: &Path, observations: &ObservationHomes) -> Result<Carried> {
     crate::bugs::migrate_0_5(root, observations)
 }
 
-/// Mapper 5, knowledge (t37j): replace this body with a call to
-/// `crate::library::migrate_0_5(root)`.
-fn knowledge_0_5(_root: &Path) -> Result<Carried> {
-    Ok(Carried::default())
+/// Mapper 5, knowledge (t37j), given what the earlier mappers carry.
+fn knowledge_0_5(root: &Path, earlier: &Carried) -> Result<Carried> {
+    crate::library::migrate_0_5(root, earlier)
 }
 
 #[cfg(test)]

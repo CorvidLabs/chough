@@ -8,6 +8,7 @@
 use crate::journal::Post;
 use crate::records::{local_path, read_native_text};
 use anyhow::Result;
+use std::collections::BTreeSet;
 use std::path::Path;
 
 /// One front matter value.
@@ -214,11 +215,85 @@ fn list(items: Vec<String>, empty: &str) -> String {
     }
 }
 
+/// What a migration plan changes before the index it writes is read (REQ-records-009):
+/// files the earlier mappers write count as present, files the plan removes as gone, and
+/// the bug records it writes join the open bugs, so the planned `index.md` is the one
+/// `chough library index` builds after the apply. Outside a migration it is empty.
+/// One open bug as the index lists it: its record file (None without one), ID, title
+/// and status.
+type OpenBug = (Option<String>, String, String, String);
+
+#[derive(Default)]
+pub(crate) struct Pending {
+    /// Whether a migration plan is being built; a 0.5.x bug record is then left to the
+    /// bug mapper instead of refused.
+    pub(crate) migrating: bool,
+    /// Paths the plan writes.
+    pub(crate) present: BTreeSet<String>,
+    /// Paths the plan removes.
+    pub(crate) gone: BTreeSet<String>,
+    /// Open bugs the plan writes: (file, id, title, status).
+    pub(crate) bugs: Vec<(String, String, String, String)>,
+}
+
+impl Pending {
+    /// Whether `relative`, a file or a folder ending in `/`, exists once the plan applies.
+    fn exists(&self, root: &Path, relative: &str) -> bool {
+        let folder = format!("{}/", relative.trim_end_matches('/'));
+        if self
+            .present
+            .iter()
+            .any(|path| path == relative || path.starts_with(&folder))
+        {
+            return true;
+        }
+        !self.gone.contains(relative) && exists(root, relative)
+    }
+
+    /// The open bugs once the plan applies, by file name as `chough bug` reads them:
+    /// (file, id, title, status), the file None when the bug has no record file.
+    fn open_bugs(&self, root: &Path) -> Result<Vec<OpenBug>> {
+        if !self.migrating {
+            return Ok(crate::bugs::open_backlog(root)?
+                .into_iter()
+                .map(|bug| {
+                    let id = bug["id"].as_str().unwrap_or("?").to_string();
+                    let title = bug["title"].as_str().unwrap_or("").to_string();
+                    let status = bug["status"].as_str().unwrap_or("?").to_string();
+                    (bug_file(root, &id), id, title, status)
+                })
+                .collect());
+        }
+        let bound = crate::markdown::Kind::Bug.bound();
+        let mut found: Vec<OpenBug> = crate::bugs::records_in(root, crate::bugs::BUGS_DIR, bound)
+            .into_iter()
+            .map(|(name, record)| {
+                let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
+                let file = format!("{}/{name}", crate::bugs::BUGS_DIR);
+                (Some(file), field("id"), field("title"), field("status"))
+            })
+            .filter(|(file, ..)| file.as_ref().is_some_and(|file| !self.gone.contains(file)))
+            .filter(|(.., status)| !crate::bugs::is_closed_status(status))
+            .collect();
+        found.extend(self.bugs.iter().map(|(file, id, title, status)| {
+            (
+                Some(file.clone()),
+                id.clone(),
+                title.clone(),
+                status.clone(),
+            )
+        }));
+        found.sort();
+        found.dedup();
+        Ok(found)
+    }
+}
+
 /// `index.md` for the knowledge directory `dir`, generated from its sources with
 /// identical bytes for the same sources (REQ-cli-043, KNOW-4). It links and copies no
 /// text: posts by title, bugs and archived changes by ID and title, lesson sources by
 /// path and count.
-pub(super) fn index(root: &Path, dir: &str, posts: &[Post]) -> Result<String> {
+pub(super) fn index(root: &Path, dir: &str, posts: &[Post], pending: &Pending) -> Result<String> {
     let up = "../".repeat(dir.split('/').filter(|part| !part.is_empty()).count());
     let link = |path: &str| format!("[{path}]({up}{path})");
     let newest: Vec<String> = posts
@@ -247,18 +322,15 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post]) -> Result<String> {
         ("Tasks", "fledge.toml"),
     ]
     .into_iter()
-    .filter(|(_, path)| exists(root, path))
+    .filter(|(_, path)| pending.exists(root, path))
     .map(|(what, path)| format!("{what}: {}", link(path)))
     .collect();
-    let bugs: Vec<String> = crate::bugs::open_backlog(root)?
+    let bugs: Vec<String> = pending
+        .open_bugs(root)?
         .into_iter()
-        .map(|bug| {
-            let id = bug["id"].as_str().unwrap_or("?").to_string();
-            let title = one_line(bug["title"].as_str().unwrap_or(""));
-            let status = bug["status"].as_str().unwrap_or("?");
-            let named =
-                bug_file(root, &id).map_or(id.clone(), |path| format!("[{id}]({up}{path})"));
-            format!("{named} {title} ({status})")
+        .map(|(file, id, title, status)| {
+            let named = file.map_or(id.clone(), |path| format!("[{id}]({up}{path})"));
+            format!("{named} {} ({status})", one_line(&title))
         })
         .collect();
     let rules: Vec<String> = rule_files(root)?.iter().map(|path| link(path)).collect();
