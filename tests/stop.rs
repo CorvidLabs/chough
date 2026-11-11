@@ -263,7 +263,11 @@ fn stopping_a_case_run_stops_its_command_and_records_nothing() {
         serde_json::from_slice(&fs::read(outputs.path().join("stdout")).unwrap()).unwrap();
     assert_eq!(report["outcome"], "passed", "{report}");
     let observation = report["observation"].as_str().unwrap();
-    assert!(fixture.exists(&format!(".chough/evidence/{observation}.json")));
+    // The run's 0.6.0 evidence entry in the active session (REQ-records-005).
+    assert!(fixture.exists(&format!(
+        ".chough/sessions/{}/evidence/{observation}.md",
+        fixture.active_id()
+    )));
 }
 
 #[test]
@@ -379,7 +383,11 @@ fn a_stop_signal_inherited_as_blocked_stays_blocked() {
         serde_json::from_slice(&fs::read(outputs.path().join("stdout")).unwrap()).unwrap();
     assert_eq!(report["outcome"], "passed", "{report}");
     let observation = report["observation"].as_str().unwrap();
-    assert!(fixture.exists(&format!(".chough/evidence/{observation}.json")));
+    // The run's 0.6.0 evidence entry in the active session (REQ-records-005).
+    assert!(fixture.exists(&format!(
+        ".chough/sessions/{}/evidence/{observation}.md",
+        fixture.active_id()
+    )));
 }
 
 /// A `git` stand-in that, once `armed` exists, marks itself running and stalls in

@@ -1358,7 +1358,7 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                 // Leif's choice for #84: warn, do not refuse; a subagent may report
                 // before this tree has the record.
                 eprintln!(
-                    "chough: warning: observation {text} has no record in .chough/evidence yet; the entry was added and `chough inbox list` marks it recorded: false"
+                    "chough: warning: observation {text} has no record yet, as an evidence entry or a receipt; the entry was added and `chough inbox list` marks it recorded: false"
                 );
             }
             let mut added = json!({"schema_version":1,"added":file,"id":id});
