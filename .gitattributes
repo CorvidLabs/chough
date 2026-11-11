@@ -4,10 +4,6 @@
 # planes into one paragraph. Plain text keeps each plane on its own line.
 *.3md linguist-language=Text
 
-.chough/session.json merge=chough-session
-.chough/sessions/*.json merge=chough-session
-.chough/sessions/archive/*.json merge=chough-session
-
 # Append-only JSON lines and changelog bullets merge by keeping both sides' lines
 # (DRIVE-12).
 .chough/pruned.jsonl merge=union

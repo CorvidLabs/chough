@@ -198,40 +198,13 @@ versions require an upgrade to use the new-form IDs. See the
 [CLI identity reference](docs/cli.md#case-observation-validation-and-snapshot-identities)
 for allocation, artifact paths, collision refusal and compatibility details.
 
-## Merge parallel checkpoint edits
+## Parallel work on sessions
 
-The repository declares `.chough/session.json merge=chough-session` in
-`.gitattributes`. To enable the merge driver, each clone runs:
-
-```sh
-git config --local merge.chough-session.name "Chough schema 2 checkpoint"
-git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"
-```
-
-Git supplies base, ours and theirs as `%O`, `%A` and `%B`. A nonzero driver result
-leaves the conflict for human resolution. `chough init` never sets either Git
-configuration value.
-
-Without the driver, use the explicit fallback:
-
-```sh
-chough checkpoint --merge <base> <ours> <theirs>
-```
-
-The command merges schema 2 checkpoints only. Success replaces only ours, while a
-current-cycle conflict stays unresolved instead of combining fields. One agent still
-owns live checkpoint writes, and merging adds no second store. See
-[Checkpoint merges](docs/cli.md#checkpoint-merges) for the collection and conflict
-rules.
-
-Native approvals and reviews remain in SpecSync. The current agent invokes those
-writers from actual human authority; the Rust helper reads native state for gates.
-Approvals and reviews are recorded claims bound to their content, not authenticated
-identity: actor labels do not authenticate people, and a structural pass or exit code
-does not establish behavioral proof or human acceptance. When an agent records a
-human's decision at a gate, `chough checkpoint --close-gate` keeps who decided, their
-words, where and the recording agent as a relayed claim, never as a native approval. Publication and deployment
-keep their separate authorization and evidence requirements.
+Each piece of work is a session folder, `.chough/sessions/<date>-<slug>/`, so branches
+that work on different sessions merge with no conflict and need no merge driver. A
+session's Timeline is append-only. One agent owns a session's live writes; subagents
+report through `chough inbox add`, and starting or switching work never touches
+another session. See [Sessions](docs/cli.md#sessions).
 
 ## Tested platforms
 

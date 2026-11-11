@@ -126,20 +126,10 @@ evaluated as a backend and deferred (D-010). The checkpoint stores decision summ
 and references, never reasoning transcripts, and it never stores native lifecycle
 state: it stores the change ID and reads status when a gate matters.
 
-For committed parallel edits, Git can invoke the same bounded
-`chough checkpoint --merge <base> <ours> <theirs>` command through a per-clone driver.
-The explicit command remains available without that driver. It merges ordered
-exact-string collections, but treats the current cycle as one indivisible value. A
-divergent current-cycle conflict remains unresolved rather than manufacturing a
-combined objective, stage, consent or human gate. Success atomically replaces only
-ours; every refusal preserves all three inputs and writes no Chough record. This is
-not a lock or a change to one-owner live writes. The checkpoint remains the only
-canonical one, with no second store, runtime, service or copied SpecSync state. Because SpecSync
-6.1.1 status does not report an edited approved delta (BUG-0002), the gate into build,
-test and accept also reads the native approval ledger
-(`.specsync/changes/<id>/approvals.json`) and the change's deltas read-only, within
-4 MiB each, and compares SpecSync's own approved-delta digests; it copies nothing into
-Chough's records and starts no process.
+There is no checkpoint merge. Each session is its own folder,
+`.chough/sessions/<date>-<slug>/`, so branches that work on different sessions merge
+with no conflict, and the Timeline in each `session.md` is append-only, so a branch
+that only appended entries merges cleanly with its own base.
 
 ## Timing is derived, not stored
 

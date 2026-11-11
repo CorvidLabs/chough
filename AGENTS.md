@@ -28,9 +28,9 @@ the same checkpoint (DRIVE-3, DRIVE-12):
   `CHANGELOG.md` merge with Git's union driver.
 - Add a change's cases in a file of its own,
   `.chough/cases/<module>.<change-topic>.cases.toml`, not in the shared module file.
-- Set up both Chough merge drivers once per clone:
-  `git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"`
-  and `git config --local merge.chough-bug.driver "chough bug merge %O %A %B"`.
+- Set up Chough's bug merge driver once per clone:
+  `git config --local merge.chough-bug.driver "chough bug merge %O %A %B"`. Sessions need
+  no merge driver: each is its own folder.
 - After merging main into a branch, run `chough library index` and commit `knowledge/`.
   It union-merges, and the verify lane's `library index --check` fails until it is
   rebuilt.

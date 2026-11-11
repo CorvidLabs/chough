@@ -25,9 +25,6 @@ pub(super) struct DoctorArgs {
     /// An open, unfinished session to close for abandoned work (repeatable; a decision).
     #[arg(long = "close")]
     close: Vec<String>,
-    /// The session key for a legacy `.chough/session.json` with no native change.
-    #[arg(long = "adopt-as")]
-    adopt_as: Option<String>,
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -104,7 +101,7 @@ fn archived(root: &Path, change: Option<&str>) -> bool {
 
 /// The 0.5.x checkpoint finding, if `.chough/session.json` exists: the project is not
 /// migrated (REQ-records-010). Doctor never migrates; the finding names the command.
-fn legacy(root: &Path, _adopt_as: Option<&str>) -> Result<Option<Finding>> {
+fn legacy(root: &Path) -> Result<Option<Finding>> {
     let target = checkpoint::SESSION;
     if !local_path(root, target)?.exists() {
         return Ok(None);
@@ -124,7 +121,7 @@ fn legacy(root: &Path, _adopt_as: Option<&str>) -> Result<Option<Finding>> {
 /// Every finding, in the order the fixes run (REQ-history-012).
 fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     let mut found = vec![];
-    if let Some(finding) = legacy(root, args.adopt_as.as_deref())? {
+    if let Some(finding) = legacy(root)? {
         found.push(finding);
     }
     if !sessions::enabled(root)? {

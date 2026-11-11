@@ -282,6 +282,12 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/lifecycle.md",
         "e232af339e12254fcc735ffa87b72c36d0e80a8b3efc585cb7be627973d42235",
     ),
+    // v0.5.0 (commit 455cb643) and main through 88e53eba; superseded by the Chough 0.6.0
+    // session folders and Timeline.
+    (
+        "references/checkpoint.md",
+        "b7371621899a8926447873b1f80db3f64cc51361544251099793a1e1f79760e3",
+    ),
     // Main 66bef80 (safe checkpoint merges, #29); superseded when the learning handoff
     // change added decision prefixes and the handoff blocks to the same file.
     (

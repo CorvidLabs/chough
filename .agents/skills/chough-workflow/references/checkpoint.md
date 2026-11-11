@@ -1,29 +1,27 @@
 # Checkpoint and cold resume
 
 Essential state must never live only in model context. The checkpoint is the single
-writable record of where work stands: `.chough/session.json`, or, once
-`.chough/sessions/` exists, the active session `.chough/sessions/<key>.json` (see
-[Sessions per objective](#sessions-per-objective)). It works without the librarian and
-without any other storage adapter.
+writable record of where work stands: the front matter of the active session's
+`.chough/sessions/<id>/session.md` (see [Sessions](#sessions)). It works without the
+librarian and without any other storage adapter.
 
 ## What it holds
 
 | Field | Content |
 |---|---|
-| `objective`, `stage` | Current outcome, stage, status, side-stage callers and iteration |
+| `objective`, `stage`, `stage_status`, `iteration`, `callers` | Current outcome, stage, status, side-stage callers and iteration |
 | `native_change` | The SpecSync change ID; native status decides its state |
-| `references` | Criteria, requirements, cases, design sources and files in scope |
-| `decisions`, `open_questions` | Decisions with their reason in the sentence; questions that matter |
-| `completed`, `observations`, `bugs`, `blockers` | Work done and the records that show it |
-| `awaiting_human` | Real gates still waiting for a person |
+| `criteria`, `requirements`, `cases`, `design`, `files` | What is in scope |
+| `observations`, `bugs`, `blockers` | The records that show the work, and what blocks it |
+| `waiting_on_human` | Real gates still waiting for a person, each with the stage it holds |
 | `run_consents` | Consent for this objective only |
-| `next_action` | Suggested next step; never overrides native state |
+| `next` | Suggested next step; never overrides native state |
 
-Standing preferences are in `.chough/preferences.json`. Legacy transitions stay in
-`.chough/transitions.jsonl`; adopted and new projects use immutable events under
-`.chough/history/cycles/`, selected by `history_cursor` in the same checkpoint. With
-sessions, `.chough/local/active-session` names the active one; `.chough/local/` stays
-in each worktree and is never committed.
+These are the front matter of `.chough/sessions/<id>/session.md`. Decisions with
+their reasons, completed work and open questions live in its Decisions and why, Where
+it stands and Open threads sections, and transitions in its Timeline. Standing
+preferences are in `.chough/preferences.json`. `.chough/local/active-session` names the
+active session; `.chough/local/` stays in each worktree and is never committed.
 Observations are in `.chough/evidence/`, bugs in
 `.chough/bugs/`, case definitions in `.chough/cases/` and retention removals in
 `.chough/pruned.jsonl`.
@@ -38,10 +36,8 @@ chough checkpoint --completed "<what was done>" --observation <id> \
   --decision "<decision, because reason>" --next-action "<next step>"
 ```
 
-Opening a gate with `--awaiting-human "<gate>"` appends one `gate-opened` record to the
-transition history, an event under `.chough/history/cycles/` (or a line of
-`.chough/transitions.jsonl` in a legacy project), only when that gate is not already
-open; `--close-gate` and `--clear-awaiting-human` append one `gate-closed` record per
+Opening a gate with `--awaiting-human "<gate>"` appends one `gate-opened` entry to the
+session's Timeline, only when that gate is not already open; `--close-gate` and `--clear-awaiting-human` append one `gate-closed` record per
 gate they close. They record when a gate waited, and `chough timing` reads them to
 show waiting-on-human time. Open and close gates through these flags rather than by
 editing the checkpoint file, or the waiting time is lost.
@@ -108,106 +104,48 @@ A fresh agent with none of the earlier conversation:
 
 ## Schema and concurrency
 
-A schema 1 session keeps working for `context` and `status`. `chough migrate`
-converts it after saving the original bytes to `.chough/session.v1.json`. Hand edits
-are allowed and validated on every read. With several agents, one agent owns live
-checkpoint writes; others report to it. APS was evaluated as a backend and deferred:
-it lost concurrent read-modify-write updates without error and accepts unknown fields.
+The checkpoint is the front matter of the active session's `session.md`; the story
+sections and the Timeline are in the same file. Hand edits are allowed: Chough keeps
+any key it does not know and every line a person wrote outside the sections it
+appends to, and refuses front matter outside its strict YAML subset with the file,
+line and rule. With several agents, one agent owns live checkpoint writes; others
+report through the inbox. A 0.5.x project (`.chough/session.json`, `history/`,
+`transitions.jsonl`) is refused as unmigrated until `chough migrate` converts it.
 
-For committed parallel schema 2 edits, the repository declares:
+There is no checkpoint merge. Each session is its own folder, so two branches that
+work on different sessions merge with no conflict. Two branches that change the same
+session conflict in Git like any file; resolve by keeping both Timelines' entries
+and one coherent checkpoint, never by inventing a decision.
 
-```gitattributes
-.chough/session.json merge=chough-session
-```
+## Sessions
 
-Each clone that wants automatic merging configures the driver locally:
-
-```sh
-git config --local merge.chough-session.name "Chough schema 2 checkpoint"
-git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"
-```
-
-Git supplies base, ours and theirs as `%O`, `%A` and `%B`. `chough init` never sets
-these values. Without a driver, use the explicit fallback:
-
-```sh
-chough checkpoint --merge <base> <ours> <theirs>
-```
-
-The merge preserves ordered exact-string history and reference changes. It treats
-objective, intent scope, modules, stage, native change, next action, run consents,
-blockers and awaiting-human gates as one current-cycle group. If both sides change
-that group differently, leave the conflict unresolved and ask the checkpoint owner
-or human to select a coherent cycle. Never hand-resolve it by combining fields. A
-merge is not approval, consent, gate closure or a lifecycle transition.
-
-Success replaces only ours. Every refusal preserves all three inputs and writes no
-Chough record. The merge adds no second checkpoint store and does not change the
-one-owner rule for live writes.
-
-## Sessions per objective
-
-When `.chough/sessions/` exists, each objective or native change has its own
-checkpoint at `.chough/sessions/<key>.json`, and every command uses the active one
-(`chough session new|adopt|use|list`). Start one with `chough session new <change-id>`
-or move the existing checkpoint with `chough session adopt <key>`. A session archives
-itself at its move into done, in its own change, and the active pointer is cleared;
-then start the next one with `chough session new`. It stays open while its inbox has
-unfolded entries or release is authorized (ask for release before done). Do not stage
-another session's archive move. A session whose native change is already archived
-is finished too, and the next `session new` or `session use` archives it; close
-abandoned work with `chough session close <key> --reason <text>`. When a fresh
+Each piece of work is a session folder, `.chough/sessions/<date>-<slug>/`, holding
+`session.md`, `evidence/` and `agent/`. Start one with `chough session new <key>`; the
+key is kept as an alias, and `chough session use <id, alias or slug>` switches. A
+session only ever closes itself: at its own move into done it writes one story,
+`.chough/archive/sessions/<id>.md`, removes each file of its folder whose bytes are
+committed at HEAD, keeps and reports the rest, and clears the active pointer; then
+start the next one with `chough session new`. It stays open while its inbox has
+unfolded entries or release is authorized (ask for release before done). Starting or
+switching work never archives, closes or changes another session, even a finished
+one; `chough session list`, `chough next` and `chough doctor` name each finished open
+session with its fix, `chough doctor --fix`. Close abandoned work with `chough session
+close <key> --reason <text>`. After the move into done, commit the story, then run
+`chough doctor --fix` to remove the committed folder and commit that. When a fresh
 worktree refuses to enter Chough, run `chough doctor` to see the debt and
-`chough doctor --fix` to clear it; decisions also need `--reason`. Subagents do not edit the
-session: they run `chough inbox add --session <key> --from <name> --kind
+`chough doctor --fix` to clear it; decisions also need `--reason`. Subagents do not
+edit the session: they run `chough inbox add --session <key> --from <name> --kind
 observation|decision|completed|question --text <text>`, and the agent that owns the
 session runs `chough inbox fold`. Inbox entries never approve, review, consent, clear a
-gate or move a stage. Declare the merge driver for session files as well:
+gate or move a stage.
 
-```gitattributes
-.chough/sessions/*.json merge=chough-session
-.chough/sessions/archive/*.json merge=chough-session
-```
+## The Timeline
 
-## Immutable transition history
-
-New projects use event history. Existing schema-2 projects remain in legacy mode
-until the owner previews `chough history adopt` and explicitly runs
-`chough history adopt --apply`. Adoption preserves the legacy log and schema-1
-migration backup byte-for-byte. A digest-bound anchor detects later legacy changes.
-An older helper may reject an adopted checkpoint; use a compatible helper and never
-remove its cursor to make an old reader accept it.
-
-The optional `history_cursor` is part of the atomic current-cycle merge group.
-Immutable event paths from independent branches can integrate, while divergent
-cursors require selecting one coherent checkpoint. Other branch events and orphan
-writes remain visible in `chough history show`; they do not prove a completed stage.
-Only parent links on the selected lineage order current work. Native gates still
-decide lifecycle transitions.
-
-Recent guidance follows at most 128 events and 512 KiB. Local appends to a new cycle allow at most 4,096
-events and 16 MiB; a capacity refusal preserves the checkpoint, and a reasoned
-`chough stage reset` can begin a new cycle without deleting the old proof. Timing
-bounds transition content at 4,096 events / 16 MiB and keeps other tips separate
-with unknown durations. Missing or intentionally pruned history is partial, never
-zero or verified.
-
-`chough history prune` is a read-only preview. It preserves active or referenced
-cycles, unresolved branches/orphans, the newest three closed cycles including time
-ties, and cycles younger than 14 days. Protected proof can prevent reclamation.
-`--apply` requires both an explicit history-prune command and human retention
-authorization; evidence auto-retention never starts history pruning. Maintenance
-has one 16,384-read / 64-MiB metadata budget, including revalidation. An incomplete
-scan refuses apply, and an interruption leaves an immutable receipt with an
-explicit partial result. Applying adoption or cleanup to a real project is a
-separate human operation, never a side effect of finishing implementation.
-
-Before integrating a branch that pruned history, check the other branch's new
-references and retained hashes. If new proof references removed content, restore
-the exact bytes from Git before accepting integration; a pruned or unavailable
-reference is not passing evidence. The one-owner live checkpoint and maintenance
-rule still applies; arbitrary external filesystem writers are not serialized.
-
-Git may combine independently written event sets above that local capacity. Retain
-all imported proof, refuse further ordinary appends to the full cycle, and use a
-reasoned reset for new work. The limit never silently discards merged events.
+Every transition is one entry of the session's `## Timeline`, `- <time> · <kind> ·
+<from> → <to> · <text> ^t-xxxxxx`, with its fields as indented lines, written in the
+same save as the checkpoint change it goes with. Chough only appends entries and
+never edits one; `chough history show` lists them. Recent guidance reads at most the
+newest 128 entries. A timeline holds at most 4,096 entries of 64 KiB each; a refusal
+at that bound leaves the session unchanged and names `chough session close` and
+`chough session new`. An entry that is not a valid transition is refused, never
+shown as history.
