@@ -78,7 +78,7 @@ for example by an older Chough, is refused the same way. See [Migration](#migrat
 | `status [--environment NAME]` | The full view, always JSON (`--json` is accepted and changes nothing). It starts with a `summary` object (see [The status view](#the-status-view)), then the checkpoint, the native gate for the next main stage in `checkpoint.gate` (`null` when that stage has no prerequisite), valid transitions, `next_valid_action`, `corrections`, native status, the snapshot, observations with freshness, and open and blocking bugs. |
 | `next [--environment NAME] [--json]` | The focused action view, text by default and compact JSON with `--json`; see [The next view](#the-next-view). |
 | `migrate [--apply DIGEST] [--consent TEXT]` | Without `--apply`, previews the migration of a 0.5.x project's records to 0.6.0 and writes nothing; with `--apply` and the preview's digest, applies that plan with the human's consent. See [Migration](#migration). |
-| `checkpoint` | Show or update: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--remove-completed` (marks one exact completed entry withdrawn before any `--completed` additions, so a mistaken entry is corrected in one call; an entry that is not present is refused), `--blocker`, `--clear-blockers`, `--awaiting-human` with `--holds` and `--drives` (see [Human gates](#human-gates)), `--clear-awaiting-human`, `--close-gate` with `--decided-by`, `--words`, `--where` and `--recorded-by`, and `--verdict` or `--no-native` for a gate that drives a native step (see [Relayed decisions at gates](#relayed-decisions-at-gates)), `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` Timeline entry with its `holds` and `drives`, and `--clear-awaiting-human` appends one `gate-closed` entry per gate it withdraws, in the same save as the checkpoint change; `--clear-awaiting-human` records no decision. With SpecSync configured, `--native-change <id>` first runs `specsync change status <id> --json` and refuses as `refused:native-change-unknown`, saving nothing from the call, unless that read succeeds with JSON (a missing change, a failed or timed-out read, or non-JSON output refuses), and as `refused:native-change-mismatch` when the reply's `summary.id` or `change.id` names a different change; a JSON reply that names no change ID, such as `[]` or `{}`, also refuses as `refused:native-change-unknown`; without a SpecSync configuration only the ID format is checked. That read happens on every `--native-change` call: under a second for an open change, and seconds longer for an archived one, since SpecSync re-reads its acceptance records. |
+| `checkpoint` | Show or update: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question` (with `--answer` when it resolves exactly one), `--completed`, `--remove-completed` (marks one exact completed entry withdrawn before any `--completed` additions, so a mistaken entry is corrected in one call; an entry that is not present is refused), `--blocker`, `--clear-blockers`, `--awaiting-human` with `--holds` and `--drives` (see [Human gates](#human-gates)), `--clear-awaiting-human`, `--close-gate` with `--decided-by`, `--words`, `--where` and `--recorded-by`, and `--verdict` or `--no-native` for a gate that drives a native step (see [Relayed decisions at gates](#relayed-decisions-at-gates)), `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug` (a bug's name or alias; an unknown one, or an alias two bugs hold, is refused). A gate added with `--awaiting-human` that was not already open appends one `gate-opened` Timeline entry with its `holds` and `drives`, and `--clear-awaiting-human` appends one `gate-closed` entry per gate it withdraws, in the same save as the checkpoint change; `--clear-awaiting-human` records no decision. With SpecSync configured, `--native-change <id>` first runs `specsync change status <id> --json` and refuses as `refused:native-change-unknown`, saving nothing from the call, unless that read succeeds with JSON (a missing change, a failed or timed-out read, or non-JSON output refuses), and as `refused:native-change-mismatch` when the reply's `summary.id` or `change.id` names a different change; a JSON reply that names no change ID, such as `[]` or `{}`, also refuses as `refused:native-change-unknown`; without a SpecSync configuration only the ID format is checked. That read happens on every `--native-change` call: under a second for an open change, and seconds longer for an archived one, since SpecSync re-reads its acceptance records. |
 | `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return\|backfill` | Moves between stages with reasons, each one Timeline entry. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the entry keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test for accept (advance or skip) needs no open blocking bug (`refused:blocking-bugs`) and, for each case referenced in the checkpoint, a latest executed (passed or failed) observation (by recorded time, then ID; a later `not-run` does not replace it) that passed or that a local bug of any status links (`refused:unlinked-failure` otherwise, naming the case and observation; rerun the case, or link it with `chough bug add ... --observation <id>` or `chough bug update <bug> --observation <id>`); `next` and `status` at test name the same refusal; entering validate or release needs consent or a standing preference. While an open human gate holds a stage the move would leave, `advance` and `skip` are refused as `refused:awaiting-human` before any native read (see [Human gates](#human-gates)); `back`, `iterate`, `reset`, `pause`, `resume`, `enter` and `return` are never refused by a gate. `backfill` records an advance that already happened; see [Backfilled moves](#backfilled-moves). `advance --to <stage>` moves through each main stage up to `<stage>` on one native read; see [Batched advance](#batched-advance). The move into done also archives the session; see [Moving into done](#moving-into-done). |
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding with `--environment`; record a manual or agent-assisted run with `--environment`, `--method manual\|agent-assisted`, `--summary`, optional `--artifact` and `--limitation`, and `--verdict N=pass\|fail` for every expected outcome. `run` and `record` name the evidence when `--observation-id` is omitted (see [Record names](#record-names)), return it as `observation` with the case ID as `case` beside `recorded`, and exit 3 when the recorded outcome is not passed. |
 | `evidence add [ID]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional `--artifact` (a project file spelled canonically: relative, `/`-separated; or one absolute path outside the project, fingerprinted in place), `--case`, `--method`, `--track`, `--limitation`, `--failing-lines` (a manual failure's key failing lines), `--screenshot` (one key screenshot committed beside the entry) and `--raw-log` (the CI run that holds the raw log); see [Evidence entries](#evidence-entries). Omitting ID names the evidence for you; an explicit ID must be a new-form name for a new write. Returns the stored ID as `observation` beside `recorded`. Never replaces an ID. There is no evidence retention in 0.6.0; see [Retention](#retention). |
@@ -200,7 +200,8 @@ first, with their total.
 | Timing | 4,096 entries and 16 MiB in one request |
 
 An entry that is not a valid transition (an unknown stage or kind, a direct-write
-field on another kind, or a relay with only one of `summary_digest` and `list`) is
+field on another kind, or a relay with only one of `summary_digest` and `list`, or of
+`native` and `actor`) is
 refused by every reader, never shown as history. A line in the Timeline that is not an
 entry, such as the closing line of an archived story, is prose and is skipped.
 
@@ -499,7 +500,10 @@ records the step in the human's name instead.
 
 The gate's `gate-closed` entry carries `relayed_by` with the four values under
 `decided_by`, `words`, `where` and `recorded_by` (REQ-history-010), the shape agreed
-with SpecSync's side for its approval and review records (spec-sync#633). One decision
+with SpecSync's side for its approval and review records (spec-sync#633). When the
+close drove a SpecSync step, `relayed_by` also gives `native`, the command it ran
+(`specsync change approve <change>` or `specsync change review <change>`), and
+`actor`, the SpecSync actor it ran as, both or neither. One decision
 is added to Decisions and why for the handoff, ending with the native step when one
 ran:
 
@@ -641,10 +645,23 @@ The front matter gives `kind: session`, `id`, `aliases`, `objective`, `intent_sc
 verified`, `## Open threads` and `## Timeline`. Chough writes the Goal from the
 objective once and never rewrites the Goal or Where it stands paragraphs. A decision
 from `checkpoint --decision` is one item in Decisions and why, completed work one item
-in Where it stands, and an open question one item in Open threads; `--resolve-question`
-appends the answer to that item's line, and `--remove-completed` marks an item
-withdrawn on its own line. `next` and `status` read decisions, completed work and open
-questions from these sections, so no field repeats them.
+in Where it stands, and an open question one item in Open threads.
+`--resolve-question` keeps the question's line and marks it ` (resolved)`; with
+`--answer <text>` and exactly one `--resolve-question`, the line becomes
+`<question> (resolved: <answer>)`. `--remove-completed` marks an item withdrawn on its
+own line. `next` and `status` read decisions, completed work and open questions from
+these sections, so no field repeats them.
+
+Each observation the session references is one What was verified item that links its
+entry:
+
+```text
+- [<claim>](evidence/<id>.md)
+```
+
+An entry another open session holds is linked as `../<session>/evidence/<id>.md`, and
+an observation held only as a receipt, or by no record, stays a plain `- <id>` item. A
+person's edit to an item's claim keeps the item.
 
 - `chough session new <key> [--objective T] [--intent-scope S] [--module M]...`
   creates the folder by create-new and makes it active. A key another session holds as
@@ -798,10 +815,18 @@ Each evidence entry the session holds becomes one map in the story's `receipts`,
 its `id`, `aliases` (one value, comma and space separated), `claim`, `result`,
 `observed`, `command`, `revision`, `environment`, `content`, `fingerprint`, `raw_log`,
 `case`, `case_digest`, `duration_seconds`, `screenshot` and `actor` when present, and
-one What was verified line (its claim, its command and the first 12 digits of its
-fingerprint, ending `^<evidence id>`) for each entry not already listed. Screenshots
-move beside the story. Evidence and bug links into an archived session resolve to its
-story's receipts.
+one What was verified line per receipt:
+
+```text
+- <claim> — `<command>` <first 12 fingerprint digits> [screenshot](<session>/<file>) ^<evidence id>
+```
+
+The command, the digits and the screenshot link appear only when the receipt has them,
+and a receipt without a claim shows its ID. The line replaces the item that linked the
+entry while the session was open, since that folder leaves with the session; an item a
+person wrote that names the entry is kept, and that entry gets no second line.
+Screenshots move beside the story. Evidence and bug links into an archived session
+resolve to its story's receipts.
 
 ## Migration
 
