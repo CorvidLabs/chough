@@ -251,7 +251,9 @@ cleans the current tree and the receipt says how many values it redacted.
 ## Migration
 
 `chough migrate` (preview, writes nothing, ends with the plan's digest) and
-`chough migrate --apply <digest>`, which applies only the previewed plan:
+`chough migrate --apply <digest>`, which applies only the previewed plan, only with
+the human's consent (`--consent <who, words, where>` or a standing `migration`
+preference) and never while a native change is open:
 
 1. Inventory every 0.5.x file with size and SHA-256. Refuse if any file it would
    remove is uncommitted or differs from HEAD, so Git holds every removed byte.
@@ -268,8 +270,9 @@ cleans the current tree and the receipt says how many values it redacted.
 5. Read the native validity of every archived change whose acceptance manifest
    lists a file to remove (at most 8 at once), remove the 0.5.x files whose bytes
    still match, read validity again, and restore everything and refuse if any
-   archive that was valid no longer is. The old trims' two safety rules, preview
-   first and never weaken a SpecSync archive, live on here.
+   archive that was valid no longer is. The old trims' safety rules live on here,
+   as #212 carries them forward: preview first, apply only with consent and never
+   while a change is open (KNOW-11), and never weaken a SpecSync archive (KNOW-10).
 
 Every rewritten file passes the leak guard with redaction, so the home-folder paths
 the audit found in 96 committed files do not survive; a file kept byte for byte that
@@ -320,10 +323,10 @@ checkpoint, an evidence entry or a bug written after `check --commit`, untracked
 committed, leaves the verification current, including in a reviewer's clean
 checkout. Chough only reads SpecSync's policy: `doctor` reports
 `records_in_verification` while an entry is missing, `init` and the migration say
-the same, and `next` says when writes are safe. This repository adds the entries in
-its migration commit. SpecSync refuses the list while an open change's affected paths
-overlap it, so the recreated draft names `.chough/cases/` and `.chough/README.md`
-instead of `.chough/`; archived changes are exempt from that check.
+the same, and `next` says when writes are safe. This change adds the entries to this
+repository's policy during build. SpecSync refuses the list while an open change's
+affected paths overlap it, so this change names `.chough/cases/`, `.chough/README.md`
+and `.specsync/sdd.json` instead of all of `.chough/`; archived changes are exempt.
 
 ## Bug fixes
 

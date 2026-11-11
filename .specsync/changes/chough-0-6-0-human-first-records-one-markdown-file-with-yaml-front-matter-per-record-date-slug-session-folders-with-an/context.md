@@ -54,7 +54,10 @@ were really SpecSync's are already fixed there, and are closed as fixed upstream
 - #212 marks the old cleanup and vault-copy criteria as superseded but does not retire
   them, because live requirements and cases still depend on them. This change retires
   them all with `hi retire`, rewords KNOW-24, and removes or rewrites what implements
-  them; plan.md maps every affected requirement, criterion and case.
+  them; plan.md maps every affected requirement, criterion and case. As merged
+  (88e53eba), #212 marks 18 superseded and carries KNOW-10 and KNOW-11 forward as the
+  upgrade's rules: never weaken a SpecSync archive; preview first, apply only with
+  consent and never while a change is open. Those two stay and trace to the migration.
 - Leif's two later answers, relayed by the coordinator on 2026-11-10 and captured
   in #212 as KNOW-34 and KNOW-35: "Keep all (Recommended)" for finished-session stories
   (nothing trims the archive) and "Split them (Recommended)" for proof files (logs to
@@ -131,9 +134,9 @@ verdicts for every requirement, case file, doc and skill file this change touche
 ## For a session picking this up
 
 - Read the deltas first; they are frozen at approval. design.md explains them.
-- The chough repository's own records are still 0.5.x until the dogfood step; drive
-  this session with the 0.5.0 build until the migration commit, then with the 0.6.0
-  build (plan.md, Dogfood).
+- The chough repository's own records stay 0.5.x for this whole change; drive it with
+  the 0.5.0 build. The repository migrates only after this change is archived
+  (KNOW-11), and the dogfood is the next change on this branch (plan.md, Dogfood).
 - `tests/spec_split.rs` pins the bodies of REQ-history-001 to 004 and
   REQ-reporting-001 to 003. This change modifies or removes REQ-history-001, 002,
   003, 004 and REQ-reporting-001, so those pins are updated naming this change.

@@ -66,7 +66,7 @@ Record both failures with `chough cases run` and link each to a local bug (plain
 
 ## 10. Migration and doctor
 
-- [ ] `src/migrate.rs`: preview with its plan digest, apply only that plan, receipt, mapping, aliases, removed IDs, redaction of every rewritten file, leak findings for files kept byte for byte, the archive validity check with restore-and-refuse, interrupted apply.
+- [ ] `src/migrate.rs`: preview with its plan digest, apply only that plan, receipt, mapping, aliases, removed IDs, redaction of every rewritten file, leak findings for files kept byte for byte, the archive validity check with restore-and-refuse, the refusals while a native change is open and without consent, interrupted apply.
 - [ ] Migration fixtures captured from every release, 0.1.0 to 0.5.0, each built from its tag (#213), plus the synthetic shapes in plan.md.
 - [ ] Fail-closed reader for every command but migrate, doctor, skill, help and version.
 - [ ] Doctor findings: unmigrated, leak, unfinished archive, timeline rewritten, alias conflict; `--fix --redact`.
@@ -74,7 +74,7 @@ Record both failures with `chough cases run` and link each to a local bug (plain
 
 ## 10b. The remaining bug fixes
 
-- [ ] #12 (REQ-records-014): only Chough's records under `.chough/sessions/`, `archive/` and `bugs/`; the `records_in_verification` doctor finding, the `chough init` advice, the migration follow-up and the `chough next` wording; the #1045 and #212 regression cases, the case-definition control and the real native closeout test, with SpecSync at the CI pin; the accept and lifecycle references say when Chough writes are safe and keep the documented order for projects without the entries, with their doc pins updated.
+- [ ] #12 (REQ-records-014): only Chough's records under `.chough/sessions/`, `archive/` and `bugs/`; the `records_in_verification` doctor finding, the `chough init` advice, the migration follow-up and the `chough next` wording; the #1045 and #212 regression cases, the case-definition control and the real native closeout test, with SpecSync at the CI pin; add the three entries to this repository's `.specsync/sdd.json`; the accept and lifecycle references say when Chough writes are safe and keep the documented order for projects without the entries, with their doc pins updated.
 - [ ] #190: gate summaries count from the merge base, leaving out Chough's records, the knowledge directory and SpecSync bookkeeping.
 - [ ] #76 and BUG-0023: the next-action wording at init, test and accept, and the summary first in `status`.
 - [ ] BUG-0001 and BUG-0022: the config comment in the version agreement check; the `toolchain` task first in the verify lane.
@@ -85,7 +85,7 @@ Record both failures with `chough cases run` and link each to a local bug (plain
 
 ## 10c. Retired criteria and the case map
 
-- [ ] `hi retire` every KNOW criterion #212 marks superseded (planned: KNOW-2, 7, 8, 9, 10, 11, 13, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28 and 29), each in the commit that removes its requirements and cases; reword KNOW-24 to the approved wording (every kind of file has a stated rule, finished stories stay for good, working files go when the work finishes, machine-only files are never committed); then `hi index` and `hi check`.
+- [ ] `hi retire` every KNOW criterion #212 marks superseded (KNOW-2, 7, 8, 9, 13, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28 and 29; KNOW-10 and KNOW-11 stay, carried forward by #212 and traced to REQ-records-009), each in the commit that removes its requirements and cases; reword KNOW-24 to the approved wording (every kind of file has a stated rule, finished stories stay for good, working files go when the work finishes, machine-only files are never committed); then `hi index` and `hi check`.
 - [ ] Apply plan.md's case map: remove 102 cases with their behaviour, re-link 3, rewrite 71 and port 128, naming the requirement or criterion in each commit; `fledge run cases` passes.
 
 ## 11. Docs and release preparation
@@ -103,13 +103,19 @@ Record both failures with `chough cases run` and link each to a local bug (plain
 
 ## 12. Dogfood
 
-- [ ] Migrate this repository with the 0.6.0 build, as its own commit with the receipt, adding `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` to `verification_ignored_paths` in `.specsync/sdd.json` in the same commit.
+- [ ] Rehearse the migration of this branch on a throwaway clone with the 0.6.0 build: preview, apply with a probe consent, receipt, archive validity; record what it shows.
 - [ ] Close BUG-0002 and BUG-0003 as `fixed-upstream`, each note citing t37b's check on spec-sync main 46f55652 (SpecSync 6.2.0).
 
-Then, as plain steps (the release gate in plan.md applies): drive this session with the 0.6.0 build from that commit on;
-run and record every case in testing.md; `fledge lanes run verify` on macOS and
-`fledge run linux-verify`; CI including archive authentication; Leif's acceptance
-review; the move into done in 0.6.0; close #233, #210 and #208 as folded in, #211
-as superseded by KNOW-30, and #237, #165, #12, #190, #76, #14 and #132 and the
-nine local bugs as their cases show (a flake that never reproduced stays open with
-its diagnostics, saying so). No 0.6.0 tag or release until the dogfood is complete and `chough bug list` shows zero open Chough bugs; a flake that will not reproduce goes to Leif, never closed to clear the gate. Publication waits for Leif's go. After release: refresh the shared skill copy the hc agents load with `chough skill update`.
+Then, as plain steps (the release gate in plan.md applies): run and record every case in
+testing.md; `fledge lanes run verify` on macOS and `fledge run linux-verify`; CI
+including archive authentication; Leif's acceptance review; ship and the move into
+done, still with the 0.5.0 build. After this change is archived, with no native change
+open and Leif's consent (his scope approval names this one migration), migrate this
+repository with the 0.6.0 build as its own commit with the receipt; then run the dogfood
+cycle in plan.md, the next change on this branch, intent to done in 0.6.0; close #233,
+#210 and #208 as folded in, #211 as superseded by KNOW-30, and #237, #165, #12, #190,
+#76, #14 and #132 and the nine local bugs as their cases show (a flake that never
+reproduced stays open with its diagnostics, saying so). No 0.6.0 tag or release until
+the dogfood is complete and `chough bug list` shows zero open Chough bugs; a flake that
+will not reproduce goes to Leif, never closed to clear the gate. Publication waits for
+Leif's go. After release: refresh the shared skill copy the hc agents load with `chough skill update`.

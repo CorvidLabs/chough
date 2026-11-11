@@ -14,7 +14,8 @@ The 0.5.x trims existed partly to protect archive validity (KNOW-10), and every
 archived change's acceptance manifest lists `knowledge/` files, for example 915
 paths in the newest archive, most of them `knowledge/archives/*.md`.
 
-Probe: in a throwaway clone at 250148ce, `specsync change status
+Probe: in a throwaway clone at 250148ce (this branch before its rebase onto #212; the
+records it read are unchanged by that rebase), `specsync change status
 return-the-observation-id-from-cases-record-and-evidence-add-issue-60 --json`, then
 `git rm -r knowledge/archives knowledge/intent`, commit, and the same status read.
 Both replies were byte-identical (382,025 bytes): `approval_valid: true`,
@@ -26,7 +27,7 @@ archive authentication shards or the other 168 archives. The dogfood step theref
 runs the full verify lane and CI archive authentication after migrating
 (plan.md). Recorded as evidence on this session.
 
-## This repository's 0.5.x records (at 250148ce)
+## This repository's 0.5.x records (at 250148ce, before the rebase onto #212)
 
 | Path | Tracked files | Size |
 |---|---|---|
