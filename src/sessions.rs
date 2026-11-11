@@ -106,7 +106,7 @@ pub(super) enum SessionCommand {
 }
 
 #[derive(Clone, Copy, ValueEnum)]
-pub(super) enum Kind {
+pub(crate) enum Kind {
     Observation,
     Decision,
     Completed,
@@ -1206,7 +1206,7 @@ fn pending(root: &Path, key: &str) -> Result<Vec<(String, Entry)>> {
 }
 
 /// The Markdown record of a new inbox entry named `name`.
-fn render_entry(
+pub(super) fn render_entry(
     name: &str,
     session: &str,
     from: &str,
