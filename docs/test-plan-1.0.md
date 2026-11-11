@@ -33,8 +33,9 @@ list at close, and the receipts. A row with an unrecorded step does not count.
 
 ## Bar 2: zero known flakes
 
-The flake tracker is a GitHub label (`flake`) plus a notes file per flake
-under `docs/` while one is open. Known today: #187 (timing test under a full
+The flake tracker is a GitHub label (`flake`) plus one local bug record per flake in
+`.chough/bugs/`, which holds its failing runs, diagnostics and stress results in its
+Log (#217); there is no notes file under `docs/`. Known today: #187 (timing test under a full
 macOS verify, DRIVE-19) and #132 (fork/fd inheritance: ETXTBSY on stand-in
 scripts, held checkpoint lock).
 
@@ -53,21 +54,36 @@ Rules:
 
 ## Bar 3: migration fixtures
 
-For every 0.x tag — v0.1.0, v0.2.0, v0.3.0, v0.4.0, v0.5.0 and each later
-0.x — a fixture exercises the upgrade to the current format:
+Chough 0.6.0's `chough migrate` is the upgrade from every earlier release (Q7, #213,
+REQ-records-009). Fixtures exercise it:
 
-- `tests/fixtures/` holds one fixture per tag: a `.chough` tree captured at
-  that tag (an active session, an archived session, transitions, a bug, an
-  evidence receipt), small enough to review in a diff. The fixture is
-  regenerable by a script checked in next to it, run at that tag.
-- A CI case runs the current `chough migrate` (and, once it exists, the
-  slug-folder migration) against a copy of each fixture and asserts: the
-  migration receipt names every moved file with before and after digests;
-  `chough next`, `chough status` and `chough cases check` succeed on the
-  migrated tree; no record present before is missing after; a second migrate
-  is a no-op.
-- A separate case asserts the 1.0 helper fails closed with "run
-  `chough migrate`" on an unmigrated 0.x tree and never silently rewrites it.
+- `tests/fixtures/` holds one fixture per released tag, v0.1.0 to v0.5.0, each a
+  `.chough` tree captured from a project built from that tag, small enough to review
+  in a diff and regenerable by a script checked in next to it, run at that tag.
+- Synthetic fixtures add what a captured project may lack:
+  - a legacy single checkpoint with adopted history;
+  - open and archived sessions;
+  - sessions the 0.5.0 roll-up moved into the vault;
+  - a bug of each ID form;
+  - inbox entries;
+  - external and committed artifacts;
+  - home-folder paths in records;
+  - old proof.
+- A CI case runs `chough migrate` against a copy of each fixture and asserts:
+  - the plan and its digest, and the written tree;
+  - the receipt, with before and after digests for every file;
+  - every old ID resolving as an alias, and a removed ID reading `removed`;
+  - each redaction;
+  - `chough next`, `chough status`, `chough bug show`, `chough session list` and
+    `chough timing` working on the result;
+  - a second apply reporting nothing to do;
+  - an interrupted apply finishing on the next run;
+  - an archive that would read invalid making it restore every removed file and
+    refuse.
+- A separate case asserts that 0.6.0 refuses an unmigrated or mixed tree with
+  `refused:unmigrated`, naming `chough migrate`, and never silently rewrites it.
+- Later format changes before 1.0 add one tested step each, so a checkout at any 0.x
+  tag reaches the frozen format.
 
 ## Bar 4: host-matrix e2e harness
 

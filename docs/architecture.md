@@ -3,8 +3,8 @@
 The current agent interprets requests and follows the workflow skill. The Rust helper
 does only deterministic work: keep the checkpoint, route stages within native gates,
 validate and run test definitions, bind observations, keep local bugs, separate
-preferences from consent, snapshot and index the librarian's knowledge directory (on
-by default), and install the skill per host. Each existing tool keeps its own records.
+preferences from consent, index the librarian's knowledge directory and write its
+journal (on by default), and install the skill per host. Each existing tool keeps its own records.
 
 ![Record ownership](diagrams/ownership.svg)
 
@@ -16,8 +16,8 @@ flowchart TB
     agent --> spec["SpecSync: contracts, changes, approval, review, archive"]
     agent --> fledge["Fledge + project tools: real checks"]
     agent --> proto["Prototype + companion: approved design"]
-    agent --> chough["Chough checkpoint: stage, decisions, consents, next action"]
-    agent -.-> library["Librarian (on by default, knowledge/): index, archive entries, snapshots, briefs"]
+    agent --> chough["Chough session: checkpoint, story, Timeline, next action"]
+    agent -.-> library["Librarian (on by default, knowledge/): index, journal and feed; links, never copies"]
     fledge --> evidence["Observations: revision, inputs, environment"]
     evidence --> chough
     spec -->|"native state gates stages"| chough
@@ -34,31 +34,38 @@ flowchart TB
 | `.specsync/changes/`, `.specsync/archive/` | SpecSync: change packages, approval, verification, review, archive |
 | `design/prototype/` with `COMPANION.md` | The canonical prototype and its rationale and mappings |
 | `fledge.toml` | Fledge tasks and lanes |
-| `.chough/session.json` | Chough: the writable checkpoint (schema 2) of a project without `.chough/sessions/` |
-| `.chough/sessions/<key>.json` | Chough, in sessions mode: one checkpoint per objective or native change; only the active one is written |
-| `.chough/sessions/archive/`, `.chough/sessions/shelved/` | Finished sessions, kept byte for byte; an oversized or unreadable session set aside with `session shelve` |
-| `.chough/sessions/<key>.inbox/` | Create-only subagent reports, folded into the session by its owner |
-| `.chough/local/` | Local to each worktree and ignored by Git: the active-session pointer and the checkpoint writer lock |
-| `.chough/session.v1.json` | The original schema 1 bytes kept by `chough migrate` |
-| `.chough/transitions.jsonl` | Preserved legacy stage history, including `gate-opened` and `gate-closed` records written when an awaiting-human gate opens or closes; frozen behind a digest anchor once history is adopted |
-| `.chough/history/cycles/<cycle>/<event>.json` | Immutable transition events, gate records included; the checkpoint cursor selects the current lineage, and `chough timing` derives durations from them and stores none |
-| `.chough/history/pruned/<cycle>.json` | Immutable planned-removal receipt; missing receipted content is pruned or interrupted, never timing proof |
+| `.chough/README.md` | Chough: the one-screen guide to this tree, written create-only by `init` and `migrate --apply` |
+| `.chough/sessions/<id>/session.md` | Chough: one open session. Its front matter is the checkpoint; its body is the story and the append-only Timeline. Only the active session is written |
+| `.chough/sessions/<id>/evidence/` | Chough: the session's evidence entries, one Markdown file each, and at most 5 small key screenshots |
+| `.chough/sessions/<id>/agent/` | Agent working files, with `inbox/` for create-only subagent reports that the session's owner folds |
+| `.chough/archive/sessions/<id>.md` | One story per finished session, kept for good, with a receipt per evidence entry; a folder of the same name beside it holds its screenshots, when it has any |
+| `.chough/archive/shelved/<id>/` | A session that could not be read, moved byte for byte by `session shelve` |
+| `.chough/archive/migrations/<id>.md` | The receipt of a migration from 0.5.x |
+| `.chough/bugs/<id>.md` | The local bug backlog: one Markdown record per bug with an append-only `## Log`; earlier IDs are aliases |
 | `.chough/preferences.json` | Standing project preferences, each with its source |
 | `.chough/cases/<module>.cases.toml` | Test definitions (`chough-testing/1`) with curated `TC-<module>-<title-slug>` IDs for new cases and exact legacy numeric IDs retained |
-| `.chough/evidence/OBS-*.json`, `.chough/evidence/<legacy-id>.json` | Schema 1 and 2 observations with new or legacy IDs |
-| `.chough/artifacts/<observation-id>.log` | Automated output whose name inherits its observation ID exactly |
-| `.chough/pruned.jsonl` | Append-only ledger of observation sets removed by retention; entries gain no new ID field |
-| `.chough/bugs/*.json` | Local bug backlog; its deterministic identity generator is unchanged |
-| `.chough/validation/VAL-*.json`, `.chough/validation/<legacy-id>.json`, `.chough/validation.stop` | Limits and progress of optional repeated runs, and the unchanged pending stop request |
-| `knowledge/` (librarian, on by default; `library-dir` renames it, `librarian off` opts out) | Generated `INDEX.md` with a lessons index, one `archives/<change-id>.md` summary per archived native change, new and legacy snapshots and briefs; never a second current source and never read by a gate. An earlier `library/` folder is listed as is |
+| `.chough/local/` | One worktree's machine-local state, ignored by Git: the active-session pointer, the writer lock, gate lists, direct-write baselines, `external-artifacts.toml`, `logs/` and an optional `identity.toml` |
+| `knowledge/` (librarian, on by default; `library-dir` renames it, `librarian off` opts out) | The generated reading guide `index.md`, the journal in `journal/` with its generated `feed.xml`, and cross-project lessons in `lessons/`. It links and never copies a record or source, and no gate reads it. Earlier `library/` snapshots and `briefs/` are kept as they are |
 | `<host>/skills/chough-workflow/` | Installed skill copies; edits are preserved |
+
+<!-- depends on plan step 4: the evidence/ rows, screenshots, receipts and logs/ -->
+
+Every record Chough writes is one Markdown file with YAML front matter, and the file is
+the record's only source of truth (REQ-records-001). The front matter is a strict YAML
+subset that Chough reads and writes without a dependency, and it holds the fields
+agents parse. The body is for people. Chough owns only the front matter and the
+sections it appends to: it keeps any front matter key it does not know, and every body
+line a person wrote. Records are bounded: 64 KiB each, 1 MiB for a session or story,
+and 4 MiB for a migration receipt. A value Chough would commit is checked for local
+paths, user and host names, emails and credentials, and refused as `refused:leak`
+unless `--redact` stores a placeholder (REQ-records-006).
 
 `.chough/` is plain project data, and the helper uploads nothing. By kind:
 
 | Kind | Paths | Normally |
 |---|---|---|
-| Current working records: what an agent resumes from | `.chough/session.json` or `.chough/sessions/`, `preferences.json`, `cases/`, `bugs/`, `validation/`; `.specsync/changes/<id>/` | Committed when the team shares the work |
-| Historical evidence: append-only history and scoped observations, current only while their inputs match | `.chough/history/`, `.chough/transitions.jsonl`, `evidence/`, `artifacts/`, `pruned.jsonl` | Committed or kept local by collaboration and confidentiality needs; routine runs are prunable (below) |
+| Current working records: what an agent resumes from | `.chough/sessions/`, `preferences.json`, `cases/`, `bugs/`; `.specsync/changes/<id>/` | Committed when the team shares the work |
+| History: one story per finished session and the migration receipt | `.chough/archive/` | Committed and kept for good; never moved, copied or trimmed |
 | Chough's own self-test records: its backlog and run history for building Chough | this repository's root `.chough/` | Committed here; never packaged or installed by `chough init` |
 | Examples: rehearsal samples and their case definitions | `examples/<sample>/` | Committed; exercises run in disposable copies whose output is not kept |
 | Frozen native archives: SpecSync's record of a closed change, authenticated from Git history | `.specsync/archive/changes/<date>-<id>/` | Committed once; never edited or pruned |
@@ -67,64 +74,52 @@ flowchart TB
 | Ignored build output and local state | `/target`, `.fledge/cache/`, `.chough/local/`, and under `.specsync/`: `hashes.json`, `change.lock`, `config.local.toml`, `backup-3x/` | Never committed |
 | CI output | GitHub Actions run logs | Kept by the hosted run; no CI artifact is uploaded |
 
-**Identity allocation.** A small crate-internal boundary normalizes ASCII slugs and
-uses the existing getrandom 0.4.3 package directly to fill 12 random bytes for each
-new OBS, VAL or SNAP suffix. There is one candidate and one atomic no-replace attempt,
-with no runtime, service, central allocator, persistent random state, timestamp or
-numeric fallback, digest retry or second random draw. Observation, validation and
-artifact files use create-new writes. Snapshot final directories use atomic directory
-creation, create-new children and manifest-last publication; this is not a claim of a
-crash-proof multi-file transaction. A collision, random-source failure or write
-failure preserves every pre-existing record and artifact.
+**Names.** A new session, evidence entry, bug, inbox entry, journal post and migration
+receipt is named `<YYYY-MM-DD>-<slug>`: the UTC date it was created and a slug of its
+key or title, at most 80 bytes in all (REQ-records-003). Nothing is named by a counter.
+A same-folder clash at creation gets `-` and six hex digits from 24 random bits, drawn
+directly with the existing getrandom 0.4.3 package, and is written by create-new. A
+second clash is refused, with nothing written and no second draw. A name never
+changes. Every ID a record had before 0.6.0, such as `BUG-0012`, an `OBS-` ID or a
+session key, is kept in the record's `aliases` and resolves wherever an ID is taken.
+An alias held by two records is refused where it is resolved and reported by
+`chough doctor`. Case IDs stay curated definitions, with exact legacy numeric cases and
+their digests unchanged. Timestamps stay in their own fields and decide chronology,
+never identity.
 
-Case IDs remain curated definitions, with exact legacy numeric cases and their
-digests unchanged. Legacy observation, validation and dated snapshot records load
-beside new forms without migration. Existing timestamp fields determine chronology;
-IDs and random suffixes do not. Exact observation IDs continue through checkpoint
-references, bug links, native manifests, retention and pruning, while legacy and new
-validation IDs both resume and mixed snapshots share deterministic indexes. The
-single checkpoint, optional librarian and unchanged stop marker, preferences,
-consents, transitions and pruning-ledger shapes retain their existing ownership.
+**Nothing is trimmed.** No command removes a committed record or working file unless
+its exact bytes are committed at HEAD (REQ-records-012). Every finished session stays
+one story in `.chough/archive/sessions/`. A record that a migration removed without
+carrying it reads `removed`, naming the receipt, and never counts as current or
+passed.
 
-**Retention.** An observation set is one evidence record plus the artifacts no other
-record references. `chough evidence prune` previews by default and changes nothing:
-it lists eligible sets with case, environment, age, outcome and bytes, protected sets
-with their reason, and warns above 50 MiB. A set is protected when the checkpoint,
-any bug, an active native change or the most recent archived one lists it; when it
-is not a routine automated run; when it is among the newest 3 automated runs or the
-newest failure for its case and environment; when it is a validation run's failure
-or first or last pass; or when it is younger than 14 days. If native manifests
-cannot be read, everything they could protect stays protected. `--apply` needs a run
-consent `retention` or the standing preference `retention auto` (default `off`);
-with `auto`, `cases run`, `validate run` and `validate resume` apply the same rules
-after recording.
-Each removed set appends a line to `.chough/pruned.jsonl`. Only working-tree files are
-removed; Git history, native archives and ignore rules are untouched. A referenced
-observation is labelled `current`, `historical` (present but stale), `pruned` (absent
-and in the ledger) or `unavailable` (absent and not in it); pruned and unavailable
-ones never count as current or passed.
-
-**Large artifacts.** Artifacts stay inside the project: absolute, `..` and symlinked
-paths are refused, and there is no external artifact location. Keep screenshots,
-recordings and other binaries small. A large one may be ignored by Git
-(`.gitignore` or `.git/info/exclude`): the observation still keeps its fingerprint
-and reads `current-observation` where the file exists, while a clone without the file
-reads `stale-artifact`, never passed. Git LFS is not recommended, because SpecSync
-`change check` currently refuses tracked LFS files (CorvidLabs/spec-sync#789).
+<!-- depends on plan step 4 -->
+**Proof files.** A raw log is never committed. A case run's output goes to
+`.chough/local/logs/<evidence id>.log`, and its entry keeps the exact command, the
+output's SHA-256 and, for a failure, at most 20 key failing lines (REQ-records-005). An
+artifact outside the project is fingerprinted in place, its path kept only in
+`.chough/local/external-artifacts.toml` under a neutral ID; elsewhere it reads
+`external, not checkable here`. A key screenshot (PNG or JPEG, at most 512 KiB, 5 and
+2 MiB per session) is committed beside its entry with its metadata removed, and moves
+beside the story when the session finishes (REQ-records-013).
 
 ## Checkpoint authority
 
-There is exactly one writable checkpoint at a time: `.chough/session.json`, or in
-sessions mode the active session. Hand edits are allowed and validated on every read
-(`deny_unknown_fields`, bounded size, closed stage names, project-relative paths).
-Commands replace it atomically, and writers in one worktree take the checkpoint lock
-`.chough/local/checkpoint.lock`, so parallel writers there apply in turn (DRIVE-11).
-With several agents, each pull request records its work in its own session, one agent
-owns each session, and subagents report with `chough inbox add`; there is no lock
-across clones. APS was
-evaluated as a backend and deferred (D-010). The checkpoint stores decision summaries
-and references, never reasoning transcripts, and it never stores native lifecycle
-state: it stores the change ID and reads status when a gate matters.
+There is exactly one writable checkpoint at a time: the front matter of the active
+session's `.chough/sessions/<id>/session.md`, named by `.chough/local/active-session`
+or, with no pointer, the only open session that is not finished. Hand edits are
+allowed and validated on every read: the strict YAML subset, the keys and their
+types, the size bound and closed stage names. A key Chough does not know is kept. Each
+command resolves the active session once and saves only to it, by an atomic replace.
+Every command that writes a record takes the project's writer lock,
+`.chough/local/checkpoint.lock`, so parallel writers in one worktree apply in turn
+(DRIVE-11). The lock records its holder's process ID, so a busy refusal can name it.
+With several agents, each pull request records its work in its own session, one
+agent owns each session, and subagents report with `chough inbox add`; there is no
+lock across clones. APS was evaluated as a backend and deferred (D-010). The
+checkpoint stores decision summaries and references, never reasoning transcripts, and
+it never stores native lifecycle state: it stores the change ID and reads status when
+a gate matters.
 
 There is no checkpoint merge. Each session is its own folder,
 `.chough/sessions/<date>-<slug>/`, so branches that work on different sessions merge
@@ -134,14 +129,17 @@ that only appended entries merges cleanly with its own base.
 ## Timing is derived, not stored
 
 `chough timing` reports how long stages, tests, bug fixes and human gates took from
-the records above; it writes nothing and keeps no timing store. The one record added
-for it is a pair of transition kinds: `chough checkpoint` appends `gate-opened` when an
-awaiting-human gate opens and `gate-closed` when it is cleared, in the call that
-already writes the checkpoint, so waiting time survives `--clear-awaiting-human`. They
-record when, and they start or end no stage segment. A gate closed with `--close-gate`
-also carries `relayed_by`: a relayed claim of who decided, their words, where and the
-recording agent (REQ-cli-050), which timing does not report and Chough does not
-authenticate.
+the records above; it writes nothing and keeps no timing store. It reads every open
+session's Timeline and every archived story's, and case runs from evidence entries and
+from the receipts of stories and bugs. The one record added for it is a pair of
+Timeline entry kinds: `chough checkpoint` appends `gate-opened` when an awaiting-human
+gate opens and `gate-closed` when it is closed, in the same save as the checkpoint
+change, so waiting time survives `--clear-awaiting-human`. They record when, and they
+start or end no stage segment. A gate closed with `--close-gate` also carries the
+relay: who is said to have decided, their words, where, and the recording agent
+(REQ-cli-050), plus the SpecSync step it ran and the actor it ran as when the gate
+drove one (REQ-history-010). Timing does not report the relay, and Chough does not
+authenticate it.
 Native times are read from `specsync change status` and, read-only, the gate and
 timestamp fields of a change's native record files; validity comes only from status,
 and nothing native is copied into Chough's records. Every duration is labelled elapsed
@@ -192,7 +190,8 @@ of `change.md`); a change's deltas and other artifacts stay covered wherever the
 change directory is. Artifacts are hashed separately; case observations also bind the
 case's definition digest. Any of those changing makes the observation stale, while
 committing only Chough records, an empty commit or SpecSync bookkeeping does not.
-Records without a content identity keep the earlier revision-bound comparison. This
+A receipt migrated from an observation with no content identity keeps the earlier
+revision-bound comparison. This
 narrow form of reuse is D-018, which supersedes the deferral in D-016; the broader
 proposal with ancestry checks and a separate label stays unapproved, and Git history
 holds it.
@@ -224,23 +223,24 @@ environment and native gates keep their existing semantics. Opt-in stderr phases
 and load/lookup counts expose local work without changing report schemas or records.
 Native wait remains independently bounded and reported by the native reader.
 
-## Immutable history and maintenance
+## Timelines and finished sessions
 
-REQ-history-002 to REQ-history-004 (formerly REQ-cli-025 to REQ-cli-027) add explicit adoption for existing projects and event
-history for new projects. The optional cursor stays in the single schema-2
-checkpoint and its atomic current-cycle merge group. Parent links order one
-lineage; different branch tips and unpublished-orphan outcomes never become one
-completed timeline. Event publication precedes atomic checkpoint publication;
-failed saves preserve the checkpoint and leave unselected events inspectable.
+Each transition is one entry of its session's `## Timeline`:
+`- <time> · <kind> · <from> → <to> · <text> ^t-xxxxxx`, with its structured fields as
+indented `- key: value` lines, `by` naming the acting agent when known (REQ-history-002).
+The entry and the checkpoint change it goes with are one atomic replace of
+`session.md`, so a refused save leaves neither. Chough only appends entries and never
+edits, reorders or removes one; `chough correct` appends a correction that links the
+entry it corrects (REQ-history-015). `chough doctor` reports a Timeline whose committed
+entries were rewritten. An entry is at most 64 KiB and a Timeline at most 4,096
+entries. Recent guidance reads the newest 128 entries, and timing reads at most 4,096
+entries and 16 MiB of Timelines per request, reporting the rest as partial.
 
-Legacy logs and migration backups remain unchanged. Recent guidance reads only
-selected parents within 128 events / 512 KiB. Cycles and timing transition reads
-are bounded at 4,096 events / 16 MiB. Maintenance counts revalidation against one
-16,384-read / 64-MiB metadata budget; unavailable protection refuses apply.
-
-Cycle retention is separate from evidence auto-retention. Preview names exact
-files, digests, bytes and protections. Active/reference-linked, unresolved and
-recent/newest closed cycles remain. Consented explicit apply works from oldest
-selected ancestors first, revalidates protection, and publishes a bounded immutable
-receipt before deleting eligible cycle files. Receipts cannot supply stage times
-or human acceptance. Protected proof may grow beyond the retention target.
+A session closes only itself, at its own move into done or with `chough session close
+--reason`. It writes its story, `.chough/archive/sessions/<id>.md`, by create-new: the
+front matter with the outcome and a receipt per evidence entry, the story as written,
+the Timeline and a closing line. Chough reads the story back, then removes each file
+of the session folder whose bytes are committed at HEAD, keeps and reports the rest,
+and clears the active pointer. `chough doctor --fix` finishes the removal after the
+commit. Starting or switching work never reads, moves or rewrites another session's
+folder or story. There is no roll-up and no count or age bound on the archive.
