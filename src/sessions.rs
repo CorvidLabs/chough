@@ -587,20 +587,45 @@ pub(super) fn unfolded(root: &Path, key: &str) -> Result<usize> {
 
 /// Move every other finished open session to the archive, bytes unchanged. A finished
 /// session with unfolded inbox entries stays open, so its entries are not stranded;
-/// it is returned in the second list with its unfolded count.
+/// it is returned in the second list with its unfolded count. So does one with an
+/// open human gate, returned with its gate count and recovery (#181).
 fn archive_done(root: &Path, keep: &str) -> Result<(Vec<String>, Vec<serde_json::Value>)> {
     let mut archived = vec![];
     let mut kept_open = vec![];
     for key in keys_in(root, DIR)? {
         // An unreadable session is left where it is; `session list` reports it.
-        if key == keep
-            || !read_at(root, &session_file(&key)).is_ok_and(|session| finished(root, &session))
-        {
+        if key == keep {
+            continue;
+        }
+        let Ok(session) = read_at(root, &session_file(&key)) else {
+            continue;
+        };
+        if !finished(root, &session) {
             continue;
         }
         let count = unfolded(root, &key)?;
         if count > 0 {
             kept_open.push(json!({"key": key, "inbox_unfolded": count}));
+            continue;
+        }
+        // A finished session that still holds an open human gate is not doctor's
+        // mechanical `finished_session` fix (REQ-history-012): closing it is a
+        // decision, so a switch never drops the gate silently (#181, DRIVE-17).
+        if !session.awaiting_human.is_empty() {
+            let finalized = session
+                .native_change
+                .as_deref()
+                .is_some_and(|change| crate::library::finalized_at(root, change).is_some());
+            let recovery = if finalized {
+                "chough doctor --fix --reason <text>"
+            } else {
+                crate::stage::CLOSE_GATE_COMMAND
+            };
+            kept_open.push(json!({
+                "key": key,
+                "open_gates": session.awaiting_human.len(),
+                "recovery": recovery,
+            }));
             continue;
         }
         archive_open(root, &key)?;

@@ -64,44 +64,8 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- `.chough/artifacts/issue-32-next-status-latency/PROFILE.md`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/final-instrumented-next-calls.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/final-instrumented-prime-calls.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/final-instrumented-prime-next.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/final-instrumented-status-calls.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/final-next-1.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/instrumented-next-calls.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/instrumented-prime-calls.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/instrumented-prime-next.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/instrumented-status-calls.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/instrumented-warm-next.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/next-a5df1ead-5.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/benchmark-warm/prime-a5df1ead-next.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/definition-status.json`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/mutation-anti-spoof.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/mutation-history-guard.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/post-145-test.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/next-1.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/next-2.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/next-3.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/next-release-1.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/next-release-2.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/next-release-3.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/specsync-active-1.time`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/specsync-active-2.time`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/specsync-archived-1.time`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/specsync-archived-2.time`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/status-1.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/status-2.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/status-3.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/status-release-1.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/status-release-2.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/runs/status-release-3.trace`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/selected-cases.json`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/status-after-drive-15.json`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/status-after-main-merge.json`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/verify-integrated.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
-- `.chough/artifacts/issue-32-next-status-latency/verify.log`: Git d828eff3056f83709fd4cf0d12cdedae8234bbad
+- `.chough/artifacts/issue-32-next-status-latency/failing-native-before.log`: moved to [knowledge/attachments/BUG-archived-87045dd6/artifacts/issue-32-next-status-latency/failing-native-before.log](../attachments/chough-change-d6e69a84/knowledge/attachments/BUG-archived-87045dd6/artifacts/issue-32-next-status-latency/failing-native-before.log)
+- `.chough/artifacts/issue-32-next-status-latency/failing-specsync-symlink-before.log`: moved to [knowledge/attachments/BUG-specsync-ff94fc45/artifacts/issue-32-next-status-latency/failing-specsync-symlink-before.log](../attachments/chough-change-d6e69a84/knowledge/attachments/BUG-specsync-ff94fc45/artifacts/issue-32-next-status-latency/failing-specsync-symlink-before.log)
 
 ## Attachments
 

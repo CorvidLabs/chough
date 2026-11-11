@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "return-the-observation-id-from-cases-record-and-evidence-add-issue-60",
+  "implementation_commit": "980c3bec791d3b2b7b906dab90e4a5f2417c40fa",
+  "implementation_tree": "8cabb004eb5448ea684d06d6a231caf8dc4a0cc2",
+  "contract_digest": "acf60b7442cd58db740d15f4a690012cdbbd43ff0e5c2aa3a0f106fecbf340e3",
+  "workspace_digest": "68403b77c82a9021ef9295f7c1493467adcdddbf679b5eb129de08f45049541b",
+  "closing_digest": "7e64110d7ad8ab90dc179c9da7034a39a2b77d8a00f4583596bfd2193ad7fbda",
+  "review_digest": "9e713091d5dbb139f0e6cd33fa68c72aefbae3854ce5fd0a7c345abc89596875",
+  "finalization_digest": "5a9f5888af5ac8a2c430c3e964b5d91c3b0c59f21a68b854be6543bb4df85900",
+  "timestamp": 1794352544
+}
