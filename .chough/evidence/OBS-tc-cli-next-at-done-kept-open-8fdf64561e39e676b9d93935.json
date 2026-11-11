@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-next-at-done-kept-open-8fdf64561e39e676b9d93935",
+  "criteria": [
+    "LIFE-1",
+    "FLOW-13",
+    "DRIVE-13"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test reduce -- --exact next_at_done_names_what_keeps_the_session_open for TC-cli-next-at-done-kept-open: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-next-at-done-kept-open-8fdf64561e39e676b9d93935.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-next-at-done-kept-open-8fdf64561e39e676b9d93935.log": "8ebb3243287fedf97f4cc0269ece283d4567e48065d68a5a59c29b56777d83eb"
+  },
+  "observed_at_unix_seconds": 1794432280,
+  "snapshot": {
+    "revision": "7881bfb9cc07c008ff618c9007f038ff5b9b6a21",
+    "dirty": false,
+    "fingerprint": "04568d5236d8e0a1830b0944d5ba3f4302a1369fec6f5d48f5920f5037c81db0",
+    "content": "c4579a7878f8c62e19039da7006a110dfa2693443f433cd12859fdbe33a28c64"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-next-at-done-kept-open",
+      "digest": "5a53a9c70d4145686415e0aa3a3a88d2450a4ec88f9d5075d6672e2b04ab18cf"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "reduce",
+    "--",
+    "--exact",
+    "next_at_done_names_what_keeps_the_session_open"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

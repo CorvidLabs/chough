@@ -669,9 +669,22 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
             ]);
             let advanced = run_suggested(&fixture, command);
             assert_eq!(advanced["applied"]["to"], "done", "{advanced}");
+            // Kept open for the authorized release, next names it (REQ-cli-021).
             let done = fixture.ok(&["next", "--json"]);
-            assert_eq!(done["next_valid_action"]["action"], NEXT_WORK);
-            assert_eq!(done["next_valid_action"]["command"], NEXT_SESSION);
+            assert_eq!(
+                done["next_valid_action"]["command"],
+                "chough stage enter release --reason \"<request>\"",
+                "{done:#}"
+            );
+            fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+            let released = fixture.ok(&["stage", "advance"]);
+            assert_eq!(
+                released["applied"]["session_archive"]["status"], "archived",
+                "{released:#}"
+            );
+            // Archived, the next piece of work starts in a new session.
+            let refused = fixture.fails(&["next", "--json"]);
+            assert!(refused.contains("chough session new <key>"), "{refused}");
             let created = run_suggested(&fixture, NEXT_SESSION);
             assert_eq!(
                 fixture.session()["objective"],

@@ -1341,12 +1341,14 @@ fn done_action(
     let check_first = native_next
         .map(|text| format!(" Native next action, check it first: {text}."))
         .unwrap_or_default();
-    // A session still open at done is kept for release or for inbox entries to fold;
-    // its next piece of work still starts in a new session.
-    let closed = |action: String, reason: String| Action {
-        action,
-        reason: format!("{reason}{check_first}"),
-        command: Some(NEXT_SESSION.into()),
+    // A closed cycle's next piece of work starts in a new session, unless the move into
+    // done kept this session open; then next names what closes it (REQ-cli-021).
+    let closed = |action: String, reason: String| {
+        kept_open_action(root, session).unwrap_or(Action {
+            action,
+            reason: format!("{reason}{check_first}"),
+            command: Some(NEXT_SESSION.into()),
+        })
     };
     let done = gate_for_state(root, session, "done", state.clone());
     match (state, done) {
@@ -1683,6 +1685,52 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
 
 /// How to record a human's decision on a gate on their behalf (REQ-cli-050).
 pub(super) const CLOSE_GATE_COMMAND: &str = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
+
+/// What keeps an open session at done open (REQ-history-006), as the action that
+/// closes it (REQ-cli-021): an authorized release it has not yet entered, then
+/// unfolded inbox entries. None when nothing does.
+fn kept_open_action(root: &Path, session: &Checkpoint) -> Option<Action> {
+    let id = crate::sessions::checkpoint_path(root)
+        .ok()
+        .and_then(|relative| crate::sessions::id_of(&relative))?;
+    // The session archives itself at the move from release into done, so a release is
+    // still ahead only while the last move into done did not come from release.
+    let released = session
+        .source
+        .as_ref()
+        .map(crate::session_md::timeline)
+        .and_then(Result::ok)
+        .and_then(|entries| {
+            entries.into_iter().rev().find(|entry| {
+                entry.transition.to == "done"
+                    && STAGE_KINDS.contains(&entry.transition.kind.as_str())
+            })
+        })
+        .is_some_and(|entry| entry.transition.from == "release");
+    if !released
+        && crate::prefs::authorized(root, session, "release")
+            .ok()
+            .flatten()
+            .is_some()
+    {
+        return Some(Action {
+            action: "Release is authorized for this cycle: enter it. The session stays open for the release and archives itself at the move from release into done.".into(),
+            reason: "The move into done kept this session open because release is authorized (REQ-history-006).".into(),
+            command: Some("chough stage enter release --reason \"<request>\"".into()),
+        });
+    }
+    let count = crate::sessions::unfolded(root, &id)
+        .ok()
+        .filter(|count| *count > 0)?;
+    Some(Action {
+        action: format!(
+            "This session stays open: {count} unfolded inbox {}. Fold them with `chough inbox fold`, then run `chough doctor --fix` to archive the session, and start the next piece of work in a new session after that.",
+            if count == 1 { "entry" } else { "entries" }
+        ),
+        reason: "The move into done keeps a session open while its inbox holds unfolded entries (REQ-history-006).".into(),
+        command: Some("chough inbox fold".into()),
+    })
+}
 
 /// Whether the session is fresh from `chough init` or `session new`: no stage move on
 /// its Timeline yet (#76).
