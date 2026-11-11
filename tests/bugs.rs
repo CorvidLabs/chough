@@ -1667,12 +1667,27 @@ fn bugs_record_the_acting_agent() {
         ),
         "{text}"
     );
+    // `found_by` and each Log entry show the actor as one line for people, in whatever
+    // form Actor::display gives, with every known part.
+    let found_by = text
+        .lines()
+        .find_map(|line| line.strip_prefix("found_by: "))
+        .unwrap_or_else(|| panic!("{text}"));
     assert!(
-        text.contains("found_by: SYNTHETIC-agent (SYNTHETIC-model) in t999 (manual report)"),
+        found_by.starts_with("SYNTHETIC-agent")
+            && found_by.contains("SYNTHETIC-model")
+            && found_by.contains("t999")
+            && found_by.ends_with(" (manual report)"),
         "{text}"
     );
+    let entries: Vec<&str> = text.lines().filter(|line| line.starts_with("- ")).collect();
     assert!(
-        text.contains(" · by SYNTHETIC-agent (SYNTHETIC-model) in t999\n"),
+        !entries.is_empty()
+            && entries.iter().all(|entry| {
+                entry
+                    .split_once(" · by ")
+                    .is_some_and(|(_, by)| by.starts_with("SYNTHETIC-agent") && by.contains("t999"))
+            }),
         "{text}"
     );
     let (text, _) = add(
