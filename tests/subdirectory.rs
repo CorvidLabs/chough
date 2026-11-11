@@ -45,6 +45,32 @@ fn head(root: &Path) -> String {
     String::from_utf8(output.stdout).unwrap().trim().to_string()
 }
 
+/// The repository-relative file of evidence entry `id` in the project's one open session.
+fn entry_file(repo: &Fixture, id: &str) -> String {
+    let sessions = repo.root().join("app/.chough/sessions");
+    let open: Vec<String> = std::fs::read_dir(&sessions)
+        .unwrap()
+        .flatten()
+        .filter(|entry| entry.path().join("session.md").is_file())
+        .filter_map(|entry| entry.file_name().into_string().ok())
+        .collect();
+    assert_eq!(open.len(), 1, "{open:?}");
+    format!("app/.chough/sessions/{}/evidence/{id}.md", open[0])
+}
+
+/// One scalar front matter value of a Markdown record.
+fn front(text: &str, key: &str) -> Option<String> {
+    text.strip_prefix("---\n")
+        .and_then(|rest| rest.split_once("\n---\n"))
+        .and_then(|(front, _)| {
+            front.lines().find_map(|line| {
+                line.split_once(": ")
+                    .filter(|(name, _)| *name == key)
+                    .map(|(_, value)| value.trim_matches('"').to_string())
+            })
+        })
+}
+
 /// A repository whose Chough project lives in `app/`, committed, with stub `hi` and
 /// `specsync` on PATH.
 fn repository() -> Fixture {
@@ -97,14 +123,22 @@ fn a_project_in_a_subdirectory_records_evidence() {
         .as_str()
         .unwrap_or_else(|| panic!("{run:#}"))
         .to_string();
-    let record: Value =
-        serde_json::from_str(&repo.read(&format!("app/.chough/evidence/{id}.json"))).unwrap();
+    // The entry is in the project's session, under app/ (REQ-records-004).
+    let entry = repo.read(&entry_file(&repo, &id));
     assert_eq!(
-        record["snapshot"]["revision"],
-        head(repo.root()),
-        "{record:#}"
+        front(&entry, "revision").as_deref(),
+        Some(head(repo.root()).as_str()),
+        "{entry}"
     );
-    assert_eq!(record["snapshot"]["dirty"], false, "{record:#}");
+    // An entry records the project's content identity, not a dirty flag: it is the
+    // identity of the clean project, so nothing outside app/ counted.
+    let clean = ok(&repo, &["status"])["snapshot"].clone();
+    assert_eq!(clean["dirty"], false, "{clean:#}");
+    assert_eq!(
+        front(&entry, "content").as_deref(),
+        clean["content"].as_str(),
+        "{entry}"
+    );
 
     let added = ok(
         &repo,
@@ -127,7 +161,17 @@ fn a_project_in_a_subdirectory_records_evidence() {
             "Checked by hand in app/",
         ],
     );
-    assert!(added.to_string().contains("OBS-"), "{added:#}");
+    // An automatic date-slug ID (REQ-records-003), recorded in the project's session.
+    let observation = added["observation"].as_str().unwrap_or_default();
+    assert!(
+        observation.starts_with(|c: char| c.is_ascii_digit()) && !observation.contains("OBS-"),
+        "{added:#}"
+    );
+    assert_eq!(
+        format!("app/{}", added["recorded"].as_str().unwrap_or_default()),
+        entry_file(&repo, observation),
+        "{added:#}"
+    );
 
     let status = ok(&repo, &["status"]);
     assert!(
