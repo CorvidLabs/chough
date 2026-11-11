@@ -373,6 +373,7 @@ pub(super) fn temporary_for(root: &Path, relative: &str, target: &Path) -> Resul
 }
 
 /// Append one line to an append-only managed log.
+#[allow(dead_code)] // removed at integration (t382): the append-only logs it wrote are gone
 pub(super) fn append_line(root: &Path, relative: &str, line: &str) -> Result<()> {
     ensure!(
         !line.contains('\n') && line.len() as u64 <= RECORD_LIMIT,
