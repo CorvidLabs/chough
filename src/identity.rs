@@ -146,11 +146,10 @@ pub(crate) fn snapshot(source: &str) -> Result<String> {
 
 // Plan step 3 calls these; until then only their tests do.
 #[cfg_attr(not(test), allow(dead_code))]
-// Plan step 3 calls these; until then only their tests do.
-#[cfg_attr(not(test), allow(dead_code))]
 /// The longest a record name may be, a clash suffix included (REQ-records-003).
 pub(crate) const NAME_LIMIT: usize = 80;
 /// `-` and six hexadecimal digits.
+#[cfg_attr(not(test), allow(dead_code))]
 const CLASH_SUFFIX: usize = 7;
 
 // Plan step 3 calls these; until then only their tests do.

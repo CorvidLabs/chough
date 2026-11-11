@@ -351,9 +351,12 @@ fn token_byte(byte: u8) -> bool {
     byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')
 }
 
+/// A token prefix, the fewest bytes that follow it, and which bytes may follow.
+type TokenForm = (&'static str, usize, fn(u8) -> bool);
+
 fn tokens(value: &str, all: &mut Vec<Match>) {
     let bytes = value.as_bytes();
-    let forms: [(&str, usize, fn(u8) -> bool); 12] = [
+    let forms: [TokenForm; 12] = [
         ("ghp_", 30, |byte| byte.is_ascii_alphanumeric()),
         ("gho_", 30, |byte| byte.is_ascii_alphanumeric()),
         ("ghu_", 30, |byte| byte.is_ascii_alphanumeric()),
@@ -477,7 +480,7 @@ fn jwts(value: &str, all: &mut Vec<Match>) {
             continue;
         }
         let third = run(bytes, second + 1, token_byte);
-        if third - second - 1 >= 8 {
+        if third - second > 8 {
             all.push(Match {
                 kind: Kind::Jwt,
                 start,
