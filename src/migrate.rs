@@ -31,7 +31,7 @@
 
 use crate::leaks::{self, Local};
 use crate::records::{local_path, print_json};
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result, bail, ensure};
 use serde::Serialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -63,6 +63,9 @@ pub(crate) struct Carried {
     /// Files kept byte for byte that hold a leak: listed as `leak` findings, never
     /// changed (REQ-records-009), each with the kinds found.
     pub(crate) kept_with_leaks: BTreeMap<String, Vec<String>>,
+    /// What could not be carried and is not a file, such as history a 0.5.x retention
+    /// pruned: each said in the plan and the receipt.
+    pub(crate) gaps: Vec<String>,
 }
 
 impl Carried {
@@ -81,6 +84,7 @@ impl Carried {
         self.aliases.extend(other.aliases);
         self.removed.extend(other.removed);
         self.kept_with_leaks.extend(other.kept_with_leaks);
+        self.gaps.extend(other.gaps);
         Ok(())
     }
 }
@@ -191,6 +195,8 @@ struct Redaction {
 struct Plan {
     /// Every 0.5.x file with its SHA-256.
     sources: BTreeMap<String, String>,
+    /// The 0.5.x record paths of REQ-records-010 found in the project.
+    legacy: Vec<String>,
     carried: Carried,
     redactions: Vec<Redaction>,
     follow_ups: Vec<String>,
@@ -214,10 +220,24 @@ impl Plan {
             "redactions": self.redactions,
             "removed": self.carried.removed,
             "kept_with_leaks": self.carried.kept_with_leaks,
+            "gaps": self.carried.gaps,
+            "unaccounted": self.unaccounted(),
             "aliases": self.carried.aliases,
             "follow_ups": self.follow_ups,
             "git_history": "Git history still holds what earlier commits recorded; this migration does not rewrite it.",
         })
+    }
+
+    /// The 0.5.x files the plan neither carries nor removes; an apply refuses while
+    /// there is any, so it never leaves a mixed tree.
+    fn unaccounted(&self) -> Vec<String> {
+        self.legacy
+            .iter()
+            .filter(|path| {
+                !self.carried.sources.contains(*path) && !self.carried.removed.contains_key(*path)
+            })
+            .cloned()
+            .collect()
     }
 
     /// The SHA-256 of the printed plan, which `--apply` must name.
@@ -242,10 +262,412 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
             ));
             print_json(&view)
         }
-        Some(_) => bail!(
-            "`chough migrate --apply` is being built in plan step 10; nothing was written. Run `chough migrate` to preview the plan."
-        ),
+        Some(wanted) => apply(root, &plan, &digest, &wanted, args.consent.as_deref()),
     }
+}
+
+/// At most this many archive validity reads run at once (REQ-records-009).
+const VALIDITY_READERS: usize = 8;
+
+/// Apply the plan whose digest is `wanted` (REQ-records-009): every refusal writes
+/// nothing; then write by create-new and read back, write the receipt, and remove the
+/// 0.5.x files, restoring them if an archive that read valid no longer does.
+fn apply(
+    root: &Path,
+    plan: &Plan,
+    digest: &str,
+    wanted: &str,
+    consent: Option<&str>,
+) -> Result<()> {
+    if plan.sources.is_empty() {
+        return print_json(
+            &json!({"schema_version": 1, "applied": false, "nothing_to_do": "no 0.5.x record is left; the project is migrated"}),
+        );
+    }
+    ensure!(
+        wanted == digest,
+        "refused:plan-digest: the plan Chough builds now has digest {digest}, not {wanted}, so nothing was written; nothing is migrated that was not previewed first.\nRun `chough migrate` to preview the current plan, then apply its digest."
+    );
+    let unaccounted = plan.unaccounted();
+    ensure!(
+        unaccounted.is_empty(),
+        "refused:unaccounted: the plan neither carries nor removes {}, so nothing was written; applying it would leave a mixed tree. This is a Chough bug: report it with the plan.",
+        unaccounted.join(", ")
+    );
+    let open = open_native_changes(root)?;
+    ensure!(
+        open.is_empty(),
+        "refused:change-open: native change {} is not archived, and the migration never runs while a change is open, so nothing was written.\nArchive it (or finish it) first, then run `chough migrate` again.",
+        open.join(", ")
+    );
+    let consent = match consent {
+        Some(consent) if !consent.trim().is_empty() => {
+            format!("--consent (a relayed claim): {}", consent.trim())
+        }
+        _ => match crate::prefs::effective(root, "migration")? {
+            (value, origin) if value == "standing" => origin,
+            _ => bail!(
+                "refused:no-consent: the migration needs the human's consent, as --consent \"<who consented, their words and where>\" or a standing `migration` preference, so nothing was written; Chough never infers consent from the digest or any record."
+            ),
+        },
+    };
+    let removals: BTreeSet<String> = plan
+        .carried
+        .sources
+        .iter()
+        .chain(plan.carried.removed.keys())
+        .cloned()
+        .collect();
+    let uncommitted: Vec<&String> = removals
+        .iter()
+        .filter(|path| !crate::sessions::committed_at_head(root, path))
+        .collect();
+    ensure!(
+        uncommitted.is_empty(),
+        "refused:uncommitted: the migration removes only bytes Git holds, and {} differ from HEAD or are untracked, so nothing was written.\nCommit them, then run `chough migrate` again.",
+        uncommitted
+            .iter()
+            .map(|path| path.as_str())
+            .collect::<Vec<_>>()
+            .join(", ")
+    );
+    for written in &plan.carried.written {
+        let path = local_path(root, &written.path)?;
+        if let Ok(existing) = std::fs::read(&path)
+            && existing != written.bytes.as_bytes()
+            && !replaces_by_case(root, plan, &written.path)
+        {
+            bail!(
+                "refused:target-exists: {} already exists with other bytes, and the migration writes by create-new only, so nothing more was written.",
+                written.path
+            );
+        }
+    }
+    // Write: create-new, or count a file an interrupted apply wrote with the planned
+    // bytes as done; a path that differs only in case from a planned removal on a
+    // case-insensitive file system replaces it in place.
+    let mut written_now = vec![];
+    for written in &plan.carried.written {
+        let path = local_path(root, &written.path)?;
+        let done = std::fs::read(&path).is_ok_and(|bytes| bytes == written.bytes.as_bytes());
+        if !done {
+            if let Some(parent) = path.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+            if replaces_by_case(root, plan, &written.path) {
+                crate::records::write_replace_bounded(
+                    root,
+                    &written.path,
+                    &written.bytes,
+                    crate::markdown::Kind::Receipt.bound(),
+                )?;
+            } else {
+                ensure!(
+                    crate::records::write_new(root, &written.path, &written.bytes)?,
+                    "{} appeared while migrating; nothing more was written",
+                    written.path
+                );
+            }
+            written_now.push(written.path.clone());
+        }
+        let back = std::fs::read(&path)?;
+        ensure!(
+            sha256(&back) == sha256(written.bytes.as_bytes()),
+            "{} did not read back as planned; nothing was removed",
+            written.path
+        );
+    }
+    let receipt = receipt_path()?;
+    let receipt_text = receipt_record(plan, digest, &consent, &removals, root)?;
+    let receipt_local = local_path(root, &receipt)?;
+    match std::fs::read_to_string(&receipt_local) {
+        Ok(existing) => ensure!(
+            existing.contains(&format!("plan_digest: {digest}")),
+            "refused: {receipt} already exists for another plan, so nothing was removed"
+        ),
+        Err(_) => {
+            if let Some(parent) = receipt_local.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+            ensure!(
+                crate::records::write_new(root, &receipt, &receipt_text)?,
+                "{receipt} appeared while migrating; nothing was removed"
+            );
+        }
+    }
+    // Never weaken an archive: read the validity of every archived change whose
+    // acceptance manifest lists a file to remove, remove, read again, and restore
+    // everything if any that read valid no longer does.
+    let affected = affected_archives(root, &removals)?;
+    let before = validity(root, &affected)?;
+    let mut kept_bytes: Vec<(String, Vec<u8>)> = vec![];
+    for path in &removals {
+        let local = local_path(root, path)?;
+        let Ok(bytes) = std::fs::read(&local) else {
+            continue;
+        };
+        if plan
+            .sources
+            .get(path)
+            .is_some_and(|planned| *planned != sha256(&bytes))
+        {
+            continue;
+        }
+        std::fs::remove_file(&local)?;
+        kept_bytes.push((path.clone(), bytes));
+    }
+    let after = validity(root, &affected)?;
+    let weakened: Vec<&String> = affected
+        .iter()
+        .filter(|id| {
+            before.get(*id).is_some_and(|state| is_valid(state))
+                && !after.get(*id).is_some_and(|state| is_valid(state))
+        })
+        .collect();
+    if !weakened.is_empty() {
+        for (path, bytes) in &kept_bytes {
+            let local = local_path(root, path)?;
+            if let Some(parent) = local.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+            std::fs::write(local, bytes)?;
+        }
+        bail!(
+            "refused:archive-weakened: removing the 0.5.x files made archive {} read invalid, so every removed file was restored byte for byte; the written 0.6.0 files and the receipt stay for review.",
+            weakened
+                .iter()
+                .map(|id| id.as_str())
+                .collect::<Vec<_>>()
+                .join(", ")
+        );
+    }
+    prune_empty_folders(root)?;
+    print_json(&json!({
+        "schema_version": 1,
+        "applied": true,
+        "plan_digest": digest,
+        "receipt": receipt,
+        "written": written_now,
+        "removed": kept_bytes.iter().map(|(path, _)| path).collect::<Vec<_>>(),
+        "archives_checked": affected,
+        "git_history": "Git history still holds what earlier commits recorded; this migration does not rewrite it.",
+    }))
+}
+
+/// Whether `path` stands in for a planned removal that differs from it only in case,
+/// such as `knowledge/index.md` for `knowledge/INDEX.md`, on a file system that sees
+/// them as one file.
+fn replaces_by_case(root: &Path, plan: &Plan, path: &str) -> bool {
+    plan.carried.removed.keys().any(|removed| {
+        removed != path
+            && removed.eq_ignore_ascii_case(path)
+            && local_path(root, removed).is_ok_and(|local| local.exists())
+            && local_path(root, path).is_ok_and(|local| local.exists())
+    })
+}
+
+/// Every native change with a workspace under `.specsync/changes/`: not archived.
+fn open_native_changes(root: &Path) -> Result<Vec<String>> {
+    let mut open = vec![];
+    if let Ok(entries) = std::fs::read_dir(local_path(root, ".specsync/changes")?) {
+        for entry in entries.flatten() {
+            if entry.path().join("state.json").is_file() {
+                open.push(entry.file_name().to_string_lossy().to_string());
+            }
+        }
+    }
+    open.sort();
+    Ok(open)
+}
+
+/// The archived changes whose acceptance manifest lists a file in `removals`.
+fn affected_archives(root: &Path, removals: &BTreeSet<String>) -> Result<Vec<String>> {
+    let mut affected = vec![];
+    let Ok(entries) = std::fs::read_dir(local_path(root, ".specsync/archive/changes")?) else {
+        return Ok(affected);
+    };
+    for entry in entries.flatten() {
+        let Ok(bytes) = std::fs::read(entry.path().join("verification.json")) else {
+            continue;
+        };
+        let Ok(value) = serde_json::from_slice::<Value>(&bytes) else {
+            continue;
+        };
+        let lists = value["acceptance_manifest"]["entries"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(|entry| entry["path"].as_str())
+            .any(|listed| {
+                removals.iter().any(|removed| {
+                    removed == listed
+                        || removed.starts_with(&format!("{}/", listed.trim_end_matches('/')))
+                })
+            });
+        if lists {
+            let finalization: Value = std::fs::read(entry.path().join("finalization.json"))
+                .ok()
+                .and_then(|bytes| serde_json::from_slice(&bytes).ok())
+                .unwrap_or(Value::Null);
+            let id = finalization["change_id"]
+                .as_str()
+                .map(String::from)
+                .unwrap_or_else(|| entry.file_name().to_string_lossy().to_string());
+            affected.push(id);
+        }
+    }
+    affected.sort();
+    affected.dedup();
+    Ok(affected)
+}
+
+/// The terminal evidence validity of each change, at most eight reads at once.
+fn validity(root: &Path, ids: &[String]) -> Result<BTreeMap<String, String>> {
+    let mut found = BTreeMap::new();
+    for chunk in ids.chunks(VALIDITY_READERS) {
+        let read: Vec<(String, String)> = std::thread::scope(|scope| {
+            let handles: Vec<_> = chunk
+                .iter()
+                .map(|id| {
+                    scope.spawn(move || {
+                        let response = crate::records::native_json(
+                            root,
+                            "specsync",
+                            &["change", "status", id, "--json"],
+                        );
+                        let state = response
+                            .value
+                            .as_ref()
+                            .and_then(|value| {
+                                value["summary"]["terminal_evidence"]["validity"].as_str()
+                            })
+                            .unwrap_or("unknown")
+                            .to_string();
+                        (id.clone(), state)
+                    })
+                })
+                .collect();
+            handles
+                .into_iter()
+                .filter_map(|handle| handle.join().ok())
+                .collect()
+        });
+        found.extend(read);
+    }
+    Ok(found)
+}
+
+/// Whether a terminal evidence validity reads as valid.
+fn is_valid(state: &str) -> bool {
+    matches!(state, "authenticated-history" | "exact" | "valid")
+}
+
+/// Remove the 0.5.x folders the migration emptied.
+fn prune_empty_folders(root: &Path) -> Result<()> {
+    fn prune(path: &std::path::Path) {
+        if let Ok(entries) = std::fs::read_dir(path) {
+            for entry in entries.flatten() {
+                if entry.path().is_dir() {
+                    prune(&entry.path());
+                }
+            }
+        }
+        let _ = std::fs::remove_dir(path);
+    }
+    for folder in [
+        ".chough/history",
+        ".chough/evidence",
+        ".chough/sessions/archive",
+        ".chough/sessions/shelved",
+        ".chough/artifacts",
+    ] {
+        prune(&local_path(root, folder)?);
+    }
+    Ok(())
+}
+
+/// The migration receipt: every file before and after with its size and SHA-256, the
+/// redactions, every removed file with why and the commit that holds it, the alias map
+/// and the consent (REQ-records-009).
+fn receipt_record(
+    plan: &Plan,
+    digest: &str,
+    consent: &str,
+    removals: &BTreeSet<String>,
+    root: &Path,
+) -> Result<String> {
+    let head = std::process::Command::new("git")
+        .args(["rev-parse", "HEAD"])
+        .current_dir(root)
+        .output()
+        .ok()
+        .map(|output| String::from_utf8_lossy(&output.stdout).trim().to_string())
+        .unwrap_or_default();
+    let mut record = crate::markdown::Record::new("");
+    record.set_scalar("kind", "receipt")?;
+    record.set_scalar(
+        "id",
+        receipt_path()?
+            .trim_start_matches(".chough/archive/migrations/")
+            .trim_end_matches(".md"),
+    )?;
+    record.set_scalar("plan_digest", digest)?;
+    record.set_scalar(
+        "applied",
+        &crate::session_md::iso_time(crate::records::now()?),
+    )?;
+    record.set_scalar("consent", consent)?;
+    record.set_scalar("removed_at_commit", &head)?;
+    let mut body = String::from(
+        "# Migration from Chough 0.5.x\n\nGit history still holds what earlier commits recorded; this migration does not rewrite it.\n\n## Before\n\n",
+    );
+    for (path, sha) in &plan.sources {
+        body.push_str(&format!("- `{path}` {sha}\n"));
+    }
+    body.push_str("\n## After\n\n");
+    for written in &plan.carried.written {
+        body.push_str(&format!(
+            "- `{}` {} bytes {}\n",
+            written.path,
+            written.bytes.len(),
+            sha256(written.bytes.as_bytes())
+        ));
+    }
+    body.push_str("\n## Redactions\n\n");
+    for redaction in &plan.redactions {
+        body.push_str(&format!(
+            "- `{}` {}: {}\n",
+            redaction.file, redaction.field, redaction.kind
+        ));
+    }
+    body.push_str("\n## Removed\n\n");
+    for path in removals {
+        let why = plan
+            .carried
+            .removed
+            .get(path)
+            .map(String::as_str)
+            .unwrap_or("carried into the 0.6.0 records above");
+        body.push_str(&format!("- `{path}`: {why}; held by commit {head}\n"));
+    }
+    body.push_str("\n## Kept with leaks\n\n");
+    for (path, kinds) in &plan.carried.kept_with_leaks {
+        body.push_str(&format!("- `{path}`: {} (fix by hand)\n", kinds.join(", ")));
+    }
+    body.push_str("\n## Not carried\n\n");
+    for gap in &plan.carried.gaps {
+        body.push_str(&format!("- {gap}\n"));
+    }
+    body.push_str("\n## Aliases\n\n");
+    for (old, new) in &plan.carried.aliases {
+        body.push_str(&format!("- `{old}` → `{new}`\n"));
+    }
+    for follow_up in &plan.follow_ups {
+        body.push_str(&format!("\n## Follow-up\n\n{follow_up}\n"));
+    }
+    let mut record = crate::markdown::parse("receipt", &format!("{}{body}", record.render()))?;
+    record.redact_leaks(Local::current());
+    record.render_within(crate::markdown::Kind::Receipt)
 }
 
 /// Build the plan: run every mapper in order, redact what they write and list every
@@ -274,10 +696,13 @@ fn plan(root: &Path) -> Result<Plan> {
         redactions.extend(redact(local, written)?);
     }
     redactions.sort();
+    let legacy = legacy_paths(root)?;
     let mut sources = BTreeMap::new();
-    for path in legacy_paths(root)?
+    for path in legacy
+        .clone()
         .into_iter()
         .chain(carried.sources.iter().cloned())
+        .chain(carried.removed.keys().cloned())
     {
         let bytes = std::fs::read(local_path(root, &path)?)
             .with_context(|| format!("{path} cannot be read, so no plan was made"))?;
@@ -291,6 +716,7 @@ fn plan(root: &Path) -> Result<Plan> {
         .collect::<Vec<_>>();
     Ok(Plan {
         sources,
+        legacy,
         carried,
         redactions,
         follow_ups,
@@ -330,8 +756,6 @@ fn redact(local: &Local, written: &mut Written) -> Result<Vec<Redaction>> {
     Ok(found)
 }
 
-// Called by the bug mapper (t38b) and the apply; removed at integration (t382).
-#[allow(dead_code)]
 /// The migration receipt's path, fixed when the plan is built: an apply on another UTC
 /// day rebuilds a plan with another digest and asks for a fresh preview.
 pub(crate) fn receipt_path() -> Result<String> {
@@ -559,10 +983,9 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             (format!(".chough/sessions/{id}/session.md"), record.render())
         };
         for gap in missing {
-            carried.removed.insert(
-                format!("{path} history"),
-                format!("not carried into {target}: {gap}"),
-            );
+            carried
+                .gaps
+                .push(format!("{path}: history not carried into {target}: {gap}"));
         }
         carried.written.push(Written {
             path: target.clone(),
@@ -634,7 +1057,8 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
     let mut leftovers = BTreeSet::new();
     walk_files(root, ".chough/history", &mut leftovers)?;
     walk_files(root, ".chough/sessions/shelved", &mut leftovers)?;
-    for path in [".chough/transitions.jsonl", ".chough/sessions/.gitignore"] {
+    // `.chough/sessions/.gitignore` is a 0.6.0 file too (the same `.*.tmp`), so it stays.
+    for path in [".chough/transitions.jsonl"] {
         if local_path(root, path)?.is_file() {
             leftovers.insert(path.to_string());
         }
@@ -645,8 +1069,6 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
         }
         let why = if path.starts_with(".chough/sessions/shelved") {
             "a shelved 0.5.x session is not carried"
-        } else if path.ends_with(".gitignore") {
-            "0.5.x temporary-file ignore; 0.6.0 keeps local state in .chough/local/"
         } else if path.contains("/pruned/") {
             "a 0.5.x retention receipt; there is no retention in 0.6.0"
         } else {
