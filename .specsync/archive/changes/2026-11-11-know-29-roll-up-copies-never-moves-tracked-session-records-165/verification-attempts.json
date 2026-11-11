@@ -162,6 +162,100 @@
       "requirement_ids": [
         "REQ-history-011"
       ]
+    },
+    {
+      "timestamp": 1794356855,
+      "commit": "5427b09f421dba93f1fe23f5bc754684290e264f",
+      "contract_digest": "1d89d5d4ad2f73776115c6edbf2f6277b4f0cc70992b3bcf8e11c1138784d54c",
+      "execution_digest": "41a0a17a63b3d1c89e7e361c9769eecadfcb517ca8a6aaf6d6eeef951959c638",
+      "workspace_digest": "f689e64de65cd5a096deddf55c3e92dc8d387bcbeec7c91e0022c87d7d698893",
+      "acceptance_input_digest": "445d07bebcad4b72f8e9c2e7cdbfc5f0ca32d6040f139aff593b9508cacb0f7d",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": "specs/history/context.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c7be0cc159d8fdada8b3809c60f684f35fc5b02f3f981e48ec8f19129267269a",
+            "entry_digest": "6bbb61dd11242efaedd04fb704cfc25fc4e4ae8e407f76a756753e21b8748519",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "specs/history/history.spec.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "858df5ccfd3877142f5b8a597a7ec34b958d923397258288ef379df24a12609d",
+            "entry_digest": "e030e93efa937426a341e8477e4effe6f4ef43b2d8f8b3cd144ef0f258a9ff63",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "specs/history/requirements.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "af030571af2152daec303c0e5c219aabd23c1a51a7542f6e6b6ba57216b8d25a",
+            "entry_digest": "7b267013e69e8779f847a9eb64430db8096cb7cb56aa66235562b9acb7a41dbe",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "specs/history/tasks.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "41aad80a94e9d05a23d84110df7715c8e1c64f6ec7ef2d722ff7fb4f5d313fce",
+            "entry_digest": "87fc1481fa94ca7470b7d65139992638f9b6f6bc84d2173429aee6f3f57a3ee4",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "specs/history/testing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "74de30567f1314c8cbc76d737d358d2d8868e120277c783c92c4415e8c986d25",
+            "entry_digest": "f16ed18f718ccef0ad477842feea6fdaef0a63a067eb4b174a727c8109133df0",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "src/sessions.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8d3c189efdea6a86eb62356a3bb6c02c18e08f3515dd567258ed72f4fea0b13f",
+            "entry_digest": "e513e2f6f39154f7ba86dcc5aa7584a9bd1084544e6cc1b74b21a89a4258474c",
+            "owners": [
+              "history"
+            ]
+          },
+          {
+            "path": "tests/reduce.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fa931010547720637b5ac3df67903c603b709211b49c9a5235eb2858e994b07b",
+            "entry_digest": "244b38d2912bb9f7f9549522dc33837bbcbcb2d039b98754644f4fd1a2b8581e",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-history-011"
+      ]
     }
   ]
 }

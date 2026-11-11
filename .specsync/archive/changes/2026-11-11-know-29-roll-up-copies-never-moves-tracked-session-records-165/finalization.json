@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "know-29-roll-up-copies-never-moves-tracked-session-records-165",
+  "implementation_commit": "5427b09f421dba93f1fe23f5bc754684290e264f",
+  "implementation_tree": "d468e9513c87ef25555870232ae82d1b15a9db46",
+  "contract_digest": "1d89d5d4ad2f73776115c6edbf2f6277b4f0cc70992b3bcf8e11c1138784d54c",
+  "workspace_digest": "f689e64de65cd5a096deddf55c3e92dc8d387bcbeec7c91e0022c87d7d698893",
+  "closing_digest": "0c862ae1cd37b13c4727b77b4d061598e2fc3ec3f7fb67e0e2a037bda5bdebee",
+  "review_digest": "4ca92eaedeed88c8dc745ef11f94d5e8c837594c97fd0a0537989d91dcb2346d",
+  "finalization_digest": "dde247e6ad55e7eb0184deeb8e98784a3647f408037e6699589508705028fdf4",
+  "timestamp": 1794356956
+}
