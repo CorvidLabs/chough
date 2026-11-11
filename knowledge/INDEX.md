@@ -2,7 +2,7 @@
 id: "index"
 title: "Project knowledge index"
 type: index
-archived_changes: 169
+archived_changes: 170
 tags:
   - chough/index
 ---
@@ -43,21 +43,21 @@ Canonical prototypes:
 
 Active:
 
-- append-only-event-corrections-with-chough-correct-never-rewriting-history-167 (active; `specsync change status append-only-event-corrections-with-chough-correct-never-rewriting-history-167`)
+- none
 
 Archived changes (newest first; the newest 3 are hot):
 
+- [append-only-event-corrections-with-chough-correct-never-rewriting-history-167](archives/append-only-event-corrections-with-chough-correct-never-rewriting-history-167.md) Append-only event corrections with chough correct, never rewriting history (#167) (hot)
 - [return-the-observation-id-from-cases-record-and-evidence-add-issue-60](archives/return-the-observation-id-from-cases-record-and-evidence-add-issue-60.md) Return the observation ID from cases record and evidence add (issue 60) (hot)
 - [keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181](archives/keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181.md) Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181) (hot)
-- [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](archives/keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136.md) Keep observations current when the generated knowledge index is rebuilt (#136) (hot)
+- [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](archives/keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136.md) Keep observations current when the generated knowledge index is rebuilt (#136) (cold)
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](archives/make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit.md) Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit (cold)
 - [read-bounded-diagnostic-input-inventories-without-changing-freshness-authority](archives/read-bounded-diagnostic-input-inventories-without-changing-freshness-authority.md) Read bounded diagnostic input inventories without changing freshness authority (cold)
 - [move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence](archives/move-the-two-192-cases-into-dedicated-196-files-without-changing-definitions-or-evidence.md) Move the two #192 cases into dedicated #196 files without changing definitions or evidence (cold)
 - [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](archives/refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113.md) Refuse new-session writes when the adopted frozen legacy log is missing (113) (cold)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](archives/recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits.md) Recognize pristine skills from pinned released bundles without replacing edits (cold)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](archives/explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18.md) Explain how Chough guides the SpecSync lifecycle, stages and human gates in the README and walkthrough (FLOW-18) (cold)
-- [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197 (cold)
-- All 169 archived changes, by month: [timeline.md](timeline.md)
+- All 170 archived changes, by month: [timeline.md](timeline.md)
 
 ## Lessons index
 
@@ -71,6 +71,7 @@ Module lesson sources:
 
 Archived lesson bundles:
 
+- [append-only-event-corrections-with-chough-correct-never-rewriting-history-167](../.specsync/archive/changes/2026-11-11-append-only-event-corrections-with-chough-correct-never-rewriting-history-167/lesson-bundle.md)
 - [return-the-observation-id-from-cases-record-and-evidence-add-issue-60](../.specsync/archive/changes/2026-11-10-return-the-observation-id-from-cases-record-and-evidence-add-issue-60/lesson-bundle.md)
 - [keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181](../.specsync/archive/changes/2026-11-10-keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181/lesson-bundle.md)
 - [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](../.specsync/archive/changes/2026-11-10-keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136/lesson-bundle.md)
@@ -80,7 +81,6 @@ Archived lesson bundles:
 - [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](../.specsync/archive/changes/2026-11-10-refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113/lesson-bundle.md)
 - [recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits](../.specsync/archive/changes/2026-11-10-recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits/lesson-bundle.md)
 - [explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18](../.specsync/archive/changes/2026-11-08-explain-how-chough-guides-the-specsync-lifecycle-stages-and-human-gates-in-the-readme-and-walkthrough-flow-18/lesson-bundle.md)
-- [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../.specsync/archive/changes/2026-11-07-correct-prune-capture-authority-and-unsafe-rollback-for-pr-197/lesson-bundle.md)
 - Every lesson bundle is on its change's [timeline](timeline.md) entry
 
 ## Open bug backlog (live)
@@ -99,7 +99,7 @@ Archived lesson bundles:
 
 ## Observations
 
-586 recorded; most recent:
+577 recorded; most recent:
 
 - OBS-tc-cli-next-corrections-list-is-bounded-c0ca4ee04e14f5c8bb37d6fc ProductTest Passed in local-macos-arm64 at 673de2e066b1
 - OBS-tc-history-correction-appends-without-rewriting-e5fc0d86a3b61a4812b75301 ProductTest Passed in local-macos-arm64 at 673de2e066b1

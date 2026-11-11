@@ -5,7 +5,7 @@ type: module
 modules:
   - cli
 lessons: 57
-archived_changes: 143
+archived_changes: 144
 tags:
   - chough/module
   - module/cli
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched cli
 
-143 archived changes, newest first.
+144 archived changes, newest first.
 
+- [append-only-event-corrections-with-chough-correct-never-rewriting-history-167](../archives/append-only-event-corrections-with-chough-correct-never-rewriting-history-167.md) Append-only event corrections with chough correct, never rewriting history (#167)
 - [return-the-observation-id-from-cases-record-and-evidence-add-issue-60](../archives/return-the-observation-id-from-cases-record-and-evidence-add-issue-60.md) Return the observation ID from cases record and evidence add (issue 60)
 - [keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136](../archives/keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136.md) Keep observations current when the generated knowledge index is rebuilt (#136)
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](../archives/make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit.md) Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit
@@ -42,5 +43,4 @@ this note only links them.
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197
 - [make-evidence-prune-apply-recheck-protections-and-restore-partial-removals](../archives/make-evidence-prune-apply-recheck-protections-and-restore-partial-removals.md) Make evidence prune --apply recheck protections and restore partial removals
 - [mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation](../archives/mark-the-0-5-0-release-published-in-the-roadmap-with-its-install-observation.md) Mark the 0.5.0 release published in the roadmap with its install observation
-- [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
-- 133 more on the [timeline](../timeline.md)
+- 134 more on the [timeline](../timeline.md)

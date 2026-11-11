@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-d077dfdc45be7cd6a35973df",
-    "head": "EVT-83b341b06e7381f1bd8abf3a",
+    "head": "EVT-ea29681027c1dff70010f9f3",
     "legacy": null
   },
   "schema_version": 2,
@@ -9,7 +9,7 @@
   "intent_scope": "",
   "modules": [],
   "stage": {
-    "current": "accept",
+    "current": "done",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -28,7 +28,9 @@
     "design": [],
     "files": []
   },
-  "decisions": [],
+  "decisions": [
+    "0xLeif decided \"Implementation review of append-only-event-corrections-with-chough-correct-never-rewriting-history-167\": \"Leif ACCEPTED all four (2026-11-10): #211 (#165), #210 (#167), #208 (#14) and #233 (#201)\" (Relayed by coordinator Claude Code (hc t370) to worker hc t37j, 2026-11-10; merge held for Leif's 95% bar (dogfood + full suite), coordinator merges); recorded by claude-code (claude-opus-5-5) on hc t37j; a relayed claim, not authenticated"
+  ],
   "open_questions": [],
   "completed": [
     "Addressed corvid-agent review of #210: cargo fmt, CHANGELOG names 0.6.0 as the oldest reader of correction events, corrections bounded as {total, items} in next (10, statements cut, in LISTS) and status, tests for the bound, the oversized-statement refusal and timing's skip of the correction kind; main merged"
@@ -41,9 +43,7 @@
   ],
   "bugs": [],
   "blockers": [],
-  "awaiting_human": [
-    "Implementation review of append-only-event-corrections-with-chough-correct-never-rewriting-history-167"
-  ],
+  "awaiting_human": [],
   "run_consents": [],
   "next_action": "Record Leif's relayed acceptance as the review, ship, dogfood, full suite; stop before merge for the coordinator."
 }

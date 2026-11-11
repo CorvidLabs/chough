@@ -5,7 +5,7 @@ type: module
 modules:
   - history
 lessons: 6
-archived_changes: 29
+archived_changes: 30
 tags:
   - chough/module
   - module/history
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched history
 
-29 archived changes, newest first.
+30 archived changes, newest first.
 
+- [append-only-event-corrections-with-chough-correct-never-rewriting-history-167](../archives/append-only-event-corrections-with-chough-correct-never-rewriting-history-167.md) Append-only event corrections with chough correct, never rewriting history (#167)
 - [keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181](../archives/keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181.md) Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181)
 - [refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113](../archives/refuse-new-session-writes-when-the-adopted-frozen-legacy-log-is-missing-113.md) Refuse new-session writes when the adopted frozen legacy log is missing (113)
 - [correct-prune-capture-authority-and-unsafe-rollback-for-pr-197](../archives/correct-prune-capture-authority-and-unsafe-rollback-for-pr-197.md) Correct prune capture authority and unsafe rollback for PR 197
@@ -42,5 +43,4 @@ this note only links them.
 - [flag-direct-specsync-lifecycle-writes-in-history-183-drive-21](../archives/flag-direct-specsync-lifecycle-writes-in-history-183-drive-21.md) Flag direct SpecSync lifecycle writes in history (183, DRIVE-21)
 - [chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17](../archives/chough-doctor-finds-and-fixes-the-chough-debt-that-stops-a-fresh-worktree-from-entering-chough-drive-17.md) Chough doctor finds and fixes the Chough debt that stops a fresh worktree from entering Chough (DRIVE-17)
 - [a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16](../archives/a-session-whose-native-change-is-archived-is-finished-and-abandoned-work-closes-with-a-reason-163-drive-16.md) A session whose native change is archived is finished, and abandoned work closes with a reason (163, DRIVE-16)
-- [a-session-archives-itself-at-its-own-move-into-done-155](../archives/a-session-archives-itself-at-its-own-move-into-done-155.md) A session archives itself at its own move into done (155)
-- 19 more on the [timeline](../timeline.md)
+- 20 more on the [timeline](../timeline.md)

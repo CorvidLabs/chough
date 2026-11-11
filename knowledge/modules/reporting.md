@@ -5,7 +5,7 @@ type: module
 modules:
   - reporting
 lessons: 0
-archived_changes: 6
+archived_changes: 7
 tags:
   - chough/module
   - module/reporting
@@ -31,8 +31,9 @@ this note only links them.
 
 ## Archived changes that touched reporting
 
-6 archived changes, newest first.
+7 archived changes, newest first.
 
+- [append-only-event-corrections-with-chough-correct-never-rewriting-history-167](../archives/append-only-event-corrections-with-chough-correct-never-rewriting-history-167.md) Append-only event corrections with chough correct, never rewriting history (#167)
 - [make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit](../archives/make-native-process-test-probes-zombie-aware-for-187-and-preserve-the-132-reproduction-limit.md) Make native process test probes zombie-aware for #187 and preserve the #132 reproduction limit
 - [chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21](../archives/chough-timing-skips-direct-native-write-events-without-marking-its-report-partial-189-drive-21.md) chough timing skips direct-native-write events, and chough change new passes --no-spec-change (189, DRIVE-21, DRIVE-20)
 - [make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive](../archives/make-the-timing-trace-test-fail-only-when-tracing-changes-the-report-never-because-its-runs-straddle-a-second-169-drive.md) Make the timing trace test fail only when tracing changes the report, never because its runs straddle a second (169, DRIVE-19)
