@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "BUG-evidence-commits-raw-logs-not-a-digest-receipt-with-key-failing-lines-2-143a995780130675707fcb2c",
+  "title": "Evidence commits raw logs, not a digest receipt with key failing lines (#215)",
+  "symptom": "A case run commits its raw log under .chough/artifacts/ beside the records, and its observation has no fingerprint and no key failing lines",
+  "trigger": "Run the case, or evidence add --artifact <absolute path>, on Chough 0.5.0",
+  "expected": "The raw log stays in .chough/local/logs/, and the committed entry gives the command, the output's SHA-256 and at most 20 key failing lines (REQ-records-005)",
+  "actual": "The raw log is committed in .chough/artifacts/; no local log, fingerprint or key lines",
+  "criteria": [
+    "KNOW-35"
+  ],
+  "requirements": [
+    "REQ-records-005"
+  ],
+  "cases": [
+    "TC-records-proof-split-and-external"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "1af0710fdf20fef56e90261cff3e7f5e5450c829",
+  "steps": [
+    "Run tests/records.rs logs_stay_local_and_failures_keep_key_lines as TC-records-proof-split-and-external"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-records-proof-split-and-external-71d4096f0611298620fd0ce6"
+  ],
+  "impact": "Committed raw logs carry local paths and noise, and a reviewer cannot see why a run failed without the log",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "GitHub issue #215, red on 0.5.0 by t38b at 69b56154 (leif/0.6.0-records-red)",
+  "notes": [],
+  "created_at_unix_seconds": 1794440721,
+  "updated_at_unix_seconds": 1794440721
+}

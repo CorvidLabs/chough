@@ -26,7 +26,8 @@
   "observations": [
     "OBS-tc-records-actor-recorded-556298a33aba7c34ff56307b",
     "OBS-tc-records-actor-recorded-838ca2648f678ed5413a44a5",
-    "OBS-tc-records-actor-recorded-3926d24155e0fa587813f2f6"
+    "OBS-tc-records-actor-recorded-3926d24155e0fa587813f2f6",
+    "OBS-tc-records-actor-recorded-6675479880e75161b11ac3e3"
   ],
   "impact": "Several agents' work cannot be told apart in the history (GitHub #201, folded from PR #233)",
   "classification": "product-defect",
@@ -50,8 +51,15 @@
       "observations": [
         "OBS-tc-records-actor-recorded-3926d24155e0fa587813f2f6"
       ]
+    },
+    {
+      "at_unix_seconds": 1794440743,
+      "text": "The evidence part of #201: on 0.5.0 neither evidence add nor cases run records the actor (TC-records-actor-recorded, red at 69b56154 on leif/0.6.0-records-red).",
+      "observations": [
+        "OBS-tc-records-actor-recorded-6675479880e75161b11ac3e3"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794424053,
-  "updated_at_unix_seconds": 1794424630
+  "updated_at_unix_seconds": 1794440743
 }
