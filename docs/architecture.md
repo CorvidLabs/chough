@@ -36,7 +36,7 @@ flowchart TB
 | `fledge.toml` | Fledge tasks and lanes |
 | `.chough/README.md` | Chough: the one-screen guide to this tree, written create-only by `init` and `migrate --apply` |
 | `.chough/sessions/<id>/session.md` | Chough: one open session. Its front matter is the checkpoint; its body is the story and the append-only Timeline. Only the active session is written |
-| `.chough/sessions/<id>/evidence/` | Chough: the session's evidence entries, one Markdown file each, and at most 5 small key screenshots |
+| `.chough/sessions/<id>/evidence/` | Chough: the session's evidence entries, one Markdown file each (a repeated validation run is one entry), and at most 5 small key screenshots |
 | `.chough/sessions/<id>/agent/` | Agent working files, with `inbox/` for create-only subagent reports that the session's owner folds |
 | `.chough/archive/sessions/<id>.md` | One story per finished session, kept for good, with a receipt per evidence entry; a folder of the same name beside it holds its screenshots, when it has any |
 | `.chough/archive/shelved/<id>/` | A session that could not be read, moved byte for byte by `session shelve` |
@@ -44,11 +44,10 @@ flowchart TB
 | `.chough/bugs/<id>.md` | The local bug backlog: one Markdown record per bug with an append-only `## Log`; earlier IDs are aliases |
 | `.chough/preferences.json` | Standing project preferences, each with its source |
 | `.chough/cases/<module>.cases.toml` | Test definitions (`chough-testing/1`) with curated `TC-<module>-<title-slug>` IDs for new cases and exact legacy numeric IDs retained |
-| `.chough/local/` | One worktree's machine-local state, ignored by Git: the active-session pointer, the writer lock, gate lists, direct-write baselines, `external-artifacts.toml`, `logs/` and an optional `identity.toml` |
+| `.chough/local/` | One worktree's machine-local state, ignored by Git: the active-session pointer, the writer lock, gate lists, direct-write baselines, `external-artifacts.toml`, `logs/`, a pending `validation.stop` and an optional `identity.toml` |
 | `knowledge/` (librarian, on by default; `library-dir` renames it, `librarian off` opts out) | The generated reading guide `index.md`, the journal in `journal/` with its generated `feed.xml`, and cross-project lessons in `lessons/`. It links and never copies a record or source, and no gate reads it. Earlier `library/` snapshots and `briefs/` are kept as they are |
 | `<host>/skills/chough-workflow/` | Installed skill copies; edits are preserved |
 
-<!-- depends on plan step 4: the evidence/ rows, screenshots, receipts and logs/ -->
 
 Every record Chough writes is one Markdown file with YAML front matter, and the file is
 the record's only source of truth (REQ-records-001). The front matter is a strict YAML
@@ -93,7 +92,6 @@ one story in `.chough/archive/sessions/`. A record that a migration removed with
 carrying it reads `removed`, naming the receipt, and never counts as current or
 passed.
 
-<!-- depends on plan step 4 -->
 **Proof files.** A raw log is never committed. A case run's output goes to
 `.chough/local/logs/<evidence id>.log`, and its entry keeps the exact command, the
 output's SHA-256 and, for a failure, at most 20 key failing lines (REQ-records-005). An

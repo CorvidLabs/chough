@@ -162,13 +162,15 @@ next action is a suggestion it verifies, not a command it obeys blindly.
   cases/*.cases.toml                case definitions
   sessions/<date>-<slug>/           one folder per open session
     session.md                      checkpoint (front matter), story and Timeline
-    evidence/                       one Markdown entry per observation
+    evidence/                       one Markdown entry per observation, and up to
+                                    5 small key screenshots
     agent/                          working files and the inbox
   archive/sessions/<date>-<slug>.md one story per finished session, kept for good
   archive/migrations/               the receipt of a migration from 0.5.x
   bugs/<date>-<slug>.md             one file per bug, with an append-only Log
   local/                            this worktree only, never committed: the active
-                                    session, the lock, logs, identity, gate lists
+                                    session, the lock, raw logs, external artifact
+                                    paths, identity, gate lists
 knowledge/
   index.md                          the reading guide, generated
   journal/                          short dated posts and their Atom feed
@@ -232,8 +234,7 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `history show` | Show the active session's Timeline, or the newest archived story's |
 | `correct` | Correct an earlier Timeline entry by appending a linked correction; history is never rewritten |
 | `cases check/list/select/run/record` | Validate and list `chough-testing/1` definitions, select focused cases, record honest outcomes |
-| `evidence add` | Record an observation with its revision, inputs, environment and artifacts; freshness compares content, not the revision |
-| `evidence prune` | Retired by 0.6.0, which keeps every finished session's proof in its story and trims nothing; the command goes when evidence moves into session folders |
+| `evidence add` | Record an observation as an entry of the active session, with its revision, inputs, environment and artifacts, and optionally a key screenshot or a manual failure's key failing lines; freshness compares content, not the revision |
 | `bug add/update/search/list/show/report/merge` | Local-first backlog of Markdown bugs with an append-only Log; old IDs still resolve; report candidates are never posted; `merge` is the Git merge driver for bug records |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
 | `library init/index/merge` | Project librarian, on by default in `knowledge/`: `index.md` and the journal feed, regenerated from their sources; `index --check` fails when they drift; `merge` is their Git merge driver |
