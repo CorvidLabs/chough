@@ -51,14 +51,33 @@ pub(crate) struct Written {
     pub(crate) bytes: String,
 }
 
+/// One binary 0.6.0 file the migration writes, create-new: a key screenshot whose
+/// metadata the mapper already removed (REQ-records-013). Never redacted as text.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub(crate) struct Binary {
+    /// Project-relative path.
+    pub(crate) path: String,
+    /// The exact bytes written.
+    pub(crate) bytes: Vec<u8>,
+}
+
+/// One file the apply writes, with its final bytes.
+#[derive(Clone, Debug)]
+struct Planned {
+    path: String,
+    bytes: Vec<u8>,
+}
+
 /// What one mapper carries into 0.6.0.
 #[derive(Clone, Debug, Default, Serialize)]
 pub(crate) struct Carried {
     /// The 0.5.x files this mapper consumed; each is removed after the apply, once its
     /// bytes still match the plan.
     pub(crate) sources: BTreeSet<String>,
-    /// The 0.6.0 files written.
+    /// The 0.6.0 text files written.
     pub(crate) written: Vec<Written>,
+    /// The 0.6.0 binary files written.
+    pub(crate) binaries: Vec<Binary>,
     /// Each 0.5.x ID with the project-relative path of the record that now holds it as
     /// an alias (REQ-records-003), or `removed` when it was not carried.
     pub(crate) aliases: BTreeMap<String, String>,
@@ -73,17 +92,26 @@ pub(crate) struct Carried {
 }
 
 impl Carried {
+    /// Whether this one already writes `path`, as text or binary.
+    fn writes(&self, path: &str) -> bool {
+        self.written.iter().any(|known| known.path == path)
+            || self.binaries.iter().any(|known| known.path == path)
+    }
+
     /// Add `other` to this one; a file two mappers write is refused.
     fn absorb(&mut self, other: Carried) -> Result<()> {
-        for written in other.written {
-            if self.written.iter().any(|known| known.path == written.path) {
-                bail!(
-                    "two mappers write {}, so the plan is refused; this is a Chough bug",
-                    written.path
-                );
+        for path in other
+            .written
+            .iter()
+            .map(|written| &written.path)
+            .chain(other.binaries.iter().map(|binary| &binary.path))
+        {
+            if self.writes(path) {
+                bail!("two mappers write {path}, so the plan is refused; this is a Chough bug");
             }
-            self.written.push(written);
         }
+        self.written.extend(other.written);
+        self.binaries.extend(other.binaries);
         self.sources.extend(other.sources);
         self.aliases.extend(other.aliases);
         self.removed.extend(other.removed);
@@ -228,6 +256,8 @@ struct Plan {
     carried: Carried,
     /// Open bugs' fixture files, kept byte for byte, each with why.
     kept: BTreeMap<String, String>,
+    /// Every file the apply writes, text (redacted) and binary, by path.
+    files: Vec<Planned>,
     redactions: Vec<Redaction>,
     follow_ups: Vec<String>,
 }
@@ -236,11 +266,10 @@ impl Plan {
     /// The plan as printed, without its digest.
     fn view(&self) -> Value {
         let written: Vec<Value> = self
-            .carried
-            .written
+            .files
             .iter()
             .map(|written| {
-                json!({"path": written.path, "sha256": sha256(written.bytes.as_bytes()), "bytes": written.bytes.len()})
+                json!({"path": written.path, "sha256": sha256(&written.bytes), "bytes": written.bytes.len()})
             })
             .collect();
         json!({
@@ -364,10 +393,10 @@ fn apply(
             .collect::<Vec<_>>()
             .join(", ")
     );
-    for written in &plan.carried.written {
+    for written in &plan.files {
         let path = local_path(root, &written.path)?;
         if let Ok(existing) = std::fs::read(&path)
-            && existing != written.bytes.as_bytes()
+            && existing != written.bytes
             && !collides_by_case(plan, &written.path)
         {
             bail!(
@@ -382,8 +411,7 @@ fn apply(
     // interruption or a restore never meets it half replaced.
     let mut written_now = vec![];
     for written in plan
-        .carried
-        .written
+        .files
         .iter()
         .filter(|written| !collides_by_case(plan, &written.path))
     {
@@ -454,8 +482,7 @@ fn apply(
         );
     }
     for written in plan
-        .carried
-        .written
+        .files
         .iter()
         .filter(|written| collides_by_case(plan, &written.path))
     {
@@ -488,15 +515,15 @@ fn collides_by_case(plan: &Plan, path: &str) -> bool {
 
 /// Write one planned file by create-new, or count it done when it already holds the
 /// planned bytes, then read it back.
-fn write_planned(root: &Path, written: &Written, written_now: &mut Vec<String>) -> Result<()> {
+fn write_planned(root: &Path, written: &Planned, written_now: &mut Vec<String>) -> Result<()> {
     let path = local_path(root, &written.path)?;
-    let done = std::fs::read(&path).is_ok_and(|bytes| bytes == written.bytes.as_bytes());
+    let done = std::fs::read(&path).is_ok_and(|bytes| bytes == written.bytes);
     if !done {
         if let Some(parent) = path.parent() {
             std::fs::create_dir_all(parent)?;
         }
         ensure!(
-            crate::records::write_new(root, &written.path, &written.bytes)?,
+            crate::records::write_new_bytes(root, &written.path, &written.bytes)?,
             "{} appeared while migrating; nothing more was written",
             written.path
         );
@@ -504,7 +531,7 @@ fn write_planned(root: &Path, written: &Written, written_now: &mut Vec<String>) 
     }
     let back = std::fs::read(&path)?;
     ensure!(
-        sha256(&back) == sha256(written.bytes.as_bytes()),
+        sha256(&back) == sha256(&written.bytes),
         "{} did not read back as planned",
         written.path
     );
@@ -689,12 +716,12 @@ fn receipt_record(
         body.push_str(&format!("- `{path}` {sha}\n"));
     }
     body.push_str("\n## After\n\n");
-    for written in &plan.carried.written {
+    for written in &plan.files {
         body.push_str(&format!(
             "- `{}` {} bytes {}\n",
             written.path,
             written.bytes.len(),
-            sha256(written.bytes.as_bytes())
+            sha256(&written.bytes)
         ));
     }
     body.push_str("\n## Redactions\n\n");
@@ -780,6 +807,19 @@ fn plan(root: &Path) -> Result<Plan> {
         redactions.extend(redact(local, written)?);
     }
     redactions.sort();
+    let mut files: Vec<Planned> = carried
+        .written
+        .iter()
+        .map(|written| Planned {
+            path: written.path.clone(),
+            bytes: written.bytes.clone().into_bytes(),
+        })
+        .chain(carried.binaries.iter().map(|binary| Planned {
+            path: binary.path.clone(),
+            bytes: binary.bytes.clone(),
+        }))
+        .collect();
+    files.sort_by(|left, right| left.path.cmp(&right.path));
     let legacy = accountable_paths(root)?;
     let mut sources = BTreeMap::new();
     for path in legacy
@@ -803,6 +843,7 @@ fn plan(root: &Path) -> Result<Plan> {
         legacy,
         carried,
         kept,
+        files,
         redactions,
         follow_ups,
     })
@@ -1434,6 +1475,44 @@ mod tests {
         assert_eq!(carried.aliases["OBS-gone"], "removed");
         assert!(!carried.aliases.contains_key("OBS-entry"));
         crate::session_md::read(&written.path, &written.bytes).unwrap();
+    }
+
+    /// A binary write (a stripped screenshot) is planned byte for byte, never as text,
+    /// shares the one-writer rule with text writes, and writes and reads back exactly.
+    #[test]
+    fn a_binary_write_is_planned_and_written_byte_for_byte() {
+        let png = vec![
+            0x89, b'P', b'N', b'G', 0x0d, 0x0a, 0x1a, 0x0a, 0xff, 0x00, 0xfe,
+        ];
+        let mut text = Carried::default();
+        text.written.push(Written {
+            path: ".chough/archive/sessions/a/shot.png".into(),
+            bytes: "text".into(),
+        });
+        let mut binary = Carried::default();
+        binary.binaries.push(Binary {
+            path: ".chough/archive/sessions/a/shot.png".into(),
+            bytes: png.clone(),
+        });
+        let refused = text.absorb(binary.clone()).unwrap_err().to_string();
+        assert!(refused.contains("two mappers write"), "{refused}");
+        let mut empty = Carried::default();
+        empty.absorb(binary).unwrap();
+        assert_eq!(empty.binaries[0].bytes, png);
+
+        let root = tempfile::tempdir().unwrap();
+        let planned = Planned {
+            path: ".chough/archive/sessions/a/shot.png".into(),
+            bytes: png.clone(),
+        };
+        let mut now = vec![];
+        write_planned(root.path(), &planned, &mut now).unwrap();
+        assert_eq!(now, vec![planned.path.clone()]);
+        assert_eq!(std::fs::read(root.path().join(&planned.path)).unwrap(), png);
+        // An interrupted apply's file with the planned bytes counts as done.
+        let mut again = vec![];
+        write_planned(root.path(), &planned, &mut again).unwrap();
+        assert!(again.is_empty());
     }
 
     #[test]
