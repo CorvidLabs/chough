@@ -57,7 +57,7 @@ fn init_writes_a_schema_2_checkpoint_at_intent() {
     let fixture = Fixture::new();
     fixture.init();
     let id = fixture.active_id();
-    assert_eq!(fixture.open_ids(), [id.clone()]);
+    assert_eq!(fixture.open_ids(), std::slice::from_ref(&id));
     assert_eq!(id.get(11..), Some("ship-a-focused-change"), "{id}");
     let record = fixture.read(&fixture.session_file());
     assert!(record.starts_with("---\nkind: session\n"), "{record}");
@@ -3138,7 +3138,10 @@ fn one_checkpoint_store_and_no_aps_adapter_in_either_mode() {
     assert!(fixture.run(&["next"]).status.success());
     fixture.ok(&["status"]);
     let first_file = fixture.session_file();
-    assert_eq!(checkpoint_files(&fixture), [first_file.clone()]);
+    assert_eq!(
+        checkpoint_files(&fixture),
+        std::slice::from_ref(&first_file)
+    );
     assert!(!fixture.exists(".chough/session.json"));
 
     // A second session gets its own record; a checkpoint write changes only the active one.
