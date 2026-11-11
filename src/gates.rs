@@ -331,6 +331,21 @@ fn diff_link(root: &Path, base: &str, head: &str) -> String {
     }
 }
 
+/// What a gate summary's change count leaves out (#190, REQ-cli-061): Chough's
+/// records, the knowledge directory and SpecSync's lifecycle bookkeeping.
+fn left_out_of_summary(root: &Path) -> Vec<String> {
+    let knowledge = crate::prefs::effective(root, "library-dir")
+        .map(|(dir, _)| dir)
+        .unwrap_or_else(|_| "knowledge".into());
+    vec![
+        ".chough/".into(),
+        format!("{}/", knowledge.trim_end_matches('/')),
+        ".specsync/changes/".into(),
+        ".specsync/archive/".into(),
+        ".specsync/hashes.json".into(),
+    ]
+}
+
 /// The one-screen summary of `gate` in `session`: what changed, the tests, the risks
 /// and a diff link, within 24 lines and 4,096 bytes.
 pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
@@ -352,10 +367,21 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
         }
         None => lines.push("Change: none recorded".into()),
     }
-    let base = state
+    // #190 (REQ-cli-061): count from the merge base with the default branch, so work
+    // merged from main is not this change's, and from the change's base commit only
+    // when there is no merge base.
+    // Work on the default branch itself has HEAD as its merge base, so the change's
+    // base commit decides there.
+    let base_commit = state
         .as_ref()
         .and_then(|state| state["base_commit"].as_str())
         .map(String::from);
+    let base = ["origin/HEAD", "main"]
+        .iter()
+        .find_map(|branch| git(root, &["merge-base", "HEAD", branch]))
+        .filter(|merge_base| *merge_base != head)
+        .or(base_commit);
+    let left_out = left_out_of_summary(root);
     match &base {
         Some(base) => {
             let numstat =
@@ -367,6 +393,11 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                     let added = parts.next()?.parse().unwrap_or(0);
                     let deleted = parts.next()?.parse().unwrap_or(0);
                     Some((added, deleted, parts.next()?.to_string()))
+                })
+                .filter(|(_, _, path)| {
+                    !left_out
+                        .iter()
+                        .any(|prefix| path.starts_with(prefix.as_str()))
                 })
                 .collect();
             let insertions: u64 = files.iter().map(|file| file.0).sum();

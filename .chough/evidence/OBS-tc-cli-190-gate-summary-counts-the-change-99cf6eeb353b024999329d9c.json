@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-190-gate-summary-counts-the-change-99cf6eeb353b024999329d9c",
+  "criteria": [
+    "FLOW-16",
+    "FLOW-23"
+  ],
+  "requirements": [
+    "REQ-cli-061"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test gates -- --exact gate_summary_counts_only_the_changes_own_files for TC-cli-190-gate-summary-counts-the-change: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-190-gate-summary-counts-the-change-99cf6eeb353b024999329d9c.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-190-gate-summary-counts-the-change-99cf6eeb353b024999329d9c.log": "ec8b28006f25073fdfd8de4a6d30f52f3a2029b023bef4e52b25ea4a0ec58653"
+  },
+  "observed_at_unix_seconds": 1794424776,
+  "snapshot": {
+    "revision": "603456f3a22a5ff926090e40e81bbca2e4b2a21c",
+    "dirty": false,
+    "fingerprint": "a16c5c1f91eb0e6989f486ddbdd43291be4109322ee3326e493e10fe1aa11ef4",
+    "content": "4b690ed0cf4105249ce2089c70c61b0744e8550f3401d507e59fc0067e9ba6e2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-190-gate-summary-counts-the-change",
+      "digest": "087d32b333cbca67a875dfa17244ee8a3a29082ac164da481a66c35093023750"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "gates",
+    "--",
+    "--exact",
+    "gate_summary_counts_only_the_changes_own_files"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 8
+}
