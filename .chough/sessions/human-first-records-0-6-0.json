@@ -48,11 +48,16 @@
     "0xLeif decided \"Scope approval of the Chough 0.6.0 native change\": \"ok i approve\" (coordinator chat, 2026-11-11 (relayed by the coordinator agent t370)); recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated"
   ],
   "open_questions": [],
-  "completed": [],
-  "observations": [],
+  "completed": [
+    "Plan step 3 (sessions): session folders, the Timeline in session.md, finish into one story, no roll-up, Markdown inbox, leak guard; fmt, clippy --all-targets -D warnings and the full suite (561 passed, 11 ignored for steps 6, 8 and 10) passed at c1d75ceb"
+  ],
+  "observations": [
+    "OBS-tc-history-165-earlier-archives-stay-e355ee5b96eaa89fb762f797",
+    "OBS-tc-history-switch-archives-sessions-left-open-098c034bb55f6a0dff1be113"
+  ],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Native scope approval pending: Leif runs specsync change approve himself with --actor 0xLeif (the agent's run was refused as self-approval). Once native status reads approved, advance to build and start plan.md step 1, the #165 red regression."
+  "next_action": "Plan step 6 with #236 first (approval and review as the human, dogfood the Chough-driven approve), plus step 7; helpers take steps 4, 5, 8 and 9 under t370's file-ownership split"
 }
