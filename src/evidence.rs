@@ -668,6 +668,25 @@ pub(super) fn artifact_fingerprints(
     Ok(fingerprints)
 }
 
+#[derive(clap::Subcommand)]
+pub(super) enum EvidenceCommand {
+    Add(Box<EvidenceArgs>),
+    /// Preview which observation sets retention could remove and what protects the rest;
+    /// `--apply` removes eligible sets under a run consent or `retention auto`.
+    Prune {
+        /// Remove eligible sets and append each to .chough/pruned.jsonl.
+        #[arg(long)]
+        apply: bool,
+    },
+}
+
+pub(super) fn run(root: &Path, command: EvidenceCommand) -> Result<()> {
+    match command {
+        EvidenceCommand::Add(args) => add(root, *args),
+        EvidenceCommand::Prune { apply } => prune(root, apply),
+    }
+}
+
 pub(super) fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     read_session(root)?;
     if let Some(id) = &args.id {

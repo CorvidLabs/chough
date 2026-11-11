@@ -118,7 +118,7 @@ enum Commands {
     /// Record an observation; never executes a test or authenticates an actor.
     Evidence {
         #[command(subcommand)]
-        command: EvidenceCommand,
+        command: evidence::EvidenceCommand,
     },
     /// Keep the local bug backlog.
     Bug {
@@ -180,18 +180,6 @@ enum Commands {
     Doctor(Box<doctor::DoctorArgs>),
 }
 
-#[derive(Subcommand)]
-enum EvidenceCommand {
-    Add(Box<evidence::EvidenceArgs>),
-    /// Preview which observation sets retention could remove and what protects the rest;
-    /// `--apply` removes eligible sets under a run consent or `retention auto`.
-    Prune {
-        /// Remove eligible sets and append each to .chough/pruned.jsonl.
-        #[arg(long)]
-        apply: bool,
-    },
-}
-
 fn main() -> Result<()> {
     // A stop then finds orphans of what Chough started (#81, Linux; no effect elsewhere).
     records::become_subreaper();
@@ -249,10 +237,7 @@ fn main() -> Result<()> {
                 std::process::exit(code);
             }
         }
-        Commands::Evidence { command } => match command {
-            EvidenceCommand::Add(args) => evidence::add(&root, *args)?,
-            EvidenceCommand::Prune { apply } => evidence::prune(&root, apply)?,
-        },
+        Commands::Evidence { command } => evidence::run(&root, command)?,
         Commands::Bug { command } => bugs::run(&root, command)?,
         Commands::Pref { command } => prefs::pref(&root, command)?,
         Commands::Consent { command } => prefs::consent(&root, command)?,
