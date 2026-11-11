@@ -1,0 +1,28 @@
+{
+  "schema_version": 2,
+  "id": "OBS-product-test-5628640eada77b4185bb7389",
+  "criteria": [
+    "KNOW-34"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Claude Code (claude-opus-5-5, hc t382) ran tests/fixtures/migrate/observe-vaulted-adopter.sh with the chough 0.5.0 release build on the same vaulted-adopter fixture: checkpoint --awaiting-human Review, checkpoint --close-gate Review with the four relay values, and stage advance each exited 0; transitions.jsonl unchanged. 0.5.0 already holds #142's fix, so the 0.5.x tree is writable before migration.",
+  "artifacts": [],
+  "artifact_fingerprints": {},
+  "observed_at_unix_seconds": 1794429257,
+  "snapshot": {
+    "revision": "7e6b58f37ea721ec46d1f00466daa1efcb12cb08",
+    "dirty": false,
+    "fingerprint": "e199edcfad1ca271d4e5ac487cd0affc2fece1cb6eb37acafceefa5a3e7342ce",
+    "content": "e287cef970a2e70b5d716af6bc20f127df4d7275ee92871b760314f7393345e9"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "method": "agent-assisted"
+}
