@@ -174,7 +174,7 @@ fn inbox_dir(id: &str) -> String {
 }
 
 /// The session ID of a session file path.
-fn id_of(relative: &str) -> Option<String> {
+pub(super) fn id_of(relative: &str) -> Option<String> {
     relative
         .strip_prefix(&format!("{DIR}/"))
         .and_then(|rest| rest.strip_suffix("/session.md"))

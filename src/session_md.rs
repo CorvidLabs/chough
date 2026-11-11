@@ -274,17 +274,25 @@ pub(super) fn timeline(record: &Record) -> Result<Vec<Entry>> {
     let mut entries: Vec<Entry> = vec![];
     for line in section.lines() {
         if let Some(head) = line.strip_prefix("- ") {
-            entries.push(parse_head(head)?);
+            entries.push(
+                parse_head(head)
+                    .with_context(|| format!("invalid transition at timeline line `- {head}`"))?,
+            );
         } else if let Some(field) = line.strip_prefix("  - ") {
             let entry = entries
                 .last_mut()
-                .context("a timeline field line comes after its entry")?;
+                .context("invalid transition: a timeline field line comes after its entry")?;
+            let id = entry.id.clone();
             let (key, value) = field
                 .split_once(": ")
                 .map(|(key, value)| (key, value.to_string()))
                 .or_else(|| field.strip_suffix(':').map(|key| (key, String::new())))
-                .with_context(|| format!("timeline entry {}: a field is `key: value`", entry.id))?;
-            apply_field(entry, key, value)?;
+                .with_context(|| {
+                    format!("invalid transition at timeline entry ^{id}: a field is `key: value`")
+                })?;
+            apply_field(entry, key, value).with_context(|| {
+                format!("invalid transition at timeline entry ^{id}: field `{key}`")
+            })?;
         }
         // Any other line is prose a person or the closing line wrote; it is not an entry.
     }

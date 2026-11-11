@@ -471,11 +471,7 @@ fn list(root: &Path, as_json: bool) -> Result<()> {
 /// The active session's key, when one is clear.
 fn active_key(root: &Path) -> Option<String> {
     let relative = crate::sessions::checkpoint_path(root).ok()?;
-    relative
-        .strip_prefix(".chough/sessions/")
-        .and_then(|name| name.strip_suffix(".json"))
-        .map(String::from)
-        .or_else(|| (relative == crate::checkpoint::SESSION).then(|| "session".into()))
+    crate::sessions::id_of(&relative)
 }
 
 /// Check that listed gate `number` of list `id` may be closed now: on the list, in the
