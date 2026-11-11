@@ -6,9 +6,8 @@ mod common;
 use common::Fixture;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
 use std::fs;
-use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const DAY: u64 = 86_400;
@@ -135,7 +134,6 @@ fn write_run(fixture: &Fixture, id: &str, observations: &[&str], completed: u32,
         &serde_json::to_string_pretty(&run).unwrap(),
     );
 }
-
 
 fn project() -> Fixture {
     let fixture = Fixture::new();
@@ -293,7 +291,6 @@ fn rebuilding_the_knowledge_index_keeps_the_observation_current() {
     fixture.ok(&["library", "index"]);
     assert_eq!(label(&fixture).as_deref(), Some("current"));
 }
-
 
 #[cfg(unix)]
 fn knowledge_fixture() -> Fixture {
