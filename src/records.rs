@@ -1542,6 +1542,76 @@ pub(super) fn record_names(root: &Path, directory: &str) -> Result<Vec<String>> 
     Ok(names)
 }
 
+/// The process ID the project's writer lock file records (REQ-cli-040): the writer
+/// that holds the lock writes it there. None when the file names none.
+pub(super) fn lock_holder(path: &Path) -> Option<u32> {
+    fs::read_to_string(path).ok()?.trim().parse().ok()
+}
+
+/// Record this process as the holder of the writer lock `file`, which it has just
+/// taken. The file is rewritten in place, never replaced, so every writer keeps
+/// locking the same file.
+pub(super) fn record_lock_holder(mut file: &File) -> io::Result<()> {
+    use std::io::{Seek, SeekFrom};
+    file.set_len(0)?;
+    file.seek(SeekFrom::Start(0))?;
+    file.write_all(format!("{}\n", std::process::id()).as_bytes())?;
+    file.flush()
+}
+
+/// Whether process `pid` is running, where that can be told.
+fn process_running(pid: u32) -> Option<bool> {
+    #[cfg(unix)]
+    {
+        let pid = libc::pid_t::try_from(pid).ok()?;
+        // SAFETY: signal 0 sends nothing; kill only checks that the process exists and
+        // that this process may signal it.
+        if unsafe { libc::kill(pid, 0) } == 0 {
+            return Some(true);
+        }
+        Some(io::Error::last_os_error().raw_os_error() == Some(libc::EPERM))
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = pid;
+        None
+    }
+}
+
+/// What a busy refusal says of the lock's holder (REQ-cli-040, #132): the process the
+/// lock file names, and, when it is not running, that a process it forked may still
+/// hold the lock through an inherited descriptor.
+pub(super) fn lock_holder_text(holder: Option<u32>) -> String {
+    match holder {
+        None => "the lock file names no holder".into(),
+        Some(pid) => match process_running(pid) {
+            Some(true) => format!("held by process {pid}"),
+            Some(false) => format!(
+                "the lock file names process {pid}, which is not running, so a process it forked may still hold the lock through an inherited descriptor (#132)"
+            ),
+            None => format!("the lock file names process {pid}"),
+        },
+    }
+}
+
+/// Trace how long a writer waited for the project's writer lock (REQ-cli-040), so a
+/// slow or refused writer in a loaded run shows what it waited on.
+pub(super) fn trace_lock_wait(started: Instant) {
+    trace(&format!(
+        "checkpoint-lock waited_ms={}",
+        started.elapsed().as_millis()
+    ));
+}
+
+/// A wait for people: whole seconds, or milliseconds under one second.
+pub(super) fn wait_text(wait: Duration) -> String {
+    if wait.as_secs() > 0 {
+        format!("{} seconds", wait.as_secs())
+    } else {
+        format!("{} ms", wait.as_millis())
+    }
+}
+
 /// Where the `toolchain` task (tools/toolchain.sh) leaves its verdict, under the
 /// Git-ignored local logs (REQ-history-007, REQ-records-005).
 pub(super) const TOOLCHAIN_LOG: &str = ".chough/local/logs/toolchain.log";

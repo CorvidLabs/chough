@@ -322,8 +322,9 @@ pub(super) fn read_session(root: &Path) -> Result<Session> {
         .with_context(|| crate::sessions::shelve_hint(&relative))
 }
 
-/// The project's checkpoint writer lock (issues 62 and 83, DRIVE-11): the empty,
-/// never-replaced file `.chough/local/checkpoint.lock`. `.chough/local/` holds a
+/// The project's checkpoint writer lock (issues 62 and 83, DRIVE-11): the
+/// never-replaced file `.chough/local/checkpoint.lock`, which names the process that
+/// holds it (REQ-cli-040, #132). `.chough/local/` holds a
 /// `.gitignore` of `*` (written here when missing, create-only), so the lock is never a
 /// managed record or a source change, and every Chough process working on the project
 /// uses this one file whatever its temporary directory.
@@ -385,7 +386,13 @@ pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
     let started = Instant::now();
     loop {
         match <fs::File as fs4::FileExt>::try_lock(&file) {
-            Ok(()) => break,
+            Ok(()) => {
+                // REQ-cli-040 (#132): name this writer in the lock file. A lock file
+                // another account owns is open read-only and keeps its holder unnamed.
+                let _ = crate::records::record_lock_holder(&file);
+                crate::records::trace_lock_wait(started);
+                break;
+            }
             Err(fs4::TryLockError::WouldBlock) if started.elapsed() < LOCK_WAIT => {
                 std::thread::sleep(LOCK_POLL);
             }
@@ -394,9 +401,11 @@ pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
                 // so resolving, and pinning, the checkpoint here changes nothing.
                 let target = crate::sessions::checkpoint_path(root)
                     .unwrap_or_else(|_| "the checkpoint".into());
+                crate::records::trace_lock_wait(started);
                 bail!(
-                    "refused:checkpoint-busy: another Chough command is changing {target} and did not finish within {} seconds; nothing was saved. Rerun when it finishes.",
-                    LOCK_WAIT.as_secs()
+                    "refused:checkpoint-busy: another Chough command is changing {target} and did not finish within {} ({}); nothing was saved. Rerun when it finishes.",
+                    crate::records::wait_text(LOCK_WAIT),
+                    crate::records::lock_holder_text(crate::records::lock_holder(&path))
                 )
             }
             Err(fs4::TryLockError::Error(error)) => {
@@ -980,6 +989,27 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
 mod tests {
     use super::*;
 
+    /// Take `file`'s lock, waiting a bounded time (#132): a process another test thread
+    /// forks inherits this process's descriptors until it execs, so a lock this test
+    /// process just released can stay held for a moment under a loaded, parallel suite.
+    fn lock_within(file: &fs::File, path: &Path) {
+        let started = Instant::now();
+        while <fs::File as fs4::FileExt>::try_lock(file).is_err() {
+            assert!(
+                started.elapsed() < Duration::from_secs(10),
+                "the checkpoint lock stayed held for 10 seconds ({})",
+                crate::records::lock_holder_text(crate::records::lock_holder(path))
+            );
+            std::thread::sleep(LOCK_POLL);
+        }
+    }
+
+    /// Wait a bounded time until nothing holds the lock at `path`, then release it.
+    fn wait_until_free(path: &Path) {
+        let probe = OpenOptions::new().read(true).open(path).unwrap();
+        lock_within(&probe, path);
+    }
+
     /// DRIVE-14 (REQ-cli-032): validation, which `init` runs before it writes anything,
     /// refuses a checkpoint whose serialization is over the 1 MiB cap and names the cap.
     #[test]
@@ -997,19 +1027,21 @@ mod tests {
     fn a_held_checkpoint_lock_refuses_as_busy_after_the_wait() {
         let root = tempfile::tempdir().unwrap();
         fs::create_dir_all(root.path().join(".chough")).unwrap();
+        let path = checkpoint_lock_path(root.path()).unwrap();
         let other = OpenOptions::new()
             .read(true)
             .write(true)
             .create(true)
             .truncate(false)
-            .open(checkpoint_lock_path(root.path()).unwrap())
+            .open(&path)
             .unwrap();
-        <fs::File as fs4::FileExt>::lock(&other).unwrap();
+        lock_within(&other, &path);
         let started = Instant::now();
         let error = lock_checkpoint(root.path()).unwrap_err().to_string();
         assert!(error.starts_with("refused:checkpoint-busy"), "{error}");
         assert!(started.elapsed() >= LOCK_WAIT);
         drop(other);
+        wait_until_free(&path);
         lock_checkpoint(root.path()).unwrap();
         lock_checkpoint(root.path()).unwrap();
         // The lock lives in the project (#83, DRIVE-11): only `.chough/local/`, which
@@ -1030,6 +1062,49 @@ mod tests {
         assert_eq!(
             fs::read_to_string(root.path().join(".chough/local/.gitignore")).unwrap(),
             "*\n"
+        );
+    }
+
+    /// REQ-cli-040 (#132): a busy refusal names the process the lock file holds, and
+    /// says when it is not running, so a lock kept by a forked child's inherited
+    /// descriptor can be told from a live writer; a writer that takes the lock records
+    /// its own process ID there.
+    #[cfg(unix)]
+    #[test]
+    fn a_busy_refusal_names_the_lock_holders_process() {
+        let root = tempfile::tempdir().unwrap();
+        fs::create_dir_all(root.path().join(".chough")).unwrap();
+        let path = checkpoint_lock_path(root.path()).unwrap();
+        let other = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(&path)
+            .unwrap();
+        lock_within(&other, &path);
+        fs::write(&path, format!("{}\n", std::process::id())).unwrap();
+        let error = lock_checkpoint(root.path()).unwrap_err().to_string();
+        assert!(
+            error.contains(&format!("held by process {}", std::process::id())),
+            "{error}"
+        );
+        let gone = std::process::Command::new("true").spawn().unwrap();
+        let pid = gone.id();
+        gone.wait_with_output().unwrap();
+        fs::write(&path, format!("{pid}\n")).unwrap();
+        let error = lock_checkpoint(root.path()).unwrap_err().to_string();
+        assert!(
+            error.contains(&format!("process {pid}, which is not running"))
+                && error.contains("#132"),
+            "{error}"
+        );
+        drop(other);
+        wait_until_free(&path);
+        lock_checkpoint(root.path()).unwrap();
+        assert_eq!(
+            fs::read_to_string(&path).unwrap(),
+            format!("{}\n", std::process::id())
         );
     }
 
@@ -1062,12 +1137,13 @@ mod tests {
             .truncate(false)
             .open(&path)
             .unwrap();
-        <fs::File as fs4::FileExt>::lock(&other).unwrap();
+        lock_within(&other, &path);
         let error = lock_for_update(&root).unwrap_err().to_string();
         assert!(error.starts_with("refused:checkpoint-busy"), "{error}");
         assert!(error.contains("-alpha/session.md"), "{error}");
         assert!(!error.contains(".chough/session.json"), "{error}");
         assert!(error.contains("nothing was saved"), "{error}");
         drop(other);
+        wait_until_free(&path);
     }
 }
