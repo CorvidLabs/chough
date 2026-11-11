@@ -294,6 +294,22 @@ pub(super) fn timeline(record: &Record) -> Result<Vec<Entry>> {
         if entry.transition.reason.as_deref() == entry.transition.gate.as_deref() {
             entry.transition.reason = None;
         }
+        let transition = &entry.transition;
+        ensure!(
+            crate::stage::is_stage(&transition.from)
+                && crate::stage::is_stage(&transition.to)
+                && (crate::stage::STAGE_KINDS.contains(&transition.kind.as_str())
+                    || matches!(
+                        transition.kind.as_str(),
+                        crate::stage::GATE_OPENED
+                            | crate::stage::GATE_CLOSED
+                            | crate::stage::DIRECT_WRITE
+                    )),
+            "invalid transition at timeline entry ^{}: unknown stage or kind",
+            entry.id
+        );
+        crate::stage::validate_records(transition)
+            .with_context(|| format!("invalid transition at timeline entry ^{}", entry.id))?;
     }
     Ok(entries)
 }
