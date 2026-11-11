@@ -79,9 +79,10 @@ small TOML, with one `.chough/README.md` reading guide (DRIVE-28). Includes
 the corrections command (LIFE-18; #167, scoped in #210), session identity
 recording (LIFE-17; #201, scoped in #233) and external case artifacts by
 recorded fingerprint (FLOW-22; #14 item 3, scoped in #208). The session bugs
-#181, #113 and #207 are fixed on main (#206, #200 and the #207 fix); #237
-(an open human gate blocking every stage advance, even for unrelated later
-decisions) is open.
+#181 and #113 are fixed on main (#206, #200); #207 was closed not-planned by
+design and its side-effect fix ships with #214 in 0.6.0; #237 (an open human
+gate blocking every stage advance, even for unrelated later decisions) is
+open.
 
 Done means: two agents can run parallel sessions in one repository, commit
 both, and merge without a hand-resolved conflict in any file Chough writes
@@ -144,8 +145,8 @@ docs change. Includes #165 (whose first wording is superseded by KNOW-30),
 #235) and the KNOW criteria still open when this milestone starts.
 
 Done means: the vault contains no copy of a record that has a home; every
-vault note either is original content (lesson, decision, bug write-up,
-session story) or links; the index regenerates byte-identical from its
+vault note either is original content (a cross-project lesson or a journal
+post) or links; the index regenerates byte-identical from its
 sources (KNOW-4); a fresh agent is pointed at the index at start and resume
 (KNOW-1, FLOW-13); archived session stories stay at `.chough/archive/sessions/`.
 
