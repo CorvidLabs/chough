@@ -499,11 +499,12 @@ fn stop_backfills() {
     }
 }
 
-/// `library snapshot` reads the Git HEAD for its manifest; a stop then stops that Git
-/// and leaves the library unchanged, with no copied files and no manifest (Chough bot
-/// review 5762745045 on #79).
+/// `gate list` reads the Git HEAD before it saves the list it numbered; a stop then stops
+/// that Git and leaves `.chough` and the knowledge directory unchanged, with no saved list
+/// (Chough bot review 5762745045 on #79; `library snapshot`, which this once ran, is
+/// retired in 0.6.0).
 #[test]
-fn stopping_a_library_snapshot_stops_git_and_records_nothing() {
+fn stopping_a_gate_list_stops_git_and_records_nothing() {
     for (signal, number, seconds) in [
         ("INT", libc::SIGINT, 651),
         ("TERM", libc::SIGTERM, 652),
@@ -521,13 +522,7 @@ fn stopping_a_library_snapshot_stops_git_and_records_nothing() {
         stall_git(&fixture, &seconds);
         assert_stopped_in(
             &fixture,
-            &[
-                "library",
-                "snapshot",
-                "notes.md",
-                "--reason",
-                "keep the note",
-            ],
+            &["gate", "list"],
             signal,
             number,
             &format!("sleep {seconds}"),
@@ -550,7 +545,7 @@ fn hold_git(fixture: &Fixture, seconds: impl std::fmt::Display) {
     fixture.write("armed", "");
 }
 
-fn snapshot_fixture() -> Fixture {
+fn git_fixture() -> Fixture {
     let fixture = Fixture::new();
     fixture.hi_stand_in();
     fixture.init();
@@ -574,19 +569,13 @@ fn stopping_while_a_descendant_of_git_holds_its_output_stops_both() {
     ] {
         // #144: a token only this fixture uses, so a concurrent run is never matched.
         let seconds = identity(seconds);
-        let fixture = snapshot_fixture();
+        let fixture = git_fixture();
         hold_git(&fixture, &seconds);
         // The marker is written as the stand-in exits; the signal follows once git has
         // exited and well inside the grace for the held pipes.
         assert_stopped_after(
             &fixture,
-            &[
-                "library",
-                "snapshot",
-                "notes.md",
-                "--reason",
-                "keep the note",
-            ],
+            &["gate", "list"],
             signal,
             number,
             &format!("sleep {seconds}"),
@@ -602,20 +591,10 @@ fn stopping_while_a_descendant_of_git_holds_its_output_stops_both() {
 fn a_descendant_of_git_holding_its_output_is_stopped_after_a_bounded_grace() {
     let sleep = format!("sleep {}", identity(671));
     let _reap = Reap(sleep.clone());
-    let fixture = snapshot_fixture();
+    let fixture = git_fixture();
     hold_git(&fixture, sleep.trim_start_matches("sleep "));
     let started = Instant::now();
-    let (mut child, outputs) = start(
-        &fixture,
-        &[
-            "library",
-            "snapshot",
-            "notes.md",
-            "--reason",
-            "keep the note",
-        ],
-        Inherit::Defaults,
-    );
+    let (mut child, outputs) = start(&fixture, &["gate", "list"], Inherit::Defaults);
     let started_at = Instant::now();
     let status = loop {
         if let Some(status) = child.try_wait().unwrap() {
@@ -751,15 +730,9 @@ fn stopping_a_case_run_stops_an_orphan_that_left_the_group() {
 fn a_grace_kill_after_git_is_reported() {
     let seconds = identity(681);
     let _reap = Reap(format!("sleep {seconds}"));
-    let fixture = snapshot_fixture();
+    let fixture = git_fixture();
     hold_git(&fixture, &seconds);
-    let output = fixture.run(&[
-        "library",
-        "snapshot",
-        "notes.md",
-        "--reason",
-        "keep the note",
-    ]);
+    let output = fixture.run(&["gate", "list"]);
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(output.status.success(), "{stderr}");
     assert!(
