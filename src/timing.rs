@@ -1058,10 +1058,12 @@ fn native_budget() -> Result<Duration> {
 }
 
 /// The native reads of one report: each change ID is read at most once, and every
-/// read shares one budget. Nothing outlives the report.
+/// read shares one budget, which bounds only the time spent waiting on native reads
+/// (REQ-reporting-002): Chough's own record loads before or between reads spend none of
+/// it. Nothing outlives the report.
 struct NativeReads {
     budget: Duration,
-    started: Instant,
+    spent: Duration,
     responses: BTreeMap<String, NativeJson>,
 }
 
@@ -1076,25 +1078,33 @@ impl NativeReads {
     fn new(budget: Duration) -> Self {
         Self {
             budget,
-            started: Instant::now(),
+            spent: Duration::ZERO,
             responses: BTreeMap::new(),
         }
+    }
+
+    /// The budget spent so far: the time native reads have taken.
+    #[cfg(test)]
+    fn spent(&self) -> Duration {
+        self.spent
     }
 
     fn fetch(&mut self, root: &Path, id: &str) -> Fetch {
         if self.responses.contains_key(id) {
             return Fetch::Reused;
         }
-        let remaining = self.budget.saturating_sub(self.started.elapsed());
+        let remaining = self.budget.saturating_sub(self.spent);
         if remaining.is_zero() {
             return Fetch::BudgetExhausted;
         }
+        let started = Instant::now();
         let response = native_json_within(
             root,
             "specsync",
             &["change", "status", id, "--json"],
             Some(remaining),
         );
+        self.spent += started.elapsed();
         self.responses.insert(id.to_string(), response);
         Fetch::Read
     }
@@ -2177,6 +2187,29 @@ mod tests {
         let gates = [gate(10, 50), gate(30, 70), gate(200, 300)];
         assert_eq!(waiting_in(0, 100, &gates, 1_000).seconds(), Some(60));
         assert_eq!(waiting_in(60, 250, &gates, 1_000).seconds(), Some(60));
+    }
+
+    /// TC-reporting-budget-starts-at-first-read (REQ-reporting-002): the budget bounds
+    /// only time spent waiting on native reads. A record load slower than the whole
+    /// budget, before the first read, leaves that read its full budget: the flaky MSRV
+    /// run read no stub call when loads under heavy concurrent builds spent it first.
+    #[test]
+    fn a_slow_record_load_does_not_spend_the_native_budget() {
+        let directory = tempfile::tempdir().unwrap();
+        let mut reads = NativeReads::new(Duration::from_secs(1));
+        // Chough's own work before and between native reads, slower than the budget.
+        std::thread::sleep(Duration::from_millis(1_100));
+        crate::records::with_native_stdout("specsync", r#"{"id":"c1"}"#, || {
+            assert!(matches!(reads.fetch(directory.path(), "c1"), Fetch::Read));
+            assert!(matches!(reads.fetch(directory.path(), "c1"), Fetch::Reused));
+            std::thread::sleep(Duration::from_millis(200));
+            assert!(matches!(reads.fetch(directory.path(), "c2"), Fetch::Read));
+        });
+        assert!(
+            reads.spent() < Duration::from_millis(500),
+            "{:?}",
+            reads.spent()
+        );
     }
 
     #[test]
