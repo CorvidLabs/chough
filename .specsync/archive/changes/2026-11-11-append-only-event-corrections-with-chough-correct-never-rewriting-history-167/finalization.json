@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "append-only-event-corrections-with-chough-correct-never-rewriting-history-167",
+  "implementation_commit": "364eb89885ddc882423217d8d4bdb0ca8cb2e0c6",
+  "implementation_tree": "982bf85f2d097cc26b0939e56b145e5c5f99c48b",
+  "contract_digest": "117a456030b12767cd1e97ae6c9aaee91dfd3502aff948d34e58d7b1d8f19fe2",
+  "workspace_digest": "916ed9d90011b264ec797d835187a92805ed667785576cb4cf094b323a3dff53",
+  "closing_digest": "4662b31fca63cc98fd9035a6d1c9bfe9d88d1825afcaae33202aba94ecc90a3c",
+  "review_digest": "86357c4d417d1fb5f6e34d2b0e27a67b8537ab0b2c223b7503838a9364afe3aa",
+  "finalization_digest": "3e710878cf6495836a14aab1aa17ade349470986a80ac3355b9b923439f43003",
+  "timestamp": 1794357682
+}

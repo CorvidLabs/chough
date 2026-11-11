@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "append-only-event-corrections-with-chough-correct-never-rewriting-history-167",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "364eb89885ddc882423217d8d4bdb0ca8cb2e0c6",
+      "contract_digest": "117a456030b12767cd1e97ae6c9aaee91dfd3502aff948d34e58d7b1d8f19fe2",
+      "execution_digest": "86dd40356a1dfba1877c91ee73cbdf3e71830834a03e6b541be63e1d48d3afeb",
+      "workspace_digest": "916ed9d90011b264ec797d835187a92805ed667785576cb4cf094b323a3dff53",
+      "timestamp": 1794357522
+    }
+  ]
+}
