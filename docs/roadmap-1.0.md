@@ -2,8 +2,8 @@
 
 Source: Leif's MVP / 1.0 interview of 2026-11-10 and his same-day decisions on
 issues #14, #165, #167, #201, #234, #235 and #236 and the 2026-11-10
-design review, captured as FLOW-21 to FLOW-23, DRIVE-24 to DRIVE-28, KNOW-30 to
-KNOW-33 and LIFE-17 to LIFE-26. This
+design review, captured as FLOW-21 to FLOW-24, DRIVE-24 to DRIVE-28, KNOW-30 to
+KNOW-35 and LIFE-17 to LIFE-26. This
 roadmap records proposed sequencing; it is not human acceptance or proof of
 delivery. Durable intent stays in [HI](../hi/).
 
@@ -102,7 +102,9 @@ artifacts or are regenerated from seeds, matching LIFE-8), with each evidence
 entry a one-line claim plus a receipt in the DRIVE-26 form; the remaining
 case-binding fixes (FLOW-22, #14 item 3: external artifacts by recorded
 fingerprint); FLOW-23 (#236): a human's Chough gate approval drives the
-SpecSync approval as that human, never a hard-coded identity; LIFE-26 (#234):
+SpecSync approval as that human, never a hard-coded identity; FLOW-24:
+approval on permission given in advance is recorded in the agent's name,
+quoting the earlier permission; LIFE-26 (#234):
 committed records never leak local paths, usernames, credentials or personal
 information; and #12 (Chough records and SpecSync verification making each
 other stale). #60 and #136 are fixed on main (#204, #209).
@@ -122,9 +124,13 @@ Serves bar 1.
 Scope: LIFE-23: all of KNOW is in the 1.0 scope — the librarian, the roll-ups,
 the index and observations — re-scoped by the 2026-11-10 interview round 2
 (#235) and the design review: the vault holds only what has no other home
-(lessons, decisions with their reasons, bug write-ups and short session
-stories in the DRIVE-26 form) and links to hi/, specs/, .specsync/ and
-.chough/, never copies (KNOW-30, KNOW-31, KNOW-32). A module's own lessons
+(cross-project lessons and journal posts) and links to hi/, specs/,
+.specsync/ and .chough/ — including the bug files and session stories that
+live in .chough/ — never copies or holds them (KNOW-30, KNOW-31, KNOW-32).
+Every finished session's story stays in the archive, nothing trimmed
+(KNOW-34); proof splits: logs to CI, the record keeps the key failing lines,
+the exact command and a fingerprint, and a few small key screenshots sit
+beside the story under a size cap (KNOW-35). A module's own lessons
 stay with its spec; only cross-project lessons live in `knowledge/lessons/`
 (KNOW-31). A journal post is short and links to the archived session story,
 so nothing is written twice (KNOW-33); `knowledge/index.md` is the vault's
@@ -288,10 +294,12 @@ named by date plus slug, with old sequential IDs kept as aliases.
   FLOW-17 is unchanged until then.
 - KNOW-29 says older archived sessions "roll into the knowledge vault as a
   summary note with attachments", which reads as a move. The 2026-11-10
-  interview round 2 (#235) resolved this: KNOW-30 now records that the vault
-  links and never moves or copies, with at most a short session story that
-  links. KNOW-29's roll-up now reads as link-and-story; the conflict is
-  closed.
+  interview round 2 (#235) and Leif's "Keep all" answer (KNOW-34) resolved
+  this: the vault links and never moves or copies, and every finished
+  session's story stays. KNOW-29 and the other cleanup-era criteria carry a
+  supersession note and retire with the 0.6.0 change, which removes the
+  behavior, requirements and cases together; KNOW-10's never-weaken and
+  KNOW-11's preview-first safeguards carry forward to the one-time upgrade.
 - The interview describes today's layout as "a single committed
   session.json"; main has had per-session files since 0.4.0 (DRIVE-3,
   DRIVE-13). DRIVE-24 is the folder form of the same direction, not a

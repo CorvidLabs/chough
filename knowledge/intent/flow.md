@@ -28,6 +28,7 @@ criteria:
   - FLOW-21
   - FLOW-22
   - FLOW-23
+  - FLOW-24
 tags:
   - chough/intent
 ---
@@ -63,3 +64,4 @@ archived changes whose requirements trace it.
 - **FLOW-21**: none yet
 - **FLOW-22**: none yet
 - **FLOW-23**: none yet
+- **FLOW-24**: none yet
