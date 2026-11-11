@@ -29,8 +29,8 @@ opens the prototype, exercises the interactions, checks each listed state at eac
 target viewport, and saves screenshots with notes. Record them as observations
 (`chough cases record <design-qa case> --method agent-assisted …`) with method and
 limits. Check each screenshot for personal information before recording it; a session
-commits at most 5 small key screenshots, and larger ones are recorded by fingerprint
-(see [testing.md](testing.md)). A text-only host does the source checks, then hands rendered judgment to a
+commits at most 5 small key screenshots, each with `chough evidence add … --screenshot
+<path>`, and larger ones are recorded by fingerprint (see [testing.md](testing.md)). A text-only host does the source checks, then hands rendered judgment to a
 capable agent or the human and leaves the unperformed checks explicit.
 
 Run the design, accessibility and user-advocate passes from [roles.md](roles.md).

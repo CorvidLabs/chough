@@ -97,16 +97,16 @@ Chough, in order, rather than after the fact.
   the declared variables, not their values, and always state that inherited
   variables were not recorded.
 - `expect_output` and the `cargo-test` count read the output with complete terminal
-  escape sequences (colours, hyperlinks) removed, while the artifact keeps the raw
+  escape sequences (colours, hyperlinks) removed, while the raw log keeps the raw
   bytes. Write fragments as the visible text; a fragment containing ESC is refused.
 - Manual or agent-assisted: `chough cases record <ID> --method manual --verdict 1=pass
-  --verdict 2=fail … --summary "…" --artifact <screenshot>` gives a verdict for every
+  --verdict 2=fail … --summary "…" --artifact <file>` gives a verdict for every
   expected outcome; any fail makes the observation failed. Like `cases run`, it
   names the entry when `--observation-id` is omitted and exits 3 when the outcome is
   not passed. Direct `chough evidence add [ID]` names its entry the same way and
-  applies the same rules; for a manual failure the entry can keep the key failing
-  lines within the same bounds. IDs from before 0.6.0 stay readable and linkable as
-  aliases.
+  applies the same rules; for a manual failure, `--failing-lines "<text>"` keeps the
+  key failing lines within the same bounds, and `--screenshot <path>` commits one key
+  screenshot (below). IDs from before 0.6.0 stay readable and linkable as aliases.
 
 A failing case stays failed even when every other case passes. Do not rerun until
 it passes and report only the pass. Capture the failure with
@@ -128,8 +128,10 @@ that machine freshness re-reads the file as `current` or `changed`; elsewhere it
 `external, not checkable here`, which is neither a pass nor stale. A missing path, a
 directory, a symlink or a file over the bound is refused.
 
-A session may commit at most 5 small key screenshots beside their evidence entries:
-PNG or JPEG, at most 512 KiB each and 2 MiB in all, with their metadata stripped.
+A session may commit at most 5 small key screenshots beside their evidence entries,
+each with `chough evidence add … --screenshot <path>` (add `--case <ID>` for a manual
+case check): PNG or JPEG, at most 512 KiB each and 2 MiB in all, with their metadata
+stripped.
 Chough cannot see what an image shows, so check every screenshot for personal
 information (names, emails, paths, tokens, private messages) before adding it, and
 crop or blur what does not belong. Record a larger image by fingerprint with
