@@ -52,6 +52,7 @@ or redacting every value before it is written.
 | `utc_date` | Formats a Unix time as its UTC `YYYY-MM-DD` date. |
 | `dated_name` | Names a new record `<date>-<slug>`, cut back at a hyphen to leave room for a clash suffix. |
 | `create_named` | Creates a record by create-new, with one clash suffix on a clash and a refusal on a second. |
+| `suffixed` | Adds one clash suffix to a name from one fresh draw of 24 random bits. |
 | `RECORD_BOUND` | The 65,536-byte bound of every record kind not named otherwise. |
 | `SESSION_BOUND` | The 1,048,576-byte bound of a session record and of an archived session story. |
 | `RECEIPT_BOUND` | The 4,194,304-byte bound of a migration receipt. |
@@ -72,6 +73,7 @@ or redacting every value before it is written.
 | `body` | The Markdown body. |
 | `section` | The text of a `## ` section. |
 | `append_to_section` | Appends lines to the end of a `## ` section, or creates it at the end of the body. |
+| `mark_item` | Marks one item of a `## ` section on its own line, the one in-place edit Chough makes to a section it owns. |
 | `render` | The whole record file. |
 | `render_within` | The record file, refused when over its kind's bound. |
 | `fields` | Every value a record would write, with its field name, for the leak guard. |

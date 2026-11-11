@@ -3,22 +3,21 @@ module = "history"
 
 [[case]]
 id = "TC-history-bounds-pinned-exactly"
-title = "The recent, cycle and receipt bounds hold at exactly their value and refuse one byte past it"
+title = "The 4,096-entry timeline and 1 MiB session bounds are pinned exactly"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["LIFE-3", "LIFE-8"]
 requirements = ["REQ-history-003"]
-paths = ["src/history.rs", "src/evidence.rs", "tests/history.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
+paths = ["src/history.rs", "src/session_md.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["the three history tests that pin RECENT_BYTES, CYCLE_BYTES and RECEIPT_BYTES pass"]
+expected = ["both pinned bound tests pass"]
 
 [case.bind]
 adapter = "command"
-argv = ["cargo", "test", "--locked", "--test", "history", "--", "recent_traversal_stops_at_exactly_512_kib", "a_cycle_of_exactly_16_mib_is_full_and_one_byte_more_is_over_its_bound", "a_receipt_of_exactly_1_mib_is_read_and_one_byte_more_is_refused"]
-expect_output = ["test result: ok. 3 passed"]
-timeout_seconds = 600
+argv = ["cargo", "test", "--locked", "--test", "history", "--", "a_timeline_holds_4096_entries_and_refuses_the_4097th", "a_session_record_of_exactly_1_mib_is_read_and_one_byte_more_is_refused"]
+expect_output = ["test result: ok. 2 passed"]
 
 [[case]]
 id = "TC-history-inbox-bounds-pinned-exactly"
