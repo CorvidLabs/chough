@@ -6,8 +6,8 @@ guided by the skill or kept as a qualified, deferred or unavailable adapter.
 
 ## Platforms
 
-Chough supports macOS and Linux. Windows is best-effort, through WSL 2 with Ubuntu;
-native Windows is not supported (FLOW-17, FLOW-21). SpecSync made the same choice: since its
+Chough supports macOS and Linux. Windows is supported through WSL 2 with Ubuntu, on a
+best-effort basis; native Windows is not supported (FLOW-17, FLOW-21). SpecSync made the same choice: since its
 6.0 release it publishes only Linux and macOS binaries and points Windows users to WSL.
 
 | Platform | Status | What shows it |
