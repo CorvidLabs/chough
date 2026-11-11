@@ -1058,10 +1058,8 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
     walk_files(root, ".chough/history", &mut leftovers)?;
     walk_files(root, ".chough/sessions/shelved", &mut leftovers)?;
     // `.chough/sessions/.gitignore` is a 0.6.0 file too (the same `.*.tmp`), so it stays.
-    for path in [".chough/transitions.jsonl"] {
-        if local_path(root, path)?.is_file() {
-            leftovers.insert(path.to_string());
-        }
+    if local_path(root, ".chough/transitions.jsonl")?.is_file() {
+        leftovers.insert(".chough/transitions.jsonl".to_string());
     }
     for path in leftovers {
         if lineage_files.contains(&path) || carried.sources.contains(&path) {
