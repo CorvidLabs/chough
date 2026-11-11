@@ -476,10 +476,8 @@ fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
     if !native {
         // A session that lost its native change record; reaching accept needs one, so
         // the record is cleared after the reset.
-        let path = format!(".chough/sessions/{SHIP_KEY}.json");
-        let mut session: serde_json::Value = serde_json::from_str(&fixture.read(&path)).unwrap();
-        session["native_change"] = serde_json::Value::Null;
-        fixture.write(&path, &session.to_string());
+        fixture.ok(&["session", "use", SHIP_KEY]);
+        fixture.set_front("native_change", "");
     }
     fixture.commit("fixture");
     fixture
@@ -487,15 +485,7 @@ fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
 
 /// The ship session's checkpoint, open or archived.
 fn ship_session(fixture: &Fixture) -> serde_json::Value {
-    for path in [
-        format!(".chough/sessions/{SHIP_KEY}.json"),
-        format!(".chough/sessions/archive/{SHIP_KEY}.json"),
-    ] {
-        if fixture.exists(&path) {
-            return serde_json::from_str(&fixture.read(&path)).unwrap();
-        }
-    }
-    panic!("no session {SHIP_KEY}");
+    fixture.session_json(SHIP_KEY)
 }
 
 /// The four relay values for the review gate.
@@ -539,23 +529,35 @@ fn records(root: &Path) -> BTreeMap<String, Vec<u8>> {
         .collect()
 }
 
-/// Whether a history event records the review gate closed with the four values.
+/// Whether the archived story's Timeline records the review gate closed with the four
+/// values. After the move into done there is no open session, so the story is read
+/// directly.
 fn gate_closed_with_relay(fixture: &Fixture) -> bool {
     let expected = serde_json::json!({
         "decided_by": "SYNTHETIC-human", "words": "pass", "where": "a test",
         "recorded_by": "SYNTHETIC-agent"
     });
-    let cycles = fixture.root().join(".chough/history/cycles");
-    let Ok(cycles) = fs::read_dir(cycles) else {
-        return false;
+    // The session may still be open (a refused done move) or archived.
+    let file = if fixture.is_archived(SHIP_KEY) {
+        fixture.story_of(SHIP_KEY)
+    } else {
+        fixture.session_file_of(SHIP_KEY)
     };
-    for cycle in cycles {
-        for event in fs::read_dir(cycle.unwrap().path()).unwrap() {
-            let value: serde_json::Value =
-                serde_json::from_str(&fs::read_to_string(event.unwrap().path()).unwrap()).unwrap();
-            let transition = &value["transition"];
-            if transition["kind"] == "gate-closed" && transition["relayed_by"] == expected {
-                return true;
+    let story = fixture.read(&file);
+    let mut gate_closed = false;
+    for line in story.lines() {
+        if line.starts_with("- ") {
+            gate_closed = line.contains("· gate-closed ·");
+        } else if gate_closed {
+            if let Some(payload) = line.strip_prefix("  - relayed_by: ") {
+                let relay: serde_json::Value = serde_json::from_str(payload).unwrap();
+                let four = serde_json::json!({
+                    "decided_by": relay["decided_by"], "words": relay["words"],
+                    "where": relay["where"], "recorded_by": relay["recorded_by"]
+                });
+                if four == expected {
+                    return true;
+                }
             }
         }
     }
