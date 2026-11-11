@@ -10,23 +10,28 @@ use std::fs;
 use std::path::Path;
 
 fn assert_new_bug_id(id: &str) {
-    assert!(id.len() <= 100, "bug ID exceeds 100 bytes: {id}");
-    let rest = id.strip_prefix("BUG-").expect("new bug ID prefix");
-    let (slug, digest) = rest.rsplit_once('-').expect("new bug ID separator");
-    assert!(!slug.is_empty() && slug.len() <= 71, "invalid slug: {id}");
+    // `<YYYY-MM-DD>-<slug>`, at most 80 bytes (REQ-records-003).
+    assert!(id.len() <= 80, "bug name exceeds 80 bytes: {id}");
+    let (date, slug) = id.split_at(10);
     assert!(
-        slug.bytes()
-            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-'),
+        date.bytes()
+            .enumerate()
+            .all(|(at, byte)| if at == 4 || at == 7 {
+                byte == b'-'
+            } else {
+                byte.is_ascii_digit()
+            }),
+        "bug name does not start with a date: {id}"
+    );
+    let slug = slug.strip_prefix('-').expect("a slug after the date");
+    assert!(
+        !slug.is_empty()
+            && slug
+                .bytes()
+                .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-'),
         "slug is not lowercase ASCII: {id}"
     );
     assert!(!slug.starts_with('-') && !slug.ends_with('-') && !slug.contains("--"));
-    assert_eq!(digest.len(), 24, "digest length is not 24: {id}");
-    assert!(
-        digest
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
-        "digest is not lowercase hex: {id}"
-    );
 }
 
 #[test]
@@ -154,7 +159,7 @@ fn repeated_validation_needs_authority_honors_stop_and_persists_findings() {
     let bugs = fixture.ok(&["bug", "list"]);
     assert_eq!(bugs["bugs"].as_array().unwrap().len(), 1);
     let bug = fixture.ok(&["bug", "show", &bug_id]);
-    assert_eq!(bug["bug"]["observations"].as_array().unwrap().len(), 3);
+    assert_eq!(bug["bug"]["evidence"].as_array().unwrap().len(), 3);
     assert_eq!(bug["verification"], "reproduced");
 
     fixture.ok(&["validate", "stop"]);
@@ -177,8 +182,8 @@ fn repeated_validation_needs_authority_honors_stop_and_persists_findings() {
     assert_eq!(resumed["captured_locally"][0], bug_id);
     let appended = fixture.ok(&["bug", "show", &bug_id]);
     assert_eq!(appended["bug"]["id"], bug_id);
-    assert_eq!(appended["bug"]["observations"].as_array().unwrap().len(), 5);
-    assert!(fixture.exists(&format!(".chough/bugs/{bug_id}.json")));
+    assert_eq!(appended["bug"]["evidence"].as_array().unwrap().len(), 5);
+    assert!(fixture.exists(&format!(".chough/bugs/{bug_id}.md")));
     assert!(!fixture.exists(".chough/validation.stop"));
 
     // A new objective ends the run consent, so repetition is refused again.

@@ -165,8 +165,7 @@ fn bugs_link_sub_criteria_and_dotted_requirements() {
         "--requirement",
         "REQ-chat.service-1",
     ]);
-    let record: serde_json::Value =
-        serde_json::from_str(&fixture.read(bug["recorded"].as_str().unwrap())).unwrap();
+    let record = fixture.ok(&["bug", "show", bug["id"].as_str().unwrap()])["bug"].clone();
     assert_eq!(record["criteria"], json!(["UX-12.a"]));
     assert_eq!(record["requirements"], json!(["REQ-chat.service-1"]));
 }

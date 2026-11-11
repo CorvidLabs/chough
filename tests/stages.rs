@@ -1841,29 +1841,7 @@ fn case_observation(fixture: &Fixture, id: &str, case: &str, outcome: &str, obse
 }
 
 fn linking_bug(fixture: &Fixture, id: &str, status: &str, scope: &str, observation: &str) {
-    let record = json!({
-        "schema_version": 1,
-        "id": id,
-        "title": format!("Fixture bug {id}"),
-        "symptom": "It breaks",
-        "trigger": "Running the probe",
-        "expected": "It works",
-        "actual": "It broke",
-        "environment": "local",
-        "observations": [observation],
-        "impact": "Not yet assessed.",
-        "classification": "product-defect",
-        "scope": scope,
-        "status": status,
-        "regression_baseline": null,
-        "source": "fixture",
-        "created_at_unix_seconds": 1,
-        "updated_at_unix_seconds": 1,
-    });
-    fixture.write(
-        &format!(".chough/bugs/{id}.json"),
-        &serde_json::to_string(&record).unwrap(),
-    );
+    fixture.bug_md(id, scope, status, &[observation]);
 }
 
 const FAILED: &str = "OBS-fail-000000000000000000000001";
