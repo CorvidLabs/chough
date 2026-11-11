@@ -1430,7 +1430,12 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
     // Refused before any record or native read when invalid (REQ-reporting-002).
     let budget = native_budget()?;
     let phase = Instant::now();
-    let session = read_session(root)?;
+    // With no open session, the newest archived story is the cycle to report (plan step
+    // 9 reads every timeline and receipt).
+    let session = match read_session(root) {
+        Ok(session) => session,
+        Err(error) => crate::sessions::newest_archived(root)?.ok_or(error)?,
+    };
     let at = now()?;
     let mut partial: Vec<Value> = vec![];
     let transitions = read_transitions(root, &session, args.cycle == "all")?;
