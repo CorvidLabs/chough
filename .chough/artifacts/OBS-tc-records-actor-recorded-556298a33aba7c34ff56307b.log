@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test the_override_variables_name_the_agent_model_and_terminal ... FAILED
+
+failures:
+
+---- the_override_variables_name_the_agent_model_and_terminal stdout ----
+
+thread 'the_override_variables_name_the_agent_model_and_terminal' (888433383) panicked at tests/actor.rs:37:5:
+no record names the acting agent
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_override_variables_name_the_agent_model_and_terminal
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.84s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.22s
+     Running tests/actor.rs (target/debug/deps/actor-6860519fe161e062)
+error: test failed, to rerun pass `--test actor`

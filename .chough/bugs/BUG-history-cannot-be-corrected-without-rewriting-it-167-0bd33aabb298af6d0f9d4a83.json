@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "id": "BUG-history-cannot-be-corrected-without-rewriting-it-167-0bd33aabb298af6d0f9d4a83",
+  "title": "History cannot be corrected without rewriting it (#167)",
+  "symptom": "there is no way to record that an earlier transition's reason, decision or next action was wrong except by editing the record",
+  "trigger": "Try to correct an earlier stage move's reason",
+  "expected": "chough correct appends a correction entry linked to the entry and changes no earlier byte; next and status show the corrected text, marked",
+  "actual": "chough has no correct command (error: unrecognized subcommand 'correct')",
+  "criteria": [
+    "LIFE-18",
+    "LIFE-7"
+  ],
+  "requirements": [
+    "REQ-history-002"
+  ],
+  "cases": [
+    "TC-history-append-only-corrections"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "99b2664f637137a402777a2e023ee66321ffce62",
+  "steps": [
+    "chough init; chough stage advance; chough stage reset --to intent --reason <text>",
+    "chough correct ^<entry id> --reason <what is true instead>"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-history-append-only-corrections-2154744639f0ea1e779ae0b5"
+  ],
+  "impact": "Wrong history stays or gets rewritten by hand (GitHub #167, folded from PR #210)",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "GitHub issue #167; red on 0.5.0 at leif/0.6.0-features-red 9e3eef8a",
+  "notes": [],
+  "created_at_unix_seconds": 1794424053,
+  "updated_at_unix_seconds": 1794424053
+}

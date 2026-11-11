@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-237-gate-holds-its-stage-bb20e2599081ad8899140f35",
+  "criteria": [
+    "FLOW-3",
+    "FLOW-5",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-030"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test humans -- --exact a_gate_holds_only_the_stage_it_names for TC-cli-237-gate-holds-its-stage: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-237-gate-holds-its-stage-bb20e2599081ad8899140f35.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-237-gate-holds-its-stage-bb20e2599081ad8899140f35.log": "1e1461f291774a6a2fabdb3116ee286cb05d3b3bd7e55fe6142795adf42223d5"
+  },
+  "observed_at_unix_seconds": 1794423892,
+  "snapshot": {
+    "revision": "018412c85bc31e1b2695a93e58ad0920eb5edf60",
+    "dirty": false,
+    "fingerprint": "819d921ea10284c979806979dbf5fcf3f04c415382db84379e223873eda00efb",
+    "content": "ae213eb2e0c4bf6af4ec8e6a82ffa0076d351f73faeac9e7df6f215182044fab"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-237-gate-holds-its-stage",
+      "digest": "d1117e3e2e52ace02f6728437b006782f49617e1de1508232c9b1cc6f5f11427"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "humans",
+    "--",
+    "--exact",
+    "a_gate_holds_only_the_stage_it_names"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test result: ok. 1 passed\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}
