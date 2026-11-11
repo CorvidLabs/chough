@@ -19,3 +19,24 @@ adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "doctor", "--", "doctor_fix_", "doctor_decision_fixes_need_a_reason_and_record_no_human_decision", "doctor_reports_an_unmigrated_checkpoint_and_never_migrates"]
 expect_output = ["test result: ok. 5 passed"]
 timeout_seconds = 600
+
+# Plan step 10's doctor slice (t37j): the 0.6.0 findings in REQ-history-012's fix order.
+
+[[case]]
+id = "TC-history-doctor-findings-0-6"
+title = "chough doctor reports an unmigrated tree, a committed leak, a rewritten Timeline entry, an alias two bugs hold, an oversized record and missing verification exclusions; it migrates nothing, redacts only with --redact and fixes none of the rest"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17", "LIFE-26", "LIFE-20"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/migrate.rs", "src/leaks.rs", "src/markdown.rs", "fledge.toml", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the six 0.6.0 finding tests in tests/doctor.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "doctor", "--", "doctor_reports_an_unmigrated_checkpoint_and_never_migrates", "doctor_reports_a_committed_leak_and_redacts_it_only_with_redact", "doctor_reports_a_rewritten_timeline_entry_and_fixes_nothing", "doctor_reports_an_alias_held_by_two_bugs_and_fixes_nothing", "doctor_reports_oversized_committed_records_and_the_leaks_step_fails", "doctor_names_the_missing_verification_exclusions"]
+expect_output = ["test result: ok. 6 passed"]
+timeout_seconds = 600
