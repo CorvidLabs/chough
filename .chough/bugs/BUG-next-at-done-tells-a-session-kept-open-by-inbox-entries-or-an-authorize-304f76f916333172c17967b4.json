@@ -24,12 +24,13 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-next-at-done-kept-open-8fdf64561e39e676b9d93935"
+    "OBS-tc-cli-next-at-done-kept-open-8fdf64561e39e676b9d93935",
+    "OBS-tc-cli-next-at-done-kept-open-c238a23f65eb7fca532b2b16"
   ],
   "impact": "An agent following next opens a second session while the first still holds unfolded entries or an authorized release, leaving it open and the release undone",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -41,8 +42,15 @@
       "observations": [
         "OBS-tc-cli-next-at-done-kept-open-8fdf64561e39e676b9d93935"
       ]
+    },
+    {
+      "at_unix_seconds": 1794432502,
+      "text": "status: open -> verified. Green on 9bfd7c48: TC-cli-next-at-done-kept-open passes. The test's third part (the archived session) expected a success before the fix and now expects the existing 'no open session' refusal naming chough session new; the red run failed in the first part, before reaching it.",
+      "observations": [
+        "OBS-tc-cli-next-at-done-kept-open-c238a23f65eb7fca532b2b16"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794432251,
-  "updated_at_unix_seconds": 1794432288
+  "updated_at_unix_seconds": 1794432502
 }
