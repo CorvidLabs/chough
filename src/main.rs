@@ -197,6 +197,14 @@ fn main() -> Result<()> {
     leaks::set_redacting(cli.redact);
     let root = cli.root.canonicalize().context("project root must exist")?;
     ensure!(root.is_dir(), "project root must be a directory");
+    // REQ-records-010: one guard before any record is read or written. Clap has already
+    // answered --help and --version.
+    if !matches!(
+        cli.command,
+        Commands::Migrate(_) | Commands::Doctor(_) | Commands::Skill { .. }
+    ) {
+        migrate::ensure_migrated(&root)?;
+    }
     match cli.command {
         Commands::Init {
             objective,
@@ -281,7 +289,6 @@ fn init(
     modules: Vec<String>,
     hosts: Vec<String>,
 ) -> Result<()> {
-    sessions::ensure_migrated(root)?;
     ensure!(
         modules.iter().all(|module| valid_module_name(module)),
         "invalid module name: use a module ID SpecSync accepts, such as cli or chat.service"

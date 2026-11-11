@@ -65,8 +65,6 @@ const LOCAL: &str = ".chough/local";
 pub(super) const POINTER: &str = ".chough/local/active-session";
 const INBOX_LIMIT: u64 = 16_384;
 const MAX_INBOX: usize = 200;
-/// A 0.5.x checkpoint; its presence means the project has not been migrated.
-const LEGACY: &str = ".chough/session.json";
 
 #[derive(Subcommand)]
 pub(super) enum SessionCommand {
@@ -192,24 +190,6 @@ pub(super) fn ensure_key(key: &str) -> Result<()> {
 
 pub(super) fn enabled(root: &Path) -> Result<bool> {
     Ok(local_path(root, DIR)?.is_dir())
-}
-
-/// Refuse a project still in the 0.5.x layout (REQ-records-010).
-pub(super) fn ensure_migrated(root: &Path) -> Result<()> {
-    let legacy_session = local_path(root, LEGACY)?.exists();
-    let legacy_files = match fs::read_dir(local_path(root, DIR)?) {
-        Ok(entries) => entries.filter_map(|entry| entry.ok()).any(|entry| {
-            entry.file_name().to_str().is_some_and(|name| {
-                name.ends_with(".json") || name == "archive" || name == "shelved"
-            })
-        }),
-        Err(_) => false,
-    };
-    ensure!(
-        !legacy_session && !legacy_files,
-        "refused:unmigrated: this project's Chough records are in the 0.5.x format; run `chough migrate` to see the plan, then `chough migrate --apply <digest>`"
-    );
-    Ok(())
 }
 
 /// The names (without `.json`) of the JSON files directly in `dir`.
@@ -383,7 +363,6 @@ pub(super) fn pointer(root: &Path) -> Result<Option<String>> {
 
 /// The active session's ID, or a refusal naming the next command.
 fn active(root: &Path) -> Result<String> {
-    ensure_migrated(root)?;
     if let Some(id) = pointer(root)? {
         if local_path(root, &archive_file(&id))?.is_file() {
             bail!(
@@ -741,7 +720,6 @@ pub(super) fn create(
         "invalid module name: use a module ID SpecSync accepts, such as cli or chat.service"
     );
     lock_project(root)?;
-    ensure_migrated(root)?;
     for id in open_ids(root)?.iter().chain(archived_ids(root)?.iter()) {
         let file = if local_path(root, &archive_file(id))?.is_file() {
             archive_file(id)
@@ -807,7 +785,6 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
         }
         SessionCommand::Use { key } => {
             lock_project(root)?;
-            ensure_migrated(root)?;
             ensure!(
                 enabled(root)?,
                 "no sessions; run `chough session new <key>`"
@@ -818,7 +795,6 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
             print_json(&json!({"schema_version":1,"active":id}))
         }
         SessionCommand::List => {
-            ensure_migrated(root)?;
             ensure!(
                 enabled(root)?,
                 "no sessions; run `chough session new <key>`"
@@ -952,7 +928,6 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
 
 /// The newest archived story's checkpoint, by its `closed` date and then its ID.
 pub(super) fn newest_archived(root: &Path) -> Result<Option<Session>> {
-    ensure_migrated(root)?;
     let mut newest: Option<(String, String, Checkpoint)> = None;
     for id in archived_ids(root)? {
         let Ok(session) = read_at(root, &archive_file(&id)) else {
@@ -1096,7 +1071,6 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
         "the reason must not be blank; say why the work is abandoned with --reason <text>"
     );
     lock_project(root)?;
-    ensure_migrated(root)?;
     let id = resolve_open(root, key)?;
     let count = unfolded(root, &id)?;
     ensure!(
