@@ -531,7 +531,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "evidence_state": if observations.is_empty() { "missing" } else { "observations-present-not-acceptance" },
         "observations": observations,
         "observation_references": observation_references,
-        "observation_label_note": "current: present with matching inputs; historical: present but stale; pruned: removed by retention (see .chough/pruned.jsonl); unavailable: missing and not in the ledger. Pruned and unavailable observations never count as current, passed or verifying evidence.",
+        "observation_label_note": "current: present with matching inputs; historical: present but stale; removed: not carried by the 0.6.0 migration, as its receipt records; unavailable: missing. Removed and unavailable observations never count as current, passed or verifying evidence.",
         "environment": environment,
         "open_bugs": assessment.open_bugs,
         "blocking_bugs": assessment.blocking,
@@ -832,9 +832,14 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         .iter()
         .filter_map(|entry| entry["id"].as_str())
         .collect();
-    let unreferenced = records::record_names(root, ".chough/evidence")?
+    // The open sessions' entries that nothing references, by ID or alias.
+    let unreferenced = evidence::load_all(root)?
         .iter()
-        .filter(|name| !referenced.contains(name.trim_end_matches(".json")))
+        .filter(|entry| {
+            !std::iter::once(&entry.id)
+                .chain(&entry.aliases)
+                .any(|id| referenced.contains(id.as_str()))
+        })
         .count();
     let attention: Vec<&Value> = references
         .iter()
