@@ -3,21 +3,21 @@ module = "history"
 
 [[case]]
 id = "TC-history-session-archives-itself-at-done"
-title = "A session archives itself at its move into done, stays open for unfolded entries or authorized release, and is skipped without sessions"
+title = "A session archives itself at its move into done, and stays open for unfolded entries or until an authorized release"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-13", "DRIVE-3"]
-requirements = ["REQ-history-006", "REQ-cli-049"]
+requirements = ["REQ-history-006"]
 paths = ["src/sessions.rs", "src/stage.rs", "tests/reduce.rs"]
 environments = ["local-linux-aarch64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["the four reduce tests for the done-time session archive pass"]
+expected = ["the three reduce tests for the done-time session archive pass"]
 
 [case.bind]
 adapter = "command"
-argv = ["cargo", "test", "--locked", "--test", "reduce", "--", "the_move_into_done_archives_the_session_and_clears_the_pointer", "the_move_into_done_keeps_a_session_with_unfolded_inbox_entries_open", "the_move_into_done_skips_the_archive_without_sessions", "a_session_with_release_authorized_archives_itself_after_release"]
-expect_output = ["test result: ok. 4 passed"]
+argv = ["cargo", "test", "--locked", "--test", "reduce", "--", "the_move_into_done_archives_the_session_and_clears_the_pointer", "the_move_into_done_keeps_a_session_with_unfolded_inbox_entries_open", "a_session_with_release_authorized_archives_itself_after_release"]
+expect_output = ["test result: ok. 3 passed"]
 timeout_seconds = 600
 
 [[case]]

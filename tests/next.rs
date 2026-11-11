@@ -1139,8 +1139,8 @@ fn next_surfaces_the_error_library_index_refuses_a_symlinked_archive_with() {
 }
 
 /// Issue 74: `next` names the newest 3 lesson bundles by finalization timestamp, then
-/// directory, the same archives `chough library index` marks hot (KNOW-8), not the
-/// newest by directory name.
+/// directory, the same archives whose bundles `chough library index` links (KNOW-8), not
+/// the newest by directory name.
 #[test]
 fn next_lists_the_newest_three_bundles_by_finalization_like_the_librarian() {
     let fixture = Fixture::new();
@@ -1194,22 +1194,21 @@ fn next_lists_the_newest_three_bundles_by_finalization_like_the_librarian() {
         "{shown}"
     );
 
-    // The librarian's hot archives are the same three.
+    // The knowledge index links the same three bundles, and no older one.
     fixture.ok(&["library", "index"]);
-    let index = fixture.read("knowledge/INDEX.md");
-    for (slug, status) in [
-        ("export-chats", "hot"),
-        ("search-messages", "hot"),
-        ("add-bounded-pagination", "hot"),
-        ("protect-secrets", "cold"),
-        ("preserve-history", "cold"),
-        ("enforce-rules", "cold"),
+    let index = fixture.read("knowledge/index.md");
+    for (slug, linked) in [
+        ("export-chats", true),
+        ("search-messages", true),
+        ("add-bounded-pagination", true),
+        ("protect-secrets", false),
+        ("preserve-history", false),
+        ("enforce-rules", false),
     ] {
-        assert!(
-            index.contains(&format!(
-                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
-            )),
-            "{slug} {status} in {index}"
+        assert_eq!(
+            index.contains(&format!("- [{slug}](../{})\n", path(slug))),
+            linked,
+            "{slug} in {index}"
         );
     }
 }
@@ -1275,16 +1274,20 @@ fn next_and_the_librarian_pick_the_same_hot_archives_when_a_bundle_is_missing() 
         "{shown}"
     );
 
+    // The knowledge index names the same three, d's bundle as missing, and not a.
     fixture.ok(&["library", "index"]);
-    let index = fixture.read("knowledge/INDEX.md");
-    for (slug, status) in [("d", "hot"), ("c", "hot"), ("b", "hot"), ("a", "cold")] {
+    let index = fixture.read("knowledge/index.md");
+    assert!(
+        index.contains(&format!("- d: `{base}-d/lesson-bundle.md` (missing)\n")),
+        "{index}"
+    );
+    for slug in ["c", "b"] {
         assert!(
-            index.contains(&format!(
-                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
-            )),
-            "{slug} {status} in {index}"
+            index.contains(&format!("- [{slug}](../{base}-{slug}/lesson-bundle.md)\n")),
+            "{slug} in {index}"
         );
     }
+    assert!(!index.contains(&format!("{base}-a/")), "{index}");
 }
 
 /// Render a 0.5.x-shaped checkpoint JSON into the active session's session.md

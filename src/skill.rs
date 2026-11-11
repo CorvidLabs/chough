@@ -288,6 +288,12 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/checkpoint.md",
         "b7371621899a8926447873b1f80db3f64cc51361544251099793a1e1f79760e3",
     ),
+    // v0.4.0, v0.5.0 (commit 455cb643) and main through plan step 8's base; superseded
+    // by the 0.6.0 vault guidance: index.md, the journal and lessons (REQ-cli-044).
+    (
+        "references/librarian.md",
+        "ba9e89ee55dd51f7ac477a52c27ce1d641272a1fabc9be3fce150fa6321f47b8",
+    ),
     // Main 66bef80 (safe checkpoint merges, #29); superseded when the learning handoff
     // change added decision prefixes and the handoff blocks to the same file.
     (

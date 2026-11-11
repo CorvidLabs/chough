@@ -6,6 +6,7 @@ use std::path::Path;
 
 pub(crate) const OBSERVATION_SLUG_LIMIT: usize = 71;
 pub(crate) const VALIDATION_SLUG_LIMIT: usize = 71;
+#[cfg_attr(not(test), allow(dead_code))] // removed at integration (t382)
 pub(crate) const SNAPSHOT_SLUG_LIMIT: usize = 70;
 
 #[cfg(test)]
@@ -89,6 +90,7 @@ pub(crate) fn valid_validation_id(id: &str) -> bool {
     valid_random_id("VAL-", id, VALIDATION_SLUG_LIMIT)
 }
 
+#[cfg_attr(not(test), allow(dead_code))] // removed at integration (t382)
 pub(crate) fn valid_snapshot_id(id: &str) -> bool {
     valid_random_id("SNAP-", id, SNAPSHOT_SLUG_LIMIT)
 }
@@ -140,6 +142,7 @@ pub(crate) fn validation(source: &str) -> Result<String> {
     allocate("VAL-", source, "validation", VALIDATION_SLUG_LIMIT)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 pub(crate) fn snapshot(source: &str) -> Result<String> {
     allocate("SNAP-", source, "snapshot", SNAPSHOT_SLUG_LIMIT)
 }

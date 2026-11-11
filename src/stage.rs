@@ -1091,104 +1091,6 @@ fn latest_reset_at(
     Ok(history.and_then(|read| newest(read.records.iter())))
 }
 
-/// When the current cycle began: its newest reset, or None when no reset time can be
-/// read (a first cycle, or a partial history walk).
-fn current_cycle_start(root: &Path, session: &Checkpoint) -> Option<u64> {
-    let cycle = crate::history::selected(
-        session,
-        crate::history::CYCLE_EVENTS,
-        crate::history::CYCLE_BYTES,
-        // The newest reset by time, over the whole timeline: merged branches can
-        // append an older reset after a newer one.
-        true,
-    );
-    if !cycle.partial.is_empty() {
-        return None;
-    }
-    if cycle.records.iter().any(|record| record["kind"] == "reset") {
-        latest_reset_at(root, Some(&cycle)).ok().flatten()
-    } else {
-        None
-    }
-}
-
-/// REQ-cli-045 (KNOW-16, KNOW-21): on the move into done, with the librarian on, drop the
-/// checkpoint's observation references whose record was observed before the current cycle
-/// began or has no record, and every file and design reference: done closes the cycle, and
-/// the native archive and the vault keep what the change touched. Never fails: the result
-/// is `dropped`, `unchanged`, `skipped` or `refused`, so the move into done never depends
-/// on it.
-fn drop_closed_cycle_references(root: &Path, session: &mut Checkpoint) -> Value {
-    match crate::prefs::effective(root, "librarian") {
-        Ok((value, _)) if value != "on" => {
-            return json!({"status": "skipped", "reason": "the librarian is off"});
-        }
-        Err(error) => return json!({"status": "refused", "reason": format!("{error:#}")}),
-        Ok(_) => {}
-    }
-    let start = current_cycle_start(root, session);
-    // Only a missing record may be dropped; an existing record that cannot be read keeps
-    // every reference and refuses the step (review of #108).
-    let mut kept = vec![];
-    let mut dropped = vec![];
-    let mut unreadable = vec![];
-    if let Some(start) = start {
-        for id in &session.observations {
-            match crate::evidence::observed_at(root, id) {
-                Ok(Some(at)) if at >= start => kept.push(id.clone()),
-                Ok(_) => dropped.push(id.clone()),
-                Err(error) => unreadable.push(format!("{id}: {error:#}")),
-            }
-        }
-    } else {
-        kept.clone_from(&session.observations);
-    }
-    if !unreadable.is_empty() {
-        return json!({"status": "refused", "reason": format!(
-            "a referenced observation record cannot be read, so no reference was dropped ({})",
-            unreadable.join("; ")
-        )});
-    }
-    let dropped_files = session.references.files.clone();
-    let dropped_design = session.references.design.clone();
-    if dropped.is_empty() && dropped_files.is_empty() && dropped_design.is_empty() {
-        return match start {
-            Some(_) => json!({"status": "unchanged"}),
-            None => {
-                json!({"status": "skipped", "reason": "no reset time can be read, so no cycle is known to be closed"})
-            }
-        };
-    }
-    let before = (
-        std::mem::replace(&mut session.observations, kept),
-        std::mem::take(&mut session.references.files),
-        std::mem::take(&mut session.references.design),
-    );
-    match save_checkpoint(root, session) {
-        Ok(()) => {
-            let mut result = json!({
-                "status": "dropped",
-                "dropped": dropped,
-                "dropped_files": dropped_files,
-                "dropped_design": dropped_design,
-            });
-            if start.is_none() {
-                result["observations"] =
-                    json!("kept: no reset time can be read, so no cycle is known to be closed");
-            }
-            result
-        }
-        Err(error) => {
-            (
-                session.observations,
-                session.references.files,
-                session.references.design,
-            ) = before;
-            json!({"status": "refused", "reason": format!("{error:#}")})
-        }
-    }
-}
-
 /// Whether the recorded archived change belongs to the cycle before the latest reset:
 /// the latest stage transition is that reset, or the change's recorded finalization is
 /// no later than it (REQ-cli-021). Without both times only the first test applies.
@@ -1972,15 +1874,6 @@ fn forward_step(
     Ok(Some(gate.label))
 }
 
-/// The response of a native read a forward move made, for the move into done to reuse
-/// for this change's own manifest (REQ-cli-052). It never outlives the command.
-pub(super) fn read_value(read: &Option<NativeState>) -> Option<&Value> {
-    match read {
-        Some(NativeState::State(_, value)) => Some(value),
-        _ => None,
-    }
-}
-
 /// `stage advance --to <target>`: every main stage up to `target` on one native read.
 /// Every step is checked before the first transition is recorded, so a refused step
 /// records nothing (REQ-cli-052). Returns the applied move and the native read it made.
@@ -2198,19 +2091,16 @@ fn move_back(
 
 pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
     let mut session = read_checkpoint(root)?;
-    // The native read a forward move made, kept for the move into done (REQ-cli-052).
-    let mut read = None;
     let mut applied = match command {
         StageCommand::Show => None,
         StageCommand::Advance { note, to } => {
             if let Some(note) = &note {
                 ensure_text("note", note)?;
             }
-            let (applied, made) = match to {
+            let (applied, _) = match to {
                 Some(target) => advance_to(root, &mut session, &target, note.as_deref())?,
                 None => move_forward(root, &mut session, "advance", note.as_deref(), None)?,
             };
-            read = made;
             Some(applied)
         }
         StageCommand::Skip { reason } => {
@@ -2243,14 +2133,13 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
                 ensure_text("note", note)?;
             }
             let backfill = backfill_evidence(root, &at, &commit, &quote)?;
-            let (applied, made) = move_forward(
+            let (applied, _) = move_forward(
                 root,
                 &mut session,
                 "advance",
                 note.as_deref(),
                 Some(backfill),
             )?;
-            read = made;
             Some(applied)
         }
         StageCommand::Back { to, reason } => {
@@ -2409,32 +2298,20 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         .as_mut()
         .filter(|applied| applied["kind"] == "advance" && applied["to"] == "done")
     {
-        // REQ-cli-045 (KNOW-16, KNOW-21): first drop the checkpoint's references from
-        // closed cycles, so they no longer protect proof the archives and vault now keep.
-        applied["checkpoint_references"] = drop_closed_cycle_references(root, &mut session);
-        // REQ-cli-052 (DRIVE-2): the trim takes this change's manifest from the gate's
-        // read instead of reading it again; every other read stays live.
-        let change = session.native_change.clone();
-        let prior = change.as_deref().zip(read_value(&read));
-        applied["librarian_trim"] = crate::library::trim_at_done(root, prior);
-        // REQ-cli-043: then refresh the knowledge directory, so the change just archived
-        // and any proof just trimmed are summarized; never undoes the move either.
-        applied["librarian_index"] = crate::library::refresh_at_done(root);
-        // REQ-cli-049 (KNOW-23): last, rotate the retention ledger into the vault.
-        applied["ledger_rotation"] = crate::evidence::rotate_at_done(root);
-        // REQ-history-006 (DRIVE-13, #155): last among the steps that change a record, the
-        // session archives itself in its own change and the active pointer is cleared;
-        // never undoes the move either.
+        // REQ-history-006 (DRIVE-13, #155): the session archives itself in its own change
+        // and the active pointer is cleared; never undoes the move.
         let from = applied["from"].as_str().unwrap_or_default().to_string();
         applied["session_archive"] = crate::sessions::archive_at_done(root, &session, &from);
-        // REQ-cli-043 (KNOW-4, #191): the rotation and the self-archive change what the
-        // directory is generated from, so regenerate once more and report that pass.
-        if applied["librarian_index"]["status"] == "refreshed"
-            && (applied["ledger_rotation"]["status"] == "rotated"
-                || applied["session_archive"]["status"] == "archived")
+        // REQ-records-011: then its journal post, and REQ-cli-043: then index.md and
+        // feed.xml, regenerated once; neither undoes the move.
+        if applied["session_archive"]["status"] == "archived"
+            && let Some(id) = applied["session_archive"]["id"]
+                .as_str()
+                .map(str::to_string)
         {
-            applied["librarian_index"] = crate::library::refresh_at_done(root);
+            applied["journal_post"] = crate::journal::post_for_done(root, &id);
         }
+        applied["librarian_index"] = crate::library::refresh_at_done(root);
     }
     report(root, &session, applied)
 }

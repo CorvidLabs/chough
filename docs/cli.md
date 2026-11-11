@@ -30,7 +30,8 @@ their JSON.
 | `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty); `retention` off, auto, manual (manual opts out of trimming at done, KNOW-13). Only `always`, `standing` and `auto` authorize without a run consent, except that with the librarian on, an unset `retention` lets the trim at done run (see [Post-archive summary](#post-archive-summary)); `manual` or a recorded `off` stops it. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring, release, retention. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. A new run receives a VAL ID and every attempt receives a new OBS ID. `resume ID` continues a new or legacy run under its original ID; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
-| `library init\|snapshot PATH... --reason R\|index [--check]\|archive [--apply]` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`). `snapshot` copies each named file (at most 4 MiB) into `<library-dir>/snapshots/SNAP-<slug>-<24-lowercase-hex>/` with a manifest of source path, revision, SHA-256 and creation time; `index` regenerates `INDEX.md` (new and legacy dated snapshots, archived changes newest first with the newest 3 marked hot, a lessons index of pointers, and any earlier `library/` folder listed as is) and one `archives/<change-id>.md` entry per archived native change; `index --check` writes nothing and fails when a generated note is missing or differs (see [Merging branches](#merging-branches)). `archive` previews, or with `--apply` performs, the post-archive summary; see [Post-archive summary](#post-archive-summary). No gate reads the knowledge directory. |
+| `library init\|index [--check]\|merge BASE OURS THEIRS` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`). It keeps the vault (REQ-cli-044): `index.md`, the reading guide, and `journal/feed.xml`, both regenerated from their sources; the journal posts; `lessons/`; and any existing `snapshots/`, `briefs/` and earlier `library/` folder, kept as they are and linked from the index. `init` builds `index.md`, `journal/` and `lessons/`. `index` regenerates `index.md` and the feed, and removes a `README.md` an earlier release generated once its bytes are committed; `index --check` writes nothing and fails naming each generated file that is missing or differs (see [Merging branches](#merging-branches)). `merge` is the Git merge driver for those two files: it keeps ours, and the next `library index` rebuilds them. No gate reads the knowledge directory. |
+| `journal add --kind K --title T --body B [--link L]...` | Write one post, `knowledge/journal/<date>-<slug>.md`, by create-new, then regenerate the index and feed (REQ-records-011). `--kind` is `shipped`, `closed`, `intent`, `spec`, `broke` or `learned`; the body is at most 1,200 bytes; each `--link` is a repository path that exists or an http(s) URL. The move into done writes a `shipped` post from the archived story and `session close` a `closed` one. Chough never rewrites a post. |
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. Hosts that share a directory get one entry. Both report a `legacy` list for an older `.claude/skills` copy, with each file's state, and never write it. |
 | `skill remove-legacy [--host claude]` | Remove a legacy `.claude/skills` copy's files that are byte-identical to the current or a known earlier bundle, then empty directories; keeps edited and unknown files and reports `removed` and `kept`. Refuses, removing nothing, while the shared `.agents/skills` copy is missing. |
 | `timing [--json] [--cycle current\|all] [--stage S] [--case ID] [--bug ID]` | Read-only report of how long stages, tests, bug fixes and human gates took, from existing records; Markdown-style text by default. Every duration is elapsed wall-clock time, not effort. See [Timing](#timing). |
@@ -389,7 +390,8 @@ file Chough writes (REQ-cli-047, DRIVE-12):
 | `.chough/cases/<module>.<part>.cases.toml` | Each change adds its cases in a file of its own |
 | `.chough/pruned.jsonl`, `CHANGELOG.md` | Git's `union` driver: both sides' lines are kept |
 | `.chough/bugs/<id>.json` | `chough bug merge`, below |
-| `knowledge/` | Git's `union` driver, then `chough library index`; `library index --check` fails CI until it is rebuilt |
+| `knowledge/journal/<date>-<slug>.md` | Posts with unique names, written once |
+| `knowledge/index.md`, `knowledge/journal/feed.xml` | `chough library merge` keeps ours, then `chough library index`; `library index --check` fails CI until it is rebuilt |
 
 A cases file is `<module>.cases.toml`, or `<module>.<part>.cases.toml`. Its `module`
 field names the module, and `<part>` uses letters, digits, `-` and `_`. Case IDs stay
@@ -411,36 +413,34 @@ unchanged and the command exits nonzero.
 file that is missing or differs from a rebuild, with CRLF read as LF, and it is a step of
 the verify and ci lanes here.
 
+`chough library merge <base> <ours> <theirs>` is the driver for `knowledge/index.md` and
+`knowledge/journal/feed.xml`. It keeps ours byte for byte and exits 0, so a merge commit
+never holds a union of two feeds that is not valid XML; the next `chough library index`
+rebuilds both from the merged posts and sources.
+
 Declare the drivers in `.gitattributes`:
 
 ```gitattributes
 .chough/pruned.jsonl merge=union
 CHANGELOG.md merge=union
 .chough/bugs/*.json merge=chough-bug
-knowledge/INDEX.md merge=union
-knowledge/rules.md merge=union
-knowledge/timeline.md merge=union
-knowledge/timeline/*.md merge=union
-knowledge/archives/*.md merge=union
-knowledge/modules/*.md merge=union
-knowledge/intent/*.md merge=union
-knowledge/bugs/*.md merge=union
-knowledge/sessions/*.md merge=union
-knowledge/attachments/*/pruned.jsonl merge=union
+knowledge/index.md merge=chough-generated
+knowledge/journal/feed.xml merge=chough-generated
 ```
 
-In the knowledge directory, only the generated notes, which `library index --check`
-compares, and the retention ledger shards, which are append-only like the ledger, are
-union-merged. Attachments, snapshots, briefs and the README still conflict.
+In the knowledge directory, only the two generated files, which `library index --check`
+compares, use the driver. Posts, lessons, snapshots and briefs are not generated, so
+a conflicting edit to one still stops for a human.
 `CHANGELOG.md` is this repository's own; a project declares it only if it keeps one.
 
-Set up Chough's bug driver once per clone:
+Set up Chough's drivers once per clone:
 
 ```sh
 git config --local merge.chough-bug.driver "chough bug merge %O %A %B"
+git config --local merge.chough-generated.driver "chough library merge %O %A %B"
 ```
 
-Without it, Git falls back to its normal text merge for bug files. Spec change logs
+Without them, Git falls back to its normal text merge for those files. Spec change logs
 and `requirements.md` belong to SpecSync (CorvidLabs/spec-sync#862).
 
 ## Sessions

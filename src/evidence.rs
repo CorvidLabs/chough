@@ -983,6 +983,7 @@ pub(super) const LEDGER: &str = ".chough/pruned.jsonl";
 /// A vault shard of the ledger, in an archive's attachments folder (KNOW-23).
 pub(super) const SHARD: &str = "pruned.jsonl";
 /// Ledger entries kept in `.chough/pruned.jsonl` at each rotation (KNOW-23).
+#[allow(dead_code)] // removed at integration (t382)
 const LEDGER_KEEP: usize = 100;
 const POLICY: &str = "chough-retention/1";
 const KEEP_NEWEST: usize = 3;
@@ -1242,6 +1243,7 @@ fn references_from(root: &Path, lenient: bool) -> Result<BTreeMap<String, Vec<St
 
 /// Whether a protection reason is a closed bug's link: `<bug-id> <status>` with status
 /// verified, duplicate or wont-fix.
+#[allow(dead_code)] // removed at integration (t382)
 fn closed_bug_reason(reason: &str) -> bool {
     reason.starts_with("BUG-")
         && reason
@@ -1255,6 +1257,7 @@ fn closed_bug_reason(reason: &str) -> bool {
 /// bug, the first linked passed observation after it; by [`file_key`], a fixture under
 /// `.chough/`. A linked record that is gone (already trimmed) or unreadable is not a key
 /// item; an observation two bugs name goes with the bug first by ID.
+#[allow(dead_code)] // removed at integration (t382)
 fn closed_bug_key_items(
     root: &Path,
 ) -> Result<(BTreeMap<String, String>, BTreeMap<String, String>)> {
@@ -1597,6 +1600,7 @@ struct Classification {
     native: Native,
     total_bytes: u64,
     /// The newest routine run of each case and environment (KNOW-17).
+    #[allow(dead_code)] // removed at integration (t382)
     newest_run: BTreeSet<String>,
 }
 
@@ -2099,6 +2103,7 @@ fn retention(root: &Path, authority: Option<&str>) -> Result<Value> {
 }
 
 /// The newest ledger line per observation ID, with `restored` events undoing a removal.
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn ledger_records(root: &Path) -> Result<BTreeMap<String, Value>> {
     let mut records = BTreeMap::new();
     for line in ledger_lines(root)? {
@@ -2119,6 +2124,7 @@ pub(super) fn ledger_records(root: &Path) -> Result<BTreeMap<String, Value>> {
 /// When an observation record was observed: None when it has no record, and an error
 /// when a record exists but cannot be read (review of #108), so callers never treat an
 /// unreadable record as a missing one.
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn observed_at(root: &Path, id: &str) -> Result<Option<u64>> {
     if !is_present(root, id)? {
         return Ok(None);
@@ -2127,6 +2133,7 @@ pub(super) fn observed_at(root: &Path, id: &str) -> Result<Option<u64>> {
 }
 
 /// Outcome, environment and cases of a present observation, for knowledge entries.
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn observation_summary(root: &Path, id: &str) -> Option<(String, String, Vec<String>)> {
     if !is_present(root, id).ok()? {
         return None;
@@ -2145,6 +2152,7 @@ pub(super) fn observation_summary(root: &Path, id: &str) -> Option<(String, Stri
 
 /// One archived change as the post-archive summary sees it: its ID, whether it is one
 /// of the hot (newest) archives, and the paths its verification manifest lists.
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) struct ListedArchive {
     pub(super) id: String,
     pub(super) hot: bool,
@@ -2155,6 +2163,7 @@ pub(super) struct ListedArchive {
 
 /// The archived change whose cycle `observed_at` falls in: the first finalized at or
 /// after it (KNOW-20). None when it was observed after the newest archive (current work).
+#[allow(dead_code)] // removed at integration (t382)
 fn owner_by_cycle(archives: &[ListedArchive], observed_at: u64) -> Option<&ListedArchive> {
     archives
         .iter()
@@ -2164,6 +2173,7 @@ fn owner_by_cycle(archives: &[ListedArchive], observed_at: u64) -> Option<&Liste
 
 /// For each archived change, the present observation records no archive lists that were
 /// observed in its cycle (KNOW-20), so its knowledge entry can summarize them.
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn attributed_records(
     root: &Path,
     archives: &[ListedArchive],
@@ -2191,9 +2201,11 @@ pub(super) fn attributed_records(
     Ok(found)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 const SUMMARY_REASON: &str = "archived-summary: routine automated proof listed only by cold archived changes (outside the newest 3), summarized in the knowledge directory and committed identically at HEAD; bytes stay recoverable from Git";
 
 /// Eligible candidates, protected sets, sets not at HEAD, and the native read state.
+#[allow(dead_code)] // removed at integration (t382)
 struct SummaryPlan {
     eligible: Vec<SummaryCandidate>,
     protected: Vec<Value>,
@@ -2201,6 +2213,7 @@ struct SummaryPlan {
     native: Native,
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 struct SummaryCandidate {
     id: String,
     files: Vec<String>,
@@ -2226,6 +2239,7 @@ struct SummaryCandidate {
 /// The files of a candidate that move into the vault instead of being removed, with
 /// their attachment paths (KNOW-19): a non-routine set whole, a failed run's artifacts,
 /// screenshots and failure-first logs.
+#[allow(dead_code)] // removed at integration (t382)
 fn candidate_moves(candidate: &SummaryCandidate, knowledge_dir: &str) -> BTreeMap<String, String> {
     candidate
         .files
@@ -2250,10 +2264,12 @@ fn candidate_moves(candidate: &SummaryCandidate, knowledge_dir: &str) -> BTreeMa
         .collect()
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 const LOOSE_REASON: &str = "archived-summary: loose artifacts no observation record references, owned by a cold archived change (outside the newest 3), summarized in the knowledge directory and committed identically at HEAD; key items move into its attachments; bytes stay recoverable from Git";
 
 /// The first commit time of every file under `.chough/artifacts/`, read once per project
 /// per process: an apply makes no commit, so it cannot change during one (KNOW-20).
+#[allow(dead_code)] // removed at integration (t382)
 fn first_commits(root: &Path) -> BTreeMap<String, u64> {
     use std::sync::{Mutex, OnceLock};
     static CACHE: OnceLock<Mutex<BTreeMap<std::path::PathBuf, BTreeMap<String, u64>>>> =
@@ -2285,6 +2301,7 @@ fn first_commits(root: &Path) -> BTreeMap<String, u64> {
 }
 
 /// The blob each of `files` has in HEAD's tree; untracked files are absent.
+#[allow(dead_code)] // removed at integration (t382)
 fn head_blobs(root: &Path, files: &[String]) -> Result<BTreeMap<String, String>> {
     let mut tracked = BTreeMap::new();
     for chunk in files.chunks(256) {
@@ -2307,6 +2324,7 @@ fn head_blobs(root: &Path, files: &[String]) -> Result<BTreeMap<String, String>>
 /// Files whose working-tree bytes equal the blob tracked at HEAD. Hashing uses
 /// `--no-filters`, so the exact bytes on disk are compared: with `core.autocrlf` or
 /// other clean filters a file that differs from HEAD byte for byte is never identical.
+#[allow(dead_code)] // removed at integration (t382)
 fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> {
     let tracked = head_blobs(root, files)?;
     let mut identical = BTreeSet::new();
@@ -2334,6 +2352,7 @@ fn identical_at_head(root: &Path, files: &[String]) -> Result<BTreeSet<String>> 
 }
 
 /// The Git blob ID of exactly `bytes`, with no filters applied.
+#[allow(dead_code)] // removed at integration (t382)
 fn blob_of(root: &Path, bytes: &[u8]) -> Result<String> {
     let output = crate::records::run_owned(
         Command::new("git")
@@ -2505,6 +2524,7 @@ fn place_copy(
 /// cold archives, no protection left once age and the latest-archive reason are set
 /// aside, every file committed identically at HEAD), protected sets with reasons, and
 /// sets held back because their bytes are not at HEAD.
+#[allow(dead_code)] // removed at integration (t382)
 fn summary_plan(
     root: &Path,
     archives: &[ListedArchive],
@@ -2611,6 +2631,7 @@ fn summary_plan(
 /// The protection rules of [`summary_plan`], from local state and the given manifests:
 /// sets listed only by cold archives with no protection left (pending the HEAD check),
 /// and protected sets with their reasons.
+#[allow(dead_code)] // removed at integration (t382)
 fn summary_protections(
     root: &Path,
     archives: &[ListedArchive],
@@ -2865,6 +2886,7 @@ fn summary_protections(
 /// Re-apply the protection rules right before removing one of `candidate`'s files: no
 /// native change is open, and the set is still unprotected with no file beyond the plan. The
 /// bytes themselves are checked against the plan by [`remove_verified`].
+#[allow(dead_code)] // removed at integration (t382)
 fn still_unprotected(
     root: &Path,
     archives: &[ListedArchive],
@@ -2915,6 +2937,7 @@ fn still_unprotected(
     )
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn one_line_bounded(text: &str) -> String {
     text.split_whitespace()
         .collect::<Vec<_>>()
@@ -2925,17 +2948,20 @@ fn one_line_bounded(text: &str) -> String {
 }
 
 /// Most archive validity reads that run at once (REQ-cli-033).
+#[cfg_attr(not(test), allow(dead_code))] // removed at integration (t382)
 const VALIDITY_READERS: usize = 8;
 
 /// Reader threads for `archives` validity reads on a host that reports `available`
 /// parallelism: at least 2 and at most [`VALIDITY_READERS`], and never more than there
 /// are archives (REQ-cli-033, audit CH-M11).
+#[cfg_attr(not(test), allow(dead_code))] // removed at integration (t382)
 fn validity_readers(available: usize, archives: usize) -> usize {
     available.clamp(2, VALIDITY_READERS).min(archives.max(1))
 }
 
 /// Terminal evidence validity of each archive, as `specsync change status` reports it.
 /// Fails closed: an archive whose validity cannot be read is an error, never a value.
+#[allow(dead_code)] // removed at integration (t382)
 fn validity(root: &Path, ids: &BTreeSet<String>) -> Result<BTreeMap<String, String>> {
     // Each read costs tens of seconds inside SpecSync (spec-sync#831), so they run in
     // parallel, at most 8 at once; errors are reported in ID order, not completion order.
@@ -2974,6 +3000,7 @@ fn validity(root: &Path, ids: &BTreeSet<String>) -> Result<BTreeMap<String, Stri
     Ok(found)
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn validity_of(root: &Path, id: &str) -> Result<String> {
     let response = native_json(root, "specsync", &["change", "status", id, "--json"]);
     let Some(state) = response
@@ -2993,6 +3020,7 @@ fn validity_of(root: &Path, id: &str) -> Result<String> {
 /// `chough library archive [--apply]`: preview the post-archive summary, or with an
 /// authority remove the eligible proof after `write_entries` summarized it. Ledger lines
 /// come first; a removal that changes any affected archive's validity is restored.
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn archive_summary(
     root: &Path,
     archives: &[ListedArchive],
@@ -3359,6 +3387,7 @@ pub(super) fn archive_summary(
 }
 
 /// The retention authority for an apply, or the refusal a human must resolve.
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn retention_authority(root: &Path, command: &str) -> Result<String> {
     let session = read_session(root)?;
     let authorized = match &session {
@@ -3422,6 +3451,7 @@ pub(super) fn auto_prune(root: &Path) -> Value {
 /// have a knowledge note into the first archive's vault shard, each `restored` event with
 /// the entry it follows. Shards are written first and the ledger replaced last, so an
 /// interruption leaves at most a duplicate line, which readers ignore. Never fails.
+#[allow(dead_code)] // removed at integration (t382)
 pub(super) fn rotate_at_done(root: &Path) -> Value {
     match crate::prefs::effective(root, "librarian") {
         Ok((value, _)) if value != "on" => {
@@ -3434,6 +3464,7 @@ pub(super) fn rotate_at_done(root: &Path) -> Value {
         .unwrap_or_else(|error| json!({"status": "refused", "reason": format!("{error:#}")}))
 }
 
+#[allow(dead_code)] // removed at integration (t382)
 fn rotate_ledger(root: &Path) -> Result<Value> {
     let (dir, _) = crate::prefs::effective(root, "library-dir")?;
     let path = local_path(root, LEDGER)?;
