@@ -111,84 +111,74 @@ fn write_bug(
     }
 }
 
-fn write_run(fixture: &Fixture, id: &str, observations: &[&str], completed: u32, failures: u32) {
-    let run = json!({
-        "schema_version": 1,
-        "id": id,
-        "case": "TC-val",
-        "times": completed,
-        "interval_seconds": 0,
-        "environment": "local",
-        "authority": "run consent: fixture",
-        "state": "complete",
-        "completed": completed,
-        "failures": failures,
-        "not_run": 0,
-        "observations": observations,
-        "bugs": [],
-        "elapsed_seconds": 1,
-        "started_at_unix_seconds": 1,
-    });
-    fixture.write(
-        &format!(".chough/validation/{id}.json"),
-        &serde_json::to_string_pretty(&run).unwrap(),
-    );
-}
-
-fn project() -> Fixture {
-    let fixture = Fixture::new();
-    fixture.init();
-    fixture.commit("fixture");
-    fixture
-}
-
+/// REQ-records-009, REQ-cli-012, LIFE-8: an observation the 0.6.0 migration did not
+/// carry reads `removed`, naming the migration's receipt; an ID no record ever held reads
+/// `unavailable`; neither ever counts as current, passed or verifying evidence. On a
+/// 0.5.x project the open session references `n1`, which becomes its entry and reads
+/// historical (REQ-cli-021); nothing references `old-pass`, so the migration removes it;
+/// and a bug links `old-fail`, which no file holds any more. After the migration the
+/// checkpoint references `old-pass` and `never-recorded`.
 #[test]
 fn removed_and_missing_observations_are_labeled_and_never_count() {
-    let fixture = project();
-    for (id, age) in [
-        ("n1", 20),
-        ("n2", 21),
-        ("n3", 22),
-        ("old-fail", 40),
-        ("old-pass", 41),
-    ] {
-        let outcome = if id == "old-fail" { "failed" } else { "passed" };
-        write_obs(&fixture, &Obs::run(id, "TC-a", outcome, age));
+    fn copy(from: &std::path::Path, to: &std::path::Path) {
+        fs::create_dir_all(to).unwrap();
+        for entry in fs::read_dir(from).unwrap().flatten() {
+            let target = to.join(entry.file_name());
+            if entry.path().is_dir() {
+                copy(&entry.path(), &target);
+            } else {
+                fs::copy(entry.path(), target).unwrap();
+            }
+        }
     }
-    // A newer failure keeps old-fail out of the last-failure slot.
-    write_obs(&fixture, &Obs::run("newer-fail", "TC-a", "failed", 30));
-    fixture.ok(&["consent", "grant", "retention", "--source", "Human: prune"]);
-    let applied = fixture.ok(&["evidence", "prune", "--apply"]);
-    assert_eq!(
-        applied["pruned"].as_array().unwrap().len(),
-        2,
-        "{applied:#}"
-    );
+    let fixture = Fixture::new();
+    let release = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/releases/v0.5.0/.chough");
+    for folder in ["sessions", "history", "bugs"] {
+        copy(
+            &release.join(folder),
+            &fixture.root().join(".chough").join(folder),
+        );
+    }
+    write_obs(&fixture, &Obs::run("n1", "TC-a", "passed", 20));
+    write_obs(&fixture, &Obs::run("old-pass", "TC-a", "passed", 41));
+    let session = ".chough/sessions/fixture-first.json";
+    let mut checkpoint: Value = serde_json::from_str(&fixture.read(session)).unwrap();
+    checkpoint["observations"] = json!(["n1"]);
+    fixture.write(session, &serde_json::to_string_pretty(&checkpoint).unwrap());
+    let bug_file = fs::read_dir(fixture.root().join(".chough/bugs"))
+        .unwrap()
+        .flatten()
+        .map(|entry| format!(".chough/bugs/{}", entry.file_name().to_string_lossy()))
+        .find(|name| name.ends_with(".json"))
+        .unwrap();
+    let mut bug: Value = serde_json::from_str(&fixture.read(&bug_file)).unwrap();
+    bug["observations"] = json!(["old-fail"]);
+    fixture.write(&bug_file, &serde_json::to_string_pretty(&bug).unwrap());
+    let old_bug = bug["id"].as_str().unwrap().to_string();
+    fixture.commit("a 0.5.x project");
+    let plan = fixture.ok(&["migrate"]);
+    assert_eq!(plan["aliases"]["old-pass"], "removed", "{plan:#}");
+    assert_eq!(plan["aliases"]["old-fail"], "removed", "{plan:#}");
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    let applied = fixture.ok(&[
+        "migrate",
+        "--apply",
+        &digest,
+        "--consent",
+        "SYNTHETIC-human said migrate it (fixture)",
+    ]);
+    let receipt = applied["receipt"].as_str().unwrap().to_string();
+    fixture.commit("the migrated records");
 
-    // References written after pruning: the checkpoint, a bug and a validation run.
+    // References written after the migration.
     fixture.ok(&[
         "checkpoint",
         "--observation",
         "old-pass",
         "--observation",
         "never-recorded",
-        "--observation",
-        "n1",
     ]);
-    write_bug(
-        &fixture,
-        "BUG-0001",
-        "open",
-        &["old-fail", "old-pass", "never-recorded"],
-        None,
-    );
-    write_run(
-        &fixture,
-        "tc-a-1",
-        &["old-fail", "old-pass", "never-recorded"],
-        3,
-        1,
-    );
 
     // The focused next view lists only the referenced observations that need attention.
     let next = fixture.ok(&["next", "--environment", "local", "--json"]);
@@ -203,66 +193,46 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
             )
         })
         .collect();
-    assert_eq!(listed["old-pass"], "pruned", "{next}");
-    assert_eq!(listed["old-fail"], "pruned", "{next}");
+    assert_eq!(listed["old-pass"], "removed", "{next}");
     assert_eq!(listed["never-recorded"], "unavailable", "{next}");
     assert_eq!(listed["n1"], "historical", "{next}");
     assert!(listed.values().all(|label| label != "current"), "{next}");
-    for command in ["status"] {
-        let report = fixture.ok(&[command, "--environment", "local"]);
-        let references = report["observation_references"].as_array().unwrap();
-        let label = |id: &str| {
-            references
-                .iter()
-                .find(|entry| entry["id"] == id)
-                .unwrap_or_else(|| panic!("{id} missing from {references:?}"))["label"]
-                .clone()
-        };
-        assert_eq!(label("old-pass"), "pruned");
-        assert_eq!(label("old-fail"), "pruned");
-        assert_eq!(label("never-recorded"), "unavailable");
-        assert_eq!(label("n1"), "historical");
-        for observation in report["observations"].as_array().unwrap() {
-            assert_ne!(observation["record"]["id"], "old-pass");
-            assert!(observation["label"] == "historical" || observation["label"] == "current");
-        }
+    let report = fixture.ok(&["status", "--environment", "local"]);
+    let references = report["observation_references"].as_array().unwrap();
+    let label = |id: &str| {
+        references
+            .iter()
+            .find(|entry| entry["id"] == id)
+            .unwrap_or_else(|| panic!("{id} missing from {references:?}"))["label"]
+            .clone()
+    };
+    assert_eq!(label("old-pass"), "removed");
+    assert_eq!(label("never-recorded"), "unavailable");
+    assert_eq!(label("n1"), "historical");
+    for observation in report["observations"].as_array().unwrap() {
+        assert!(
+            !observation["record"]["aliases"]
+                .to_string()
+                .contains("old-pass"),
+            "{observation:#}"
+        );
+        assert_ne!(observation["label"], "current", "{observation:#}");
     }
 
-    let bug = fixture.ok(&["bug", "show", "BUG-0001"]);
-    assert_eq!(bug["verification"], "unverified");
-    let labels: BTreeMap<String, String> = bug["observation_labels"]
+    // The bug shows the link it lost as removed, naming the receipt, and never verifies.
+    let shown = fixture.ok(&["bug", "show", &old_bug]);
+    let lost = shown["observation_labels"]
         .as_array()
         .unwrap()
         .iter()
-        .map(|entry| {
-            (
-                entry["id"].as_str().unwrap().to_string(),
-                entry["label"].as_str().unwrap().to_string(),
-            )
-        })
-        .collect();
-    // An observation that is no longer present reads missing (REQ-cli-012).
-    assert_eq!(labels["old-pass"], "missing");
-    assert_eq!(labels["old-fail"], "missing");
-    assert_eq!(labels["never-recorded"], "missing");
-    let refused = fixture.fails(&["bug", "update", "BUG-0001", "--status", "verified"]);
+        .find(|entry| entry["id"] == "old-fail")
+        .unwrap_or_else(|| panic!("{shown:#}"))
+        .clone();
+    assert_eq!(lost["label"], "removed", "{shown:#}");
+    assert_eq!(lost["receipt"], receipt.as_str(), "{shown:#}");
+    assert_eq!(shown["verification"], "unverified", "{shown:#}");
+    let refused = fixture.fails(&["bug", "update", &old_bug, "--status", "verified"]);
     assert!(refused.contains("passed observation"), "{refused}");
-    assert_eq!(
-        fixture.ok(&["bug", "list"])["bugs"][0]["verification"],
-        "unverified"
-    );
-
-    let validation = fixture.ok(&["validate", "status"]);
-    let run = &validation["runs"][0];
-    assert_eq!(run["completed"], 3);
-    assert_eq!(run["failures"], 1);
-    let labels: Vec<&str> = run["observation_labels"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|entry| entry["label"].as_str().unwrap())
-        .collect();
-    assert_eq!(labels, vec!["pruned", "pruned", "unavailable"]);
 }
 
 #[test]
