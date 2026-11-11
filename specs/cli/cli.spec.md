@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 83
+version: 85
 status: active
 files:
   - src/main.rs
@@ -177,7 +177,8 @@ covers the crate-internal identity boundary without creating a public Rust API.
    archives. The checkpoint references native records and never duplicates their state.
 4. Observations record revision, working content, environment and, for cases, the
    definition digest. Freshness compares the working content, which leaves out
-   Chough records, build output and SpecSync lifecycle bookkeeping; the revision is
+   Chough records, build output, the generated knowledge directory and SpecSync
+   lifecycle bookkeeping; the revision is
    recorded but not compared, except for records without a content identity. Current
    evidence is not equivalent to proven criterion achievement.
 5. Managed and selected paths stay inside the project and symlinks are rejected.
@@ -379,4 +380,6 @@ provider, runtime or hosted service.
 | 80 | 2026-11-07 | correct-prune-capture-authority-and-unsafe-rollback-for-pr-197: Correct prune capture authority and unsafe rollback for PR 197 |
 | 81 | 2026-11-09 | recognize-pristine-skills-from-pinned-released-bundles-without-replacing-edits: Recognize pristine skills from pinned released bundles without replacing edits |
 | 82 | 2026-11-10 | read-bounded-diagnostic-input-inventories-without-changing-freshness-authority: Read bounded diagnostic input inventories without changing freshness authority |
-| 83 | 2026-11-10 | external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14: External evidence artifacts by recorded fingerprint, never copied into the project (#14) |
+| 83 | 2026-11-10 | keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136: Keep observations current when the generated knowledge index is rebuilt (#136) |
+| 84 | 2026-11-10 | return-the-observation-id-from-cases-record-and-evidence-add-issue-60: Return the observation ID from cases record and evidence add (issue 60) |
+| 85 | 2026-11-10 | external-evidence-artifacts-by-recorded-fingerprint-never-copied-into-the-project-14: External evidence artifacts by recorded fingerprint, never copied into the project (#14) |

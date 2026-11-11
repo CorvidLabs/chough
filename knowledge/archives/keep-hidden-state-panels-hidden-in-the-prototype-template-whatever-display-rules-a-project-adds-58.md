@@ -49,7 +49,7 @@ verification records, the retention ledger and Git stay authoritative.
 
 | ID | Outcome | Environment | Cases |
 |---|---|---|---|
-| OBS-installation-observation-48008674b01d6e137c95d956 | passed (by cycle time) | macos-arm64-cargo-1.99.0 |  |
+| OBS-installation-observation-48008674b01d6e137c95d956 | passed (pruned) (by cycle time) | macos-arm64-cargo-1.99.0 |  |
 | OBS-product-test-3df243412063021fb3800669 | passed (pruned) (by cycle time) | local-macos-arm64 |  |
 | OBS-product-test-c727fa6d2f004d10b1d511f8 | passed (by cycle time) | linux-aarch64-docker-chough-linux-1-2-3 |  |
 | OBS-tc-cli-change-new-no-spec-change-3fde0095f41dd209e86af817 | passed (by cycle time) | local-macos-arm64 | TC-cli-change-new-no-spec-change |
@@ -69,13 +69,13 @@ verification records, the retention ledger and Git stay authoritative.
 | OBS-tc-cli-sigterm-stops-native-process-71d69f74f25a3aade7f0057f | passed (by cycle time) | local-macos-arm64 | TC-cli-sigterm-stops-native-process |
 | OBS-tc-cli-timed-out-prime-kills-native-process-f812f5bccc709170ad193979 | passed (by cycle time) | local-macos-arm64 | TC-cli-timed-out-prime-kills-native-process |
 | OBS-tc-history-prune-protection-race-16793e9e4c84b7f00004251a | failed (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
-| OBS-tc-history-prune-protection-race-831610f271a785164c912a6e | passed (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
-| OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05 | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restore-preserves-recreated-file |
+| OBS-tc-history-prune-protection-race-831610f271a785164c912a6e | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-protection-race |
+| OBS-tc-history-prune-restore-preserves-recreated-file-ec625ca74058487a167adf05 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-restore-preserves-recreated-file |
 | OBS-tc-history-prune-restore-preserves-recreated-file-fe5568108c710f47994da0c7 | failed (by cycle time) | local-macos-arm64 | TC-history-prune-restore-preserves-recreated-file |
-| OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-earlier-sets |
+| OBS-tc-history-prune-restores-earlier-sets-42efe7ab63bba4851815235f | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-restores-earlier-sets |
 | OBS-tc-history-prune-restores-earlier-sets-bba515e3dbd42cea1399e660 | failed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-earlier-sets |
 | OBS-tc-history-prune-restores-partial-removal-9d8c4669e6b99ad1f7b3504d | failed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
-| OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078 | passed (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
+| OBS-tc-history-prune-restores-partial-removal-c5ff0e975581686f00f9f078 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-prune-restores-partial-removal |
 | OBS-tc-history-timing-skips-direct-writes-0a97e1153f349a07b54d9027 | passed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
 | OBS-tc-history-timing-skips-direct-writes-0cdba57ff26afee624de3680 | passed (pruned) (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
 | OBS-tc-history-timing-skips-direct-writes-38c9d1d3dce771083298c7cc | failed (by cycle time) | local-macos-arm64 | TC-history-timing-skips-direct-writes |
@@ -94,4 +94,6 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Attachments
 
+- [artifacts/release-0.5.0/clean-install-macos-arm64.log](../attachments/keep-hidden-3da8628d/artifacts/release-0.5.0/clean-install-macos-arm64.log)
+- [evidence/OBS-installation-observation-48008674b01d6e137c95d956.json](../attachments/keep-hidden-3da8628d/evidence/OBS-installation-observation-48008674b01d6e137c95d956.json)
 - [sessions/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.json](../attachments/keep-hidden-3da8628d/sessions/keep-hidden-state-panels-hidden-in-the-prototype-template-whatever-display-rules-a-project-adds-58.json)

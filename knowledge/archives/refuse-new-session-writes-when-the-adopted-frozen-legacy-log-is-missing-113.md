@@ -42,21 +42,21 @@ verification records, the retention ledger and Git stay authoritative.
 
 | Path | Digest | Location |
 |---|---|---|
-| `.chough/artifacts/issue-113/README.md` | 6327578442fb49039d47a4de9cf0a1a848748450127223d95a524a10ff850506 | working tree |
+| `.chough/artifacts/issue-113/README.md` | 6327578442fb49039d47a4de9cf0a1a848748450127223d95a524a10ff850506 | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
 | `.chough/artifacts/issue-113/actual-corrected-sessions39-names.json` | 5741cb0df886ae4671cae78751b85a3aa715f1f7c34cfc871c3cebc0fed4f7ad | working tree |
-| `.chough/artifacts/issue-113/actual-corrected-sessions39.stderr` | 0ea1dcfcd5b7fbe574300dc3ce7d95c4cbefced09980005ee871c7055f4009aa | working tree |
+| `.chough/artifacts/issue-113/actual-corrected-sessions39.stderr` | 0ea1dcfcd5b7fbe574300dc3ce7d95c4cbefced09980005ee871c7055f4009aa | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
 | `.chough/artifacts/issue-113/actual-corrected-sessions39.stdout` | 0344ea0976fc0268e4e7d11c14fc45910f439e98d21d255ca7373fae6bf90d87 | working tree |
-| `.chough/artifacts/issue-113/actual-ends-and-fences.json` | 605f3b7c8cb0ae9a88d85cbca290676549b7b039a9bdb99b789c1733c4c57426 | working tree |
-| `.chough/artifacts/issue-113/actual-signal-causal-proof.json` | b5d7701e996b40aa8afeff183fb7e910f34b7d3acd9e0dbbeb34612c8feb455f | working tree |
-| `.chough/artifacts/issue-113/fmt.stdout` | 6b90175025d8aef9add20d7a2069cc882ce8ee05e520e179afc60f673cc73fba | working tree |
-| `.chough/artifacts/issue-113/history25.stdout` | 544ba49c50465e378c081a8ac243cd92bbccd11820f63117abf90a0bfe5d0ef8 | working tree |
-| `.chough/artifacts/issue-113/lint.stderr` | 8d694f0b27308f79cb584e17c7e50625a8d5e325ff2db26c351103d2c35345da | working tree |
-| `.chough/artifacts/issue-113/lint.stdout` | 9d1989d1dc5f73288d37e75a62ba28197baa7690abd0e9fecf874a060af3166b | working tree |
-| `.chough/artifacts/issue-113/original-partial-sessions.stderr` | bfebe0614a3df16d54576e26cbe40b4ec79ecd985d400431e9d071b208b69603 | working tree |
-| `.chough/artifacts/issue-113/original-partial-sessions.stdout` | 89b0bdfa4ef2c945645fdae9a6a85cde588ee331e6e85e146f2fa6e154bc5464 | working tree |
-| `.chough/artifacts/issue-113/red-missing-log.stderr` | 491cdb3fdfc1c4a585640dfc69baa493b17a0f9f1a94929e14580fab24c09063 | working tree |
-| `.chough/artifacts/issue-113/red-missing-log.stdout` | b1fe1495c38ea4f6b635b6a9d9f45dbf969dafd02b4f9d16ca999ed5c34d8b50 | working tree |
-| `.chough/artifacts/issue-113/red-never-adopted.stdout` | 46f6f0bfa807543724e7cb49f2600cb9a44fde89939acead4655095a5ab364fc | working tree |
+| `.chough/artifacts/issue-113/actual-ends-and-fences.json` | 605f3b7c8cb0ae9a88d85cbca290676549b7b039a9bdb99b789c1733c4c57426 | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/actual-signal-causal-proof.json` | b5d7701e996b40aa8afeff183fb7e910f34b7d3acd9e0dbbeb34612c8feb455f | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/fmt.stdout` | 6b90175025d8aef9add20d7a2069cc882ce8ee05e520e179afc60f673cc73fba | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/history25.stdout` | 544ba49c50465e378c081a8ac243cd92bbccd11820f63117abf90a0bfe5d0ef8 | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/lint.stderr` | 8d694f0b27308f79cb584e17c7e50625a8d5e325ff2db26c351103d2c35345da | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/lint.stdout` | 9d1989d1dc5f73288d37e75a62ba28197baa7690abd0e9fecf874a060af3166b | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/original-partial-sessions.stderr` | bfebe0614a3df16d54576e26cbe40b4ec79ecd985d400431e9d071b208b69603 | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/original-partial-sessions.stdout` | 89b0bdfa4ef2c945645fdae9a6a85cde588ee331e6e85e146f2fa6e154bc5464 | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/red-missing-log.stderr` | 491cdb3fdfc1c4a585640dfc69baa493b17a0f9f1a94929e14580fab24c09063 | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/red-missing-log.stdout` | b1fe1495c38ea4f6b635b6a9d9f45dbf969dafd02b4f9d16ca999ed5c34d8b50 | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
+| `.chough/artifacts/issue-113/red-never-adopted.stdout` | 46f6f0bfa807543724e7cb49f2600cb9a44fde89939acead4655095a5ab364fc | Git c035590e4952dbdd9a001ace37d3ac33097705f5 |
 | `.chough/artifacts/issue-113/retained-run-provenance.json` | aa5eeb0393d208c4ad4a852f36026f2f316f924d4f70637ead0049e5d6b2b65d | working tree |
 | `.chough/cases/history.missing-log-113.cases.toml` | 606413fccbfe939b83a694b8d11ffaef419a1451a63f34d499053e7ce1c10288 | working tree |
 | `.chough/history/cycles/CYC-9b5095352ed99d70ff1d2f0b/EVT-0abaf045305de66a7af813f6.json` | bed739e7f4f22a69079bba249180fe3f262151c0af3fe72e7827ff738a853437 | working tree |
@@ -80,7 +80,19 @@ verification records, the retention ledger and Git stay authoritative.
 
 ## Loose artifacts
 
-- none
+- `.chough/artifacts/issue-113/README.md`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/actual-corrected-sessions39.stderr`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/actual-ends-and-fences.json`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/actual-signal-causal-proof.json`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/fmt.stdout`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/history25.stdout`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/lint.stderr`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/lint.stdout`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/original-partial-sessions.stderr`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/original-partial-sessions.stdout`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/red-missing-log.stderr`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/red-missing-log.stdout`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
+- `.chough/artifacts/issue-113/red-never-adopted.stdout`: Git c035590e4952dbdd9a001ace37d3ac33097705f5
 
 ## Attachments
 

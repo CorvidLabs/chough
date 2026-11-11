@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136",
+  "implementation_commit": "14487b9c7ba7e6ad71035f17d63b53fe2bd04703",
+  "implementation_tree": "10f1d608ff85639866fca0b291873a580d7bf149",
+  "contract_digest": "0c6e41c469e88abe0c4c00c29bd187802ed6e207f534f0467c633265fb27a76f",
+  "workspace_digest": "d5a551f25974e4a65aca99bef16f198edfa2f667207055f03b7895f568ac4284",
+  "closing_digest": "eb8e35fa0197cf5b7d73052f060881691144cc3d237db729f0be2c683702050d",
+  "review_digest": "a67f4f7dc736c1145cff4646e8e9c1881b879e34a646eb4bc47b4d5f919d4403",
+  "finalization_digest": "aab2bf8c8eced2d49ac9d7a3c4980d156edb704d29ef5d413801bd35a1d59dfd",
+  "timestamp": 1794350879
+}
