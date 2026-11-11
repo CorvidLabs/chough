@@ -66,6 +66,76 @@ impl Fixture {
         serde_json::from_slice(&output.stdout).unwrap()
     }
 
+    fn read(&self, name: &str) -> String {
+        fs::read_to_string(self.root().join(name)).unwrap()
+    }
+
+    /// The active session's record, `.chough/sessions/<id>/session.md` (REQ-cli-037).
+    fn session_file(&self) -> String {
+        let id = self.read(".chough/local/active-session");
+        format!(".chough/sessions/{}/session.md", id.trim())
+    }
+
+    /// The active session's checkpoint in the 0.5.x JSON shape the assertions use.
+    fn session(&self) -> Value {
+        common::parse_session(&self.read(&self.session_file()))
+    }
+
+    /// Set one front matter key of the active session to `value`, as written in the file.
+    fn set_front(&self, key: &str, value: &str) {
+        let file = self.session_file();
+        let text = self.read(&file);
+        let (front, body) = text
+            .strip_prefix("---\n")
+            .and_then(|rest| rest.split_once("\n---\n"))
+            .expect("a session record");
+        let mut lines: Vec<String> = vec![];
+        let mut found = false;
+        for line in front.lines() {
+            if line.split_once(':').map(|(name, _)| name) == Some(key) {
+                lines.push(format!("{key}: {value}"));
+                found = true;
+            } else {
+                lines.push(line.to_string());
+            }
+        }
+        if !found {
+            lines.push(format!("{key}: {value}"));
+        }
+        self.write(&file, &format!("---\n{}\n---\n{body}", lines.join("\n")));
+    }
+
+    /// Replace the items of one body section of the active session (`## <heading>`).
+    fn set_section(&self, heading: &str, items: &[String]) {
+        let file = self.session_file();
+        let text = self.read(&file);
+        let start = text.find(&format!("\n## {heading}\n")).unwrap() + heading.len() + 5;
+        let end = start + text[start..].find("\n## ").unwrap() + 1;
+        let listed: String = items.iter().map(|item| format!("\n- {item}")).collect();
+        self.write(
+            &file,
+            &format!("{}{listed}\n\n{}", &text[..start], &text[end..]),
+        );
+    }
+
+    /// Pad the active session record to exactly `bytes` with a paragraph under its goal,
+    /// and return the padded text.
+    fn pad_session_to(&self, bytes: usize) -> String {
+        let file = self.session_file();
+        let text = self.read(&file);
+        let at = text.find("\n## Where it stands\n").unwrap();
+        assert!(text.len() + 2 <= bytes, "{} {bytes}", text.len());
+        let padded = format!(
+            "{}\n{}\n{}",
+            &text[..at],
+            "x".repeat(bytes - text.len() - 2),
+            &text[at..]
+        );
+        assert_eq!(padded.len(), bytes);
+        self.write(&file, &padded);
+        padded
+    }
+
     fn init(&self) {
         self.ok(&[
             "init",
@@ -188,18 +258,25 @@ fn init_preserves_user_files_and_installs_a_complete_skill() {
                 .is_file()
         );
     }
-    fixture.write(
-        ".chough/session.json",
-        "user owned bytes, even if malformed\n",
-    );
+    let session_file = fixture.session_file();
+    fixture.write(&session_file, "user owned bytes, even if malformed\n");
     fixture.write(
         ".agents/skills/chough-workflow/SKILL.md",
         "user owned skill\n",
     );
-    let output = fixture.ok(&["init", "--objective", "Do not overwrite"]);
+    // With a session open, `init --objective` refuses rather than add or replace one
+    // (REQ-cli-037), and plain `init` creates nothing and keeps every existing file.
+    let refused = fixture.run(&["init", "--objective", "Do not overwrite"]);
+    assert!(!refused.status.success());
+    assert!(
+        String::from_utf8_lossy(&refused.stderr).contains("already has an open session"),
+        "{}",
+        String::from_utf8_lossy(&refused.stderr)
+    );
+    let output = fixture.ok(&["init"]);
     assert!(output["created"].as_array().unwrap().is_empty());
     assert_eq!(
-        fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
+        fixture.read(&session_file),
         "user owned bytes, even if malformed\n"
     );
     assert_eq!(
@@ -268,14 +345,15 @@ fn invalid_modules_and_future_schemas_are_rejected() {
     );
     assert!(!fixture.root().join(".chough").exists());
     fixture.init();
-    let path = fixture.root().join(".chough/session.json");
-    let mut session: Value = serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
-    session["schema_version"] = json!(99);
-    fixture.write(
-        ".chough/session.json",
-        &serde_json::to_string(&session).unwrap(),
+    // A record that is not a supported session record is refused.
+    fixture.set_front("kind", "session-v99");
+    let output = fixture.run(&["context", "--json"]);
+    assert!(!output.status.success());
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("not a session record"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
     );
-    assert!(!fixture.run(&["context", "--json"]).status.success());
 }
 
 #[test]
@@ -283,7 +361,7 @@ fn oversized_records_fail_explicitly() {
     let fixture = Fixture::new();
     fixture.init();
     fixture.write(
-        ".chough/session.json",
+        &fixture.session_file(),
         &" ".repeat(common::CHECKPOINT_CAP + 1),
     );
     let output = fixture.run(&["context", "--json"]);
@@ -291,49 +369,54 @@ fn oversized_records_fail_explicitly() {
     assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
 }
 
-fn session_padded_to(fixture: &Fixture, session: &Value, bytes: usize) -> String {
-    let compact = serde_json::to_string(session).unwrap();
-    assert!(compact.len() <= bytes, "{}", compact.len());
-    let padded = format!("{compact}{}", " ".repeat(bytes - compact.len()));
-    fixture.write(".chough/session.json", &padded);
-    padded
-}
-
+/// TC-cli-checkpoint-byte-bound-is-131072, rewritten for 0.6.0: a session record is
+/// bounded at 1,048,576 bytes (REQ-cli-032, REQ-records-001). One of exactly that size
+/// is read; one byte more is refused naming the bound and `chough session shelve`, with
+/// the file unchanged.
 #[test]
 fn checkpoint_byte_bound_is_exactly_1048576() {
     let fixture = Fixture::new();
     fixture.init();
-    let path = fixture.root().join(".chough/session.json");
-    let session: Value = serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
+    let file = fixture.session_file();
+    let fresh = fixture.read(&file);
 
-    session_padded_to(&fixture, &session, common::CHECKPOINT_CAP);
-    let output = fixture.run(&["context", "--json"]);
-    assert!(
-        output.status.success(),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-
-    let over = session_padded_to(&fixture, &session, common::CHECKPOINT_CAP + 1);
-    let output = fixture.run(&["context", "--json"]);
-    assert!(!output.status.success());
-    assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
-    assert_eq!(fs::read_to_string(&path).unwrap(), over);
-
-    // A checkpoint whose content (not padding) exceeds the bound is refused too.
-    let mut large = session.clone();
-    for list in ["decisions", "completed"] {
-        large[list] = json!(
-            (0..140)
-                .map(|index| format!("{list}: {index} {}", "d".repeat(4_000)))
-                .collect::<Vec<_>>()
+    fixture.pad_session_to(common::CHECKPOINT_CAP);
+    for args in [
+        vec!["context", "--json"],
+        vec!["next", "--json"],
+        vec!["status", "--json"],
+    ] {
+        let output = fixture.run(&args);
+        assert!(
+            output.status.success(),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
         );
     }
-    assert!(serde_json::to_vec(&large).unwrap().len() > common::CHECKPOINT_CAP);
-    fixture.write(
-        ".chough/session.json",
-        &serde_json::to_string(&large).unwrap(),
-    );
+
+    fixture.write(&file, &fresh);
+    let over = fixture.pad_session_to(common::CHECKPOINT_CAP + 1);
+    for args in [vec!["context", "--json"], vec!["next", "--json"]] {
+        let output = fixture.run(&args);
+        assert!(!output.status.success(), "{args:?}");
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(stderr.contains("1048576"), "{args:?}: {stderr}");
+        assert!(
+            stderr.contains("chough session shelve"),
+            "{args:?}: {stderr}"
+        );
+        assert_eq!(fixture.read(&file), over, "{args:?}");
+    }
+
+    // A record whose content (not padding) exceeds the bound is refused too.
+    fixture.write(&file, &fresh);
+    for heading in ["Decisions and why", "Where it stands"] {
+        let items: Vec<String> = (0..140)
+            .map(|index| format!("{heading}: {index} {}", "d".repeat(4_000)))
+            .collect();
+        fixture.set_section(heading, &items);
+    }
+    assert!(fixture.read(&file).len() > common::CHECKPOINT_CAP);
     let output = fixture.run(&["context", "--json"]);
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
@@ -343,22 +426,16 @@ fn checkpoint_byte_bound_is_exactly_1048576() {
 fn observation_pointer_bound_is_400_and_other_lists_stay_at_200() {
     let fixture = Fixture::new();
     fixture.init();
-    let path = fixture.root().join(".chough/session.json");
-    let session: Value = serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
-    let observations = |count: usize| {
-        json!(
-            (0..count)
-                .map(|index| format!("OBS-bound-{index:03}"))
-                .collect::<Vec<_>>()
-        )
+    let file = fixture.session_file();
+    let fresh = fixture.read(&file);
+    let ids = |prefix: &str, count: usize| -> Vec<String> {
+        (0..count)
+            .map(|index| format!("{prefix}-bound-{index:03}"))
+            .collect()
     };
+    let listed = |items: Vec<String>| format!("[{}]", items.join(", "));
 
-    let mut at_bound = session.clone();
-    at_bound["observations"] = observations(400);
-    fixture.write(
-        ".chough/session.json",
-        &serde_json::to_string(&at_bound).unwrap(),
-    );
+    fixture.set_front("observations", &listed(ids("OBS", 400)));
     let output = fixture.run(&["context", "--json"]);
     assert!(
         output.status.success(),
@@ -366,12 +443,7 @@ fn observation_pointer_bound_is_400_and_other_lists_stay_at_200() {
         String::from_utf8_lossy(&output.stderr)
     );
 
-    let mut over = session.clone();
-    over["observations"] = observations(401);
-    fixture.write(
-        ".chough/session.json",
-        &serde_json::to_string(&over).unwrap(),
-    );
+    fixture.set_front("observations", &listed(ids("OBS", 401)));
     let output = fixture.run(&["context", "--json"]);
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("too many observation"));
@@ -381,20 +453,23 @@ fn observation_pointer_bound_is_400_and_other_lists_stay_at_200() {
         String::from_utf8_lossy(&output.stderr)
     );
 
+    // Decisions and completed work are story sections in 0.6.0; bugs stay in the front
+    // matter. Each keeps the 200-item bound.
     for list in ["decisions", "completed", "bugs"] {
-        let mut other = session.clone();
-        other[list] = json!(
-            (0..201)
-                .map(|index| format!("BUG-bound-{index:03}"))
-                .collect::<Vec<_>>()
-        );
-        fixture.write(
-            ".chough/session.json",
-            &serde_json::to_string(&other).unwrap(),
-        );
+        fixture.write(&file, &fresh);
+        let items = ids("BUG", 201);
+        match list {
+            "decisions" => fixture.set_section("Decisions and why", &items),
+            "completed" => fixture.set_section("Where it stands", &items),
+            _ => fixture.set_front("bugs", &listed(items)),
+        }
         let output = fixture.run(&["context", "--json"]);
         assert!(!output.status.success(), "{list} accepted 201 entries");
-        assert!(String::from_utf8_lossy(&output.stderr).contains("too many"));
+        assert!(
+            String::from_utf8_lossy(&output.stderr).contains("too many"),
+            "{list}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
     }
 }
 
@@ -419,66 +494,43 @@ fn managed_record_bytes(root: &Path) -> BTreeMap<PathBuf, Vec<u8>> {
     records
 }
 
-fn checkpoint_capacity_fixture(history: &str) -> (Fixture, Value) {
+/// A project whose active session waits on the gates `existing-one` and `existing-two`
+/// and that keeps a retained proof file. With `history` "selected", a gate was opened and
+/// cleared earlier, so the timeline already holds gate entries.
+fn checkpoint_capacity_fixture(history: &str) -> Fixture {
     let fixture = Fixture::new();
     fixture.init();
     if history == "selected" {
         fixture.ok(&["checkpoint", "--awaiting-human", "initial recorded gate"]);
     }
-    let mut session: Value = serde_json::from_str(
-        &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
-    )
-    .unwrap();
-    if history == "legacy" {
-        session.as_object_mut().unwrap().remove("history_cursor");
-        fixture.write(
-            ".chough/transitions.jsonl",
-            "{\"schema_version\":1,\"at_unix_seconds\":100,\"kind\":\"reset\",\"from\":\"done\",\"to\":\"intent\",\"refresh\":[]}\n",
-        );
-    }
-    session["awaiting_human"] = json!(["existing-one", "existing-two"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--clear-awaiting-human",
+        "--awaiting-human",
+        "existing-one",
+        "--awaiting-human",
+        "existing-two",
+    ]);
     fixture.write(".chough/artifacts/retained.log", "retained proof bytes\n");
-    fixture.write(".chough/session.v1.json", "retained migration bytes\n");
-    (fixture, session)
+    fixture
 }
 
-fn fill_checkpoint_to_pretty_bytes(session: &mut Value, bytes: usize) {
-    // Full-size entries across the text lists (each list holds at most 200), then one
-    // entry padded to land on exactly `bytes` pretty-printed plus a newline.
-    let lists = ["decisions", "completed", "open_questions", "blockers"];
-    let size = |session: &Value| serde_json::to_string_pretty(session).unwrap().len() + 1;
-    for list in lists {
-        session[list] = json!([]);
-    }
-    'fill: for list in lists {
-        // At most 190 per list, so a test that adds one more entry meets the byte
-        // bound, not the 200-entry list bound.
-        for _ in 0..190 {
-            if size(session) + 4_200 > bytes {
-                break 'fill;
-            }
-            session[list]
-                .as_array_mut()
-                .unwrap()
-                .push(json!("d".repeat(4_000)));
-        }
-    }
-    let last = lists
-        .iter()
-        .find(|list| session[**list].as_array().unwrap().len() < 190)
-        .unwrap();
-    session[*last]
-        .as_array_mut()
-        .unwrap()
-        .push(json!(String::new()));
-    let index = session[*last].as_array().unwrap().len() - 1;
-    let current = size(session);
-    assert!(
-        current <= bytes && bytes - current <= 4_096,
-        "{current} {bytes}"
-    );
-    session[*last][index] = json!("d".repeat(bytes - current));
-    assert_eq!(size(session), bytes);
+/// The gate change the capacity tests attempt: keep `existing-one`, replace
+/// `existing-two` with `replacement`.
+const REPLACE_GATES: [&str; 6] = [
+    "--clear-awaiting-human",
+    "--awaiting-human",
+    "existing-one",
+    "--awaiting-human",
+    "replacement",
+    "",
+];
+
+fn gate_change(extra: &[&'static str]) -> Vec<&'static str> {
+    let mut args = vec!["checkpoint"];
+    args.extend_from_slice(extra);
+    args.extend(REPLACE_GATES.iter().copied().filter(|arg| !arg.is_empty()));
+    args
 }
 
 fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str], bound: &str) {
@@ -508,26 +560,16 @@ fn assert_checkpoint_refusal_preserves_records(fixture: &Fixture, args: &[&str],
 
 #[test]
 fn checkpoint_writer_observation_overflow_preserves_all_managed_records() {
-    for history in ["empty", "selected", "legacy"] {
-        let (fixture, mut session) = checkpoint_capacity_fixture(history);
-        session["observations"] = json!(
-            (0..400)
-                .map(|index| format!("OBS-bound-{index:03}"))
-                .collect::<Vec<_>>()
-        );
-        fixture.write(".chough/session.json", &session.to_string());
+    // 0.6.0 has one layout; a legacy log is migrate's (plan step 10).
+    for history in ["empty", "selected"] {
+        let fixture = checkpoint_capacity_fixture(history);
+        let observations: Vec<String> = (0..400)
+            .map(|index| format!("OBS-bound-{index:03}"))
+            .collect();
+        fixture.set_front("observations", &format!("[{}]", observations.join(", ")));
         assert_checkpoint_refusal_preserves_records(
             &fixture,
-            &[
-                "checkpoint",
-                "--observation",
-                "OBS-bound-400",
-                "--clear-awaiting-human",
-                "--awaiting-human",
-                "existing-one",
-                "--awaiting-human",
-                "replacement",
-            ],
+            &gate_change(&["--observation", "OBS-bound-400"]),
             "limit 400",
         );
     }
@@ -535,107 +577,83 @@ fn checkpoint_writer_observation_overflow_preserves_all_managed_records() {
 
 #[test]
 fn checkpoint_writer_byte_overflow_preserves_all_managed_records() {
-    for history in ["empty", "selected", "legacy"] {
-        let (fixture, mut session) = checkpoint_capacity_fixture(history);
-        fill_checkpoint_to_pretty_bytes(&mut session, common::CHECKPOINT_CAP - 1);
-        let mut candidate = session.clone();
-        candidate["decisions"].as_array_mut().unwrap().push(json!(
-            "another decision that exceeds the serialized byte bound"
-        ));
-        candidate["awaiting_human"] = json!(["existing-one", "replacement"]);
-        assert!(serde_json::to_vec(&candidate).unwrap().len() <= common::CHECKPOINT_CAP);
-        assert!(
-            serde_json::to_string_pretty(&candidate).unwrap().len() + 1 > common::CHECKPOINT_CAP
-        );
-        fixture.write(".chough/session.json", &session.to_string());
+    for history in ["empty", "selected"] {
+        let fixture = checkpoint_capacity_fixture(history);
+        // One byte under the bound: the decision and the gate entries would pass it.
+        fixture.pad_session_to(common::CHECKPOINT_CAP - 1);
         assert_checkpoint_refusal_preserves_records(
             &fixture,
-            &[
-                "checkpoint",
+            &gate_change(&[
                 "--decision",
                 "another decision that exceeds the serialized byte bound",
-                "--clear-awaiting-human",
-                "--awaiting-human",
-                "existing-one",
-                "--awaiting-human",
-                "replacement",
-            ],
+            ]),
             "1048576",
         );
     }
 }
 
+/// The gate entries (kind and gate) at the end of a session record's timeline.
+fn last_gate_entries(text: &str, count: usize) -> Vec<(String, String)> {
+    let entries = common::timeline(text);
+    entries[entries.len() - count..]
+        .iter()
+        .map(|line| {
+            let parts: Vec<&str> = line.splitn(4, " · ").collect();
+            let text = parts[3].rsplit_once(" ^").unwrap().0;
+            (parts[1].to_string(), text.trim().to_string())
+        })
+        .collect()
+}
+
+/// In 0.6.0 gate entries are part of the session record (REQ-history-002), so the record
+/// bound is checked on the final record, gate entries included (REQ-cli-032): a save that
+/// records no gate entry keeps a record at the bound at the bound, a gate change that lands
+/// exactly on the bound saves, and one a byte over is refused with every record unchanged.
 #[test]
 fn checkpoint_writer_final_cursor_byte_bound_is_checked_before_gate_events() {
-    // An empty cursor only grows when the command actually records a gate event.
-    let (fixture, mut session) = checkpoint_capacity_fixture("empty");
-    fill_checkpoint_to_pretty_bytes(&mut session, common::CHECKPOINT_CAP);
-    fixture.write(".chough/session.json", &session.to_string());
-    let next_action = session["next_action"].as_str().unwrap();
-    let result = fixture.ok(&["checkpoint", "--next-action", next_action]);
-    assert!(result["checkpoint"]["history_cursor"]["head"].is_null());
+    let fixture = checkpoint_capacity_fixture("empty");
+    fixture.pad_session_to(common::CHECKPOINT_CAP);
+    let next_action = fixture.session()["next_action"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    fixture.ok(&["checkpoint", "--next-action", &next_action]);
     assert_eq!(
-        fs::read(fixture.root().join(".chough/session.json"))
-            .unwrap()
-            .len(),
+        fixture.read(&fixture.session_file()).len(),
         common::CHECKPOINT_CAP
     );
 
+    // What the gate change adds, measured on a record far from the bound.
+    let probe = checkpoint_capacity_fixture("empty");
+    let file = probe.session_file();
+    let (before, entries) = (
+        probe.read(&file).len(),
+        common::timeline(&probe.read(&file)).len(),
+    );
+    probe.ok(&gate_change(&[]));
+    let after = probe.read(&file);
+    let growth = after.len() - before;
+    let added = common::timeline(&after).len() - entries;
+    let gates = last_gate_entries(&after, added);
+    for expected in [
+        ("gate-closed".to_string(), "existing-two".to_string()),
+        ("gate-opened".to_string(), "replacement".to_string()),
+    ] {
+        assert!(gates.contains(&expected), "{gates:?}");
+    }
+
     for final_bytes in [common::CHECKPOINT_CAP, common::CHECKPOINT_CAP + 1] {
-        let (fixture, mut candidate) = checkpoint_capacity_fixture("empty");
-        candidate["awaiting_human"] = json!(["existing-one", "replacement"]);
-        candidate["history_cursor"]["head"] = json!("EVT-000000000000000000000000");
-        fill_checkpoint_to_pretty_bytes(&mut candidate, final_bytes);
-        let mut initial = candidate.clone();
-        initial["awaiting_human"] = json!(["existing-one", "existing-two"]);
-        initial["history_cursor"]["head"] = Value::Null;
-        let initial_bytes = serde_json::to_string_pretty(&initial).unwrap().len() + 1;
-        assert!(initial_bytes <= common::CHECKPOINT_CAP);
-        fixture.write(".chough/session.json", &initial.to_string());
-        let args = [
-            "checkpoint",
-            "--clear-awaiting-human",
-            "--awaiting-human",
-            "existing-one",
-            "--awaiting-human",
-            "replacement",
-        ];
+        let fixture = checkpoint_capacity_fixture("empty");
+        fixture.pad_session_to(final_bytes - growth);
+        let args = gate_change(&[]);
         if final_bytes > common::CHECKPOINT_CAP {
             assert_checkpoint_refusal_preserves_records(&fixture, &args, "1048576");
             continue;
         }
-        let result = fixture.ok(&args);
-        assert_eq!(
-            fs::read(fixture.root().join(".chough/session.json"))
-                .unwrap()
-                .len(),
-            final_bytes
-        );
-        let cursor = &result["checkpoint"]["history_cursor"];
-        let cycle = cursor["cycle"].as_str().unwrap();
-        let mut head = cursor["head"].as_str().map(str::to_owned);
-        let mut transitions = vec![];
-        while let Some(id) = head {
-            let path = format!(".chough/history/cycles/{cycle}/{id}.json");
-            let event: Value =
-                serde_json::from_str(&fs::read_to_string(fixture.root().join(path)).unwrap())
-                    .unwrap();
-            transitions.push((
-                event["transition"]["kind"].as_str().unwrap().to_owned(),
-                event["transition"]["reason"].as_str().unwrap().to_owned(),
-            ));
-            head = event["parent"].as_str().map(str::to_owned);
-        }
-        transitions.reverse();
-        assert_eq!(
-            transitions,
-            [
-                ("gate-closed".into(), "existing-one".into()),
-                ("gate-closed".into(), "existing-two".into()),
-                ("gate-opened".into(), "existing-one".into()),
-                ("gate-opened".into(), "replacement".into()),
-            ]
-        );
+        fixture.ok(&args);
+        let text = fixture.read(&fixture.session_file());
+        assert_eq!(text.len(), final_bytes);
+        assert_eq!(last_gate_entries(&text, added), gates);
     }
 }
 
@@ -664,7 +682,8 @@ fn records_other_than_the_checkpoint_keep_the_65536_byte_bound() {
 #[test]
 fn init_rejects_unreadable_session_sizes_before_writing() {
     let fixture = Fixture::new();
-    let mut arguments = vec!["init"];
+    // `init` writes a session only with an objective (REQ-cli-037).
+    let mut arguments = vec!["init", "--objective", "Fix a reported bug"];
     for _ in 0..17 {
         arguments.extend(["--module", "cli"]);
     }
@@ -687,14 +706,7 @@ fn aggregate_context_budget_is_explicit() {
     ] {
         fixture.write(&format!("specs/cli/{name}"), &"x".repeat(20_000));
     }
-    let session_path = fixture.root().join(".chough/session.json");
-    let mut session: Value =
-        serde_json::from_str(&fs::read_to_string(&session_path).unwrap()).unwrap();
-    session["modules"] = json!(["cli", "other"]);
-    fixture.write(
-        ".chough/session.json",
-        &serde_json::to_string(&session).unwrap(),
-    );
+    fixture.set_front("modules", "[cli, other]");
     for name in [
         "other.spec.md",
         "requirements.md",
@@ -1945,14 +1957,29 @@ fn checkpoint_lock_path(root: &Path) -> PathBuf {
     common::checkpoint_lock_path(root).expect("the project has a .chough directory")
 }
 
+/// The active session's folder, `.chough/sessions/<id>` (REQ-cli-037).
+fn session_dir(root: &Path) -> PathBuf {
+    let id = fs::read_to_string(root.join(".chough/local/active-session")).unwrap();
+    root.join(".chough/sessions").join(id.trim())
+}
+
+/// The write temps in the active session's folder: `.session.md.<pid>.tmp`.
 fn session_temps(root: &Path) -> Vec<String> {
-    let mut names: Vec<String> = fs::read_dir(root.join(".chough"))
+    let mut names: Vec<String> = fs::read_dir(session_dir(root))
         .unwrap()
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
-        .filter(|name| name.starts_with(".session.json.") && name.ends_with(".tmp"))
+        .filter(|name| name.starts_with(".session.md.") && name.ends_with(".tmp"))
         .collect();
     names.sort();
     names
+}
+
+/// The decisions of the session record at `path` (its "Decisions and why" items).
+fn decisions_in(path: &Path) -> Vec<Value> {
+    common::parse_session(&fs::read_to_string(path).unwrap())["decisions"]
+        .as_array()
+        .unwrap()
+        .clone()
 }
 
 fn chough_command(root: &Path, args: &[&str]) -> Command {
@@ -1987,18 +2014,13 @@ fn checkpoint_writer_lock_holder_process() {
         .open(checkpoint_lock_path(&root))
         .unwrap();
     <fs::File as fs4::FileExt>::lock(&lock).unwrap();
-    let session_path = root.join(".chough/session.json");
-    let mut session: Value = serde_json::from_slice(&fs::read(&session_path).unwrap()).unwrap();
-    session["decisions"]
-        .as_array_mut()
-        .unwrap()
-        .push(json!(HOLDER_DECISION));
-    let temp = root.join(format!(".chough/.session.json.{}.tmp", std::process::id()));
-    fs::write(
-        &temp,
-        serde_json::to_string_pretty(&session).unwrap() + "\n",
-    )
-    .unwrap();
+    let session_path = session_dir(&root).join("session.md");
+    let text = fs::read_to_string(&session_path).unwrap();
+    let heading = "\n## Decisions and why\n\n";
+    let at = text.find(heading).unwrap() + heading.len();
+    let session = format!("{}- {HOLDER_DECISION}\n{}", &text[..at], &text[at..]);
+    let temp = session_dir(&root).join(format!(".session.md.{}.tmp", std::process::id()));
+    fs::write(&temp, session).unwrap();
     if mode == "after-rename" {
         fs::rename(&temp, &session_path).unwrap();
     }
@@ -2077,10 +2099,7 @@ fn checkpoint_writers_in_parallel_keep_every_update() {
             let response: Value = serde_json::from_slice(&output.stdout).unwrap();
             assert_eq!(response["saved"], true);
         }
-        let session: Value = serde_json::from_str(
-            &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
-        )
-        .unwrap();
+        let session = fixture.session();
         for lane in 1..=lanes {
             for (list, value) in [
                 ("decisions", format!("Parallel lane {lane} round {round}")),
@@ -2109,7 +2128,8 @@ fn checkpoint_writers_in_parallel_keep_every_update() {
 fn checkpoint_writer_killed_before_rename_leaves_a_temp_the_next_writer_removes() {
     let fixture = Fixture::new();
     fixture.init();
-    let before = fs::read(fixture.root().join(".chough/session.json")).unwrap();
+    let session_path = fixture.root().join(fixture.session_file());
+    let before = fs::read(&session_path).unwrap();
     let mut holder = start_lock_holder(fixture.root(), "before-rename");
     let temps = session_temps(fixture.root());
     assert_eq!(temps.len(), 1, "{temps:?}");
@@ -2127,10 +2147,7 @@ fn checkpoint_writer_killed_before_rename_leaves_a_temp_the_next_writer_removes(
         "the next writer did not wait for the live writer"
     );
     assert_eq!(session_temps(fixture.root()), temps);
-    assert_eq!(
-        fs::read(fixture.root().join(".chough/session.json")).unwrap(),
-        before
-    );
+    assert_eq!(fs::read(&session_path).unwrap(), before);
 
     // SIGKILL (TerminateProcess on Windows) before the rename: the lock is released,
     // the temp stays behind, and the waiting writer removes it and saves its own update.
@@ -2142,11 +2159,7 @@ fn checkpoint_writer_killed_before_rename_leaves_a_temp_the_next_writer_removes(
     assert!(stderr.contains(&temps[0]), "{stderr}");
     assert!(stderr.contains("removed"), "{stderr}");
     assert!(session_temps(fixture.root()).is_empty());
-    let session: Value = serde_json::from_str(
-        &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
-    )
-    .unwrap();
-    let decisions = session["decisions"].as_array().unwrap();
+    let decisions = decisions_in(&session_path);
     assert!(decisions.contains(&json!("After the killed writer")));
     assert!(!decisions.contains(&json!(HOLDER_DECISION)));
 }
@@ -2168,11 +2181,7 @@ fn checkpoint_writer_killed_after_rename_keeps_its_saved_update() {
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(output.status.success(), "{stderr}");
     assert!(!stderr.contains("removed"), "{stderr}");
-    let session: Value = serde_json::from_str(
-        &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
-    )
-    .unwrap();
-    let decisions = session["decisions"].as_array().unwrap();
+    let decisions = decisions_in(&fixture.root().join(fixture.session_file()));
     assert!(decisions.contains(&json!(HOLDER_DECISION)));
     assert!(decisions.contains(&json!("After the renamed write")));
     assert!(session_temps(fixture.root()).is_empty());
@@ -2182,41 +2191,24 @@ fn checkpoint_writer_killed_after_rename_keeps_its_saved_update() {
 fn checkpoint_writer_removes_only_orphaned_session_temps() {
     let fixture = Fixture::new();
     fixture.init();
-    let before = fs::read(fixture.root().join(".chough/session.json")).unwrap();
-    fixture.write(".chough/.session.json.4194304.tmp", "{\"partial\":");
-    fixture.write(".chough/.session.json.notapid.tmp", "kept\n");
+    let session_file = fixture.session_file();
+    let folder = session_file.trim_end_matches("/session.md").to_string();
+    let orphan = format!("{folder}/.session.md.4194304.tmp");
+    let not_a_pid = format!("{folder}/.session.md.notapid.tmp");
+    let before = fixture.read(&session_file);
+    fixture.write(&orphan, "---\npartial");
+    fixture.write(&not_a_pid, "kept\n");
     fixture.write(".chough/.preferences.json.4194304.tmp", "kept\n");
     // Reading does not take the writer lock and changes nothing.
     fixture.ok(&["status"]);
-    assert!(
-        fixture
-            .root()
-            .join(".chough/.session.json.4194304.tmp")
-            .exists()
-    );
-    assert_eq!(
-        fs::read(fixture.root().join(".chough/session.json")).unwrap(),
-        before
-    );
+    assert!(fixture.root().join(&orphan).exists());
+    assert_eq!(fixture.read(&session_file), before);
     let output = fixture.run(&["checkpoint", "--decision", "After an orphan"]);
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(output.status.success(), "{stderr}");
-    assert!(
-        stderr.contains(".chough/.session.json.4194304.tmp"),
-        "{stderr}"
-    );
-    assert!(
-        !fixture
-            .root()
-            .join(".chough/.session.json.4194304.tmp")
-            .exists()
-    );
-    assert!(
-        fixture
-            .root()
-            .join(".chough/.session.json.notapid.tmp")
-            .exists()
-    );
+    assert!(stderr.contains(".session.md.4194304.tmp"), "{stderr}");
+    assert!(!fixture.root().join(&orphan).exists());
+    assert!(fixture.root().join(&not_a_pid).exists());
     assert!(
         fixture
             .root()
@@ -2232,25 +2224,29 @@ fn checkpoint_writer_removes_only_orphaned_session_temps() {
 fn read_only_commands_leave_session_temps_in_place() {
     let fixture = Fixture::new();
     fixture.init();
-    let temp = ".chough/.session.json.4194304.tmp";
+    let session_file = fixture.session_file();
+    let temp = format!(
+        "{}/.session.md.4194304.tmp",
+        session_file.trim_end_matches("/session.md")
+    );
+    // `history prune` is gone in 0.6.0 (REQ-history-001 removed).
     for args in [
         vec!["context"],
         vec!["stage", "show"],
         vec!["history", "show"],
-        vec!["history", "prune"],
     ] {
-        fixture.write(temp, "{\"partial\":");
-        let before = fs::read(fixture.root().join(".chough/session.json")).unwrap();
+        fixture.write(&temp, "---\npartial");
+        let before = fs::read(fixture.root().join(&session_file)).unwrap();
         let output = fixture.run(&args);
         let stderr = String::from_utf8_lossy(&output.stderr);
         assert!(output.status.success(), "{args:?} {stderr}");
         assert!(!stderr.contains("removed"), "{args:?} {stderr}");
         assert!(
-            fixture.root().join(temp).is_file(),
+            fixture.root().join(&temp).is_file(),
             "{args:?} removed the session temp"
         );
         assert_eq!(
-            fs::read(fixture.root().join(".chough/session.json")).unwrap(),
+            fs::read(fixture.root().join(&session_file)).unwrap(),
             before,
             "{args:?}"
         );
@@ -2344,10 +2340,7 @@ fn writers_with_different_temp_directories_share_the_checkpoint_lock() {
         "{}",
         String::from_utf8_lossy(&output.stderr)
     );
-    let session: Value = serde_json::from_str(
-        &fs::read_to_string(fixture.root().join(".chough/session.json")).unwrap(),
-    )
-    .unwrap();
+    let session = fixture.session();
     assert!(
         session["decisions"]
             .as_array()
@@ -2389,6 +2382,7 @@ fn the_checkpoint_lock_lives_in_the_project_and_git_ignores_it() {
 /// decision in the one remaining checkpoint or refuse with nothing saved. (#77's
 /// `legacy_writers_racing_adopt_end_in_one_mode` asserts only the single mode.)
 #[test]
+#[ignore = "plan step 10: rewritten with chough migrate"]
 fn legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved() {
     for trial in 0..10 {
         let fixture = Fixture::new();
@@ -2532,12 +2526,15 @@ impl Fixture {
 }
 
 /// Issue #100 (LIFE-15): SpecSync's own files are read within SpecSync's bound, never
-/// Chough's 65,536-byte record bound. Retention reads an archived `finalization.json`
-/// larger than that bound to find the latest native manifest.
+/// Chough's 65,536-byte record bound. Rewritten for 0.6.0 (REQ-cli-042): the finished-
+/// session reader, which tells with no native read that a session's native change is
+/// archived (REQ-history-006, DRIVE-16), reads an archived `finalization.json` larger
+/// than that bound.
 #[test]
 fn an_archived_finalization_over_the_record_bound_is_read() {
     let fixture = Fixture::new();
     let archive = fixture.big_archive();
+    fixture.ok(&["checkpoint", "--native-change", "big-change"]);
     let finalization = json!({
         "schema_version": 2,
         "change_id": "big-change",
@@ -2547,14 +2544,10 @@ fn an_archived_finalization_over_the_record_bound_is_read() {
     .to_string();
     assert!(finalization.len() > 65_536);
     fixture.write(&format!("{archive}/finalization.json"), &finalization);
-    let preview = fixture.ok(&["evidence", "prune"]);
-    assert_eq!(preview["native"]["state"], "observed", "{preview:#}");
-    assert!(
-        preview["native"]["detail"]
-            .as_str()
-            .is_some_and(|detail| !detail.contains("65536")),
-        "{preview:#}"
-    );
+    let list = fixture.ok(&["session", "list"]);
+    let session = &list["sessions"][0];
+    assert_eq!(session["finished"], true, "{list:#}");
+    assert_eq!(session["fix"], "chough doctor --fix", "{list:#}");
 }
 
 /// Issue #100 (LIFE-15): the librarian reads an archived `change.md` larger than the
