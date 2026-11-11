@@ -136,56 +136,6 @@ fn write_run(fixture: &Fixture, id: &str, observations: &[&str], completed: u32,
     );
 }
 
-/// Every file under the project (outside .git) with its bytes.
-fn tree(root: &Path) -> BTreeMap<String, Vec<u8>> {
-    fn walk(root: &Path, dir: &Path, files: &mut BTreeMap<String, Vec<u8>>) {
-        for entry in fs::read_dir(dir).unwrap() {
-            let path = entry.unwrap().path();
-            if path.file_name().unwrap() == ".git" {
-                continue;
-            }
-            if path.is_dir() {
-                walk(root, &path, files);
-            } else {
-                let name = path
-                    .strip_prefix(root)
-                    .unwrap()
-                    .to_string_lossy()
-                    .into_owned();
-                files.insert(name, fs::read(&path).unwrap());
-            }
-        }
-    }
-    let mut files = BTreeMap::new();
-    walk(root, root, &mut files);
-    files
-}
-
-fn ids(list: &Value) -> BTreeSet<String> {
-    list.as_array()
-        .unwrap()
-        .iter()
-        .map(|entry| entry["id"].as_str().unwrap().to_string())
-        .collect()
-}
-
-fn reasons(preview: &Value, id: &str) -> Vec<String> {
-    preview["protected"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .find(|entry| entry["id"] == id)
-        .unwrap_or_else(|| panic!("{id} is not protected: {preview:#}"))["reasons"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|reason| reason.as_str().unwrap().to_string())
-        .collect()
-}
-
-fn set<const N: usize>(items: [&str; N]) -> BTreeSet<String> {
-    items.into_iter().map(String::from).collect()
-}
 
 fn project() -> Fixture {
     let fixture = Fixture::new();
@@ -193,10 +143,6 @@ fn project() -> Fixture {
     fixture.commit("fixture");
     fixture
 }
-
-
-
-
 
 #[test]
 fn removed_and_missing_observations_are_labeled_and_never_count() {
@@ -321,7 +267,6 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
     assert_eq!(labels, vec!["pruned", "pruned", "unavailable"]);
 }
 
-
 #[test]
 fn rebuilding_the_knowledge_index_keeps_the_observation_current() {
     let fixture = Fixture::new();
@@ -348,22 +293,6 @@ fn rebuilding_the_knowledge_index_keeps_the_observation_current() {
     fixture.ok(&["library", "index"]);
     assert_eq!(label(&fixture).as_deref(), Some("current"));
 }
-
-
-/// Rewrites a fixture record so it binds every listed case.
-fn bind_cases(fixture: &Fixture, id: &str, cases: &[&str]) {
-    let name = format!(".chough/evidence/{id}.json");
-    let mut record: Value = serde_json::from_str(&fixture.read(&name)).unwrap();
-    record["cases"] = cases
-        .iter()
-        .map(|case| json!({"id": case, "digest": ZERO}))
-        .collect();
-    fixture.write(&name, &serde_json::to_string_pretty(&record).unwrap());
-}
-
-
-
-
 
 
 #[cfg(unix)]
@@ -480,7 +409,6 @@ printf '{"summary":{"id":"%s","state":"archived","terminal_evidence":{"validity"
     fixture
 }
 
-
 #[test]
 fn an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change() {
     let fixture = knowledge_fixture();
@@ -496,4 +424,3 @@ fn an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change() {
     assert!(!next.to_string().contains("left-behind"), "{next:#}");
     fixture.ok(&["gate", "list", "--json"]);
 }
-

@@ -36,7 +36,9 @@ fn unix_of(iso: &str) -> u64 {
 fn read_evidence(fixture: &Fixture, id: &str) -> Value {
     let mut found = None;
     for session in fixture.open_ids() {
-        let dir = fixture.root().join(format!(".chough/sessions/{session}/evidence"));
+        let dir = fixture
+            .root()
+            .join(format!(".chough/sessions/{session}/evidence"));
         let Ok(entries) = fs::read_dir(&dir) else {
             continue;
         };
@@ -132,7 +134,6 @@ fn read_evidence(fixture: &Fixture, id: &str) -> Value {
     }
     found.unwrap_or_else(|| panic!("no evidence entry {id}"))
 }
-
 
 use common::Fixture;
 use serde_json::Value;
@@ -505,7 +506,10 @@ fn execution_records_failures_and_vacuous_runs_honestly() {
             .contains("build or environment failure")
     );
     // The raw log stays machine-local (REQ-records-005), named by the entry's ID.
-    let id = record("TC-cli-0002")["record"]["id"].as_str().unwrap().to_string();
+    let id = record("TC-cli-0002")["record"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
     let log = format!(".chough/local/logs/{id}.log");
     assert!(fixture.read(&log).contains("1 failed"));
     assert_eq!(
@@ -1175,10 +1179,12 @@ fn coloured_output_matches_its_visible_text_and_the_artifact_keeps_the_raw_bytes
         limitations(&record).contains(&ESCAPES_REMOVED.to_string()),
         "{record}"
     );
-    let artifact = fixture.read(&format!(
-        ".chough/local/logs/{}.log",
-        record["id"].as_str().unwrap()
-    )).into_bytes();
+    let artifact = fixture
+        .read(&format!(
+            ".chough/local/logs/{}.log",
+            record["id"].as_str().unwrap()
+        ))
+        .into_bytes();
     let mut raw = b"--- stdout ---\n".to_vec();
     raw.extend(COLOURED);
     raw.extend(b"\n--- stderr ---\n");
@@ -1267,12 +1273,12 @@ fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations(
         // The raw log stays machine-local and uncommitted (REQ-records-005); the entry
         // carries its fingerprint.
         let log = format!(".chough/local/logs/{id}.log");
-        let fixture = roots
-            .iter()
-            .find(|fixture| fixture.exists(&log))
-            .unwrap();
+        let fixture = roots.iter().find(|fixture| fixture.exists(&log)).unwrap();
         let record: Value = read_evidence(fixture, id);
-        assert!(record["artifacts"].as_array().unwrap().is_empty(), "{record}");
+        assert!(
+            record["artifacts"].as_array().unwrap().is_empty(),
+            "{record}"
+        );
         let bytes = fixture.read(&log);
         assert!(bytes.contains("test result: ok. 1 passed"));
         let digest = {
@@ -1628,7 +1634,11 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
         "--observation-id",
         id,
     ]);
-    assert!(first.status.success(), "{}", String::from_utf8_lossy(&first.stderr));
+    assert!(
+        first.status.success(),
+        "{}",
+        String::from_utf8_lossy(&first.stderr)
+    );
     let log = format!(".chough/local/logs/{id}.log");
     let before = fixture.read(&log);
     let output = fixture.run(&[
@@ -1647,9 +1657,13 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
     assert_eq!(fixture.read(&log), before);
     let session = fixture.active_id();
     assert_eq!(
-        std::fs::read_dir(fixture.root().join(format!(".chough/sessions/{session}/evidence")))
-            .unwrap()
-            .count(),
+        std::fs::read_dir(
+            fixture
+                .root()
+                .join(format!(".chough/sessions/{session}/evidence"))
+        )
+        .unwrap()
+        .count(),
         1,
         "a second entry was written"
     );
@@ -2392,7 +2406,7 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
         .iter()
         .filter(|(_, kind)| kind == "dry-run")
         .map(|(id, _)| id)
-        .filter(|id| reported.get(*id).is_some())
+        .filter(|id| reported.contains_key(*id))
         .collect();
     assert_eq!(dry_runs.len(), 1, "a dry run read as a delivery kind");
 }
@@ -2430,7 +2444,10 @@ fn manual_case_record_returns_its_case_and_observation_ids() {
     let recorded = report["recorded"].as_str().unwrap();
     assert_eq!(
         recorded,
-        format!(".chough/sessions/{}/evidence/{observation}.md", fixture.active_id())
+        format!(
+            ".chough/sessions/{}/evidence/{observation}.md",
+            fixture.active_id()
+        )
     );
     let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);
@@ -2465,7 +2482,10 @@ fn evidence_add_returns_its_observation_id() {
     let recorded = report["recorded"].as_str().unwrap();
     assert_eq!(
         recorded,
-        format!(".chough/sessions/{}/evidence/{observation}.md", fixture.active_id())
+        format!(
+            ".chough/sessions/{}/evidence/{observation}.md",
+            fixture.active_id()
+        )
     );
     let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);

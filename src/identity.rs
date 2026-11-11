@@ -134,6 +134,7 @@ fn allocate(prefix: &str, source: &str, fallback: &str, slug_limit: usize) -> Re
     ))
 }
 
+#[allow(dead_code)] // removed at integration (t382): 0.5.x OBS allocation, unused in 0.6.0
 pub(crate) fn observation(source: &str) -> Result<String> {
     allocate("OBS-", source, "observation", OBSERVATION_SLUG_LIMIT)
 }

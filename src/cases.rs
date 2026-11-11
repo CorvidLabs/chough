@@ -1025,7 +1025,11 @@ fn observation_id(case: &str, requested: Option<String>) -> Result<String> {
         return Ok(id);
     }
     // REQ-cli-023 / REQ-records-003: named from the case ID by date and slug.
-    Ok(identity::dated_name(&identity::utc_date(now()?), case, "observation"))
+    Ok(identity::dated_name(
+        &identity::utc_date(now()?),
+        case,
+        "observation",
+    ))
 }
 
 /// The outcome of one explicit case execution, already recorded.

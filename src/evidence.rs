@@ -387,11 +387,7 @@ fn active_session(root: &Path) -> Result<String> {
 /// refusing a same-name different-content creation with no retry (REQ-cli-023), then
 /// register it in the session: the `observations` front matter list, which the session
 /// writer links in What was verified (REQ-records-004).
-pub(super) fn record(
-    root: &Path,
-    evidence: &Evidence,
-    files: EntryFiles,
-) -> Result<String> {
+pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Result<String> {
     validate_record(evidence, &evidence.id)?;
     let session_id = active_session(root)?;
     let dir = evidence_dir(&session_id);
@@ -479,7 +475,10 @@ fn record_explicit(
     }
     let text = record.render_within(markdown::Kind::Evidence)?;
     let created = crate::records::write_new_bounded(root, &target, &text, markdown::RECORD_BOUND)?;
-    ensure!(created, "observation identity collision: {name} already exists");
+    ensure!(
+        created,
+        "observation identity collision: {name} already exists"
+    );
 
     let mut session = match crate::checkpoint::read_session(root)? {
         crate::checkpoint::Session::V2(session) => *session,
@@ -514,7 +513,7 @@ pub(super) struct EvidenceArgs {
     summary: String,
     /// A project-local artifact to fingerprint, or an absolute path outside the
     /// project, fingerprinted in place and never copied (REQ-records-005).
-    #[arg(long)]
+    #[arg(long = "artifact")]
     artifacts: Vec<String>,
     /// Key failing lines of a manual failure, within the bounds of REQ-records-005.
     #[arg(long)]
@@ -997,14 +996,17 @@ fn evidence_from_receipt(map: &[(String, String)]) -> Result<Evidence> {
 /// Receipts held by archived stories and bugs, as (qualified source, entry) pairs.
 fn receipt_entries(root: &Path, id: &str) -> Result<Vec<(String, Evidence)>> {
     let mut found = vec![];
-    for view_sources in [receipt_maps(root, ".chough/archive/sessions", "receipts")?, {
-        let bugs = local_path(root, crate::bugs::BUGS_DIR)?;
-        if bugs.is_dir() {
-            receipt_maps(root, crate::bugs::BUGS_DIR, "receipts")?
-        } else {
-            vec![]
-        }
-    }] {
+    for view_sources in [
+        receipt_maps(root, ".chough/archive/sessions", "receipts")?,
+        {
+            let bugs = local_path(root, crate::bugs::BUGS_DIR)?;
+            if bugs.is_dir() {
+                receipt_maps(root, crate::bugs::BUGS_DIR, "receipts")?
+            } else {
+                vec![]
+            }
+        },
+    ] {
         for (source, map) in view_sources {
             let entry = evidence_from_receipt(&map)?;
             if entry.id == id || entry.aliases.iter().any(|alias| alias == id) {
@@ -1016,11 +1018,7 @@ fn receipt_entries(root: &Path, id: &str) -> Result<Vec<(String, Evidence)>> {
 }
 
 /// Every `receipts:` map in the Markdown records under a folder, with the record name.
-fn receipt_maps(
-    root: &Path,
-    dir: &str,
-    key: &str,
-) -> Result<Vec<(String, Vec<(String, String)>)>> {
+fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<Vec<(String, Vec<(String, String)>)>> {
     let folder = local_path(root, dir)?;
     let mut found = vec![];
     let Ok(entries) = fs::read_dir(&folder) else {
@@ -1057,7 +1055,11 @@ pub(super) fn load(root: &Path, id: &str) -> Result<Evidence> {
             found.push(Evidence::from_record(&record)?);
         }
     }
-    found.extend(receipt_entries(root, id)?.into_iter().map(|(_, entry)| entry));
+    found.extend(
+        receipt_entries(root, id)?
+            .into_iter()
+            .map(|(_, entry)| entry),
+    );
     match found.len() {
         0 => bail!("evidence not found: {id}"),
         1 => Ok(found.pop().expect("one entry")),
