@@ -1024,7 +1024,8 @@ fn observation_id(case: &str, requested: Option<String>) -> Result<String> {
         identity::require_explicit_observation_id(&id)?;
         return Ok(id);
     }
-    identity::observation(case)
+    // REQ-cli-023 / REQ-records-003: named from the case ID by date and slug.
+    Ok(identity::dated_name(&identity::utc_date(now()?), case, "observation"))
 }
 
 /// The outcome of one explicit case execution, already recorded.
@@ -1192,6 +1193,7 @@ pub(super) fn run_case(
     }
     let record = Evidence {
         id: observation.clone(),
+        explicit_id: false,
         aliases: vec![],
         criteria: case.criteria.clone(),
         requirements: case.requirements.clone(),
@@ -1293,6 +1295,7 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
     let (external, artifact_fingerprints) = evidence::bind_artifacts(root, &artifacts)?;
     let record = Evidence {
         id: observation.clone(),
+        explicit_id: false,
         aliases: vec![],
         criteria: case.criteria.clone(),
         requirements: case.requirements.clone(),

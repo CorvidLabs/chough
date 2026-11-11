@@ -109,6 +109,8 @@ pub(super) struct Evidence {
     pub(super) environment: String,
     /// The one-line claim.
     pub(super) summary: String,
+    /// The ID was supplied explicitly: a clash refuses, never suffixes (REQ-cli-023).
+    pub(super) explicit_id: bool,
     /// Project-local artifacts, fingerprinted (paths are project-relative).
     pub(super) artifacts: Vec<String>,
     pub(super) artifact_fingerprints: BTreeMap<String, String>,
@@ -294,6 +296,7 @@ impl Evidence {
         });
         Ok(Evidence {
             id: need("id")?,
+            explicit_id: false,
             aliases: record.list("aliases"),
             criteria: record.list("criteria"),
             requirements: record.list("requirements"),
@@ -396,6 +399,9 @@ pub(super) fn record(
     // name allocation; a refused entry write leaves no screenshot behind (it is new
     // and uncommitted, REQ-records-012).
     let written_shot = std::cell::Cell::new(None);
+    if evidence.explicit_id {
+        return record_explicit(root, evidence, screenshot, &session_id, &dir);
+    }
     let name = identity::create_named(
         root,
         &dir,
@@ -439,6 +445,46 @@ pub(super) fn record(
     Ok(format!("{dir}/{name}.md"))
 }
 
+/// An explicitly named entry: a name already in use refuses with nothing written
+/// and no clash suffix (REQ-cli-023).
+fn record_explicit(
+    root: &Path,
+    evidence: &Evidence,
+    screenshot: Option<(String, Vec<u8>)>,
+    session_id: &str,
+    dir: &str,
+) -> Result<String> {
+    let name = evidence.id.clone();
+    let target = format!("{dir}/{name}.md");
+    ensure!(
+        !local_path(root, &target)?.exists(),
+        "observation identity collision: {name} already exists; record a new observation or omit the ID"
+    );
+    let mut entry = evidence.clone();
+    if let Some((extension, bytes)) = &screenshot {
+        let file = write_screenshot(root, session_id, &name, extension, bytes)?;
+        entry.screenshot = Some(file);
+    }
+    let mut record = entry.to_record(&name);
+    if leaks::redacting() {
+        record.redact_leaks(leaks::Local::current());
+    } else {
+        record.check_leaks(leaks::Local::current())?;
+    }
+    let text = record.render_within(markdown::Kind::Evidence)?;
+    let created = crate::records::write_new_bounded(root, &target, &text, markdown::RECORD_BOUND)?;
+    ensure!(created, "observation identity collision: {name} already exists");
+
+    let mut session = match crate::checkpoint::read_session(root)? {
+        crate::checkpoint::Session::V2(session) => *session,
+    };
+    if !session.observations.contains(&name) {
+        session.observations.push(name.clone());
+    }
+    crate::checkpoint::save_checkpoint(root, &mut session)?;
+    Ok(target)
+}
+
 // ---------------------------------------------------------------------------
 // `evidence add`.
 
@@ -474,7 +520,7 @@ pub(super) struct EvidenceArgs {
     #[arg(long)]
     raw_log: Option<String>,
     /// Link a test-case definition; its current digest is bound to the observation.
-    #[arg(long)]
+    #[arg(long = "case")]
     cases: Vec<String>,
     #[arg(long)]
     method: Option<String>,
@@ -629,6 +675,7 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     }
     let evidence = Evidence {
         id,
+        explicit_id: args.id.is_some(),
         aliases: vec![],
         criteria: args.criteria,
         requirements: args.requirements,
@@ -1870,6 +1917,7 @@ impl<'de> Deserialize<'de> for Evidence {
         let legacy = Legacy::deserialize(deserializer)?;
         Ok(Evidence {
             id: legacy.id,
+            explicit_id: false,
             aliases: vec![],
             criteria: legacy.criteria,
             requirements: legacy.requirements,

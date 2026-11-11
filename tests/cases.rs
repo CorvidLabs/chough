@@ -2,8 +2,131 @@
 
 mod common;
 
+/// `YYYY-MM-DDTHH:MM:SSZ` back to Unix seconds (the 0.6.0 entry writes ISO).
+fn unix_of(iso: &str) -> u64 {
+    let (date, time) = iso.split_once('T').unwrap();
+    let (year, month, day) = {
+        let mut parts = date.split('-');
+        (
+            parts.next().unwrap().parse::<i64>().unwrap(),
+            parts.next().unwrap().parse::<i64>().unwrap(),
+            parts.next().unwrap().parse::<i64>().unwrap(),
+        )
+    };
+    let (hour, minute, second) = {
+        let mut parts = time.trim_end_matches('Z').split(':');
+        (
+            parts.next().unwrap().parse::<u64>().unwrap(),
+            parts.next().unwrap().parse::<u64>().unwrap(),
+            parts.next().unwrap().parse::<u64>().unwrap(),
+        )
+    };
+    let year = if month <= 2 { year - 1 } else { year };
+    let month = if month <= 2 { month + 9 } else { month - 3 };
+    let era = year.div_euclid(400);
+    let yoe = year.rem_euclid(400);
+    let doy = (153 * month + 2) / 5 + day - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    let days = era * 146_097 + doe - 719_468;
+    (days * 86_400 + (hour * 3_600 + minute * 60 + second) as i64) as u64
+}
+
+/// An evidence entry in the 0.6.0 layout, read as the 0.5.x JSON shape these tests
+/// assert on. Searches every open session's evidence folder.
+fn read_evidence(fixture: &Fixture, id: &str) -> Value {
+    let mut found = None;
+    for session in fixture.open_ids() {
+        let dir = fixture.root().join(format!(".chough/sessions/{session}/evidence"));
+        let Ok(entries) = fs::read_dir(&dir) else {
+            continue;
+        };
+        for entry in entries.flatten() {
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if !name.ends_with(".md") {
+                continue;
+            }
+            let text = fs::read_to_string(entry.path()).unwrap();
+            let (front, _) = text
+                .strip_prefix("---\n")
+                .and_then(|rest| rest.split_once("\n---\n"))
+                .expect("an evidence entry");
+            let get = |key: &str| -> Option<String> {
+                front.lines().find_map(|line| {
+                    line.split_once(':')
+                        .filter(|(name, _)| name.trim() == key)
+                        .map(|(_, value)| {
+                            value
+                                .trim()
+                                .trim_matches('"')
+                                .replace("\\n", "\n")
+                                .to_string()
+                        })
+                })
+            };
+            let list = |key: &str| -> Vec<String> {
+                front
+                    .lines()
+                    .find_map(|line| {
+                        let (name, value) = line.split_once(':')?;
+                        if name.trim() != key {
+                            return None;
+                        }
+                        let value = value.trim();
+                        Some(
+                            value
+                                .strip_prefix('[')?
+                                .strip_suffix(']')?
+                                .split(", ")
+                                .filter(|item| !item.is_empty())
+                                .map(|item| item.trim().trim_matches('"').to_string())
+                                .collect(),
+                        )
+                    })
+                    .unwrap_or_default()
+            };
+            let entry_id = get("id").unwrap_or_default();
+            let aliases = list("aliases");
+            if entry_id != id && !aliases.iter().any(|alias| alias == id) {
+                continue;
+            }
+            let cases = list("case");
+            let digests = list("case_digest");
+            found = Some(serde_json::json!({
+                "schema_version": 2,
+                "id": entry_id,
+                "aliases": aliases,
+                "criteria": list("criteria"),
+                "requirements": list("requirements"),
+                "contracts": list("contracts"),
+                "kind": get("evidence_kind"),
+                "outcome": get("result"),
+                "environment": get("environment"),
+                "summary": get("claim"),
+                "artifacts": list("artifacts"),
+                "external": get("external"),
+                "screenshot": get("screenshot"),
+                "fingerprint": get("fingerprint"),
+                "raw_log": get("raw_log"),
+                "observed_at_unix_seconds": get("observed").map(|iso| unix_of(&iso)),
+                "snapshot": {"revision": get("revision"), "content": get("content")},
+                "cases": cases.iter().zip(&digests).map(|(id, digest)| serde_json::json!({"id": id, "digest": digest})).collect::<Vec<_>>(),
+                "method": get("method"),
+                "track": get("track"),
+                "argv": list("command"),
+                "exit_code": get("exit_code").and_then(|code| code.parse::<i32>().ok()),
+                "tests_run": get("tests_run").and_then(|count| count.parse::<u64>().ok()),
+                "limitations": list("limitations"),
+                "duration_seconds": get("duration_seconds").and_then(|d| d.parse::<u64>().ok()),
+            }));
+        }
+    }
+    found.unwrap_or_else(|| panic!("no evidence entry {id}"))
+}
+
+
 use common::Fixture;
 use serde_json::Value;
+use std::fs;
 
 const HEADER: &str = "profile = \"chough-testing/1\"\nmodule = \"cli\"\n";
 
@@ -1123,31 +1246,37 @@ fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations(
         }
     }
     for id in &observations {
+        // Date and slug names (REQ-records-003): <date>-tc-cli-0001, plus one
+        // 6-hex clash suffix for same-day repeats (REQ-cli-023).
         let suffix = id
-            .strip_prefix("OBS-tc-cli-0001-")
-            .unwrap_or_else(|| panic!("old-form observation allocated: {id}"));
-        assert_eq!(suffix.len(), 24, "{id}");
+            .strip_prefix(&format!("{}-tc-cli-0001", &id[..10]))
+            .unwrap_or_else(|| panic!("not a date-slug observation name: {id}"));
         assert!(
-            suffix
-                .bytes()
-                .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()),
+            suffix.is_empty()
+                || (suffix.len() == 7
+                    && suffix[1..]
+                        .bytes()
+                        .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())),
             "{id}"
         );
-        let artifact = format!(".chough/artifacts/{id}.log");
+        // The raw log stays machine-local and uncommitted (REQ-records-005); the entry
+        // carries its fingerprint.
+        let log = format!(".chough/local/logs/{id}.log");
         let fixture = roots
             .iter()
-            .find(|fixture| fixture.exists(&format!(".chough/evidence/{id}.json")))
+            .find(|fixture| fixture.exists(&log))
             .unwrap();
-        let record: Value =
-            serde_json::from_str(&fixture.read(&format!(".chough/evidence/{id}.json"))).unwrap();
-        assert_eq!(record["artifacts"][0], artifact);
-        assert!(
-            fixture
-                .read(&artifact)
-                .contains("test result: ok. 1 passed")
-        );
-        assert!(record["observed_at_unix_seconds"].is_u64());
-        assert!(record["duration_seconds"].is_u64());
+        let record: Value = read_evidence(fixture, id);
+        assert!(record["artifacts"].as_array().unwrap().is_empty(), "{record}");
+        let bytes = fixture.read(&log);
+        assert!(bytes.contains("test result: ok. 1 passed"));
+        let digest = {
+            use sha2::{Digest, Sha256};
+            format!("sha256:{:x}", Sha256::digest(bytes.as_bytes()))
+        };
+        assert_eq!(record["fingerprint"].as_str().unwrap(), digest, "{record}");
+        assert!(record["observed_at_unix_seconds"].is_u64(), "{record}");
+        assert!(record["duration_seconds"].is_u64(), "{record}");
     }
     let unique = observations
         .iter()
@@ -1293,21 +1422,31 @@ fn recorded_id(output: &std::process::Output) -> String {
     );
     let report: Value = serde_json::from_slice(&output.stdout).unwrap();
     let path = report["recorded"].as_str().unwrap();
-    path.strip_prefix(".chough/evidence/")
-        .and_then(|name| name.strip_suffix(".json"))
+    path.strip_suffix(".md")
+        .and_then(|name| name.rsplit_once('/'))
+        .map(|(_, stem)| stem)
         .unwrap()
         .to_string()
 }
 
 fn assert_observation_form(id: &str, slug: &str) {
-    let suffix = id
-        .strip_prefix(&format!("OBS-{slug}-"))
+    // A date and slug name (REQ-records-003): <YYYY-MM-DD>-<slug>, plus one 6-hex
+    // clash suffix on a same-day clash (REQ-cli-023).
+    let (date, rest) = id.split_once('-').unwrap();
+    assert_eq!(date.len(), 4, "{id}");
+    let (month, rest) = rest.split_once('-').unwrap();
+    let (day, slug_part) = rest.split_once('-').unwrap();
+    assert_eq!(month.len(), 2, "{id}");
+    assert_eq!(day.len(), 2, "{id}");
+    let suffix = slug_part
+        .strip_prefix(slug)
         .unwrap_or_else(|| panic!("wrong observation form: {id}"));
-    assert_eq!(suffix.len(), 24, "{id}");
     assert!(
-        suffix
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
+        suffix.is_empty()
+            || (suffix.len() == 7
+                && suffix[1..]
+                    .bytes()
+                    .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())),
         "{id}"
     );
 }
@@ -1476,9 +1615,22 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
         "cargo",
         "running 1 test\ntest passes ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored",
     );
-    let id = "OBS-tc-cli-0001-000000000000000000000012";
-    let artifact = format!(".chough/artifacts/{id}.log");
-    fixture.write(&artifact, "original artifact bytes\n");
+    // An explicit date-slug ID used twice: the second write is refused with nothing
+    // written, no suffix and no fallback (REQ-cli-023); the first entry and its local
+    // log keep their bytes.
+    let id = "2020-01-01-collision-check";
+    let first = fixture.run(&[
+        "cases",
+        "run",
+        "TC-cli-0001",
+        "--environment",
+        "local",
+        "--observation-id",
+        id,
+    ]);
+    assert!(first.status.success(), "{}", String::from_utf8_lossy(&first.stderr));
+    let log = format!(".chough/local/logs/{id}.log");
+    let before = fixture.read(&log);
     let output = fixture.run(&[
         "cases",
         "run",
@@ -1490,11 +1642,17 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
     ]);
     assert!(!output.status.success());
     let error = String::from_utf8_lossy(&output.stderr);
-    assert!(error.contains("artifact identity collision"), "{error}");
+    assert!(error.contains("identity collision"), "{error}");
     assert!(error.contains(id), "{error}");
-    assert_eq!(fixture.read(&artifact), "original artifact bytes\n");
-    assert!(!fixture.exists(&format!(".chough/evidence/{id}.json")));
-    assert!(std::fs::read_dir(fixture.root().join(".chough/evidence")).is_err());
+    assert_eq!(fixture.read(&log), before);
+    let session = fixture.active_id();
+    assert_eq!(
+        std::fs::read_dir(fixture.root().join(format!(".chough/sessions/{session}/evidence")))
+            .unwrap()
+            .count(),
+        1,
+        "a second entry was written"
+    );
 }
 
 /// Generated records under `dir` in a fixture: relative path to bytes.
@@ -2189,12 +2347,10 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
         "delivery-observation",
         "dry-run",
     ];
-    for (index, kind) in kinds.iter().enumerate() {
-        let id = format!("OBS-{kind}-{:024x}", index + 1);
-        fixture.ok(&[
+    for kind in kinds.iter() {
+        let report = fixture.ok(&[
             "evidence",
             "add",
-            &id,
             "--criterion",
             "LIFE-1",
             "--requirement",
@@ -2210,8 +2366,8 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
             "--summary",
             &format!("A {kind} of the 1.2.0 release"),
         ]);
-        let record: Value =
-            serde_json::from_str(&fixture.read(&format!(".chough/evidence/{id}.json"))).unwrap();
+        let id = report["observation"].as_str().unwrap().to_string();
+        let record: Value = read_evidence(&fixture, &id);
         assert_eq!(record["schema_version"], 2, "{record:#}");
         assert_eq!(record["kind"], *kind, "{record:#}");
     }
@@ -2274,8 +2430,11 @@ fn manual_case_record_returns_its_case_and_observation_ids() {
         .unwrap_or_else(|| panic!("no observation: {report}"));
     assert_observation_form(observation, "tc-cli-0002");
     let recorded = report["recorded"].as_str().unwrap();
-    assert_eq!(recorded, format!(".chough/evidence/{observation}.json"));
-    let stored: Value = serde_json::from_str(&fixture.read(recorded)).unwrap();
+    assert_eq!(
+        recorded,
+        format!(".chough/sessions/{}/evidence/{observation}.md", fixture.active_id())
+    );
+    let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);
 }
 
@@ -2306,7 +2465,10 @@ fn evidence_add_returns_its_observation_id() {
         .unwrap_or_else(|| panic!("no observation: {report}"));
     assert_observation_form(observation, "tc-cli-0001");
     let recorded = report["recorded"].as_str().unwrap();
-    assert_eq!(recorded, format!(".chough/evidence/{observation}.json"));
-    let stored: Value = serde_json::from_str(&fixture.read(recorded)).unwrap();
+    assert_eq!(
+        recorded,
+        format!(".chough/sessions/{}/evidence/{observation}.md", fixture.active_id())
+    );
+    let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);
 }
