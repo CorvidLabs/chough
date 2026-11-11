@@ -70,12 +70,13 @@
     "Leif's intent approval closed both gates with his words; native approval recorded as 0xLeif citing 'Yes, merge when green'; change check --commit verified and committed; head 506ba5f9 pushed; independent review requested from t37j",
     "Addressed t37j's review: LIFE-23 scoped to the #235-amended knowledge criteria; LIFE-17 records only the hc terminal id (LIFE-26); KNOW-29, KNOW-2, KNOW-7, KNOW-18, KNOW-19, KNOW-22, KNOW-23, KNOW-25, KNOW-28 amended citing #235/design review, with two open questions for Leif (five-recent bound on archived stories; where failure-first logs and screenshots live); KNOW-30 reinterpretation sentence dropped; roadmap and PR mappings corrected for #181/#113/#207/#60/#136 fixed on main, #211 dropped, #214/#208/#210/#233 folded into 0.6.0",
     "Per t370: retired KNOW-2, 7, 18, 19, 22, 23, 25, 28, 29 (superseded by KNOW-30/31/33, citing Leif's 'Approve it') instead of amending; LIFE-23 now scopes all current knowledge criteria; LIFE-17 keeps 'address' with the t370 example; roadmap and PR body list #214, #237 and the leif/human-first-records 0.6.0 branch; #237 added to milestone and epic",
-    "Coordinator routed the still-wanted parts: items 1-3 become 0.6.0 spec requirements (not new intent), 4-5 go to Leif; killed the stale concurrent lane (the earlier --test change failure coincided with two lanes sharing one target dir, the known #132 pattern)"
+    "Coordinator routed the still-wanted parts: items 1-3 become 0.6.0 spec requirements (not new intent), 4-5 go to Leif; killed the stale concurrent lane (the earlier --test change failure coincided with two lanes sharing one target dir, the known #132 pattern)",
+    "Retirements done per t370, but the lane's cases step fails: the 9 retired criteria still back live REQ-cli requirements with ~35 active case bindings on main; surfaced to t370 with the recommendation to move retirements into the 0.6.0 change"
   ],
   "observations": [],
   "bugs": [],
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "When the clean lane is green: commit, specsync change check --commit LAST (no Chough write after), push, re-request t37j with the exact head"
+  "next_action": "Wait for t370's call on retirement placement; then finish green, check --commit last, push, re-request t37j"
 }
