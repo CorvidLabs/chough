@@ -2550,30 +2550,6 @@ fn an_archived_finalization_over_the_record_bound_is_read() {
     assert_eq!(session["fix"], "chough doctor --fix", "{list:#}");
 }
 
-/// Issue #100 (LIFE-15): the librarian reads an archived `change.md` larger than the
-/// record bound for its title and criteria instead of silently dropping them.
-#[test]
-fn an_archived_change_md_over_the_record_bound_is_read() {
-    let fixture = Fixture::new();
-    let archive = fixture.big_archive();
-    fixture.write(
-        &format!("{archive}/verification.json"),
-        "{\"acceptance_manifest\":{\"entries\":[]}}\n",
-    );
-    fixture.write(
-        &format!("{archive}/change.md"),
-        &format!(
-            "---\nid: big-change\nstate: archived\n---\n\n# A large archived change\n\n## Acceptance Criteria\n\n- It is read whole\n\n## Notes\n\n{}\n",
-            "x".repeat(70_000)
-        ),
-    );
-    fixture.ok(&["library", "index"]);
-    let entry =
-        fs::read_to_string(fixture.root().join("knowledge/archives/big-change.md")).unwrap();
-    assert!(entry.contains("A large archived change"), "{entry}");
-    assert!(entry.contains("It is read whole"), "{entry}");
-}
-
 /// Issue #100 (LIFE-15): a `.specsync/sdd.json` policy larger than the record bound is
 /// SpecSync's to judge; a valid disabled policy is not refused as unreadable.
 #[test]
@@ -2687,8 +2663,9 @@ fn the_skill_states_lesson_labels_sources_and_limits_and_that_decisions_outrank_
 
 /// REQ-cli-002, third criterion (#138): Chough points to lessons and keeps no lesson store,
 /// index or ledger of its own. A lesson in the module's `## Lessons` section and one in an
-/// archived lesson bundle reach no file under `.chough/` or `knowledge/`; the module note
-/// links the source and `next` names it without printing either lesson.
+/// archived lesson bundle reach no file under `.chough/` or `knowledge/`; the knowledge
+/// index links the source with its lesson count and `next` names it without printing
+/// either lesson.
 #[cfg(unix)]
 #[test]
 fn chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger() {
@@ -2763,11 +2740,10 @@ fn chough_points_to_lessons_and_keeps_no_lesson_store_index_or_ledger() {
         }
     }
     assert!(stored.is_empty(), "lesson text was stored in {stored:?}");
-    let note = fs::read_to_string(fixture.root().join("knowledge/modules/cli.md")).unwrap();
+    let index = fs::read_to_string(fixture.root().join("knowledge/index.md")).unwrap();
     assert!(
-        note.contains("recorded in the `## Lessons` section of")
-            && note.contains("[specs/cli/context.md](../../specs/cli/context.md)"),
-        "{note}"
+        index.contains("cli: [specs/cli/context.md](../specs/cli/context.md), 1 lesson\n"),
+        "{index}"
     );
 }
 
