@@ -392,12 +392,33 @@ fn choose_name(
     Ok(name)
 }
 
-/// The IDs 0.6.0 records already hold in a mixed tree, each with its aliases.
+/// The IDs 0.6.0 records already hold in a mixed tree, each with its aliases: open
+/// sessions' entries and the receipts of stories and bugs. A record that does not read
+/// is skipped, since the plan refuses an existing target with other bytes anyway.
 fn existing_names(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
-    Ok(crate::evidence::every_observation(root)?
-        .into_iter()
-        .map(|view| (view.id, view.aliases))
-        .collect())
+    let mut names: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    for session in crate::sessions::open_ids(root)? {
+        let folder = format!(".chough/sessions/{session}/evidence");
+        for (_, record) in crate::bugs::records_in(root, &folder, crate::markdown::RECORD_BOUND) {
+            if let Some(id) = record.scalar("id") {
+                names.insert(id.to_string(), record.list("aliases"));
+            }
+        }
+    }
+    for (folder, bound) in [
+        (".chough/archive/sessions", crate::markdown::SESSION_BOUND),
+        (crate::bugs::BUGS_DIR, crate::markdown::RECORD_BOUND),
+    ] {
+        for (_, record) in crate::bugs::records_in(root, folder, bound) {
+            for map in record.maps("receipts") {
+                let held = crate::bugs::receipt_names(&map);
+                if let Some((id, aliases)) = held.split_first() {
+                    names.insert(id.clone(), aliases.to_vec());
+                }
+            }
+        }
+    }
+    Ok(names)
 }
 
 // MARK: - Reading 0.5.x records
@@ -451,12 +472,13 @@ fn read_observations(root: &Path, carried: &mut Carried) -> Result<Vec<Observati
             if !top_level_json {
                 continue;
             }
-            let text = read_bounded_record(&local_path(root, &path)?, LEGACY_BOUND)
-                .with_context(|| format!("{path} cannot be read, so no plan was made"))?;
-            let evidence =
-                crate::evidence::legacy_observation(&path, &text).with_context(|| {
-                    format!("{path} is not a 0.5.x observation, so no plan was made")
-                })?;
+            // A vault file that does not read as an observation is the knowledge
+            // mapper's to remove, like the rest of the vault no record carries.
+            let Ok(evidence) = read_bounded_record(&local_path(root, &path)?, LEGACY_BOUND)
+                .and_then(|text| crate::evidence::legacy_observation(&path, &text))
+            else {
+                continue;
+            };
             if found.iter().any(|known| known.evidence.id == evidence.id) {
                 continue;
             }
@@ -471,7 +493,9 @@ fn read_observations(root: &Path, carried: &mut Carried) -> Result<Vec<Observati
 }
 
 /// Every 0.5.x validation run under `.chough/validation/`, sorted by file; any other
-/// file there is removed with why.
+/// file there, and a run that does not read, is removed with why. Unlike an unreadable
+/// observation, which a session may need, a run is carried only when a session names
+/// its `VAL-` ID, which 0.5.x hardly allowed, so an unreadable one refuses nothing.
 fn read_runs(root: &Path, carried: &mut Carried) -> Result<Vec<Run>> {
     let mut found = vec![];
     for path in files_under(root, VALIDATION_DIR)? {
@@ -485,12 +509,17 @@ fn read_runs(root: &Path, carried: &mut Carried) -> Result<Vec<Run>> {
             );
             continue;
         }
-        let text = read_bounded_record(&local_path(root, &path)?, LEGACY_BOUND)
-            .with_context(|| format!("{path} cannot be read, so no plan was made"))?;
-        let run = crate::validate::legacy_run(&path, &text).with_context(|| {
-            format!("{path} is not a 0.5.x validation run, so no plan was made")
-        })?;
-        found.push(Run { source: path, run });
+        let read = read_bounded_record(&local_path(root, &path)?, LEGACY_BOUND)
+            .and_then(|text| crate::validate::legacy_run(&path, &text));
+        match read {
+            Ok(run) => found.push(Run { source: path, run }),
+            Err(_) => {
+                carried.removed.insert(
+                    path,
+                    "does not read as a 0.5.x validation run, so nothing of it is carried (REQ-records-009); Git keeps its bytes".into(),
+                );
+            }
+        }
     }
     Ok(found)
 }
