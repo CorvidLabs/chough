@@ -238,6 +238,23 @@ releasing". So:
   `chough skill update` (the audit found it still reads session.json), then other
   repositories, only at 95 percent confidence or better.
 
+## Delta corrections
+
+Corrections to the approved deltas found while building. They are collected here and
+applied together, and the human re-approves them once, before the move to test (the
+approved-delta guard, REQ-cli-022, refuses that move while a delta differs from its
+approval). Until then the approved deltas stay as they are.
+
+1. REQ-cli-021 (next after done): the move into done archives the session
+   (REQ-history-006), so there is no session left for a reset. At done, `chough next`
+   names `chough session new <key>`, unless release is authorized or unfolded inbox
+   entries keep the session open; it no longer names a reset into a new cycle.
+2. REQ-history-006 (receipts): each receipt also carries `observed`, the entry's
+   observation time (ISO UTC, REQ-cli-017), so a bug whose evidence is archived keeps
+   its verified state, which needs a pass observed after the latest failure
+   (REQ-cli-012), and timing can order case runs read from receipts (REQ-reporting-001).
+   A receipt's `aliases` is one scalar, comma-and-space separated.
+
 ## Risks
 
 - **Scale.** Nearly every source and test file changes. Mitigation: the record layer
