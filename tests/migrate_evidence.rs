@@ -744,8 +744,9 @@ fn key_screenshots_are_stripped_bounded_and_kept_beside_their_session_or_story()
 }
 
 /// A 0.5.x validation run (REQ-cli-023): carried like an observation under its `VAL-`
-/// ID. One an open session references is one entry, named from its case ID and `run`,
-/// holding each attempt; one nothing references is removed with why, aliased
+/// ID. One an open session references is one entry in the format `validate run`
+/// writes, named from its case ID and `run`, holding each attempt with its
+/// observation's new ID; one nothing references is removed with why, aliased
 /// `removed`.
 #[test]
 fn validation_runs_carry_like_observations() {
@@ -815,13 +816,31 @@ fn validation_runs_carry_like_observations() {
     let entry = front(&text);
     assert_eq!(entry["validation_run"], "true", "{text}");
     assert_eq!(items(&entry["aliases"]), [referenced], "{text}");
-    assert_eq!(entry["case"], "TC-fixture-0001", "{text}");
+    // The format `validate run` writes, so `validate resume <old ID>` continues it.
+    assert_eq!(entry["run_case"], "TC-fixture-0001", "{text}");
+    assert_eq!(
+        entry["authority"], "consent: SYNTHETIC-human asked for three runs",
+        "{text}"
+    );
+    assert_eq!(entry["times"], "3", "{text}");
+    assert_eq!(entry["interval_seconds"], "0", "{text}");
     assert_eq!(entry["failures"], "1", "{text}");
     assert_eq!(entry["elapsed_seconds"], "25", "{text}");
     let held = maps(&text, "attempts");
     assert_eq!(held.len(), 3, "{text}");
     assert_eq!(held[1]["result"], "failed", "{text}");
     assert_eq!(held[2]["observed"], iso(started + 20), "{text}");
+    // Each attempt names its observation's new ID: nothing else references the attempts,
+    // so each is an entry of the run's session, its old ID an alias.
+    for (attempt, old) in held.iter().zip(&attempts) {
+        let entry = format!(
+            ".chough/sessions/{open}/evidence/{}.md",
+            attempt["observation"]
+        );
+        assert_eq!(alias(&plan, old), entry, "{plan:#}");
+        let text = fixture.read(&entry);
+        assert_eq!(items(&front(&text)["aliases"]), [old.as_str()], "{text}");
+    }
     assert_eq!(alias(&plan, unreferenced), "removed");
     assert!(
         plan["removed"][format!(".chough/validation/{unreferenced}.json")]
@@ -980,4 +999,91 @@ fn rolled_observations_in_the_vault_become_receipts_of_their_story() {
     .unwrap();
     assert!(!beside.windows(4).any(|w| w == b"tEXt" || w == b"eXIf"));
     assert_eq!(receipt["fingerprint"], sha256(&beside));
+}
+
+/// REQ-cli-017: 0.5.x compared content only for schema 2 records, so a schema 1
+/// observation's freshness rested on its revision-bound fingerprint. Its entry carries no
+/// content and reads stale once anything is committed, while a schema 2 twin with the
+/// same content identity reads current.
+#[test]
+fn a_schema_1_observation_is_carried_without_content_and_stays_stale() {
+    // The migrated tree's content identity, from `evidence add` on a migrated probe of
+    // the same files (the migration's own writes are part of it).
+    let content = {
+        let probe = project("releases/v0.5.0");
+        probe.stubs();
+        probe.commit("the probe");
+        migrate(&probe);
+        probe.ok(&[
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "fixture",
+            "--summary",
+            "SYNTHETIC probe of the content identity",
+        ]);
+        let folder = probe
+            .root()
+            .join(format!(".chough/sessions/{}/evidence", probe.active_id()));
+        let entry = fs::read_dir(folder)
+            .unwrap()
+            .next()
+            .unwrap()
+            .unwrap()
+            .path();
+        front(&fs::read_to_string(entry).unwrap())["content"].clone()
+    };
+    let fixture = project("releases/v0.5.0");
+    fixture.stubs();
+    let modern = "OBS-product-test-00000000000000000000h002";
+    let schema_1 = "OBS-product-test-00000000000000000000h001";
+    for (id, version) in [(modern, 2), (schema_1, 1)] {
+        let mut record = observation_like(&fixture, PRODUCT, id, &format!("SYNTHETIC {id}"), 1);
+        record["schema_version"] = json!(version);
+        record["snapshot"]["content"] = json!(content);
+        fixture.write(
+            &format!(".chough/evidence/{id}.json"),
+            &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+        );
+    }
+    reference(
+        &fixture,
+        ".chough/sessions/fixture-first.json",
+        &[modern, schema_1],
+    );
+    fixture.commit("a schema 1 and a schema 2 observation with one content identity");
+    let (plan, _) = migrate(&fixture);
+    let old_entry = front(&fixture.read(&alias(&plan, schema_1)));
+    assert!(!old_entry.contains_key("content"), "{old_entry:?}");
+    assert_eq!(
+        front(&fixture.read(&alias(&plan, modern)))["content"],
+        content
+    );
+    fixture.git(&["commit", "-q", "--allow-empty", "-m", "anything committed"]);
+    let status = fixture.ok(&["status", "--environment", "fixture"]);
+    let freshness = |old: &str| {
+        status["observations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["record"]["aliases"][0] == old)
+            .unwrap_or_else(|| panic!("{old}: {status:#}"))["freshness"]
+            .clone()
+    };
+    assert_eq!(freshness(modern), "current-observation", "{status:#}");
+    assert_eq!(
+        freshness(schema_1),
+        "stale-revision-or-inputs",
+        "{status:#}"
+    );
 }

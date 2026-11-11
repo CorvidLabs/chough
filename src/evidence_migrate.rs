@@ -17,9 +17,10 @@
 //!
 //! It reads and returns only: the framework redacts, writes and removes.
 
-use crate::evidence::{Evidence, ValidationRun};
+use crate::evidence::Evidence;
 use crate::migrate::{Binary, Carried, ObservationHomes, Receipt, SessionHome, Written};
 use crate::records::{local_path, read_bounded_record};
+use crate::validate::MigratedAttempt;
 use anyhow::{Context, Result, bail, ensure};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
@@ -116,8 +117,9 @@ impl Item<'_> {
                     .unwrap_or_else(|| evidence.summary.clone());
                 crate::identity::dated_name(&date, &source, "evidence")
             }
+            // As `validate run` names a new run.
             Item::Run(run) => {
-                crate::identity::dated_name(&date, &format!("{} run", run.run.case), "evidence")
+                crate::identity::dated_name(&date, &format!("{} run", run.run.case), "run")
             }
         }
     }
@@ -133,6 +135,7 @@ struct Uncarried {
     receipt_extra_cases: usize,
     receipt_artifact_paths: usize,
     receipt_fields: usize,
+    missing_attempts: usize,
 }
 
 impl Uncarried {
@@ -213,6 +216,13 @@ impl Uncarried {
             ),
         );
         add(
+            self.missing_attempts,
+            format!(
+                "{} of carried validation runs have no 0.5.x observation left, so they are not listed among the run's attempts",
+                plural(self.missing_attempts, "attempt")
+            ),
+        );
+        add(
             self.receipt_artifact_paths,
             format!(
                 "the artifact paths of {} are not carried; each receipt's fingerprint is its first artifact's digest",
@@ -249,20 +259,50 @@ pub(super) fn migrate_0_5(
     let fixtures = crate::bugs::open_fixtures_0_5(root)?;
     let taken = existing_names(root)?;
 
-    // Place, then name in observed-then-old-ID order.
+    // Place every record. A run carried as an entry holds its attempts, so an attempt's
+    // observation nothing else carries becomes an entry of the run's session
+    // (REQ-cli-023).
     let mut items: Vec<(Item, Home)> = vec![];
     for observation in &observations {
         let home = place(&observation.evidence.id, sessions, bug_links);
         items.push((Item::Observation(observation), home));
     }
+    let mut run_sessions: BTreeMap<String, String> = BTreeMap::new();
     for run in &runs {
         let home = place(&run.run.id, sessions, bug_links);
+        if let Home::Entry(session) = &home {
+            for attempt in &run.run.observations {
+                let held = run_sessions
+                    .entry(attempt.clone())
+                    .or_insert_with(|| session.clone());
+                if *session < *held {
+                    *held = session.clone();
+                }
+            }
+        }
         items.push((Item::Run(run), home));
     }
+    for (item, home) in &mut items {
+        if *home == Home::Removed
+            && let Some(session) = run_sessions.get(item.old_id())
+        {
+            *home = Home::Entry(session.clone());
+        }
+    }
+    // Name every carried record in observed-then-old-ID order before carrying any, so a
+    // run knows its attempts' new IDs.
     items.sort_by(|(left, _), (right, _)| {
         (left.observed(), left.old_id()).cmp(&(right.observed(), right.old_id()))
     });
     let mut planned: BTreeSet<String> = BTreeSet::new();
+    let mut names: BTreeMap<String, String> = BTreeMap::new();
+    for (item, home) in &items {
+        if *home != Home::Removed {
+            let name = choose_name(item, &taken, &planned)?;
+            planned.insert(name.clone());
+            names.insert(item.old_id().to_string(), name);
+        }
+    }
     let mut screenshots = Screenshots::default();
     let mut uncarried = Uncarried::default();
     for (item, home) in &items {
@@ -270,7 +310,7 @@ pub(super) fn migrate_0_5(
             Item::Observation(observation) => &observation.source,
             Item::Run(run) => &run.source,
         };
-        if *home == Home::Removed {
+        let Some(name) = names.get(item.old_id()) else {
             // A rolled observation in the vault is the knowledge mapper's to remove.
             if source.starts_with(".chough/") {
                 carried.removed.insert(
@@ -285,16 +325,14 @@ pub(super) fn migrate_0_5(
                 remove_artifacts(root, observation, &fixtures, &mut carried)?;
             }
             continue;
-        }
-        let name = choose_name(item, &taken, &planned)?;
-        planned.insert(name.clone());
+        };
         carried.sources.insert(source.clone());
         match item {
             Item::Observation(observation) => carry_observation(
                 root,
                 observation,
                 home,
-                &name,
+                name,
                 &bug_paths,
                 &fixtures,
                 &mut screenshots,
@@ -305,9 +343,11 @@ pub(super) fn migrate_0_5(
             Item::Run(run) => carry_run(
                 run,
                 home,
-                &name,
+                name,
+                &names,
                 &bug_paths,
                 &observations,
+                &mut uncarried,
                 &mut carried,
                 &mut homes,
             )?,
@@ -441,8 +481,12 @@ fn read_observations(root: &Path, carried: &mut Carried) -> Result<Vec<Observati
         }
         let text = read_bounded_record(&local_path(root, &path)?, LEGACY_BOUND)
             .with_context(|| format!("{path} cannot be read, so no plan was made"))?;
-        let evidence = crate::evidence::legacy_observation(&path, &text)
-            .with_context(|| format!("{path} is not a 0.5.x observation, so no plan was made"))?;
+        let evidence = without_schema_1_content(
+            crate::evidence::legacy_observation(&path, &text).with_context(|| {
+                format!("{path} is not a 0.5.x observation, so no plan was made")
+            })?,
+            &text,
+        );
         found.push(Observation {
             source: path,
             evidence,
@@ -475,7 +519,10 @@ fn read_observations(root: &Path, carried: &mut Carried) -> Result<Vec<Observati
             // A vault file that does not read as an observation is the knowledge
             // mapper's to remove, like the rest of the vault no record carries.
             let Ok(evidence) = read_bounded_record(&local_path(root, &path)?, LEGACY_BOUND)
-                .and_then(|text| crate::evidence::legacy_observation(&path, &text))
+                .and_then(|text| {
+                    crate::evidence::legacy_observation(&path, &text)
+                        .map(|evidence| without_schema_1_content(evidence, &text))
+                })
             else {
                 continue;
             };
@@ -522,6 +569,20 @@ fn read_runs(root: &Path, carried: &mut Carried) -> Result<Vec<Run>> {
         }
     }
     Ok(found)
+}
+
+/// A schema 1 observation without its content identity: 0.5.x compared content only for
+/// schema 2 records, so a schema 1 record's freshness rested on its revision-bound
+/// fingerprint, and its entry stays stale after a commit as it did (REQ-cli-017).
+fn without_schema_1_content(mut evidence: Evidence, text: &str) -> Evidence {
+    #[derive(serde::Deserialize)]
+    struct Schema {
+        schema_version: u32,
+    }
+    if serde_json::from_str::<Schema>(text).is_ok_and(|schema| schema.schema_version < 2) {
+        evidence.snapshot.content = None;
+    }
+    evidence
 }
 
 /// Every file under `relative`, project-relative and sorted.
@@ -762,64 +823,62 @@ fn receipt_map(evidence: &Evidence) -> Receipt {
     map
 }
 
-/// Carry one validation run as one entry holding each attempt, or as a receipt
-/// (REQ-cli-023).
+/// Carry one validation run as one entry holding each attempt, in the format `validate
+/// run` writes so `validate resume <old ID>` continues it, or as a receipt
+/// (REQ-cli-023). Each attempt names its observation's new ID.
+#[allow(clippy::too_many_arguments)]
 fn carry_run(
     run: &Run,
     home: &Home,
     name: &str,
+    names: &BTreeMap<String, String>,
     bug_paths: &BTreeMap<String, String>,
     observations: &[Observation],
+    uncarried: &mut Uncarried,
     carried: &mut Carried,
     homes: &mut ObservationHomes,
 ) -> Result<()> {
     let legacy = &run.run;
-    let attempts: Vec<Vec<(String, String)>> = legacy
-        .observations
-        .iter()
-        .filter_map(|id| {
-            observations
-                .iter()
-                .find(|observation| observation.evidence.id == *id)
-        })
-        .map(|observation| {
-            let evidence = &observation.evidence;
-            let mut attempt = vec![
-                (
-                    "observed".to_string(),
-                    crate::session_md::iso_time(evidence.observed_at_unix_seconds),
-                ),
-                ("result".to_string(), evidence.outcome.name().to_string()),
-            ];
-            if let Some(duration) = evidence.duration_seconds {
-                attempt.push(("duration_seconds".to_string(), duration.to_string()));
-            }
-            attempt
-        })
-        .collect();
-    let completed = (legacy.state == "complete")
-        .then(|| legacy.started_at_unix_seconds + legacy.elapsed_seconds);
-    let entry = ValidationRun {
-        id: name.to_string(),
-        case: legacy.case.clone(),
-        environment: legacy.environment.clone(),
-        state: legacy.state.clone(),
-        started: legacy.started_at_unix_seconds,
-        completed,
-        failures: u64::from(legacy.failures),
-        not_run: u64::from(legacy.not_run),
-        elapsed_seconds: legacy.elapsed_seconds,
-        attempts,
-        summary: format!(
-            "A 0.5.x repeated validation run of {}: {} of {} attempts",
-            legacy.case, legacy.completed, legacy.times
-        ),
-    };
     let old = legacy.id.clone();
+    let summary = format!(
+        "A 0.5.x repeated validation run of {}: {} of {} attempts",
+        legacy.case, legacy.completed, legacy.times
+    );
     match home {
         Home::Entry(session) => {
+            let mut attempts = vec![];
+            let mut latest: Option<(u64, String)> = None;
+            for id in &legacy.observations {
+                let Some(observation) = observations
+                    .iter()
+                    .find(|observation| observation.evidence.id == *id)
+                else {
+                    uncarried.missing_attempts += 1;
+                    continue;
+                };
+                let evidence = &observation.evidence;
+                let observed = evidence.observed_at_unix_seconds;
+                if latest.as_ref().is_none_or(|(at, _)| observed >= *at) {
+                    latest = Some((observed, evidence.snapshot.revision.clone()));
+                }
+                attempts.push(MigratedAttempt {
+                    observation: names.get(id).cloned().unwrap_or_else(|| id.clone()),
+                    started: observed.saturating_sub(evidence.duration_seconds.unwrap_or(0)),
+                    observed,
+                    result: evidence.outcome.name().to_string(),
+                    duration_seconds: evidence.duration_seconds,
+                });
+            }
+            let revision = latest.map(|(_, revision)| revision).unwrap_or_default();
+            let text = crate::validate::migrated_run_text(
+                legacy,
+                name,
+                &legacy.authority,
+                legacy.interval_seconds,
+                attempts,
+                &revision,
+            )?;
             let path = format!(".chough/sessions/{session}/evidence/{name}.md");
-            let text = crate::evidence::validation_run_text(&entry, std::slice::from_ref(&old))?;
             carried.written.push(Written {
                 path: path.clone(),
                 bytes: text,
@@ -836,19 +895,22 @@ fn carry_run(
                     .unwrap_or_else(|| "removed".into()),
             };
             carried.aliases.insert(old.clone(), alias);
-            let mut map: Receipt = vec![
+            let map: Receipt = vec![
                 ("id".into(), name.to_string()),
                 ("aliases".into(), old.clone()),
-                ("claim".into(), entry.summary.clone()),
+                ("claim".into(), summary),
                 ("result".into(), "not-run".into()),
-                ("environment".into(), entry.environment.clone()),
-                ("case".into(), entry.case.clone()),
+                ("environment".into(), legacy.environment.clone()),
+                ("case".into(), legacy.case.clone()),
                 (
                     "observed".into(),
-                    crate::session_md::iso_time(entry.started),
+                    crate::session_md::iso_time(legacy.started_at_unix_seconds),
+                ),
+                (
+                    "duration_seconds".into(),
+                    legacy.elapsed_seconds.to_string(),
                 ),
             ];
-            map.push(("duration_seconds".into(), entry.elapsed_seconds.to_string()));
             homes.receipts.insert(old, map);
         }
         Home::Removed => bail!("a removed validation run is never carried; this is a Chough bug"),
