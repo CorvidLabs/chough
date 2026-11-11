@@ -317,6 +317,9 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
         &[archived_id],
     );
     let bug = link_bug(&fixture, &[archived_id]);
+    // An artifact no observation names, as a 0.5.x prune left them.
+    let orphan = ".chough/artifacts/OBS-pruned-00000000000000000000a003.log";
+    fixture.write(orphan, "SYNTHETIC log of a pruned observation\n");
     fixture.commit("a 0.5.x project whose sessions and bug reference observations");
     let case_run = legacy(&fixture, CASE_RUN);
     let product = legacy(&fixture, PRODUCT);
@@ -356,6 +359,12 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
         removed[LOG]
             .as_str()
             .is_some_and(|why| why.contains("raw log")),
+        "{removed:#}"
+    );
+    assert!(
+        removed[orphan]
+            .as_str()
+            .is_some_and(|why| why.contains("no carried observation")),
         "{removed:#}"
     );
     assert!(applied["receipt"].is_string(), "{applied:#}");
@@ -890,4 +899,85 @@ fn names_are_deterministic_and_an_interrupted_apply_resumes() {
         fs::read(fixture.root().join(&second)).unwrap(),
         fs::read(elsewhere.root().join(&second)).unwrap()
     );
+}
+
+/// Observations the 0.5.x roll-up moved into the vault with their session
+/// (`<library-dir>/attachments/<folder>/evidence/`, their artifacts under
+/// `attachments/<folder>/artifacts/`): one the rolled session references is a receipt of
+/// its story, its image read from the vault and kept beside the story; one nothing
+/// references is removed, aliased `removed`.
+#[test]
+fn rolled_observations_in_the_vault_become_receipts_of_their_story() {
+    let fixture = project("migrate/adopted");
+    let base = "knowledge/attachments/archived-1";
+    let template: Value = serde_json::from_str(
+        &fs::read_to_string(
+            manifest_dir()
+                .join("tests/fixtures/releases/v0.5.0/.chough/evidence")
+                .join(format!("{PRODUCT}.json")),
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let rolled = "OBS-product-test-00000000000000000000g001";
+    let stray = "OBS-product-test-00000000000000000000g002";
+    let image = format!(".chough/artifacts/{rolled}.png");
+    let bytes = png_with_metadata(2_000);
+    for (id, artifacts) in [(rolled, json!([image])), (stray, json!([]))] {
+        let mut record = template.clone();
+        record["id"] = json!(id);
+        record["summary"] = json!(format!("SYNTHETIC rolled proof {id}"));
+        record["artifacts"] = artifacts.clone();
+        record["artifact_fingerprints"] = if artifacts == json!([]) {
+            json!({})
+        } else {
+            json!({ image.clone(): sha256(&bytes) })
+        };
+        fixture.write(
+            &format!("{base}/evidence/{id}.json"),
+            &(serde_json::to_string_pretty(&record).unwrap() + "\n"),
+        );
+    }
+    let moved = format!("{base}/artifacts/{rolled}.png");
+    fs::create_dir_all(fixture.root().join(format!("{base}/artifacts"))).unwrap();
+    fs::write(fixture.root().join(&moved), &bytes).unwrap();
+    reference(
+        &fixture,
+        &format!("{base}/sessions/archived-1.json"),
+        &[rolled],
+    );
+    fixture.commit("rolled observations in the vault");
+
+    let (plan, _) = migrate(&fixture);
+    let story = session_id(&plan, "archived-1");
+    assert_eq!(
+        alias(&plan, rolled),
+        format!(".chough/archive/sessions/{story}.md")
+    );
+    assert_eq!(alias(&plan, stray), "removed");
+    for path in [format!("{base}/evidence/{rolled}.json"), moved.clone()] {
+        assert!(plan["removed"].get(&path).is_none(), "{path}: {plan:#}");
+        assert!(!fixture.exists(&path), "{path}");
+    }
+    assert!(
+        plan["removed"][format!("{base}/evidence/{stray}.json")]
+            .as_str()
+            .is_some(),
+        "{plan:#}"
+    );
+    let text = fixture.read(&format!(".chough/archive/sessions/{story}.md"));
+    let receipts = maps(&text, "receipts");
+    let receipt = receipts
+        .iter()
+        .find(|receipt| receipt["aliases"] == rolled)
+        .unwrap_or_else(|| panic!("{text}"));
+    let name = &receipt["screenshot"];
+    let beside = fs::read(
+        fixture
+            .root()
+            .join(format!(".chough/archive/sessions/{story}/{name}")),
+    )
+    .unwrap();
+    assert!(!beside.windows(4).any(|w| w == b"tEXt" || w == b"eXIf"));
+    assert_eq!(receipt["fingerprint"], sha256(&beside));
 }
