@@ -501,17 +501,24 @@ native read, and never records a human decision, approval, review or consent.
 
 | Kind | What it finds | Fix |
 |---|---|---|
-| `legacy_checkpoint` | `.chough/session.json` exists: a 0.5.x project | Names `chough migrate`; doctor never migrates |
-| `records_in_verification` | `.specsync/sdd.json` exists and its `verification_ignored_paths` lacks `.chough/sessions/`, `.chough/archive/` or `.chough/bugs/` (REQ-records-014) | Never fixed: Chough never writes the policy. The finding adds `missing` (the entries to add), `specsync` (`6.1.2 and later`, the releases that honour the list) and `advice`: adding them is an ordinary reviewed change to `.specsync/sdd.json`. `chough init` prints the same advice as `records_in_verification` |
+| `unmigrated` | 0.5.x records, such as `.chough/session.json` (REQ-records-010); the finding lists up to 20 of their `paths` and the `total` | Names `chough migrate`; doctor never migrates. The session findings below wait until the tree is migrated |
+| `leak` | A file Git tracks under `.chough/` or the knowledge directory that matches the leak patterns of REQ-records-006, one finding per `line` and `match` (the kind), never the text | `chough doctor --fix --redact` replaces each match with `<redacted:<kind>>` in place; `--fix` alone skips it. Not a decision |
 | `stale_pointer` | The active pointer names a missing or archived session | Remove the pointer |
-| `stale_gates` | A finished session with open awaiting-human gates, whose native change is archived | A decision: withdraw the gates as `checkpoint --clear-awaiting-human` does, then archive the session |
 | `finished_session` | An open session at done, or with its native change archived on HEAD | Archive it into its story; one with unfolded inbox entries is skipped, naming `chough inbox fold` |
-| `unfinished_session` | An open, unfinished session named with `--close <key>` | A decision: `session close <key> --reason` |
 | `unfinished_archive` | A session folder whose story exists and that still holds files | Remove each file committed at HEAD; otherwise skipped, naming the commit to make |
+| `stale_gates` | A finished session with open awaiting-human gates, whose native change is archived | A decision: withdraw the gates as `checkpoint --clear-awaiting-human` does, then archive the session |
+| `unfinished_session` | An open, unfinished session named with `--close <key>` | A decision: `session close <key> --reason` |
+| `timeline_rewritten` | A session or story whose Timeline at HEAD is not an exact prefix of its working Timeline (REQ-history-002); `entries` names the entries that differ | None: restore them from `git show HEAD:<file>` by hand |
+| `alias_conflict` | An ID that is the `id` or an alias of two records of one kind (REQ-records-003); `records` names both | None: decide which record keeps it |
+| `oversize` | A committed record, evidence entry or screenshot over its bound, or a session's screenshots over 2,097,152 bytes in all (REQ-records-001, -005, -013), with its `bytes` and `bound` | None |
+| `records_in_verification` | `.specsync/sdd.json` exists and its `verification_ignored_paths` lacks `.chough/sessions/`, `.chough/archive/` or `.chough/bugs/` (REQ-records-014) | Never fixed: Chough never writes the policy. The finding adds `missing` (the entries to add), `specsync` (`6.1.2 and later`, the releases that honour the list) and `advice`: adding them is an ordinary reviewed change to `.specsync/sdd.json`. `chough init` prints the same advice as `records_in_verification` |
 
 - **No flag or `--dry-run`:** reports every finding as `found` and changes nothing.
 - **`--fix`:** applies the fixes in the order of the table. It applies a decision fix
   only with `--reason <text>`, and otherwise reports it as `skipped`.
+- **`--leaks`:** reports only the `leak` and `oversize` findings, changes nothing and
+  exits 1 on any; it is the verify lane's `leaks` step, so CI fails on a leak or an
+  oversized record.
 - **Exit code:** 0 when nothing is left `found` or `skipped`, 1 otherwise, so CI can
   run `chough doctor` as a check.
 
