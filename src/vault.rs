@@ -219,6 +219,10 @@ fn list(items: Vec<String>, empty: &str) -> String {
 /// files the earlier mappers write count as present, files the plan removes as gone, and
 /// the bug records it writes join the open bugs, so the planned `index.md` is the one
 /// `chough library index` builds after the apply. Outside a migration it is empty.
+/// One open bug as the index lists it: its record file (None without one), ID, title
+/// and status.
+type OpenBug = (Option<String>, String, String, String);
+
 #[derive(Default)]
 pub(crate) struct Pending {
     /// Whether a migration plan is being built; a 0.5.x bug record is then left to the
@@ -248,7 +252,7 @@ impl Pending {
 
     /// The open bugs once the plan applies, by file name as `chough bug` reads them:
     /// (file, id, title, status), the file None when the bug has no record file.
-    fn open_bugs(&self, root: &Path) -> Result<Vec<(Option<String>, String, String, String)>> {
+    fn open_bugs(&self, root: &Path) -> Result<Vec<OpenBug>> {
         if !self.migrating {
             return Ok(crate::bugs::open_backlog(root)?
                 .into_iter()
@@ -261,17 +265,16 @@ impl Pending {
                 .collect());
         }
         let bound = crate::markdown::Kind::Bug.bound();
-        let mut found: Vec<(Option<String>, String, String, String)> =
-            crate::bugs::records_in(root, crate::bugs::BUGS_DIR, bound)
-                .into_iter()
-                .map(|(name, record)| {
-                    let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
-                    let file = format!("{}/{name}", crate::bugs::BUGS_DIR);
-                    (Some(file), field("id"), field("title"), field("status"))
-                })
-                .filter(|(file, ..)| file.as_ref().is_some_and(|file| !self.gone.contains(file)))
-                .filter(|(.., status)| !crate::bugs::is_closed_status(status))
-                .collect();
+        let mut found: Vec<OpenBug> = crate::bugs::records_in(root, crate::bugs::BUGS_DIR, bound)
+            .into_iter()
+            .map(|(name, record)| {
+                let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
+                let file = format!("{}/{name}", crate::bugs::BUGS_DIR);
+                (Some(file), field("id"), field("title"), field("status"))
+            })
+            .filter(|(file, ..)| file.as_ref().is_some_and(|file| !self.gone.contains(file)))
+            .filter(|(.., status)| !crate::bugs::is_closed_status(status))
+            .collect();
         found.extend(self.bugs.iter().map(|(file, id, title, status)| {
             (
                 Some(file.clone()),
