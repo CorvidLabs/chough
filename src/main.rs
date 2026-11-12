@@ -619,6 +619,57 @@ fn cut(text: &str) -> String {
     format!("{}{CUT}", &text[..end])
 }
 
+/// Cut text as [`cut`] does, but never inside a command (F5, REQ-cli-021): each
+/// backticked span stays whole wherever it falls, only the text around the spans counts
+/// toward the bound and is cut, and the spans after the cut follow the marker in order,
+/// each after one space the bound also counts.
+fn cut_around_commands(text: &str) -> String {
+    if text.chars().map(escaped_width).sum::<usize>() <= STRING_LIMIT {
+        return text.to_string();
+    }
+    let commands = text.matches('`').count() / 2;
+    let mut budget = STRING_LIMIT.saturating_sub(CUT.len() + commands);
+    let mut kept = String::new();
+    let mut was_cut = false;
+    let mut rest = text;
+    while !rest.is_empty() {
+        // The text up to the next command, a backtick through the next backtick; an
+        // unpaired backtick is text.
+        let (prose, command, after) = match rest.find('`').and_then(|open| {
+            rest[open + 1..]
+                .find('`')
+                .map(|close| (open, open + close + 2))
+        }) {
+            Some((open, end)) => (&rest[..open], &rest[open..end], &rest[end..]),
+            None => (rest, "", ""),
+        };
+        if !was_cut {
+            let mut end = 0;
+            for (index, character) in prose.char_indices() {
+                let width = escaped_width(character);
+                if width > budget {
+                    was_cut = true;
+                    break;
+                }
+                budget -= width;
+                end = index + character.len_utf8();
+            }
+            kept.push_str(&prose[..end]);
+            if was_cut {
+                kept.push_str(CUT);
+            }
+        }
+        if !command.is_empty() {
+            if was_cut {
+                kept.push(' ');
+            }
+            kept.push_str(command);
+        }
+        rest = after;
+    }
+    kept
+}
+
 /// Print a report as pretty JSON with its `summary` first (BUG-0023), the rest in the
 /// usual key order.
 fn print_summary_first(report: &Value) -> Result<()> {
@@ -939,12 +990,14 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,
         "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
+        // F5: a command shown here is whole, whatever its length; the bound cuts the
+        // text around it, and the command field is never cut.
         "next_valid_action": {
-            "action": cut(&corrections.apply(&assessment.action.action)),
-            "reason": cut(&assessment.action.reason),
-            "command": assessment.action.command.as_deref().map(cut),
+            "action": cut_around_commands(&corrections.apply(&assessment.action.action)),
+            "reason": cut_around_commands(&assessment.action.reason),
+            "command": assessment.action.command,
         },
-        "gate": assessment.gate.as_ref().map(|(to, gate)| json!({"to": to, "allowed": gate.allowed, "label": cut(&gate.label), "detail": cut(&gate.detail)})),
+        "gate": assessment.gate.as_ref().map(|(to, gate)| json!({"to": to, "allowed": gate.allowed, "label": cut_around_commands(&gate.label), "detail": cut_around_commands(&gate.detail)})),
         "awaiting_human": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.awaiting_human).iter()),
         "gates": checkpoint.map_or_else(Vec::new, |checkpoint| open_gates(checkpoint, LIST_LIMIT)),
         "blockers": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.blockers).iter()),
