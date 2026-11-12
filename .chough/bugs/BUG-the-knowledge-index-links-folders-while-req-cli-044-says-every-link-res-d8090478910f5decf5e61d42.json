@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "BUG-the-knowledge-index-links-folders-while-req-cli-044-says-every-link-res-d8090478910f5decf5e61d42",
+  "title": "The knowledge index links folders while REQ-cli-044 says every link resolves to an existing file",
+  "symptom": "index.md links journal/, hi/, specs/, .specsync/archive/ and .specsync/archive/changes/ as REQ-cli-043 asks; Obsidian does not open folder links",
+  "trigger": "Open the index in Obsidian, or check links against REQ-cli-044's acceptance criterion",
+  "expected": "One consistent contract: file links, or the AC says file or folder",
+  "actual": "REQ-cli-043 and REQ-cli-044 disagree",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-043",
+    "REQ-cli-044"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "d854ce1ac06a195e0c81d2aaf22d61bd64e2c556",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "Folder links do nothing in Obsidian",
+  "classification": "requirement-gap",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37f, test stage, area knowledge",
+  "notes": [],
+  "created_at_unix_seconds": 1794447528,
+  "updated_at_unix_seconds": 1794447528
+}
