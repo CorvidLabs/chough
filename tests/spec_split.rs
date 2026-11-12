@@ -19,13 +19,17 @@ const MOVED: [(&str, &str, &str); 4] = [
     (
         "REQ-cli-025",
         "REQ-history-002",
-        // Modified by native change keep-one-session-per-objective (#77): per-session cursor.
-        "bc8c769b2b2cde3bce9bfc1ce2314090293a44ec5d847c67aa56c2f7ffd326be",
+        // Modified by native change keep-one-session-per-objective (#77): per-session
+        // cursor; then by chough-0-6-0-human-first-records-...: the append-only Timeline
+        // of session.md.
+        "c1f64664020694fd1a24c4e7ed2e792860b9c4fbd2f6ed36399b72baea297a63",
     ),
     (
         "REQ-cli-026",
         "REQ-history-003",
-        "d3167c2e28ffae2e850f3dcdbcec2cf6db2fc515c789f017006a1713b582adea",
+        // Modified by native change chough-0-6-0-human-first-records-...: the Timeline's
+        // bounds.
+        "271afbcaa66901f05181fb3adf538a47a894c0baa73f19d6d2190e0a8b450945",
     ),
     (
         "REQ-cli-027",
@@ -40,8 +44,10 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
         "REQ-reporting-001",
         // Modified by native change chough-timing-skips-direct-native-write-events-without-
         // marking-its-report-partial-189-drive-21 (#189): direct-native-write events
-        // (REQ-history-013) start or end no segment and are not an unrecognised kind.
-        "f10aaac5200dc31c8f976df83b11486f2a19a632c7737a9ad0b78352eebd0c3b",
+        // (REQ-history-013) start or end no segment and are not an unrecognised kind; then
+        // by chough-0-6-0-human-first-records-...: it reads timelines and receipts, and
+        // duration_seconds.
+        "20739bcd2e5d588a134d188c11eaf31bd213b06ad0c80ddaec983bdd882b02c6",
     ),
     (
         "REQ-cli-024",
@@ -56,6 +62,21 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
         "REQ-reporting-003",
         "a6d5d17f585dbbd531b337e2102791f0c42c89f211bf5987ea03eb30c4f3608c",
     ),
+];
+
+/// Requirements native change chough-0-6-0-human-first-records-... removed with the
+/// behaviour they specified (retention, the vault trims and copies, the ledger, session
+/// notes); none is in any spec.
+const REMOVED: [&str; 9] = [
+    "REQ-cli-033",
+    "REQ-cli-041",
+    "REQ-cli-045",
+    "REQ-cli-046",
+    "REQ-cli-048",
+    "REQ-cli-049",
+    "REQ-cli-051",
+    "REQ-history-001",
+    "REQ-history-004",
 ];
 
 /// Whether a former cli requirement ID is in either split mapping.
@@ -114,6 +135,13 @@ fn moved_requirements_keep_their_wording_under_their_new_ids() {
             !history.contains_key(old),
             "{old} must not reappear in specs/history"
         );
+        if REMOVED.contains(&new) {
+            assert!(
+                !history.contains_key(new),
+                "{new} was removed, yet is in specs/history"
+            );
+            continue;
+        }
         let body = history
             .get(new)
             .unwrap_or_else(|| panic!("{new} (was {old}) missing from specs/history"));
@@ -156,6 +184,13 @@ fn every_cli_requirement_before_the_reporting_split_is_still_in_cli_or_mapped() 
     let cli = blocks(&companion("cli"));
     for number in (1..=34).chain([36]) {
         let id = format!("REQ-cli-{number:03}");
+        if REMOVED.contains(&id.as_str()) {
+            assert!(
+                !cli.contains_key(&id),
+                "{id} was removed, yet is in specs/cli"
+            );
+            continue;
+        }
         assert!(
             cli.contains_key(&id) != mapped(&id),
             "{id} must be in specs/cli or in a split mapping, not both or neither"
