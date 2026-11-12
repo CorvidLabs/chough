@@ -2496,3 +2496,83 @@ fn next_with_no_native_change_says_only_that_none_is_recorded() {
         );
     }
 }
+
+/// Whether `text` names an internal trace ID: `FLOW-`, `LIFE-`, `DRIVE-`, `KNOW-` or
+/// `REQ-` followed by a letter or digit.
+fn names_trace_id(text: &str) -> bool {
+    ["FLOW-", "LIFE-", "DRIVE-", "KNOW-", "REQ-"]
+        .iter()
+        .any(|prefix| {
+            text.match_indices(prefix).any(|(at, _)| {
+                text[at + prefix.len()..]
+                    .chars()
+                    .next()
+                    .is_some_and(|next| next.is_ascii_alphanumeric())
+            })
+        })
+}
+
+/// Fresh-eyes F12f (second round, 2026-11-12): next's Why line named FLOW-23 ("...which
+/// only the human gives (FLOW-23)."). The reasons next and status give a human carry no
+/// internal trace ID; the IDs stay in code comments and the docs. The scope gate at plan,
+/// as reported, and the review at accept are read from next and status; every other
+/// reason the next valid action can give is read where it is written.
+#[cfg(unix)]
+#[test]
+fn next_and_status_reasons_name_no_trace_id() {
+    let plan = approved_at_plan("trace-scope");
+    plan.write(".stub-state", "draft\n");
+    plan.write(
+        ".stub-next",
+        "run `specsync change approve trace-scope --actor <name>`\n",
+    );
+    let accept = approved_at_plan("trace-review");
+    while accept.checkpoint()["stage"]["current"] != "accept" {
+        accept.ok(&["stage", "advance"]);
+    }
+    accept.write(".stub-state", "verifying\n");
+    for fixture in [&plan, &accept] {
+        let shown = text(fixture, &["next"]);
+        let why = shown
+            .lines()
+            .find(|line| line.starts_with("  Why: "))
+            .unwrap_or_else(|| panic!("no Why line in:\n{shown}"));
+        assert!(!names_trace_id(why), "{why}");
+        let next = fixture.ok(&["next", "--json"]);
+        let reason = next["next_valid_action"]["reason"].as_str().unwrap();
+        assert!(!names_trace_id(reason), "{reason}");
+        let status = fixture.ok(&["status", "--json"]);
+        let reason = status["summary"]["next_valid_action"]["reason"]
+            .as_str()
+            .unwrap();
+        assert!(!names_trace_id(reason), "{reason}");
+    }
+
+    // Each `reason:` field and the lines its value continues on, comments aside.
+    let mut named = vec![];
+    for file in ["src/stage.rs", "src/main.rs"] {
+        let source =
+            std::fs::read_to_string(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(file))
+                .unwrap();
+        let lines: Vec<&str> = source.lines().collect();
+        let indent = |line: &str| line.len() - line.trim_start().len();
+        for (index, line) in lines.iter().enumerate() {
+            if !line.trim_start().starts_with("reason:") {
+                continue;
+            }
+            let value: Vec<&str> = std::iter::once(*line)
+                .chain(
+                    lines[index + 1..]
+                        .iter()
+                        .copied()
+                        .take_while(|next| indent(next) > indent(line)),
+                )
+                .filter(|part| !part.trim_start().starts_with("//"))
+                .collect();
+            if value.iter().any(|part| names_trace_id(part)) {
+                named.push(format!("{file}:{}: {}", index + 1, line.trim()));
+            }
+        }
+    }
+    assert!(named.is_empty(), "{named:#?}");
+}
