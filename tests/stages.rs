@@ -1256,7 +1256,9 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
         "{shown}"
     );
     assert!(
-        shown.contains("Native next action: merge the PR on GitHub"),
+        shown.contains(
+            "SpecSync's own next step, for reference (the step to take now is Next): merge the PR on GitHub"
+        ),
         "{shown}"
     );
 
@@ -2343,7 +2345,9 @@ fn native_next_action_is_shown_once_and_does_not_cut_the_next_line() {
         "{main}"
     );
     assert!(
-        shown.contains(&format!("  Native next action: {native_next}")),
+        shown.contains(&format!(
+            "  SpecSync's own next step, for reference (the step to take now is Next): {native_next}"
+        )),
         "{shown}"
     );
     assert!(
