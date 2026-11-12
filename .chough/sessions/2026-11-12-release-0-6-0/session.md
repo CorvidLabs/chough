@@ -35,6 +35,13 @@ cases:
   - TC-cli-next-at-accept-while-approved-names-the-review-preparation
   - TC-cli-next-and-status-show-every-command-whole
   - TC-cli-gate-list-names-the-ship-for-a-verifying-gate
+  - TC-cli-change-check-no-commit
+  - TC-cli-gate-close-records-direct-writes-first
+  - TC-cli-accept-step-checks-through-chough
+  - TC-history-doctor-names-an-outdated-merge-driver-chough
+  - TC-history-story-lists-each-cases-latest-run
+  - TC-history-archived-story-says-archived
+  - TC-history-start-entry-starts-the-first-segment
 design: []
 files: []
 observations:
@@ -176,6 +183,13 @@ observations:
   - 2026-11-12-tc-history-story-lists-each-cases-latest-run
   - 2026-11-12-tc-history-archived-story-says-archived
   - 2026-11-12-tc-history-start-entry-starts-the-first-segment
+  - 2026-11-12-tc-cli-change-check-no-commit-af939c
+  - 2026-11-12-tc-cli-gate-close-records-direct-writes-first-3a2c8c
+  - 2026-11-12-tc-cli-accept-step-checks-through-chough-6cbf4b
+  - 2026-11-12-tc-history-doctor-names-an-outdated-merge-driver-chough-f9b3a5
+  - 2026-11-12-tc-history-story-lists-each-cases-latest-run-9199cb
+  - 2026-11-12-tc-history-archived-story-says-archived-64087b
+  - 2026-11-12-tc-history-start-entry-starts-the-first-segment-c3fc99
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -215,6 +229,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Kimi 2 and F12h (t38c, REQ-cli-005): evidence add needs only a criterion and resolves a requirement the session's delta adds; red then green, a contract change so no bug. REQ-cli-005's kept criterion on the check-first hint holds when no native change is recorded (tests/cli.rs)
 - F8's bug link (t38c, REQ-cli-012): red at 9b9bc010, green at 68c7a32a, bug verified; the migrate cases moved to the records module
 - t37f's batch (t38k round 2): F12a, F12e, F12f, Kimi 1, F3, F4, F5, F6; red at 5195bd67, green at cca98758, seven bugs verified
+- t38c's F13 and t38b's F8, Kimi 6, F9 and F11 (t38k round 2, t38h 6): red at 804bdb50, green at 91c3824f, three bugs verified; every item of the second fresh-eyes round integrated
 
 ## Decisions and why
 
@@ -368,6 +383,13 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test sessions -- --exact a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones for TC-history-story-lists-each-cases-latest-run: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-story-lists-each-cases-latest-run.md)
 - [Ran cargo test --locked --test sessions -- --exact an_archived_story_says_archived_and_keeps_no_next for TC-history-archived-story-says-archived: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-archived-story-says-archived.md)
 - [Ran cargo test --locked --test timing -- --exact init_and_session_new_write_a_start_entry_that_timing_reads for TC-history-start-entry-starts-the-first-segment: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-start-entry-starts-the-first-segment.md)
+- [Ran cargo test --locked --test direct_writes -- --exact change_check_no_commit_runs_the_plain_check_and_is_never_flagged for TC-cli-change-check-no-commit: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-change-check-no-commit-af939c.md)
+- [Ran cargo test --locked --test direct_writes -- --exact a_direct_write_before_a_gate_close_is_recorded_before_its_entry for TC-cli-gate-close-records-direct-writes-first: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-gate-close-records-direct-writes-first-3a2c8c.md)
+- [Ran cargo test --locked --test docs -- --exact the_accept_steps_first_check_runs_through_chough for TC-cli-accept-step-checks-through-chough: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-accept-step-checks-through-chough-6cbf4b.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_reports_merge_drivers_that_would_run_an_older_chough for TC-history-doctor-names-an-outdated-merge-driver-chough: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-doctor-names-an-outdated-merge-driver-chough-f9b3a5.md)
+- [Ran cargo test --locked --test sessions -- --exact a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones for TC-history-story-lists-each-cases-latest-run: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-story-lists-each-cases-latest-run-9199cb.md)
+- [Ran cargo test --locked --test sessions -- --exact an_archived_story_says_archived_and_keeps_no_next for TC-history-archived-story-says-archived: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-archived-story-says-archived-64087b.md)
+- [Ran cargo test --locked --test timing -- --exact init_and_session_new_write_a_start_entry_that_timing_reads for TC-history-start-entry-starts-the-first-segment: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-start-entry-starts-the-first-segment-c3fc99.md)
 
 ## Open threads
 
