@@ -808,3 +808,21 @@ expected = ["tests/cli.rs::context_gives_the_timeline_and_open_bugs_as_markdown 
 adapter = "cargo-test"
 test_target = "cli"
 test = "context_gives_the_timeline_and_open_bugs_as_markdown"
+
+[[case]]
+id = "TC-cli-a-stage-move-replaces-a-gate-close-next-action"
+title = "After a gate close's next action names a move, the move replaces it with Continue <stage>, so next in build never says to advance with nothing built; a next action the agent wrote is kept"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "FLOW-2"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_stage_move_replaces_the_next_action_a_gate_close_left passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_stage_move_replaces_the_next_action_a_gate_close_left"

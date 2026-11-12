@@ -744,6 +744,57 @@ fn approving_the_scope_gate_replaces_the_next_action_it_left_stale() {
     )));
 }
 
+/// F1 of the fourth fresh-eyes round (REQ-cli-021): a gate close's next action names the
+/// move its decision allows; once that move is made it is replaced with
+/// `Continue <stage>` for the stage reached, so `chough next` in build never says to run
+/// `chough stage advance` with nothing built. The same at intent, then design.
+#[cfg(unix)]
+#[test]
+fn a_stage_move_replaces_the_next_action_a_gate_close_left() {
+    let fixture = at_plan();
+    fixture.no_spec_approval(ID);
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    fixture.ok(&args(&relay(SCOPE, "SYNTHETIC-human")));
+    assert_eq!(next_action(&fixture), closed_next(SCOPE, "approved"));
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(fixture.checkpoint()["stage"]["current"], "build");
+    assert_eq!(next_action(&fixture), "Continue build");
+    let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert!(
+        !action.contains("chough stage advance")
+            && !action.contains("Continue build: Continue build"),
+        "next in build: {action}"
+    );
+
+    // At intent: a gate that drives nothing, then the move to design.
+    let fixture = project();
+    fixture.ok(&["checkpoint", "--awaiting-human", "Approve the intent"]);
+    fixture.ok(&args(&relay("Approve the intent", "SYNTHETIC-human")));
+    assert_eq!(
+        next_action(&fixture),
+        closed_next("Approve the intent", "closed")
+    );
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(next_action(&fixture), "Continue design");
+    // A next action the agent wrote is the agent's, and a move leaves it.
+    fixture.ok(&[
+        "checkpoint",
+        "--next-action",
+        "SYNTHETIC: sketch the screen",
+    ]);
+    fixture.ok(&[
+        "stage",
+        "skip",
+        "--json",
+        "--reason",
+        "SYNTHETIC: no visuals",
+    ]);
+    assert_eq!(next_action(&fixture), "SYNTHETIC: sketch the screen");
+}
+
 /// The rest of t382's rule: a review gate names its verdict, a gate that drives no native
 /// step or is closed with --no-native says "closed"; a next action given in the same call
 /// is kept; and a close that leaves another gate holding the stage, or of a gate that
