@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 84
+version: 85
 status: active
 files:
   - src/main.rs
@@ -13,7 +13,6 @@ files:
   - src/gates.rs
   - src/direct_writes.rs
   - src/evidence.rs
-  - src/identity.rs
   - src/library.rs
   - src/native.rs
   - src/native_check.rs
@@ -24,7 +23,6 @@ files:
   - src/stage.rs
   - src/validate.rs
   - src/vault.rs
-  - src/attachments.rs
   - tests/cli.rs
   - tests/bugs.rs
   - tests/cases.rs
@@ -146,25 +144,8 @@ evidence, bug, pref, consent, validate, library, skill and timing.
 Internal modules under src/ make their entry points visible to the crate root only.
 They are implementation details of the binary, not exports or library promises, and
 command behavior is specified under Behavioral Examples and in docs/cli.md rather
-than presented as Rust API symbols to the structural checker. The following table
-covers the crate-internal identity boundary without creating a public Rust API.
-
-| Internal symbol | Structural behavior |
-|---|---|
-| `OBSERVATION_SLUG_LIMIT` | Limits an observation slug so the complete OBS ID fits 100 bytes. |
-| `VALIDATION_SLUG_LIMIT` | Limits a validation slug so the complete VAL ID fits 100 bytes. |
-| `SNAPSHOT_SLUG_LIMIT` | Limits a snapshot slug so the complete SNAP ID fits 100 bytes. |
-| `slug` | Normalizes bounded nonempty lowercase ASCII slugs with caller-selected fallbacks. |
-| `valid_case_id` | Accepts curated slug and exact legacy numeric case IDs with the module-aware bound. |
-| `valid_observation_id` | Accepts the exact new OBS form with a complete 24-digit lowercase hex suffix. |
-| `valid_validation_id` | Accepts the exact new VAL form with a complete 24-digit lowercase hex suffix. |
-| `valid_snapshot_id` | Accepts the exact new SNAP form with a complete 24-digit lowercase hex suffix. |
-| `observation` | Allocates one OBS candidate from one random 96-bit draw. |
-| `validation` | Allocates one VAL candidate from one random 96-bit draw. |
-| `snapshot` | Allocates one SNAP candidate from one random 96-bit draw. |
-| `require_explicit_observation_id` | Applies new-form explicit observation validation and the old-style omit-ID remedy. |
-| `with_random_results` | Test-only random-source seam; no production override. |
-| `random_draws` | Test-only draw-count seam used to prove there is no retry. |
+than presented as Rust API symbols to the structural checker. The record identity
+boundary moved to the records module with `src/identity.rs` in Chough 0.6.0.
 
 ## Invariants
 
@@ -382,3 +363,4 @@ provider, runtime or hosted service.
 | 82 | 2026-11-10 | read-bounded-diagnostic-input-inventories-without-changing-freshness-authority: Read bounded diagnostic input inventories without changing freshness authority |
 | 83 | 2026-11-10 | keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136: Keep observations current when the generated knowledge index is rebuilt (#136) |
 | 84 | 2026-11-10 | return-the-observation-id-from-cases-record-and-evidence-add-issue-60: Return the observation ID from cases record and evidence add (issue 60) |
+| 85 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |

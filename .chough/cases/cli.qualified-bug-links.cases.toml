@@ -1,0 +1,80 @@
+# B1: a session-qualified bug link (<session>/<id>, as bug add stores it) counts as a
+# link where the test gate and next's last failure read bug links (REQ-cli-021).
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-qualified-link-leaves-test"
+title = "A failure a bug links by its session-qualified ID does not block leaving test"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-021", "REQ-cli-012"]
+paths = ["src/bugs.rs", "src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "stages", "--", "--exact", "a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal"]
+expect_output = ["test a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-qualified-link-last-failure"
+title = "next's last failure lists a bug that links it by its session-qualified ID, open and archived"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/bugs.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "next", "--", "--exact", "last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived"]
+expect_output = ["test last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-capture-links-qualified"
+title = "Automatic failure capture links each failure by its session-qualified ID, opening and appending"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-cli-012", "REQ-cli-023"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::automatic_failure_capture_links_each_failure_by_its_session_qualified_id passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "bugs", "--", "--exact", "automatic_failure_capture_links_each_failure_by_its_session_qualified_id"]
+expect_output = ["test automatic_failure_capture_links_each_failure_by_its_session_qualified_id ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-alias-link-stored-canonical"
+title = "A bug link given by an entry's alias is stored as the entry's canonical session-qualified ID"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-cli-012", "REQ-cli-023"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_link_by_an_entrys_alias_is_stored_as_its_canonical_session_qualified_id passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "bugs", "--", "--exact", "a_link_by_an_entrys_alias_is_stored_as_its_canonical_session_qualified_id"]
+expect_output = ["test a_link_by_an_entrys_alias_is_stored_as_its_canonical_session_qualified_id ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600

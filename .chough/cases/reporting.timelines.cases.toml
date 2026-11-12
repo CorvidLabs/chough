@@ -1,0 +1,44 @@
+profile = "chough-testing/1"
+module = "reporting"
+
+# Plan step 9 (t38b): timing reads every session's timeline and the receipts of
+# archived stories and bugs.
+
+[[case]]
+id = "TC-reporting-timing-from-timelines"
+title = "Timing reads each open session's and story's timeline, names an unreadable story in partial, reads case runs from entries and story and bug receipts, and writes nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "FLOW-13"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "src/bugs.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::timing_reads_timelines_and_receipts passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "timing_reads_timelines_and_receipts"
+
+# The timing native budget (REQ-reporting-002): a unit test, since an integration test
+# cannot make a record load slow on demand.
+[[case]]
+id = "TC-reporting-budget-starts-at-first-read"
+title = "The timing native budget starts at the first native read, so a slow record load does not spend it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-reporting-002"]
+paths = ["src/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["timing::tests::a_slow_record_load_does_not_spend_the_native_budget passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "timing::tests::a_slow_record_load_does_not_spend_the_native_budget"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600

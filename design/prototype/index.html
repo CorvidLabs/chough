@@ -1,0 +1,684 @@
+<title>Chough Records Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: a project file explorer. Tree on the left, the chosen record on the right,
+   one switch between how a person reads it (serif prose) and how an agent reads it (mono, raw). */
+:root {
+  --paper: #f7f6f3;        /* page ground: a cool off-white, slightly toward slate */
+  --sheet: #ffffff;        /* the open file */
+  --ink: #1b1f24;          /* body text: chough plumage, softened */
+  --muted: #5c6670;        /* secondary text */
+  --rule: #dfe2e5;         /* hairlines */
+  --beak: #b8432f;         /* accent: the red of a chough's bill, muted */
+  --beak-soft: #f6e3de;    /* accent wash */
+  --decided: #276749;      /* Leif decided */
+  --decided-soft: #e3f1e8;
+  --proposed: #8a5a00;     /* coordinator proposal, needs confirming */
+  --proposed-soft: #fbf0d9;
+  --ghost: #9aa3ab;        /* removed items */
+  --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-read: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-raw: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15181c; --sheet: #1d2126; --ink: #e6e8ea; --muted: #a2abb3; --rule: #30363d;
+    --beak: #e07a63; --beak-soft: #3a2420; --decided: #7cc79a; --decided-soft: #1c3226;
+    --proposed: #e3b25a; --proposed-soft: #3a2f17; --ghost: #66707a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #15181c; --sheet: #1d2126; --ink: #e6e8ea; --muted: #a2abb3; --rule: #30363d;
+  --beak: #e07a63; --beak-soft: #3a2420; --decided: #7cc79a; --decided-soft: #1c3226;
+  --proposed: #e3b25a; --proposed-soft: #3a2f17; --ghost: #66707a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+a { color: var(--beak); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--beak); outline-offset: 2px; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 18px; }
+
+header.top { display: grid; gap: 10px; }
+header.top h1 { font-size: 1.5rem; margin: 0; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+header.top p { margin: 0; color: var(--muted); max-width: 70ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; background: var(--sheet); }
+.seg button { border: 0; background: transparent; padding: 7px 12px; cursor: pointer; font-size: 0.875rem; }
+.seg button[aria-pressed="true"] { background: var(--beak-soft); color: var(--beak); font-weight: 600; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.8125rem; color: var(--muted); align-items: center; }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.02em; white-space: nowrap; }
+.chip.decided { background: var(--decided-soft); color: var(--decided); }
+.chip.proposed { background: var(--proposed-soft); color: var(--proposed); }
+.chip.owner { background: transparent; border: 1px solid var(--rule); color: var(--muted); }
+.chip.local { background: transparent; border: 1px dashed var(--beak); color: var(--beak); }
+.chip.gen { background: transparent; border: 1px dotted var(--muted); color: var(--muted); }
+
+.truth { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; overflow-x: auto; }
+.truth table { border-collapse: collapse; width: 100%; font-size: 0.8125rem; min-width: 520px; }
+.truth th, .truth td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.truth th { color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.6875rem; }
+.truth code { font-family: var(--font-raw); font-size: 0.78rem; }
+
+.app { display: grid; grid-template-columns: minmax(250px, 320px) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 760px) { .app { grid-template-columns: minmax(0, 1fr); } }
+
+nav.tree { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; padding: 10px 6px; font-family: var(--font-raw); font-size: 0.8125rem; overflow-x: auto; }
+.tree ul { list-style: none; margin: 0; padding-left: 14px; }
+.tree > ul { padding-left: 4px; }
+.tree li { margin: 1px 0; }
+.dir { color: var(--muted); padding: 3px 6px; display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.dir .note { font-family: var(--font-ui); font-size: 0.6875rem; color: var(--muted); }
+.file { display: flex; gap: 6px; align-items: baseline; width: 100%; text-align: left; border: 0; background: transparent; padding: 3px 6px; border-radius: 6px; cursor: pointer; font-family: var(--font-raw); font-size: 0.8125rem; color: var(--ink); }
+.file:hover { background: var(--paper); }
+.file[aria-current="true"] { background: var(--beak-soft); color: var(--beak); }
+.file .tag { margin-left: auto; font-family: var(--font-ui); font-size: 0.625rem; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+.ghost { color: var(--ghost); text-decoration: line-through; padding: 3px 6px; display: block; }
+.ghost span { text-decoration: none; display: inline-block; font-family: var(--font-ui); font-size: 0.6875rem; margin-left: 4px; }
+
+article.view { background: var(--sheet); border: 1px solid var(--rule); border-radius: 10px; min-width: 0; overflow: hidden; }
+.view-head { padding: 12px 16px; border-bottom: 1px solid var(--rule); display: grid; gap: 6px; }
+.view-head .path { font-family: var(--font-raw); font-size: 0.8125rem; color: var(--muted); overflow-wrap: anywhere; }
+.view-head .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.why { margin: 0 16px; padding: 10px 12px; border-left: 3px solid var(--rule); background: var(--paper); border-radius: 0 8px 8px 0; font-size: 0.8125rem; display: grid; gap: 4px; margin-top: 14px; }
+.why b { font-weight: 600; }
+.why .row { display: flex; gap: 8px; align-items: baseline; }
+.why .row .chip { flex: none; }
+
+.human { font-family: var(--font-read); font-size: 1.0625rem; line-height: 1.65; padding: 6px 22px 22px; max-width: 72ch; }
+.human h1 { font-size: 1.6rem; line-height: 1.25; margin: 18px 0 10px; text-wrap: balance; font-weight: 600; }
+.human h2 { font-family: var(--font-ui); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 22px 0 6px; font-weight: 600; }
+.human p { margin: 0 0 12px; }
+.human ul { margin: 0 0 12px; padding-left: 20px; }
+.human li { margin: 3px 0; }
+.human code { font-family: var(--font-raw); font-size: 0.86em; background: var(--paper); padding: 1px 4px; border-radius: 4px; }
+.human pre { font-family: var(--font-raw); font-size: 0.8125rem; background: var(--paper); padding: 12px; border-radius: 8px; overflow-x: auto; line-height: 1.5; }
+.human blockquote { margin: 0 0 12px; padding-left: 12px; border-left: 3px solid var(--beak); color: var(--muted); font-style: italic; }
+.human table { border-collapse: collapse; font-family: var(--font-ui); font-size: 0.875rem; margin: 0 0 12px; }
+.human td, .human th { border-bottom: 1px solid var(--rule); padding: 4px 10px 4px 0; text-align: left; }
+.human a.internal { cursor: pointer; }
+.meta-strip { font-family: var(--font-ui); font-size: 0.8125rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 14px 22px 0; }
+.meta-strip b { color: var(--ink); font-weight: 500; }
+.state { margin: 14px 22px 0; padding: 10px 12px; border-radius: 8px; font-family: var(--font-ui); font-size: 0.875rem; border: 1px solid var(--rule); }
+.state.wait { border-color: var(--proposed); background: var(--proposed-soft); color: var(--ink); }
+.state.away { border-style: dashed; border-color: var(--muted); }
+
+.raw { font-family: var(--font-raw); font-size: 0.8125rem; line-height: 1.6; padding: 16px; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.raw .fm { color: var(--decided); }
+.raw .fmk { color: var(--beak); }
+
+.stub { padding: 22px; display: grid; gap: 10px; }
+.stub p { margin: 0; max-width: 62ch; }
+footer.notes { font-size: 0.8125rem; color: var(--muted); max-width: 80ch; }
+@media (prefers-reduced-motion: no-preference) { .file { transition: background 120ms ease; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>How a project's Chough records would look</h1>
+    <p>A clickable prototype for the human-first records redesign (chough #234, #235, #236). The example is raven, using real work from 2026-11-10. Pick any file, and switch between how a person reads it and how an agent reads it. Every choice here is now your decision (green); the earlier proposals were confirmed on 2026-11-10.</p>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Reading mode">
+        <button type="button" id="mode-human" aria-pressed="true">Read as a person</button>
+        <button type="button" id="mode-agent" aria-pressed="false">Read as an agent</button>
+      </div>
+      <div class="legend">
+        <span class="chip decided">Leif decided</span>
+        <span class="chip proposed">Proposal, confirm</span>
+        <span class="chip local">never committed</span>
+        <span class="chip gen">generated</span>
+        <span class="chip owner">owned by another tool</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="truth" aria-label="One source of truth">
+    <table>
+      <thead><tr><th>Kind of fact</th><th>Lives only in</th><th>Owner</th><th>Everything else</th></tr></thead>
+      <tbody>
+        <tr><td>Human intent and acceptance criteria</td><td><code>hi/</code></td><td>HI</td><td>links to it</td></tr>
+        <tr><td>Module contracts, requirements, module lessons</td><td><code>specs/</code></td><td>SpecSync</td><td>links to it</td></tr>
+        <tr><td>Change lifecycle and its archive</td><td><code>.specsync/</code></td><td>SpecSync</td><td>links to it</td></tr>
+        <tr><td>Sessions, decisions, bugs, evidence</td><td><code>.chough/</code></td><td>Chough</td><td>links to it</td></tr>
+        <tr><td>The project's story: journal, cross-project lessons</td><td><code>knowledge/</code></td><td>Chough (librarian)</td><td>links out, copies nothing</td></tr>
+        <tr><td>Tasks</td><td><code>fledge.toml</code></td><td>Fledge</td><td>runs them</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="app">
+    <nav class="tree" aria-label="Project files" id="tree"></nav>
+    <article class="view" id="view" aria-live="polite"></article>
+  </div>
+
+  <footer class="notes">Prototype only: no files exist yet in this shape. Names follow date + slug (your decision), so parallel branches never renumber anything. When a session finishes, its folder collapses into one archived story: receipts fold into "What was verified" and the agent/ files are removed. The companion notes are in <code>design/prototype/COMPANION.md</code>.</footer>
+</div>
+
+<script>
+const FILES = {
+".chough/README.md": {
+  kind: "guide", owner: "Chough", commit: "committed",
+  why: [["decided","Humans and agents are both first-class readers; anyone interested in the project (product, design, dev, QA) can open this folder and understand it."],["decided","Nothing extra or repetitive hangs around: working files exist only while a change is in progress."],["decided","A plain README at the top of .chough/ that explains every folder in one screen."]],
+  raw: `---
+kind: guide
+---
+# What lives in .chough
+
+This is Chough's working memory for raven. Everything here is plain Markdown you can read in any editor or on GitHub. Agents read the same files; the short block at the top of each one is for them.
+
+## Folders
+
+- **sessions/**: work in progress. One folder per piece of work, named by date and a short slug. Several can be open at once. While a change is in progress its folder can hold extra working files for agents.
+- **archive/sessions/**: finished work. Each finished session becomes one readable file. The working files are gone; Git history still has them.
+- **bugs/**: one file per bug, open or fixed.
+- **cases/**: how to run the checks that produce evidence.
+- **local/**: this machine only. Never committed: raw logs, caches, paths to outside files.
+
+## What isn't here
+
+Intent lives in [hi/](hi/), contracts in [specs/](specs/), and change history in [.specsync/archive/](.specsync/archive/). Chough links to them and never keeps its own copy.`
+},
+".chough/sessions/2026-11-10-funded-chat-key/session.md": {
+  kind: "session", owner: "Chough", commit: "committed", state: "wait",
+  waitText: "accept raven#720: a funded account's chat key is published without waiting for the inbox.",
+  why: [["decided","Each session gets its own unique date + slug folder, committed so handoffs work (active and archive, like SpecSync changes/archive)."],["decided","The story holds goal and outcome, decisions and why, what was verified, and open threads."],["decided","A human gate shows plainly what is being decided; you answer in chat or with the Chough CLI."],["decided","The checkpoint fields (stage, next action, gates) live in this file's frontmatter, replacing session.json, and the timeline is an append-only list at the bottom, replacing transitions.jsonl."]],
+  raw: `---
+kind: session
+id: 2026-11-10-funded-chat-key
+stage: accept
+native_change: a-funded-account-publishes-its-chat-key-once-its-balance-changes
+criteria: [ONBOARDING-4]
+requirements: [REQ-chat.service-13]
+pr: raven#720
+waiting_on_human:
+  - who: Leif
+    decide: Accept raven#720 (publish a funded account's chat key without waiting for the inbox)
+next: Push the archive and merge once CI is green
+---
+# A funded account publishes its chat key right away
+
+## Goal
+
+From issue #717: a room owner who only runs rooms never got their chat key published, so another admin's key change couldn't reach them.
+
+## Where it stands
+
+Built and verified. Waiting for Leif to accept it.
+
+## Decisions and why
+
+- **Publish on funding, not on inbox load.** Leif chose this on 2026-11-10 (ONBOARDING-4), so every funded account can receive keys.
+
+## What was verified
+
+- [251 of 251 chat and room tests pass on 9a020bbb](sessions/2026-11-10-funded-chat-key/evidence/2026-11-10-chat-key-suites-pass.md)
+- [The owner's key shows up in the explorer after funding](sessions/2026-11-10-funded-chat-key/evidence/2026-11-10-owner-key-visible.md)
+
+## Open threads
+
+- Not tried on Safari or iPhone.
+
+## Timeline
+
+- 2026-11-10 23:58 · intent → plan · Leif chose "publish on funding"
+- 2026-11-11 00:20 · build → test → accept · all checks green
+- 2026-11-11 00:24 · waiting on Leif · accept raven#720`
+},
+".chough/sessions/2026-11-10-funded-chat-key/agent/working-notes.md": {
+  kind: "agent working file", owner: "Chough", commit: "committed",
+  why: [["decided","While a change is in progress, agent-helpful working files live in an agent/ folder inside the session, committed so any agent can resume or hand off."],["decided","They're removed automatically when the session finishes; Git history keeps them."]],
+  raw: `---
+kind: agent-working
+session: 2026-11-10-funded-chat-key
+removed_at_finish: true
+---
+# Working notes (agents)
+
+- KeyPublishService status stuck at 'unfunded' after funding: balance-change effect added in chat.service.
+- Files touched: src/app/core/services/chat.service.ts, key-publish.service.ts, their specs.
+- Resume here if interrupted: CI on 9a020bbb; merge after Leif accepts.
+- Retry note: e2e 'same-parent key rotations' needed the owner's key published first (#719).`
+},
+".chough/sessions/2026-11-10-funded-chat-key/evidence/2026-11-10-chat-key-suites-pass.md": {
+  kind: "evidence", owner: "Chough", commit: "committed",
+  why: [["decided","An evidence entry is a one-line claim plus a receipt: the command, the result and a digest. Raw logs stay in CI, never committed."],["decided","Named by date + slug, never a sequence number."],["decided","While the change is active, receipts are files in the session; at finish they fold into the archived story's 'What was verified'."]],
+  raw: `---
+kind: evidence
+id: 2026-11-10-chat-key-suites-pass
+claim: 251 of 251 chat and room tests pass on 9a020bbb, macOS
+result: pass
+command: bun test src/app/core/services/chat src/app/core/services/room
+revision: 9a020bbb
+environment: macOS 26, bun 1.3
+digest: sha256:4be81c07a2d9…77f0
+raw_log: CI artifact, raven run 42903318841 (kept 14 days)
+criteria: [ONBOARDING-4]
+---
+**251 of 251 chat and room tests pass on 9a020bbb, macOS.**
+
+The full log is in the CI run; its digest is above, so anyone can check a re-run matches.`
+},
+".chough/sessions/2026-11-10-funded-chat-key/evidence/2026-11-10-owner-key-visible.md": {
+  kind: "evidence", owner: "Chough", commit: "committed", state: "away",
+  why: [["decided","Outside files are machine-local: the committed record holds only a neutral id and the fingerprint, never a path, file name or username (#208, #234)."],["decided","On another machine it reads 'external, not checkable here', not stale."]],
+  raw: `---
+kind: evidence
+id: 2026-11-10-owner-key-visible
+claim: After funding, the owner's chat key shows up in the LocalNet explorer
+result: pass
+method: human-observation
+external: ext-7f3k
+fingerprint: sha256:56fc2b0b88a1…19d0
+revision: 9a020bbb
+criteria: [ONBOARDING-4]
+---
+**After funding, the owner's chat key shows up in the LocalNet explorer.**
+
+Checked by eye from a screenshot. The screenshot stays on the machine that took it; this record keeps only its fingerprint.`
+},
+".chough/archive/sessions/2026-11-10-busy-room-history.md": {
+  kind: "session (finished)", owner: "Chough", commit: "committed",
+  why: [["decided","A finished session becomes one file: the story, with the evidence receipts folded into 'What was verified'. The agent/ working files are removed; Git history keeps them."],["decided","This archived story is the full record; the journal post is short and links here, so nothing is written twice."]],
+  raw: `---
+kind: session
+id: 2026-11-10-busy-room-history
+stage: done
+native_change: a-busy-room-keeps-its-record-and-every-message
+criteria: [HISTORY-1]
+requirements: [REQ-room.service-19]
+pr: raven#716
+accepted_by: Leif, 2026-11-10
+closed: 2026-11-11
+---
+# Busy rooms keep their name and history
+
+## Goal
+
+From issue #641: "Load all of a busy room's history, and let a new member join it."
+
+## Outcome
+
+Shipped in raven#716. Room details are read on their own, and a refresh reads every message since the last one this device saw.
+
+## Decisions and why
+
+- **Read room details on their own**, because they were falling past the 2,000-note search cap.
+- **Keep the reviewer's reproduction as a test.** corvid-agent found that your own sends could skip unindexed messages ([bug](bugs/2026-11-10-own-sends-skip-unindexed-messages.md)).
+- **Accepted by Leif** on 2026-11-10, after the fix.
+
+## What was verified
+
+- 193 of 193 room tests pass on 390cf5dd, macOS · \`bun test src/app/core/services/room\` · sha256:9f2c41d0…e41a
+- 7 of 7 room LocalNet specs pass on 390cf5dd · \`bun run e2e:localnet room\` · sha256:a07d2e9c…3b1c
+
+## Open threads
+
+- Not tried on Safari or iPhone.
+- A new member's history older than the newest 2,000 needs UI work (follow-up).
+
+## Timeline
+
+- 2026-11-10 17:41 · plan → build · scope approved by Leif
+- 2026-11-10 18:51 · test → build · corvid-agent found own sends skipping unindexed messages
+- 2026-11-10 21:02 · accept · Leif accepted raven#716
+- 2026-11-11 00:29 · done · merged as accf7e54`
+},
+".chough/archive/sessions/2026-11-05-gift-fee-note.md": {
+  kind: "session (finished)", owner: "Chough", commit: "committed",
+  why: [["decided","Finished sessions are one file each, in archive/sessions/."]],
+  raw: `---
+kind: session
+id: 2026-11-05-gift-fee-note
+stage: done
+pr: raven#713
+accepted_by: Leif, 2026-11-10
+closed: 2026-11-10
+---
+# Each gift shows the fee it actually paid
+
+## Goal
+
+Leif approved "a Home fee note that says what the sender really paid" (2026-11-05).
+
+## Outcome
+
+Shipped in raven#713. Each gift stores its funding fee when it's made; older gifts read theirs from Algorand. When fees differ, each gift shows its own.
+
+## Decisions and why
+
+- **Real fee, old gifts too.** Leif chose it on 2026-11-10 so the note is true for every gift.
+
+## What was verified
+
+- 69 of 69 unit tests on fc30e058 · \`bun test src/app/core/services/starter-gift\` · sha256:1c9d…2a40
+- A LocalNet run reproduces the old bug on main and passes with the fix · sha256:7e03…b911
+
+## Open threads
+
+- None.`
+},
+".chough/bugs/2026-11-10-own-sends-skip-unindexed-messages.md": {
+  kind: "bug", owner: "Chough", commit: "committed",
+  why: [["decided","Bugs are Markdown with frontmatter, one file each; the file is the source of truth (no JSON twin)."],["decided","Named by date + slug."],["decided","The log at the bottom is append-only, so nobody rewrites a bug's history."]],
+  raw: `---
+kind: bug
+id: 2026-11-10-own-sends-skip-unindexed-messages
+status: fixed
+found_by: corvid-agent (review of raven#716)
+criteria: [HISTORY-1]
+requirements: [REQ-room.service-19]
+fixed_in: raven#716
+---
+# Your own sends could make a room refresh skip messages
+
+**What happened:** a message you sent is stored with the network's round. A refresh then started from that round, skipping messages the indexer hadn't caught up on yet.
+
+**Steps:** 1. Open a busy room. 2. Send a message while others are posting. 3. Refresh. Some of their messages never appear.
+
+**Expected:** a refresh shows every message since the last one this device saw.
+
+**Why it matters:** people silently miss messages in the busiest rooms.
+
+**Fix:** a per-room read mark set only from indexer results ([raven#716, full record](archive/sessions/2026-11-10-busy-room-history.md)).
+
+## Log
+
+- 2026-11-10 18:51 · found by corvid-agent, with a reproduction
+- 2026-11-10 20:40 · fixed; the reproduction is kept as a test`
+},
+".chough/cases/room.cases.toml": {
+  kind: "cases", owner: "Chough", commit: "committed",
+  why: [["decided","Case definitions stay as small TOML: they're configuration a person edits, not a record of what happened."]],
+  raw: `# How to produce evidence for the room service.
+[[case]]
+id = "room-suites"
+covers = ["HISTORY-1", "REQ-room.service-19"]
+run = ["bun", "test", "src/app/core/services/room"]
+env = { NO_COLOR = "1" }
+expect = "pass"`
+},
+".chough/local/external-artifacts.toml": {
+  kind: "local", owner: "Chough", commit: "never",
+  why: [["decided","The real path of an outside file lives only on the machine that recorded it (#208, #234)."]],
+  raw: `# This machine only. Git ignores this folder.
+[ext-7f3k]
+path = "~/Desktop/owner-key-explorer.png"
+fingerprint = "sha256:56fc2b0b88a1…19d0"`
+},
+".chough/local/logs/2026-11-10-chat-key-suites.log": {
+  kind: "local", owner: "Chough", commit: "never",
+  why: [["decided","Raw logs are never committed; CI keeps them, and a local copy may sit here."]],
+  raw: `(raw test output, 5,104 lines, kept on this machine only)`
+},
+"knowledge/index.md": {
+  kind: "guide", owner: "Chough librarian", commit: "committed",
+  why: [["decided","The vault holds only what has no other home, links to everything else, and reads well for people and agents alike."],["decided","A short reading guide at the top of the vault for people new to the project."]],
+  raw: `---
+kind: guide
+---
+# Raven's knowledge
+
+Start here if you're new to the project.
+
+## Read the story
+
+- [The journal](knowledge/journal/2026-11-10-busy-rooms-keep-their-name-and-history.md): what changed, newest first. Also as a [feed](knowledge/journal/feed.xml).
+
+## Where things live
+
+- What people want: [hi/](hi/)
+- How each part must behave: [specs/](specs/)
+- Finished changes: [.specsync/archive/](.specsync/archive/) and [finished sessions](archive/sessions/2026-11-10-busy-room-history.md)
+- Work in progress and bugs: [.chough/](.chough/README.md)
+
+## Lessons that belong to no single module
+
+- [Trust the change check, not status, for an edited approval](knowledge/lessons/2026-10-31-trust-check-for-approval-drift.md)`
+},
+"knowledge/journal/2026-11-10-busy-rooms-keep-their-name-and-history.md": {
+  kind: "journal", owner: "Chough librarian", commit: "committed",
+  why: [["decided","The agent writes a post automatically when something ships, intent or a spec changes, or something breaks or is learned. Anyone can edit it; the agent never overwrites a person's edits."],["decided","The post is short and links to the archived session story, which holds the full record, so nothing is written twice."],["decided","This is the style you approved; one journal per repo."]],
+  raw: `---
+date: 2026-11-10
+kind: shipped
+title: Busy rooms keep their name and history
+links: [raven#716, raven#641, REQ-room.service-19]
+record: .chough/archive/sessions/2026-11-10-busy-room-history.md
+---
+# Busy rooms keep their name and history
+
+In busy rooms, Raven only ever read the newest 2,000 notes, so older messages vanished and some rooms even lost their name. That's fixed: room details are now read on their own, and a refresh picks up every message since the last one this device saw.
+
+While reviewing it, corvid-agent caught a sneaky case: your own sent messages could make a refresh skip messages the indexer hadn't caught up on yet. That's fixed too, with the reviewer's reproduction kept as a test.
+
+Leif accepted it on Nov 10. Not yet tried on Safari or iPhone.
+
+Read more: raven#716 · [the full record](archive/sessions/2026-11-10-busy-room-history.md)`
+},
+"knowledge/journal/2026-11-10-older-lock-messages-you-cant-open-now-show.md": {
+  kind: "journal", owner: "Chough librarian", commit: "committed",
+  why: [["decided","Posts happen when something ships."]],
+  raw: `---
+date: 2026-11-10
+kind: shipped
+title: Older lock messages you can't open now show up
+links: [raven#718, raven#599, EXTRA-6]
+---
+# Older lock messages you can't open now show up
+
+Some older Extra Lock messages used to disappear without a trace, which made chats look like they had stopped loading. Now they show as a message this device won't open, with a short reason, so you know something arrived.
+
+Leif chose this over keeping them hidden (EXTRA-6).
+
+Read more: raven#718 · issue #599`
+},
+"knowledge/journal/feed.xml": {
+  kind: "feed", owner: "Chough librarian", commit: "generated",
+  why: [["decided","Dated Markdown posts are the source; a feed file is generated from them for feed readers, the site or agents."]],
+  raw: `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Raven journal</title>
+  <updated>2026-11-11T00:29:00Z</updated>
+  <entry>
+    <title>Busy rooms keep their name and history</title>
+    <updated>2026-11-11T00:29:00Z</updated>
+    <link href="knowledge/journal/2026-11-10-busy-rooms-keep-their-name-and-history.md"/>
+  </entry>
+  <entry>
+    <title>Older lock messages you can't open now show up</title>
+    <updated>2026-11-10T23:34:00Z</updated>
+    <link href="knowledge/journal/2026-11-10-older-lock-messages-you-cant-open-now-show.md"/>
+  </entry>
+</feed>`
+},
+"knowledge/lessons/2026-10-31-trust-check-for-approval-drift.md": {
+  kind: "lesson", owner: "Chough librarian", commit: "committed",
+  why: [["decided","The vault keeps lessons that have no other home."],["decided","A module's own lessons stay with its spec in specs/; only lessons that span projects or tools live here."]],
+  raw: `---
+kind: lesson
+date: 2026-10-31
+applies_to: [SpecSync approvals]
+source: spec-sync PR #823
+---
+# Trust the change check, not status, for an edited approval
+
+After a change is approved, editing its delta can leave \`change status\` still saying the approval is valid, while \`change check\` correctly refuses. Until that's fixed, treat a delta as frozen at approval and rely on the check.`
+},
+"hi/": { stub: "Owned by HI. Human intent and acceptance criteria live here and only here. Chough and the vault link to a criterion by its ID; they never copy its text.", owner: "HI" },
+"specs/": { stub: "Owned by SpecSync. Module contracts, requirements and each module's own lessons. Chough links to them.", owner: "SpecSync" },
+".specsync/archive/": { stub: "Owned by SpecSync. The record of every finished change. The vault no longer keeps a copy of each one; a journal post or archived session links here instead.", owner: "SpecSync" },
+"fledge.toml": { stub: "Owned by Fledge. The project's tasks and lanes. Evidence receipts name the Fledge command that ran.", owner: "Fledge" }
+};
+
+const TREE = [
+  { dir: "hi/", file: "hi/", tag: "HI" },
+  { dir: "specs/", file: "specs/", tag: "SpecSync" },
+  { dir: ".specsync/", children: [ { file: ".specsync/archive/", label: "archive/", tag: "SpecSync" } ] },
+  { file: "fledge.toml", label: "fledge.toml", tag: "Fledge" },
+  { dir: ".chough/", children: [
+    { file: ".chough/README.md", label: "README.md" },
+    { dir: "sessions/", note: "work in progress", children: [
+      { dir: "2026-11-10-funded-chat-key/", children: [
+        { file: ".chough/sessions/2026-11-10-funded-chat-key/session.md", label: "session.md", tag: "waiting" },
+        { dir: "evidence/", children: [
+          { file: ".chough/sessions/2026-11-10-funded-chat-key/evidence/2026-11-10-chat-key-suites-pass.md", label: "2026-11-10-chat-key-suites-pass.md" },
+          { file: ".chough/sessions/2026-11-10-funded-chat-key/evidence/2026-11-10-owner-key-visible.md", label: "2026-11-10-owner-key-visible.md", tag: "external" }
+        ]},
+        { dir: "agent/", note: "removed at finish", children: [
+          { file: ".chough/sessions/2026-11-10-funded-chat-key/agent/working-notes.md", label: "working-notes.md", tag: "agents" }
+        ]}
+      ]}
+    ]},
+    { dir: "archive/sessions/", note: "finished: one file each", children: [
+      { file: ".chough/archive/sessions/2026-11-10-busy-room-history.md", label: "2026-11-10-busy-room-history.md" },
+      { file: ".chough/archive/sessions/2026-11-05-gift-fee-note.md", label: "2026-11-05-gift-fee-note.md" }
+    ]},
+    { dir: "bugs/", children: [
+      { file: ".chough/bugs/2026-11-10-own-sends-skip-unindexed-messages.md", label: "2026-11-10-own-sends-skip-unindexed-messages.md", tag: "fixed" }
+    ]},
+    { dir: "cases/", children: [ { file: ".chough/cases/room.cases.toml", label: "room.cases.toml" } ]},
+    { dir: "local/", note: "this machine only, git-ignored", children: [
+      { file: ".chough/local/external-artifacts.toml", label: "external-artifacts.toml", tag: "local" },
+      { file: ".chough/local/logs/2026-11-10-chat-key-suites.log", label: "logs/2026-11-10-chat-key-suites.log", tag: "local" }
+    ]},
+    { ghost: "session.json, transitions.jsonl", why: "replaced by each session's own file" },
+    { ghost: "bugs/BUG-0012.json, evidence/OBS-…-3d85d0c9….json", why: "replaced by Markdown, date + slug" }
+  ]},
+  { dir: "knowledge/", children: [
+    { file: "knowledge/index.md", label: "index.md" },
+    { dir: "journal/", children: [
+      { file: "knowledge/journal/2026-11-10-busy-rooms-keep-their-name-and-history.md", label: "2026-11-10-busy-rooms-keep-their-name-and-history.md" },
+      { file: "knowledge/journal/2026-11-10-older-lock-messages-you-cant-open-now-show.md", label: "2026-11-10-older-lock-messages-you-cant-open-now-show.md" },
+      { file: "knowledge/journal/feed.xml", label: "feed.xml", tag: "generated" }
+    ]},
+    { dir: "lessons/", children: [ { file: "knowledge/lessons/2026-10-31-trust-check-for-approval-drift.md", label: "2026-10-31-trust-check-for-approval-drift.md" } ]},
+    { ghost: "intent/", why: "copied hi/, removed" },
+    { ghost: "archives/", why: "restated .specsync/archive, removed" }
+  ]}
+];
+
+let mode = "human";
+let current = ".chough/sessions/2026-11-10-funded-chat-key/session.md";
+
+function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, href) => {
+    const key = Object.keys(FILES).find(k => k === href || k === ".chough/" + href || k.endsWith(href));
+    return key ? `<a href="#" class="internal" data-open="${key}">${text}</a>` : `<span>${text}</span>`;
+  });
+  return s;
+}
+
+function splitFront(raw) {
+  if (!raw.startsWith("---\n")) return { front: "", body: raw };
+  const end = raw.indexOf("\n---", 4);
+  return { front: raw.slice(4, end), body: raw.slice(end + 5).replace(/^\n/, "") };
+}
+
+function md(body) {
+  const lines = body.split("\n"); let html = ""; let list = false; let para = [];
+  const flush = () => { if (para.length) { html += `<p>${inline(para.join(" "))}</p>`; para = []; } };
+  const endList = () => { if (list) { html += "</ul>"; list = false; } };
+  for (const line of lines) {
+    if (/^# /.test(line)) { flush(); endList(); html += `<h1>${inline(line.slice(2))}</h1>`; }
+    else if (/^## /.test(line)) { flush(); endList(); html += `<h2>${inline(line.slice(3))}</h2>`; }
+    else if (/^- /.test(line)) { flush(); if (!list) { html += "<ul>"; list = true; } html += `<li>${inline(line.slice(2))}</li>`; }
+    else if (line.trim() === "") { flush(); endList(); }
+    else { endList(); para.push(line); }
+  }
+  flush(); endList(); return html;
+}
+
+function frontFields(front) {
+  const out = {}; let key = null;
+  for (const line of front.split("\n")) {
+    const m = line.match(/^([a-z_]+):\s*(.*)$/);
+    if (m) { key = m[1]; out[key] = m[2]; } else if (key && line.trim()) { out[key] = (out[key] ? out[key] + " " : "") + line.trim().replace(/^- /, ""); }
+  }
+  return out;
+}
+
+function whyBox(f) {
+  if (!f.why) return "";
+  return `<div class="why"><b>Why it looks like this</b>${f.why.map(([k, t]) => `<div class="row"><span class="chip ${k}">${k === "decided" ? "Leif decided" : "Proposal"}</span><span>${esc(t)}</span></div>`).join("")}</div>`;
+}
+
+function commitChip(f) {
+  if (f.commit === "never") return `<span class="chip local">never committed</span>`;
+  if (f.commit === "generated") return `<span class="chip gen">generated, committed</span>`;
+  return `<span class="chip owner">committed</span>`;
+}
+
+function render() {
+  const f = FILES[current]; const view = document.getElementById("view");
+  if (f.stub) {
+    view.innerHTML = `<div class="view-head"><div class="path">${esc(current)}</div><div class="chips"><span class="chip owner">owned by ${esc(f.owner)}</span></div></div><div class="stub"><p>${esc(f.stub)}</p><p class="chip decided" style="justify-self:start">Single source of truth: Leif decided</p></div>`;
+    markTree(); return;
+  }
+  const { front, body } = splitFront(f.raw);
+  const fields = frontFields(front);
+  let head = `<div class="view-head"><div class="path">${esc(current)}</div><div class="chips"><span class="chip owner">${esc(f.kind)}</span>${commitChip(f)}<span class="chip owner">owner: ${esc(f.owner)}</span></div></div>`;
+  let content;
+  if (mode === "agent") {
+    const fmHtml = front ? `<span class="fm">---\n${esc(front).replace(/^([a-z_]+):/gm, '<span class="fmk">$1</span>:')}\n---</span>\n` : "";
+    content = `<pre class="raw">${fmHtml}${esc(body)}</pre>`;
+  } else {
+    const strip = [];
+    if (fields.stage) strip.push(`Stage <b>${esc(fields.stage)}</b>`);
+    if (fields.status) strip.push(`Status <b>${esc(fields.status)}</b>`);
+    if (fields.result) strip.push(`Result <b>${esc(fields.result)}</b>`);
+    if (fields.revision) strip.push(`Revision <b>${esc(fields.revision)}</b>`);
+    if (fields.pr) strip.push(`PR <b>${esc(fields.pr)}</b>`);
+    if (fields.date) strip.push(`<b>${esc(fields.date)}</b>`);
+    let state = "";
+    if (f.state === "wait") state = `<div class="state wait"><b>Waiting on Leif:</b> ${esc(f.waitText || "")} Answer in chat with your agent, or run <code>chough gate</code> yourself.</div>`;
+    if (f.state === "away") state = `<div class="state away"><b>External, not checkable here.</b> The screenshot stays on the machine that recorded it. On that machine, Chough re-checks its fingerprint.</div>`;
+    const bodyHtml = current.endsWith(".xml") || current.endsWith(".toml") || current.endsWith(".log") ? `<pre>${esc(body)}</pre>` : md(body);
+    content = `${strip.length ? `<div class="meta-strip">${strip.join("")}</div>` : ""}${state}<div class="human">${bodyHtml}</div>`;
+  }
+  view.innerHTML = head + whyBox(f) + content;
+  markTree();
+}
+
+function markTree() {
+  document.querySelectorAll(".file").forEach(b => b.setAttribute("aria-current", b.dataset.path === current ? "true" : "false"));
+}
+
+function buildTree(nodes) {
+  const ul = document.createElement("ul");
+  for (const n of nodes) {
+    const li = document.createElement("li");
+    if (n.ghost) { li.innerHTML = `<span class="ghost">${esc(n.ghost)}<span>(${esc(n.why)})</span></span>`; }
+    else if (n.file) {
+      const b = document.createElement("button"); b.type = "button"; b.className = "file"; b.dataset.path = n.file;
+      b.innerHTML = `<span>${esc(n.label || n.dir || n.file)}</span>${n.tag ? `<span class="tag">${esc(n.tag)}</span>` : ""}`;
+      b.addEventListener("click", () => { current = n.file; render(); });
+      li.appendChild(b);
+    } else {
+      li.innerHTML = `<div class="dir"><span>${esc(n.dir)}</span>${n.note ? `<span class="note">${esc(n.note)}</span>` : ""}</div>`;
+      if (n.children) li.appendChild(buildTree(n.children));
+    }
+    ul.appendChild(li);
+  }
+  return ul;
+}
+
+document.getElementById("tree").appendChild(buildTree(TREE));
+document.getElementById("view").addEventListener("click", e => {
+  const a = e.target.closest("[data-open]"); if (!a) return; e.preventDefault(); current = a.dataset.open; render();
+});
+const setMode = m => { mode = m; document.getElementById("mode-human").setAttribute("aria-pressed", m === "human"); document.getElementById("mode-agent").setAttribute("aria-pressed", m === "agent"); render(); };
+document.getElementById("mode-human").addEventListener("click", () => setMode("human"));
+document.getElementById("mode-agent").addEventListener("click", () => setMode("agent"));
+render();
+</script>

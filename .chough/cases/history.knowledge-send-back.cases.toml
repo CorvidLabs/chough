@@ -1,0 +1,25 @@
+profile = "chough-testing/1"
+module = "history"
+
+# K1 for the 6.3.0 send-back (t37f): the merge_drivers doctor finding, under the doctor's
+# own requirement. The same test is bound to REQ-cli-047 in
+# cli.knowledge-send-back.cases.toml.
+
+[[case]]
+id = "TC-history-doctor-merge-drivers"
+title = "chough doctor reports a clone missing a merge driver or attribute line as one merge_drivers finding naming the fix, runs it last, and doctor --fix sets the drivers in the local config, never writing .gitattributes and leaving a missing line skipped"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17", "DRIVE-12"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/library.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_reports_missing_merge_drivers_and_fix_sets_them passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "doctor", "--", "--exact", "doctor_reports_missing_merge_drivers_and_fix_sets_them"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600

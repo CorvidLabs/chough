@@ -231,39 +231,22 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
             "provenance": "fixture",
         })
     };
-    let ids: Vec<String> = (0..500).map(|index| format!("stale-{index:03}")).collect();
-    let loose: Vec<String> = (0..7).map(|index| format!("loose-{index}")).collect();
+    let ids: Vec<String> = (0..500)
+        .map(|index| format!("2026-11-10-stale-{index:03}"))
+        .collect();
+    let loose: Vec<String> = (0..7)
+        .map(|index| format!("2026-11-10-loose-{index}"))
+        .collect();
     for id in ids.iter().chain(&loose) {
-        fixture.write(
-            &format!(".chough/evidence/{id}.json"),
-            &serde_json::to_string(&stale(id)).unwrap(),
-        );
+        write_entry(&fixture, &stale(id));
     }
     for (index, scope) in ["blocking", "blocking", "in-scope", "out-of-scope"]
         .iter()
         .enumerate()
     {
         let id = format!("BUG-{:04}", index + 1);
-        let bug = json!({
-            "schema_version": 1,
-            "id": id,
-            "title": format!("Fixture bug {id}"),
-            "symptom": "It breaks",
-            "trigger": "Running the probe",
-            "expected": "It works",
-            "actual": "It broke",
-            "environment": "local",
-            "observations": ids,
-            "impact": "Not yet assessed.",
-            "classification": "unclassified",
-            "scope": scope,
-            "status": "open",
-            "regression_baseline": null,
-            "source": "fixture",
-            "created_at_unix_seconds": 1,
-            "updated_at_unix_seconds": 1,
-        });
-        fixture.write(&format!(".chough/bugs/{id}.json"), &bug.to_string());
+        let linked: Vec<&str> = ids.iter().map(String::as_str).collect();
+        fixture.bug_md(&id, scope, "open", &linked);
     }
     let added = fixture.run(&[
         "evidence",
@@ -290,9 +273,11 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     );
 
     let added: Value = serde_json::from_slice(&added.stdout).unwrap();
-    let current: Value =
-        serde_json::from_str(&fixture.read(added["recorded"].as_str().unwrap())).unwrap();
-    let current_id = current["id"].as_str().unwrap();
+    let current_id = added["observation"].as_str().unwrap();
+    assert!(
+        fixture.exists(added["recorded"].as_str().unwrap()),
+        "{added}"
+    );
 
     // 40 human gates and 40 blockers. The session record is bounded at 64 KiB, so six
     // of each are 4 KiB long, the most that fits beside the rest, and they come first.
@@ -315,12 +300,15 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     };
     session["awaiting_human"] = json!(list("Gate"));
     session["blockers"] = json!(list("Blocker"));
-    session["observations"] = json!([current_id, "stale-000"]);
+    session["observations"] = json!([current_id, "2026-11-10-stale-000"]);
     session["next_action"] = json!("n".repeat(4_096));
     session["objective"] = json!("o".repeat(4_000));
-    let session_text = serde_json::to_string(&session).unwrap();
-    assert!(session_text.len() < 65_536, "{}", session_text.len());
-    fixture.write(".chough/session.json", &session_text);
+    let session_text = write_session(&fixture, &session);
+    assert!(
+        session_text.len() <= common::CHECKPOINT_CAP,
+        "{}",
+        session_text.len()
+    );
 
     fixture.native_calls();
     let raw = text(&fixture, &["next", "--json"]);
@@ -437,9 +425,12 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     };
     session["awaiting_human"] = json!(list("Gate"));
     session["blockers"] = json!(list("Blocker"));
-    let session_text = serde_json::to_string(&session).unwrap();
-    assert!(session_text.len() < 65_536, "{}", session_text.len());
-    fixture.write(".chough/session.json", &session_text);
+    let session_text = write_session(&fixture, &session);
+    assert!(
+        session_text.len() <= common::CHECKPOINT_CAP,
+        "{}",
+        session_text.len()
+    );
     let raw = text(&fixture, &["next", "--json"]);
     assert!(raw.len() <= NEXT_LIMIT, "JSON form is {} bytes", raw.len());
     let next: Value = serde_json::from_str(&raw).unwrap();
@@ -472,6 +463,10 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
 /// done_action's new-cycle steps, shared by the archived-not-done action.
 const NEW_CYCLE: &str = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work), then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
 const RESET: &str = "chough stage reset --to intent --reason \"<why>\"";
+/// After done the session is archived, so the next piece of work starts a new session
+/// (REQ-cli-021, corrected in the 0.6.0 plan's Delta corrections).
+const NEXT_WORK: &str = "Start the next piece of work in a new session: chough session new <key> --objective \"<outcome>\", then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
+const NEXT_SESSION: &str = "chough session new <key> --objective \"<outcome>\"";
 
 /// Split a suggested command into arguments, honoring double quotes.
 fn words(command: &str) -> Vec<String> {
@@ -497,7 +492,10 @@ fn words(command: &str) -> Vec<String> {
 
 /// Run a suggested `chough ...` command with its placeholders filled.
 fn run_suggested(fixture: &Fixture, command: &str) -> Value {
-    let command = command.replace("<why>", "New work after the archive");
+    let command = command
+        .replace("<why>", "New work after the archive")
+        .replace("<key>", "next-work")
+        .replace("<outcome>", "The next piece of work");
     let arguments = words(&command);
     assert_eq!(arguments[0], "chough", "{command}");
     let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
@@ -539,28 +537,6 @@ fn archived_change_at(stage: &str, change: &str) -> Fixture {
     fixture
 }
 
-fn bug(id: &str, status: &str, scope: &str) -> Value {
-    json!({
-        "schema_version": 1,
-        "id": id,
-        "title": format!("Fixture bug {id}"),
-        "symptom": "It breaks",
-        "trigger": "Running the probe",
-        "expected": "It works",
-        "actual": "It broke",
-        "environment": "local",
-        "observations": [],
-        "impact": "Not yet assessed.",
-        "classification": "unclassified",
-        "scope": scope,
-        "status": status,
-        "regression_baseline": null,
-        "source": "fixture",
-        "created_at_unix_seconds": 1,
-        "updated_at_unix_seconds": 1,
-    })
-}
-
 fn observation(id: &str, outcome: &str, observed: u64) -> Value {
     json!({
         "schema_version": 2,
@@ -580,10 +556,106 @@ fn observation(id: &str, outcome: &str, observed: u64) -> Value {
     })
 }
 
-fn write_record(fixture: &Fixture, directory: &str, value: &Value) {
+/// The active session's evidence folder (REQ-cli-017).
+fn evidence_dir(fixture: &Fixture) -> std::path::PathBuf {
+    fixture
+        .root()
+        .join(format!(".chough/sessions/{}/evidence", fixture.active_id()))
+}
+
+/// A Unix time as the `YYYY-MM-DDTHH:MM:SSZ` an entry's `observed` holds.
+fn iso(seconds: u64) -> String {
+    let days = (seconds / 86_400) as i64 + 719_468;
+    let era = days.div_euclid(146_097);
+    let day_of_era = days.rem_euclid(146_097);
+    let year_of_era =
+        (day_of_era - day_of_era / 1_460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let shifted = (5 * day_of_year + 2) / 153;
+    let day = day_of_year - (153 * shifted + 2) / 5 + 1;
+    let month = if shifted < 10 {
+        shifted + 3
+    } else {
+        shifted - 9
+    };
+    let year = year_of_era + era * 400 + i64::from(month <= 2);
+    let time = seconds % 86_400;
+    format!(
+        "{year:04}-{month:02}-{day:02}T{:02}:{:02}:{:02}Z",
+        time / 3_600,
+        time % 3_600 / 60,
+        time % 60
+    )
+}
+
+/// Write an observation as an evidence entry of the active session, in the front matter
+/// `evidence add` writes (REQ-cli-017), by hand so that its recorded time, revision and
+/// inputs are the fixture's. The values are plain scalars, so none is quoted.
+fn write_entry(fixture: &Fixture, value: &Value) {
+    let id = value["id"].as_str().unwrap();
+    let field = |key: &str| value[key].as_str().unwrap().to_string();
+    let list = |key: &str, items: Vec<String>| {
+        if items.is_empty() {
+            format!("{key}: []\n")
+        } else {
+            let items: String = items.iter().map(|item| format!("  - {item}\n")).collect();
+            format!("{key}:\n{items}")
+        }
+    };
+    let strings = |key: &str| -> Vec<String> {
+        value[key].as_array().map_or_else(Vec::new, |items| {
+            items
+                .iter()
+                .map(|item| item.as_str().unwrap().to_string())
+                .collect()
+        })
+    };
+    let summary = field("summary");
+    let mut front = format!(
+        "kind: evidence\nid: {id}\naliases: []\nclaim: {summary}\nresult: {}\nevidence_kind: {}\n",
+        field("outcome"),
+        field("kind"),
+    );
+    if let Some(cases) = value["cases"].as_array().filter(|cases| !cases.is_empty()) {
+        let of = |key: &str| {
+            cases
+                .iter()
+                .map(|case| case[key].as_str().unwrap().to_string())
+                .collect()
+        };
+        front.push_str(&list("case", of("id")));
+        front.push_str(&list("case_digest", of("digest")));
+    }
+    let snapshot = &value["snapshot"];
+    front.push_str(&format!(
+        "revision: {}\n",
+        snapshot["revision"].as_str().unwrap()
+    ));
+    if let Some(content) = snapshot["content"].as_str() {
+        front.push_str(&format!("content: {content}\n"));
+    }
+    front.push_str(&format!("environment: {}\n", field("environment")));
+    let artifacts = strings("artifacts");
+    if !artifacts.is_empty() {
+        front.push_str(&list("artifacts", artifacts.clone()));
+        front.push_str("artifact_fingerprints:\n");
+        for artifact in &artifacts {
+            front.push_str(&format!(
+                "  - path: {artifact}\n    digest: {}\n",
+                value["artifact_fingerprints"][artifact].as_str().unwrap()
+            ));
+        }
+    }
+    for key in ["criteria", "requirements", "contracts"] {
+        front.push_str(&list(key, strings(key)));
+    }
+    front.push_str(&format!(
+        "limitations: []\nobserved: {}\n",
+        iso(value["observed_at_unix_seconds"].as_u64().unwrap())
+    ));
     fixture.write(
-        &format!(".chough/{directory}/{}.json", value["id"].as_str().unwrap()),
-        &serde_json::to_string(value).unwrap(),
+        &format!(".chough/sessions/{}/evidence/{id}.md", fixture.active_id()),
+        &format!("---\n{front}---\n**{summary}.**\n"),
     );
 }
 
@@ -644,7 +716,7 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
         );
         let expected = if stage == "accept" {
             format!(
-                "{opening}Record done first: chough stage advance (accept to done is allowed). Then: {NEW_CYCLE}"
+                "{opening}Record done first: chough stage advance (accept to done is allowed), which archives this session. Then: {NEXT_WORK}"
             )
         } else {
             format!("{opening}{NEW_CYCLE}")
@@ -685,14 +757,40 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
 
         // The suggested command, placeholders filled, succeeds.
         if stage == "accept" {
+            // In 0.6.0 a session archives itself at done (REQ-history-006); a release
+            // consent keeps it open so the done-stage assertions still apply.
+            fixture.ok(&[
+                "consent",
+                "grant",
+                "release",
+                "--source",
+                "Human: release it",
+            ]);
             let advanced = run_suggested(&fixture, command);
             assert_eq!(advanced["applied"]["to"], "done", "{advanced}");
+            // Kept open for the authorized release, next names it (REQ-cli-021).
             let done = fixture.ok(&["next", "--json"]);
-            assert_eq!(done["next_valid_action"]["action"], NEW_CYCLE);
-            assert_eq!(done["next_valid_action"]["command"], RESET);
-            let reset = run_suggested(&fixture, RESET);
-            assert_eq!(reset["applied"]["to"], "intent");
-            assert_after_reset(&fixture, "done");
+            assert_eq!(
+                done["next_valid_action"]["command"],
+                "chough stage enter release --reason \"<request>\"",
+                "{done:#}"
+            );
+            fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+            let released = fixture.ok(&["stage", "advance"]);
+            assert_eq!(
+                released["applied"]["session_archive"]["status"], "archived",
+                "{released:#}"
+            );
+            // Archived, the next piece of work starts in a new session.
+            let refused = fixture.fails(&["next", "--json"]);
+            assert!(refused.contains("chough session new <key>"), "{refused}");
+            let created = run_suggested(&fixture, NEXT_SESSION);
+            assert_eq!(
+                fixture.session()["objective"],
+                "The next piece of work",
+                "{created}"
+            );
+            assert_eq!(fixture.session()["stage"]["current"], "intent");
         } else {
             let reset = run_suggested(&fixture, command);
             assert_eq!(reset["applied"]["to"], "intent", "{reset}");
@@ -759,7 +857,7 @@ fn keeps_todays_action_when_something_else_applies() {
     );
     // A blocking bug at test.
     let fixture = archived_at("test");
-    write_record(&fixture, "bugs", &bug("BUG-0001", "open", "blocking"));
+    fixture.bug_md("BUG-0001", "blocking", "open", &[]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(
         action
@@ -855,6 +953,68 @@ fn next_shows_the_five_newest_decisions_with_kind_and_reason() {
     assert!(!shown.contains("another old one"), "{shown}");
 }
 
+/// B1 (REQ-cli-021): the latest failure lists each bug that links it by the
+/// session-qualified form `bug add` stores (`<session>/<id>`, REQ-cli-023), while its
+/// session is open and after the session is archived and the failure is a receipt of
+/// its story.
+#[test]
+fn last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let session = fixture.active_id();
+    write_entry(
+        &fixture,
+        &observation("2026-11-10-fails-once", "failed", 3_000),
+    );
+    let added = fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC qualified link in next",
+        "--symptom",
+        "SYNTHETIC symptom of the latest failure",
+        "--trigger",
+        "SYNTHETIC trigger of the latest failure",
+        "--expected",
+        "SYNTHETIC pass",
+        "--actual",
+        "SYNTHETIC fail",
+        "--environment",
+        "local",
+        "--observation",
+        "2026-11-10-fails-once",
+    ]);
+    let bug = added["id"].as_str().unwrap().to_string();
+    let record = fixture.read(&format!(".chough/bugs/{bug}.md"));
+    assert!(
+        record.contains(&format!("evidence: [{session}/2026-11-10-fails-once]")),
+        "{record}"
+    );
+    let linked = json!({"total": 1, "items": [{"id": bug, "status": "open"}]});
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["last_failure"]["id"], "2026-11-10-fails-once",
+        "{next:#}"
+    );
+    assert_eq!(next["last_failure"]["bugs"], linked, "open: {next:#}");
+
+    fixture.commit("the session and its bug");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    fixture.ok(&[
+        "session",
+        "new",
+        "after",
+        "--objective",
+        "SYNTHETIC the next piece of work",
+    ]);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["last_failure"]["id"], "2026-11-10-fails-once",
+        "{next:#}"
+    );
+    assert_eq!(next["last_failure"]["bugs"], linked, "archived: {next:#}");
+}
+
 #[test]
 fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     let fixture = Fixture::new();
@@ -864,65 +1024,67 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     assert!(text(&fixture, &["next"]).contains("Last failure: none"));
 
     // Passed and not-run records never count, however recent.
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("passed-late", "passed", 9_000),
+        &observation("2026-11-10-passed-late", "passed", 9_000),
     );
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("not-run-late", "not-run", 9_500),
+        &observation("2026-11-10-not-run-late", "not-run", 9_500),
     );
     assert_eq!(fixture.ok(&["next", "--json"])["last_failure"], Value::Null);
 
     // Recorded times disagree with file names and modification times: the name that
     // sorts last and the newest file are the oldest failures.
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("m-latest", "failed", 3_000),
+        &observation("2026-11-10-m-latest", "failed", 3_000),
     );
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("a-middle", "failed", 2_000),
+        &observation("2026-11-10-a-middle", "failed", 2_000),
     );
-    write_record(
+    write_entry(
         &fixture,
-        "evidence",
-        &observation("z-oldest", "failed", 1_000),
+        &observation("2026-11-10-z-oldest", "failed", 1_000),
     );
-    let evidence = fixture.root().join(".chough/evidence");
-    set_mtime(&evidence.join("m-latest.json"), 1_000_000);
-    set_mtime(&evidence.join("a-middle.json"), 2_000_000);
-    set_mtime(&evidence.join("z-oldest.json"), 3_000_000);
-    // Four bugs link the latest failure, by observations, a note and a regression
-    // baseline; one links an older failure only.
-    let mut linked = bug("BUG-0001", "fix-pending-verification", "in-scope");
-    linked["observations"] = json!(["m-latest"]);
-    write_record(&fixture, "bugs", &linked);
-    let mut noted = bug("BUG-0002", "open", "in-scope");
-    noted["notes"] =
-        json!([{"at_unix_seconds": 5, "text": "Seen again", "observations": ["m-latest"]}]);
-    write_record(&fixture, "bugs", &noted);
-    let mut baseline = bug("BUG-0003", "verified", "in-scope");
-    baseline["regression_baseline"] = json!("m-latest");
-    write_record(&fixture, "bugs", &baseline);
-    let mut fourth = bug("BUG-0004", "open", "out-of-scope");
-    fourth["observations"] = json!(["a-middle", "m-latest"]);
-    write_record(&fixture, "bugs", &fourth);
-    let mut older = bug("BUG-0005", "open", "in-scope");
-    older["observations"] = json!(["z-oldest"]);
-    write_record(&fixture, "bugs", &older);
+    let evidence = evidence_dir(&fixture);
+    set_mtime(&evidence.join("2026-11-10-m-latest.md"), 1_000_000);
+    set_mtime(&evidence.join("2026-11-10-a-middle.md"), 2_000_000);
+    set_mtime(&evidence.join("2026-11-10-z-oldest.md"), 3_000_000);
+    // Four bugs link the latest failure, by their evidence or a regression baseline;
+    // one links an older failure only.
+    fixture.bug_md(
+        "BUG-0001",
+        "in-scope",
+        "fix-pending-verification",
+        &["2026-11-10-m-latest"],
+    );
+    fixture.bug_md("BUG-0002", "in-scope", "open", &["2026-11-10-m-latest"]);
+    fixture.bug_md("BUG-0003", "in-scope", "verified", &[]);
+    let baseline = ".chough/bugs/BUG-0003.md";
+    fixture.write(
+        baseline,
+        &fixture.read(baseline).replace(
+            "receipts: []\n",
+            "receipts: []\nregression_baseline: 2026-11-10-m-latest\n",
+        ),
+    );
+    fixture.bug_md(
+        "BUG-0004",
+        "out-of-scope",
+        "open",
+        &["2026-11-10-a-middle", "2026-11-10-m-latest"],
+    );
+    fixture.bug_md("BUG-0005", "in-scope", "open", &["2026-11-10-z-oldest"]);
 
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
         next["last_failure"],
         json!({
-            "id": "m-latest",
+            "id": "2026-11-10-m-latest",
             "observed_at_unix_seconds": 3_000,
-            "summary": "fixture observation m-latest",
+            "summary": "fixture observation 2026-11-10-m-latest",
             "bugs": {"total": 4, "items": [
                 {"id": "BUG-0001", "status": "fix-pending-verification"},
                 {"id": "BUG-0002", "status": "open"},
@@ -932,7 +1094,7 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     );
     let shown = text(&fixture, &["next"]);
     for line in [
-        "Last failure: m-latest at 1970-01-01T00:50:00Z: fixture observation m-latest",
+        "Last failure: 2026-11-10-m-latest at 1970-01-01T00:50:00Z: fixture observation 2026-11-10-m-latest",
         "  Linked bugs: BUG-0001 fix-pending-verification, BUG-0002 open, BUG-0003 verified (3 of 4)",
     ] {
         assert!(shown.contains(line), "missing {line:?} in:\n{shown}");
@@ -940,13 +1102,13 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
 
     // A tie on recorded time goes to the greater observation ID; an unlinked failure
     // shows no bugs. A long summary is cut.
-    let mut tie = observation("n-tie", "failed", 3_000);
+    let mut tie = observation("2026-11-10-n-tie", "failed", 3_000);
     tie["summary"] = json!("s".repeat(2_000));
-    write_record(&fixture, "evidence", &tie);
-    set_mtime(&evidence.join("n-tie.json"), 10);
+    write_entry(&fixture, &tie);
+    set_mtime(&evidence.join("2026-11-10-n-tie.md"), 10);
     let next = fixture.ok(&["next", "--json"]);
     let failure = &next["last_failure"];
-    assert_eq!(failure["id"], "n-tie");
+    assert_eq!(failure["id"], "2026-11-10-n-tie");
     assert_eq!(failure["bugs"], json!({"total": 0, "items": []}));
     let summary = failure["summary"].as_str().unwrap();
     assert!(
@@ -956,7 +1118,7 @@ fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     );
     let shown = text(&fixture, &["next"]);
     assert!(
-        shown.contains("Last failure: n-tie at 1970-01-01T00:50:00Z: sss"),
+        shown.contains("Last failure: 2026-11-10-n-tie at 1970-01-01T00:50:00Z: sss"),
         "{shown}"
     );
     assert!(shown.contains("  Linked bugs: none"), "{shown}");
@@ -979,7 +1141,7 @@ fn next_searches_a_context_md_larger_than_4_mib() {
     fixture.write("specs/docs/context.md", &filler);
     let mut session = fixture.session();
     session["modules"] = json!(["cli", "docs"]);
-    fixture.write(".chough/session.json", &session.to_string());
+    write_session(&fixture, &session);
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
         next["lessons"]["sources"],
@@ -1021,7 +1183,7 @@ fn next_points_to_the_lesson_source_and_counts_archived_bundles() {
     fixture.write("specs/native/native.3md", "SECRET-LESSON-TEXT\n");
     let mut session = fixture.session();
     session["modules"] = json!(["cli", "docs", "ghost", "native"]);
-    fixture.write(".chough/session.json", &session.to_string());
+    write_session(&fixture, &session);
     // Seven archived bundles written out of order, and an archive without one.
     for day in [3, 7, 1, 5, 2, 6, 4] {
         let dir = format!(".specsync/archive/changes/2026-10-0{day}-change-{day}");
@@ -1146,8 +1308,8 @@ fn next_surfaces_the_error_library_index_refuses_a_symlinked_archive_with() {
 }
 
 /// Issue 74: `next` names the newest 3 lesson bundles by finalization timestamp, then
-/// directory, the same archives `chough library index` marks hot (KNOW-8), not the
-/// newest by directory name.
+/// directory, the same archives whose bundles `chough library index` links (KNOW-8), not
+/// the newest by directory name.
 #[test]
 fn next_lists_the_newest_three_bundles_by_finalization_like_the_librarian() {
     let fixture = Fixture::new();
@@ -1201,22 +1363,21 @@ fn next_lists_the_newest_three_bundles_by_finalization_like_the_librarian() {
         "{shown}"
     );
 
-    // The librarian's hot archives are the same three.
+    // The knowledge index links the same three bundles, and no older one.
     fixture.ok(&["library", "index"]);
-    let index = fixture.read("knowledge/INDEX.md");
-    for (slug, status) in [
-        ("export-chats", "hot"),
-        ("search-messages", "hot"),
-        ("add-bounded-pagination", "hot"),
-        ("protect-secrets", "cold"),
-        ("preserve-history", "cold"),
-        ("enforce-rules", "cold"),
+    let index = fixture.read("knowledge/index.md");
+    for (slug, linked) in [
+        ("export-chats", true),
+        ("search-messages", true),
+        ("add-bounded-pagination", true),
+        ("protect-secrets", false),
+        ("preserve-history", false),
+        ("enforce-rules", false),
     ] {
-        assert!(
-            index.contains(&format!(
-                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
-            )),
-            "{slug} {status} in {index}"
+        assert_eq!(
+            index.contains(&format!("- [{slug}](../{})\n", path(slug))),
+            linked,
+            "{slug} in {index}"
         );
     }
 }
@@ -1282,16 +1443,123 @@ fn next_and_the_librarian_pick_the_same_hot_archives_when_a_bundle_is_missing() 
         "{shown}"
     );
 
+    // The knowledge index names the same three, d's bundle as missing, and not a.
     fixture.ok(&["library", "index"]);
-    let index = fixture.read("knowledge/INDEX.md");
-    for (slug, status) in [("d", "hot"), ("c", "hot"), ("b", "hot"), ("a", "cold")] {
+    let index = fixture.read("knowledge/index.md");
+    assert!(
+        index.contains(&format!("- d: `{base}-d/lesson-bundle.md` (missing)\n")),
+        "{index}"
+    );
+    for slug in ["c", "b"] {
         assert!(
-            index.contains(&format!(
-                "- [{slug}](archives/{slug}.md) {slug} ({status})\n"
-            )),
-            "{slug} {status} in {index}"
+            index.contains(&format!("- [{slug}](../{base}-{slug}/lesson-bundle.md)\n")),
+            "{slug} in {index}"
         );
     }
+    assert!(!index.contains(&format!("{base}-a/")), "{index}");
+}
+
+/// Render a 0.5.x-shaped checkpoint JSON into the active session's session.md
+/// (front matter plus body sections), keeping its id and Timeline, and return the
+/// bytes written.
+fn write_session(fixture: &Fixture, session: &Value) -> String {
+    let file = fixture.session_file();
+    let existing = fixture.read(&file);
+    let text = render_session(&existing, session);
+    fixture.write(&file, &text);
+    text
+}
+
+/// The session.md bytes for a 0.5.x-shaped checkpoint JSON, given the active session's
+/// current file (its id and Timeline are kept).
+fn render_session(existing: &str, session: &Value) -> String {
+    let id = existing
+        .lines()
+        .find_map(|line| line.strip_prefix("id: "))
+        .unwrap()
+        .to_string();
+    let timeline = existing
+        .split("\n## Timeline\n")
+        .nth(1)
+        .unwrap_or("")
+        .to_string();
+    let scalar = |value: &Value| value.as_str().unwrap_or_default().to_string();
+    let list = |value: &Value| -> String {
+        let items: Vec<&str> = value
+            .as_array()
+            .map(|all| all.iter().filter_map(Value::as_str).collect())
+            .unwrap_or_default();
+        format!("[{}]", items.join(", "))
+    };
+    let mut front = format!("---\nkind: session\nid: {id}\naliases: []\n");
+    front.push_str(&format!("objective: {}\n", scalar(&session["objective"])));
+    front.push_str(&format!(
+        "intent_scope: {}\n",
+        scalar(&session["intent_scope"])
+    ));
+    front.push_str(&format!("modules: {}\n", list(&session["modules"])));
+    let status = scalar(&session["stage"]["status"]);
+    front.push_str(&format!(
+        "stage: {}\n",
+        scalar(&session["stage"]["current"])
+    ));
+    front.push_str(&format!(
+        "stage_status: {}\n",
+        if status.is_empty() { "active" } else { &status }
+    ));
+    front.push_str(&format!(
+        "iteration: {}\n",
+        session["stage"]["iteration"].as_u64().unwrap_or(1)
+    ));
+    front.push_str("callers: []\npr: \"\"\n");
+    front.push_str(&format!(
+        "native_change: \"{}\"\n",
+        scalar(&session["native_change"])
+    ));
+    for key in ["criteria", "requirements", "cases", "design", "files"] {
+        front.push_str(&format!("{key}: {}\n", list(&session["references"][key])));
+    }
+    for key in ["observations", "bugs", "blockers"] {
+        front.push_str(&format!("{key}: {}\n", list(&session[key])));
+    }
+    let gates = session["awaiting_human"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    if gates.is_empty() {
+        front.push_str("waiting_on_human: []\n");
+    } else {
+        front.push_str("waiting_on_human:\n");
+        for gate in &gates {
+            front.push_str(&format!(
+                "  - gate: {}\n    holds: intent\n    opened: 2026-01-01T00:00:00Z\n",
+                gate.as_str().unwrap()
+            ));
+        }
+    }
+    front.push_str("run_consents: []\n");
+    front.push_str(&format!("next: {}\n", scalar(&session["next_action"])));
+    let items = |key: &str| -> String {
+        session[key]
+            .as_array()
+            .map(|all| {
+                all.iter()
+                    .filter_map(Value::as_str)
+                    .map(|item| format!("- {item}\n"))
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
+    format!(
+        "{}---\n# {}\n\n## Goal\n\n{}\n\n## Where it stands\n\n{}\n## Decisions and why\n\n{}\n## What was verified\n\n## Open threads\n\n{}\n## Timeline\n{}",
+        front,
+        scalar(&session["objective"]),
+        scalar(&session["objective"]),
+        items("completed"),
+        items("decisions"),
+        items("open_questions"),
+        timeline
+    )
 }
 
 #[cfg(unix)]
@@ -1307,40 +1575,43 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     fixture.commit("fixture");
 
     // 500 referenced stale observations, each referenced by four bugs.
-    let stale: Vec<String> = (0..500).map(|index| format!("stale-{index:03}")).collect();
+    let stale: Vec<String> = (0..500)
+        .map(|index| format!("2026-11-10-stale-{index:03}"))
+        .collect();
     for id in &stale {
-        write_record(
-            &fixture,
-            "evidence",
-            &observation(id, "passed", 1_700_000_000),
-        );
+        write_entry(&fixture, &observation(id, "passed", 1_700_000_000));
     }
+    let linked: Vec<&str> = stale.iter().map(String::as_str).collect();
     for index in 1..=4 {
-        let mut record = bug(&format!("BUG-{index:04}"), "open", "in-scope");
-        record["observations"] = json!(stale);
-        write_record(&fixture, "bugs", &record);
+        fixture.bug_md(&format!("BUG-{index:04}"), "in-scope", "open", &linked);
     }
     // 200 more observations, 100 failed; the latest recorded failure is fail-037.
     for index in 0..100_u64 {
-        write_record(
+        write_entry(
             &fixture,
-            "evidence",
-            &observation(&format!("pass-{index:03}"), "passed", 1_800_000_000 + index),
+            &observation(
+                &format!("2026-11-10-pass-{index:03}"),
+                "passed",
+                1_800_000_000 + index,
+            ),
         );
         let observed = if index == 37 {
             1_900_000_000
         } else {
             1_800_000_000 + index
         };
-        let mut failed = observation(&format!("fail-{index:03}"), "failed", observed);
+        let mut failed = observation(&format!("2026-11-10-fail-{index:03}"), "failed", observed);
         failed["summary"] = json!(format!("failure {index:03} {}", "f".repeat(4_000)));
-        write_record(&fixture, "evidence", &failed);
+        write_entry(&fixture, &failed);
     }
     // 40 bugs link the latest failure.
     for index in 5..45 {
-        let mut record = bug(&format!("BUG-{index:04}"), "open", "in-scope");
-        record["observations"] = json!(["fail-037"]);
-        write_record(&fixture, "bugs", &record);
+        fixture.bug_md(
+            &format!("BUG-{index:04}"),
+            "in-scope",
+            "open",
+            &["2026-11-10-fail-037"],
+        );
     }
     // 40 archived bundles and 16 modules.
     for index in 0..40 {
@@ -1383,14 +1654,13 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     session["decisions"] = json!(list("decided:", 50));
     session["awaiting_human"] = json!(list("Gate", 40));
     session["blockers"] = json!(list("Blocker", 40));
-    session["observations"] = json!(["stale-000"]);
-    let session_text = serde_json::to_string(&session).unwrap();
+    session["observations"] = json!(["2026-11-10-stale-000"]);
+    let session_text = write_session(&fixture, &session);
     assert!(
         session_text.len() > 130 * 4_096 && session_text.len() <= common::CHECKPOINT_CAP,
         "{}",
         session_text.len()
     );
-    fixture.write(".chough/session.json", &session_text);
     fixture.write(".stub-count", "");
 
     let raw = text(&fixture, &["next", "--json"]);
@@ -1407,7 +1677,7 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     assert_eq!(next["schema_version"], 1);
     assert_eq!(next["truncated"], true);
     assert_eq!(next["decisions"]["total"], 50);
-    assert_eq!(next["last_failure"]["id"], "fail-037");
+    assert_eq!(next["last_failure"]["id"], "2026-11-10-fail-037");
     assert_eq!(
         next["last_failure"]["observed_at_unix_seconds"],
         1_900_000_000_u64
@@ -1438,7 +1708,7 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     for total in [
         "Decisions (",
         " of 50, newest first):",
-        "Last failure: fail-037 at 2030-03-17T17:46:40Z: failure 037",
+        "Last failure: 2026-11-10-fail-037 at 2030-03-17T17:46:40Z: failure 037",
         " of 40)",
         " of 16 modules):",
         "Archived lesson bundles (",
@@ -1451,7 +1721,14 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     assert_eq!(text(&fixture, &["next", "--json"]), raw);
     assert_eq!(text(&fixture, &["next"]), shown);
     let mut stamp = 4_000_000_u64;
-    for directory in [".chough/evidence", ".chough/bugs", ".chough"] {
+    let session_dir = format!(".chough/sessions/{}", fixture.active_id());
+    let evidence = format!("{session_dir}/evidence");
+    for directory in [
+        evidence.as_str(),
+        ".chough/bugs",
+        session_dir.as_str(),
+        ".chough",
+    ] {
         let mut entries: Vec<_> = std::fs::read_dir(fixture.root().join(directory))
             .unwrap()
             .map(|entry| entry.unwrap().path())
@@ -1475,6 +1752,10 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     assert_eq!(text(&fixture, &["next"]), shown);
     assert_eq!(fixture.native_calls(), 4, "one native read per run");
 }
+
+/// The report fixture's artifact: a raw log in the machine-local store (REQ-records-005),
+/// outside the snapshot's inputs like every `.chough/` file.
+const REPORT_INPUT: &str = ".chough/local/logs/report-input.log";
 
 /// A portable report fixture with both legacy and slug case definitions. The
 /// observations are synthetic records, so no product test or native approval is
@@ -1508,7 +1789,7 @@ expect_output = ["reported"]
         }
         fixture.write(".chough/cases/cli.cases.toml", &definitions);
     }
-    fixture.write(".chough/artifacts/report-input.log", "artifact\n");
+    fixture.write(REPORT_INPUT, "artifact\n");
     fixture.write(
         ".specsync/changes/observed/plan.md",
         "A native source artifact, without configured native tools.\n",
@@ -1528,7 +1809,7 @@ expect_output = ["reported"]
     let fingerprint = format!("{:x}", Sha256::digest(b"artifact\n"));
     let mut refs = vec!["checkpoint".to_string()];
     for index in 0..12 {
-        let id = format!("report-observation-{index}");
+        let id = format!("2026-11-10-report-observation-{index}");
         let record = json!({
             "schema_version": 2,
             "id": id,
@@ -1539,14 +1820,14 @@ expect_output = ["reported"]
             "outcome": "passed",
             "environment": "local",
             "summary": "Synthetic report input, not an executed product check",
-            "artifacts": [".chough/artifacts/report-input.log"],
-            "artifact_fingerprints": {".chough/artifacts/report-input.log": fingerprint},
+            "artifacts": [REPORT_INPUT],
+            "artifact_fingerprints": {REPORT_INPUT: fingerprint},
             "observed_at_unix_seconds": 1,
             "snapshot": snapshot,
             "provenance": "synthetic test record",
             "cases": cases,
         });
-        fixture.write(&format!(".chough/evidence/{id}.json"), &record.to_string());
+        write_entry(&fixture, &record);
         refs.extend(["--observation".to_string(), id]);
     }
     fixture.ok(&refs.iter().map(String::as_str).collect::<Vec<_>>());
@@ -1669,9 +1950,9 @@ fn report_read_context_does_not_survive_the_next_request() {
     assert_eq!(report_freshness(&fixture, "local"), "stale-case-definition");
     fixture.write(".chough/cases/cli.cases.toml", &original);
     assert_eq!(report_freshness(&fixture, "local"), "current-observation");
-    fixture.write(".chough/artifacts/report-input.log", "changed\n");
+    fixture.write(REPORT_INPUT, "changed\n");
     assert_eq!(report_freshness(&fixture, "local"), "stale-artifact");
-    fixture.write(".chough/artifacts/report-input.log", "artifact\n");
+    fixture.write(REPORT_INPUT, "artifact\n");
     assert_eq!(report_freshness(&fixture, "another"), "stale-environment");
     fixture.write("src/input.txt", "changed\n");
     assert_eq!(
@@ -1827,7 +2108,9 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
     for list in lists {
         session[list] = json!([]);
     }
-    let size = |session: &Value| serde_json::to_string(session).unwrap().len();
+    let file = fixture.session_file();
+    let existing = fixture.read(&file);
+    let size = |session: &Value| render_session(&existing, session).len();
     'fill: for list in lists {
         for index in 0..199 {
             if size(&session) + 4_200 > common::CHECKPOINT_CAP {
@@ -1839,13 +2122,13 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
                 .push(json!(format!("{list} {index:03} {}", "x".repeat(4_000))));
         }
     }
-    let compact = serde_json::to_string(&session).unwrap();
+    let compact = render_session(&existing, &session);
     let at_cap = format!(
         "{compact}{}",
         " ".repeat(common::CHECKPOINT_CAP - compact.len())
     );
     assert_eq!(at_cap.len(), common::CHECKPOINT_CAP);
-    fixture.write(".chough/session.json", &at_cap);
+    fixture.write(&file, &at_cap);
     for args in [
         &["next"][..],
         &["next", "--json"],
@@ -1872,8 +2155,223 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
             );
         }
     }
-    fixture.write(".chough/session.json", &format!("{at_cap} "));
+    fixture.write(&file, &format!("{at_cap} "));
     let output = fixture.run(&["next"]);
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
+}
+
+/// #76 (REQ-cli-021): `chough next` guides a fresh agent through the stages: right after
+/// init it names `hi check` and then `chough context`; at test, `chough cases select`,
+/// `chough cases run` and `chough bug add`; at accept while the change is verifying, the
+/// human's review through `--close-gate` with `--verdict` or opening the review gate,
+/// and never `specsync change review` with an agent as reviewer.
+#[cfg(unix)]
+#[test]
+fn next_guides_a_fresh_agent_from_init_to_accept() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let action = &fixture.ok(&["next", "--json"])["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    let check = text.find("`hi check`").expect(text);
+    let context = text.find("`chough context`").expect(text);
+    assert!(check < context, "{text}");
+    assert_eq!(action["command"], "hi check");
+
+    // At test, with no native lifecycle gating the move.
+    while fixture.checkpoint()["stage"]["current"] != "test" {
+        fixture.ok(&["stage", "advance"]);
+    }
+    let action = &fixture.ok(&["next", "--json"])["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    for part in [
+        "`chough cases select --requirement <id>`",
+        "`chough cases run <case-id> --environment <env>`",
+        "`chough bug add`",
+    ] {
+        assert!(text.contains(part), "missing {part}: {text}");
+    }
+    assert_eq!(
+        action["command"],
+        "chough cases run <case-id> --environment <env>"
+    );
+
+    // At accept while the native change is verifying.
+    let fixture = approved_at_plan("verify-change");
+    while fixture.checkpoint()["stage"]["current"] != "accept" {
+        fixture.ok(&["stage", "advance"]);
+    }
+    fixture.write(".stub-state", "verifying\n");
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(text.starts_with("The human reviews next."), "{text}");
+    for part in [
+        "chough change ship verify-change --close-gate",
+        "--verdict block",
+        "--awaiting-human \"Implementation review of verify-change\" --holds accept --drives review",
+    ] {
+        assert!(text.contains(part), "missing {part}: {text}");
+    }
+    let mut found = vec![];
+    strings(&next, &mut found);
+    let status = fixture.ok(&["status", "--json"]);
+    strings(&status, &mut found);
+    assert!(
+        found
+            .iter()
+            .all(|text| !text.contains("specsync change review")),
+        "an agent-run review is named at accept"
+    );
+    // With the review gate open, the gate waits and names the verdict.
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Implementation review of verify-change",
+    ]);
+    let action = &fixture.ok(&["next", "--json"])["next_valid_action"];
+    let text = action["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Waiting for a human decision: Implementation review of verify-change.")
+            && text.contains("chough change ship verify-change")
+            && text.contains("--verdict block"),
+        "{text}"
+    );
+}
+
+/// REQ-cli-021, REQ-records-014, TC-cli-accept-ships-through-change-ship (N1): at accept
+/// while verifying, the human's decision to ship goes through `chough change ship <id>
+/// --close-gate`, which closes the gate only after the native ship; in a project whose
+/// records SpecSync's verification counts, the action also says to commit the review
+/// gate and run `chough change check <id>` again before the ship, so nothing under
+/// `.chough/` changes between the check and the finalize.
+#[test]
+fn at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate() {
+    let fixture = approved_at_plan("ship-change");
+    while fixture.checkpoint()["stage"]["current"] != "accept" {
+        fixture.ok(&["stage", "advance"]);
+    }
+    fixture.write(".stub-state", "verifying\n");
+    let action = |fixture: &Fixture| -> String {
+        fixture.ok(&["next", "--json"])["next_valid_action"]["action"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    let commit_step =
+        "commit the gate and run `chough change check ship-change` again before the ship";
+    fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
+    let commit_first = action(&fixture);
+    for part in [
+        "chough change ship ship-change --close-gate",
+        "--verdict block",
+        commit_step,
+    ] {
+        assert!(
+            commit_first.contains(part),
+            "missing {part}: {commit_first}"
+        );
+    }
+    fixture.write(
+        ".specsync/sdd.json",
+        "{\"enabled\": true, \"verification_ignored_paths\": [\".chough/sessions/\", \".chough/archive/\", \".chough/bugs/\"]}\n",
+    );
+    let any_point = action(&fixture);
+    assert!(
+        any_point.contains("chough change ship ship-change --close-gate")
+            && !any_point.contains(commit_step),
+        "{any_point}"
+    );
+}
+
+/// BUG-0023 (REQ-cli-021): with 500 referenced observations (linked by 40 bugs, as the
+/// bounds test links them) and those 40 bugs, the first 40
+/// lines of `chough status` give the stage, the next action and its command, the open
+/// gates and the blockers, and its JSON starts with a `summary` holding the same next
+/// action as `chough next --json`.
+#[test]
+fn status_leads_with_the_same_summary_as_next() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let ids: Vec<String> = (0..500).map(|index| format!("OBS-{index:04}")).collect();
+    let mut args = vec!["checkpoint".to_string()];
+    for gate in ["First gate", "Second gate"] {
+        args.extend(["--awaiting-human".into(), gate.into()]);
+    }
+    args.extend(["--blocker".into(), "The staging database is down".into()]);
+    fixture.ok(&args.iter().map(String::as_str).collect::<Vec<_>>());
+    for (index, linked) in ids.chunks(13).enumerate().take(40) {
+        let linked: Vec<&str> = linked.iter().map(String::as_str).collect();
+        fixture.bug_md(
+            &format!("2026-11-10-fixture-{index:02}"),
+            "in-scope",
+            "open",
+            &linked,
+        );
+    }
+    let output = text(&fixture, &["status"]);
+    assert!(
+        output.starts_with("{\n  \"summary\": {"),
+        "{}",
+        &output[..200]
+    );
+    let head: String = output.lines().take(40).collect::<Vec<_>>().join("\n");
+    for part in [
+        "\"stage\"",
+        "\"current\": \"intent\"",
+        "\"next_valid_action\"",
+        "\"command\"",
+        "First gate",
+        "Second gate",
+        "The staging database is down",
+    ] {
+        assert!(
+            head.contains(part),
+            "missing {part} in the first 40 lines:\n{head}"
+        );
+    }
+    let status: Value = serde_json::from_str(&output).unwrap();
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        status["summary"]["next_valid_action"],
+        next["next_valid_action"]
+    );
+}
+
+/// t37f's seed capture: after a migration, or once a session has finished, the latest
+/// failure may be a receipt that a bug or an archived story holds; next still names
+/// it, with the bug that links it (REQ-cli-021).
+#[test]
+fn next_names_the_latest_failure_held_only_as_a_receipt() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.bug_md(
+        "2026-01-01-broken",
+        "in-scope",
+        "verified",
+        &["2026-01-01-failing"],
+    );
+    let path = ".chough/bugs/2026-01-01-broken.md";
+    let text = fixture.read(path).replacen(
+        "receipts: []\n",
+        "receipts:\n  - id: 2026-01-01-failing\n    aliases: OBS-failing-000000000000000000000001\n    claim: the probe failed\n    result: failed\n    observed: 2026-01-01T00:00:10Z\n",
+        1,
+    );
+    fixture.write(path, &text);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["last_failure"]["id"], "2026-01-01-failing", "{next:#}");
+    assert_eq!(
+        next["last_failure"]["bugs"]["items"][0]["id"], "2026-01-01-broken",
+        "{next:#}"
+    );
+    let shown = text_of(&fixture);
+    assert!(
+        shown.contains("Last failure: 2026-01-01-failing"),
+        "{shown}"
+    );
+}
+
+fn text_of(fixture: &Fixture) -> String {
+    let output = fixture.run(&["next"]);
+    String::from_utf8_lossy(&output.stdout).to_string()
 }

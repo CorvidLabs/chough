@@ -1,0 +1,110 @@
+profile = "chough-testing/1"
+module = "records"
+
+# #213 and plan step 10: chough migrate carries a 0.5.x project into 0.6.0. The bug,
+# evidence and knowledge mappers prove their parts in tests/migrate_bugs.rs,
+# tests/migrate_knowledge.rs and their unit tests; this case runs the framework's
+# end-to-end tests.
+
+[[case]]
+id = "TC-records-migrate-from-0-5"
+title = "chough migrate previews without writing, refuses a wrong digest, an open change, no consent and uncommitted bytes, applies by create-new with a receipt, removes the 0.5.x files, and has nothing to do the second time"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-21", "KNOW-10", "KNOW-11"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs", "tests/fixtures/releases"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["every test in tests/migrate.rs passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "migrate"]
+expect_output = ["test result: ok."]
+timeout_seconds = 900
+
+# The local bug where history writes refused once the adopting session rolled into the
+# vault: fixed before 0.5.0 by #142, so its red run is on the last build before #142
+# (90e5de6f^), with the same tree observed on 0.5.0 (delta correction 5).
+[[case]]
+id = "TC-records-migrate-vaulted-adopter"
+title = "A project whose adopting session rolled into the vault migrates, its legacy entries land in that session's story, and afterwards checkpoint --awaiting-human, --close-gate and a stage move all succeed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-34", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_vaulted_adopter_migrates_and_writes_work passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_vaulted_adopter_migrates_and_writes_work"
+
+# t37j's migration preview rehearsal on this repository (plan Migration step 2) found
+# 0.5.x files REQ-records-009 removes that the plan left out or left unaccounted.
+
+[[case]]
+id = "TC-records-migrate-accounts-every-file"
+title = "chough migrate lists .chough/session.v1.json, .chough/pruned.jsonl and every file under .chough/artifacts/ in the plan: removed with why, kept as an open bug's fixture, or unaccounted so the apply refuses"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-21"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "src/bugs.rs", "tests/migrate.rs", "tests/migrate_bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the accounting test in tests/migrate.rs and the fixture test in tests/migrate_bugs.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "migrate", "--test", "migrate_bugs", "--", "every_legacy_file_and_artifact_is_accounted_for", "a_bug_of_each_id_form_carries_its_links_fixtures_and_redactions"]
+expect_output = ["test every_legacy_file_and_artifact_is_accounted_for ... ok", "test a_bug_of_each_id_form_carries_its_links_fixtures_and_redactions ... ok"]
+timeout_seconds = 600
+
+# t38b's unmigrated guard (REQ-records-010): one check in main before any record is read.
+
+[[case]]
+id = "TC-records-unmigrated-fails-closed"
+title = "On a 0.5.x tree every command but migrate, doctor and skill refuses as refused:unmigrated naming up to 5 paths and the count of the rest, writing nothing; migrate, doctor, skill status, --help and --version run; a mixed tree refuses and doctor reports it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20", "DRIVE-25", "LIFE-3"]
+requirements = ["REQ-records-010"]
+paths = ["src/migrate.rs", "src/main.rs", "src/checkpoint.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::an_unmigrated_tree_is_refused_with_the_migrate_command passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "an_unmigrated_tree_is_refused_with_the_migrate_command"
+
+# t37j's second rehearsal on this repository: the receipt of a real project is far past
+# the ordinary record bound.
+
+[[case]]
+id = "TC-records-migrate-receipt-bound"
+title = "A migration receipt past the 65,536-byte ordinary record bound applies within its own 4,194,304-byte bound, listing every file"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-21"]
+requirements = ["REQ-records-009", "REQ-records-001"]
+paths = ["src/migrate.rs", "src/records.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_receipt_past_the_ordinary_record_bound_applies passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_receipt_past_the_ordinary_record_bound_applies"

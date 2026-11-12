@@ -12,9 +12,9 @@ scope, including archived history, is authenticated before merge. Expect a draft
 with an open change to show Archive red and every other job skipped.
 
 The `SpecSync Archive`, `Fledge / HI / SpecSync` and `CI gate fixtures` jobs use
-published SpecSync **6.2.0**, its pinned action commit, and the upstream action's
+published SpecSync **6.3.0**, its pinned action commit, and the upstream action's
 release archive/checksum verification. The action version input is explicit: the
-v6.2.0 wrapper's default binary is 6.1.2. The `Archive` job pins the same v6.2.0
+v6.3.0 wrapper's default binary is 6.2.0. The `Archive` job pins the same v6.3.0
 commit with `archive-gate-only: 'true'`; 6.1.2 was the first release with that input
 (#832). Fledge is 1.8.0, installed by the Fledge Action at its reviewed commit with
 `version: v1.8.0` (the GitHub release of the version published to crates.io), and HI
@@ -78,7 +78,7 @@ merging; CI never performs those decisions.
 
 ## Local verification
 
-Use Python 3.11 or later and the published SpecSync 6.2.0 executable:
+Use Python 3.11 or later and the published SpecSync 6.3.0 executable:
 
 ```sh
 fledge run ci-archive-fixtures

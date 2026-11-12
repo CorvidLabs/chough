@@ -1,13 +1,13 @@
 flowchart TB
-    tests["Focused cases pass; blocking bugs closed"] --> gate["Record the awaiting-human gate; commit source with .chough/"]
+    tests["Focused cases pass; blocking bugs closed"] --> gate["Open the review gate (holds accept, drives review); commit source with .chough/"]
     gate --> check["Native scoped check, committed"]
     check --> present["Present evidence, open bugs and limits"]
     present --> human{"Human implementation review"}
     human -->|"changes requested"| build["Back to build"]
     build --> tests
-    human -->|"approved"| review["specsync change review"]
-    review -->|"no commit in between"| ship["specsync change ship or finalize (same PR)"]
-    ship --> archive["Review gate: --close-gate, then stage advance; commit"]
-    archive --> push["Push; hosted CI at the archived tip"]
+    human -->|"approved"| ship["chough change ship --close-gate: SpecSync review as the human, then ship and finalize (same PR), then done"]
+    ship --> story["Commit the archived story, journal post and index"]
+    story --> cleanup["chough doctor --fix removes the committed session folder; commit"]
+    cleanup --> push["Push; hosted CI at the archived tip"]
     push --> merge["Merge through the normal process"]
     merge -. "only if authorized" .-> release["Optional release with real commands"]

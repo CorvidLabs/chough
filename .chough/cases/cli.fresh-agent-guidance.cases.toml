@@ -1,0 +1,77 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# #76 and BUG-0023: the next action guides a fresh agent through the stages, and
+# status leads with the same short summary.
+
+[[case]]
+id = "TC-cli-76-next-guides-a-fresh-agent"
+title = "next names hi check and then chough context right after init, cases select, cases run and bug add at test, and the human's review with --verdict or the review gate at accept while verifying, never an agent's review"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1", "LIFE-3", "FLOW-13", "FLOW-10"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_guides_a_fresh_agent_from_init_to_accept passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_guides_a_fresh_agent_from_init_to_accept"
+
+[[case]]
+id = "TC-cli-bug-0023-status-leads-with-summary"
+title = "status leads with a summary holding the stage, the same next action and command as next, the open gates and the blockers, within its first 40 lines"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1", "FLOW-13"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::status_leads_with_the_same_summary_as_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "status_leads_with_the_same_summary_as_next"
+
+[[case]]
+id = "TC-cli-next-at-done-kept-open"
+title = "At done, next names chough inbox fold for a session kept open by unfolded inbox entries and chough stage enter release for one kept open for an authorized release, and a new session only once the session has archived itself"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1", "FLOW-13", "DRIVE-13"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/sessions.rs", "tests/reduce.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/reduce.rs::next_at_done_names_what_keeps_the_session_open passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "reduce"
+test = "next_at_done_names_what_keeps_the_session_open"
+
+[[case]]
+id = "TC-cli-next-last-failure-from-receipts"
+title = "next names the latest failed observation by recorded time even when only a bug or an archived story holds it as a receipt, with the bugs that link it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1", "FLOW-13"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/bugs.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_names_the_latest_failure_held_only_as_a_receipt passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_names_the_latest_failure_held_only_as_a_receipt"

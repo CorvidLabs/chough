@@ -6,15 +6,15 @@ guided by the skill or kept as a qualified, deferred or unavailable adapter.
 
 ## Platforms
 
-Chough supports macOS and Linux. Windows is supported through WSL 2 with Ubuntu;
-native Windows is not supported (FLOW-17). SpecSync made the same choice: since its
+Chough supports macOS and Linux. Windows is supported through WSL 2 with Ubuntu, on a
+best-effort basis; native Windows is not supported (FLOW-17, FLOW-21). SpecSync made the same choice: since its
 6.0 release it publishes only Linux and macOS binaries and points Windows users to WSL.
 
 | Platform | Status | What shows it |
 |---|---|---|
 | Linux (Ubuntu, x86_64) | Supported | Hosted CI: `Product / ubuntu-latest`, `MSRV / 1.88.0`, and `Fledge / HI / SpecSync`, whose `verify` lane runs the feature and bug exercise |
 | macOS | Supported | Hosted CI: `Product / macos-latest`; local development and the exercises on macOS arm64 |
-| Windows through WSL 2 with Ubuntu | Supported, as Linux | The Ubuntu jobs above; no job runs inside WSL |
+| Windows through WSL 2 with Ubuntu | Best-effort, as Linux | The Ubuntu jobs above; no job runs inside WSL |
 | Native Windows | Not supported | No CI job; the Windows-specific code that remains is not built or tested |
 
 What the Ubuntu jobs show for WSL 2: Ubuntu on WSL 2 runs a Linux kernel with the
@@ -34,9 +34,8 @@ No job runs inside WSL, so these are not covered:
 - Windows on Arm, whose WSL target is `aarch64-unknown-linux-gnu`. The hosted jobs are
   x86_64; Linux aarch64 has had local runs only.
 
-What Chough writes still checks out on Windows. Record names refuse Windows reserved
-names and characters, and vault attachment paths stay within 220 characters
-(REQ-cli-046), so a Windows clone of a repository that uses Chough works even though
+What Chough writes still checks out on Windows. Record names use only lowercase ASCII
+letters, digits and hyphens and stay within 80 bytes (REQ-records-003), so a Windows clone of a repository that uses Chough works even though
 Chough does not run there. Where Chough compares digests or front matter it still
 reads CRLF checkouts, and those tests run on Linux and macOS.
 
@@ -83,7 +82,7 @@ whether an installed copy is current, edited or outdated.
 | Tool | Native ownership | Chough boundary |
 |---|---|---|
 | [HI](https://github.com/CorvidLabs/hi) 0.8.0 | Human sentences, permanent IDs, scoped export, structure | Reads `hi export`; FRD is derived downstream; HI does not track achievement |
-| [SpecSync](https://github.com/CorvidLabs/spec-sync) 6.2.0 | Requirements, contracts, changes, approval, verification, review, archive, lessons | Reads `change status --json` `summary.state`, `approval_valid`, `correction_valid`, `terminal_evidence.validity` and `change.affected_specs` for gates, and the approval ledger and deltas read-only to confirm approved deltas are unchanged; never runs approve, check, review or finalize |
+| [SpecSync](https://github.com/CorvidLabs/spec-sync) 6.3.0 | Requirements, contracts, changes, approval, verification, review, archive, lessons | Reads `change status --json` `summary.state`, `approval_valid`, `correction_valid`, `terminal_evidence.validity` and `change.affected_specs` for gates, and the approval ledger and deltas read-only to confirm approved deltas are unchanged; never runs approve, check, review or finalize |
 | [Fledge](https://github.com/CorvidLabs/fledge) 1.8.0 | Tasks, lanes, work and release mechanics | Case binding `fledge-task`; Chough's own lanes |
 | [CorvidLabs skills](https://github.com/CorvidLabs/skills) | Product-authoritative skills and the host directory mapping | Linked, not copied |
 | Design system (`CorvidLabs/design-system`, a private repository) | Tokens and assets | The visual sample pins `tokens.css` at c698ed4; Figma is optional |

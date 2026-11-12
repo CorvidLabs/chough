@@ -35,10 +35,14 @@ saved label, decides what each move is allowed to do. The loop is:
    already exists, it is used; you are asked only when a real decision is missing.
 2. The agent drafts the native SpecSync change, filling its technical interview
    fields from your intent and the repository. You approve scope once, where your
-   prior or standing authorization does not already cover it.
+   prior or standing authorization does not already cover it. When you decide at
+   that gate, Chough records SpecSync's approval in your name, from your configured
+   identity; when earlier authorization covers it, the agent records the approval
+   in its own name and quotes you.
 3. The agent builds, tests and advances the stages.
-4. You review the implementation; only then does the agent record the native
-   review and ship, closing the review gate with your words as a relayed claim.
+4. You review the implementation. Your decision at the review gate records
+   SpecSync's review in your name, and the agent ships, closing the gate with your
+   words as a relayed claim.
 
 `chough next` tells the agent (or you) the focused next valid action; it is
 routing guidance, not an unattended runner. `chough change new/answer/check/status`
@@ -81,10 +85,10 @@ Chough works with HI, SpecSync and Fledge. One command installs the versions CI
 uses:
 
 ```sh
-cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.2.0
+cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.3.0
 ```
 
-This command needs Rust 1.89 or later, because SpecSync 6.2.0 declares it. Cargo
+This command needs Rust 1.89 or later, because SpecSync 6.3.0 declares it. Cargo
 skips a tool already installed from crates.io at that version and replaces a
 different version (`--force` reinstalls). The binaries are `hi`, `fledge` and
 `specsync`. Install Chough itself as shown in [Install](#install).
@@ -100,17 +104,17 @@ chough init --objective "Free shipping from fifty dollars" \
 chough next --environment local
 ```
 
-`init` never overwrites existing files. It writes the checkpoint
-`.chough/session.json`, creates the librarian's `knowledge/` directory (on by default)
-and copies the skill bundle into each requested host's project skill directory
+`init` never overwrites existing files. With `--objective` it creates the first
+session, `.chough/sessions/<date>-<slug>/session.md`, whose front matter is the
+checkpoint; it writes the reading guide `.chough/README.md`, creates the librarian's
+`knowledge/` directory (on by default) and copies the skill bundle into each requested host's project skill directory
 (`openai`, the default, → `.agents/skills`, a shared skills directory, which `claude`
 shares (Claude Code 2.1.316 did not discover `.agents/skills` alone, so add a
 `CLAUDE.md` line pointing at `.agents/skills/chough-workflow/SKILL.md`; `init` does not
 write it, see [integrations](docs/integrations.md)); `gemini` → `.gemini/skills`, which
 no run has exercised; also `codex` → `.codex/skills`, `cursor` → `.cursor/skills` and
-`grok` → `.grok/skills`). In a project that keeps one session per change
-(`.chough/sessions/`), `init` refuses; start each change with
-`chough session new <change-id>` instead. Kimi Code CLI uses the existing `openai`
+`grok` → `.grok/skills`). Start each later change with
+`chough session new <change-id>`. Kimi Code CLI uses the existing `openai`
 installer value and discovered `.agents/skills/chough-workflow/SKILL.md` in one
 observed run. Google Antigravity read the skill from `.agents/skills` in one run
 reported narratively in closed PR #20 and not independently verified. `chough next`
@@ -127,12 +131,67 @@ that authorization without asking you to repeat permission for each internal too
 step. It asks when a consequential decision or permission is still missing. Native
 checks and your separate implementation acceptance and merge decision remain.
 
+For a gate you decide to record SpecSync's approval or review in your name, Chough
+needs to know who you are. Add yourself once, in `chough/identity.toml` under your
+configuration directory (`$XDG_CONFIG_HOME`, by default `~/.config`), or for one
+project in `.chough/local/identity.toml`, which is never committed:
+
+```toml
+[[human]]
+name = "<how records show you>"
+aliases = ["<another name you go by>"]
+specsync_actor = "<the actor SpecSync records for you>"
+```
+
+Chough refuses a decision by someone it cannot find there
+(`refused:human-identity-unknown`); it never guesses or falls back to an agent.
+
 To resume, either run `chough next --environment local` yourself and paste its
 output to the agent, or tell the agent: "Read AGENTS.md, run
 `chough next --environment local` and follow
 [the skill](skills/chough-workflow/SKILL.md)." The agent re-checks native state,
 evidence freshness, open bugs and pending human decisions itself; a saved stage or
 next action is a suggestion it verifies, not a command it obeys blindly.
+
+## What a project holds
+
+```text
+.chough/
+  README.md                         one-screen guide to this tree
+  preferences.json                  standing preferences
+  cases/*.cases.toml                case definitions
+  sessions/<date>-<slug>/           one folder per open session
+    session.md                      checkpoint (front matter), story and Timeline
+    evidence/                       one Markdown entry per observation, and up to
+                                    5 small key screenshots
+    agent/                          working files and the inbox
+  archive/sessions/<date>-<slug>.md one story per finished session, kept for good
+  archive/migrations/               the receipt of a migration from 0.5.x
+  bugs/<date>-<slug>.md             one file per bug, with an append-only Log
+  local/                            this worktree only, never committed: the active
+                                    session, the lock, raw logs, external artifact
+                                    paths, identity, gate lists
+knowledge/
+  index.md                          the reading guide, generated
+  journal/                          short dated posts and their Atom feed
+  lessons/                          lessons that span projects
+```
+
+Every record is one Markdown file with YAML front matter, named by its date and a
+slug, and the file is the record. You can read and edit it; Chough keeps any front
+matter key it does not know and every line you write outside the sections it appends
+to. Committed records never hold a local path, user or host name, email or
+credential: a write that would is refused as `refused:leak` (`--redact` stores a
+placeholder instead). Intent stays in `hi/`, contracts in `specs/` and change history
+in `.specsync/archive/`; Chough links them and never copies them.
+
+To upgrade a project from Chough 0.5.x, upgrade every agent's Chough first, because
+Chough 0.5.x cannot read 0.6.0 records. Then, with no native change open, run
+`chough migrate` to preview the plan, and with the human's consent run the
+`chough migrate --apply <digest> --consent "<who, their words, where>"` command it
+prints. It applies exactly the previewed plan, writes a receipt in
+`.chough/archive/migrations/` and keeps every old ID as an alias. Until a project
+migrates, every other command refuses with `refused:unmigrated`.
 
 ## The loop
 
@@ -165,73 +224,45 @@ without SpecSync configured, or with SDD disabled, is not gated.
 |---|---|
 | `init`, `skill status/update/remove-legacy` | Install the skill per host without overwriting edits; remove a legacy `.claude/skills` copy explicitly |
 | `next`, `status`, `context` | Resume: stage, gates, freshness, open bugs, focused sources |
-| `checkpoint`, `migrate` | Keep the checkpoint, record relayed gate decisions and merge parallel edits; migrate schema 1 explicitly |
-| `session new/adopt/use/list/close/shelve`, `inbox add/list/fold` | One checkpoint per change or objective; subagents report through a create-only inbox |
+| `checkpoint` | Keep the checkpoint; open human gates that hold a stage and drive SpecSync's approval or review; record a human's gate decision, which runs that step in their name |
+| `migrate` | Preview the one-way upgrade of a 0.5.x project, then apply the previewed plan with the human's consent |
+| `session new/use/list/close/shelve`, `inbox add/list/fold` | One session folder per change or objective, archived as one story when it finishes; subagents report through a create-only inbox |
 | `doctor` | Find, and with `--fix` repair, the Chough debt that stops a fresh worktree from entering Chough; no flag or `--dry-run` only reports |
 | `gate list/record` | Number the open human gates, each with a one-screen summary and its digest, and record one relayed reply for listed gates only |
 | `change new/answer/check/status/ship` | Run SpecSync's change new, answer, check (with `--commit`) and status steps, passing their output, refusals and exit code through unchanged; `ship` ships after the review, closes the review gate with its relay and moves to done |
 | `stage …` | Show, advance (one stage or `--to` several), skip, iterate, back, reset, pause, resume, enter and return, and backfill a move that already happened |
-| `history show/adopt/prune` | Inspect, adopt and prune the immutable transition history |
+| `history show` | Show the active session's Timeline, or the newest archived story's |
+| `correct` | Correct an earlier Timeline entry by appending a linked correction; history is never rewritten |
 | `cases check/list/select/run/record` | Validate and list `chough-testing/1` definitions, select focused cases, record honest outcomes |
-| `evidence add` | Record an observation with its revision, inputs, environment and artifacts; freshness compares content, not the revision |
-| `evidence prune` | Preview, then on consent remove, routine runs nothing references ([retention](docs/architecture.md#records-and-owners)) |
-| `bug add/update/search/list/show/report/merge` | Local-first backlog; report candidates are never posted; `merge` is the Git merge driver for bug records |
+| `evidence add` | Record an observation as an entry of the active session, with its revision, inputs, environment and artifacts, and optionally a key screenshot or a manual failure's key failing lines; freshness compares content, not the revision |
+| `bug add/update/search/list/show/report/merge` | Local-first backlog of Markdown bugs with an append-only Log; old IDs still resolve; report candidates are never posted; `merge` is the Git merge driver for bug records |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
-| `library init/snapshot/index/archive` | Project librarian, on by default in `knowledge/`; post-archive summary preview and apply; `index --check` fails when the generated notes drift |
+| `library init/index/merge` | Project librarian, on by default in `knowledge/`: `index.md` and the journal feed, regenerated from their sources; `index --check` fails when they drift; `merge` is their Git merge driver |
+| `journal add` | Write one short dated post in `knowledge/journal/` that links the records; the move into done and `session close` write one too |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
-This table documents current main. Three entries were added after the 0.5.0
-release and need a build from main: `gate list/record`, the `change ship
---list/--gate` options and the `change new --no-spec-change/--rationale` options.
-The released 0.5.0 binary has every other row, including `change
-new/answer/check/status/ship` and `stage …`.
+This table documents 0.6.0, which is not released yet. Every command writes
+0.6.0 records, which the released 0.5.0 binary cannot read.
 
 ## Record identities and compatibility
 
-New cases use curated `TC-<module>-<title-slug>` IDs. Automatic observations,
-validation runs and librarian snapshots use `OBS-<slug>-<24-lowercase-hex>`,
-`VAL-<slug>-<24-lowercase-hex>` and `SNAP-<slug>-<24-lowercase-hex>`, with random
-96-bit suffixes and no runtime or service. Existing numeric cases, legacy
-observations and validation runs, and dated snapshots remain readable and
-resumable where supported, with no migration or schema rewrite. Older Chough
-versions require an upgrade to use the new-form IDs. See the
-[CLI identity reference](docs/cli.md#case-observation-validation-and-snapshot-identities)
-for allocation, artifact paths, collision refusal and compatibility details.
+Every new session, evidence entry, bug, inbox entry, journal post and migration
+receipt is named `<YYYY-MM-DD>-<slug>`, from its creation date and its title or key,
+never by a counter. A same-day clash gets six random hex digits, and the name never
+changes. Every ID a record had before 0.6.0, such as `BUG-0012` or an `OBS-` ID, stays
+in its `aliases` and still resolves. Cases keep their curated
+`TC-<module>-<title-slug>` IDs. Chough 0.5.x cannot read 0.6.0 records, so upgrade
+every agent before a project migrates; downgrading is not supported. See the
+[CLI reference](docs/cli.md) for the details.
 
-## Merge parallel checkpoint edits
+## Parallel work on sessions
 
-The repository declares `.chough/session.json merge=chough-session` in
-`.gitattributes`. To enable the merge driver, each clone runs:
-
-```sh
-git config --local merge.chough-session.name "Chough schema 2 checkpoint"
-git config --local merge.chough-session.driver "chough checkpoint --merge %O %A %B"
-```
-
-Git supplies base, ours and theirs as `%O`, `%A` and `%B`. A nonzero driver result
-leaves the conflict for human resolution. `chough init` never sets either Git
-configuration value.
-
-Without the driver, use the explicit fallback:
-
-```sh
-chough checkpoint --merge <base> <ours> <theirs>
-```
-
-The command merges schema 2 checkpoints only. Success replaces only ours, while a
-current-cycle conflict stays unresolved instead of combining fields. One agent still
-owns live checkpoint writes, and merging adds no second store. See
-[Checkpoint merges](docs/cli.md#checkpoint-merges) for the collection and conflict
-rules.
-
-Native approvals and reviews remain in SpecSync. The current agent invokes those
-writers from actual human authority; the Rust helper reads native state for gates.
-Approvals and reviews are recorded claims bound to their content, not authenticated
-identity: actor labels do not authenticate people, and a structural pass or exit code
-does not establish behavioral proof or human acceptance. When an agent records a
-human's decision at a gate, `chough checkpoint --close-gate` keeps who decided, their
-words, where and the recording agent as a relayed claim, never as a native approval. Publication and deployment
-keep their separate authorization and evidence requirements.
+Each piece of work is a session folder, `.chough/sessions/<date>-<slug>/`, so branches
+that work on different sessions merge with no conflict and need no merge driver. A
+session's Timeline is append-only, and a finished session becomes one story in
+`.chough/archive/sessions/` that is never moved or trimmed. One agent owns a session's live writes; subagents
+report through `chough inbox add`, and starting or switching work never touches
+another session. See [Sessions](docs/cli.md#sessions).
 
 ## Tested platforms
 
@@ -243,7 +274,7 @@ from 6.0.
 |---|---|
 | Hosted CI: Ubuntu, macOS | `cargo test` and a release build |
 | Hosted CI: Ubuntu, Rust 1.88.0 | `cargo test` with the minimum Rust version |
-| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (format, lint, tests, HI and SpecSync checks, change audit, case definitions, the knowledge index check, the feature and bug exercise, build); the native archive check and its fixtures |
+| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (tool versions against the CI pins, format, lint, tests, HI and SpecSync checks, change audit, case definitions, the knowledge index check, the leak scan, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
 On Windows, install Rust, Chough, HI, SpecSync and Fledge inside Ubuntu on WSL 2, and
@@ -307,10 +338,8 @@ through the native SpecSync lifecycle; the policy requires a change for meaningf
 files.
 
 - [Architecture](docs/architecture.md), [lifecycle](docs/lifecycle.md), [CLI reference](docs/cli.md)
-- [Decisions](docs/DECISIONS.md), [roadmap](docs/ROADMAP.md), [integrations and limits](docs/integrations.md)
-- [Roadmap to 1.0](docs/roadmap-1.0.md) and [the 1.0 test plan](docs/test-plan-1.0.md)
-- [Evidence-reuse proposal](docs/NEXT_CHANGE.md): addressed for content-identical
-  commits by D-018; its ancestry check and reuse label remain unapproved
+- [Decisions](docs/DECISIONS.md) and [integrations and limits](docs/integrations.md)
+- [Roadmap](docs/roadmap-1.0.md), with delivered work, and [the 1.0 test plan](docs/test-plan-1.0.md)
 - [Diagram rendering and visual verification](docs/verification.md)
 - [Release steps](docs/releasing.md) and the [change log](CHANGELOG.md)
 

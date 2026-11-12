@@ -115,7 +115,7 @@ test = "history_ranges_need_three_samples_and_exclude_idle_time"
 
 [[case]]
 id = "TC-reporting-0086"
-title = "Bug fix times come from observations, notes and the retention ledger"
+title = "Bug fix times come from evidence entries, story and bug receipts and the bug Log, with a 0.5.x alias and missing or untimed links unavailable"
 status = "active"
 track = "functional"
 method = "automated"
@@ -124,12 +124,12 @@ requirements = ["REQ-reporting-001"]
 paths = ["src/bugs.rs", "src/timing.rs", "tests/timing.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/timing.rs::bug_fix_times_come_from_observations_notes_and_the_retention_ledger passes"]
+expected = ["tests/timing.rs::bug_fix_times_come_from_entries_receipts_and_the_bug_log passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "timing"
-test = "bug_fix_times_come_from_observations_notes_and_the_retention_ledger"
+test = "bug_fix_times_come_from_entries_receipts_and_the_bug_log"
 
 [[case]]
 id = "TC-reporting-0087"

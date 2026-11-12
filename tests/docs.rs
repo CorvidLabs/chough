@@ -572,6 +572,7 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
         .expect("README names the Fledge verify lane's steps in parentheses");
     // The README's words for each task in fledge.toml.
     let words = [
+        ("toolchain", "tool versions"),
         ("fmt", "format"),
         ("lint", "lint"),
         ("test", "tests"),
@@ -580,6 +581,7 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
         ("audit", "change audit"),
         ("cases", "case definitions"),
         ("knowledge", "knowledge index"),
+        ("leaks", "leak scan"),
         ("exercise", "feature and bug exercise"),
         ("build", "build"),
     ];
@@ -968,7 +970,7 @@ fn docs_state_only_the_pinned_tool_versions() {
             [version.clone(), format!("{}.{}", parts[0], parts[1])]
         })
         .collect();
-    let history = ["docs/DECISIONS.md", "docs/ROADMAP.md"];
+    let history = ["docs/DECISIONS.md", "docs/roadmap-1.0.md"];
     let present = ["uses", "use", "pins", "follows"];
     let past = [
         "observed",
@@ -1569,3 +1571,27 @@ is still read now and every advance refusal applies. The quote is evidence only:
 never records a human approval or review, so record human gates and native approvals
 the usual way when they happen.
 "###;
+
+/// REQ-cli-043, TC-cli-docs-name-the-root-library-folder (K7): the knowledge table in
+/// docs/cli.md lists only paths inside the knowledge directory, and names the
+/// repository-root `library/` that the index links, never a `library/` inside it.
+#[test]
+fn the_knowledge_table_names_the_repository_root_library() {
+    let cli = read("docs/cli.md");
+    let rows: Vec<&str> = cli
+        .lines()
+        .filter(|line| line.starts_with("| `snapshots/`"))
+        .collect();
+    assert_eq!(rows.len(), 1, "{rows:#?}");
+    let first_cell = rows[0].split(" | ").next().unwrap_or_default();
+    assert!(
+        !first_cell.contains("`library/`"),
+        "the table puts library/ inside the knowledge directory: {}",
+        rows[0]
+    );
+    assert!(
+        rows[0].contains("repository-root `library/`"),
+        "{}",
+        rows[0]
+    );
+}

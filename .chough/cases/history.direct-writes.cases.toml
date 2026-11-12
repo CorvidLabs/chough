@@ -18,21 +18,3 @@ expected = ["the direct_writes test a_direct_write_field_on_another_kind_is_an_i
 adapter = "cargo-test"
 test_target = "direct_writes"
 test = "a_direct_write_field_on_another_kind_is_an_invalid_payload"
-
-[[case]]
-id = "TC-history-direct-write-oldest-reader-named"
-title = "The change log names the oldest Chough that reads direct-native-write events"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-21"]
-requirements = ["REQ-history-013"]
-paths = ["src/direct_writes.rs", "src/stage.rs", "src/history.rs", "src/change.rs", "tests/direct_writes.rs"]
-environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["the direct_writes test the_change_log_names_the_oldest_chough_that_reads_direct_write_events passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "direct_writes"
-test = "the_change_log_names_the_oldest_chough_that_reads_direct_write_events"

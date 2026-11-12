@@ -3,82 +3,12 @@
 profile = "chough-testing/1"
 module = "history"
 
-[[case]]
-id = "TC-history-0050"
-title = "Preview lists sets with reasons and bytes and changes nothing"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::preview_lists_sets_with_reasons_and_bytes_and_changes_nothing passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "preview_lists_sets_with_reasons_and_bytes_and_changes_nothing"
-
-[[case]]
-id = "TC-history-0051"
-title = "Every protection reason is named"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::every_protection_reason_is_named passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "every_protection_reason_is_named"
-
-[[case]]
-id = "TC-history-0052"
-title = "Newest runs count per case and environment"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::newest_runs_count_per_case_and_environment passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "newest_runs_count_per_case_and_environment"
-
-[[case]]
-id = "TC-history-0053"
-title = "Apply needs consent or the standing preference and appends the ledger"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::apply_needs_consent_or_the_standing_preference_and_appends_the_ledger passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "apply_needs_consent_or_the_standing_preference_and_appends_the_ledger"
-
+# Retired with REQ-history-001 in 0.6.0; its test now binds
+# TC-records-removed-and-missing-observations-never-count (REQ-records-009).
 [[case]]
 id = "TC-history-0054"
 title = "Removed and missing observations are labeled and never count"
-status = "active"
+status = "retired"
 track = "functional"
 method = "automated"
 criteria = ["LIFE-8"]
@@ -94,310 +24,22 @@ test_target = "evidence"
 test = "removed_and_missing_observations_are_labeled_and_never_count"
 
 [[case]]
-id = "TC-history-0055"
-title = "A validation run keeps its counts after its middle passes are pruned"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "a_validation_run_keeps_its_counts_after_its_middle_passes_are_pruned"
-
-[[case]]
-id = "TC-history-0056"
-title = "Native manifests protect their sets and a failed read protects everything"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::native_manifests_protect_their_sets_and_a_failed_read_protects_everything passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "native_manifests_protect_their_sets_and_a_failed_read_protects_everything"
-
-[[case]]
-id = "TC-history-0057"
-title = "Automatic pruning follows case runs only when retention is auto"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::automatic_pruning_follows_case_runs_only_when_retention_is_auto passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "automatic_pruning_follows_case_runs_only_when_retention_is_auto"
-
-[[case]]
-id = "TC-history-0058"
-title = "A multi case record counts in the group of every case"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::a_multi_case_record_counts_in_the_group_of_every_case passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "a_multi_case_record_counts_in_the_group_of_every_case"
-
-[[case]]
-id = "TC-history-0059"
-title = "One artifact spelled two ways is shared and kept"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::one_artifact_spelled_two_ways_is_shared_and_kept passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "one_artifact_spelled_two_ways_is_shared_and_kept"
-
-[[case]]
-id = "TC-history-0060"
-title = "Bug fixtures and checkpoint paths protect the sets they name"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "bug_fixtures_and_checkpoint_paths_protect_the_sets_they_name"
-
-[[case]]
-id = "TC-history-0061"
-title = "Bug show labels note observations once"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8"]
-requirements = ["REQ-history-001"]
-paths = ["src/evidence.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::bug_show_labels_note_observations_once passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "bug_show_labels_note_observations_once"
-
-[[case]]
-id = "TC-history-adoption"
-title = "Explicit history adoption preserves legacy bytes"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-2", "LIFE-3", "LIFE-7"]
-requirements = ["REQ-history-002"]
-paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/history.rs::adoption_preview_preserves_legacy_bytes_and_apply_is_explicit passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "history"
-test = "adoption_preview_preserves_legacy_bytes_and_apply_is_explicit"
-
-[[case]]
-id = "TC-history-branches"
-title = "Independent branch events survive with explicit checkpoint selection"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-3", "LIFE-7"]
-requirements = ["REQ-history-002"]
-paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/history.rs::real_git_branch_events_survive_while_checkpoint_selection_remains_explicit passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "history"
-test = "real_git_branch_events_survive_while_checkpoint_selection_remains_explicit"
-
-[[case]]
 id = "TC-history-bounds"
-title = "History event, cycle, recent and maintenance limits are exercised"
+title = "A timeline holds 4,096 entries and next reads only the newest 128"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["LIFE-3", "LIFE-8", "LIFE-10"]
 requirements = ["REQ-history-003"]
-paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
+paths = ["src/history.rs", "src/session_md.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/history.rs::history_bounds_cover_all_resource_limits passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
+expected = ["both timeline bound tests pass"]
 
 [case.bind]
-adapter = "cargo-test"
-test_target = "history"
-test = "history_bounds_cover_all_resource_limits"
-
-[[case]]
-id = "TC-history-retention"
-title = "History retention revalidates new protection and preserves proof"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-7", "LIFE-8"]
-requirements = ["REQ-history-003"]
-paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/history.rs::cycle_retention_is_read_only_until_authorized_and_revalidates_new_references passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "history"
-test = "cycle_retention_is_read_only_until_authorized_and_revalidates_new_references"
-
-[[case]]
-id = "TC-history-retention-revalidation"
-title = "Evidence cleanup retains changed missing and newly referenced proof"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-2", "LIFE-7", "LIFE-8"]
-requirements = ["REQ-history-004"]
-paths = ["src/history.rs", "src/checkpoint.rs", "src/stage.rs", "src/timing.rs", "src/evidence.rs", "tests/history.rs", "tests/evidence.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::retention_revalidation_keeps_changed_missing_and_newly_referenced_proof passes; the required full verify lane covers additional history, interruption and compatibility regressions"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "retention_revalidation_keeps_changed_missing_and_newly_referenced_proof"
-
-[[case]]
-id = "TC-history-legacy-timing-bounds"
-title = "Legacy timing retains at most 4096 input lines and reports omitted history"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-8", "LIFE-10"]
-requirements = ["REQ-history-003"]
-paths = ["src/history.rs", "src/timing.rs", "tests/timing.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["tests/timing.rs::legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission passes at the exact event limit and one line beyond, preserving the chronological suffix and source bytes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "timing"
-test = "legacy_timing_retains_the_latest_4096_input_lines_and_marks_omission"
-
-[[case]]
-id = "TC-history-frozen-reference-aliases"
-title = "Frozen artifact directory path aliases protect every referenced history cycle"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-2", "LIFE-7", "LIFE-8"]
-requirements = ["REQ-history-003", "REQ-history-004"]
-paths = ["src/history.rs", "tests/history.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["Canonical, mixed-case backslash, repeated-separator and dot-component directory references in frozen text protect all cycles; preview and authorized fixture apply leave every .chough byte unchanged"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "history"
-test = "frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply"
-
-[[case]]
-id = "TC-history-closing-reset-age"
-title = "History retention ages idle cycles from the selected closing reset"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-7", "LIFE-8"]
-requirements = ["REQ-history-003", "REQ-history-004"]
-paths = ["src/history.rs", "tests/history.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["Recently closed idle cycles stay protected and new receipts retain the actual closing reset timestamp"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "history"
-test = "idle_cycle_age_uses_the_selected_closure_and_receipts_record_it"
-
-[[case]]
-id = "TC-history-post-prune-reference"
-title = "History inspection reports referenced proof missing after real Git integration"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-7", "LIFE-8"]
-requirements = ["REQ-history-003", "REQ-history-004"]
-paths = ["src/history.rs", "tests/history.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["The real Git prune then independent-reference then clean-merge ordering covers exact event paths, four directory quote forms, terminal punctuation, parentheses, mixed file and cycle references, longer unknown paths containing known file prefixes or suffixes, and Unicode context; missing paths and sources are explicit, preview preserves bytes, apply refuses writes, restoring only an exact file cannot satisfy a separate whole-cycle reference, and exact restoration clears each diagnostic"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "history"
-test = "real_git_post_prune_references_report_unavailable_until_exact_restoration"
-
-[[case]]
-id = "TC-history-stale-receipt-age"
-title = "Stale receipt timestamps cannot age a recently closed history cycle"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["LIFE-7", "LIFE-8"]
-requirements = ["REQ-history-003", "REQ-history-004"]
-paths = ["src/history.rs", "tests/history.rs"]
-environments = ["local-macos-arm64", "ci-linux", "ci-windows"]
-artifacts = ["test-log"]
-expected = ["An older receipt cannot override the selected recent closing reset or make the protected cycle eligible for deletion"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "history"
-test = "stale_receipt_age_cannot_override_a_recent_selected_closure"
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "history", "--", "a_timeline_holds_4096_entries_and_refuses_the_4097th", "next_reads_only_the_newest_128_entries"]
+expect_output = ["test result: ok. 2 passed"]
 
 [[case]]
 id = "TC-history-split-keeps-requirement-wording"
@@ -406,7 +48,7 @@ status = "active"
 track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-7"]
-requirements = ["REQ-history-001", "REQ-history-002", "REQ-history-003", "REQ-history-004"]
+requirements = ["REQ-history-002", "REQ-history-003"]
 paths = ["specs/cli/requirements.md", "specs/history/requirements.md", "tests/spec_split.rs"]
 environments = ["local-linux-x86_64", "local-macos-arm64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
@@ -436,24 +78,6 @@ test_target = "sessions"
 test = "inbox_add_racing_an_archive_never_strands_its_entry"
 
 [[case]]
-id = "TC-history-retention-protects-inbox-observations"
-title = "Retention protects observations named by unfolded inbox entries"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-3", "LIFE-8"]
-requirements = ["REQ-history-009"]
-paths = ["src/sessions.rs", "tests/evidence.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::retention_protects_observations_named_by_unfolded_inbox_entries passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "retention_protects_observations_named_by_unfolded_inbox_entries"
-
-[[case]]
 id = "TC-history-inbox-add-killed-leaves-no-partial-entry"
 title = "An inbox add killed while writing leaves no partial entry"
 status = "active"
@@ -471,28 +95,12 @@ adapter = "cargo-test"
 test_target = "sessions"
 test = "an_inbox_add_killed_while_writing_leaves_no_partial_entry"
 
-[[case]]
-id = "TC-history-retention-refuses-unreadable-inbox-entry"
-title = "Retention refuses while an unfolded inbox entry cannot be read"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-3", "LIFE-8"]
-requirements = ["REQ-history-009"]
-paths = ["src/sessions.rs", "tests/evidence.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/evidence.rs::retention_refuses_while_an_unfolded_inbox_entry_cannot_be_read passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "evidence"
-test = "retention_refuses_while_an_unfolded_inbox_entry_cannot_be_read"
-
+# Retired with REQ-history-008 in 0.6.0; its test now binds
+# TC-cli-session-use-waits-for-stage-advance (REQ-cli-040).
 [[case]]
 id = "TC-history-session-use-waits-for-stage-advance"
 title = "session use waits for a running stage advance"
-status = "active"
+status = "retired"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-3"]
@@ -508,76 +116,22 @@ test_target = "sessions"
 test = "session_use_waits_for_a_running_stage_advance"
 
 [[case]]
-id = "TC-history-vanished-session-leaves-no-event"
-title = "A save refused because the session vanished leaves no event"
+id = "TC-history-sessions-local-holds-pointer-and-lock"
+title = ".chough/local/ holds only the pointer and the writer lock, all ignored by Git"
 status = "active"
 track = "functional"
 method = "automated"
-criteria = ["DRIVE-3", "LIFE-7"]
-requirements = ["REQ-history-008"]
-paths = ["src/sessions.rs", "src/history.rs", "tests/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
+criteria = ["DRIVE-3", "DRIVE-11"]
+requirements = ["REQ-history-007"]
+paths = ["src/sessions.rs", "src/session_md.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/sessions.rs::a_save_refused_because_the_session_vanished_leaves_no_event passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "sessions"
-test = "a_save_refused_because_the_session_vanished_leaves_no_event"
-
-[[case]]
-id = "TC-history-saved-event-survives-a-move"
-title = "A saved event survives a move of its checkpoint, inside or outside the session stores"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-3", "LIFE-7"]
-requirements = ["REQ-history-008"]
-paths = ["src/history.rs", "src/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["both src/sessions.rs saved-event unit tests pass"]
+expected = ["tests/sessions.rs::local_holds_only_the_pointer_and_the_lock passes"]
 
 [case.bind]
 adapter = "command"
-argv = ["cargo", "test", "--locked", "--bin", "chough", "saved_event"]
-expect_output = ["test result: ok. 2 passed; 0 failed"]
-
-[[case]]
-id = "TC-history-no-sessions-local-holds-only-lock"
-title = "A project without sessions gains only the Git-ignored lock in .chough/local"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-3", "DRIVE-11"]
-requirements = ["REQ-history-007"]
-paths = ["src/checkpoint.rs", "tests/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/sessions.rs::a_project_without_sessions_is_unchanged passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "sessions"
-test = "a_project_without_sessions_is_unchanged"
-
-[[case]]
-id = "TC-history-sessions-local-holds-pointer-and-lock"
-title = "In sessions mode .chough/local holds only the pointer and the lock"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-3", "DRIVE-11"]
-requirements = ["REQ-history-007"]
-paths = ["src/checkpoint.rs", "tests/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/sessions.rs::in_sessions_mode_local_holds_only_the_pointer_and_the_lock passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "sessions"
-test = "in_sessions_mode_local_holds_only_the_pointer_and_the_lock"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "--exact", "local_holds_only_the_pointer_and_the_lock"]
+expect_output = ["test result: ok. 1 passed"]
 
 [[case]]
 id = "TC-history-archived-session-listed-archived"
@@ -616,19 +170,36 @@ test_target = "sessions"
 test = "an_unrecorded_inbox_observation_is_added_with_a_warning"
 
 [[case]]
-id = "TC-history-session-after-legacy-adoption"
-title = "A session started after legacy history adoption writes events while the legacy log stays guarded"
+id = "TC-history-sessions-in-folders"
+title = "Sessions live in their own folders and finish into one story with its full timeline"
 status = "active"
 track = "functional"
 method = "automated"
-criteria = ["DRIVE-3", "DRIVE-12"]
-requirements = ["REQ-history-006"]
-paths = ["src/history.rs", "src/sessions.rs", "tests/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
+criteria = ["DRIVE-24", "DRIVE-3", "DRIVE-13"]
+requirements = ["REQ-history-006", "REQ-history-002"]
+paths = ["src/sessions.rs", "src/session_md.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/sessions.rs::a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded passes"]
+expected = ["both session folder tests pass"]
 
 [case.bind]
-adapter = "cargo-test"
-test_target = "sessions"
-test = "a_session_started_after_legacy_adoption_writes_events_and_keeps_the_log_guarded"
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "each_session_has_its_own_folder_and_timeline", "sessions_live_in_folders_and_finish_into_one_story"]
+expect_output = ["test result: ok. 2 passed"]
+[[case]]
+id = "TC-history-append-only-timeline"
+title = "Timeline entries are appended in order with unique IDs and never rewritten"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-3", "DRIVE-24"]
+requirements = ["REQ-history-002"]
+paths = ["src/history.rs", "src/session_md.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::entries_are_appended_in_order_and_never_rewritten passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "history", "--", "--exact", "entries_are_appended_in_order_and_never_rewritten"]
+expect_output = ["test result: ok. 1 passed"]

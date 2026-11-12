@@ -20,24 +20,6 @@ test_target = "advance_to"
 test = "a_batched_advance_reads_native_status_once_in_a_session"
 
 [[case]]
-id = "TC-cli-advance-to-single-checkpoint"
-title = "A batched advance in a single-checkpoint project appends one transition per step on one read"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-9"]
-requirements = ["REQ-cli-052"]
-paths = ["src/stage.rs", "src/library.rs", "src/evidence.rs", "tests/advance_to.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["the advance_to test a_batched_advance_in_a_single_checkpoint_project passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "advance_to"
-test = "a_batched_advance_in_a_single_checkpoint_project"
-
-[[case]]
 id = "TC-cli-advance-to-no-prerequisite"
 title = "A batch with no native prerequisite makes no native read"
 status = "active"

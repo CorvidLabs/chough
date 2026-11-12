@@ -25,34 +25,46 @@ new` prints the lessons of the modules you declare.
 
 Prepare one coherent concrete package: outcome, contract delta, plan, verification
 and consequential choices. Apply the main skill's authorization rule before asking
-for a decision. If an actual prior or standing human instruction covers this scope,
-that authorization already exists: record its source, scope and limits in the
-checkpoint and native context, then run the native operation yourself.
+for a decision. Exactly one of two cases applies, and the records say which.
+
+**Authority given in advance.** If an actual prior or standing human instruction
+covers this scope, that authorization already exists: record its source, scope and
+limits in the checkpoint and native context, then run the native operation yourself,
+as the acting agent account `<agent>-<terminal>` (for example `claude-code-t382`):
 
 ```sh
-specsync change approve <id> --actor "<agent-account>" --note "<human authority source, covered scope and limits>"
-chough checkpoint --clear-awaiting-human
+specsync change approve <id> --actor "<agent>-<terminal>" --note "Approved under <the human's words> (<where they said them>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>)."
 ```
 
 The acting agent account is the actor; the human instruction supplies the authority.
 Do not use the human's name merely because they authorized the agent's work, and do
-not ask the operator to execute this command or repeat covered permission.
+not ask the operator to execute this command or repeat covered permission. If
+SpecSync or the project's configuration refuses that actor, stop and report the
+refusal; never record the approval in the human's name instead.
 
-When a consequential decision or authority is actually missing, ask one concise
-question and record that real gate with `chough checkpoint --awaiting-human
-"Scope decision of <id>"`. Keep doing independent preparation while it is pending.
-After the missing decision arrives, record it on the human's behalf and perform the
-native steps as the agent:
+**A decision at the gate.** When a consequential decision or authority is actually
+missing, ask one concise question and record that real gate. At plan it holds plan
+and drives the native approval by default:
 
 ```sh
-chough checkpoint --close-gate "Scope decision of <id>" --decided-by "<who>" \
-  --words "<their exact words>" --where "<where and when, and who relayed it>" \
-  --recorded-by "<agent-account>"
+chough checkpoint --awaiting-human "Scope approval of <id>"
 ```
 
-That closes only that gate and keeps a relayed claim on its gate record and in the
-decisions; it does not approve anything natively. An actor label alone never
-supplies human authority, and neither Chough nor SpecSync authenticates who decided.
+Keep doing independent preparation while it is pending. When the human answers,
+record their decision; Chough runs `specsync change approve` as that human, from the
+configured identity (see [checkpoint.md](checkpoint.md)), and only then closes the
+gate:
+
+```sh
+chough checkpoint --close-gate "Scope approval of <id>" --decided-by "<who>" \
+  --words "<their exact words>" --where "<where and when, and who relayed it>" \
+  --recorded-by "<agent>-<terminal>"
+```
+
+A decision that is not an approval, such as "change this first", closes the gate with
+`--no-native` and approves nothing. Chough never decides which case applies from the
+words. An actor label alone never supplies human authority, and neither Chough nor
+SpecSync authenticates who decided.
 
 Lessons learned from rehearsing SpecSync 6.1: the delta is frozen once approved and
 `change check` refuses an edited delta; `change check` also refuses while `tasks.md`

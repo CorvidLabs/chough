@@ -200,6 +200,8 @@ fn no_change_command_writes_a_tracked_file_under_dot_chough() {
     // A checkpoint save, as in any project past init: the writer's lock creates the
     // `.gitignore` that keeps `.chough/local/` untracked.
     fixture.ok(&["checkpoint", "--next-action", "Run the change steps"]);
+    // The change's workspace, which a baseline needs (A3-2).
+    fixture.write(".specsync/changes/free-shipping/state.json", "{}\n");
     fixture.write(".stub-out", "{}\n");
     let split = |files: BTreeMap<String, Vec<u8>>| {
         let (local, tracked): (BTreeMap<_, _>, BTreeMap<_, _>) = files
@@ -303,7 +305,7 @@ fn a_missing_specsync_refuses_naming_install_and_the_step_to_rerun() {
         assert_eq!(output.status.code(), Some(1), "{chough:?}");
         let error = String::from_utf8_lossy(&output.stderr);
         assert!(
-            error.contains("`cargo install --locked specsync@6.2.0`"),
+            error.contains("`cargo install --locked specsync@6.3.0`"),
             "{chough:?} names no install: {error}"
         );
         let step = format!("`chough {}`", chough[..2].join(" "));
@@ -424,6 +426,11 @@ if [ "$2" = ship ]; then
     if [ -f .stub-ship-err ]; then cat .stub-ship-err >&2; fi
     exit "$(cat .stub-ship-exit 2>/dev/null || echo 0)"
 fi
+if [ "$2" = review ] || [ "$2" = approve ]; then
+    echo "$*" >>.stub-native-calls
+    if [ -f .stub-review-exit ]; then echo 'review refused' >&2; exit "$(cat .stub-review-exit)"; fi
+    exit 0
+fi
 if [ -f .stub-status-fail ]; then echo 'status failed' >&2; exit 2; fi
 printf '{"summary":{"id":"%s","state":"archived","approval_valid":true,"correction_valid":true,"terminal_evidence":{"validity":"authenticated-history"}},"acceptance_entries":[{"path":"specs/cli/cli.spec.md","kind":"file"}]}\n' "$3"
 "#;
@@ -468,6 +475,11 @@ fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
         "---\nid: a5\nstate: archived\n---\n\n# Title of a5\n\n## Intent\n\nx\n\n## Acceptance Criteria\n\n- a5 works\n",
     );
     fixture.ok(&["session", "new", SHIP_KEY, "--objective", "Ship a5"]);
+    // The review gate drives the native review as the decided human (REQ-records-008).
+    fixture.write(
+        ".chough/local/identity.toml",
+        "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-reviewer\"\n",
+    );
     fixture.ok(&["checkpoint", "--native-change", SHIP_ID]);
     fixture.ok(&["stage", "reset", "--to", stage, "--reason", "Ready to ship"]);
     for gate in gates {
@@ -476,10 +488,8 @@ fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
     if !native {
         // A session that lost its native change record; reaching accept needs one, so
         // the record is cleared after the reset.
-        let path = format!(".chough/sessions/{SHIP_KEY}.json");
-        let mut session: serde_json::Value = serde_json::from_str(&fixture.read(&path)).unwrap();
-        session["native_change"] = serde_json::Value::Null;
-        fixture.write(&path, &session.to_string());
+        fixture.ok(&["session", "use", SHIP_KEY]);
+        fixture.set_front("native_change", "");
     }
     fixture.commit("fixture");
     fixture
@@ -487,15 +497,7 @@ fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
 
 /// The ship session's checkpoint, open or archived.
 fn ship_session(fixture: &Fixture) -> serde_json::Value {
-    for path in [
-        format!(".chough/sessions/{SHIP_KEY}.json"),
-        format!(".chough/sessions/archive/{SHIP_KEY}.json"),
-    ] {
-        if fixture.exists(&path) {
-            return serde_json::from_str(&fixture.read(&path)).unwrap();
-        }
-    }
-    panic!("no session {SHIP_KEY}");
+    fixture.session_json(SHIP_KEY)
 }
 
 /// The four relay values for the review gate.
@@ -539,22 +541,32 @@ fn records(root: &Path) -> BTreeMap<String, Vec<u8>> {
         .collect()
 }
 
-/// Whether a history event records the review gate closed with the four values.
+/// Whether the archived story's Timeline records the review gate closed with the four
+/// values. After the move into done there is no open session, so the story is read
+/// directly.
 fn gate_closed_with_relay(fixture: &Fixture) -> bool {
     let expected = serde_json::json!({
         "decided_by": "SYNTHETIC-human", "words": "pass", "where": "a test",
         "recorded_by": "SYNTHETIC-agent"
     });
-    let cycles = fixture.root().join(".chough/history/cycles");
-    let Ok(cycles) = fs::read_dir(cycles) else {
-        return false;
+    // The session may still be open (a refused done move) or archived.
+    let file = if fixture.is_archived(SHIP_KEY) {
+        fixture.story_of(SHIP_KEY)
+    } else {
+        fixture.session_file_of(SHIP_KEY)
     };
-    for cycle in cycles {
-        for event in fs::read_dir(cycle.unwrap().path()).unwrap() {
-            let value: serde_json::Value =
-                serde_json::from_str(&fs::read_to_string(event.unwrap().path()).unwrap()).unwrap();
-            let transition = &value["transition"];
-            if transition["kind"] == "gate-closed" && transition["relayed_by"] == expected {
+    let story = fixture.read(&file);
+    let mut gate_closed = false;
+    for line in story.lines() {
+        if line.starts_with("- ") {
+            gate_closed = line.contains("· gate-closed ·");
+        } else if gate_closed && let Some(payload) = line.strip_prefix("  - relayed_by: ") {
+            let relay: serde_json::Value = serde_json::from_str(payload).unwrap();
+            let four = serde_json::json!({
+                "decided_by": relay["decided_by"], "words": relay["words"],
+                "where": relay["where"], "recorded_by": relay["recorded_by"]
+            });
+            if four == expected {
                 return true;
             }
         }
@@ -573,6 +585,11 @@ fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
         String::from_utf8_lossy(&output.stderr)
     );
     assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID]);
+    // REQ-records-008: the review ran once, as the decided human, before the ship.
+    assert_eq!(
+        fixture.read(".stub-native-calls"),
+        format!("change review {SHIP_ID} --reviewer SYNTHETIC-reviewer --verdict pass\n")
+    );
     assert!(
         output.stdout.starts_with(b"SHIPPED a5\n"),
         "SpecSync's output does not come first: {}",
@@ -585,6 +602,36 @@ fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
     let session = ship_session(&fixture);
     assert_eq!(session["stage"]["current"], "done", "{session:#}");
     assert_eq!(session["awaiting_human"], serde_json::json!([]));
+}
+
+/// REQ-cli-059, REQ-records-008: a review gate's relay naming no configured human is
+/// refused before SpecSync runs; a refused review stops the ship with its output and
+/// exit code.
+#[test]
+fn ship_refuses_an_unknown_human_and_stops_on_a_refused_review() {
+    let fixture = shipping_session_at("accept");
+    let before = records(fixture.root());
+    let mut relay = review_relay();
+    relay[3] = "nobody";
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &relay), &[]);
+    assert!(!output.status.success());
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("refused:human-identity-unknown"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!fixture.exists(".stub-native-calls"));
+    assert!(ship_calls(&fixture).is_empty());
+    assert_eq!(records(fixture.root()), before);
+    fixture.write(".stub-review-exit", "3");
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    assert_eq!(output.status.code(), Some(3));
+    assert_eq!(String::from_utf8_lossy(&output.stderr), "review refused\n");
+    assert!(
+        ship_calls(&fixture).is_empty(),
+        "the ship ran after a refused review"
+    );
+    assert_eq!(records(fixture.root()), before);
 }
 
 #[test]
@@ -629,6 +676,8 @@ fn ship_refuses_before_running_without_the_relay_or_outside_accept() {
         "a test",
         "--recorded-by",
         "SYNTHETIC-agent",
+        // A docs check held at accept drives the review by default, and is not one.
+        "--no-native",
     ]
     .to_vec();
     // Each case: the arguments; the stage, whether the native change is recorded and
@@ -919,4 +968,81 @@ fn change_new_passes_no_spec_change_with_its_rationale() {
         &[],
     );
     assert!(retried.status.success());
+}
+
+/// REQ-history-010, REQ-cli-059, TC-cli-a-ship-records-the-review-it-ran (A3-1): when
+/// `chough change ship` runs the review as the decided human, the gate's `gate-closed`
+/// entry names that SpecSync command as `native` and the actor it ran as as `actor`,
+/// as a close that drives the review itself does.
+#[test]
+fn a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay() {
+    let fixture = shipping_session_at("accept");
+    fixture.write(".stub-ship-out", "SHIPPED a5\n");
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let file = if fixture.is_archived(SHIP_KEY) {
+        fixture.story_of(SHIP_KEY)
+    } else {
+        fixture.session_file_of(SHIP_KEY)
+    };
+    let story = fixture.read(&file);
+    let mut gate_closed = false;
+    let mut relay = serde_json::Value::Null;
+    for line in story.lines() {
+        if line.starts_with("- ") {
+            gate_closed = line.contains("· gate-closed ·");
+        } else if gate_closed && let Some(payload) = line.strip_prefix("  - relayed_by: ") {
+            relay = serde_json::from_str(payload).unwrap();
+        }
+    }
+    assert_eq!(
+        relay["native"],
+        format!("specsync change review {SHIP_ID}"),
+        "{story}"
+    );
+    assert_eq!(relay["actor"], "SYNTHETIC-reviewer", "{story}");
+}
+
+/// REQ-cli-059, TC-cli-a-ship-reports-the-review-it-ran (A3-3 residual): the close
+/// report after a ship that ran the review names it in `native_step.ran` with the actor,
+/// as a close that runs the review itself reports it, never `ran: null`.
+#[test]
+fn a_ship_that_runs_the_review_reports_it_in_native_step() {
+    let fixture = shipping_session_at("accept");
+    fixture.write(".stub-ship-out", "SHIPPED a5\n");
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(output.status.success(), "{stdout}");
+    assert!(!stdout.contains("\"ran\": null"), "{stdout}");
+    assert!(
+        stdout.contains(&format!("\"ran\": \"ran specsync change review {SHIP_ID}")),
+        "{stdout}"
+    );
+}
+
+/// REQ-cli-057, REQ-cli-060, TC-cli-an-unknown-change-leaves-no-baseline (A3-2): a
+/// `chough change answer` or `check` that SpecSync refuses for a change ID with no
+/// workspace under `.specsync/changes/` writes nothing under `.chough/`, not even a
+/// direct-write baseline for that ID.
+#[test]
+fn a_refused_step_for_an_unknown_change_leaves_no_baseline() {
+    let fixture = fixture();
+    fixture.init();
+    fixture.ok(&["checkpoint", "--next-action", "Run the change steps"]);
+    fixture.write(".stub-exit", "1");
+    for args in [
+        vec!["change", "answer", "nosuch-change", "kind", "bug-fix"],
+        vec!["change", "check", "nosuch-change"],
+    ] {
+        let output = run_env(&fixture, &args, &[]);
+        assert!(!output.status.success(), "{args:?} was not refused");
+    }
+    assert!(
+        !fixture.exists(".chough/local/native-writes/nosuch-change.json"),
+        "a baseline was written for an unknown change"
+    );
 }

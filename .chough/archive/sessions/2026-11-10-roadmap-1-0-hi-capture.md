@@ -1,0 +1,125 @@
+---
+kind: session
+id: 2026-11-10-roadmap-1-0-hi-capture
+aliases: [roadmap-1-0-hi-capture]
+objective: Turn the 2026-11-10 MVP interview into hi capture, a 1.0 roadmap, a test plan and a draft issue list
+intent_scope: ""
+modules: []
+stage: plan
+stage_status: active
+iteration: 1
+callers: []
+native_change: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
+pr: ""
+criteria:
+  - FLOW-21
+  - FLOW-22
+  - DRIVE-24
+  - KNOW-30
+  - LIFE-17
+  - LIFE-18
+  - LIFE-19
+  - LIFE-20
+  - LIFE-21
+  - LIFE-22
+  - LIFE-23
+  - LIFE-24
+  - LIFE-25
+  - KNOW-31
+  - KNOW-32
+  - DRIVE-25
+  - DRIVE-26
+  - DRIVE-27
+  - FLOW-23
+  - LIFE-26
+  - KNOW-33
+  - DRIVE-28
+  - KNOW-34
+  - KNOW-35
+  - FLOW-24
+requirements: []
+cases: []
+design: []
+files: []
+observations: []
+bugs: []
+blockers: []
+waiting_on_human: []
+run_consents: []
+next: Lane green at 27c2cd14 -> push -> t37j re-review -> merge
+closed: 2026-11-12
+outcome: done
+receipts: []
+---
+# Turn the 2026-11-10 MVP interview into hi capture, a 1.0 roadmap, a test plan and a draft issue list
+
+## Goal
+
+Turn the 2026-11-10 MVP interview into hi capture, a 1.0 roadmap, a test plan and a draft issue list
+
+## Where it stands
+
+- Wrote docs/roadmap-1.0.md (milestones M1-M7 tied to the four bar items, session slug-folder migration design) and docs/test-plan-1.0.md (dogfood checklist, flake tracker and clean window, migration fixtures, host-matrix harness); linked both from README and docs/ROADMAP.md
+- Completed the native change artifacts (context, docs, design, tasks) after the verify lane's audit step refused the TODO placeholders
+- PR #212 open (docs+hi, stopped for Leif); milestone 'Chough 1.0' created with epic #232 and issues #213-#231, existing open issues mapped onto the milestone; dependencies linked with blocked-by
+- Addressed corvid-agent's review of #212: merged main (resolved the issue-102 session roll-up conflict in main's favor), regenerated the knowledge vault, re-answered the native change's acceptance criteria and tasks to match the created issues; marked #187 and #196 closed in epic #232 and the PR body
+- Review addressed: merged head green (verify lane 10 steps), change record matches the created issues, review reply posted on #212
+- Folded the 2026-11-10 round-2 decisions into #212: KNOW-30 rewritten (links, never moves or copies), 7 new criteria captured (KNOW-31/32, DRIVE-25/26/27, FLOW-23, LIFE-26), roadmap M1/M2/M3 and the migration design updated, #216 re-scoped, #234/#235/#236 mapped into the milestone and epic, PR body updated
+- Round-2 fold-in verified and pushed at 1badc216; PR comment posted; t370 notified
+- Folded the design-review deltas into #212: DRIVE-24 and DRIVE-25 rewritten to the approved design (session.md frontmatter checkpoint + timeline, agent/ folder, one archived story file), KNOW-30 path updated, KNOW-31 gained the lessons rule, KNOW-33 and DRIVE-28 captured, migration design and M1/M3 updated, #214 re-scoped, PR body updated
+- Added Leif's 0.6.0 shipping decision to the roadmap: the human-first redesign ships as one change, dogfooded on chough before any other repo updates; native change AC updated; PR body patched
+- Fixed the three stale bits from t370: LIFE-23 tail now points at KNOW-30's links-never-copies; PR body count corrected to 22; PR body M3 item 10 rewritten to the KNOW-30 wording with #196/#187 marked done; branch-wide wording sweep clean (only historical superseded mentions remain)
+- Leif's intent approval closed both gates with his words; native approval recorded as 0xLeif citing 'Yes, merge when green'; change check --commit verified and committed; head 506ba5f9 pushed; independent review requested from t37j
+- Addressed t37j's review: LIFE-23 scoped to the #235-amended knowledge criteria; LIFE-17 records only the hc terminal id (LIFE-26); KNOW-29, KNOW-2, KNOW-7, KNOW-18, KNOW-19, KNOW-22, KNOW-23, KNOW-25, KNOW-28 amended citing #235/design review, with two open questions for Leif (five-recent bound on archived stories; where failure-first logs and screenshots live); KNOW-30 reinterpretation sentence dropped; roadmap and PR mappings corrected for #181/#113/#207/#60/#136 fixed on main, #211 dropped, #214/#208/#210/#233 folded into 0.6.0
+- Per t370: retired KNOW-2, 7, 18, 19, 22, 23, 25, 28, 29 (superseded by KNOW-30/31/33, citing Leif's 'Approve it') instead of amending; LIFE-23 now scopes all current knowledge criteria; LIFE-17 keeps 'address' with the t370 example; roadmap and PR body list #214, #237 and the leif/human-first-records 0.6.0 branch; #237 added to milestone and epic
+- Coordinator routed the still-wanted parts: items 1-3 become 0.6.0 spec requirements (not new intent), 4-5 go to Leif; killed the stale concurrent lane (the earlier --test change failure coincided with two lanes sharing one target dir, the known #132 pattern)
+- Retirements done per t370, but the lane's cases step fails: the 9 retired criteria still back live REQ-cli requirements with ~35 active case bindings on main; surfaced to t370 with the recommendation to move retirements into the 0.6.0 change
+- Un-retired the 9 KNOW criteria per t370's call, each carrying the supersession note ('Superseded by KNOW-30/31/33 (Leif, 2026-11-10); retired in the Chough 0.6.0 change...'); KNOW-30 tail simplified; cases check valid again
+- Leif's 'Yes, make it match' folded in: supersession notes on KNOW-8/9/13/16/17/20/21/26/27, carry-forward notes on KNOW-10/11, KNOW-24 reword note, DRIVE-25 and KNOW-31 fixed to the approved design, KNOW-34 (Keep all) and KNOW-35 (Split them) captured verbatim; both open questions resolved by them; roadmap and PR body updated
+- Captured FLOW-24 (the agent's name for approval on permission given in advance, quoting the earlier permission); roadmap and PR body updated; 112 criteria
+- Bug recorded for the intermittent lane failures; tests green under the shared lock; verification refreshed at 27c2cd14 after committing the bug
+
+## Decisions and why
+
+- Criteria drafted from the 2026-11-10 MVP interview and the same-day issue decisions on #14, #165, #167 and #201
+- 2026-11-10 pause from Leif via t370: no approvals, reviews, acceptances, gates, closes or merges recorded as 0xLeif/Leif until new instructions; work stops at READY
+- 2026-11-10 coordinator: #212 is the INTENT of Leif's one big human-first-records Chough cycle (design stage in _worktrees/ch-human-first, artifact 1gaHcJYeiULDxWtKMGUZim); hold #212 at READY, no merge, no new criteria unless the coordinator sends exact deltas
+- Leif (0xLeif) decided "Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping": "Approve it" (Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10, answering 'Do you approve this as Chough's intent?'); recorded by kimi-code agent, chough session roadmap-1-0-hi-capture; a relayed claim, not authenticated
+- Leif (0xLeif) decided "Leif: intent approval of the 13 criteria; native scope approval of the change; rulings on FLOW-17 vs FLOW-21 and KNOW-29 vs KNOW-30": ""Approve it"; "Yes, merge when green" (Windows read as best-effort through WSL in the approved summary; KNOW-29/KNOW-30 closed earlier by the #235 rewrite)" (Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10); recorded by kimi-code agent, chough session roadmap-1-0-hi-capture; a relayed claim, not authenticated
+
+## What was verified
+
+## Open threads
+
+## Timeline
+
+- 2026-11-10T15:55:10Z · skip · intent → design · No visuals or interactions: hi criteria and documentation only ^t-fc08ad
+  - native_change: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
+  - revision: 996dadc2d26b200a7f745215ef9c151304107e05
+- 2026-11-10T15:55:42Z · back · design → intent · Skip was meant for design, not intent; the intent capture (13 new criteria from the interview) is the work itself ^t-d9f3e9
+  - native_change: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
+  - revision: 996dadc2d26b200a7f745215ef9c151304107e05
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version
+- 2026-11-10T15:55:42Z · advance · intent → design ·  ^t-b9a560
+  - native_change: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
+  - revision: 996dadc2d26b200a7f745215ef9c151304107e05
+- 2026-11-10T15:55:42Z · skip · design → plan · No visuals or interactions change: hi criteria and roadmap/test-plan documentation only ^t-b2dce3
+  - native_change: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
+  - revision: 996dadc2d26b200a7f745215ef9c151304107e05
+- 2026-11-10T15:58:22Z · gate-opened · plan → plan · Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping ^t-1b255d
+  - native_change: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
+  - revision: 996dadc2d26b200a7f745215ef9c151304107e05
+- 2026-11-11T01:10:45Z · gate-opened · plan → plan · Leif: intent approval of the 13 criteria; native scope approval of the change; rulings on FLOW-17 vs FLOW-21 and KNOW-29 vs KNOW-30 ^t-a19481
+  - native_change: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
+  - revision: 7d89aaa9a7eca18eb22c73ad79a022a0ae7dad57
+- 2026-11-11T02:19:28Z · gate-closed · plan → plan · Leif: approve the intent as a whole (13 new criteria from the 2026-11-10 interview) and the native scope of capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping ^t-4254f6
+  - native_change: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
+  - revision: e208a1103c22c7e1abb914a0fded5a6a88d6a956
+  - relayed_by: {"decided_by":"Leif (0xLeif)","words":"Approve it","where":"Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10, answering 'Do you approve this as Chough's intent?'","recorded_by":"kimi-code agent, chough session roadmap-1-0-hi-capture"}
+- 2026-11-11T02:19:29Z · gate-closed · plan → plan · Leif: intent approval of the 13 criteria; native scope approval of the change; rulings on FLOW-17 vs FLOW-21 and KNOW-29 vs KNOW-30 ^t-28a103
+  - native_change: capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping
+  - revision: e208a1103c22c7e1abb914a0fded5a6a88d6a956
+  - relayed_by: {"decided_by":"Leif (0xLeif)","words":"\"Approve it\"; \"Yes, merge when green\" (Windows read as best-effort through WSL in the approved summary; KNOW-29/KNOW-30 closed earlier by the #235 rewrite)","where":"Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10","recorded_by":"kimi-code agent, chough session roadmap-1-0-hi-capture"}
+
+
+Closed 2026-11-12: done.

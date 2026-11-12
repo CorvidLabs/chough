@@ -1,12 +1,17 @@
-//! Reader-only diagnostic inventory compatibility, REQ-cli-004/006.
-//! Nine historical originals are immutable data, never re-recorded as fresh runs.
-//! Common fixture native/HI stand-ins isolate record parsing; they are TEST inputs,
-//! not claims of native scope approval or real human review.
+//! Reader-only diagnostic inventory compatibility, REQ-cli-004/006, in 0.6.0: the nine
+//! historical originals stay immutable, byte-pinned data. Each is carried from 0.5.x by
+//! `chough migrate` (REQ-records-009) into an entry of the open session that references
+//! it, and live `status` then reports the freshness 0.5.x reported. An invalid inventory
+//! refuses the migration's preview, naming the file and writing nothing, as 0.5.x
+//! `status` refused it. A valid one stays on the entry as diagnostic metadata and never
+//! changes freshness. Common fixture native/HI stand-ins isolate record parsing; they are
+//! TEST inputs, not claims of native scope approval or real human review.
 #![cfg(unix)]
 mod common;
 use common::Fixture;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
@@ -82,13 +87,93 @@ fn corpus() -> Vec<(String, Vec<u8>, Value)> {
         })
         .collect()
 }
-fn fixture() -> (Fixture, String, Value) {
+
+/// The open 0.5.x session of the v0.5.0 release fixture, which references the
+/// observations under test.
+const SESSION: &str = ".chough/sessions/fixture-first.json";
+const BASELINE: &str = "OBS-product-test-00000000000000000000f001";
+const CONSENT: &str = "TEST consent relayed for the inventory migration fixture";
+
+/// A 0.5.x project (the v0.5.0 release fixture's sessions and history) and a baseline
+/// 0.5.x observation that is current once migrated: its content identity and revision
+/// come from `evidence add` on the migrated tree, which the migration's own writes (the
+/// knowledge index among them) are part of, after which the project is reset to its
+/// 0.5.x commit, `start`.
+struct Project {
+    f: Fixture,
+    baseline: Value,
+    start: String,
+}
+
+fn copy_dir(from: &Path, to: &Path) {
+    fs::create_dir_all(to).unwrap();
+    for entry in fs::read_dir(from).unwrap() {
+        let entry = entry.unwrap();
+        let target = to.join(entry.file_name());
+        if entry.file_type().unwrap().is_dir() {
+            copy_dir(&entry.path(), &target);
+        } else {
+            fs::copy(entry.path(), target).unwrap();
+        }
+    }
+}
+
+/// Every file of the project except Git's, with its bytes.
+fn tree(root: &Path) -> BTreeMap<String, Vec<u8>> {
+    fn walk(base: &Path, dir: &Path, files: &mut BTreeMap<String, Vec<u8>>) {
+        for entry in fs::read_dir(dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path.file_name().is_some_and(|name| name == ".git") {
+                continue;
+            }
+            if path.is_dir() {
+                walk(base, &path, files);
+            } else {
+                let name = path.strip_prefix(base).unwrap().display().to_string();
+                files.insert(name, fs::read(&path).unwrap());
+            }
+        }
+    }
+    let mut files = BTreeMap::new();
+    walk(root, root, &mut files);
+    files
+}
+
+fn head(f: &Fixture) -> String {
+    let output = std::process::Command::new("git")
+        .args(["rev-parse", "HEAD"])
+        .current_dir(f.root())
+        .output()
+        .unwrap();
+    String::from_utf8(output.stdout).unwrap().trim().to_string()
+}
+
+/// A front matter scalar of a record.
+fn front_value(text: &str, key: &str) -> Option<String> {
+    let (front, _) = text.strip_prefix("---\n")?.split_once("\n---\n")?;
+    front
+        .lines()
+        .find_map(|line| line.strip_prefix(&format!("{key}: ")))
+        .map(|value| value.trim_matches('"').to_string())
+}
+
+fn project() -> Project {
     // Assert every immutable original before invoking any child CLI.
     assert_eq!(corpus().len(), 9);
     let f = Fixture::new();
     f.stubs();
-    f.init();
-    f.commit("TEST valid inventory-reader baseline");
+    let release =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/releases/v0.5.0/.chough");
+    for folder in ["sessions", "history"] {
+        copy_dir(
+            &release.join(folder),
+            &f.root().join(".chough").join(folder),
+        );
+    }
+    f.commit("TEST a 0.5.x project");
+    let start = head(&f);
+    // The migrated tree's content identity, from a 0.6.0 baseline entry.
+    migrate(&f);
     f.ok(&[
         "evidence",
         "add",
@@ -107,88 +192,157 @@ fn fixture() -> (Fixture, String, Value) {
         "--summary",
         "TEST current baseline, no inventory",
     ]);
-    let files: Vec<_> = fs::read_dir(f.root().join(".chough/evidence"))
-        .unwrap()
-        .collect();
-    assert_eq!(files.len(), 1);
-    let name = files[0]
-        .as_ref()
-        .unwrap()
-        .file_name()
-        .to_string_lossy()
-        .to_string();
-    let record: Value =
-        serde_json::from_slice(&fs::read(f.root().join(".chough/evidence").join(&name)).unwrap())
-            .unwrap();
+    let folder = f
+        .root()
+        .join(format!(".chough/sessions/{}/evidence", f.active_id()));
+    let entries: Vec<_> = fs::read_dir(&folder).unwrap().collect();
+    assert_eq!(entries.len(), 1);
+    let text = fs::read_to_string(entries[0].as_ref().unwrap().path()).unwrap();
     assert!(
-        record["snapshot"].get("input_inventory").is_none(),
-        "writer policy stays unchanged"
+        !text.contains("input_inventory"),
+        "writer policy stays unchanged: {text}"
     );
     let status = f.ok(&["status", "--environment", "local"]);
     assert_eq!(
         status["observations"][0]["freshness"], "current-observation",
         "legacy valid setup must pass before inventory is introduced"
     );
-    assert_eq!(status["observations"][0]["label"], "current");
-    (f, name, record)
+    let content = front_value(&text, "content").unwrap();
+    let revision = front_value(&text, "revision").unwrap();
+    let baseline = json!({
+        "schema_version": 2,
+        "id": BASELINE,
+        "criteria": ["LIFE-1"],
+        "requirements": ["REQ-cli-001"],
+        "contracts": ["specs/cli/cli.spec.md"],
+        "kind": "product-test",
+        "outcome": "passed",
+        "environment": "local",
+        "summary": "TEST current baseline, no inventory",
+        "artifacts": [],
+        "artifact_fingerprints": {},
+        "observed_at_unix_seconds": 1_794_414_607u64,
+        "snapshot": {
+            "revision": revision,
+            "dirty": false,
+            "fingerprint": "0".repeat(64),
+            "content": content,
+        },
+        "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+        "method": "automated",
+    });
+    let p = Project { f, baseline, start };
+    prepare(&p, &[]);
+    p
 }
-fn write(f: &Fixture, name: &str, value: &Value) {
+
+/// Back to the 0.5.x project, with `records` as its observations, each referenced by the
+/// open session, committed.
+fn prepare(p: &Project, records: &[(&str, &[u8])]) {
+    let f = &p.f;
+    f.git(&["reset", "-q", "--hard", &p.start]);
+    f.git(&["clean", "-q", "-fdx"]);
+    let mut ids = vec![];
+    for (name, bytes) in records {
+        let path = f.root().join(".chough/evidence").join(name);
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        fs::write(path, bytes).unwrap();
+        ids.push(name.trim_end_matches(".json").to_string());
+    }
+    let mut session: Value = serde_json::from_str(&f.read(SESSION)).unwrap();
+    session["observations"] = json!(ids);
     f.write(
-        &format!(".chough/evidence/{name}"),
-        &serde_json::to_string(value).unwrap(),
+        SESSION,
+        &(serde_json::to_string_pretty(&session).unwrap() + "\n"),
     );
+    f.commit("TEST the observations under test");
 }
-fn row(f: &Fixture, name: &str, value: &Value) -> Value {
-    write(f, name, value);
-    let before = f.read(&format!(".chough/evidence/{name}"));
-    let status = f.ok(&["status", "--environment", "local"]);
-    assert_eq!(
-        before,
-        f.read(&format!(".chough/evidence/{name}")),
-        "reader must write nothing"
-    );
+
+/// Preview and apply the migration; returns the plan.
+fn migrate(f: &Fixture) -> Value {
+    let plan = f.ok(&["migrate"]);
+    assert_eq!(plan["unaccounted"], json!([]), "{plan:#}");
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    let applied = f.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    plan
+}
+
+fn name_of(value: &Value) -> String {
+    format!("{}.json", value["id"].as_str().unwrap())
+}
+
+/// Migrate `value` as the session's one observation, then its live status row; status
+/// writes nothing.
+fn row(p: &Project, value: &Value) -> Value {
+    let bytes = serde_json::to_vec(value).unwrap();
+    prepare(p, &[(&name_of(value), &bytes)]);
+    migrate(&p.f);
+    status_row(p, &["status", "--environment", "local"])
+}
+
+/// The one observation row of `args`'s status report; the report writes nothing.
+fn status_row(p: &Project, args: &[&str]) -> Value {
+    let before = tree(p.f.root());
+    let status = p.f.ok(args);
+    assert_eq!(before, tree(p.f.root()), "reader must write nothing");
     let rows = status["observations"].as_array().unwrap();
-    assert_eq!(rows.len(), 1);
+    assert_eq!(rows.len(), 1, "{status:#}");
     rows[0].clone()
 }
+
 fn entry(path: &str) -> Value {
     json!({"domain": 0, "key": path, "path": path, "digest": "a".repeat(64)})
 }
 fn inventory(entries: Vec<Value>, complete: bool) -> Value {
     json!({"version":1,"complete":complete,"entries":entries})
 }
-fn refuse(f: &Fixture, name: &str, baseline: &Value, inv: Value, label: &str) {
+
+/// An invalid inventory refuses the migration's preview, naming the record, and the
+/// project keeps every byte, the 0.5.x record included.
+fn refuse(p: &Project, baseline: &Value, inv: Value, label: &str) {
     let mut value = baseline.clone();
     value["snapshot"]["input_inventory"] = inv;
-    write(f, name, &value);
-    let before = f.read(&format!(".chough/evidence/{name}"));
-    let out = f.run(&["status", "--environment", "local"]);
+    let name = name_of(&value);
+    prepare(p, &[(&name, &serde_json::to_vec(&value).unwrap())]);
+    let before = tree(p.f.root());
+    let out = p.f.run(&["migrate"]);
     assert!(
         !out.status.success(),
         "{label}: invalid inventory accepted: {}",
         String::from_utf8_lossy(&out.stdout)
     );
-    assert!(!out.stderr.is_empty(), "{label}: refusal must be visible");
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        stderr.contains(&name),
+        "{label}: refusal must name the record: {stderr}"
+    );
     assert_eq!(
         before,
-        f.read(&format!(".chough/evidence/{name}")),
-        "{label}: refusal mutated record"
+        tree(p.f.root()),
+        "{label}: refusal mutated the project"
     );
 }
 
 #[test]
 fn inventory_exact_nine_originals_stay_historical_partial_and_byte_identical() {
     let originals = corpus();
-    let (f, current_name, current) = fixture();
-    fs::remove_file(f.root().join(".chough/evidence").join(current_name)).unwrap();
-    for (name, bytes, record) in &originals {
+    let p = project();
+    let records: Vec<(&str, &[u8])> = originals
+        .iter()
+        .map(|(name, bytes, _)| (name.as_str(), bytes.as_slice()))
+        .collect();
+    prepare(&p, &records);
+    for (_, _, record) in &originals {
         assert_ne!(
-            record["snapshot"]["content"], current["snapshot"]["content"],
+            record["snapshot"]["content"], p.baseline["snapshot"]["content"],
             "historical discriminator must be real"
         );
-        fs::write(f.root().join(".chough/evidence").join(name), bytes).unwrap();
     }
-    let report = f.ok(&["status", "--environment", "local-macos-arm64"]);
+    let plan = migrate(&p.f);
+    let before = tree(p.f.root());
+    let report = p.f.ok(&["status", "--environment", "local-macos-arm64"]);
+    assert_eq!(before, tree(p.f.root()), "reader must write nothing");
     let rows = report["observations"].as_array().unwrap();
     assert_eq!(rows.len(), 9);
     assert_eq!(
@@ -203,43 +357,65 @@ fn inventory_exact_nine_originals_stay_historical_partial_and_byte_identical() {
             .count(),
         7
     );
-    for (name, bytes, record) in originals {
+    for (_, _, record) in &originals {
+        let id = record["id"].as_str().unwrap();
         let r = rows
             .iter()
-            .find(|r| r["record"]["id"] == record["id"])
-            .unwrap();
-        assert_eq!(r["label"], "historical");
-        assert_eq!(r["freshness"], "stale-revision-or-inputs");
+            .find(|r| r["record"]["aliases"][0] == id)
+            .unwrap_or_else(|| panic!("{id} is not an entry: {report:#}"));
+        assert_ne!(r["label"], "current", "{r:#}");
+        assert_eq!(r["freshness"], "stale-revision-or-inputs", "{r:#}");
+        // Every evidentiary value and the partial inventory are retained.
+        let carried = &r["record"];
+        for key in [
+            "criteria",
+            "requirements",
+            "contracts",
+            "kind",
+            "outcome",
+            "environment",
+            "summary",
+            "observed_at_unix_seconds",
+            "method",
+            "track",
+            "limitations",
+        ] {
+            assert_eq!(carried[key], record[key], "{id}: {key}");
+        }
+        assert_eq!(carried["revision"], record["snapshot"]["revision"], "{id}");
+        assert_eq!(carried["content"], record["snapshot"]["content"], "{id}");
         assert_eq!(
-            r["record"], record,
-            "every evidentiary value/provenance and partial inventory retained"
+            carried["input_inventory"], record["snapshot"]["input_inventory"],
+            "{id}: the partial inventory is retained"
         );
-        assert_eq!(
-            r["record"]["snapshot"]["input_inventory"]["complete"],
-            false
-        );
-        assert_eq!(
-            fs::read(f.root().join(".chough/evidence").join(name)).unwrap(),
-            bytes
+        assert_eq!(carried["input_inventory"]["complete"], false, "{id}");
+        assert!(
+            plan["sources"]
+                .get(format!(".chough/evidence/{id}.json"))
+                .is_some(),
+            "{id}"
         );
     }
+    // The originals themselves are untouched.
+    assert_eq!(corpus().len(), 9);
 }
+
 #[test]
 fn inventory_absent_null_and_advisory_data_never_change_authoritative_freshness() {
-    let (f, name, baseline) = fixture();
-    let mut v = baseline.clone();
-    assert_eq!(row(&f, &name, &v)["freshness"], "current-observation");
+    let p = project();
+    let mut v = p.baseline.clone();
+    assert_eq!(row(&p, &v)["freshness"], "current-observation");
     v["snapshot"]["input_inventory"] = Value::Null;
-    assert_eq!(row(&f, &name, &v)["freshness"], "current-observation");
+    assert_eq!(row(&p, &v)["freshness"], "current-observation");
     for complete in [false, true] {
         v["snapshot"]["input_inventory"] = inventory(vec![entry("src/input.txt")], complete);
-        let r = row(&f, &name, &v);
+        let r = row(&p, &v);
         assert_eq!(
             r["freshness"], "current-observation",
             "diagnostic digest intentionally differs from actual bytes"
         );
         assert_eq!(
-            r["record"]["snapshot"]["input_inventory"],
+            r["record"]["input_inventory"],
             v["snapshot"]["input_inventory"]
         );
     }
@@ -247,17 +423,17 @@ fn inventory_absent_null_and_advisory_data_never_change_authoritative_freshness(
     // This token is retained exactly and remains diagnostic, not input authority.
     v["snapshot"]["input_inventory"] = inventory(vec![entry("src/input.txt")], true);
     v["snapshot"]["input_inventory"]["entries"][0]["digest"] = json!("A".repeat(64));
-    let uppercase = row(&f, &name, &v);
+    let uppercase = row(&p, &v);
     assert_eq!(uppercase["freshness"], "current-observation");
     assert_eq!(
-        uppercase["record"]["snapshot"]["input_inventory"]["entries"][0]["digest"],
+        uppercase["record"]["input_inventory"]["entries"][0]["digest"],
         "A".repeat(64)
     );
-    f.write("src/input.txt", "changed authoritative input\n");
-    let uppercase_stale = row(&f, &name, &v);
+    p.f.write("src/input.txt", "changed authoritative input\n");
+    let uppercase_stale = status_row(&p, &["status", "--environment", "local"]);
     assert_eq!(uppercase_stale["freshness"], "stale-revision-or-inputs");
-    assert_eq!(
-        uppercase_stale["label"], "historical",
+    assert_ne!(
+        uppercase_stale["label"], "current",
         "uppercase metadata cannot promote stale content"
     );
     for inv in [
@@ -266,22 +442,23 @@ fn inventory_absent_null_and_advisory_data_never_change_authoritative_freshness(
         inventory(vec![entry("src/input.txt")], true),
     ] {
         v["snapshot"]["input_inventory"] = inv;
-        let r = row(&f, &name, &v);
+        row(&p, &v);
+        p.f.write("src/input.txt", "changed authoritative input\n");
+        let r = status_row(&p, &["status", "--environment", "local"]);
         assert_eq!(r["freshness"], "stale-revision-or-inputs");
-        assert_eq!(
-            r["label"], "historical",
+        assert_ne!(
+            r["label"], "current",
             "inventory must never promote a stale pass"
         );
     }
 }
+
 #[test]
 fn inventory_strict_schema_versions_and_unsafe_semantics_refuse() {
-    let (f, name, baseline) = fixture();
+    let p = project();
+    let baseline = p.baseline.clone();
     let good = inventory(vec![entry("src/input.txt")], false);
-    assert_eq!(
-        row(&f, &name, &baseline)["freshness"],
-        "current-observation"
-    );
+    assert_eq!(row(&p, &baseline)["freshness"], "current-observation");
     let mut bads = vec![
         ("not-object", json!([])),
         ("missing-fields", json!({})),
@@ -329,25 +506,21 @@ fn inventory_strict_schema_versions_and_unsafe_semantics_refuse() {
         bads.push(("entry-field", v));
     }
     for (label, inv) in bads {
-        refuse(&f, &name, &baseline, inv, label);
+        refuse(&p, &baseline, inv, label);
     }
 }
+
 #[test]
 fn inventory_entry_and_serialized_byte_caps_are_exact() {
-    let (f, name, baseline) = fixture();
+    let p = project();
+    let baseline = p.baseline.clone();
     let mut v = baseline.clone();
     let entries: Vec<_> = (0..128).map(|i| entry(&format!("file{i}"))).collect();
     v["snapshot"]["input_inventory"] = inventory(entries.clone(), false);
-    assert_eq!(row(&f, &name, &v)["freshness"], "current-observation");
+    assert_eq!(row(&p, &v)["freshness"], "current-observation");
     let mut too_many = entries;
     too_many.push(entry("file128"));
-    refuse(
-        &f,
-        &name,
-        &baseline,
-        inventory(too_many, false),
-        "129 entries",
-    );
+    refuse(&p, &baseline, inventory(too_many, false), "129 entries");
     let mut inv = inventory(vec![entry("x")], false);
     let base = serde_json::to_vec(&inv).unwrap().len();
     assert_eq!(
@@ -359,16 +532,18 @@ fn inventory_entry_and_serialized_byte_caps_are_exact() {
     inv["entries"][0] = entry(&path);
     assert_eq!(serde_json::to_vec(&inv).unwrap().len(), 32768);
     v["snapshot"]["input_inventory"] = inv.clone();
-    assert_eq!(row(&f, &name, &v)["freshness"], "current-observation");
+    assert_eq!(row(&p, &v)["freshness"], "current-observation");
     inv["complete"] = json!(true); // One byte shorter; grow path+key by two.
     inv["entries"][0] = entry(&(path + "x"));
     assert_eq!(serde_json::to_vec(&inv).unwrap().len(), 32769);
 
-    refuse(&f, &name, &baseline, inv, "inventory byte cap");
+    refuse(&p, &baseline, inv, "inventory byte cap");
 }
+
 #[test]
 fn inventory_change_key_classification_and_writer_omission_are_preserved() {
-    let (f, name, baseline) = fixture();
+    let p = project();
+    let baseline = p.baseline.clone();
     let mut v = baseline.clone();
     v["snapshot"]["input_inventory"] = inventory(
         vec![
@@ -376,85 +551,83 @@ fn inventory_change_key_classification_and_writer_omission_are_preserved() {
         ],
         true,
     );
-    assert_eq!(row(&f, &name, &v)["freshness"], "current-observation");
+    assert_eq!(row(&p, &v)["freshness"], "current-observation");
     let mut wrong = v["snapshot"]["input_inventory"].clone();
     wrong["entries"][0]["key"] = json!(".specsync/changes/test-change/design.md");
-    refuse(&f, &name, &baseline, wrong, "wrong change domain key");
-    // No change to record schema or producer: the fresh baseline has no inventory.
+    refuse(&p, &baseline, wrong, "wrong change domain key");
+    // No change to record schema or producer: project() asserts the 0.6.0 writer's
+    // entry has no inventory, and the 0.5.x baseline carries none.
     assert!(baseline["snapshot"].get("input_inventory").is_none());
     assert_eq!(baseline["schema_version"], 2);
 }
 
 #[test]
 fn inventory_legacy_schema_one_and_environment_rules_remain_authoritative() {
-    let (f, name, baseline) = fixture();
+    let p = project();
+    let baseline = p.baseline.clone();
+    // A schema 1 record has no content identity: its revision-bound identity cannot
+    // survive the commit the migration needs, so it reads stale, and an inventory
+    // cannot change that.
     let mut legacy = baseline.clone();
     legacy["schema_version"] = json!(1);
     legacy["snapshot"]
         .as_object_mut()
         .unwrap()
         .remove("content");
-    assert_eq!(row(&f, &name, &legacy)["freshness"], "current-observation");
+    assert_eq!(row(&p, &legacy)["freshness"], "stale-revision-or-inputs");
     legacy["snapshot"]["input_inventory"] = Value::Null;
-    assert_eq!(row(&f, &name, &legacy)["freshness"], "current-observation");
+    assert_eq!(row(&p, &legacy)["freshness"], "stale-revision-or-inputs");
     let mut modern = baseline;
     modern["snapshot"]["input_inventory"] = inventory(vec![], true);
-    write(&f, &name, &modern);
-    let unchecked = f.ok(&["status"]);
+    assert_eq!(row(&p, &modern)["freshness"], "current-observation");
     assert_eq!(
-        unchecked["observations"][0]["freshness"],
+        status_row(&p, &["status"])["freshness"],
         "environment-unchecked"
     );
-    let mismatch = f.ok(&["status", "--environment", "another"]);
     assert_eq!(
-        mismatch["observations"][0]["freshness"],
+        status_row(&p, &["status", "--environment", "another"])["freshness"],
         "stale-environment"
     );
-    // An empty commit leaves modern content current but stales revision-bound schema1.
-    f.git(&["commit", "--allow-empty", "-m", "TEST ancestry only"]);
-    assert_eq!(row(&f, &name, &modern)["freshness"], "current-observation");
+    // An empty commit leaves modern content current.
+    p.f.git(&["commit", "-q", "--allow-empty", "-m", "TEST ancestry only"]);
     assert_eq!(
-        row(&f, &name, &legacy)["freshness"],
-        "stale-revision-or-inputs"
+        status_row(&p, &["status", "--environment", "local"])["freshness"],
+        "current-observation"
     );
 }
 
 #[test]
 fn inventory_noncanonical_aliases_cannot_claim_distinct_normal_inputs() {
-    let (f, name, baseline) = fixture();
+    let p = project();
+    let baseline = p.baseline.clone();
     let mut canonical = baseline.clone();
     canonical["snapshot"]["input_inventory"] = inventory(vec![entry("src/input.txt")], true);
-    let control = row(&f, &name, &canonical);
+    let control = row(&p, &canonical);
     assert_eq!(
         control["freshness"], "current-observation",
         "valid normal path must load before alias discriminator"
     );
     assert_eq!(
-        control["record"]["snapshot"]["input_inventory"],
+        control["record"]["input_inventory"],
         canonical["snapshot"]["input_inventory"]
     );
     // Path::components normalizes these spellings, but raw strings are not unique
     // canonical input names. Reject metadata; never rewrite original OBS bytes.
     for alias in ["src//input.txt", "src/./input.txt", "src/input.txt/"] {
+        refuse(&p, &baseline, inventory(vec![entry(alias)], true), alias);
         refuse(
-            &f,
-            &name,
-            &baseline,
-            inventory(vec![entry(alias)], true),
-            alias,
-        );
-        refuse(
-            &f,
-            &name,
+            &p,
             &baseline,
             inventory(vec![entry("src/input.txt"), entry(alias)], true),
             "two spellings for one input",
         );
     }
 }
+
 #[test]
 fn inventory_noncanonical_alias_cannot_bypass_change_bookkeeping_classification() {
-    let (f, name, baseline) = fixture();
+    let p = project();
+    let baseline = p.baseline.clone();
     let mut canonical = baseline.clone();
     canonical["snapshot"]["input_inventory"] = inventory(
         vec![
@@ -463,13 +636,12 @@ fn inventory_noncanonical_alias_cannot_bypass_change_bookkeeping_classification(
         false,
     );
     assert_eq!(
-        row(&f, &name, &canonical)["freshness"],
+        row(&p, &canonical)["freshness"],
         "current-observation",
         "valid change input must load before alias discriminator"
     );
     refuse(
-        &f,
-        &name,
+        &p,
         &baseline,
         inventory(
             vec![entry(".specsync/changes/test-change/state.json")],
@@ -484,12 +656,6 @@ fn inventory_noncanonical_alias_cannot_bypass_change_bookkeeping_classification(
         ".specsync/changes//test-change/state.json",
         ".specsync/./changes/test-change/state.json",
     ] {
-        refuse(
-            &f,
-            &name,
-            &baseline,
-            inventory(vec![entry(alias)], true),
-            alias,
-        );
+        refuse(&p, &baseline, inventory(vec![entry(alias)], true), alias);
     }
 }

@@ -135,7 +135,7 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-7"]
 requirements = ["REQ-cli-029"]
-paths = ["docs/ROADMAP.md"]
+paths = ["docs/roadmap-1.0.md"]
 environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
 expected = ["the workflow_authority test the_roadmap_claims_no_passing_cold_start_for_delivered_work passes"]
@@ -163,38 +163,3 @@ adapter = "cargo-test"
 test_target = "cli"
 test = "the_walkthrough_begins_with_the_new_project_setup_path"
 
-[[case]]
-id = "TC-cli-librarian-off-references-skipped"
-title = "With the librarian off, done leaves the references and reports skipped"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-16"]
-requirements = ["REQ-cli-045"]
-paths = ["src/stage.rs"]
-environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["the reduce test with_the_librarian_off_done_leaves_the_references_and_reports_skipped passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "with_the_librarian_off_done_leaves_the_references_and_reports_skipped"
-
-[[case]]
-id = "TC-cli-no-reset-drops-no-observation"
-title = "With no reset time, done drops no observation reference"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["KNOW-16"]
-requirements = ["REQ-cli-045"]
-paths = ["src/stage.rs"]
-environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["the reduce test with_no_reset_time_done_drops_no_observation_reference passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "reduce"
-test = "with_no_reset_time_done_drops_no_observation_reference"

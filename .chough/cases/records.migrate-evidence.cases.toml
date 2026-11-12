@@ -1,0 +1,169 @@
+profile = "chough-testing/1"
+module = "records"
+
+# Plan step 10, the evidence mapper (t38b): chough migrate carries 0.5.x observations and
+# validation runs (src/evidence_migrate.rs). One case per test in tests/migrate_evidence.rs.
+# A cases file binds one module's contract, so these list only records requirements; the
+# receipts follow REQ-history-006, runs REQ-cli-023 and schema 1 REQ-cli-017.
+
+[[case]]
+id = "TC-records-migrate-evidence-entries-receipts"
+title = "An observation an open session references becomes its evidence entry, one an archived session or a bug references a receipt with REQ-history-006's fields, and others are removed; raw logs leave with their digest as the fingerprint, an in-project artifact stays, and every old ID resolves"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-8", "KNOW-30", "LIFE-26"]
+requirements = ["REQ-records-009", "REQ-records-003", "REQ-records-005"]
+paths = ["src/evidence_migrate.rs", "src/migrate.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::observations_become_entries_receipts_or_removals_and_every_old_id_resolves passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "observations_become_entries_receipts_or_removals_and_every_old_id_resolves"
+
+[[case]]
+id = "TC-records-migrate-evidence-v0-1-ids"
+title = "Observation IDs from 0.1.0 without the OBS- prefix are kept as aliases and resolve after the apply"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009", "REQ-records-003"]
+paths = ["src/evidence_migrate.rs", "src/migrate.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::v0_1_0_observation_ids_resolve_after_the_apply passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "v0_1_0_observation_ids_resolve_after_the_apply"
+
+[[case]]
+id = "TC-records-migrate-evidence-shared-observation"
+title = "An observation two open sessions reference is one entry, in the session whose new ID sorts first, and the other resolves it by its alias with no alias held twice"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009", "REQ-records-003"]
+paths = ["src/evidence_migrate.rs", "src/migrate.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::one_observation_two_open_sessions_reference_is_one_entry_in_the_first passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "one_observation_two_open_sessions_reference_is_one_entry_in_the_first"
+
+[[case]]
+id = "TC-records-migrate-evidence-key-screenshots"
+title = "A carried observation's PNG or JPEG is stripped of its metadata and kept beside its session or story within REQ-records-013's bounds, in observed-then-ID order; the rest are removed with why"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-35", "KNOW-34", "LIFE-26", "LIFE-20"]
+requirements = ["REQ-records-009", "REQ-records-013"]
+paths = ["src/evidence_migrate.rs", "src/migrate.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::key_screenshots_are_stripped_bounded_and_kept_beside_their_session_or_story passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "key_screenshots_are_stripped_bounded_and_kept_beside_their_session_or_story"
+
+[[case]]
+id = "TC-records-migrate-evidence-validation-runs"
+title = "A 0.5.x validation run an open session references is one entry in the format validate run writes, holding each attempt with its observation's new ID; one nothing references is removed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "FLOW-7"]
+requirements = ["REQ-records-009"]
+paths = ["src/evidence_migrate.rs", "src/migrate.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::validation_runs_carry_like_observations passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "validation_runs_carry_like_observations"
+
+[[case]]
+id = "TC-records-migrate-evidence-deterministic-names"
+title = "Migrated names are the same in every plan, a clash takes the suffix of the old ID's SHA-256, and an apply interrupted after one entry plans the same digest and resumes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-21"]
+requirements = ["REQ-records-009", "REQ-records-003"]
+paths = ["src/evidence_migrate.rs", "src/migrate.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::names_are_deterministic_and_an_interrupted_apply_resumes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "names_are_deterministic_and_an_interrupted_apply_resumes"
+
+[[case]]
+id = "TC-records-migrate-evidence-rolled-observations"
+title = "Observations the 0.5.x roll-up moved into the vault become receipts of their story, their images read from the vault and kept beside the story"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "KNOW-30", "KNOW-34"]
+requirements = ["REQ-records-009", "REQ-records-013"]
+paths = ["src/evidence_migrate.rs", "src/migrate.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::rolled_observations_in_the_vault_become_receipts_of_their_story passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "rolled_observations_in_the_vault_become_receipts_of_their_story"
+
+[[case]]
+id = "TC-records-migrate-evidence-schema-1"
+title = "A schema 1 observation is carried without a content identity, so its entry reads stale after a commit while a schema 2 twin with the same content reads current"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-2", "LIFE-7"]
+requirements = ["REQ-records-009"]
+paths = ["src/evidence_migrate.rs", "src/migrate.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases", "tests/fixtures/migrate"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::a_schema_1_observation_is_carried_without_content_and_stays_stale passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "a_schema_1_observation_is_carried_without_content_and_stays_stale"
+
+[[case]]
+id = "TC-records-migrate-evidence-uppercase-digests"
+title = "A 0.5.x observation with uppercase digests migrates with every digest lowercased, and status and next read it (REQ-cli-017's lowercase content rule)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-2"]
+requirements = ["REQ-records-009"]
+paths = ["src/evidence_migrate.rs", "tests/migrate_evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::uppercase_digests_migrate_lowercased_and_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "uppercase_digests_migrate_lowercased_and_read"

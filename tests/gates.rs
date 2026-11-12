@@ -159,35 +159,24 @@ fn record<'a>(list_id: &'a str, gates: &'a str, words: &'a str) -> Vec<&'a str> 
 }
 
 fn session(fixture: &Fixture) -> Value {
-    for path in [
-        format!(".chough/sessions/{KEY}.json"),
-        format!(".chough/sessions/archive/{KEY}.json"),
-    ] {
-        if fixture.exists(&path) {
-            return serde_json::from_str(&fixture.read(&path)).unwrap();
-        }
-    }
-    panic!("no session {KEY}");
+    fixture.session_json(KEY)
 }
 
-/// Every gate-closed relay in history, by gate.
+/// Every gate-closed relay on the active session's Timeline, by gate.
 fn closed_relays(fixture: &Fixture) -> BTreeMap<String, Value> {
     let mut found = BTreeMap::new();
-    let Ok(cycles) = fs::read_dir(fixture.root().join(".chough/history/cycles")) else {
-        return found;
-    };
-    for cycle in cycles {
-        for event in fs::read_dir(cycle.unwrap().path()).unwrap() {
-            let value: Value =
-                serde_json::from_str(&fs::read_to_string(event.unwrap().path()).unwrap()).unwrap();
-            let transition = &value["transition"];
-            if transition["kind"] == "gate-closed" && !transition["relayed_by"].is_null() {
-                found.insert(
-                    // Gate records keep the gate text as their reason.
-                    transition["reason"].as_str().unwrap().to_string(),
-                    transition["relayed_by"].clone(),
-                );
-            }
+    for entry in fixture.ok(&["history", "show"])["entries"]
+        .as_array()
+        .unwrap()
+    {
+        if entry["kind"] == "gate-closed" && !entry["relayed_by"].is_null() {
+            // A gate-closed entry's text is its gate (the reason stays empty).
+            let gate = entry["gate"]
+                .as_str()
+                .or(entry["reason"].as_str())
+                .unwrap()
+                .to_string();
+            found.insert(gate, entry["relayed_by"].clone());
         }
     }
     found
@@ -354,6 +343,11 @@ fn gate_record_refuses_unknown_unlisted_closed_or_changed_gates_with_nothing_wri
 fn a_verifying_gate_is_refused_and_closes_through_ship_with_the_list() {
     let review = "Implementation review of g1";
     let fixture = project(&[]);
+    // The review gate drives the native review as the decided human (REQ-records-008).
+    fixture.write(
+        ".chough/local/identity.toml",
+        "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-reviewer\"\n",
+    );
     let archive = ".specsync/archive/changes/2026-11-01-g1";
     fixture.write(
         &format!("{archive}/finalization.json"),
@@ -420,12 +414,18 @@ fn relay_summary_fields_are_both_or_neither() {
     fixture.init();
     let digest = "a".repeat(64);
     let good = json!({"decided_by": "SYNTHETIC-human", "words": "yes", "where": "chat", "recorded_by": "SYNTHETIC-agent", "summary_digest": digest, "list": "0123456789ab"});
-    let line = |relay: &Value| {
-        json!({"schema_version": 1, "at_unix_seconds": 1, "kind": "gate-closed", "from": "intent", "to": "intent", "reason": null, "gate": "Gate", "revision": null, "refresh": [], "relayed_by": relay}).to_string()
+    let entry = |relay: &Value| {
+        format!(
+            "- 2026-11-11T00:00:00Z · gate-closed · intent → intent · Gate ^t-aaaaaa\n  - relayed_by: {}\n",
+            serde_json::to_string(relay).unwrap()
+        )
     };
-    fixture.write(".chough/transitions.jsonl", &format!("{}\n", line(&good)));
-    let shown = fixture.ok(&["stage", "show"]);
-    assert_eq!(shown["recent_transitions"][0]["relayed_by"], good);
+    let file = fixture.session_file();
+    let original = fixture.read(&file);
+    fixture.write(&file, &format!("{original}\n{}", entry(&good)));
+    let shown = fixture.ok(&["history", "show"]);
+    let entries = shown["entries"].as_array().unwrap();
+    assert_eq!(entries.last().unwrap()["relayed_by"], good);
     let mut variants = vec![];
     for key in ["summary_digest", "list"] {
         let mut alone = good.clone();
@@ -439,24 +439,10 @@ fn relay_summary_fields_are_both_or_neither() {
     upper["list"] = json!("0123456789AB");
     variants.push(upper);
     for relay in variants {
-        fixture.write(".chough/transitions.jsonl", &format!("{}\n", line(&relay)));
-        let error = fixture.fails(&["stage", "show"]);
+        fixture.write(&file, &format!("{original}\n{}", entry(&relay)));
+        let error = fixture.fails(&["history", "show"]);
         assert!(error.contains("invalid transition"), "{relay}: {error}");
     }
-}
-
-#[test]
-fn the_change_log_names_the_oldest_chough_that_reads_summary_digests() {
-    let log =
-        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("CHANGELOG.md")).unwrap();
-    let entry = log
-        .split("\n- ")
-        .find(|entry| entry.contains("summary_digest"))
-        .expect("no change-log entry names summary_digest");
-    assert!(
-        entry.contains("oldest Chough that reads"),
-        "the entry names no oldest reader: {entry}"
-    );
 }
 
 #[test]
@@ -472,18 +458,81 @@ fn a_gate_of_another_open_session_is_refused_naming_session_use() {
         .find(|gate| gate["gate"] == SCOPE)
         .unwrap()
         .clone();
-    assert_eq!(gate["session"], KEY);
+    // The list names the session by its ID, which `session use` takes as it is.
+    let id = fixture.id_of(KEY);
+    assert_eq!(gate["session"], id.as_str());
     let number = gate["number"].to_string();
     let list_id = listed["list"].as_str().unwrap().to_string();
     let before = records(fixture.root());
     let error = fixture.fails(&record(&list_id, &number, "yes"));
     assert!(
-        error.contains(&format!("`chough session use {KEY}`")),
+        error.contains(&format!("`chough session use {id}`")),
         "{error}"
     );
     assert_eq!(records(fixture.root()), before, "something was written");
     // The recovery it names succeeds.
-    fixture.ok(&["session", "use", KEY]);
+    fixture.ok(&["session", "use", &id]);
     fixture.ok(&record(&list_id, &number, "yes"));
     assert_eq!(session(&fixture)["awaiting_human"], json!([]));
+}
+
+/// #190 (REQ-cli-061): a gate summary counts the change from the merge base with the
+/// default branch and leaves out Chough's records, the knowledge directory and SpecSync
+/// bookkeeping: a one-line product edit, 300 records and 200 files merged from main
+/// count as one file, which the summary names.
+#[test]
+fn gate_summary_counts_only_the_changes_own_files() {
+    let fixture = project(&[SCOPE]);
+    fixture.commit("the product so far, on main");
+    fixture.git(&["checkout", "-q", "-B", "main"]);
+    fixture.git(&["checkout", "-q", "-b", "feature"]);
+    fixture.write("src/product.txt", "one line\n");
+    for index in 0..150 {
+        fixture.write(
+            &format!(".chough/sessions/2026-11-11-feature/evidence/2026-11-11-entry-{index}.md"),
+            "---\nkind: evidence\n---\n",
+        );
+        fixture.write(
+            &format!("knowledge/journal/2026-11-11-post-{index}.md"),
+            "---\nkind: journal\n---\n",
+        );
+    }
+    fixture.commit("the change, with its records");
+    fixture.git(&["checkout", "-q", "main"]);
+    for index in 0..200 {
+        fixture.write(&format!("lib/merged-{index}.txt"), "from main\n");
+    }
+    fixture.commit("work on main after the base");
+    fixture.git(&["checkout", "-q", "feature"]);
+    fixture.git(&["merge", "-q", "--no-edit", "main"]);
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    assert!(
+        summary.contains("What changed: 1 files, +1 −0 since "),
+        "{summary}"
+    );
+    assert!(summary.contains("  src/product.txt +1 −0"), "{summary}");
+    assert!(!summary.contains("lib/merged-"), "{summary}");
+}
+
+/// REQ-cli-061, TC-cli-gate-summary-says-when-there-is-no-base (G2): with no merge base
+/// and no recorded base commit, the summary's Diff line says the base is unknown instead
+/// of giving a `git diff unknown..<sha>` command that fails.
+#[test]
+fn a_summary_with_no_base_says_so_instead_of_a_broken_diff_command() {
+    let fixture = project(&[SCOPE]);
+    fixture.write(
+        &format!("{DIR}/state.json"),
+        &json!({"id": ID, "title": "Free shipping at the threshold", "state": "approved"})
+            .to_string(),
+    );
+    fixture.commit("no recorded base");
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    let diff = summary
+        .lines()
+        .find(|line| line.starts_with("Diff:"))
+        .unwrap_or_else(|| panic!("no Diff line:\n{summary}"));
+    assert!(!diff.contains("unknown.."), "{diff}");
+    assert!(diff.contains("unknown"), "{diff}");
 }

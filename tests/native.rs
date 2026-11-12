@@ -13,7 +13,7 @@ const MARKER: &str = "chough_archive_authentication";
 
 #[cfg(unix)]
 const NATIVE_STUB: &str = r#"#!/bin/sh
-if [ "$1" = --version ]; then printf 'specsync 6.2.0\n'; exit 0; fi
+if [ "$1" = --version ]; then printf 'specsync 6.3.0\n'; exit 0; fi
 if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
 if [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi
 if [ -f .stub-sleep ]; then
@@ -127,8 +127,8 @@ fn warm_reports_reuse_but_every_lifecycle_read_stays_live() {
 
     fixture.ok(&["timing", "--cycle", "current", "--json"]);
     assert_eq!(fixture.native_calls(), 1, "timing reused the report");
-    fixture.ok(&["evidence", "prune"]);
-    assert_eq!(fixture.native_calls(), 1, "retention reused the report");
+    // 0.6.0 has no retention, so `evidence prune` is gone (REQ-history-001 and
+    // REQ-history-004 are removed).
 }
 
 #[cfg(unix)]
@@ -270,7 +270,7 @@ fn a_live_reply_cannot_supply_the_cached_proof_marker() {
     fixture.write(
         "bin/specsync",
         &format!(
-            "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.2.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf '%s\\n' '{{\"summary\":{{\"id\":\"old-change\",\"state\":\"archived\",\"next_action\":\"none\",\"correction_valid\":true,\"approval_valid\":true,\"terminal_evidence\":{{\"validity\":\"authenticated-history\"}}}},\"change\":{{\"id\":\"old-change\",\"state\":\"archived\"}},\"acceptance_entries\":[],\"{MARKER}\":{forged}}}'\n"
+            "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.3.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf '%s\\n' '{{\"summary\":{{\"id\":\"old-change\",\"state\":\"archived\",\"next_action\":\"none\",\"correction_valid\":true,\"approval_valid\":true,\"terminal_evidence\":{{\"validity\":\"authenticated-history\"}}}},\"change\":{{\"id\":\"old-change\",\"state\":\"archived\"}},\"acceptance_entries\":[],\"{MARKER}\":{forged}}}'\n"
         ),
     );
     fixture.executable("bin/specsync");
@@ -390,7 +390,7 @@ fn failed_malformed_and_oversized_inputs_never_become_authenticated() {
         } else {
             fixture.write(
                 "bin/specsync",
-                "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.2.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf 'not json\\n'\n",
+                "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.3.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf 'not json\\n'\n",
             );
             fixture.executable("bin/specsync");
         }
@@ -434,4 +434,341 @@ fn a_resolved_specsync_symlink_can_prime_and_reuse() {
         real.canonicalize().unwrap().to_str().unwrap()
     );
     expect_cached(&fixture, "resolved SpecSync symlink");
+}
+
+// REQ-records-014: Chough's records stay out of SpecSync's verification. These run real
+// SpecSync (the CI pin; 6.1.2 is the first release with `verification_ignored_paths`) on
+// the shipping sample; without SpecSync on PATH they are skipped, and the Fledge CI job
+// runs them.
+
+/// Whether real SpecSync is on PATH.
+#[cfg(unix)]
+fn real_specsync() -> bool {
+    let found = std::process::Command::new("specsync")
+        .arg("--version")
+        .output()
+        .is_ok_and(|output| output.status.success());
+    if !found {
+        eprintln!("skipped: real SpecSync is not on PATH (the Fledge CI job runs this test)");
+    }
+    found
+}
+
+/// The shipping sample under real SpecSync, its change `free-shipping-at-the-threshold`
+/// approved by a SYNTHETIC actor and implemented, everything committed. With `ENTRIES=yes`
+/// the seed commit lists Chough's three record folders in `verification_ignored_paths`.
+#[cfg(unix)]
+const IMPLEMENTED: &str = r##"set -eu
+rm -rf ./* .chough .specsync
+cp -R "$SAMPLE/." .
+rm -f .specsync/changes/.keep .specsync/archive/changes/.keep
+git -c init.defaultBranch=main init -q
+git config user.name "Chough test"; git config user.email test@example.invalid; git config commit.gpgsign false
+"$CHOUGH" init --objective "SYNTHETIC verification exclusions" --intent-scope CHECKOUT --module shipping >/dev/null
+specsync change adopt --json >/dev/null
+if [ "$ENTRIES" = yes ]; then
+  sed 's#"verification_commands": \[\]#"verification_ignored_paths": [".chough/archive/", ".chough/bugs/", ".chough/sessions/"],\n  "verification_commands": []#' .specsync/sdd.json >sdd.tmp
+  mv sdd.tmp .specsync/sdd.json
+  grep -q verification_ignored_paths .specsync/sdd.json
+fi
+git add -A; git commit -qm seed
+id=free-shipping-at-the-threshold
+specsync change new "Free shipping at the threshold" --spec shipping --path src/lib.rs --path tests/ --json >/dev/null
+specsync change answer $id acceptance_criteria '["An order of exactly 5000 cents ships free"]' --json >/dev/null
+specsync change answer $id public_contract yes --json >/dev/null
+specsync change answer $id architecture_risk no --json >/dev/null
+specsync change answer $id constraints none --json >/dev/null 2>&1 || true
+for f in .specsync/changes/$id/*.md; do
+  name=$(basename "$f" .md)
+  [ "$name" = change ] && continue
+  printf -- '---\nchange: %s\nartifact: %s\n---\n\n# %s\n\n' "$id" "$name" "$name" >"$f"
+  case "$name" in
+    tasks) printf -- '- [x] Add the threshold rule.\n' >>"$f" ;;
+    testing) printf -- '## Requirement Evidence\n\n- `REQ-shipping-002`: tests/threshold.rs asserts a zero fee at the threshold.\n' >>"$f" ;;
+    plan) printf '## Approach\n\nAdd the rule.\n\n## Out of scope\n\nNone.\n\n## Steps\n\n1. Add it.\n\n## Risks\n\nOff by one.\n\n## Constraints consulted\n\nNone.\n' >>"$f" ;;
+    *) printf 'Orders of 5000 cents or more ship free.\n' >>"$f" ;;
+  esac
+done
+mkdir -p .specsync/changes/$id/deltas
+printf '## ADDED\n\n### REQUIREMENT REQ-shipping-002\n\nThe module SHALL charge no fee at or above the threshold. Trace: CHECKOUT-1.\n\nAcceptance Criteria\n- tests/threshold.rs asserts a zero fee at the threshold.\n' >.specsync/changes/$id/deltas/shipping.md
+git add -A; git commit -qm draft
+specsync change approve $id --actor "SYNTHETIC-test-approver-not-a-human" >/dev/null
+mkdir -p tests; printf '#[test]\nfn threshold() {}\n' >tests/threshold.rs
+git add -A; git commit -qm implement
+"##;
+
+#[cfg(unix)]
+const CHANGE: &str = "free-shipping-at-the-threshold";
+
+/// Run `script` with `sh` in `dir`, as the fixture's Chough would see it: no actor or
+/// user identity from this machine. Returns the output, whatever the exit.
+#[cfg(unix)]
+fn sh_in(
+    dir: &Path,
+    fixture: &Fixture,
+    script: &str,
+    env: &[(&str, &str)],
+) -> std::process::Output {
+    let mut command = std::process::Command::new("sh");
+    command
+        .arg("-c")
+        .arg(script)
+        .current_dir(dir)
+        .env("CHOUGH", env!("CARGO_BIN_EXE_chough"))
+        .env(
+            "SAMPLE",
+            concat!(env!("CARGO_MANIFEST_DIR"), "/examples/shipping"),
+        )
+        .env("GIT_CONFIG_GLOBAL", "/dev/null")
+        .env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG))
+        .envs(env.iter().copied());
+    for name in common::ACTOR_VARIABLES {
+        command.env_remove(name);
+    }
+    command.output().unwrap()
+}
+
+/// [`sh_in`] in the fixture root, which must succeed; returns stdout.
+#[cfg(unix)]
+fn sh_ok(fixture: &Fixture, script: &str, env: &[(&str, &str)]) -> String {
+    let output = sh_in(fixture.root(), fixture, script, env);
+    assert!(
+        output.status.success(),
+        "script failed: {}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    String::from_utf8_lossy(&output.stdout).into_owned()
+}
+
+/// The implemented sample, with or without the three entries.
+#[cfg(unix)]
+fn implemented(entries: bool) -> Fixture {
+    let fixture = Fixture::new();
+    sh_ok(
+        &fixture,
+        IMPLEMENTED,
+        &[("ENTRIES", if entries { "yes" } else { "no" })],
+    );
+    fixture
+}
+
+/// `specsync change audit`'s errors and the change's handoff readiness, read in `dir`;
+/// both are read-only. Verification is current when the audit has no error and the
+/// readiness is `safe`.
+#[cfg(unix)]
+fn verification(dir: &Path, fixture: &Fixture) -> (Vec<String>, String) {
+    let read = |args: &[&str]| -> Value {
+        let output = sh_in(dir, fixture, &format!("specsync {}", args.join(" ")), &[]);
+        serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
+            panic!(
+                "specsync {args:?}: {error}: {}{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            )
+        })
+    };
+    let audit = read(&["change", "audit", "--json"]);
+    let errors = audit["report"]["errors"]
+        .as_array()
+        .unwrap_or_else(|| panic!("{audit:#}"))
+        .iter()
+        .map(|error| error.as_str().unwrap_or_default().to_string())
+        .collect();
+    let status = read(&["change", "status", CHANGE, "--json"]);
+    let readiness = status["summary"]["handoff"]["readiness"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    (errors, readiness)
+}
+
+/// REQ-records-014, TC-records-untracked-receipt-keeps-verification (spec-sync #1045):
+/// an untracked receipt under `.chough/sessions/` present while `change check --commit`
+/// runs is left out of the commit. With the entries, verification is current in that tree
+/// and in a clean clone of the pushed commit, whose workspace digest matches the recorded
+/// one; without them the clone's verification is stale, as the control.
+#[cfg(unix)]
+#[test]
+fn an_untracked_receipt_at_check_commit_matches_a_clean_clone() {
+    if !real_specsync() {
+        return;
+    }
+    for entries in [true, false] {
+        let fixture = implemented(entries);
+        let elsewhere = tempfile::tempdir().unwrap();
+        let origin = elsewhere.path().join("origin.git");
+        let clone = elsewhere.path().join("clone");
+        sh_ok(
+            &fixture,
+            r##"set -eu
+mkdir -p .chough/sessions/SYNTHETIC-session/evidence
+printf 'SYNTHETIC receipt\n' >.chough/sessions/SYNTHETIC-session/evidence/r1.md
+specsync change check free-shipping-at-the-threshold --commit >/dev/null
+test -n "$(git status --porcelain --untracked-files=all .chough/sessions/SYNTHETIC-session)"
+git init -q --bare --initial-branch=main "$ORIGIN"
+git push -q "$ORIGIN" main
+git clone -q "$ORIGIN" "$CLONE"
+"##,
+            &[
+                ("ORIGIN", origin.to_str().unwrap()),
+                ("CLONE", clone.to_str().unwrap()),
+            ],
+        );
+        let (errors, readiness) = verification(fixture.root(), &fixture);
+        assert!(errors.is_empty(), "entries {entries}: tree {errors:?}");
+        assert_eq!(readiness, "safe", "entries {entries}: tree");
+        assert!(!clone.join(".chough/sessions/SYNTHETIC-session").exists());
+        let (errors, readiness) = verification(&clone, &fixture);
+        if entries {
+            assert!(errors.is_empty(), "clean clone: {errors:?}");
+            assert_eq!(readiness, "safe", "clean clone");
+        } else {
+            assert!(
+                errors
+                    .iter()
+                    .any(|error| error.contains("verification evidence is stale")),
+                "control: the clean clone should be stale: {errors:?}"
+            );
+            assert_eq!(readiness, "conditional", "control: clean clone");
+        }
+    }
+}
+
+/// The Chough writes after `change check --commit` that the #212 case makes, then a
+/// commit of them.
+#[cfg(unix)]
+const WRITES_AFTER_CHECK: &str = r##"set -eu
+specsync change check free-shipping-at-the-threshold --commit >/dev/null
+"$CHOUGH" checkpoint --native-change free-shipping-at-the-threshold >/dev/null
+"$CHOUGH" checkpoint --completed "SYNTHETIC: verified the threshold" >/dev/null
+"$CHOUGH" bug add --title "SYNTHETIC bug found after the check" --symptom s --trigger t --expected e --actual a --environment local --scope out-of-scope >/dev/null
+test -n "$(git status --porcelain .chough/sessions .chough/bugs)"
+git add -A; git commit -qm "chough records after the check"
+"##;
+
+/// REQ-records-014, TC-records-write-after-check-keeps-verification (#212): with the
+/// entries, a `chough checkpoint` and a `chough bug add` written after `change check
+/// --commit` and then committed leave verification current, the audit passing, and the
+/// review then records; without the entries the same writes stale verification and the
+/// review is refused, as the control. (`chough evidence add` is the ignored test below
+/// until plan step 4 moves evidence entries under `.chough/sessions/`.)
+#[cfg(unix)]
+#[test]
+fn chough_writes_after_check_commit_leave_verification_current() {
+    if !real_specsync() {
+        return;
+    }
+    for entries in [true, false] {
+        let fixture = implemented(entries);
+        sh_ok(&fixture, WRITES_AFTER_CHECK, &[]);
+        let (errors, readiness) = verification(fixture.root(), &fixture);
+        let review = sh_in(
+            fixture.root(),
+            &fixture,
+            "specsync change review free-shipping-at-the-threshold --reviewer SYNTHETIC-test-reviewer-not-a-human",
+            &[],
+        );
+        if entries {
+            assert!(errors.is_empty(), "{errors:?}");
+            assert_eq!(readiness, "safe");
+            assert!(
+                review.status.success(),
+                "the review did not record: {}{}",
+                String::from_utf8_lossy(&review.stdout),
+                String::from_utf8_lossy(&review.stderr)
+            );
+        } else {
+            assert!(
+                errors
+                    .iter()
+                    .any(|error| error.contains("verification evidence is stale")),
+                "control: {errors:?}"
+            );
+            assert_eq!(readiness, "conditional", "control");
+            assert!(!review.status.success(), "control: the review recorded");
+        }
+    }
+}
+
+/// REQ-records-014 (#212): `chough evidence add` after `change check --commit` is a
+/// Chough write like the others once its entry lives under `.chough/sessions/`.
+#[cfg(unix)]
+#[test]
+fn chough_evidence_add_after_check_commit_leaves_verification_current() {
+    if !real_specsync() {
+        return;
+    }
+    let fixture = implemented(true);
+    sh_ok(
+        &fixture,
+        r##"set -eu
+specsync change check free-shipping-at-the-threshold --commit >/dev/null
+"$CHOUGH" evidence add --criterion CHECKOUT-1 --requirement REQ-shipping-002 --contract specs/shipping/shipping.spec.md --kind product-test --outcome passed --environment local --summary "SYNTHETIC threshold run" >/dev/null
+git add -A; git commit -qm "chough evidence after the check"
+"##,
+        &[],
+    );
+    let (errors, readiness) = verification(fixture.root(), &fixture);
+    assert!(errors.is_empty(), "{errors:?}");
+    assert_eq!(readiness, "safe");
+}
+
+/// REQ-records-014, TC-records-case-definitions-stay-verified: with the entries listed,
+/// a case definition changed under `.chough/cases/` after `change check --commit` still
+/// stales verification, so nothing a change's verification needs is hidden.
+#[cfg(unix)]
+#[test]
+fn a_case_definition_change_still_stales_verification() {
+    if !real_specsync() {
+        return;
+    }
+    let fixture = implemented(true);
+    sh_ok(
+        &fixture,
+        r##"set -eu
+specsync change check free-shipping-at-the-threshold --commit >/dev/null
+printf '\n# SYNTHETIC edit after the check\n' >>.chough/cases/shipping.cases.toml
+git add -A; git commit -qm "edit a case definition"
+"##,
+        &[],
+    );
+    let (errors, readiness) = verification(fixture.root(), &fixture);
+    assert!(
+        errors
+            .iter()
+            .any(|error| error.contains("verification evidence is stale")),
+        "{errors:?}"
+    );
+    assert_eq!(readiness, "conditional");
+}
+
+/// REQ-records-014: when SpecSync refuses the list because an open change's affected
+/// paths overlap it, Chough passes the refusal through and names the change, in `chough
+/// next` and in `chough change check`.
+#[cfg(unix)]
+#[test]
+fn a_refused_exclusion_list_names_the_overlapping_change() {
+    if !real_specsync() {
+        return;
+    }
+    let fixture = implemented(false);
+    sh_ok(
+        &fixture,
+        r##"set -eu
+specsync change new "Bug records" --spec shipping --path .chough/bugs/ --json >/dev/null
+sed 's#"verification_commands": \[\]#"verification_ignored_paths": [".chough/archive/", ".chough/bugs/", ".chough/sessions/"],\n  "verification_commands": []#' .specsync/sdd.json >sdd.tmp
+mv sdd.tmp .specsync/sdd.json
+"$CHOUGH" checkpoint --native-change bug-records >/dev/null
+"##,
+        &[],
+    );
+    let refusal = "`.chough/bugs/` overlaps affected path `.chough/bugs/` of change `bug-records`";
+    let next = fixture.ok(&["next", "--json"]);
+    let action = next["native"]["next_action"].as_str().unwrap_or_default();
+    assert!(action.contains(refusal), "{next:#}");
+    let check = fixture.run(&["change", "check", "bug-records"]);
+    let said = String::from_utf8_lossy(&check.stderr).into_owned()
+        + &String::from_utf8_lossy(&check.stdout);
+    assert!(!check.status.success() && said.contains(refusal), "{said}");
 }

@@ -1,5 +1,7 @@
 //! Installable package and fresh installs (REQ-cli-019, LIFE-9, LIFE-4).
 
+mod common;
+
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeSet;
@@ -162,33 +164,44 @@ fn init_in_a_new_project_installs_the_skill_and_an_empty_checkpoint_only() {
         .iter()
         .map(|path| path.as_str().unwrap().to_string())
         .collect();
-    let mut expected: BTreeSet<String> = bundle_files()
+    // init --objective creates the first session folder (TC-cli-0015).
+    let session_rel = created
+        .iter()
+        .find(|path| {
+            path.starts_with(".chough/sessions/") && path.ends_with("-try-chough/session.md")
+        })
+        .unwrap_or_else(|| panic!("no session record in {created:?}"))
+        .clone();
+    let expected: BTreeSet<String> = bundle_files()
         .into_iter()
         .map(|file| format!(".agents/skills/chough-workflow/{file}"))
+        .chain(std::iter::once(session_rel.clone()))
+        // REQ-records-002: the records tree's reading guide, create-only.
+        .chain(std::iter::once(".chough/README.md".to_string()))
         .collect();
-    expected.insert(".chough/session.json".to_string());
     assert_eq!(created, expected);
 
-    let session: Value =
-        serde_json::from_str(&fs::read_to_string(root.join(".chough/session.json")).unwrap())
-            .unwrap();
+    let session = fs::read_to_string(root.join(&session_rel)).unwrap();
     for empty in [
         "bugs",
         "observations",
-        "completed",
-        "decisions",
         "blockers",
-        "awaiting_human",
+        "waiting_on_human",
         "run_consents",
     ] {
-        assert_eq!(session[empty], Value::Array(vec![]), "{empty} is not empty");
+        assert!(
+            session.contains(&format!("{empty}: []")),
+            "{empty} is not empty: {session}"
+        );
     }
-    assert_eq!(session["native_change"], Value::Null);
-    let records: Vec<String> = fs::read_dir(root.join(".chough"))
+    assert!(session.contains("native_change: \"\""), "{session}");
+    let mut records: Vec<String> = fs::read_dir(root.join(".chough"))
         .unwrap()
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
         .collect();
-    assert_eq!(records, ["session.json"]);
+    records.sort();
+    // REQ-records-002: the reading guide, the cases folder, local state and the session.
+    assert_eq!(records, ["README.md", "cases", "local", "sessions"]);
     for absent in [".specsync", "examples", "tests", "docs", ".claude"] {
         assert!(!root.join(absent).exists(), "{absent} was created");
     }
@@ -1891,6 +1904,17 @@ struct PinSources<'a> {
     cargo: &'a str,
     ci_doc: &'a str,
     integrations: &'a str,
+    /// `.specsync/config.toml`: its header comment names the pins too (BUG-0001).
+    config: &'a str,
+}
+
+/// The leading comment lines of `.specsync/config.toml`.
+fn config_header(config: &str) -> String {
+    config
+        .lines()
+        .take_while(|line| line.starts_with('#'))
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 fn version_token(word: &str) -> Option<String> {
@@ -2102,6 +2126,10 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
                     "docs/integrations.md",
                     doc_versions(sources.integrations, "HI"),
                 ),
+                (
+                    ".specsync/config.toml",
+                    doc_versions(&config_header(sources.config), "HI"),
+                ),
             ],
         ),
         (
@@ -2115,6 +2143,10 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
                     "docs/integrations.md",
                     doc_versions(sources.integrations, "SpecSync"),
                 ),
+                (
+                    ".specsync/config.toml",
+                    doc_versions(&config_header(sources.config), "SpecSync"),
+                ),
             ],
         ),
         (
@@ -2127,6 +2159,10 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
                 (
                     "docs/integrations.md",
                     doc_versions(sources.integrations, "Fledge"),
+                ),
+                (
+                    ".specsync/config.toml",
+                    doc_versions(&config_header(sources.config), "Fledge"),
                 ),
             ],
         ),
@@ -2197,20 +2233,238 @@ fn pin_disagreements(sources: &PinSources) -> Vec<String> {
     problems
 }
 
+/// TC-cli-bug-0022-toolchain-matches-ci (REQ-cli-019, BUG-0022): the `toolchain` task,
+/// first in the verify lane, prints each installed tool beside the CI pin and fails
+/// naming each one that differs, and records its verdict for evidence to read. Stand-ins
+/// play every tool; nothing is installed.
+#[cfg(unix)]
 #[test]
-fn tool_and_rust_version_pins_agree() {
+fn toolchain_task_names_a_version_that_differs() {
+    let fledge = fs::read_to_string(manifest_dir().join("fledge.toml")).unwrap();
+    assert!(
+        fledge
+            .lines()
+            .any(|line| line.trim() == "toolchain = \"sh tools/toolchain.sh\""),
+        "fledge.toml defines no toolchain task:\n{fledge}"
+    );
+    let verify = fledge
+        .split("[lanes.verify]")
+        .nth(1)
+        .and_then(|lane| lane.lines().find(|line| line.starts_with("steps = ")))
+        .unwrap_or_default();
+    assert!(
+        verify.starts_with("steps = [\"toolchain\", "),
+        "the verify lane does not run toolchain first: {verify}"
+    );
+
+    let pins = Command::new("sh")
+        .arg(manifest_dir().join("tools/linux/pins.sh"))
+        .output()
+        .unwrap();
+    assert!(pins.status.success());
+    let pins = String::from_utf8(pins.stdout).unwrap();
+    let pin = |tool: &str| {
+        pins.lines()
+            .find_map(|line| line.strip_prefix(&format!("{tool}=")))
+            .unwrap()
+            .to_string()
+    };
+    let (hi, specsync, fledge_pin) = (pin("human-intent"), pin("specsync"), pin("fledge"));
+
+    let directory = tempfile::tempdir().unwrap();
+    let bin = directory.path().join("bin");
+    let log = directory.path().join("logs/toolchain.log");
+    let stand_ins = |tools: &[(&str, &str)]| {
+        let _ = fs::remove_dir_all(&bin);
+        for (name, line) in tools {
+            common::stand_in(&bin, name, line);
+        }
+    };
+    let run = || {
+        Command::new("sh")
+            .arg(manifest_dir().join("tools/toolchain.sh"))
+            .env("PATH", format!("{}:/usr/bin:/bin", bin.display()))
+            .env("CHOUGH_TOOLCHAIN_LOG", &log)
+            .output()
+            .unwrap()
+    };
+    let rust = [
+        ("rustc", "rustc 1.96.0 (SYNTHETIC 2026-01-01)"),
+        ("cargo", "cargo 1.96.0 (SYNTHETIC 2026-01-01)"),
+    ];
+
+    // Fledge differs: the task fails naming Fledge, its version and the pin.
+    let mut tools = vec![
+        ("hi", format!("hi {hi}")),
+        ("specsync", format!("specsync {specsync}")),
+        ("fledge", "fledge 0.0.1".to_string()),
+    ];
+    let install = |tools: &[(&str, String)]| {
+        let mut all: Vec<(&str, &str)> = tools
+            .iter()
+            .map(|(name, line)| (*name, line.as_str()))
+            .collect();
+        all.extend(rust);
+        stand_ins(&all);
+    };
+    install(&tools);
+    let output = run();
+    let (stdout, stderr) = (
+        String::from_utf8_lossy(&output.stdout).into_owned(),
+        String::from_utf8_lossy(&output.stderr).into_owned(),
+    );
+    assert!(!output.status.success(), "{stdout}{stderr}");
+    assert!(
+        stderr.contains(&format!("Fledge 0.0.1 (CI {fledge_pin})")),
+        "{stderr}"
+    );
+    assert!(
+        !stderr.contains("HI ") && !stderr.contains("SpecSync "),
+        "{stderr}"
+    );
+    for line in [
+        format!("HI: installed {hi}, CI pins {hi}"),
+        format!("SpecSync: installed {specsync}, CI pins {specsync}"),
+        format!("Fledge: installed 0.0.1, CI pins {fledge_pin}"),
+        "Rust (rustc): installed 1.96.0, CI stable and minimum 1.88".to_string(),
+    ] {
+        assert!(stdout.contains(&line), "missing {line:?} in {stdout}");
+    }
+    let verdict = fs::read_to_string(&log).unwrap();
+    assert!(
+        verdict.starts_with(&format!("differs: Fledge 0.0.1 (CI {fledge_pin})\n")),
+        "{verdict}"
+    );
+
+    // Every tool at its pin, and a newer Rust than the minimum: the task passes.
+    tools[2].1 = format!("fledge {fledge_pin}");
+    install(&tools);
+    let output = run();
+    assert!(
+        output.status.success(),
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(String::from_utf8_lossy(&output.stdout).contains("toolchain: matches CI"));
+    assert!(fs::read_to_string(&log).unwrap().starts_with("matches\n"));
+
+    // HI missing and a Rust older than the minimum: both are named.
+    stand_ins(&[
+        ("specsync", tools[1].1.as_str()),
+        ("fledge", tools[2].1.as_str()),
+        ("rustc", "rustc 1.80.0 (SYNTHETIC 2024-01-01)"),
+        ("cargo", "cargo 1.96.0 (SYNTHETIC 2026-01-01)"),
+    ]);
+    let output = run();
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success());
+    assert!(
+        stderr.contains(&format!("HI not installed (CI {hi})"))
+            && stderr.contains("Rust (rustc) 1.80.0 (minimum 1.88)")
+            && !stderr.contains("Rust (cargo)"),
+        "{stderr}"
+    );
+}
+
+/// TC-cli-bug-0022-toolchain-matches-ci, a second copy on PATH (BUG-0022): when a tool
+/// differs, the failure names the copy PATH finds first, the one in use, and every
+/// other copy on PATH, each with its version, so the human knows which binary to fix.
+/// Two stand-in Fledge copies play the Homebrew 1.7.2 and the Cargo 1.8.0 found on the
+/// coordinator's Mac. The verdict's first line, which evidence quotes, holds no path.
+#[cfg(unix)]
+#[test]
+fn toolchain_failure_names_each_copy_on_path_with_its_version() {
+    let pins = Command::new("sh")
+        .arg(manifest_dir().join("tools/linux/pins.sh"))
+        .output()
+        .unwrap();
+    let pins = String::from_utf8(pins.stdout).unwrap();
+    let pin = |tool: &str| {
+        pins.lines()
+            .find_map(|line| line.strip_prefix(&format!("{tool}=")))
+            .unwrap()
+            .to_string()
+    };
+    let (hi, specsync, fledge) = (pin("human-intent"), pin("specsync"), pin("fledge"));
+    let directory = tempfile::tempdir().unwrap();
+    let first = directory.path().join("homebrew-bin");
+    let second = directory.path().join("cargo-bin");
+    for (name, line) in [
+        ("hi", format!("hi {hi}")),
+        ("specsync", format!("specsync {specsync}")),
+        ("rustc", "rustc 1.96.0 (SYNTHETIC 2026-01-01)".to_string()),
+        ("cargo", "cargo 1.96.0 (SYNTHETIC 2026-01-01)".to_string()),
+    ] {
+        common::stand_in(&second, name, &line);
+    }
+    common::stand_in(&first, "fledge", "fledge 0.0.1");
+    common::stand_in(&second, "fledge", &format!("fledge {fledge}"));
+    let log = directory.path().join("toolchain.log");
+    let run = |path: String| {
+        Command::new("sh")
+            .arg(manifest_dir().join("tools/toolchain.sh"))
+            .env("PATH", path)
+            .env("CHOUGH_TOOLCHAIN_LOG", &log)
+            .output()
+            .unwrap()
+    };
+    let output = run(format!(
+        "{}:{}:/usr/bin:/bin",
+        first.display(),
+        second.display()
+    ));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "{stderr}");
+    let used = format!("{}/fledge (0.0.1, used)", first.display());
+    let other = format!("{}/fledge ({fledge})", second.display());
+    assert!(
+        stderr.contains(&format!(
+            "Fledge on PATH, first found first: {used}, {other}"
+        )),
+        "{stderr}"
+    );
+    assert!(
+        stderr.contains(&format!(
+            "a copy at {fledge} is on PATH after the one used: put it first, or upgrade or remove {}/fledge",
+            first.display()
+        )),
+        "{stderr}"
+    );
+    // The verdict evidence quotes names no path.
+    let verdict = fs::read_to_string(&log).unwrap();
+    let first_line = verdict.lines().next().unwrap();
+    assert_eq!(first_line, format!("differs: Fledge 0.0.1 (CI {fledge})"));
+
+    // Only the old copy on PATH: the fix is to upgrade it.
+    let output = run(format!("{}:/usr/bin:/bin", first.display()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(
+        stderr.contains(&format!(
+            "Fledge on PATH, first found first: {used}; upgrade it to {fledge}"
+        )),
+        "{stderr}"
+    );
+}
+
+/// TC-cli-0110 (REQ-cli-019, BUG-0001): README, AGENTS.md, CI, the docs and the header
+/// comment of `.specsync/config.toml` name the same HI, SpecSync and Fledge versions,
+/// and Cargo.toml, README and the MSRV job the same Rust version.
+#[test]
+fn versions_agree_across_readme_agents_ci_and_specsync_config() {
     let read = |file: &str| {
         fs::read_to_string(manifest_dir().join(file))
             .unwrap()
             .replace("\r\n", "\n")
     };
-    let (readme, agents, ci, cargo, ci_doc, integrations) = (
+    let (readme, agents, ci, cargo, ci_doc, integrations, config) = (
         read("README.md"),
         read("AGENTS.md"),
         read(".github/workflows/ci.yml"),
         read("Cargo.toml"),
         read("docs/ci.md"),
         read("docs/integrations.md"),
+        read(".specsync/config.toml"),
     );
     let sources = PinSources {
         readme: &readme,
@@ -2219,6 +2473,7 @@ fn tool_and_rust_version_pins_agree() {
         cargo: &cargo,
         ci_doc: &ci_doc,
         integrations: &integrations,
+        config: &config,
     };
     let problems = pin_disagreements(&sources);
     assert!(problems.is_empty(), "{}", problems.join("\n"));
@@ -2231,7 +2486,7 @@ fn tool_and_rust_version_pins_agree() {
             "human-intent@0.8.0",
             "human-intent@9.9.9",
         ),
-        ("README.md", "SpecSync", "specsync@6.2.0", "specsync@9.9.9"),
+        ("README.md", "SpecSync", "specsync@6.3.0", "specsync@9.9.9"),
         ("README.md", "Fledge", "fledge@1.8.0", "fledge@9.9.9"),
         (
             "README.md",
@@ -2240,7 +2495,7 @@ fn tool_and_rust_version_pins_agree() {
             "Chough needs Rust 9.9",
         ),
         ("AGENTS.md", "HI (human-intent)", "hi 0.8.0", "hi 9.9.9"),
-        ("AGENTS.md", "SpecSync", "specsync 6.2.0", "specsync 9.9.9"),
+        ("AGENTS.md", "SpecSync", "specsync 6.3.0", "specsync 9.9.9"),
         ("AGENTS.md", "Fledge", "fledge 1.8.0", "fledge 9.9.9"),
         (
             ".github/workflows/ci.yml",
@@ -2251,7 +2506,7 @@ fn tool_and_rust_version_pins_agree() {
         (
             ".github/workflows/ci.yml",
             "SpecSync",
-            "version: '6.2.0'",
+            "version: '6.3.0'",
             "version: '9.9.9'",
         ),
         (
@@ -2281,7 +2536,7 @@ fn tool_and_rust_version_pins_agree() {
         (
             "docs/ci.md",
             "SpecSync",
-            "SpecSync **6.2.0**",
+            "SpecSync **6.3.0**",
             "SpecSync **9.9.9**",
         ),
         ("docs/ci.md", "Fledge", "Fledge is 1.8.0", "Fledge is 9.9.9"),
@@ -2300,7 +2555,7 @@ fn tool_and_rust_version_pins_agree() {
         (
             "docs/integrations.md",
             "SpecSync",
-            "CorvidLabs/spec-sync) 6.2.0",
+            "CorvidLabs/spec-sync) 6.3.0",
             "CorvidLabs/spec-sync) 9.9.9",
         ),
         (
@@ -2308,6 +2563,24 @@ fn tool_and_rust_version_pins_agree() {
             "Fledge",
             "CorvidLabs/fledge) 1.8.0",
             "CorvidLabs/fledge) 9.9.9",
+        ),
+        (
+            ".specsync/config.toml",
+            "HI (human-intent)",
+            "HI 0.8.0",
+            "HI 9.9.9",
+        ),
+        (
+            ".specsync/config.toml",
+            "SpecSync",
+            "SpecSync 6.3.0",
+            "SpecSync 9.9.9",
+        ),
+        (
+            ".specsync/config.toml",
+            "Fledge",
+            "Fledge 1.8.0",
+            "Fledge 9.9.9",
         ),
     ];
     let changed_sources = |slot: usize, from: &str, to: &str| {
@@ -2318,12 +2591,13 @@ fn tool_and_rust_version_pins_agree() {
             cargo.clone(),
             ci_doc.clone(),
             integrations.clone(),
+            config.clone(),
         ];
         assert!(changed[slot].contains(from), "slot {slot} lacks {from}");
         changed[slot] = changed[slot].replacen(from, to, 1);
         changed
     };
-    let problems_in = |changed: &[String; 6]| {
+    let problems_in = |changed: &[String; 7]| {
         pin_disagreements(&PinSources {
             readme: &changed[0],
             agents: &changed[1],
@@ -2331,6 +2605,7 @@ fn tool_and_rust_version_pins_agree() {
             cargo: &changed[3],
             ci_doc: &changed[4],
             integrations: &changed[5],
+            config: &changed[6],
         })
     };
     for (file, tool, from, to) in cases {
@@ -2340,6 +2615,7 @@ fn tool_and_rust_version_pins_agree() {
             "Cargo.toml" => 3,
             "docs/ci.md" => 4,
             "docs/integrations.md" => 5,
+            ".specsync/config.toml" => 6,
             _ => 2,
         };
         let problems = problems_in(&changed_sources(slot, from, to));
@@ -2366,24 +2642,24 @@ fn tool_and_rust_version_pins_agree() {
 
     // The shape around the pins: README's toolchain command stays one command naming
     // all three tools, and the MSRV job needs the Archive job and runs the suite.
-    let toolchain = "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.2.0";
+    let toolchain = "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.3.0";
     let shapes = [
         (
             0,
             toolchain,
-            "cargo install --locked human-intent@0.8.0 fledge@1.8.0\ncargo install --locked specsync@6.2.0",
+            "cargo install --locked human-intent@0.8.0 fledge@1.8.0\ncargo install --locked specsync@6.3.0",
             "README.md: Install the toolchain is not one cargo install command",
         ),
         (
             0,
             toolchain,
-            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.2.0 && hi --version",
+            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.3.0 && hi --version",
             "README.md: Install the toolchain is not one cargo install command",
         ),
         (
             0,
             toolchain,
-            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.2.0 cargo-nextest@0.9.0",
+            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.3.0 cargo-nextest@0.9.0",
             "README.md: Install the toolchain is not one cargo install command",
         ),
         (

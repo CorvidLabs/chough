@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "history"
+
+# #165: the move into done never moves or removes another session's archived record.
+# Red on 0.5.0 (plan step 1); plan step 3 removed the roll-up, so it now runs unignored.
+[[case]]
+id = "TC-history-165-earlier-archives-stay"
+title = "The move into done leaves every earlier archived session in place"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-34", "KNOW-30"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "src/stage.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::done_leaves_earlier_archived_stories_in_place passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "--exact", "done_leaves_earlier_archived_stories_in_place"]
+expect_output = ["test result: ok. 1 passed"]

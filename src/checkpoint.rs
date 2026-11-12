@@ -1,24 +1,22 @@
-//! The single canonical checkpoint: `.chough/session.json`, or the active session
-//! file under `.chough/sessions/` (REQ-cli-037).
+//! The canonical checkpoint: the front matter of the active session's `session.md`
+//! (REQ-cli-037, REQ-records-004). A 0.5.x `.chough/session.json` is not read; it
+//! names `chough migrate`.
 
 use crate::records::{
     CHANGE_ID_LIMIT, ensure_text, local_path, native_json, print_json, read_bounded_record,
-    valid_change_id, valid_name, write_new_bytes, write_replace_bounded,
+    valid_change_id, valid_name, write_replace_bounded,
 };
 use crate::records::{valid_criterion_id, valid_module_name, valid_reference_id};
 use crate::stage;
 use anyhow::{Context, Result, bail, ensure};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::collections::HashSet;
 use std::fs::{self, OpenOptions};
-use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::{Mutex, PoisonError};
 use std::time::{Duration, Instant};
 
 pub(super) const SESSION: &str = ".chough/session.json";
-pub(super) const SESSION_V1_BACKUP: &str = ".chough/session.v1.json";
 /// How long a writer waits for another Chough command to release the checkpoint.
 #[cfg(not(test))]
 const LOCK_WAIT: Duration = Duration::from_secs(30);
@@ -32,18 +30,6 @@ const MAX_ITEMS: usize = 200;
 pub(super) const SESSION_LIMIT: u64 = 1_048_576;
 /// Bound of the checkpoint `observations` list; other checkpoint lists keep `MAX_ITEMS`.
 const MAX_OBSERVATIONS: usize = 400;
-
-#[derive(Clone, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-pub(super) struct SessionV1 {
-    pub(super) schema_version: u32,
-    pub(super) objective: String,
-    pub(super) intent_scope: String,
-    pub(super) modules: Vec<String>,
-    pub(super) decisions: Vec<String>,
-    pub(super) open_questions: Vec<String>,
-    pub(super) next_action: String,
-}
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -94,8 +80,6 @@ pub(super) struct Consent {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Checkpoint {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub(super) history_cursor: Option<crate::history::Cursor>,
     pub(super) schema_version: u32,
     pub(super) objective: String,
     #[serde(default)]
@@ -124,46 +108,57 @@ pub(super) struct Checkpoint {
     #[serde(default)]
     pub(super) run_consents: Vec<Consent>,
     pub(super) next_action: String,
+    /// The session record's ID, aliases, pull request and gate details (REQ-records-004).
+    #[serde(skip)]
+    pub(super) meta: crate::session_md::Meta,
+    /// The record this checkpoint was read from, so a save keeps every byte a person or
+    /// agent wrote and every key Chough does not know (REQ-records-001).
+    #[serde(skip)]
+    pub(super) source: Option<crate::markdown::Record>,
+    /// Transitions to append to the Timeline in the next save (REQ-history-002).
+    #[serde(skip)]
+    pub(super) pending: Vec<crate::stage::Transition>,
+    /// For a save: each referenced observation's entry, as a link relative to the
+    /// session folder with its claim, for its What was verified line (REQ-records-004).
+    #[serde(skip)]
+    pub(super) evidence_links: std::collections::BTreeMap<String, (String, String)>,
+    /// For a save: the answer each question resolved now was given (REQ-records-004).
+    #[serde(skip)]
+    pub(super) answers: std::collections::BTreeMap<String, String>,
 }
 
-/// A readable session in either supported schema.
+/// A readable session.
 pub(super) enum Session {
-    V1(SessionV1),
     V2(Box<Checkpoint>),
 }
 
 impl Session {
     pub(super) fn objective(&self) -> &str {
         match self {
-            Self::V1(session) => &session.objective,
             Self::V2(session) => &session.objective,
         }
     }
 
     pub(super) fn intent_scope(&self) -> &str {
         match self {
-            Self::V1(session) => &session.intent_scope,
             Self::V2(session) => &session.intent_scope,
         }
     }
 
     pub(super) fn modules(&self) -> &[String] {
         match self {
-            Self::V1(session) => &session.modules,
             Self::V2(session) => &session.modules,
         }
     }
 
     pub(super) fn next_action(&self) -> &str {
         match self {
-            Self::V1(session) => &session.next_action,
             Self::V2(session) => &session.next_action,
         }
     }
 
     pub(super) fn to_value(&self) -> Result<Value> {
         Ok(match self {
-            Self::V1(session) => serde_json::to_value(session)?,
             Self::V2(session) => serde_json::to_value(session.as_ref())?,
         })
     }
@@ -175,7 +170,6 @@ pub(super) fn new_checkpoint(
     modules: Vec<String>,
 ) -> Checkpoint {
     Checkpoint {
-        history_cursor: None,
         schema_version: 2,
         objective,
         intent_scope,
@@ -197,6 +191,11 @@ pub(super) fn new_checkpoint(
         awaiting_human: vec![],
         run_consents: vec![],
         next_action: "Read scoped intent and native status, then choose the next action within the authorized scope.".into(),
+        meta: crate::session_md::Meta::default(),
+        source: None,
+        pending: vec![],
+        evidence_links: Default::default(),
+        answers: Default::default(),
     }
 }
 
@@ -212,19 +211,6 @@ fn validate_common(objective: &str, modules: &[String]) -> Result<()> {
     ensure!(
         modules.len() <= 16,
         "select at most 16 modules for focused context"
-    );
-    Ok(())
-}
-
-pub(super) fn validate_v1(session: &SessionV1) -> Result<()> {
-    ensure!(
-        session.schema_version == 1,
-        "unsupported session schema_version"
-    );
-    validate_common(&session.objective, &session.modules)?;
-    ensure!(
-        serde_json::to_vec(session)?.len() as u64 <= SESSION_LIMIT,
-        "session exceeds {SESSION_LIMIT} bytes"
     );
     Ok(())
 }
@@ -265,9 +251,6 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
         "unsupported session schema_version"
     );
     validate_common(&session.objective, &session.modules)?;
-    if let Some(cursor) = &session.history_cursor {
-        crate::history::validate_cursor(cursor)?;
-    }
     ensure!(
         stage::is_stage(&session.stage.current),
         "unknown stage: {}",
@@ -329,38 +312,28 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
     Ok(())
 }
 
-pub(super) fn parse(content: &str) -> Result<Session> {
-    let value: Value = serde_json::from_str(content).context("invalid session record")?;
-    match value.get("schema_version").and_then(Value::as_u64) {
-        Some(1) => {
-            let session: SessionV1 =
-                serde_json::from_value(value).context("invalid schema 1 session record")?;
-            validate_v1(&session)?;
-            Ok(Session::V1(session))
-        }
-        Some(2) => {
-            let session: Checkpoint =
-                serde_json::from_value(value).context("invalid schema 2 session record")?;
-            validate_v2(&session)?;
-            Ok(Session::V2(Box::new(session)))
-        }
-        _ => bail!("unsupported session schema_version"),
-    }
+/// Read the session record at `relative` from `content`.
+pub(super) fn parse(relative: &str, content: &str) -> Result<Session> {
+    let session = crate::session_md::read(relative, content)?;
+    validate_v2(&session)?;
+    Ok(Session::V2(Box::new(session)))
 }
 
 pub(super) fn read_session(root: &Path) -> Result<Session> {
     let relative = crate::sessions::checkpoint_path(root)?;
     let path = local_path(root, &relative)?;
     if !path.exists() {
-        return Err(anyhow::anyhow!("{relative} does not exist")).context("run chough init first");
+        return Err(anyhow::anyhow!("{relative} does not exist"))
+            .context("run `chough session new <key>` first");
     }
     read_bounded_record(&path, SESSION_LIMIT)
-        .and_then(|content| parse(&content))
+        .and_then(|content| parse(&relative, &content))
         .with_context(|| crate::sessions::shelve_hint(&relative))
 }
 
-/// The project's checkpoint writer lock (issues 62 and 83, DRIVE-11): the empty,
-/// never-replaced file `.chough/local/checkpoint.lock`. `.chough/local/` holds a
+/// The project's checkpoint writer lock (issues 62 and 83, DRIVE-11): the
+/// never-replaced file `.chough/local/checkpoint.lock`, which names the process that
+/// holds it (REQ-cli-040, #132). `.chough/local/` holds a
 /// `.gitignore` of `*` (written here when missing, create-only), so the lock is never a
 /// managed record or a source change, and every Chough process working on the project
 /// uses this one file whatever its temporary directory.
@@ -422,7 +395,13 @@ pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
     let started = Instant::now();
     loop {
         match <fs::File as fs4::FileExt>::try_lock(&file) {
-            Ok(()) => break,
+            Ok(()) => {
+                // REQ-cli-040 (#132): name this writer in the lock file. A lock file
+                // another account owns is open read-only and keeps its holder unnamed.
+                let _ = crate::records::record_lock_holder(&file);
+                crate::records::trace_lock_wait(started);
+                break;
+            }
             Err(fs4::TryLockError::WouldBlock) if started.elapsed() < LOCK_WAIT => {
                 std::thread::sleep(LOCK_POLL);
             }
@@ -431,9 +410,11 @@ pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
                 // so resolving, and pinning, the checkpoint here changes nothing.
                 let target = crate::sessions::checkpoint_path(root)
                     .unwrap_or_else(|_| "the checkpoint".into());
+                crate::records::trace_lock_wait(started);
                 bail!(
-                    "refused:checkpoint-busy: another Chough command is changing {target} and did not finish within {} seconds; nothing was saved. Rerun when it finishes.",
-                    LOCK_WAIT.as_secs()
+                    "refused:checkpoint-busy: another Chough command is changing {target} and did not finish within {} ({}); nothing was saved. Rerun when it finishes.",
+                    crate::records::wait_text(LOCK_WAIT),
+                    crate::records::lock_holder_text(crate::records::lock_holder(&path))
                 )
             }
             Err(fs4::TryLockError::Error(error)) => {
@@ -443,7 +424,8 @@ pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
         }
     }
     held.push((path, file));
-    Ok(())
+    drop(held);
+    crate::migrate::ensure_migrated_under_lock(root)
 }
 
 /// Remove `.chough/.session.json.<pid>.tmp` files: the temps `save_checkpoint` writes
@@ -481,6 +463,18 @@ fn remove_orphaned_session_temps(root: &Path) -> Result<()> {
     crate::sessions::remove_orphaned_temps(root)
 }
 
+/// Release every checkpoint writer lock this process holds. A long command that saves
+/// between waits, a repeated validation run, calls it before it waits, so another
+/// command can write meanwhile (REQ-cli-040); its next save takes the lock again before
+/// it reads, so it never saves on a stale read. Nothing this process read before the
+/// release may be saved after it.
+pub(super) fn release_checkpoint_locks() {
+    HELD_LOCKS
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .clear();
+}
+
 /// Take the checkpoint writer lock before a read-modify-write, in either mode: when
 /// `.chough/session.json` exists or, in sessions mode (REQ-cli-037), when
 /// `.chough/sessions/` exists, so a save never lands on a stale read and `session
@@ -488,7 +482,7 @@ fn remove_orphaned_session_temps(root: &Path) -> Result<()> {
 /// the checkpoint path is resolved, so the mode is read under the lock. Without
 /// either there is no checkpoint to update.
 pub(super) fn lock_for_update(root: &Path) -> Result<()> {
-    if local_path(root, SESSION)?.is_file() || crate::sessions::enabled(root)? {
+    if crate::sessions::enabled(root)? {
         lock_checkpoint(root)?;
     }
     Ok(())
@@ -507,303 +501,130 @@ pub(super) fn read_checkpoint(root: &Path) -> Result<Checkpoint> {
 pub(super) fn read_checkpoint_unlocked(root: &Path) -> Result<Checkpoint> {
     match read_session(root)? {
         Session::V2(session) => Ok(*session),
-        Session::V1(_) => bail!(
-            "the session uses schema 1; run `chough migrate` to keep its bytes in {SESSION_V1_BACKUP} and continue with schema 2"
-        ),
     }
 }
 
-fn serialize_checkpoint(session: &Checkpoint) -> Result<String> {
-    validate_v2(session)?;
-    let content = serde_json::to_string_pretty(session)? + "\n";
-    ensure!(
-        content.len() as u64 <= SESSION_LIMIT,
-        "session exceeds {SESSION_LIMIT} bytes"
-    );
-    Ok(content)
+/// Every value this checkpoint writes, checked for leaks or redacted under `--redact`
+/// (REQ-records-006); returns how many matches were redacted. Prose a person wrote in
+/// the body is theirs and is not rewritten.
+fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
+    use crate::leaks::{Local, guard};
+    let local = Local::current();
+    let mut count = 0;
+    count += guard(local, "objective", &mut session.objective)?;
+    count += guard(local, "intent_scope", &mut session.intent_scope)?;
+    count += guard(local, "next", &mut session.next_action)?;
+    for (name, list) in [
+        ("decision", &mut session.decisions),
+        ("completed", &mut session.completed),
+        ("question", &mut session.open_questions),
+        ("blocker", &mut session.blockers),
+        ("gate", &mut session.awaiting_human),
+    ] {
+        for value in list.iter_mut() {
+            count += guard(local, name, value)?;
+        }
+    }
+    for consent in &mut session.run_consents {
+        count += guard(local, "consent source", &mut consent.source)?;
+        count += guard(local, "consent objective", &mut consent.objective)?;
+    }
+    for alias in &mut session.meta.aliases {
+        count += guard(local, "alias", alias)?;
+    }
+    count += guard(local, "pr", &mut session.meta.pr)?;
+    for transition in &mut session.pending {
+        if let Some(reason) = transition.reason.as_mut() {
+            count += guard(local, "reason", reason)?;
+        }
+        if let Some(gate) = transition.gate.as_mut() {
+            count += guard(local, "gate", gate)?;
+        }
+        if let Some(relay) = transition.relayed_by.as_mut() {
+            count += guard(local, "decided_by", &mut relay.decided_by)?;
+            count += guard(local, "words", &mut relay.words)?;
+            count += guard(local, "where", &mut relay.place)?;
+            count += guard(local, "recorded_by", &mut relay.recorded_by)?;
+        }
+        if let Some(backfill) = transition.backfill.as_mut() {
+            count += guard(local, "quote", &mut backfill.quote)?;
+        }
+    }
+    Ok(count)
 }
 
-pub(super) fn save_checkpoint(root: &Path, session: &Checkpoint) -> Result<()> {
+/// The session record `session` saves as, within its bound (REQ-records-001), with
+/// every value Chough writes checked for leaks first (REQ-records-006).
+pub(super) fn render_checkpoint(session: &Checkpoint) -> Result<crate::markdown::Record> {
+    validate_v2(session)?;
+    let mut guarded = session.clone();
+    let redacted = guard_leaks(&mut guarded)?;
+    if redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in the session record (--redact)");
+    }
+    let session = &guarded;
+    let record = crate::session_md::render(session, crate::records::now()?)?;
+    let content = record.render();
+    ensure!(
+        content.len() as u64 <= SESSION_LIMIT,
+        "refused: the session record would be {} bytes, over its bound of {SESSION_LIMIT} bytes; run `chough session close {} --reason <text>` and then `chough session new <key>`; the session file is unchanged",
+        content.len(),
+        session.meta.id
+    );
+    Ok(record)
+}
+
+/// Each referenced observation that resolves to an open session's entry, as a link
+/// relative to this session's folder with the entry's claim (REQ-records-004). An
+/// observation held only as a receipt, or by no record, has no link.
+pub(super) fn evidence_links(
+    root: &Path,
+    session: &Checkpoint,
+) -> std::collections::BTreeMap<String, (String, String)> {
+    let mut links = std::collections::BTreeMap::new();
+    for id in &session.observations {
+        // `<session id>/<evidence id>` of the entry that holds `id` by name or alias.
+        let Ok(Some((qualified, entry))) = crate::evidence::resolve_entry(root, id) else {
+            continue;
+        };
+        let Some((owner, name)) = qualified.split_once('/') else {
+            continue;
+        };
+        let link = if owner == session.meta.id {
+            format!("evidence/{name}.md")
+        } else {
+            format!("../{owner}/evidence/{name}.md")
+        };
+        links.insert(id.clone(), (link, entry.summary));
+    }
+    links
+}
+
+/// Save the checkpoint and its queued Timeline entries in one atomic replace; the
+/// checkpoint then holds the record written and no queued entry.
+pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<()> {
     lock_checkpoint(root)?;
     remove_orphaned_session_temps(root)?;
+    session.evidence_links = evidence_links(root, session);
+    let record = render_checkpoint(session)?;
     write_replace_bounded(
         root,
         &crate::sessions::checkpoint_path(root)?,
-        &serialize_checkpoint(session)?,
+        &record.render(),
         SESSION_LIMIT,
-    )
-}
-
-pub(super) fn migrate(root: &Path, initial_stage: &str) -> Result<()> {
-    ensure!(
-        stage::is_main(initial_stage),
-        "migration stage must be a main stage"
-    );
-    lock_for_update(root)?;
-    let path = local_path(root, &crate::sessions::checkpoint_path(root)?)?;
-    let original = read_bounded_record(&path, SESSION_LIMIT).context("run chough init first")?;
-    let session = match parse(&original)? {
-        Session::V2(_) => {
-            return print_json(
-                &json!({"schema_version": 1, "migrated": false, "reason": "session already uses schema 2"}),
-            );
-        }
-        Session::V1(session) => session,
-    };
-    ensure!(
-        !local_path(root, SESSION_V1_BACKUP)?.exists(),
-        "{SESSION_V1_BACKUP} already exists; inspect it before migrating again"
-    );
-    let mut checkpoint = new_checkpoint(
-        session.objective.clone(),
-        session.intent_scope.clone(),
-        session.modules.clone(),
-    );
-    checkpoint.stage.current = initial_stage.into();
-    checkpoint.decisions = session.decisions.clone();
-    checkpoint.open_questions = session.open_questions.clone();
-    checkpoint.next_action = session.next_action.clone();
-    validate_v2(&checkpoint)?;
-    ensure!(
-        write_new_bytes(root, SESSION_V1_BACKUP, original.as_bytes())?,
-        "{SESSION_V1_BACKUP} already exists"
-    );
-    save_checkpoint(root, &checkpoint)?;
-    print_json(&json!({
-        "schema_version": 1,
-        "migrated": true,
-        "preserved": SESSION_V1_BACKUP,
-        "stage": initial_stage,
-    }))
-}
-
-fn read_merge_operand(path: &Path) -> Result<(PathBuf, Checkpoint)> {
-    let metadata = fs::symlink_metadata(path)
-        .with_context(|| format!("reading merge operand {}", path.display()))?;
-    ensure!(
-        metadata.file_type().is_file(),
-        "merge operand must be an existing regular file whose final component is not a symbolic link: {}",
-        path.display()
-    );
-    let resolved = path.canonicalize()?;
-    let content = read_bounded_record(path, SESSION_LIMIT)?;
-    match parse(&content)? {
-        Session::V2(session) => Ok((resolved, *session)),
-        Session::V1(_) => bail!(
-            "checkpoint --merge requires schema 2 session inputs; schema 1 requires explicit migration"
-        ),
+    )?;
+    // Under `--redact` the checkpoint then holds the values saved, so what a command
+    // prints is what the session record says (REQ-records-006).
+    if crate::leaks::redacting() {
+        guard_leaks(session)?;
     }
-}
-
-fn merge_strings(base: &[String], ours: &[String], theirs: &[String]) -> Vec<String> {
-    let base_members: HashSet<&str> = base.iter().map(String::as_str).collect();
-    let ours_members: HashSet<&str> = ours.iter().map(String::as_str).collect();
-    let theirs_members: HashSet<&str> = theirs.iter().map(String::as_str).collect();
-    let mut emitted = HashSet::new();
-    let mut merged = Vec::new();
-    for value in base {
-        if ours_members.contains(value.as_str())
-            && theirs_members.contains(value.as_str())
-            && emitted.insert(value.as_str())
-        {
-            merged.push(value.clone());
-        }
-    }
-    for value in ours.iter().chain(theirs) {
-        if !base_members.contains(value.as_str())
-            && (ours_members.contains(value.as_str()) || theirs_members.contains(value.as_str()))
-            && emitted.insert(value.as_str())
-        {
-            merged.push(value.clone());
-        }
-    }
-    merged
-}
-
-const CURRENT_CYCLE_FIELDS: [&str; 10] = [
-    "objective",
-    "intent_scope",
-    "modules",
-    "stage",
-    "native_change",
-    "next_action",
-    "run_consents",
-    "blockers",
-    "awaiting_human",
-    "history_cursor",
-];
-
-fn current_cycle(session: &Checkpoint) -> Value {
-    json!({
-        "history_cursor": session.history_cursor,
-        "objective": session.objective,
-        "intent_scope": session.intent_scope,
-        "modules": session.modules,
-        "stage": session.stage,
-        "native_change": session.native_change,
-        "next_action": session.next_action,
-        "run_consents": session.run_consents,
-        "blockers": session.blockers,
-        "awaiting_human": session.awaiting_human,
-    })
-}
-
-fn merge_checkpoints(operands: &[PathBuf]) -> Result<()> {
-    ensure!(
-        operands.len() == 3,
-        "checkpoint --merge needs base, ours and theirs"
-    );
-    let (base_path, base) = read_merge_operand(&operands[0])?;
-    let (ours_path, ours) = read_merge_operand(&operands[1])?;
-    let (theirs_path, theirs) = read_merge_operand(&operands[2])?;
-    let mut distinct = HashSet::new();
-    ensure!(
-        distinct.insert(&base_path) && distinct.insert(&ours_path) && distinct.insert(&theirs_path),
-        "merge operands must resolve to three distinct paths"
-    );
-
-    let base_cycle = current_cycle(&base);
-    let ours_cycle = current_cycle(&ours);
-    let theirs_cycle = current_cycle(&theirs);
-    let ours_changed = ours_cycle != base_cycle;
-    let theirs_changed = theirs_cycle != base_cycle;
-    let selected = match (ours_changed, theirs_changed) {
-        (false, false) => &base,
-        (true, false) => &ours,
-        (false, true) => &theirs,
-        (true, true) if ours_cycle == theirs_cycle => &ours,
-        (true, true) => {
-            let differing = CURRENT_CYCLE_FIELDS
-                .iter()
-                .filter(|field| ours_cycle[**field] != theirs_cycle[**field])
-                .copied()
-                .collect::<Vec<_>>()
-                .join(", ");
-            bail!("current-cycle conflict: {differing}");
-        }
-    };
-    let mut merged = selected.clone();
-    merged.references.criteria = merge_strings(
-        &base.references.criteria,
-        &ours.references.criteria,
-        &theirs.references.criteria,
-    );
-    merged.references.requirements = merge_strings(
-        &base.references.requirements,
-        &ours.references.requirements,
-        &theirs.references.requirements,
-    );
-    merged.references.cases = merge_strings(
-        &base.references.cases,
-        &ours.references.cases,
-        &theirs.references.cases,
-    );
-    merged.references.design = merge_strings(
-        &base.references.design,
-        &ours.references.design,
-        &theirs.references.design,
-    );
-    merged.references.files = merge_strings(
-        &base.references.files,
-        &ours.references.files,
-        &theirs.references.files,
-    );
-    merged.decisions = merge_strings(&base.decisions, &ours.decisions, &theirs.decisions);
-    merged.open_questions = merge_strings(
-        &base.open_questions,
-        &ours.open_questions,
-        &theirs.open_questions,
-    );
-    merged.completed = merge_strings(&base.completed, &ours.completed, &theirs.completed);
-    merged.observations =
-        merge_strings(&base.observations, &ours.observations, &theirs.observations);
-    merged.bugs = merge_strings(&base.bugs, &ours.bugs, &theirs.bugs);
-
-    validate_v2(&merged)?;
-    let serialized = serde_json::to_string_pretty(&merged)? + "\n";
-    ensure!(
-        serialized.len() as u64 <= SESSION_LIMIT,
-        "merged session exceeds {SESSION_LIMIT} bytes"
-    );
-    match parse(&serialized)? {
-        Session::V2(_) => {}
-        Session::V1(_) => bail!("merged session is not schema 2"),
-    }
-    let report = serde_json::to_string(&json!({
-        "schema_version": 1,
-        "merged": true,
-        "checkpoint": merged
-    }))?;
-    replace_merged_ours(&operands[1], &serialized)?;
-    let mut output = std::io::stdout().lock();
-    let _ = writeln!(output, "{report}");
+    session.source = Some(record);
+    session.pending.clear();
     Ok(())
-}
-
-fn replace_merged_ours(ours: &Path, content: &str) -> Result<()> {
-    let metadata = fs::symlink_metadata(ours)?;
-    ensure!(
-        metadata.file_type().is_file(),
-        "merge output must remain a regular non-symlink file: {}",
-        ours.display()
-    );
-    let parent = ours.parent().context("merge output has no parent")?;
-    let name = ours
-        .file_name()
-        .and_then(|name| name.to_str())
-        .context("merge output name must be UTF-8")?;
-    let temporary = parent.join(format!(".{name}.{}.chough-merge.tmp", std::process::id()));
-    let result = (|| -> Result<()> {
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&temporary)?;
-        file.write_all(content.as_bytes())?;
-        file.sync_all()?;
-        fs::rename(&temporary, ours)?;
-        Ok(())
-    })();
-    if result.is_err() {
-        let _ = fs::remove_file(&temporary);
-    }
-    result.with_context(|| format!("writing merged checkpoint {}", ours.display()))
 }
 
 #[derive(clap::Args)]
 pub(super) struct CheckpointArgs {
-    /// Three-way merge schema 2 checkpoints, replacing only ours after every check passes.
-    #[arg(
-        long,
-        num_args = 3,
-        value_names = ["BASE", "OURS", "THEIRS"],
-        conflicts_with_all = [
-            "objective",
-            "next_action",
-            "native_change",
-            "decisions",
-            "questions",
-            "resolved",
-            "completed",
-            "remove_completed",
-            "blockers",
-            "clear_blockers",
-            "awaiting_human",
-            "clear_awaiting_human",
-            "close_gate",
-            "decided_by",
-            "words",
-            "place",
-            "recorded_by",
-            "criteria",
-            "requirements",
-            "cases",
-            "design",
-            "files",
-            "observations",
-            "bugs",
-        ]
-    )]
-    merge: Option<Vec<PathBuf>>,
     /// Replace the objective; this clears run consents tied to the old objective.
     #[arg(long)]
     objective: Option<String>,
@@ -815,9 +636,12 @@ pub(super) struct CheckpointArgs {
     decisions: Vec<String>,
     #[arg(long = "question")]
     questions: Vec<String>,
-    /// Remove an open question by its exact text.
+    /// Resolve an open question by its exact text; its line stays, marked resolved.
     #[arg(long = "resolve-question")]
     resolved: Vec<String>,
+    /// The answer to the one question `--resolve-question` names, appended to its line.
+    #[arg(long, requires = "resolved")]
+    answer: Option<String>,
     #[arg(long = "completed")]
     completed: Vec<String>,
     /// Remove a completed entry by its exact text, before `--completed` adds any, so the
@@ -855,6 +679,34 @@ pub(super) struct CheckpointArgs {
     /// The agent recording the decision.
     #[arg(long, allow_hyphen_values = true)]
     recorded_by: Option<String>,
+    /// The review verdict, `pass` or `block`, for a gate that drives review; required
+    /// there and never read from the words (REQ-records-008).
+    #[arg(long, value_parser = ["pass", "block"], requires = "close_gate", conflicts_with = "no_native")]
+    verdict: Option<String>,
+    /// Close a gate that drives a native step without running it: the human's decision
+    /// is neither an approval nor a review, such as a request for changes.
+    #[arg(long, requires = "close_gate")]
+    no_native: bool,
+    /// The native step `chough change ship` already ran for this gate, which the
+    /// decision names; nothing more runs (REQ-cli-059).
+    #[arg(long, hide = true, requires = "close_gate", conflicts_with_all = ["verdict", "no_native"])]
+    native_ran: Option<String>,
+    /// The SpecSync command `chough change ship` ran for this gate, which the relay
+    /// records as `native` with the actor it ran as (REQ-history-010).
+    #[arg(long, hide = true, requires_all = ["native_ran", "native_actor"])]
+    native_command: Option<String>,
+    /// The SpecSync actor the shipped review ran as.
+    #[arg(long, hide = true, requires = "native_command")]
+    native_actor: Option<String>,
+    /// The stage the gates added by --awaiting-human hold (REQ-cli-030); by default the
+    /// current stage.
+    #[arg(long, requires = "awaiting_human")]
+    holds: Option<String>,
+    /// The native step the gates added by --awaiting-human drive when a human closes
+    /// them: approve, review or none; by default approve for a gate held at plan,
+    /// review for one held at accept and none otherwise.
+    #[arg(long, value_parser = ["approve", "review", "none"], requires = "awaiting_human")]
+    drives: Option<String>,
     /// The listed summary's digest the decision was given on (REQ-history-014), for
     /// `chough gate record` and `chough change ship --list`.
     #[arg(long, hide = true, requires_all = ["close_gate", "list"])]
@@ -987,15 +839,144 @@ pub(super) fn check_relay(
         recorded_by: text(3),
         summary_digest: None,
         list: None,
+        native: None,
+        actor: None,
     };
-    let decision = format!(
-        "{} decided \"{gate}\": \"{}\" ({}); recorded by {}; a relayed claim, not authenticated",
-        relay.decided_by, relay.words, relay.place, relay.recorded_by
-    );
+    let decision = decision_text(gate, &relay, None);
     if decision.len() > stage::RELAY_TEXT_LIMIT {
         return Err(RelayProblem::TooLong(gate.into(), decision.len()));
     }
     Ok(Some((gate.into(), relay, decision)))
+}
+
+/// The decision a relayed gate close adds: who decided, their words, where, the
+/// recording agent and, when one ran, the native step (REQ-cli-050, REQ-records-008).
+pub(super) fn decision_text(gate: &str, relay: &stage::RelayedBy, step: Option<&str>) -> String {
+    let mut text = format!(
+        "{} decided \"{gate}\": \"{}\" ({}); recorded by {}; a relayed claim, not authenticated",
+        relay.decided_by, relay.words, relay.place, relay.recorded_by
+    );
+    if let Some(step) = step {
+        text.push_str("; ");
+        text.push_str(step);
+    }
+    text
+}
+
+/// Check the four relay values for leaks, or redact them under `--redact`, before
+/// anything runs (REQ-cli-050, REQ-records-006); returns how many were redacted.
+pub(super) fn guard_relay(relay: &mut stage::RelayedBy) -> Result<usize> {
+    use crate::leaks::{Local, guard};
+    let local = Local::current();
+    Ok(guard(local, "--decided-by", &mut relay.decided_by)?
+        + guard(local, "--words", &mut relay.words)?
+        + guard(local, "--where", &mut relay.place)?
+        + guard(local, "--recorded-by", &mut relay.recorded_by)?)
+}
+
+/// The native step a relayed gate close runs as the decided human (REQ-records-008).
+pub(super) struct NativeStep {
+    pub(super) change: String,
+    pub(super) human: crate::humans::Human,
+    pub(super) step: crate::humans::Step,
+}
+
+/// What closing `gate` with `relay` runs, checked before anything runs: the step the
+/// gate drives as the configured human, or nothing for a gate that drives nothing or a
+/// close with `--no-native`. Returns the step and the text the decision names it by.
+pub(super) fn native_step_for(
+    root: &Path,
+    session: &Checkpoint,
+    gate: &str,
+    relay: &stage::RelayedBy,
+    verdict: Option<&str>,
+    no_native: bool,
+) -> Result<(Option<NativeStep>, Option<String>)> {
+    use crate::humans::{Drives, Step};
+    let drives = crate::session_md::gate(session, gate).drives();
+    match (drives, verdict) {
+        (Drives::Review, None) if !no_native => bail!(
+            "refused:verdict-required: gate \"{gate}\" drives the native review, which needs the human's verdict as --verdict pass or --verdict block (never read from their words), so nothing ran or was saved.\nRun the same command with --verdict, or with --no-native for a decision that is neither an approval nor a review."
+        ),
+        (Drives::Approve | Drives::None, Some(_)) => bail!(
+            "refused:verdict-not-applicable: gate \"{gate}\" drives {}, not a review, so --verdict does not apply; nothing ran or was saved.\nRun the same command without --verdict.",
+            if drives == Drives::None {
+                "no native step"
+            } else {
+                "the native approval"
+            }
+        ),
+        _ => {}
+    }
+    if drives == Drives::None {
+        return Ok((None, None));
+    }
+    if no_native {
+        return Ok((
+            None,
+            Some(format!(
+                "no native {} ran (--no-native)",
+                if drives == Drives::Approve {
+                    "approval"
+                } else {
+                    "review"
+                }
+            )),
+        ));
+    }
+    let Some(change) = session.native_change.clone() else {
+        bail!(
+            "refused:no-native-change: gate \"{gate}\" drives the native {}, and the session records no native change, so nothing ran or was saved.\nRun `chough checkpoint --native-change <id>` first, or close the gate with --no-native for a decision that is neither an approval nor a review.",
+            drives.name()
+        );
+    };
+    let human = crate::humans::resolve(root, &relay.decided_by)?;
+    let step = match drives {
+        Drives::Approve => Step::Approve {
+            note: crate::humans::approval_note(
+                &human,
+                gate,
+                relay,
+                &crate::session_md::iso_time(crate::records::now()?),
+            ),
+        },
+        _ => Step::Review {
+            verdict: verdict.unwrap_or("pass").to_string(),
+        },
+    };
+    let summary = step.summary(&change, &human);
+    Ok((
+        Some(NativeStep {
+            change,
+            human,
+            step,
+        }),
+        Some(summary),
+    ))
+}
+
+/// Run a checked native step; on a SpecSync refusal pass its output and exit code
+/// through and end the process, so nothing is recorded (REQ-records-008).
+pub(super) fn run_native_step(root: &Path, native: &NativeStep) -> Result<serde_json::Value> {
+    use std::io::Write;
+    let ran = crate::humans::run(root, &native.change, &native.human, &native.step)?;
+    if ran.code != 0 {
+        let _ = std::io::stdout().write_all(&ran.stdout);
+        let _ = std::io::stdout().flush();
+        let _ = std::io::stderr().write_all(&ran.stderr);
+        let _ = std::io::stderr().flush();
+        std::process::exit(ran.code);
+    }
+    // SpecSync's own report goes to standard error, so standard output stays one JSON
+    // document.
+    let _ = std::io::stderr().write_all(&ran.stdout);
+    let _ = std::io::stderr().write_all(&ran.stderr);
+    Ok(json!({
+        "ran": native.step.summary(&native.change, &native.human),
+        "human": native.human.name,
+        "specsync_actor": native.human.specsync_actor,
+        "exit_code": ran.code,
+    }))
 }
 
 /// The gate, relay and decision `--close-gate` records, checked before anything is
@@ -1030,9 +1011,10 @@ fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Optio
     })
 }
 
-/// Save `session` with a gate-closed event for each of `cleared` and a gate-opened
-/// event for each of `opened`, sizing the cursor first so a refused save publishes no
-/// event. `checkpoint` and the doctor's gate withdrawal (REQ-history-012) share it.
+/// Save `session` with a gate-closed entry for each of `cleared` and a gate-opened entry
+/// for each of `opened`, all in the same atomic replace as the checkpoint change, so a
+/// refused save writes neither. `checkpoint` and the doctor's gate withdrawal
+/// (REQ-history-012) share it.
 fn save_with_gate_events(
     root: &Path,
     session: &mut Checkpoint,
@@ -1041,47 +1023,32 @@ fn save_with_gate_events(
     opened: &[String],
     relay_for: impl Fn(&String) -> Option<stage::RelayedBy>,
 ) -> Result<()> {
-    let mut candidate = session.clone();
-    if (!cleared.is_empty() || !opened.is_empty())
-        && let Some(cursor) = candidate.history_cursor.as_mut()
-        && cursor.head.is_none()
-    {
-        // Every gate event keeps the cycle and leaves a fixed-width head.
-        // Size the final cursor before publishing any events; this ID is
-        // only a serialization placeholder and is never allocated or saved.
-        cursor.head = Some("EVT-000000000000000000000000".into());
+    queue_gate_events(root, session, current_stage, cleared, opened, relay_for)?;
+    save_checkpoint(root, session)
+}
+
+/// Queue a gate-closed entry for each of `cleared` and a gate-opened entry for each of
+/// `opened` for the next save.
+fn queue_gate_events(
+    root: &Path,
+    session: &mut Checkpoint,
+    current_stage: &str,
+    cleared: &[String],
+    opened: &[String],
+    relay_for: impl Fn(&String) -> Option<stage::RelayedBy>,
+) -> Result<()> {
+    for gate in cleared {
+        stage::log_gate(
+            root,
+            session,
+            stage::GATE_CLOSED,
+            current_stage,
+            gate,
+            relay_for(gate),
+        )?;
     }
-    serialize_checkpoint(&candidate)?;
-    if session.history_cursor.is_some() {
-        for gate in cleared {
-            stage::log_gate(
-                root,
-                session,
-                stage::GATE_CLOSED,
-                current_stage,
-                gate,
-                relay_for(gate),
-            )?;
-        }
-        for gate in opened {
-            stage::log_gate(root, session, stage::GATE_OPENED, current_stage, gate, None)?;
-        }
-        save_checkpoint(root, session)?;
-    } else {
-        save_checkpoint(root, session)?;
-        for gate in cleared {
-            stage::log_gate(
-                root,
-                session,
-                stage::GATE_CLOSED,
-                current_stage,
-                gate,
-                relay_for(gate),
-            )?;
-        }
-        for gate in opened {
-            stage::log_gate(root, session, stage::GATE_OPENED, current_stage, gate, None)?;
-        }
+    for gate in opened {
+        stage::log_gate(root, session, stage::GATE_OPENED, current_stage, gate, None)?;
     }
     Ok(())
 }
@@ -1101,9 +1068,6 @@ pub(super) fn withdraw_gates(root: &Path) -> Result<Vec<String>> {
 }
 
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
-    if let Some(operands) = args.merge {
-        return merge_checkpoints(&operands);
-    }
     let mut session = read_checkpoint(root)?;
     let mut relayed = relayed_decision(&session, &args)?;
     if let Some((_, relay, _)) = relayed.as_mut() {
@@ -1122,9 +1086,70 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             backfill: None,
             relayed_by: Some(relay.clone()),
             direct_write: None,
+            actor: None,
+            holds: None,
+            drives: None,
+            corrects: None,
         };
         stage::validate_relay(&probe)
             .context("the summary digest and list are not a valid pair; nothing was saved")?;
+    }
+    // REQ-records-008: the relay passes the leak guard, and the native step the gate
+    // drives is resolved, before anything runs.
+    let mut native = None;
+    let mut native_text = None;
+    let mut native_report: Option<serde_json::Value> = None;
+    if let Some((gate, relay, decision)) = relayed.as_mut() {
+        guard_relay(relay)?;
+        (native, native_text) = match &args.native_ran {
+            Some(ran) => {
+                // REQ-history-010: the review `chough change ship` ran for this gate is
+                // named on the relay as a close that runs it would name it.
+                if let (Some(command), Some(actor)) = (&args.native_command, &args.native_actor) {
+                    relay.native = Some(command.clone());
+                    relay.actor = Some(actor.clone());
+                    // The report names the step that ran, as a close that runs it does.
+                    native_report = Some(json!({
+                        "ran": ran,
+                        "specsync_actor": actor,
+                        "ran_by": "chough change ship",
+                    }));
+                }
+                (None, Some(ran.clone()))
+            }
+            None => native_step_for(
+                root,
+                &session,
+                gate,
+                relay,
+                args.verdict.as_deref(),
+                args.no_native,
+            )?,
+        };
+        // REQ-history-010: the entry names the SpecSync command the close runs and the
+        // actor it runs as.
+        if let Some(step) = &native {
+            let verb = match step.step {
+                crate::humans::Step::Approve { .. } => "approve",
+                crate::humans::Step::Review { .. } => "review",
+            };
+            relay.native = Some(format!("specsync change {verb} {}", step.change));
+            relay.actor = Some(step.human.specsync_actor.clone());
+        }
+        *decision = decision_text(gate, relay, native_text.as_deref());
+        if decision.len() > stage::RELAY_TEXT_LIMIT {
+            bail!(
+                "refused:relay-too-long: the decision for gate \"{gate}\" would be {} bytes, over the {}-byte checkpoint text bound, so nothing ran or was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
+                decision.len(),
+                stage::RELAY_TEXT_LIMIT
+            );
+        }
+    }
+    if let Some(holds) = &args.holds {
+        ensure!(
+            stage::is_stage(holds),
+            "--holds must name a stage (a main stage, release or a side stage); got {holds:?}, so nothing was saved"
+        );
     }
     let mut changed = false;
     if let Some(objective) = args.objective {
@@ -1172,6 +1197,14 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .map(|(_, relay, _)| relay.clone())
     };
     let open_before_additions = session.awaiting_human.clone();
+    ensure!(
+        args.answer.is_none() || args.resolved.len() == 1,
+        "--answer answers one question: name exactly one --resolve-question"
+    );
+    if let (Some(answer), [question]) = (&args.answer, args.resolved.as_slice()) {
+        ensure!(!answer.trim().is_empty(), "--answer must not be blank");
+        session.answers.insert(question.clone(), answer.clone());
+    }
     for resolved in &args.resolved {
         let before = session.open_questions.len();
         session
@@ -1191,6 +1224,29 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         session.completed.remove(position);
         changed = true;
     }
+    // REQ-cli-030: the gates added here hold --holds (by default the current stage) and
+    // drive --drives (by default that stage's step).
+    for gate in &args.awaiting_human {
+        if session.awaiting_human.contains(gate) {
+            continue;
+        }
+        let holds = args
+            .holds
+            .clone()
+            .unwrap_or_else(|| session.stage.current.clone());
+        let drives = args.drives.clone().unwrap_or_else(|| {
+            crate::humans::Drives::default_for(&holds)
+                .name()
+                .to_string()
+        });
+        session.meta.gates.retain(|meta| &meta.gate != gate);
+        session.meta.gates.push(crate::session_md::GateMeta {
+            gate: gate.clone(),
+            holds,
+            drives,
+            opened: String::new(),
+        });
+    }
     for (list, values, label) in [
         (&mut session.decisions, args.decisions, "decision"),
         (&mut session.open_questions, args.questions, "question"),
@@ -1207,6 +1263,10 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         }
         changed |= !values.is_empty();
         push_unique(list, values);
+    }
+    // A linked bug ID resolves to a bug record, by its ID or an alias (REQ-records-003).
+    for bug in &args.bugs {
+        crate::bugs::resolve_id(root, bug)?;
     }
     for (list, values) in [
         (&mut session.references.criteria, args.criteria),
@@ -1228,7 +1288,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .filter(|gate| !open_before_additions.contains(gate))
             .cloned()
             .collect();
-        save_with_gate_events(
+        queue_gate_events(
             root,
             &mut session,
             &current_stage,
@@ -1236,6 +1296,13 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             &opened,
             relay_for,
         )?;
+        if let Some(native) = &native {
+            // Every check the save makes, before the native step runs, so a refused
+            // save never follows a native write.
+            render_checkpoint(&session)?;
+            native_report = Some(run_native_step(root, native)?);
+        }
+        save_checkpoint(root, &mut session)?;
     }
     let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
     if let Some((gate, relay, _)) = &relayed {
@@ -1243,6 +1310,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             "gate": gate,
             "relayed_by": relay,
             "provenance": RELAY_PROVENANCE,
+            "native_step": native_report.clone().unwrap_or_else(|| json!({"ran": null, "why": native_text})),
         });
     }
     print_json(&output)
@@ -1251,6 +1319,40 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// REQ-records-010 under the writer lock: a writer that takes the lock on a tree
+    /// holding a 0.5.x record refuses, so one that passed the guard before an apply
+    /// restored the 0.5.x files never writes into a mixed tree.
+    #[test]
+    fn taking_the_lock_on_an_unmigrated_tree_refuses() {
+        let root = tempfile::tempdir().unwrap();
+        fs::create_dir_all(root.path().join(".chough")).unwrap();
+        fs::write(root.path().join(".chough/session.json"), "{}\n").unwrap();
+        let error = lock_checkpoint(root.path()).unwrap_err().to_string();
+        assert!(error.contains("refused:unmigrated"), "{error}");
+        release_checkpoint_locks();
+    }
+
+    /// Take `file`'s lock, waiting a bounded time (#132): a process another test thread
+    /// forks inherits this process's descriptors until it execs, so a lock this test
+    /// process just released can stay held for a moment under a loaded, parallel suite.
+    fn lock_within(file: &fs::File, path: &Path) {
+        let started = Instant::now();
+        while <fs::File as fs4::FileExt>::try_lock(file).is_err() {
+            assert!(
+                started.elapsed() < Duration::from_secs(10),
+                "the checkpoint lock stayed held for 10 seconds ({})",
+                crate::records::lock_holder_text(crate::records::lock_holder(path))
+            );
+            std::thread::sleep(LOCK_POLL);
+        }
+    }
+
+    /// Wait a bounded time until nothing holds the lock at `path`, then release it.
+    fn wait_until_free(path: &Path) {
+        let probe = OpenOptions::new().read(true).open(path).unwrap();
+        lock_within(&probe, path);
+    }
 
     /// DRIVE-14 (REQ-cli-032): validation, which `init` runs before it writes anything,
     /// refuses a checkpoint whose serialization is over the 1 MiB cap and names the cap.
@@ -1269,19 +1371,21 @@ mod tests {
     fn a_held_checkpoint_lock_refuses_as_busy_after_the_wait() {
         let root = tempfile::tempdir().unwrap();
         fs::create_dir_all(root.path().join(".chough")).unwrap();
+        let path = checkpoint_lock_path(root.path()).unwrap();
         let other = OpenOptions::new()
             .read(true)
             .write(true)
             .create(true)
             .truncate(false)
-            .open(checkpoint_lock_path(root.path()).unwrap())
+            .open(&path)
             .unwrap();
-        <fs::File as fs4::FileExt>::lock(&other).unwrap();
+        lock_within(&other, &path);
         let started = Instant::now();
         let error = lock_checkpoint(root.path()).unwrap_err().to_string();
         assert!(error.starts_with("refused:checkpoint-busy"), "{error}");
         assert!(started.elapsed() >= LOCK_WAIT);
         drop(other);
+        wait_until_free(&path);
         lock_checkpoint(root.path()).unwrap();
         lock_checkpoint(root.path()).unwrap();
         // The lock lives in the project (#83, DRIVE-11): only `.chough/local/`, which
@@ -1302,6 +1406,49 @@ mod tests {
         assert_eq!(
             fs::read_to_string(root.path().join(".chough/local/.gitignore")).unwrap(),
             "*\n"
+        );
+    }
+
+    /// REQ-cli-040 (#132): a busy refusal names the process the lock file holds, and
+    /// says when it is not running, so a lock kept by a forked child's inherited
+    /// descriptor can be told from a live writer; a writer that takes the lock records
+    /// its own process ID there.
+    #[cfg(unix)]
+    #[test]
+    fn a_busy_refusal_names_the_lock_holders_process() {
+        let root = tempfile::tempdir().unwrap();
+        fs::create_dir_all(root.path().join(".chough")).unwrap();
+        let path = checkpoint_lock_path(root.path()).unwrap();
+        let other = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(&path)
+            .unwrap();
+        lock_within(&other, &path);
+        fs::write(&path, format!("{}\n", std::process::id())).unwrap();
+        let error = lock_checkpoint(root.path()).unwrap_err().to_string();
+        assert!(
+            error.contains(&format!("held by process {}", std::process::id())),
+            "{error}"
+        );
+        let gone = std::process::Command::new("true").spawn().unwrap();
+        let pid = gone.id();
+        gone.wait_with_output().unwrap();
+        fs::write(&path, format!("{pid}\n")).unwrap();
+        let error = lock_checkpoint(root.path()).unwrap_err().to_string();
+        assert!(
+            error.contains(&format!("process {pid}, which is not running"))
+                && error.contains("#132"),
+            "{error}"
+        );
+        drop(other);
+        wait_until_free(&path);
+        lock_checkpoint(root.path()).unwrap();
+        assert_eq!(
+            fs::read_to_string(&path).unwrap(),
+            format!("{}\n", std::process::id())
         );
     }
 
@@ -1334,12 +1481,13 @@ mod tests {
             .truncate(false)
             .open(&path)
             .unwrap();
-        <fs::File as fs4::FileExt>::lock(&other).unwrap();
+        lock_within(&other, &path);
         let error = lock_for_update(&root).unwrap_err().to_string();
         assert!(error.starts_with("refused:checkpoint-busy"), "{error}");
-        assert!(error.contains(".chough/sessions/alpha.json"), "{error}");
+        assert!(error.contains("-alpha/session.md"), "{error}");
         assert!(!error.contains(".chough/session.json"), "{error}");
         assert!(error.contains("nothing was saved"), "{error}");
         drop(other);
+        wait_until_free(&path);
     }
 }

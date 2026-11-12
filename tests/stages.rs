@@ -4,17 +4,42 @@ mod common;
 
 use common::Fixture;
 use serde_json::{Value, json};
-use std::collections::BTreeMap;
 use std::fs;
-use std::path::{Path, PathBuf};
-use std::process::{Command, Output};
+use std::path::Path;
+use std::process::Command;
 
+/// The active session's Timeline entries, oldest first: `time`, `kind`, `from`, `to`,
+/// `text` and `id`, plus each structured field (`  - name: value`) under its name.
 fn transitions(fixture: &Fixture) -> Vec<Value> {
-    fixture
-        .read(".chough/transitions.jsonl")
-        .lines()
-        .map(|line| serde_json::from_str(line).unwrap())
-        .collect()
+    timeline_entries(&fixture.read(&fixture.session_file()))
+}
+
+/// The Timeline entries of a session record (REQ-history-002): `- <time> · <kind> ·
+/// <from> → <to> · <text> ^<id>`, each followed by its `  - name: value` fields.
+fn timeline_entries(text: &str) -> Vec<Value> {
+    let Some(start) = text.find("\n## Timeline\n") else {
+        return vec![];
+    };
+    let mut entries: Vec<Value> = vec![];
+    for line in text[start + 1..].lines().skip(1) {
+        if let Some(item) = line.strip_prefix("- ") {
+            let parts: Vec<&str> = item.splitn(4, " · ").collect();
+            assert_eq!(parts.len(), 4, "a timeline entry: {line}");
+            let (from, to) = parts[2].split_once(" → ").unwrap_or((parts[2], ""));
+            let (text, id) = parts[3].rsplit_once(" ^").unwrap_or((parts[3], ""));
+            entries.push(json!({
+                "time": parts[0], "kind": parts[1], "from": from, "to": to,
+                "text": text.trim(), "id": id,
+            }));
+        } else if let (Some(field), Some(last)) = (line.strip_prefix("  - "), entries.last_mut()) {
+            if let Some((name, value)) = field.split_once(": ") {
+                last[name] = serde_json::from_str(value).unwrap_or_else(|_| json!(value));
+            }
+        } else if line.starts_with("## ") {
+            break;
+        }
+    }
+    entries
 }
 
 fn stage(fixture: &Fixture) -> String {
@@ -26,10 +51,23 @@ fn stage(fixture: &Fixture) -> String {
 
 #[test]
 fn init_writes_a_schema_2_checkpoint_at_intent() {
+    // TC-cli-0015 in the 0.6.0 layout: `init --objective` writes the first session folder,
+    // named by date and the objective's slug, points at it and starts at intent
+    // (REQ-cli-007, REQ-cli-037). No 0.5.x checkpoint file is written.
     let fixture = Fixture::new();
     fixture.init();
+    let id = fixture.active_id();
+    assert_eq!(fixture.open_ids(), std::slice::from_ref(&id));
+    assert_eq!(id.get(11..), Some("ship-a-focused-change"), "{id}");
+    let record = fixture.read(&fixture.session_file());
+    assert!(record.starts_with("---\nkind: session\n"), "{record}");
+    let stored = common::parse_session(&record);
+    assert_eq!(stored["id"], id);
+    assert_eq!(stored["objective"], "Ship a focused change");
+    assert_eq!(stored["stage"]["current"], "intent");
+    assert_eq!(stored["stage"]["status"], "active");
+    assert!(!fixture.exists(".chough/session.json"));
     let session = fixture.session();
-    assert_eq!(session["schema_version"], 2);
     assert_eq!(session["stage"]["current"], "intent");
     assert_eq!(session["stage"]["status"], "active");
     let shown = fixture.ok(&["stage", "show"]);
@@ -60,44 +98,58 @@ fn every_stage_is_documented_in_the_shared_stage_contract() {
     }
 }
 
+/// TC-cli-0016 in 0.6.0 (REQ-cli-007, REQ-records-010): nothing migrates implicitly. A
+/// schema 1 `.chough/session.json` is a 0.5.x record, so every command refuses as
+/// unmigrated naming `chough migrate`, and the file keeps its bytes. 0.6.0's migrate has
+/// no schema 1 meaning: it refuses the file by name, also writing nothing.
 #[test]
 fn migration_is_explicit_and_preserves_schema_1_bytes() {
     let fixture = Fixture::new();
     let original = "{\n  \"schema_version\": 1,\n  \"objective\": \"Keep my old session\",\n  \"intent_scope\": \"LIFE\",\n  \"modules\": [\"cli\"],\n  \"decisions\": [\"Decided A because B\"],\n  \"open_questions\": [\"Q1\"],\n  \"next_action\": \"Do the next thing\"\n}\n";
     fixture.write(".chough/session.json", original);
-    // Schema 1 remains readable for context and status, but not for stage changes.
-    assert_eq!(
-        fixture.ok(&["context", "--json"])["session"]["schema_version"],
-        1
-    );
-    assert!(
-        fixture.ok(&["status", "--json"])["checkpoint"]["migration"]
-            .as_str()
-            .unwrap()
-            .contains("chough migrate")
-    );
-    assert!(
-        fixture
-            .fails(&["stage", "advance"])
-            .contains("chough migrate")
-    );
+    fixture.commit("a schema 1 checkpoint");
+    // Every file of the project but Git's, with its bytes.
+    fn files(dir: &Path, out: &mut Vec<(std::path::PathBuf, Vec<u8>)>) {
+        for entry in fs::read_dir(dir).unwrap().flatten() {
+            let path = entry.path();
+            if entry.file_name() == ".git" {
+                continue;
+            }
+            if path.is_dir() {
+                files(&path, out);
+            } else {
+                out.push((path.clone(), fs::read(&path).unwrap()));
+            }
+        }
+    }
+    let tree = || {
+        let mut out = vec![];
+        files(fixture.root(), &mut out);
+        out.sort();
+        out
+    };
+    let before = tree();
+    for args in [
+        &["context", "--json"][..],
+        &["status", "--json"],
+        &["next", "--json"],
+        &["stage", "advance"],
+        &["checkpoint", "--decision", "Decided C"],
+    ] {
+        let refusal = fixture.fails(args);
+        assert!(
+            refusal.contains("refused:unmigrated")
+                && refusal.contains(".chough/session.json")
+                && refusal.contains("`chough migrate`"),
+            "{args:?}: {refusal}"
+        );
+        assert_eq!(fixture.read(".chough/session.json"), original, "{args:?}");
+        assert_eq!(tree(), before, "{args:?} wrote something");
+    }
+    let refusal = fixture.fails(&["migrate"]);
+    assert!(refusal.contains(".chough/session.json"), "{refusal}");
     assert_eq!(fixture.read(".chough/session.json"), original);
-
-    let migrated = fixture.ok(&["migrate", "--stage", "plan"]);
-    assert_eq!(migrated["migrated"], true);
-    assert_eq!(fixture.read(".chough/session.v1.json"), original);
-    let session = fixture.session();
-    assert_eq!(session["schema_version"], 2);
-    assert_eq!(session["stage"]["current"], "plan");
-    assert_eq!(session["decisions"], json!(["Decided A because B"]));
-    assert_eq!(session["open_questions"], json!(["Q1"]));
-    assert_eq!(session["next_action"], "Do the next thing");
-    assert_eq!(fixture.ok(&["migrate"])["migrated"], false);
-
-    // A second schema 1 file never overwrites the preserved backup.
-    fixture.write(".chough/session.json", original);
-    assert!(fixture.fails(&["migrate"]).contains("already exists"));
-    assert_eq!(fixture.read(".chough/session.json"), original);
+    assert_eq!(tree(), before, "the migrate refusal wrote something");
 }
 
 #[test]
@@ -148,10 +200,17 @@ fn checkpoint_round_trips_across_processes_and_rejects_unknown_fields() {
             .contains("traversal")
     );
 
-    let mut session = fixture.session();
-    session["hidden_reasoning"] = json!("must not be accepted");
-    fixture.write(".chough/session.json", &session.to_string());
-    assert!(fixture.fails(&["context", "--json"]).contains("invalid"));
+    // An unknown front matter key is kept (REQ-records-001); a key with the wrong type is
+    // refused naming the session file and the key, with nothing written (REQ-cli-007).
+    fixture.set_front("iteration", "many");
+    let file = fixture.session_file();
+    let before = fixture.read(&file);
+    let refused = fixture.fails(&["context", "--json"]);
+    assert!(
+        refused.contains(&file) && refused.contains("iteration"),
+        "{refused}"
+    );
+    assert_eq!(fixture.read(&file), before);
 }
 
 #[test]
@@ -238,7 +297,7 @@ fn transitions_cover_every_kind_and_keep_history() {
         ]
     );
     assert_eq!(
-        transitions(&fixture)[1]["reason"],
+        transitions(&fixture)[1]["text"],
         "CLI-only change; nothing visual"
     );
 }
@@ -263,27 +322,34 @@ fn optional_side_stages_and_release_need_authorization() {
     fixture.ok(&["stage", "enter", "validate", "--reason", "Repeat the check"]);
     fixture.ok(&["stage", "return"]);
 
-    for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
-    }
-    assert_eq!(stage(&fixture), "done");
-    assert!(
-        fixture
-            .fails(&["stage", "advance"])
-            .contains("release is entered only")
-    );
-    assert!(
-        fixture
-            .fails(&["stage", "enter", "release", "--reason", "Ship it"])
-            .contains("not authorized")
-    );
-    fixture.ok(&[
+    // In 0.6.0 the move into done archives the session unless release is authorized
+    // first (REQ-history-006), so the consent comes before done and is withdrawn there
+    // to show the refusal.
+    let release = [
         "consent",
         "grant",
         "release",
         "--source",
         "Human: please publish 0.2.0",
-    ]);
+    ];
+    fixture.ok(&release);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
+    assert_eq!(stage(&fixture), "done");
+    assert!(!fixture.is_archived("Ship a focused change"));
+    assert!(
+        fixture
+            .fails(&["stage", "advance"])
+            .contains("release is entered only")
+    );
+    fixture.ok(&["consent", "revoke", "release"]);
+    assert!(
+        fixture
+            .fails(&["stage", "enter", "release", "--reason", "Ship it"])
+            .contains("not authorized")
+    );
+    fixture.ok(&release);
     let entered = fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     assert!(
         entered["applied"]["authority"]
@@ -291,12 +357,19 @@ fn optional_side_stages_and_release_need_authorization() {
             .unwrap()
             .starts_with("run consent")
     );
-    fixture.ok(&["stage", "advance"]);
-    assert_eq!(stage(&fixture), "done");
 
     // A new objective ends run consents; standing preferences were never written.
     fixture.ok(&["checkpoint", "--objective", "Next piece of work"]);
     assert_eq!(fixture.session()["run_consents"], json!([]));
+    assert!(!fixture.exists(".chough/preferences.json"));
+
+    // The move from release into done archives the session at done.
+    fixture.ok(&["stage", "advance"]);
+    assert!(fixture.is_archived("Ship a focused change"));
+    assert_eq!(
+        fixture.session_json("Ship a focused change")["stage"]["current"],
+        "done"
+    );
     assert!(!fixture.exists(".chough/preferences.json"));
 }
 
@@ -366,14 +439,21 @@ fn native_state_gates_build_and_closing_without_inventing_it() {
         fixture.ok(&["stage", "advance"])["applied"]["gate"],
         "native:archived"
     );
-    assert_eq!(stage(&fixture), "done");
+    // The move into done archives the session (REQ-history-006).
+    assert!(fixture.is_archived("Ship a focused change"));
+    assert_eq!(
+        fixture.session_json("Ship a focused change")["stage"]["current"],
+        "done"
+    );
 }
 
 #[cfg(unix)]
 #[test]
 fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
-    const NEW_CYCLE: &str = "Start a new cycle: chough stage reset --to intent --reason \"<why>\" (or --to plan when the approved intent already covers the new work), then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
-    const RESET: &str = "chough stage reset --to intent --reason \"<why>\"";
+    // After done the session is archived, so the next piece of work starts a new
+    // session (REQ-cli-021, corrected in the 0.6.0 plan's Delta corrections).
+    const NEW_CYCLE: &str = "Start the next piece of work in a new session: chough session new <key> --objective \"<outcome>\", then specsync change new \"<outcome>\" --spec <module> --path <path>, then chough checkpoint --native-change <id> --next-action \"<next step>\".";
+    const RESET: &str = "chough session new <key> --objective \"<outcome>\"";
 
     let fixture = Fixture::new();
     fixture.stubs();
@@ -407,7 +487,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
         }
         assert_eq!(report["next_valid_action"], expected, "{command}");
         assert_eq!(
-            fixture.read(".chough/session.json"),
+            fixture.read(&fixture.session_file()),
             session_bytes,
             "{command} rewrote the session"
         );
@@ -415,7 +495,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
     };
 
     fixture.write(".stub-count", "");
-    let session_bytes = fixture.read(".chough/session.json");
+    let session_bytes = fixture.read(&fixture.session_file());
     for command in ["next", "status"] {
         let report = assert_action(command, NEW_CYCLE, &session_bytes);
         assert_eq!(fixture.native_calls(), 1, "{command} native reads");
@@ -443,7 +523,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
 
     fixture.ok(&["stage", "pause", "--reason", "Waiting for a person"]);
     fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
-    let session_bytes = fixture.read(".chough/session.json");
+    let session_bytes = fixture.read(&fixture.session_file());
     for command in ["next", "status"] {
         assert_action(
             command,
@@ -453,11 +533,11 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
     }
 
     fixture.ok(&["stage", "resume"]);
-    let session_bytes = fixture.read(".chough/session.json");
+    let session_bytes = fixture.read(&fixture.session_file());
     for command in ["next", "status"] {
         assert_action(
             command,
-            "Waiting for a human decision: Human scope decision. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`. `chough stage advance` and `chough stage skip` are refused until it is cleared.",
+            "Waiting for a human decision: Human scope decision. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`. `chough stage advance` and `chough stage skip` are refused until it is closed.",
             &session_bytes,
         );
     }
@@ -467,7 +547,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
         "bin/specsync",
         "#!/bin/sh\nprintf '%s\\n' '{\"summary\":{\"state\":\"archived\",\"terminal_evidence\":{\"validity\":\"authenticated-history\"}}}'\n",
     );
-    let session_bytes = fixture.read(".chough/session.json");
+    let session_bytes = fixture.read(&fixture.session_file());
     for command in ["next", "status"] {
         let report = assert_action(command, NEW_CYCLE, &session_bytes);
         assert_eq!(report["native_summary"]["state"], "archived");
@@ -542,7 +622,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
             "{command}: {action}"
         );
         assert_eq!(
-            fixture.read(".chough/session.json"),
+            fixture.read(&fixture.session_file()),
             session_bytes,
             "{command} rewrote the session"
         );
@@ -567,18 +647,16 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
     let next = fixture.ok(&["next", "--json"]);
     let command = next["next_valid_action"]["command"].as_str().unwrap();
     assert_eq!(command, RESET);
-    let arguments = words(&command.replace("<why>", "Start approved follow-up"));
+    let arguments = words(
+        &command
+            .replace("<key>", "follow-up")
+            .replace("<outcome>", "Start approved follow-up"),
+    );
     assert_eq!(arguments[0], "chough");
     let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
     fixture.ok(&arguments);
-    assert_eq!(
-        fixture.session()["next_action"],
-        "New cycle from done after reset: Start approved follow-up. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
-    );
-    assert_eq!(
-        transitions(&fixture).pop().unwrap()["reason"],
-        "Start approved follow-up"
-    );
+    assert_eq!(fixture.session()["objective"], "Start approved follow-up");
+    assert_eq!(fixture.session()["stage"]["current"], "intent");
 }
 
 #[cfg(unix)]
@@ -622,7 +700,12 @@ fn large_native_status_still_gates_by_its_summary_state() {
         fixture.ok(&["stage", "advance"])["applied"]["gate"],
         "native:archived"
     );
-    assert_eq!(stage(&fixture), "done");
+    // The move into done archives the session (REQ-history-006).
+    assert!(fixture.is_archived("Ship a focused change"));
+    assert_eq!(
+        fixture.session_json("Ship a focused change")["stage"]["current"],
+        "done"
+    );
 }
 
 #[test]
@@ -1037,12 +1120,14 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     let text = action["action"].as_str().unwrap();
+    // REQ-cli-021, corrected: a new session, not a reset (the plan's Delta corrections).
     assert!(
-        text.starts_with("Start a new cycle: chough stage reset --to intent --reason \"<why>\""),
+        text.starts_with(
+            "Start the next piece of work in a new session: chough session new <key> --objective \"<outcome>\""
+        ),
         "{text}"
     );
     for part in [
-        "--to plan",
         "specsync change new \"<outcome>\" --spec <module> --path <path>",
         "chough checkpoint --native-change <id> --next-action \"<next step>\"",
     ] {
@@ -1064,7 +1149,7 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
     );
     assert_eq!(
         action["command"],
-        "chough stage reset --to intent --reason \"<why>\""
+        "chough session new <key> --objective \"<outcome>\""
     );
     let status = fixture.ok(&["status", "--json"]);
     assert_eq!(status["next_valid_action"], action["action"]);
@@ -1073,36 +1158,31 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
         "specsync change review old-change --reviewer 0xLeif, then ship"
     );
     let shown = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
-    assert!(shown.contains("Next: Start a new cycle"), "{shown}");
+    assert!(
+        shown.contains("Next: Start the next piece of work in a new session"),
+        "{shown}"
+    );
     assert!(
         shown.contains("Native next action: merge the PR on GitHub"),
         "{shown}"
     );
 
-    // The suggested reset, with its placeholder filled, succeeds and replaces the stale
-    // next action; the transition keeps the reason.
+    // The suggested command, its placeholders filled, starts the next piece of work in
+    // a new session and leaves the finished one as it was.
+    let finished = fixture.read(&fixture.session_file());
     let command = action["command"]
         .as_str()
         .unwrap()
-        .replace("<why>", "New work: a focused view");
+        .replace("<key>", "focused-view")
+        .replace("<outcome>", "New work: a focused view");
     let arguments = words(&command);
     assert_eq!(arguments[0], "chough");
     let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
-    let reset = fixture.ok(&arguments);
-    assert_eq!(reset["applied"]["to"], "intent");
-    assert_eq!(
-        fixture.session()["next_action"],
-        "New cycle from done after reset: New work: a focused view. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
-    );
-    let last = transitions(&fixture).pop().unwrap();
-    assert_eq!(last["kind"], "reset");
-    assert_eq!(last["reason"], "New work: a focused view");
-
-    // Back continues the same cycle and keeps the next action.
-    fixture.ok(&["checkpoint", "--next-action", "Keep this step"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "back", "--to", "intent", "--reason", "Refine"]);
-    assert_eq!(fixture.session()["next_action"], "Keep this step");
+    let before = fixture.session_file();
+    fixture.ok(&arguments);
+    assert_eq!(fixture.session()["objective"], "New work: a focused view");
+    assert_eq!(fixture.session()["stage"]["current"], "intent");
+    assert_eq!(fixture.read(&before), finished);
 }
 
 #[test]
@@ -1128,7 +1208,7 @@ fn reset_replaces_the_next_action_and_back_keeps_it() {
     );
     let last = transitions(&fixture).pop().unwrap();
     assert_eq!(last["kind"], "reset");
-    assert_eq!(last["reason"], "Different work");
+    assert_eq!(last["text"], "Different work");
 
     // The next action keeps the checkpoint's own 4096-byte bound and stays one line,
     // while the transition keeps the reason whole.
@@ -1146,7 +1226,12 @@ fn reset_replaces_the_next_action_and_back_keeps_it() {
     );
     assert!(!next_action.contains('\n'));
     assert!(next_action.ends_with("and set the next action."));
-    assert_eq!(transitions(&fixture).pop().unwrap()["reason"], reason);
+    // A timeline entry is one line (REQ-history-002), so its text keeps the whole reason
+    // with the line break folded to a space.
+    assert_eq!(
+        transitions(&fixture).pop().unwrap()["text"],
+        reason.replace('\n', " ")
+    );
     fixture.ok(&["checkpoint", "--next-action", &next_action]);
 }
 
@@ -1168,9 +1253,7 @@ fn done_keeps_the_gate_refusal_for_an_archive_that_does_not_authenticate() {
 #[test]
 fn done_without_a_native_change_or_with_sdd_disabled_recommends_the_reset() {
     let fixture = done_fixture("forgotten");
-    let mut session = fixture.session();
-    session["native_change"] = Value::Null;
-    fixture.write(".chough/session.json", &session.to_string());
+    fixture.set_front("native_change", "\"\"");
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     assert!(
@@ -1189,14 +1272,14 @@ fn done_without_a_native_change_or_with_sdd_disabled_recommends_the_reset() {
     );
     assert_eq!(
         action["command"],
-        "chough stage reset --to intent --reason \"<why>\""
+        "chough session new <key> --objective \"<outcome>\""
     );
 
     fixture.write(".specsync/sdd.json", "{\"enabled\": false}\n");
     let next = fixture.ok(&["next", "--json"]);
     let text = next["next_valid_action"]["action"].as_str().unwrap();
     assert!(
-        text.starts_with("Start a new cycle: chough stage reset --to intent --reason"),
+        text.starts_with("Start the next piece of work in a new session: chough session new <key>"),
         "{text}"
     );
     assert!(!text.contains("specsync change new"), "{text}");
@@ -1256,11 +1339,25 @@ fn approved_delta(id: &str) -> Fixture {
 }
 
 #[cfg(unix)]
-/// The session and transition bytes, which a refused move must leave unchanged.
-fn records(fixture: &Fixture) -> (Vec<u8>, Vec<u8>) {
+/// The active session record's bytes (its checkpoint and timeline) and the files under
+/// `.chough/`, which a refused move must leave unchanged.
+fn records(fixture: &Fixture) -> (Vec<u8>, Vec<String>) {
+    fn walk(dir: &Path, root: &Path, out: &mut Vec<String>) {
+        for entry in fs::read_dir(dir).into_iter().flatten().flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                walk(&path, root, out);
+            } else {
+                out.push(path.strip_prefix(root).unwrap().display().to_string());
+            }
+        }
+    }
+    let mut files = vec![];
+    walk(&fixture.root().join(".chough"), fixture.root(), &mut files);
+    files.sort();
     (
-        fs::read(fixture.root().join(".chough/session.json")).unwrap(),
-        fs::read(fixture.root().join(".chough/transitions.jsonl")).unwrap(),
+        fs::read(fixture.root().join(fixture.session_file())).unwrap(),
+        files,
     )
 }
 
@@ -1403,7 +1500,8 @@ fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_change
     }
     let refused = fixture.fails(&["stage", "advance"]);
     for part in [
-        "specsync change approve guarded-change --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\"",
+        "specsync change approve guarded-change --actor \"<agent>-<terminal>\" --note \"Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>).\"",
+        "--drives approve",
         "specsync change check guarded-change",
         "specsync.approved-delta.v1",
     ] {
@@ -1506,7 +1604,7 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
     // An approval without digests can only be cleared by a new approval, so its
     // refusal names that rather than a status read.
     let approve = format!(
-        "specsync change approve {id} --actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\""
+        "specsync change approve {id} --actor \"<agent>-<terminal>\" --note \"Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>).\""
     );
     let cases: Vec<(&str, String, &str)> = vec![
         ("malformed", "{\"approvals\": [".into(), &status),
@@ -1582,901 +1680,6 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
     );
 }
 
-fn merge_base() -> Value {
-    json!({
-        "schema_version": 2,
-        "objective": "Merge parallel checkpoint edits",
-        "intent_scope": "FLOW-13",
-        "modules": ["cli"],
-        "stage": {"current": "build", "status": "active", "callers": [], "iteration": 1},
-        "native_change": "merge-checkpoints",
-        "references": {
-            "criteria": ["FLOW-13"],
-            "requirements": ["REQ-cli-007"],
-            "cases": [],
-            "design": [],
-            "files": []
-        },
-        "decisions": [],
-        "open_questions": [],
-        "completed": [],
-        "observations": [],
-        "bugs": [],
-        "blockers": [],
-        "awaiting_human": [],
-        "run_consents": [],
-        "next_action": "Merge compatible edits"
-    })
-}
-
-fn merge_json(value: &Value) -> String {
-    serde_json::to_string_pretty(value).unwrap() + "\n"
-}
-
-fn merge_paths(fixture: &Fixture) -> [String; 3] {
-    ["base.json", "ours.json", "theirs.json"].map(|name| {
-        fixture
-            .root()
-            .join("merge-inputs")
-            .join(name)
-            .to_string_lossy()
-            .into_owned()
-    })
-}
-
-fn run_merge_text(fixture: &Fixture, base: &str, ours: &str, theirs: &str) -> Output {
-    fixture.write("merge-inputs/base.json", base);
-    fixture.write("merge-inputs/ours.json", ours);
-    fixture.write("merge-inputs/theirs.json", theirs);
-    let paths = merge_paths(fixture);
-    fixture.run(&["checkpoint", "--merge", &paths[0], &paths[1], &paths[2]])
-}
-
-fn merge_record_snapshot(root: &Path) -> BTreeMap<PathBuf, Vec<u8>> {
-    fn visit(root: &Path, directory: &Path, files: &mut BTreeMap<PathBuf, Vec<u8>>) {
-        if !directory.exists() {
-            return;
-        }
-        for entry in fs::read_dir(directory).unwrap() {
-            let path = entry.unwrap().path();
-            if path.is_dir() {
-                visit(root, &path, files);
-            } else {
-                files.insert(
-                    path.strip_prefix(root).unwrap().to_owned(),
-                    fs::read(&path).unwrap(),
-                );
-            }
-        }
-    }
-
-    let mut files = BTreeMap::new();
-    visit(root, &root.join(".chough"), &mut files);
-    files
-}
-
-fn assert_merge_refusal(fixture: &Fixture, base: &str, ours: &str, theirs: &str, reason: &str) {
-    let before = [base.as_bytes(), ours.as_bytes(), theirs.as_bytes()];
-    let records = merge_record_snapshot(fixture.root());
-    let output = run_merge_text(fixture, base, ours, theirs);
-    assert!(
-        !output.status.success(),
-        "merge unexpectedly passed: {}",
-        String::from_utf8_lossy(&output.stdout)
-    );
-    let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains(reason), "missing {reason:?}: {stderr}");
-    for (name, expected) in ["base.json", "ours.json", "theirs.json"].iter().zip(before) {
-        assert_eq!(
-            fs::read(fixture.root().join("merge-inputs").join(name)).unwrap(),
-            expected
-        );
-    }
-    assert_eq!(merge_record_snapshot(fixture.root()), records);
-}
-
-fn assert_merge_ok(fixture: &Fixture, base: &Value, ours: &Value, theirs: &Value) -> Value {
-    let records = merge_record_snapshot(fixture.root());
-    let output = run_merge_text(
-        fixture,
-        &merge_json(base),
-        &merge_json(ours),
-        &merge_json(theirs),
-    );
-    assert!(
-        output.status.success(),
-        "merge failed: {}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert_eq!(fixture.read("merge-inputs/base.json"), merge_json(base));
-    assert_eq!(fixture.read("merge-inputs/theirs.json"), merge_json(theirs));
-    assert_eq!(merge_record_snapshot(fixture.root()), records);
-    serde_json::from_str(&fixture.read("merge-inputs/ours.json")).unwrap()
-}
-
-#[test]
-fn checkpoint_merge_combines_every_exact_string_collection_in_order() {
-    let fixture = Fixture::new();
-    fixture.init();
-    let collections = [
-        (
-            "references",
-            "criteria",
-            "FLOW-1",
-            "FLOW-2",
-            "FLOW-3",
-            "FLOW-4",
-            "FLOW-5",
-            "FLOW-6",
-        ),
-        (
-            "references",
-            "requirements",
-            "REQ-cli-001",
-            "REQ-cli-002",
-            "REQ-cli-003",
-            "REQ-cli-004",
-            "REQ-cli-005",
-            "REQ-cli-006",
-        ),
-        (
-            "references",
-            "cases",
-            "CASE-a",
-            "CASE-b",
-            "CASE-c",
-            "CASE-d",
-            "CASE-e",
-            "CASE-f",
-        ),
-        (
-            "references",
-            "design",
-            "docs/a.md",
-            "docs/b.md",
-            "docs/c.md",
-            "docs/d.md",
-            "docs/e.md",
-            "docs/f.md",
-        ),
-        (
-            "references",
-            "files",
-            "src/a.rs",
-            "src/b.rs",
-            "src/c.rs",
-            "src/d.rs",
-            "src/e.rs",
-            "src/f.rs",
-        ),
-        (
-            "",
-            "decisions",
-            "keep",
-            "remove ours",
-            "remove theirs",
-            "ours",
-            "theirs",
-            "shared",
-        ),
-        (
-            "",
-            "open_questions",
-            "keep",
-            "remove ours",
-            "remove theirs",
-            "ours",
-            "theirs",
-            "shared",
-        ),
-        (
-            "",
-            "completed",
-            "keep",
-            "remove ours",
-            "remove theirs",
-            "ours",
-            "theirs",
-            "shared",
-        ),
-        (
-            "",
-            "observations",
-            "OBS-a",
-            "OBS-b",
-            "OBS-c",
-            "OBS-d",
-            "OBS-e",
-            "OBS-f",
-        ),
-        (
-            "", "bugs", "BUG-a", "BUG-b", "BUG-c", "BUG-d", "BUG-e", "BUG-f",
-        ),
-    ];
-    for (parent, field, keep, remove_ours, remove_theirs, ours_add, theirs_add, shared) in
-        collections
-    {
-        let mut base = merge_base();
-        let mut ours = merge_base();
-        let mut theirs = merge_base();
-        fn slot<'a>(session: &'a mut Value, parent: &str, field: &str) -> &'a mut Value {
-            if parent.is_empty() {
-                &mut session[field]
-            } else {
-                &mut session[parent][field]
-            }
-        }
-        *slot(&mut base, parent, field) = json!([keep, remove_ours, remove_theirs]);
-        *slot(&mut ours, parent, field) = json!([keep, remove_theirs, ours_add, shared]);
-        *slot(&mut theirs, parent, field) = json!([keep, remove_ours, theirs_add, shared]);
-        let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
-        let actual = if parent.is_empty() {
-            &merged[field]
-        } else {
-            &merged[parent][field]
-        };
-        assert_eq!(
-            actual,
-            &json!([keep, ours_add, shared, theirs_add]),
-            "{parent}.{field}"
-        );
-    }
-
-    let mut base = merge_base();
-    let mut ours = merge_base();
-    let mut theirs = merge_base();
-    base["decisions"] = json!([]);
-    ours["decisions"] = json!(["Case", "case ", "case!", "shared"]);
-    theirs["decisions"] = json!(["case", "case ", "shared", "case."]);
-    let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
-    assert_eq!(
-        merged["decisions"],
-        json!(["Case", "case ", "case!", "shared", "case", "case."])
-    );
-}
-
-#[test]
-fn checkpoint_merge_selects_the_current_cycle_as_one_group() {
-    let fixture = Fixture::new();
-    fixture.init();
-    let changes = [
-        ("objective", json!("A different objective")),
-        ("intent_scope", json!("LIFE-3")),
-        ("modules", json!(["cli", "docs"])),
-        (
-            "stage",
-            json!({"current": "design", "status": "paused", "callers": [], "iteration": 2}),
-        ),
-        ("native_change", json!("another-change")),
-        ("next_action", json!("Wait for the selected cycle")),
-        (
-            "run_consents",
-            json!([{"key": "validation", "source": "human", "objective": "Merge parallel checkpoint edits", "granted_at_unix_seconds": 123}]),
-        ),
-        ("blockers", json!(["A selected blocker"])),
-        ("awaiting_human", json!(["A selected human gate"])),
-    ];
-    for (field, value) in changes {
-        let base = merge_base();
-        let mut ours = base.clone();
-        ours[field] = value.clone();
-        let merged = assert_merge_ok(&fixture, &base, &ours, &base);
-        assert_eq!(merged[field], value, "ours field {field}");
-
-        let mut theirs = base.clone();
-        theirs[field] = value.clone();
-        let merged = assert_merge_ok(&fixture, &base, &base, &theirs);
-        assert_eq!(merged[field], value, "theirs field {field}");
-
-        let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
-        assert_eq!(merged[field], value, "identical field {field}");
-    }
-
-    let base = merge_base();
-    let mut changed = base.clone();
-    changed["objective"] = json!("Identical new cycle");
-    changed["next_action"] = json!("Continue the identical cycle");
-    changed["blockers"] = json!(["Same blocker"]);
-    let merged = assert_merge_ok(&fixture, &base, &changed, &changed);
-    assert_eq!(merged, changed);
-
-    let mut ours = base.clone();
-    let mut theirs = base.clone();
-    ours["objective"] = json!("Ours cycle");
-    theirs["next_action"] = json!("Theirs next action");
-    assert_merge_refusal(
-        &fixture,
-        &merge_json(&base),
-        &merge_json(&ours),
-        &merge_json(&theirs),
-        "current-cycle conflict",
-    );
-    let output = run_merge_text(
-        &fixture,
-        &merge_json(&base),
-        &merge_json(&ours),
-        &merge_json(&theirs),
-    );
-    let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("objective"), "{stderr}");
-    assert!(stderr.contains("next_action"), "{stderr}");
-
-    let mut ours = base.clone();
-    let mut theirs = base.clone();
-    ours["native_change"] = json!("ours-change");
-    theirs["native_change"] = json!("theirs-change");
-    assert_merge_refusal(
-        &fixture,
-        &merge_json(&base),
-        &merge_json(&ours),
-        &merge_json(&theirs),
-        "native_change",
-    );
-
-    for (field, ours_value, theirs_value) in [
-        (
-            "run_consents",
-            json!([{"key": "validation", "source": "human", "objective": "Merge parallel checkpoint edits", "granted_at_unix_seconds": 123}]),
-            json!([{"key": "release", "source": "human", "objective": "Merge parallel checkpoint edits", "granted_at_unix_seconds": 456}]),
-        ),
-        (
-            "blockers",
-            json!(["Ours blocker"]),
-            json!(["Theirs blocker"]),
-        ),
-        (
-            "awaiting_human",
-            json!(["Ours gate"]),
-            json!(["Theirs gate"]),
-        ),
-    ] {
-        let mut ours = base.clone();
-        let mut theirs = base.clone();
-        ours[field] = ours_value;
-        theirs[field] = theirs_value;
-        assert_merge_refusal(
-            &fixture,
-            &merge_json(&base),
-            &merge_json(&ours),
-            &merge_json(&theirs),
-            "current-cycle conflict",
-        );
-    }
-
-    let records = merge_record_snapshot(fixture.root());
-    let output = run_merge_text(
-        &fixture,
-        &merge_json(&base),
-        &base.to_string(),
-        &merge_json(&base),
-    );
-    assert!(
-        output.status.success(),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert_eq!(merge_record_snapshot(fixture.root()), records);
-}
-
-#[test]
-fn checkpoint_merge_rejects_invalid_schemas_json_and_unknown_fields() {
-    let fixture = Fixture::new();
-    fixture.init();
-    let valid = merge_json(&merge_base());
-    let schema_1 = "{\n  \"schema_version\": 1,\n  \"objective\": \"Old session\",\n  \"intent_scope\": \"LIFE\",\n  \"modules\": [\"cli\"],\n  \"decisions\": [],\n  \"open_questions\": [],\n  \"next_action\": \"Migrate explicitly\"\n}\n";
-    let mut unknown_top = merge_base();
-    unknown_top["unknown"] = json!(true);
-    let mut unknown_nested = merge_base();
-    unknown_nested["stage"]["unknown"] = json!(true);
-    let mut unsupported = merge_base();
-    unsupported["schema_version"] = json!(3);
-    let invalid = [
-        schema_1.to_string(),
-        "{\n".to_string(),
-        merge_json(&unknown_top),
-        merge_json(&unknown_nested),
-        merge_json(&unsupported),
-    ];
-    for content in invalid {
-        for position in 0..3 {
-            let mut inputs = [valid.clone(), valid.clone(), valid.clone()];
-            inputs[position] = content.clone();
-            assert_merge_refusal(&fixture, &inputs[0], &inputs[1], &inputs[2], "session");
-        }
-    }
-    assert!(!fixture.exists(".chough/session.v1.json"));
-}
-
-#[test]
-fn checkpoint_merge_enforces_input_collection_and_output_byte_bounds() {
-    let fixture = Fixture::new();
-    fixture.init();
-    let valid = merge_json(&merge_base());
-    let oversized = format!("{}{}", valid, " ".repeat(common::CHECKPOINT_CAP));
-    for position in 0..3 {
-        let mut inputs = [valid.clone(), valid.clone(), valid.clone()];
-        inputs[position] = oversized.clone();
-        assert_merge_refusal(&fixture, &inputs[0], &inputs[1], &inputs[2], "1048576");
-    }
-    let exact = format!(
-        "{}{}",
-        valid,
-        " ".repeat(common::CHECKPOINT_CAP - valid.len())
-    );
-    assert_eq!(exact.len(), common::CHECKPOINT_CAP);
-    for position in 0..3 {
-        let mut inputs = [valid.clone(), valid.clone(), valid.clone()];
-        inputs[position] = exact.clone();
-        let output = run_merge_text(&fixture, &inputs[0], &inputs[1], &inputs[2]);
-        assert!(
-            output.status.success(),
-            "{}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-    }
-
-    let base = merge_base();
-    let mut ours = base.clone();
-    let mut theirs = base.clone();
-    ours["decisions"] = json!(
-        (0..150)
-            .map(|index| format!("ours-{index}"))
-            .collect::<Vec<_>>()
-    );
-    theirs["decisions"] = json!(
-        (0..150)
-            .map(|index| format!("theirs-{index}"))
-            .collect::<Vec<_>>()
-    );
-    assert_merge_refusal(
-        &fixture,
-        &merge_json(&base),
-        &merge_json(&ours),
-        &merge_json(&theirs),
-        "too many",
-    );
-
-    // Each side within the cap and each merged list within 200 entries; the merged
-    // result over the cap (DRIVE-14, 1 MiB).
-    for list in ["decisions", "completed"] {
-        ours[list] = json!(
-            (0..100)
-                .map(|index| format!("ours-{list}-{index}-{}", "o".repeat(3_900)))
-                .collect::<Vec<_>>()
-        );
-        theirs[list] = json!(
-            (0..100)
-                .map(|index| format!("theirs-{list}-{index}-{}", "t".repeat(3_900)))
-                .collect::<Vec<_>>()
-        );
-    }
-    assert!(merge_json(&ours).len() <= common::CHECKPOINT_CAP);
-    assert!(merge_json(&theirs).len() <= common::CHECKPOINT_CAP);
-    assert_merge_refusal(
-        &fixture,
-        &merge_json(&base),
-        &merge_json(&ours),
-        &merge_json(&theirs),
-        "1048576",
-    );
-
-    let observations = |side: &str, count: usize| {
-        json!(
-            (0..count)
-                .map(|index| format!("OBS-{side}-{index:03}"))
-                .collect::<Vec<_>>()
-        )
-    };
-    let mut ours_obs = base.clone();
-    let mut theirs_obs = base.clone();
-    ours_obs["observations"] = observations("ours", 200);
-    theirs_obs["observations"] = observations("theirs", 200);
-    let merged = assert_merge_ok(&fixture, &base, &ours_obs, &theirs_obs);
-    assert_eq!(merged["observations"].as_array().unwrap().len(), 400);
-    theirs_obs["observations"] = observations("theirs", 201);
-    assert_merge_refusal(
-        &fixture,
-        &merge_json(&base),
-        &merge_json(&ours_obs),
-        &merge_json(&theirs_obs),
-        "too many observation",
-    );
-
-    ours["decisions"] = json!(
-        (0..100)
-            .map(|index| format!("ours-{index}"))
-            .collect::<Vec<_>>()
-    );
-    theirs["decisions"] = json!(
-        (0..100)
-            .map(|index| format!("theirs-{index}"))
-            .collect::<Vec<_>>()
-    );
-    let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
-    assert_eq!(merged["decisions"].as_array().unwrap().len(), 200);
-
-    ours["run_consents"] = json!(
-        (0..200)
-            .map(|index| {
-                json!({
-                    "key": format!("consent-{index}"),
-                    "source": "test",
-                    "objective": base["objective"].clone(),
-                    "granted_at_unix_seconds": 1
-                })
-            })
-            .collect::<Vec<_>>()
-    );
-    theirs = base.clone();
-    let merged = assert_merge_ok(&fixture, &base, &ours, &theirs);
-    assert_eq!(merged["run_consents"].as_array().unwrap().len(), 200);
-    ours["run_consents"].as_array_mut().unwrap().push(json!({
-        "key": "consent-200",
-        "source": "test",
-        "objective": base["objective"].clone(),
-        "granted_at_unix_seconds": 1
-    }));
-    assert_merge_refusal(
-        &fixture,
-        &merge_json(&base),
-        &merge_json(&ours),
-        &merge_json(&theirs),
-        "too many run consents",
-    );
-}
-
-#[cfg(unix)]
-#[test]
-fn checkpoint_merge_closed_stdout_does_not_turn_a_successful_write_into_failure() {
-    let fixture = Fixture::new();
-    fixture.init();
-    let base = merge_base();
-    let mut ours = base.clone();
-    ours["decisions"] = json!(["merge succeeded before reporting"]);
-    let theirs = base.clone();
-    fixture.write("merge-inputs/base.json", &merge_json(&base));
-    fixture.write("merge-inputs/ours.json", &merge_json(&ours));
-    fixture.write("merge-inputs/theirs.json", &merge_json(&theirs));
-    let paths = merge_paths(&fixture);
-    let output = Command::new("sh")
-        .arg("-c")
-        .arg("exec 1>&-; \"$@\"")
-        .arg("sh")
-        .arg(env!("CARGO_BIN_EXE_chough"))
-        .arg("checkpoint")
-        .arg("--merge")
-        .args(paths)
-        .output()
-        .unwrap();
-    assert!(
-        output.status.success(),
-        "closed stdout changed the result: {}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-    let merged: Value = serde_json::from_str(&fixture.read("merge-inputs/ours.json")).unwrap();
-    assert_eq!(
-        merged["decisions"],
-        json!(["merge succeeded before reporting"])
-    );
-    assert_eq!(fixture.read("merge-inputs/base.json"), merge_json(&base));
-    assert_eq!(
-        fixture.read("merge-inputs/theirs.json"),
-        merge_json(&theirs)
-    );
-}
-
-#[test]
-fn checkpoint_merge_requires_distinct_regular_files_and_exact_arguments() {
-    let fixture = Fixture::new();
-    fixture.init();
-    let valid = merge_json(&merge_base());
-    fixture.write("merge-inputs/base.json", &valid);
-    fixture.write("merge-inputs/ours.json", &valid);
-    fixture.write("merge-inputs/theirs.json", &valid);
-    fs::create_dir_all(fixture.root().join("merge-inputs/directory")).unwrap();
-    let paths = merge_paths(&fixture);
-    let records = merge_record_snapshot(fixture.root());
-    for arguments in [
-        vec!["checkpoint", "--merge", &paths[0], &paths[1]],
-        vec![
-            "checkpoint",
-            "--merge",
-            &paths[0],
-            &paths[1],
-            &paths[2],
-            &paths[0],
-        ],
-        vec![
-            "checkpoint",
-            "--merge",
-            &paths[0],
-            &paths[1],
-            &paths[2],
-            "--next-action",
-            "No",
-        ],
-        vec!["checkpoint", "--merge", &paths[0], &paths[1], &paths[1]],
-        vec!["checkpoint", "--merge", &paths[0], &paths[0], &paths[2]],
-    ] {
-        assert!(
-            !fixture.run(&arguments).status.success(),
-            "{arguments:?} unexpectedly passed"
-        );
-        assert_eq!(merge_record_snapshot(fixture.root()), records);
-    }
-    let directory = fixture
-        .root()
-        .join("merge-inputs/directory")
-        .to_string_lossy()
-        .into_owned();
-    assert!(
-        !fixture
-            .run(&["checkpoint", "--merge", &paths[0], &directory, &paths[2]])
-            .status
-            .success()
-    );
-    let missing = fixture
-        .root()
-        .join("merge-inputs/missing.json")
-        .to_string_lossy()
-        .into_owned();
-    assert!(
-        !fixture
-            .run(&["checkpoint", "--merge", &paths[0], &missing, &paths[2]])
-            .status
-            .success()
-    );
-    assert_eq!(fixture.read("merge-inputs/base.json"), valid);
-    assert_eq!(fixture.read("merge-inputs/ours.json"), valid);
-    assert_eq!(fixture.read("merge-inputs/theirs.json"), valid);
-
-    #[cfg(unix)]
-    for position in 0..3 {
-        let link = fixture.root().join("merge-inputs/link.json");
-        std::os::unix::fs::symlink(fixture.root().join("merge-inputs/base.json"), &link).unwrap();
-        let mut operands = paths.clone();
-        operands[position] = link.to_string_lossy().into_owned();
-        assert!(
-            !fixture
-                .run(&[
-                    "checkpoint",
-                    "--merge",
-                    &operands[0],
-                    &operands[1],
-                    &operands[2]
-                ])
-                .status
-                .success()
-        );
-        fs::remove_file(link).unwrap();
-    }
-}
-
-fn isolated_git(root: &Path, args: &[&str]) -> Output {
-    let binary = Path::new(env!("CARGO_BIN_EXE_chough"));
-    let mut paths = vec![binary.parent().unwrap().to_owned()];
-    paths.extend(std::env::split_paths(
-        &std::env::var_os("PATH").unwrap_or_default(),
-    ));
-    fs::create_dir_all(root.join("isolated-home")).unwrap();
-    Command::new("git")
-        .current_dir(root)
-        .args(args)
-        .env("HOME", root.join("isolated-home"))
-        .env("GIT_CONFIG_GLOBAL", root.join("isolated-global-config"))
-        .env("GIT_CONFIG_SYSTEM", root.join("isolated-system-config"))
-        .env("GIT_CONFIG_NOSYSTEM", "1")
-        .env("PATH", std::env::join_paths(paths).unwrap())
-        .output()
-        .unwrap()
-}
-
-fn git_ok(root: &Path, args: &[&str]) {
-    let output = isolated_git(root, args);
-    assert!(
-        output.status.success(),
-        "git {args:?} failed: {}",
-        String::from_utf8_lossy(&output.stderr)
-    );
-}
-
-fn git_merge_fixture(
-    driver: bool,
-    current_cycle_conflict: bool,
-) -> (Fixture, Output, Value, Value, Value) {
-    let fixture = Fixture::new();
-    fixture.init();
-    fixture.write(
-        ".gitattributes",
-        ".chough/session.json merge=chough-session\n",
-    );
-    let base = merge_base();
-    let mut ours = base.clone();
-    let mut theirs = base.clone();
-    let mut base = base;
-    base["decisions"] = json!(["base keep", "remove ours", "remove theirs"]);
-    ours["decisions"] = json!([
-        "base keep",
-        "remove theirs",
-        "ours addition",
-        "shared addition"
-    ]);
-    theirs["decisions"] = json!([
-        "base keep",
-        "remove ours",
-        "theirs addition",
-        "shared addition"
-    ]);
-    if current_cycle_conflict {
-        ours["objective"] = json!("Ours current cycle");
-        theirs["next_action"] = json!("Theirs independent next action");
-    }
-    fixture.write(".chough/session.json", &merge_json(&base));
-    git_ok(fixture.root(), &["init", "--initial-branch=main"]);
-    git_ok(fixture.root(), &["config", "user.name", "Checkpoint Test"]);
-    git_ok(
-        fixture.root(),
-        &["config", "user.email", "checkpoint@example.invalid"],
-    );
-    git_ok(fixture.root(), &["config", "commit.gpgsign", "false"]);
-    if driver {
-        git_ok(
-            fixture.root(),
-            &[
-                "config",
-                "merge.chough-session.driver",
-                "chough checkpoint --merge %O %A %B",
-            ],
-        );
-    }
-    git_ok(fixture.root(), &["add", "."]);
-    git_ok(fixture.root(), &["commit", "-m", "base checkpoint"]);
-    git_ok(fixture.root(), &["checkout", "-b", "ours"]);
-    fixture.write(".chough/session.json", &merge_json(&ours));
-    git_ok(fixture.root(), &["add", ".chough/session.json"]);
-    git_ok(fixture.root(), &["commit", "-m", "ours checkpoint"]);
-    git_ok(fixture.root(), &["checkout", "main"]);
-    git_ok(fixture.root(), &["checkout", "-b", "theirs"]);
-    fixture.write(".chough/session.json", &merge_json(&theirs));
-    git_ok(fixture.root(), &["add", ".chough/session.json"]);
-    git_ok(fixture.root(), &["commit", "-m", "theirs checkpoint"]);
-    git_ok(fixture.root(), &["checkout", "ours"]);
-    let output = isolated_git(fixture.root(), &["merge", "--no-edit", "theirs"]);
-    (fixture, output, base, ours, theirs)
-}
-
-fn print_git_merge(output: &Output, checkpoint: &[u8]) {
-    println!("command: git merge --no-edit theirs");
-    println!("exit status: {}", output.status);
-    println!("stdout:\n{}", String::from_utf8_lossy(&output.stdout));
-    println!("stderr:\n{}", String::from_utf8_lossy(&output.stderr));
-    println!(
-        "resulting .chough/session.json bytes:\n{}",
-        String::from_utf8_lossy(checkpoint)
-    );
-}
-
-#[test]
-fn real_git_without_driver_conflict() {
-    let (fixture, output, _, _, _) = git_merge_fixture(false, false);
-    let checkpoint = fs::read(fixture.root().join(".chough/session.json")).unwrap();
-    print_git_merge(&output, &checkpoint);
-    assert!(!output.status.success());
-    assert!(
-        !isolated_git(fixture.root(), &["ls-files", "-u"])
-            .stdout
-            .is_empty()
-    );
-    assert!(String::from_utf8_lossy(&checkpoint).contains("<<<<<<<"));
-}
-
-#[test]
-fn real_git_driver_merges_compatible_checkpoint_changes() {
-    let (fixture, output, base, ours, theirs) = git_merge_fixture(true, false);
-    let checkpoint = fs::read(fixture.root().join(".chough/session.json")).unwrap();
-    print_git_merge(&output, &checkpoint);
-    assert!(output.status.success(), "configured driver did not merge");
-    let expected = r#"{
-  "schema_version": 2,
-  "objective": "Merge parallel checkpoint edits",
-  "intent_scope": "FLOW-13",
-  "modules": [
-    "cli"
-  ],
-  "stage": {
-    "current": "build",
-    "status": "active",
-    "callers": [],
-    "iteration": 1
-  },
-  "native_change": "merge-checkpoints",
-  "references": {
-    "criteria": [
-      "FLOW-13"
-    ],
-    "requirements": [
-      "REQ-cli-007"
-    ],
-    "cases": [],
-    "design": [],
-    "files": []
-  },
-  "decisions": [
-    "base keep",
-    "ours addition",
-    "shared addition",
-    "theirs addition"
-  ],
-  "open_questions": [],
-  "completed": [],
-  "observations": [],
-  "bugs": [],
-  "blockers": [],
-  "awaiting_human": [],
-  "run_consents": [],
-  "next_action": "Merge compatible edits"
-}
-"#;
-    assert_eq!(checkpoint, expected.as_bytes());
-    assert!(
-        isolated_git(fixture.root(), &["ls-files", "-u"])
-            .stdout
-            .is_empty()
-    );
-    assert!(
-        isolated_git(fixture.root(), &["status", "--porcelain"])
-            .stdout
-            .is_empty()
-    );
-    assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
-
-    fixture.write("merge-inputs/base.json", &merge_json(&base));
-    fixture.write("merge-inputs/ours.json", &merge_json(&ours));
-    fixture.write("merge-inputs/theirs.json", &merge_json(&theirs));
-    let paths = merge_paths(&fixture);
-    let direct = fixture.run(&["checkpoint", "--merge", &paths[0], &paths[1], &paths[2]]);
-    assert!(
-        direct.status.success(),
-        "{}",
-        String::from_utf8_lossy(&direct.stderr)
-    );
-    assert_eq!(fixture.read("merge-inputs/ours.json"), expected);
-    assert_eq!(fixture.read("merge-inputs/base.json"), merge_json(&base));
-    assert_eq!(
-        fixture.read("merge-inputs/theirs.json"),
-        merge_json(&theirs)
-    );
-    assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
-}
-
-#[test]
-fn real_git_current_cycle_conflict_and_direct_fallback_preserve_ours() {
-    let (fixture, output, base, ours, theirs) = git_merge_fixture(true, true);
-    let checkpoint = fs::read(fixture.root().join(".chough/session.json")).unwrap();
-    print_git_merge(&output, &checkpoint);
-    assert!(!output.status.success());
-    assert!(String::from_utf8_lossy(&output.stderr).contains("current-cycle conflict"));
-    assert_eq!(checkpoint, merge_json(&ours).as_bytes());
-    assert!(!String::from_utf8_lossy(&checkpoint).contains("<<<<<<<"));
-    assert!(
-        !isolated_git(fixture.root(), &["ls-files", "-u"])
-            .stdout
-            .is_empty()
-    );
-    assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
-    git_ok(fixture.root(), &["merge", "--abort"]);
-
-    fixture.write("merge-inputs/base.json", &merge_json(&base));
-    fixture.write("merge-inputs/ours.json", &merge_json(&ours));
-    fixture.write("merge-inputs/theirs.json", &merge_json(&theirs));
-    let paths = merge_paths(&fixture);
-    let direct = fixture.run(&["checkpoint", "--merge", &paths[0], &paths[1], &paths[2]]);
-    assert!(!direct.status.success());
-    assert!(String::from_utf8_lossy(&direct.stderr).contains("current-cycle conflict"));
-    assert_eq!(fixture.read("merge-inputs/ours.json"), merge_json(&ours));
-    assert_eq!(merge_record_snapshot(fixture.root()).len(), 1);
-}
-
 /// Issue #38: with a gate awaiting a human, advance and skip are refused at intent,
 /// design, plan (SDD disabled) and release, writing nothing; at most 3 gates are
 /// named; clearing the gate allows the same move with its usual gate label.
@@ -2487,10 +1690,8 @@ fn open_human_gates_refuse_advance_and_skip() {
     fixture.write(".specsync/sdd.json", "{\"enabled\": false}\n");
     fixture.init();
     let refused = |fixture: &Fixture, gate: &str| {
-        let before = (
-            fixture.read(".chough/session.json"),
-            fixture.read(".chough/transitions.jsonl"),
-        );
+        // The session record holds the checkpoint and the timeline (REQ-history-002).
+        let before = fixture.read(&fixture.session_file());
         for route in [
             vec!["stage", "advance"],
             vec!["stage", "skip", "--reason", "not needed"],
@@ -2505,10 +1706,7 @@ fn open_human_gates_refuse_advance_and_skip() {
                 assert!(error.contains(expected), "{route:?}: {expected}: {error}");
             }
         }
-        let after = (
-            fixture.read(".chough/session.json"),
-            fixture.read(".chough/transitions.jsonl"),
-        );
+        let after = fixture.read(&fixture.session_file());
         assert!(before == after, "a refused move wrote records");
     };
     for (stage_name, gate) in [
@@ -2543,11 +1741,8 @@ fn open_human_gates_refuse_advance_and_skip() {
     assert!(!error.contains("Gate D"), "{error}");
     fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
 
-    // Release -> done.
-    for _ in 0..3 {
-        fixture.ok(&["stage", "advance"]);
-    }
-    assert_eq!(stage(&fixture), "done");
+    // Release -> done. Release is authorized before the move into done, which otherwise
+    // archives the session (REQ-history-006).
     fixture.ok(&[
         "consent",
         "grant",
@@ -2555,6 +1750,10 @@ fn open_human_gates_refuse_advance_and_skip() {
         "--source",
         "Human: publish it",
     ]);
+    for _ in 0..3 {
+        fixture.ok(&["stage", "advance"]);
+    }
+    assert_eq!(stage(&fixture), "done");
     fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     fixture.ok(&["checkpoint", "--awaiting-human", "Release approval"]);
     assert!(
@@ -2565,7 +1764,10 @@ fn open_human_gates_refuse_advance_and_skip() {
     assert_eq!(stage(&fixture), "release");
     fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
     fixture.ok(&["stage", "advance"]);
-    assert_eq!(stage(&fixture), "done");
+    assert_eq!(
+        fixture.session_json("Ship a focused change")["stage"]["current"],
+        "done"
+    );
 }
 
 /// With a gate open, other moves still work, and next and status give the same
@@ -2586,7 +1788,7 @@ fn open_human_gates_leave_other_moves_and_agree_in_next() {
     );
     assert!(
         action.contains(
-            "`chough stage advance` and `chough stage skip` are refused until it is cleared"
+            "`chough stage advance` and `chough stage skip` are refused until it is closed"
         ),
         "{action}"
     );
@@ -2625,57 +1827,28 @@ fn at_test_with_case() -> Fixture {
     fixture
 }
 
+/// Write a 0.6.0 evidence entry of the active session (REQ-records-005) for `case`,
+/// with a fixed observed time, as a hand-written fixture.
 fn case_observation(fixture: &Fixture, id: &str, case: &str, outcome: &str, observed: u64) {
-    let record = json!({
-        "schema_version": 2,
-        "id": id,
-        "criteria": ["LIFE-1"],
-        "requirements": ["REQ-cli-001"],
-        "contracts": ["specs/cli/cli.spec.md"],
-        "kind": "product-test",
-        "outcome": outcome,
-        "environment": "local",
-        "summary": format!("fixture observation {id}"),
-        "artifacts": [],
-        "artifact_fingerprints": {},
-        "observed_at_unix_seconds": observed,
-        "snapshot": {"revision": "0".repeat(40), "dirty": false, "fingerprint": "0".repeat(64)},
-        "provenance": "fixture",
-        "cases": [{"id": case, "digest": "0".repeat(64)}],
-    });
+    let session = fixture.active_id();
+    let (hours, rest) = (observed / 3600, observed % 3600);
+    assert!(hours < 24, "fixture times stay within the first day");
+    let time = format!("1970-01-01T{hours:02}:{:02}:{:02}Z", rest / 60, rest % 60);
+    let zeros = "0".repeat(64);
+    let revision = "0".repeat(40);
     fixture.write(
-        &format!(".chough/evidence/{id}.json"),
-        &serde_json::to_string(&record).unwrap(),
+        &format!(".chough/sessions/{session}/evidence/{id}.md"),
+        &format!(
+            "---\nkind: evidence\nid: {id}\naliases: []\nclaim: fixture observation {id}\nresult: {outcome}\nevidence_kind: product-test\ncase: [{case}]\ncase_digest: [{zeros}]\ncriteria: [LIFE-1]\nrequirements: [REQ-cli-001]\ncontracts: [specs/cli/cli.spec.md]\nenvironment: local\nrevision: {revision}\nobserved: {time}\n---\n**fixture observation {id}.**\n"
+        ),
     );
 }
 
 fn linking_bug(fixture: &Fixture, id: &str, status: &str, scope: &str, observation: &str) {
-    let record = json!({
-        "schema_version": 1,
-        "id": id,
-        "title": format!("Fixture bug {id}"),
-        "symptom": "It breaks",
-        "trigger": "Running the probe",
-        "expected": "It works",
-        "actual": "It broke",
-        "environment": "local",
-        "observations": [observation],
-        "impact": "Not yet assessed.",
-        "classification": "product-defect",
-        "scope": scope,
-        "status": status,
-        "regression_baseline": null,
-        "source": "fixture",
-        "created_at_unix_seconds": 1,
-        "updated_at_unix_seconds": 1,
-    });
-    fixture.write(
-        &format!(".chough/bugs/{id}.json"),
-        &serde_json::to_string(&record).unwrap(),
-    );
+    fixture.bug_md(id, scope, status, &[observation]);
 }
 
-const FAILED: &str = "OBS-fail-000000000000000000000001";
+const FAILED: &str = "2026-01-01-fail-1";
 
 /// Issue #39: leaving test is refused, by advance and by skip, while a referenced
 /// case's latest observation failed and no bug links it; next and status name the
@@ -2683,13 +1856,7 @@ const FAILED: &str = "OBS-fail-000000000000000000000001";
 #[test]
 fn leaving_test_refuses_an_unlinked_failed_case_until_it_passes() {
     let fixture = at_test_with_case();
-    case_observation(
-        &fixture,
-        "OBS-pass-000000000000000000000001",
-        "TC-cli-0001",
-        "passed",
-        100,
-    );
+    case_observation(&fixture, "2026-01-01-pass-1", "TC-cli-0001", "passed", 100);
     case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
     for route in [
         vec!["stage", "advance"],
@@ -2721,13 +1888,7 @@ fn leaving_test_refuses_an_unlinked_failed_case_until_it_passes() {
         status["next_valid_action"]
     );
     // A later pass of the same case lifts the refusal.
-    case_observation(
-        &fixture,
-        "OBS-pass-000000000000000000000002",
-        "TC-cli-0001",
-        "passed",
-        300,
-    );
+    case_observation(&fixture, "2026-01-01-pass-2", "TC-cli-0001", "passed", 300);
     let next = fixture.ok(&["next", "--json"]);
     assert!(
         !next["next_valid_action"]["action"]
@@ -2748,7 +1909,7 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
     case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 100);
     case_observation(
         &fixture,
-        "OBS-notrun-000000000000000000000001",
+        "2026-01-01-notrun-1",
         "TC-cli-0001",
         "not-run",
         200,
@@ -2774,16 +1935,10 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
         next["next_valid_action"]["action"],
         status["next_valid_action"]
     );
+    case_observation(&fixture, "2026-01-01-pass-3", "TC-cli-0001", "passed", 300);
     case_observation(
         &fixture,
-        "OBS-pass-000000000000000000000003",
-        "TC-cli-0001",
-        "passed",
-        300,
-    );
-    case_observation(
-        &fixture,
-        "OBS-notrun-000000000000000000000002",
+        "2026-01-01-notrun-2",
         "TC-cli-0001",
         "not-run",
         400,
@@ -2794,7 +1949,7 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
     let fixture = at_test_with_case();
     case_observation(
         &fixture,
-        "OBS-notrun-000000000000000000000003",
+        "2026-01-01-notrun-3",
         "TC-cli-0001",
         "not-run",
         200,
@@ -2805,6 +1960,74 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
             .as_str()
             .unwrap()
             .contains("refused:unlinked-failure")
+    );
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+}
+
+/// B1 (REQ-cli-021, issue #39): a failure a bug links by the session-qualified form
+/// `bug add` stores (`<session>/<id>`, REQ-cli-023) lifts the unlinked-failure refusal,
+/// as a bare link does; so does a link qualified with another open session that holds
+/// the failure.
+#[test]
+fn a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal() {
+    let fixture = at_test_with_case();
+    let session = fixture.active_id();
+    case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
+    let added = fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC qualified link at the test gate",
+        "--symptom",
+        "SYNTHETIC symptom of the gate failure",
+        "--trigger",
+        "SYNTHETIC trigger of the gate failure",
+        "--expected",
+        "SYNTHETIC pass",
+        "--actual",
+        "SYNTHETIC fail",
+        "--environment",
+        "local",
+        "--observation",
+        FAILED,
+    ]);
+    let bug = added["id"].as_str().unwrap().to_string();
+    let record = fixture.read(&format!(".chough/bugs/{bug}.md"));
+    assert!(
+        record.contains(&format!("evidence: [{session}/{FAILED}]")),
+        "{record}"
+    );
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        !next["next_valid_action"]["action"]
+            .as_str()
+            .unwrap()
+            .contains("refused:unlinked-failure"),
+        "{next:#}"
+    );
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+
+    // The failure in another open session, linked qualified with that session.
+    let fixture = at_test_with_case();
+    let at_test = fixture.active_id();
+    fixture.ok(&[
+        "session",
+        "new",
+        "other",
+        "--objective",
+        "SYNTHETIC the session that holds the failure",
+    ]);
+    let other = fixture.active_id();
+    case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
+    fixture.ok(&["session", "use", &at_test]);
+    linking_bug(
+        &fixture,
+        "BUG-0001",
+        "open",
+        "in-scope",
+        &format!("{other}/{FAILED}"),
     );
     fixture.ok(&["stage", "advance"]);
     assert_eq!(stage(&fixture), "accept");
@@ -2838,7 +2061,7 @@ fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchange
         "BUG-0002",
         "open",
         "blocking",
-        "OBS-other-000000000000000000000001",
+        "2026-01-01-other-1",
     );
     let error = fixture.fails(&["stage", "advance"]);
     assert!(error.contains("refused:blocking-bugs"), "{error}");
@@ -2846,52 +2069,22 @@ fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchange
 
     let fixture = at_test_with_case();
     case_observation(&fixture, FAILED, "TC-cli-0002", "failed", 200);
-    case_observation(
-        &fixture,
-        "OBS-pass-000000000000000000000001",
-        "TC-cli-0001",
-        "passed",
-        100,
-    );
+    case_observation(&fixture, "2026-01-01-pass-1", "TC-cli-0001", "passed", 100);
     fixture.ok(&["stage", "advance"]);
     assert_eq!(stage(&fixture), "accept");
 
     // Equal times: the greater ID is the latest.
     let fixture = at_test_with_case();
-    case_observation(
-        &fixture,
-        "OBS-a-000000000000000000000001",
-        "TC-cli-0001",
-        "failed",
-        200,
-    );
-    case_observation(
-        &fixture,
-        "OBS-b-000000000000000000000001",
-        "TC-cli-0001",
-        "passed",
-        200,
-    );
+    case_observation(&fixture, "2026-01-01-a-1", "TC-cli-0001", "failed", 200);
+    case_observation(&fixture, "2026-01-01-b-1", "TC-cli-0001", "passed", 200);
     fixture.ok(&["stage", "advance"]);
     let fixture = at_test_with_case();
-    case_observation(
-        &fixture,
-        "OBS-a-000000000000000000000001",
-        "TC-cli-0001",
-        "passed",
-        200,
-    );
-    case_observation(
-        &fixture,
-        "OBS-b-000000000000000000000001",
-        "TC-cli-0001",
-        "failed",
-        200,
-    );
+    case_observation(&fixture, "2026-01-01-a-1", "TC-cli-0001", "passed", 200);
+    case_observation(&fixture, "2026-01-01-b-1", "TC-cli-0001", "failed", 200);
     assert!(
         fixture
             .fails(&["stage", "advance"])
-            .contains("OBS-b-000000000000000000000001")
+            .contains("2026-01-01-b-1")
     );
 
     // Other moves out of test are not gated by it.
@@ -3030,18 +2223,26 @@ fn native_next_action_is_shown_once_and_does_not_cut_the_next_line() {
 #[cfg(unix)]
 #[test]
 fn delta_guard_refusals_name_the_agent_actor_and_the_human_authority_note() {
-    // The approval remedy in both refusals records the acting agent account as the
-    // native actor and the human authority in the note (lifecycle.md Approval,
-    // docs/cli.md); it never asks the human to approve under their own name.
-    let agent = "--actor \"<agent-account>\" --note \"Human authority: <source>; covered scope: <scope>; limits: <limits>\"";
+    // TC-cli-delta-guard-refusals-name-the-agent-actor in 0.6.0 (REQ-cli-022): a remedy
+    // that needs a new definition approval names the scope gate to open with
+    // `--drives approve` first (REQ-cli-030), then, for authority given in advance, the
+    // approval with the acting agent as `<agent>-<terminal>` and the human's earlier
+    // words quoted (REQ-cli-029); it never asks the human to run a command.
+    let agent = "--actor \"<agent>-<terminal>\" --note \"Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>).\"";
     let check_refusal = |refused: &str, id: &str| {
+        let gate = refused
+            .find("--drives approve")
+            .unwrap_or_else(|| panic!("no scope gate with --drives approve: {refused}"));
         let approve = format!("specsync change approve {id} {agent}");
-        assert!(refused.contains(&approve), "missing {approve:?}: {refused}");
+        let approval = refused
+            .find(&approve)
+            .unwrap_or_else(|| panic!("missing {approve:?}: {refused}"));
+        assert!(gate < approval, "the scope gate comes first: {refused}");
         assert!(
             refused.contains(&format!("specsync change check {id}")),
             "{refused}"
         );
-        for stale in ["ask the human", "<their name>"] {
+        for stale in ["ask the human", "<their name>", "<agent-account>"] {
             assert!(!refused.contains(stale), "stale {stale:?}: {refused}");
         }
     };
@@ -3211,14 +2412,28 @@ fn reset_rule_uses_the_newest_reset_by_time_in_an_out_of_order_log() {
         "--reason",
         "Next feature",
     ]);
-    let log = fixture.read(".chough/transitions.jsonl");
-    let mut reset: Value = serde_json::from_str(log.lines().last().unwrap()).unwrap();
+    let file = fixture.session_file();
+    let record = fixture.read(&file);
+    let reset = transitions(&fixture).pop().unwrap();
     assert_eq!(reset["kind"], "reset", "{reset}");
-    let at = reset["at_unix_seconds"].as_u64().unwrap();
+    let at = unix_of(reset["time"].as_str().unwrap());
     finalized(&fixture, "old-change", at);
-    // A merge appends an older reset after the newest one.
-    reset["at_unix_seconds"] = json!(at - 100);
-    fixture.write(".chough/transitions.jsonl", &format!("{log}{reset}\n"));
+    // An older reset entry after the newest one, as a hand edit or a merge can leave it.
+    let line = record
+        .lines()
+        .rfind(|line| line.contains(" · reset · "))
+        .unwrap();
+    let older = line
+        .replacen(reset["time"].as_str().unwrap(), &iso_of(at - 100), 1)
+        .replace(reset["id"].as_str().unwrap(), "t-0ff5e7");
+    fixture.write(
+        &file,
+        &record.replacen(line, &format!("{line}\n{older}"), 1),
+    );
+    assert_eq!(
+        transitions(&fixture).len(),
+        timeline_entries(&record).len() + 1
+    );
     while stage(&fixture) != "plan" {
         fixture.ok(&["stage", "advance"]);
     }
@@ -3242,7 +2457,6 @@ fn reset_then_iterated(iterations: usize) -> Fixture {
     fixture.native("archived");
     fixture.write(".stub-validity", "exact\n");
     fixture.write(".stub-next", "merge the PR on GitHub if it is still open\n");
-    // Initialized through the CLI directly, so the checkpoint keeps its history cursor.
     fixture.ok(&[
         "init",
         "--objective",
@@ -3252,7 +2466,6 @@ fn reset_then_iterated(iterations: usize) -> Fixture {
         "--module",
         "cli",
     ]);
-    assert!(fixture.session()["history_cursor"].is_object());
     fixture.ok(&["checkpoint", "--native-change", "old-change"]);
     fixture.ok(&["stage", "reset", "--to", "done", "--reason", "Closeout"]);
     finalized(&fixture, "old-change", 1_700_000_000);
@@ -3287,22 +2500,19 @@ fn a_reset_beyond_the_recent_history_window_still_starts_this_cycle() {
 #[test]
 fn an_unreadable_cycle_start_is_reported_as_unknown() {
     let fixture = reset_then_iterated(3);
-    let cycle = fixture.session()["history_cursor"]["cycle"]
-        .as_str()
+    // The reset entry that began this cycle cannot be read: its separators and entry ID
+    // are gone, so the timeline cannot be read whole (REQ-history-002).
+    let file = fixture.session_file();
+    let record = fixture.read(&file);
+    let line = record
+        .lines()
+        .rfind(|line| line.contains(" · reset · "))
         .unwrap()
         .to_string();
-    let dir = fixture
-        .root()
-        .join(format!(".chough/history/cycles/{cycle}"));
-    let root_event = fs::read_dir(&dir)
-        .unwrap()
-        .map(|entry| entry.unwrap().path())
-        .find(|path| {
-            let event: Value = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
-            event["parent"].is_null()
-        })
-        .unwrap();
-    fs::remove_file(root_event).unwrap();
+    fixture.write(
+        &file,
+        &record.replacen(&line, "- reset to plan, by hand", 1),
+    );
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     let text = action["action"].as_str().unwrap();
@@ -3339,7 +2549,7 @@ fn checkpoint_refuses_a_native_change_specsync_does_not_know() {
         "#!/bin/sh\nif [ \"$3\" = does-not-exist ]; then\n  echo 'change does-not-exist was not found' >&2; exit 1\nfi\nexec \"$(dirname \"$0\")/specsync-known\" \"$@\"\n",
     );
     fixture.executable("bin/specsync");
-    let before = fixture.read(".chough/session.json");
+    let before = fixture.read(&fixture.session_file());
 
     let refused = fixture.fails(&["checkpoint", "--native-change", "does-not-exist"]);
     assert!(
@@ -3351,7 +2561,7 @@ fn checkpoint_refuses_a_native_change_specsync_does_not_know() {
         refused.contains("specsync change status does-not-exist"),
         "{refused}"
     );
-    assert_eq!(fixture.read(".chough/session.json"), before);
+    assert_eq!(fixture.read(&fixture.session_file()), before);
 
     let refused = fixture.fails(&[
         "checkpoint",
@@ -3364,7 +2574,7 @@ fn checkpoint_refuses_a_native_change_specsync_does_not_know() {
         refused.contains("refused:native-change-unknown"),
         "{refused}"
     );
-    assert_eq!(fixture.read(".chough/session.json"), before);
+    assert_eq!(fixture.read(&fixture.session_file()), before);
 
     // A SpecSync failure is not proof the change exists: refused, nothing saved.
     fixture.write(".stub-fail", "");
@@ -3373,7 +2583,7 @@ fn checkpoint_refuses_a_native_change_specsync_does_not_know() {
         refused.contains("refused:native-change-unknown"),
         "{refused}"
     );
-    assert_eq!(fixture.read(".chough/session.json"), before);
+    assert_eq!(fixture.read(&fixture.session_file()), before);
     fs::remove_file(fixture.root().join(".stub-fail")).unwrap();
 
     let saved = fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
@@ -3401,7 +2611,7 @@ fn checkpoint_refuses_a_native_reply_that_names_a_different_change() {
         "#!/bin/sh\ncase \"$3\" in\n  alias-of-add-thing) printf '%s\\n' '{\"change\":{\"id\":\"add-thing\"},\"summary\":{\"id\":\"add-thing\",\"state\":\"draft\"}}' ;;\n  split-reply) printf '%s\\n' '{\"change\":{\"id\":\"add-thing\"},\"summary\":{\"id\":\"split-reply\",\"state\":\"draft\"}}' ;;\n  nameless) printf '%s\\n' '{\"summary\":{\"state\":\"draft\"}}' ;;\n  *) exec \"$(dirname \"$0\")/specsync-known\" \"$@\" ;;\nesac\n",
     );
     fixture.executable("bin/specsync");
-    let before = fixture.read(".chough/session.json");
+    let before = fixture.read(&fixture.session_file());
     for (id, named) in [
         ("alias-of-add-thing", "add-thing"),
         ("split-reply", "add-thing"),
@@ -3413,7 +2623,7 @@ fn checkpoint_refuses_a_native_reply_that_names_a_different_change() {
         );
         assert!(refused.contains(id), "{id}: {refused}");
         assert!(refused.contains(named), "{id}: {refused}");
-        assert_eq!(fixture.read(".chough/session.json"), before, "{id}");
+        assert_eq!(fixture.read(&fixture.session_file()), before, "{id}");
     }
     let saved = fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
     assert_eq!(saved["saved"], true);
@@ -3438,7 +2648,7 @@ fn checkpoint_refuses_a_native_reply_that_names_no_change() {
         "#!/bin/sh\ncase \"$3\" in\n  empty-object) printf '%s\\n' '{}' ;;\n  empty-array) printf '%s\\n' '[]' ;;\n  nameless) printf '%s\\n' '{\"summary\":{\"state\":\"draft\"}}' ;;\n  *) exec \"$(dirname \"$0\")/specsync-known\" \"$@\" ;;\nesac\n",
     );
     fixture.executable("bin/specsync");
-    let before = fixture.read(".chough/session.json");
+    let before = fixture.read(&fixture.session_file());
     for id in ["empty-object", "empty-array", "nameless"] {
         for extra in [vec![], vec!["--decision", "decided: ride along"]] {
             let mut args = vec!["checkpoint", "--native-change", id];
@@ -3449,7 +2659,7 @@ fn checkpoint_refuses_a_native_reply_that_names_no_change() {
                 "{id}: {refused}"
             );
             assert!(refused.contains(id), "{id}: {refused}");
-            assert_eq!(fixture.read(".chough/session.json"), before, "{id}");
+            assert_eq!(fixture.read(&fixture.session_file()), before, "{id}");
         }
     }
     let saved = fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
@@ -3475,6 +2685,47 @@ fn checkpoint_native_change_without_specsync_keeps_the_format_check() {
 
 // ---------------------------------------------------------------------------
 // Backfilled moves (REQ-cli-036, REQ-history-005).
+
+/// Seconds since the epoch of a timeline time, `YYYY-MM-DDTHH:MM:SSZ` (UTC).
+fn unix_of(time: &str) -> u64 {
+    let number = |range: std::ops::Range<usize>| time[range].parse::<i64>().unwrap();
+    let (year, month, day) = (number(0..4), number(5..7), number(8..10));
+    let (year, month) = if month <= 2 {
+        (year - 1, month + 9)
+    } else {
+        (year, month - 3)
+    };
+    let era = year.div_euclid(400);
+    let of_era = year - era * 400;
+    let of_year = (153 * month + 2) / 5 + day - 1;
+    let of_era_days = of_era * 365 + of_era / 4 - of_era / 100 + of_year;
+    let days = era * 146_097 + of_era_days - 719_468;
+    (days * 86_400 + number(11..13) * 3_600 + number(14..16) * 60 + number(17..19)) as u64
+}
+
+/// The timeline time of `seconds` since the epoch, `YYYY-MM-DDTHH:MM:SSZ` (UTC).
+fn iso_of(seconds: u64) -> String {
+    let days = (seconds / 86_400) as i64 + 719_468;
+    let era = days.div_euclid(146_097);
+    let of_era = days - era * 146_097;
+    let year_of_era = (of_era - of_era / 1_460 + of_era / 36_524 - of_era / 146_096) / 365;
+    let of_year = of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let month_index = (5 * of_year + 2) / 153;
+    let day = of_year - (153 * month_index + 2) / 5 + 1;
+    let month = if month_index < 10 {
+        month_index + 3
+    } else {
+        month_index - 9
+    };
+    let year = year_of_era + era * 400 + i64::from(month <= 2);
+    let rest = seconds % 86_400;
+    format!(
+        "{year:04}-{month:02}-{day:02}T{:02}:{:02}:{:02}Z",
+        rest / 3_600,
+        rest / 60 % 60,
+        rest % 60
+    )
+}
 
 fn unix_now() -> u64 {
     std::time::SystemTime::now()
@@ -3505,16 +2756,17 @@ fn backfill_fixture(state: &str, shift: u64) -> Fixture {
     fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
     fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
     fixture.no_spec_approval("add-thing");
-    let shifted: String = transitions(&fixture)
-        .into_iter()
-        .enumerate()
-        .map(|(index, mut record)| {
-            let at = record["at_unix_seconds"].as_u64().unwrap();
-            record["at_unix_seconds"] = json!(at - shift + 100 * index as u64);
-            format!("{record}\n")
-        })
-        .collect();
-    fixture.write(".chough/transitions.jsonl", &shifted);
+    // Move each timeline entry's time `shift` seconds back, 100 seconds apart.
+    let file = fixture.session_file();
+    let mut record = fixture.read(&file);
+    for (index, entry) in transitions(&fixture).iter().enumerate() {
+        let time = entry["time"].as_str().unwrap();
+        let line = format!("- {time} · {} · ", entry["kind"].as_str().unwrap());
+        let moved = iso_of(unix_of(time) - shift + 100 * index as u64);
+        let at = record.find(&line).unwrap();
+        record.replace_range(at + 2..at + 2 + time.len(), &moved);
+    }
+    fixture.write(&file, &record);
     fixture.commit("base");
     fixture
 }
@@ -3523,7 +2775,7 @@ fn backfill_fixture(state: &str, shift: u64) -> Fixture {
 #[test]
 fn a_backfilled_move_keeps_its_original_time_and_quoted_evidence() {
     let fixture = backfill_fixture("approved", 10_000);
-    let before = fixture.read(".chough/transitions.jsonl");
+    let before = transitions(&fixture);
     let at = unix_now() - 5_000;
     let short = rev_parse(&fixture, "HEAD")[..12].to_string();
     fixture.write(".stub-count", "");
@@ -3554,11 +2806,27 @@ fn a_backfilled_move_keeps_its_original_time_and_quoted_evidence() {
     );
     assert_eq!(stage(&fixture), "build");
 
-    // Earlier records keep their bytes; the new one carries the past time and evidence.
-    let after = fixture.read(".chough/transitions.jsonl");
-    assert!(after.starts_with(&before));
-    let record = transitions(&fixture).pop().unwrap();
-    assert_eq!(record["kind"], "advance");
+    // Earlier entries are unchanged; the new one carries the past time and evidence
+    // (REQ-history-005), which `stage show` reports.
+    let after = transitions(&fixture);
+    assert_eq!(after[..before.len()], before[..]);
+    let entry = after.last().unwrap();
+    assert_eq!(entry["kind"], "advance");
+    assert_eq!(unix_of(entry["time"].as_str().unwrap()), at);
+    assert_eq!(entry["text"], "Built in a subagent");
+    let text = fixture.read(&fixture.session_file());
+    let timeline = &text[text.find("\n## Timeline\n").unwrap()..];
+    assert!(timeline.contains(quote), "{timeline}");
+    assert!(
+        timeline.contains(&rev_parse(&fixture, "HEAD")),
+        "{timeline}"
+    );
+    let record = fixture.ok(&["stage", "show"])["recent_transitions"]
+        .as_array()
+        .unwrap()
+        .last()
+        .unwrap()
+        .clone();
     assert_eq!(record["at_unix_seconds"], at);
     assert_eq!(record["reason"], "Built in a subagent");
     assert_eq!(record["backfill"]["commit"], rev_parse(&fixture, "HEAD"));
@@ -3567,8 +2835,10 @@ fn a_backfilled_move_keeps_its_original_time_and_quoted_evidence() {
         .as_u64()
         .unwrap();
     assert!(recorded >= at + 5_000 - 5 && recorded <= unix_now());
-    for line in before.lines() {
-        assert!(!line.contains("backfill"), "{line}");
+    for earlier in &before {
+        for field in ["backfill", "recorded_at", "commit", "quote"] {
+            assert!(earlier.get(field).is_none(), "{earlier}");
+        }
     }
 
     // Nothing human is recorded.
@@ -3618,7 +2888,12 @@ fn a_backfilled_move_keeps_its_original_time_and_quoted_evidence() {
     fixture.ok(&["stage", "advance"]);
     fixture.write(".stub-state", "archived\n");
     fixture.ok(&["stage", "advance"]);
-    assert_eq!(stage(&fixture), "done");
+    // The move into done archives the session (REQ-history-006); timing reads the
+    // archived story's timeline (REQ-reporting-001).
+    assert_eq!(
+        fixture.session_json("Ship a focused change")["stage"]["current"],
+        "done"
+    );
     let report = fixture.ok(&["timing", "--json"]);
     assert_eq!(report["cycles"][0]["completed"], true);
     let sampled: Vec<&str> = report["estimates"]["stages"]
@@ -3639,14 +2914,13 @@ fn backfill_refuses_what_advance_or_its_evidence_does_not_support() {
     let head = rev_parse(&fixture, "HEAD");
     let at = (unix_now() - 5_000).to_string();
     let refused = |args: &[&str], expected: &str| {
-        let log = fixture.read(".chough/transitions.jsonl");
-        let session = fixture.read(".chough/session.json");
+        // The session record holds the checkpoint and the timeline (REQ-history-002).
+        let session = fixture.read(&fixture.session_file());
         let mut route = vec!["stage", "backfill"];
         route.extend_from_slice(args);
         let error = fixture.fails(&route);
         assert!(error.contains(expected), "{args:?}: {error}");
-        assert_eq!(fixture.read(".chough/transitions.jsonl"), log, "{args:?}");
-        assert_eq!(fixture.read(".chough/session.json"), session, "{args:?}");
+        assert_eq!(fixture.read(&fixture.session_file()), session, "{args:?}");
     };
     let ok = ["--commit", head.as_str(), "--quote", "Leif: yes"];
     let with = |at: &str, rest: &[&str]| -> Vec<String> {
@@ -3721,7 +2995,6 @@ fn a_backfilled_move_is_carried_by_history_events() {
         "--module",
         "cli",
     ]);
-    assert!(fixture.session()["history_cursor"].is_object());
     fixture.commit("base");
     let latest = fixture.ok(&["stage", "show"])["recent_transitions"]
         .as_array()
@@ -3750,6 +3023,14 @@ fn a_backfilled_move_is_carried_by_history_events() {
     assert_eq!(record["at_unix_seconds"], at);
     assert_eq!(record["backfill"]["quote"], "Leif: intent approved");
     assert_eq!(record["backfill"]["commit"], rev_parse(&fixture, "HEAD"));
+    // The session's timeline carries it (REQ-history-002, REQ-history-005).
+    let entry = transitions(&fixture).pop().unwrap();
+    assert_eq!(unix_of(entry["time"].as_str().unwrap()), at);
+    assert!(
+        fixture
+            .read(&fixture.session_file())
+            .contains("Leif: intent approved")
+    );
     let report = fixture.ok(&["timing", "--json"]);
     assert_eq!(report["backfilled"].as_array().unwrap().len(), 1);
 }
@@ -3759,9 +3040,8 @@ fn a_backfilled_move_is_carried_by_history_events() {
 fn backfill_refuses_release_to_done() {
     let fixture = Fixture::new();
     fixture.init();
-    for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
-    }
+    // Release is authorized before the move into done, which otherwise archives the
+    // session (REQ-history-006).
     fixture.ok(&[
         "consent",
         "grant",
@@ -3769,11 +3049,13 @@ fn backfill_refuses_release_to_done() {
         "--source",
         "Human: please publish 0.2.0",
     ]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance"]);
+    }
     fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
     assert_eq!(stage(&fixture), "release");
     fixture.commit("base");
-    let log = fixture.read(".chough/transitions.jsonl");
-    let session = fixture.read(".chough/session.json");
+    let session = fixture.read(&fixture.session_file());
     let refused = fixture.fails(&[
         "stage",
         "backfill",
@@ -3788,148 +3070,17 @@ fn backfill_refuses_release_to_done() {
         refused.contains("release to done cannot be backfilled"),
         "{refused}"
     );
-    assert_eq!(fixture.read(".chough/transitions.jsonl"), log);
-    assert_eq!(fixture.read(".chough/session.json"), session);
+    assert_eq!(fixture.read(&fixture.session_file()), session);
     fixture.ok(&["stage", "advance"]);
-    assert_eq!(stage(&fixture), "done");
-}
-
-/// Leif's review thread on #78 (src/stage.rs): a reset older than the 64 KiB tail of a
-/// legacy transition log is still found, so the archived change stays the previous
-/// cycle's and `next` keeps the reset's guidance.
-#[cfg(unix)]
-#[test]
-fn a_reset_older_than_the_log_tail_is_still_found() {
-    let fixture = done_fixture("old-change");
-    finalized(&fixture, "old-change", 1_700_000_000);
-    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
-    let before = fixture.read(".chough/transitions.jsonl");
-    fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
-    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
-    let log = fixture.read(".chough/transitions.jsonl");
-    let gates = &log[before.len()..];
-    assert_eq!(gates.lines().count(), 2, "{gates}");
-    for line in gates.lines() {
-        let record: Value = serde_json::from_str(line).unwrap();
-        assert!(
-            ![
-                "advance", "iterate", "back", "reset", "skip", "pause", "resume", "enter", "return"
-            ]
-            .contains(&record["kind"].as_str().unwrap()),
-            "{record}"
-        );
-    }
-    // Push the reset out of the last 65,536 bytes with gate records only.
-    let mut padded = before.clone();
-    while padded.len() - before.len() < 80_000 {
-        padded.push_str(gates);
-    }
-    fixture.write(".chough/transitions.jsonl", &padded);
-    assert_reset_guidance(&fixture);
-}
-
-/// A legacy done fixture whose archived `old-change` closed before a reset to plan,
-/// followed by gate records only, at least `padding` bytes of them.
-#[cfg(unix)]
-fn reset_then_gates(padding: usize) -> Fixture {
-    let fixture = done_fixture("old-change");
-    finalized(&fixture, "old-change", 1_700_000_000);
-    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
-    let before = fixture.read(".chough/transitions.jsonl");
-    fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
-    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
-    let gates = fixture.read(".chough/transitions.jsonl")[before.len()..].to_string();
-    let mut padded = before.clone();
-    while padded.len() - before.len() < padding {
-        padded.push_str(&gates);
-    }
-    fixture.write(".chough/transitions.jsonl", &padded);
-    fixture
-}
-
-/// `next` names the reset's new-cycle guidance: the archived change is the previous
-/// cycle's.
-#[cfg(unix)]
-fn assert_reset_guidance(fixture: &Fixture) {
-    let next = fixture.ok(&["next", "--json"]);
-    let action = &next["next_valid_action"];
-    let text = action["action"].as_str().unwrap();
-    assert!(
-        text.starts_with("Continue plan: New cycle from done after reset: Next feature."),
-        "{text}"
+    assert_eq!(
+        fixture.session_json("Ship a focused change")["stage"]["current"],
+        "done"
     );
-    assert_eq!(action["command"], NEW_CHANGE, "{action}");
-    assert!(!text.contains("refused:native-archived"), "{text}");
 }
 
-/// `next` says the cycle is unknown rather than inferring either way.
-#[cfg(unix)]
-fn assert_cycle_unknown(fixture: &Fixture) {
-    let next = fixture.ok(&["next", "--json"]);
-    let action = &next["next_valid_action"];
-    let text = action["action"].as_str().unwrap();
-    assert!(
-        text.starts_with("Unknown whether native change old-change belongs to this cycle"),
-        "{text}"
-    );
-    assert_eq!(action["command"], "chough history show", "{action}");
-}
-
-/// Leif's review thread 4463488843 on #78: after `history adopt --apply`, the adopted
-/// cursor's first cycle continues its legacy anchor, and a reset in that anchor older
-/// than the 64 KiB tail is still found.
-#[cfg(unix)]
-#[test]
-fn an_adopted_cursor_finds_a_reset_in_its_legacy_anchor_beyond_the_tail() {
-    let fixture = reset_then_gates(80_000);
-    fixture.ok(&["history", "adopt", "--apply"]);
-    let session = fixture.session();
-    assert!(!session["history_cursor"]["legacy"].is_null(), "{session}");
-    assert_reset_guidance(&fixture);
-}
-
-/// The same thread: a legacy log beyond the 16 MiB bound is not read as "no reset";
-/// the cycle is unknown.
-#[cfg(unix)]
-#[test]
-fn a_legacy_log_beyond_its_bound_leaves_the_cycle_unknown() {
-    let fixture = reset_then_gates(16 * 1_048_576 + 4096);
-    assert_cycle_unknown(&fixture);
-}
-
-/// The same thread: an unreadable legacy log (here mode 000) is not read as "no reset";
-/// the cycle is unknown. Only a missing log reads as empty. Root reads any mode, so
-/// the check is skipped there.
-#[cfg(unix)]
-#[test]
-fn an_unreadable_legacy_log_leaves_the_cycle_unknown() {
-    use std::os::unix::fs::PermissionsExt;
-    let euid = Command::new("id").arg("-u").output().unwrap();
-    if String::from_utf8_lossy(&euid.stdout).trim() == "0" {
-        return;
-    }
-    let fixture = reset_then_gates(0);
-    let log = fixture.root().join(".chough/transitions.jsonl");
-    fs::set_permissions(&log, fs::Permissions::from_mode(0o000)).unwrap();
-    let next = fixture.run(&["next", "--json"]);
-    fs::set_permissions(&log, fs::Permissions::from_mode(0o644)).unwrap();
-    assert!(
-        next.status.success(),
-        "{}",
-        String::from_utf8_lossy(&next.stderr)
-    );
-    let next: Value = serde_json::from_slice(&next.stdout).unwrap();
-    let action = &next["next_valid_action"];
-    let text = action["action"].as_str().unwrap();
-    assert!(
-        text.starts_with("Unknown whether native change old-change belongs to this cycle"),
-        "{text}"
-    );
-    assert_ne!(action["command"], RESET_COMMAND, "{action}");
-}
-
-/// Every schema 2 checkpoint in the project, as relative paths: JSON objects with a schema
-/// version of 2 and the checkpoint's objective, stage and native change fields.
+/// Every checkpoint store in the project, as relative paths: session records (a
+/// `kind: session` front matter) and any 0.5.x-shaped JSON checkpoint (schema version 2
+/// with the checkpoint's objective, stage and native change fields).
 #[cfg(unix)]
 fn checkpoint_files(fixture: &Fixture) -> Vec<String> {
     let mut found = vec![];
@@ -3947,12 +3098,17 @@ fn checkpoint_files(fixture: &Fixture) -> Vec<String> {
                         .map(|entry| entry.unwrap().path()),
                 );
             }
-        } else if let Ok(value) = serde_json::from_slice::<Value>(&fs::read(&path).unwrap())
-            && value["schema_version"] == 2
-            && ["objective", "stage", "native_change"]
-                .iter()
-                .all(|field| value.get(field).is_some())
-        {
+            continue;
+        }
+        let bytes = fs::read(&path).unwrap();
+        let session_record = bytes.starts_with(b"---\nkind: session\n");
+        let json_checkpoint = serde_json::from_slice::<Value>(&bytes).is_ok_and(|value| {
+            value["schema_version"] == 2
+                && ["objective", "stage", "native_change"]
+                    .iter()
+                    .all(|field| value.get(field).is_some())
+        });
+        if session_record || json_checkpoint {
             let relative = path.strip_prefix(fixture.root()).unwrap();
             found.push(relative.to_string_lossy().into_owned());
         }
@@ -3961,11 +3117,11 @@ fn checkpoint_files(fixture: &Fixture) -> Vec<String> {
     found
 }
 
-/// REQ-cli-007, fourth criterion (#138, audit assertion review): no second writable
-/// checkpoint store is introduced and no adapter such as APS is required. An `aps`
-/// stand-in that records any call is never run while checkpoints are saved, stages move
-/// and reports read; the only schema 2 checkpoints are the canonical file, then the session
-/// files, and a write changes only the active session.
+/// REQ-cli-007, fourth criterion (#138, audit assertion review), in the 0.6.0 layout: the
+/// one checkpoint store is the active session's `session.md` (REQ-cli-037) and no adapter
+/// such as APS is required. An `aps` stand-in that records any call is never run while
+/// checkpoints are saved, stages move and reports read; the only checkpoint stores are the
+/// session records, and a write changes only the active session.
 #[cfg(unix)]
 #[test]
 fn one_checkpoint_store_and_no_aps_adapter_in_either_mode() {
@@ -3983,14 +3139,14 @@ fn one_checkpoint_store_and_no_aps_adapter_in_either_mode() {
     fixture.ok(&["stage", "skip", "--reason", "no visuals change"]);
     assert!(fixture.run(&["next"]).status.success());
     fixture.ok(&["status"]);
-    assert_eq!(checkpoint_files(&fixture), [".chough/session.json"]);
-
-    // Sessions mode starts by adopting event history and then the checkpoint, as the
-    // refusals of `session new` and `session adopt` name; the canonical file then moves
-    // into the sessions store.
-    fixture.ok(&["history", "adopt", "--apply"]);
-    fixture.ok(&["session", "adopt", "first"]);
+    let first_file = fixture.session_file();
+    assert_eq!(
+        checkpoint_files(&fixture),
+        std::slice::from_ref(&first_file)
+    );
     assert!(!fixture.exists(".chough/session.json"));
+
+    // A second session gets its own record; a checkpoint write changes only the active one.
     fixture.ok(&[
         "session",
         "new",
@@ -3998,36 +3154,74 @@ fn one_checkpoint_store_and_no_aps_adapter_in_either_mode() {
         "--objective",
         "Second objective",
     ]);
-    let first = fixture.read(".chough/sessions/first.json");
+    let first = fixture.read(&first_file);
     fixture.ok(&[
         "checkpoint",
         "--decision",
         "decided: only the active session changes because it is the one store",
     ]);
-    assert_eq!(fixture.read(".chough/sessions/first.json"), first);
+    assert_eq!(fixture.read(&first_file), first);
     assert!(
         fixture
-            .read(".chough/sessions/second.json")
+            .read(&fixture.session_file_of("second"))
             .contains("only the active session changes")
     );
-    fixture.ok(&["session", "use", "first"]);
+    fixture.ok(&["session", "use", "ship-a-focused-change"]);
     fixture.ok(&["stage", "advance"]);
     assert!(fixture.run(&["next"]).status.success());
-    let files = checkpoint_files(&fixture);
-    assert!(
-        files
-            .iter()
-            .all(|file| file.starts_with(".chough/sessions/")),
-        "a checkpoint outside the sessions store: {files:?}"
-    );
-    assert!(
-        files.contains(&".chough/sessions/first.json".to_string())
-            && files.iter().any(|file| file.ends_with("/second.json")),
-        "{files:?}"
+    let mut expected = vec![first_file.clone(), fixture.session_file_of("second")];
+    expected.sort();
+    assert_eq!(
+        checkpoint_files(&fixture),
+        expected,
+        "a checkpoint store other than the session records"
     );
     assert!(
         !fixture.exists(".aps-calls"),
         "an APS adapter was run: {}",
         fixture.read(".aps-calls")
     );
+}
+
+/// BUG-0020 (REQ-cli-022): with three definition approvals from a SpecSync workflow
+/// version below 2, where the second matches the current definition digest and the
+/// third is the latest, the guard compares the deltas with the second, as SpecSync
+/// treats it as effective.
+#[cfg(unix)]
+#[test]
+fn the_delta_guard_compares_with_the_effective_approval() {
+    let id = "effective-change";
+    let fixture = approved_delta(id);
+    fixture.write(
+        &format!(".specsync/changes/{id}/state.json"),
+        &json!({"id": id, "state": "approved", "workflow_version": 1}).to_string(),
+    );
+    let good = delta_digest("cli", DELTA.as_bytes());
+    let stale = "0".repeat(64);
+    let ledger = |second: &str, third: &str| {
+        json!({
+            "approvals": [
+                {"gate": "definition", "actor": "SYNTHETIC", "digest": "d-first", "approved_delta_digests": {"cli": stale}},
+                {"gate": "definition", "actor": "SYNTHETIC", "digest": "d-current", "approved_delta_digests": {"cli": second}},
+                {"gate": "definition", "actor": "SYNTHETIC", "digest": "d-later", "approved_delta_digests": {"cli": third}},
+            ],
+            "reopenings": [],
+        })
+        .to_string()
+    };
+    let approvals = format!(".specsync/changes/{id}/approvals.json");
+    fixture.write(".stub-definition-digest", "d-current");
+    // The effective (second) approval matches the delta and the latest does not.
+    fixture.write(&approvals, &ledger(&good, &stale));
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "build");
+    // The other way round: the latest matches, the effective one does not.
+    fixture.ok(&["stage", "back", "--to", "plan", "--reason", "Again"]);
+    fixture.write(&approvals, &ledger(&stale, &good));
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refused.contains("refused:native-delta-changed"),
+        "{refused}"
+    );
+    assert_eq!(stage(&fixture), "plan");
 }

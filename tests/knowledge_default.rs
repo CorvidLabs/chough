@@ -4,7 +4,7 @@
 mod common;
 
 use common::Fixture;
-use serde_json::{Value, json};
+use serde_json::Value;
 
 fn init(fixture: &Fixture) -> Value {
     fixture.ok(&[
@@ -18,74 +18,60 @@ fn init(fixture: &Fixture) -> Value {
     ])
 }
 
-/// An archived change with a title of `title_len` extra characters.
-fn archive(fixture: &Fixture, index: usize, id: &str, title_len: usize) {
-    let dir = format!(".specsync/archive/changes/2026-0{}-01-{id}", index + 1);
-    fixture.write(
-        &format!("{dir}/finalization.json"),
-        &format!(
-            "{{\"schema_version\": 2, \"change_id\": \"{id}\", \"timestamp\": {}, \"implementation_commit\": \"{}\"}}\n",
-            (index + 1) * 100,
-            "1".repeat(40)
-        ),
-    );
-    fixture.write(
-        &format!("{dir}/verification.json"),
-        &serde_json::to_string_pretty(&json!({
-            "commit": "2".repeat(40),
-            "passed": true,
-            "requirement_ids": ["REQ-cli-001"],
-            "acceptance_manifest": {"schema_version": 1, "entries": []},
-        }))
-        .unwrap(),
-    );
-    fixture.write(
-        &format!("{dir}/change.md"),
-        &format!(
-            "---\nid: {id}\nstate: archived\nbase_commit: {}\n---\n\n# Title of {id} {}\n\n## Intent\n\nx\n\n## Acceptance Criteria\n\n- {id} works\n",
-            "3".repeat(40),
-            "x".repeat(title_len)
-        ),
-    );
+/// The exact names in `relative`, sorted; on a case-insensitive file system `exists`
+/// cannot tell `INDEX.md` from `index.md`.
+fn names(fixture: &Fixture, relative: &str) -> Vec<String> {
+    let mut names: Vec<String> = std::fs::read_dir(fixture.root().join(relative))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    names.sort();
+    names
 }
 
 #[test]
 fn init_builds_the_knowledge_directory_with_the_librarian_on() {
     let fixture = Fixture::new();
-    archive(&fixture, 0, "a1", 0);
     let out = init(&fixture);
     assert_eq!(out["library"]["status"], "created", "{out:#}");
-    for file in [
-        "knowledge/README.md",
-        "knowledge/INDEX.md",
-        "knowledge/archives/a1.md",
-    ] {
-        assert!(fixture.exists(file), "{file} missing: {out:#}");
-    }
-    assert!(fixture.root().join("knowledge/briefs").is_dir());
+    assert_eq!(out["library"]["index"], "knowledge/index.md", "{out:#}");
+    // index.md, journal/ with its feed, and lessons/; no copied or generated notes.
+    assert_eq!(
+        names(&fixture, "knowledge"),
+        ["index.md", "journal", "lessons"]
+    );
+    assert_eq!(names(&fixture, "knowledge/journal"), ["feed.xml"]);
+    assert!(names(&fixture, "knowledge/lessons").is_empty());
     let next = fixture.ok(&["next", "--json"]);
-    assert_eq!(next["knowledge"]["index"], "knowledge/INDEX.md", "{next:#}");
+    assert_eq!(next["knowledge"]["index"], "knowledge/index.md", "{next:#}");
+    fixture.ok(&["library", "index", "--check"]);
 }
 
 #[test]
 fn init_preserves_an_existing_knowledge_directory() {
     let fixture = Fixture::new();
     fixture.write("knowledge/README.md", "Our own notes.\n");
-    fixture.write("knowledge/INDEX.md", "A hand-written index.\n");
+    fixture.write("knowledge/index.md", "A hand-written index.\n");
     let out = init(&fixture);
     assert_eq!(out["library"]["status"], "preserved", "{out:#}");
     assert_eq!(fixture.read("knowledge/README.md"), "Our own notes.\n");
     assert_eq!(
-        fixture.read("knowledge/INDEX.md"),
+        fixture.read("knowledge/index.md"),
         "A hand-written index.\n"
     );
+    assert_eq!(names(&fixture, "knowledge"), ["README.md", "index.md"]);
 }
 
 #[test]
 fn init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bounded() {
     let fixture = Fixture::new();
-    for (index, id) in ["a1", "a2", "a3", "a4", "a5"].iter().enumerate() {
-        archive(&fixture, index, id, 20_000);
+    // An earlier `library/` folder is linked from the index file by file (KNOW-6); this
+    // many files cannot be linked within the 65,536-byte bound.
+    for index in 0..800 {
+        fixture.write(
+            &format!("library/briefs/brief-number-{index:04}-with-a-long-name.md"),
+            "kept\n",
+        );
     }
     let out = init(&fixture);
     assert_eq!(out["library"]["status"], "refused", "{out:#}");
@@ -100,5 +86,11 @@ fn init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bounded(
         !fixture.exists("knowledge"),
         "a partial knowledge folder was left"
     );
-    assert!(fixture.exists(".chough/session.json"));
+    assert!(
+        fixture
+            .open_ids()
+            .iter()
+            .any(|id| fixture.exists(&format!(".chough/sessions/{id}/session.md"))),
+        "no session record was written"
+    );
 }

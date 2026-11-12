@@ -1,0 +1,43 @@
+profile = "chough-testing/1"
+module = "records"
+
+# Plan steps 6 and 7: approval as the configured human (#236) and the acting agent on
+# every record. Steps 4 and 5 add their evidence and bug tests to the actor case.
+
+[[case]]
+id = "TC-records-approval-as-the-human"
+title = "A gate decision approves or reviews as the configured human; unknown or ambiguous humans are refused before anything runs; the project file overrides the user file; no source names a default human"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-23", "FLOW-24", "FLOW-16"]
+requirements = ["REQ-records-008"]
+paths = ["src/humans.rs", "src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the five identity tests in tests/humans.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "humans", "--", "a_scope_gate_runs_the_approval_once_as_the_configured_human", "a_review_gate_needs_a_verdict_and_runs_the_review_with_it", "an_unknown_or_ambiguous_human_is_refused_before_anything_runs", "the_project_file_overrides_the_user_file", "no_source_names_a_person_as_the_default_human"]
+expect_output = ["test result: ok. 5 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-records-actor-recorded"
+title = "Timeline entries, evidence entries, case runs and bugs record the acting agent from the override or detected variables, none when unknown, and drop an unsafe terminal with a warning"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-17", "LIFE-26", "FLOW-16"]
+requirements = ["REQ-records-007"]
+paths = ["src/actor.rs", "src/history.rs", "src/session_md.rs", "src/bugs.rs", "src/evidence.rs", "src/cases.rs", "tests/actor.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the five tests in tests/actor.rs and tests/bugs.rs::bugs_record_the_acting_agent pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "actor", "--test", "bugs", "--", "the_override_variables_name_the_agent_model_and_terminal", "claude_code_and_hc_fill_in_without_overrides", "with_nothing_set_no_entry_has_an_actor", "a_terminal_holding_a_home_path_is_left_out_with_a_warning", "the_evidence_entry_names_the_acting_agent", "bugs_record_the_acting_agent"]
+expect_output = ["test result: ok. 5 passed", "test result: ok. 1 passed"]
+timeout_seconds = 600

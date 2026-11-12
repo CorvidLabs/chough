@@ -6,6 +6,109 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+### 0.6.0: human-first records (breaking)
+
+Chough 0.6.0 changes the record format. Chough 0.5.x cannot read 0.6.0 records, and
+0.5.0 already cannot read main's evidence inventory field, so upgrade Chough for every
+agent that works in a project before that project migrates. Then, with no native
+change open, run `chough migrate` to preview the conversion and, with the human's
+consent, `chough migrate --apply <digest> --consent "<who, their words, where>"` to
+apply it once. Run both on the same machine and account: the plan's redactions depend
+on the host and user name, so a plan previewed in CI or by another user has another
+digest and does not apply. The release date and the dogfood results are added when
+0.6.0 ships.
+
+- **Every record is one Markdown file** with YAML front matter, and the file is the
+  record: no JSON twin, cache or index is read in its place (REQ-records-001). Chough
+  keeps front matter keys it does not know and every line a person wrote outside the
+  sections it appends to, and refuses front matter outside its strict YAML subset with
+  the file, line and rule.
+- **Names are a date and a slug**, `<YYYY-MM-DD>-<slug>`, never a counter
+  (REQ-records-003). A same-day clash gets six random hex digits, a name never changes,
+  and every earlier ID (`BUG-0012`, `OBS-…`, a session key) stays as an alias that still
+  resolves.
+- **Sessions are folders**, `.chough/sessions/<id>/`, whose `session.md` front matter is
+  the checkpoint, with the story (Goal, Where it stands, Decisions and why, What was
+  verified, Open threads) and an append-only `## Timeline` in the same file
+  (REQ-records-004, REQ-history-002, REQ-history-006). Each Timeline entry names the
+  acting agent, model and hc terminal when known (#233, REQ-records-007). There are no
+  event files, cycle folders or shared transition log, and no checkpoint merge: each
+  session is its own folder.
+- **A finished session becomes one story**, `.chough/archive/sessions/<id>.md`, kept for
+  good and never moved, copied or trimmed (#165, REQ-history-006, REQ-records-012). The
+  session folder leaves the tree only once its bytes are committed: commit the story,
+  then run `chough doctor --fix` and commit that.
+- **A gate holds the stage it names** (#237, REQ-cli-030).
+  `chough checkpoint --awaiting-human "<gate>"` takes `--holds <stage>`, the current
+  stage by default, so a pending release or publication decision no longer stops build,
+  test or accept. It takes `--drives approve|review|none`, which defaults to approve at
+  plan and review at accept.
+- **A human's decision at a gate drives SpecSync as that human** (#236, REQ-records-008).
+  Closing a driving gate with `--close-gate` runs `specsync change approve` or
+  `specsync change review` first, as the human configured in
+  `chough/identity.toml` under the user configuration directory or in
+  `.chough/local/identity.toml`.
+  - A review gate needs `--verdict pass|block`.
+  - `--no-native` records a decision that is neither an approval nor a review.
+  - An unknown `--decided-by` is refused as `refused:human-identity-unknown` before
+    anything runs.
+  - On authority given in advance, the agent records the step as
+    `<agent>-<terminal>` and quotes the human (FLOW-24).
+- **No leaks in committed records** (#234, REQ-records-006). A local path, user or host
+  name, email address or credential in a value Chough would commit refuses the write as
+  `refused:leak`, naming the field and the kind, never the text. The global `--redact`
+  stores `<redacted:<kind>>` instead.
+- **`chough correct <entry> --reason <text>`** appends a correction to a Timeline entry
+  and never rewrites history (#210, REQ-history-015).
+- **Bugs are Markdown**, `.chough/bugs/<id>.md`, with an append-only `## Log`
+  (REQ-cli-012). `bug update --status fixed-upstream --note <text>` closes a bug fixed in
+  another tool. The `chough bug merge` driver now merges Markdown bugs field by field and
+  the Log entry by entry; declare it for `.chough/bugs/*.md`.
+- **The knowledge vault links and never copies** (REQ-cli-043, REQ-cli-044,
+  REQ-records-011). It holds `knowledge/index.md` (the generated reading guide), the
+  journal in `knowledge/journal/` with its Atom feed, and cross-project lessons. The
+  move into done writes a short post that links the archived story. `chough journal
+  add` writes any other post. `chough library merge` is the Git merge driver that keeps
+  the generated index and feed buildable.
+- **Chough's records stay out of SpecSync's verification** (#12, REQ-records-014). With
+  `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` in
+  `verification_ignored_paths` (SpecSync 6.1.2 and later), Chough's records can be
+  written and committed at any point of the native order. `chough next` says when that
+  holds, and `chough doctor` reports `records_in_verification` while an entry is
+  missing.
+- **`chough timing` reads every session's Timeline** and every archived story
+  (REQ-reporting-001).
+- **Tool versions and the lock.** A `toolchain` Fledge task runs first in the verify
+  lane and names each local tool that differs from the CI pins (BUG-0022). A busy lock
+  refusal names the process that holds the lock (#132).
+- **SpecSync 6.3.0.** Chough 0.6.0 is built and checked with SpecSync 6.3.0. Every
+  SpecSync Action step in CI uses the v6.3.0 release commit with `version: '6.3.0'`,
+  and the install command, `chough change`'s install remedy, AGENTS.md, the archive
+  scripts and the CI, CLI and integration docs name 6.3.0, on Leif's decision.
+- **Evidence lives in its session** (REQ-cli-017, REQ-records-005, REQ-records-013). Each
+  observation is one entry in `.chough/sessions/<id>/evidence/` with the exact command,
+  a SHA-256 fingerprint and, for a failure, at most 20 key failing lines. A repeated
+  validation run is one entry that holds every attempt. Raw logs stay in
+  `.chough/local/logs/` and in CI and are never committed. External artifacts are
+  fingerprinted in place, and up to 5 small key screenshots per session are committed
+  without metadata. When the session finishes, each entry becomes a receipt in its
+  story.
+
+Removed: `chough checkpoint --merge` and the `chough-session` merge driver;
+`chough session adopt`, `chough history adopt` and `chough history prune`;
+`chough library snapshot` and `chough library archive`; `chough session shelve
+--legacy`; the schema 1 meaning of `chough migrate`; the knowledge vault's copied
+notes, attachments and session roll-up; and, with evidence moving into sessions,
+`chough evidence prune` and the retention ledger.
+
+New: `chough migrate` (preview, `--apply`, `--consent`), `chough correct`,
+`chough journal add`, `chough library merge`, `--holds` and `--drives` on
+`--awaiting-human`, `--verdict` and `--no-native` on `--close-gate` and `gate record`,
+the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
+`chough evidence add`, and the human identity file.
+
+### Also unreleased
+
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
   of `recorded` (#60, REQ-cli-011, REQ-cli-017).

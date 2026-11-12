@@ -13,12 +13,7 @@ const ID: &str = "add-thing";
 const KEY: &str = "alpha";
 
 fn session(fixture: &Fixture) -> Value {
-    let name = if fixture.exists(&format!(".chough/sessions/{KEY}.json")) {
-        format!(".chough/sessions/{KEY}.json")
-    } else {
-        ".chough/session.json".to_string()
-    };
-    serde_json::from_str(&fixture.read(&name)).unwrap()
+    fixture.checkpoint()
 }
 
 fn current(fixture: &Fixture) -> String {
@@ -28,27 +23,13 @@ fn current(fixture: &Fixture) -> String {
         .to_string()
 }
 
-/// The events of the active session's history cycle, oldest first, following the parent
-/// links back from the cursor's head; every file in the cycle must be on that chain.
+/// The active session's Timeline entries, oldest first, as `chough history show` reads
+/// them from session.md.
 fn events(fixture: &Fixture) -> Vec<Value> {
-    let cursor = session(fixture)["history_cursor"].clone();
-    let cycle = cursor["cycle"].as_str().unwrap().to_string();
-    let dir = fixture
-        .root()
-        .join(format!(".chough/history/cycles/{cycle}"));
-    let files = fs::read_dir(&dir).map_or(0, |entries| entries.count());
-    let mut chain = vec![];
-    let mut next = cursor["head"].as_str().map(str::to_string);
-    while let Some(id) = next {
-        let event: Value =
-            serde_json::from_str(&fs::read_to_string(dir.join(format!("{id}.json"))).unwrap())
-                .unwrap();
-        next = event["parent"].as_str().map(str::to_string);
-        chain.push(event);
-    }
-    chain.reverse();
-    assert_eq!(chain.len(), files, "an event in {cycle} is off the chain");
-    chain
+    fixture.ok(&["history", "show"])["entries"]
+        .as_array()
+        .unwrap()
+        .clone()
 }
 
 /// Every file under `.chough/` with its bytes, so a refusal can be shown to write nothing.
@@ -148,13 +129,12 @@ fn a_batched_advance_reads_native_status_once_in_a_session() {
     let recorded: Vec<(&str, &str, &str, &str, &str)> = events[before..]
         .iter()
         .map(|event| {
-            let transition = &event["transition"];
             (
-                transition["kind"].as_str().unwrap(),
-                transition["from"].as_str().unwrap(),
-                transition["to"].as_str().unwrap(),
-                transition["gate"].as_str().unwrap(),
-                transition["reason"].as_str().unwrap(),
+                event["kind"].as_str().unwrap(),
+                event["from"].as_str().unwrap(),
+                event["to"].as_str().unwrap(),
+                event["gate"].as_str().unwrap(),
+                event["reason"].as_str().unwrap(),
             )
         })
         .collect();
@@ -164,43 +144,6 @@ fn a_batched_advance_reads_native_status_once_in_a_session() {
             ("advance", "plan", "build", "native:approved", "Batch"),
             ("advance", "build", "test", "native:approved", "Batch"),
             ("advance", "test", "accept", "native:approved", "Batch"),
-        ]
-    );
-}
-
-#[test]
-fn a_batched_advance_in_a_single_checkpoint_project() {
-    let fixture = Fixture::new();
-    fixture.stubs();
-    fixture.native("approved");
-    fixture.init();
-    fixture.ok(&["checkpoint", "--native-change", ID]);
-    fixture.no_spec_approval(ID);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.write(".stub-count", "");
-    let before = fixture.read(".chough/transitions.jsonl").lines().count();
-    let batch = fixture.ok(&["stage", "advance", "--to", "accept"]);
-    assert_eq!(fixture.native_calls(), 1, "{batch:#}");
-    assert_eq!(current(&fixture), "accept");
-    let log = fixture.read(".chough/transitions.jsonl");
-    let added: Vec<(String, String)> = log
-        .lines()
-        .skip(before)
-        .map(|line| {
-            let transition: Value = serde_json::from_str(line).unwrap();
-            (
-                transition["from"].as_str().unwrap().to_string(),
-                transition["to"].as_str().unwrap().to_string(),
-            )
-        })
-        .collect();
-    assert_eq!(
-        added,
-        [
-            ("plan".to_string(), "build".to_string()),
-            ("build".to_string(), "test".to_string()),
-            ("test".to_string(), "accept".to_string()),
         ]
     );
 }
@@ -326,20 +269,12 @@ fn advance_into_done_reads_native_status_once() {
     let moved = fixture.ok(&["stage", "advance"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     assert_eq!(moved["applied"]["gate"], "native:archived", "{moved:#}");
-    assert_eq!(
-        moved["applied"]["librarian_trim"]["status"], "trimmed",
-        "{moved:#}"
-    );
     assert_eq!(fixture.native_calls(), 1, "{moved:#}");
 
     let fixture = archived_session_at("test");
     let moved = fixture.ok(&["stage", "advance", "--to", "done"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     assert_eq!(moved["applied"]["steps"].as_array().unwrap().len(), 2);
-    assert_eq!(
-        moved["applied"]["librarian_trim"]["status"], "trimmed",
-        "{moved:#}"
-    );
     assert_eq!(fixture.native_calls(), 1, "{moved:#}");
 }
 

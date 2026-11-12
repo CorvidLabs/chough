@@ -63,10 +63,11 @@ fn dotted_module_ids_and_sub_criteria_are_accepted_and_resume() {
 fn a_checkpoint_written_with_dotted_modules_is_read_by_every_view() {
     let fixture = Fixture::new();
     fixture.init();
-    let mut session = fixture.session();
-    session["modules"] = json!(["chat.service", "room.service", "linked-wallet.service"]);
-    session["references"]["criteria"] = json!(["UX-12.a", "CHAT-34.a", "BOTS-4.g"]);
-    fixture.write(".chough/session.json", &session.to_string());
+    fixture.set_front(
+        "modules",
+        "[chat.service, room.service, linked-wallet.service]",
+    );
+    fixture.set_front("criteria", "[UX-12.a, CHAT-34.a, BOTS-4.g]");
     for args in [
         &["next"][..],
         &["status"],
@@ -115,17 +116,17 @@ fn ids_neither_tool_accepts_are_still_refused() {
             module,
         ]);
         assert!(error.contains("module"), "{module}: {error}");
-        assert!(!fixture.exists(".chough/session.json"));
+        assert!(!fixture.exists(".chough/sessions"));
     }
     fixture.init();
-    let original = fixture.read(".chough/session.json");
+    let original = fixture.read(&fixture.session_file());
     for criterion in ["UX-1.A", "UX-1..a", "UX-1.a.b", "UX-1.", "UX 1", "UX-1/a"] {
         let error = fixture.fails(&["checkpoint", "--criterion", criterion]);
         assert!(
             error.contains("invalid criterion ID"),
             "{criterion}: {error}"
         );
-        assert_eq!(fixture.read(".chough/session.json"), original);
+        assert_eq!(fixture.read(&fixture.session_file()), original);
     }
     for requirement in ["REQ cli-1", "REQ-cli/1", "REQ-cli-1!", "..", "._."] {
         let error = fixture.fails(&["checkpoint", "--requirement", requirement]);
@@ -164,8 +165,7 @@ fn bugs_link_sub_criteria_and_dotted_requirements() {
         "--requirement",
         "REQ-chat.service-1",
     ]);
-    let record: serde_json::Value =
-        serde_json::from_str(&fixture.read(bug["recorded"].as_str().unwrap())).unwrap();
+    let record = fixture.ok(&["bug", "show", bug["id"].as_str().unwrap()])["bug"].clone();
     assert_eq!(record["criteria"], json!(["UX-12.a"]));
     assert_eq!(record["requirements"], json!(["REQ-chat.service-1"]));
 }
@@ -215,7 +215,7 @@ fn a_mistaken_completed_entry_is_removed_or_corrected_in_one_call() {
         fixture.session()["completed"],
         json!(["Kept", "Shipped the fix"])
     );
-    let original = fixture.read(".chough/session.json");
+    let original = fixture.read(&fixture.session_file());
     let error = fixture.fails(&[
         "checkpoint",
         "--remove-completed",
@@ -224,7 +224,7 @@ fn a_mistaken_completed_entry_is_removed_or_corrected_in_one_call() {
         "Not saved either",
     ]);
     assert!(error.contains("Never recorded"), "{error}");
-    assert_eq!(fixture.read(".chough/session.json"), original);
+    assert_eq!(fixture.read(&fixture.session_file()), original);
     fixture.ok(&["checkpoint", "--remove-completed", "Kept"]);
     assert_eq!(fixture.session()["completed"], json!(["Shipped the fix"]));
 }

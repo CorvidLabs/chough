@@ -4,27 +4,14 @@
 # planes into one paragraph. Plain text keeps each plane on its own line.
 *.3md linguist-language=Text
 
-.chough/session.json merge=chough-session
-.chough/sessions/*.json merge=chough-session
-.chough/sessions/archive/*.json merge=chough-session
-
-# Append-only JSON lines and changelog bullets merge by keeping both sides' lines
-# (DRIVE-12).
-.chough/pruned.jsonl merge=union
+# Changelog bullets merge by keeping both sides' lines (DRIVE-12).
 CHANGELOG.md merge=union
 
-# Bug records merge field by field. The notes `chough library index` generates are
-# union-merged and rebuilt (`library index --check` in the verify lane), DRIVE-12;
-# attachments, snapshots, briefs and the README are not generated, so they still conflict.
-.chough/bugs/*.json merge=chough-bug
-knowledge/INDEX.md merge=union
-knowledge/rules.md merge=union
-knowledge/timeline.md merge=union
-knowledge/timeline/*.md merge=union
-knowledge/archives/*.md merge=union
-knowledge/modules/*.md merge=union
-knowledge/intent/*.md merge=union
-knowledge/bugs/*.md merge=union
-knowledge/sessions/*.md merge=union
-# Ledger shards are append-only, like the ledger they came from (KNOW-23).
-knowledge/attachments/*/pruned.jsonl merge=union
+# Markdown bug records merge field by field, with the Log entry by entry
+# (`chough bug merge`). The two files `chough library index` generates keep ours
+# (`chough library merge`) and are rebuilt (`library index --check` in the verify lane),
+# DRIVE-12. Sessions, stories, posts and lessons are separate files, so they merge as
+# files; snapshots and briefs are not generated, so they still conflict.
+.chough/bugs/*.md merge=chough-bug
+knowledge/index.md merge=chough-generated
+knowledge/journal/feed.xml merge=chough-generated

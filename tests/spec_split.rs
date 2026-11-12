@@ -19,13 +19,17 @@ const MOVED: [(&str, &str, &str); 4] = [
     (
         "REQ-cli-025",
         "REQ-history-002",
-        // Modified by native change keep-one-session-per-objective (#77): per-session cursor.
-        "bc8c769b2b2cde3bce9bfc1ce2314090293a44ec5d847c67aa56c2f7ffd326be",
+        // Modified by native change keep-one-session-per-objective (#77): per-session
+        // cursor; then by chough-0-6-0-human-first-records-...: the append-only Timeline
+        // of session.md.
+        "c1f64664020694fd1a24c4e7ed2e792860b9c4fbd2f6ed36399b72baea297a63",
     ),
     (
         "REQ-cli-026",
         "REQ-history-003",
-        "d3167c2e28ffae2e850f3dcdbcec2cf6db2fc515c789f017006a1713b582adea",
+        // Modified by native change chough-0-6-0-human-first-records-...: the Timeline's
+        // bounds.
+        "271afbcaa66901f05181fb3adf538a47a894c0baa73f19d6d2190e0a8b450945",
     ),
     (
         "REQ-cli-027",
@@ -40,8 +44,10 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
         "REQ-reporting-001",
         // Modified by native change chough-timing-skips-direct-native-write-events-without-
         // marking-its-report-partial-189-drive-21 (#189): direct-native-write events
-        // (REQ-history-013) start or end no segment and are not an unrecognised kind.
-        "f10aaac5200dc31c8f976df83b11486f2a19a632c7737a9ad0b78352eebd0c3b",
+        // (REQ-history-013) start or end no segment and are not an unrecognised kind; then
+        // by chough-0-6-0-human-first-records-...: it reads timelines and receipts, and
+        // duration_seconds.
+        "20739bcd2e5d588a134d188c11eaf31bd213b06ad0c80ddaec983bdd882b02c6",
     ),
     (
         "REQ-cli-024",
@@ -56,6 +62,21 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
         "REQ-reporting-003",
         "a6d5d17f585dbbd531b337e2102791f0c42c89f211bf5987ea03eb30c4f3608c",
     ),
+];
+
+/// Requirements native change chough-0-6-0-human-first-records-... removed with the
+/// behaviour they specified (retention, the vault trims and copies, the ledger, session
+/// notes); none is in any spec.
+const REMOVED: [&str; 9] = [
+    "REQ-cli-033",
+    "REQ-cli-041",
+    "REQ-cli-045",
+    "REQ-cli-046",
+    "REQ-cli-048",
+    "REQ-cli-049",
+    "REQ-cli-051",
+    "REQ-history-001",
+    "REQ-history-004",
 ];
 
 /// Whether a former cli requirement ID is in either split mapping.
@@ -114,6 +135,13 @@ fn moved_requirements_keep_their_wording_under_their_new_ids() {
             !history.contains_key(old),
             "{old} must not reappear in specs/history"
         );
+        if REMOVED.contains(&new) {
+            assert!(
+                !history.contains_key(new),
+                "{new} was removed, yet is in specs/history"
+            );
+            continue;
+        }
         let body = history
             .get(new)
             .unwrap_or_else(|| panic!("{new} (was {old}) missing from specs/history"));
@@ -156,9 +184,74 @@ fn every_cli_requirement_before_the_reporting_split_is_still_in_cli_or_mapped() 
     let cli = blocks(&companion("cli"));
     for number in (1..=34).chain([36]) {
         let id = format!("REQ-cli-{number:03}");
+        if REMOVED.contains(&id.as_str()) {
+            assert!(
+                !cli.contains_key(&id),
+                "{id} was removed, yet is in specs/cli"
+            );
+            continue;
+        }
         assert!(
             cli.contains_key(&id) != mapped(&id),
             "{id} must be in specs/cli or in a split mapping, not both or neither"
         );
+    }
+}
+
+/// REQ-cli-009, TC-cli-every-active-case-links-a-current-requirement (S1): every active
+/// case links only requirements its module's companion holds, so `chough cases check`
+/// in the verify and ci lanes passes once this change's removed requirements are gone
+/// from the specs; a retired case keeps its links as history.
+#[test]
+fn every_active_case_links_a_requirement_the_specs_hold() {
+    let cases = Path::new(env!("CARGO_MANIFEST_DIR")).join(".chough/cases");
+    let mut missing = vec![];
+    let mut files: Vec<_> = std::fs::read_dir(&cases)
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.path())
+        .filter(|path| path.to_string_lossy().ends_with(".cases.toml"))
+        .collect();
+    files.sort();
+    for file in files {
+        let text = std::fs::read_to_string(&file).unwrap();
+        let parsed: toml::Value = toml::from_str(&text).unwrap();
+        let module = parsed["module"].as_str().unwrap();
+        let held = blocks(&companion(module));
+        for case in parsed["case"].as_array().into_iter().flatten() {
+            if case["status"].as_str() != Some("active") {
+                continue;
+            }
+            for requirement in case["requirements"].as_array().into_iter().flatten() {
+                let requirement = requirement.as_str().unwrap();
+                if !held.contains_key(requirement) {
+                    missing.push(format!(
+                        "{}: {} links {requirement}",
+                        file.file_name().unwrap().to_string_lossy(),
+                        case["id"].as_str().unwrap()
+                    ));
+                }
+            }
+        }
+    }
+    assert!(missing.is_empty(), "{missing:#?}");
+}
+
+/// REQ-cli-044, REQ-cli-012, REQ-cli-059, TC-cli-send-back-wording-in-the-specs (K6, S6,
+/// G1): once the approved deltas are materialized, the cli requirements say a vault link
+/// may resolve to a folder, which bug keys are written only when set, and that a ship
+/// refuses only for the active session's open gates.
+#[test]
+fn the_send_back_wording_is_in_the_cli_requirements() {
+    let held = blocks(&companion("cli"));
+    for (id, phrase) in [
+        ("REQ-cli-044", "resolves to an existing file or folder"),
+        ("REQ-cli-012", "are written only when set"),
+        ("REQ-cli-059", "every open human gate of the active session"),
+    ] {
+        let body = held
+            .get(id)
+            .unwrap_or_else(|| panic!("{id} is not in the cli requirements"));
+        assert!(body.contains(phrase), "{id} lacks {phrase:?}");
     }
 }

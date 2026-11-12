@@ -25,9 +25,24 @@ const KEYS: &[(&str, &[&str], &str)] = &[
     ("librarian", &["off", "on"], "on"),
     ("library-dir", &[], "knowledge"),
     ("required-lane", &[], ""),
+    // Retired in 0.6.0, which removes no records (REQ-cli-041 and REQ-history-001 are
+    // removed): an earlier project's recorded value still reads, and setting it refuses.
     ("retention", &["off", "auto", "manual"], "off"),
+    // A standing consent to `chough migrate --apply` (REQ-records-009).
+    ("migration", &["on-request", "standing"], "on-request"),
 ];
-const CONSENT_KEYS: [&str; 4] = ["repeat-validation", "monitoring", "release", "retention"];
+const CONSENT_KEYS: [&str; 3] = ["repeat-validation", "monitoring", "release"];
+/// The preference 0.6.0 retired, which `pref set` and `consent grant` refuse.
+const RETIRED: &str = "retention";
+
+/// Refuse the retired retention key, naming why, before anything is written.
+fn ensure_not_retired(key: &str) -> Result<()> {
+    ensure!(
+        key != RETIRED,
+        "refused: the retention preference and consent are retired in Chough 0.6.0, which removes no records (a session's story and its receipts stay for good), so nothing was written"
+    );
+    Ok(())
+}
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -165,9 +180,22 @@ pub(super) fn pref(root: &Path, command: PrefCommand) -> Result<()> {
     let mut preferences = read_preferences(root)?;
     match command {
         PrefCommand::Show => {}
-        PrefCommand::Set { key, value, source } => {
+        PrefCommand::Set {
+            key,
+            mut value,
+            mut source,
+        } => {
+            ensure_not_retired(&key)?;
             ensure_text("source", &source)?;
             validate_value(&key, &value)?;
+            // REQ-records-006: preferences.json is committed; its value and source pass
+            // the leak guard, refused or redacted under --redact.
+            let local = crate::leaks::Local::current();
+            let redacted = crate::leaks::guard(local, "--source", &mut source)?
+                + crate::leaks::guard(local, "value", &mut value)?;
+            if redacted > 0 {
+                eprintln!("chough: redacted {redacted} value(s) in {PREFERENCES} (--redact)");
+            }
             preferences
                 .preferences
                 .retain(|preference| preference.key != key);
@@ -222,6 +250,7 @@ pub(super) fn consent(root: &Path, command: ConsentCommand) -> Result<()> {
     match command {
         ConsentCommand::Show => {}
         ConsentCommand::Grant { key, source } => {
+            ensure_not_retired(&key)?;
             ensure!(
                 CONSENT_KEYS.contains(&key.as_str()),
                 "run consent applies to {}",
@@ -235,7 +264,7 @@ pub(super) fn consent(root: &Path, command: ConsentCommand) -> Result<()> {
                 objective: session.objective.clone(),
                 granted_at_unix_seconds: now()?,
             });
-            save_checkpoint(root, &session)?;
+            save_checkpoint(root, &mut session)?;
         }
         ConsentCommand::Revoke { key } => {
             let before = session.run_consents.len();
@@ -243,7 +272,7 @@ pub(super) fn consent(root: &Path, command: ConsentCommand) -> Result<()> {
             if session.run_consents.len() == before {
                 bail!("no run consent for {key}");
             }
-            save_checkpoint(root, &session)?;
+            save_checkpoint(root, &mut session)?;
         }
     }
     print_json(&json!({

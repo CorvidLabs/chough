@@ -1,4 +1,4 @@
-mod attachments;
+mod actor;
 mod bugs;
 mod cases;
 mod change;
@@ -7,15 +7,23 @@ mod context;
 mod direct_writes;
 mod doctor;
 mod evidence;
+mod evidence_migrate;
 mod gates;
 mod history;
+mod humans;
 mod identity;
+mod journal;
+mod leaks;
 mod library;
+mod local; // step 4: machine-local state (wired here until the step 3 owner merges)
+mod markdown;
+mod migrate;
 mod native;
 mod native_check;
 mod policy;
 mod prefs;
 mod records;
+mod session_md;
 mod sessions;
 mod skill;
 mod stage;
@@ -24,10 +32,10 @@ mod validate;
 mod vault;
 
 use anyhow::{Context, Result, ensure};
-use checkpoint::{SESSION, Session, new_checkpoint, read_session};
+use checkpoint::{Session, read_session};
 use clap::{Parser, Subcommand};
 use records::valid_module_name;
-use records::{NativeJson, local_path, native_json, print_json, write_new, write_new_bounded};
+use records::{NativeJson, local_path, native_json, print_json, write_new};
 use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 
@@ -40,19 +48,25 @@ struct Cli {
     /// The project directory to work in.
     #[arg(long, global = true, default_value = ".")]
     root: PathBuf,
+    /// Store `<redacted:<kind>>` in place of a local path, user or host name, email or
+    /// credential in a committed record, instead of refusing the write (REQ-records-006).
+    #[arg(long, global = true)]
+    redact: bool,
     #[command(subcommand)]
     command: Commands,
 }
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Install the workflow skill and a schema 2 checkpoint without overwriting existing files.
+    /// Install the workflow skill and `.chough/README.md`, and with --objective open the first
+    /// session, without overwriting existing files.
     Init {
-        #[arg(
-            long,
-            default_value = "Describe the current objective before beginning work."
-        )]
-        objective: String,
+        /// The first session's objective; without it no session is created.
+        #[arg(long)]
+        objective: Option<String>,
+        /// The first session's key; the objective's slug when omitted.
+        #[arg(long = "session")]
+        session: Option<String>,
         #[arg(long, default_value = "")]
         intent_scope: String,
         #[arg(long = "module")]
@@ -84,11 +98,9 @@ enum Commands {
         #[arg(long)]
         json: bool,
     },
-    /// Explicitly migrate a schema 1 session, keeping its original bytes.
-    Migrate {
-        #[arg(long, default_value = "intent")]
-        stage: String,
-    },
+    /// Preview the migration of a 0.5.x project's records to 0.6.0, or apply a
+    /// previewed plan by its digest with the human's consent (REQ-records-009).
+    Migrate(migrate::MigrateArgs),
     /// Show or update the canonical checkpoint.
     Checkpoint(Box<checkpoint::CheckpointArgs>),
     /// Route between stages within native lifecycle gates.
@@ -96,7 +108,10 @@ enum Commands {
         #[command(subcommand)]
         command: stage::StageCommand,
     },
-    /// Immutable transition history adoption, inspection and protected retention.
+    /// Correct an earlier Timeline entry by appending a correction linked to it; history
+    /// is never rewritten (REQ-history-015).
+    Correct(history::CorrectArgs),
+    /// The active session's Timeline (REQ-history-002).
     History {
         #[command(subcommand)]
         command: history::HistoryCommand,
@@ -109,7 +124,7 @@ enum Commands {
     /// Record an observation; never executes a test or authenticates an actor.
     Evidence {
         #[command(subcommand)]
-        command: EvidenceCommand,
+        command: evidence::EvidenceCommand,
     },
     /// Keep the local bug backlog.
     Bug {
@@ -136,6 +151,11 @@ enum Commands {
         #[command(subcommand)]
         command: library::LibraryCommand,
     },
+    /// The knowledge journal: short dated posts that link the records (REQ-records-011).
+    Journal {
+        #[command(subcommand)]
+        command: journal::JournalCommand,
+    },
     /// Report how long stages, tests, bug fixes and human gates took, from existing
     /// records; read-only, and every duration is elapsed wall-clock time, not effort.
     Timing(Box<timing::TimingArgs>),
@@ -144,7 +164,7 @@ enum Commands {
         #[command(subcommand)]
         command: skill::SkillCommand,
     },
-    /// Sessions per objective or native change: new, adopt, use, list.
+    /// Sessions per objective or native change: new, use, list, close, shelve.
     Session {
         #[command(subcommand)]
         command: sessions::SessionCommand,
@@ -171,41 +191,45 @@ enum Commands {
     Doctor(Box<doctor::DoctorArgs>),
 }
 
-#[derive(Subcommand)]
-enum EvidenceCommand {
-    Add(Box<evidence::EvidenceArgs>),
-    /// Preview which observation sets retention could remove and what protects the rest;
-    /// `--apply` removes eligible sets under a run consent or `retention auto`.
-    Prune {
-        /// Remove eligible sets and append each to .chough/pruned.jsonl.
-        #[arg(long)]
-        apply: bool,
-    },
-}
-
 fn main() -> Result<()> {
     // A stop then finds orphans of what Chough started (#81, Linux; no effect elsewhere).
     records::become_subreaper();
     let cli = Cli::parse();
+    leaks::set_redacting(cli.redact);
     let root = cli.root.canonicalize().context("project root must exist")?;
     ensure!(root.is_dir(), "project root must be a directory");
+    // REQ-records-010: one guard before any record is read or written. Clap has already
+    // answered --help and --version.
+    // `pref set|unset migration` writes no committed file but `.chough/preferences.json`, which the
+    // migration keeps byte for byte, so the standing consent route of REQ-records-009
+    // works before the first migration.
+    let migration_preference = matches!(
+        &cli.command,
+        Commands::Pref {
+            command: prefs::PrefCommand::Set { key, .. } | prefs::PrefCommand::Unset { key, .. },
+        } if key == "migration"
+    );
+    if migration_preference
+        || matches!(
+            cli.command,
+            Commands::Migrate(_) | Commands::Doctor(_) | Commands::Skill { .. }
+        )
+    {
+        migrate::exempt_from_guard();
+    } else {
+        migrate::ensure_migrated(&root)?;
+    }
     match cli.command {
         Commands::Init {
             objective,
+            session,
             intent_scope,
             modules,
             hosts,
-        } => init(&root, objective, intent_scope, modules, hosts)?,
+        } => init(&root, objective, session, intent_scope, modules, hosts)?,
         Commands::Context { json: as_json } => {
             let session = read_session(&root)?;
-            let mut sections = context::context(&root, &session)?;
-            if matches!(&session, Session::V2(checkpoint) if checkpoint.history_cursor.is_some()) {
-                for section in &mut sections {
-                    if section.source == stage::TRANSITIONS {
-                        section.source = history::ROOT.into();
-                    }
-                }
-            }
+            let sections = context::context(&root, &session)?;
             let session_value = session.to_value()?;
             if as_json {
                 print_json(
@@ -227,31 +251,30 @@ fn main() -> Result<()> {
         Commands::Status { environment, .. } => {
             let report = status(&root, environment.as_deref())?;
             let phase = std::time::Instant::now();
-            print_json(&report)?;
+            print_summary_first(&report)?;
             records::trace_phase("status.render", phase);
         }
         Commands::Next {
             environment,
             json: as_json,
         } => print!("{}", next(&root, environment.as_deref(), as_json)?),
-        Commands::Migrate { stage } => checkpoint::migrate(&root, &stage)?,
+        Commands::Migrate(args) => migrate::run(&root, args)?,
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
         Commands::Stage { command } => stage::run(&root, command)?,
         Commands::History { command } => history::run(&root, command)?,
+        Commands::Correct(args) => history::correct(&root, args)?,
         Commands::Cases { command } => {
             if let Some(code) = cases::run(&root, command)? {
                 std::process::exit(code);
             }
         }
-        Commands::Evidence { command } => match command {
-            EvidenceCommand::Add(args) => evidence::add(&root, *args)?,
-            EvidenceCommand::Prune { apply } => evidence::prune(&root, apply)?,
-        },
+        Commands::Evidence { command } => evidence::run(&root, command)?,
         Commands::Bug { command } => bugs::run(&root, command)?,
         Commands::Pref { command } => prefs::pref(&root, command)?,
         Commands::Consent { command } => prefs::consent(&root, command)?,
         Commands::Validate { command } => validate::run(&root, command)?,
         Commands::Library { command } => library::run(&root, command)?,
+        Commands::Journal { command } => journal::run(&root, command)?,
         Commands::Timing(args) => timing::run(&root, *args)?,
         Commands::Skill { command } => skill::run(&root, command)?,
         Commands::Session { command } => sessions::run(&root, command)?,
@@ -274,16 +297,12 @@ fn main() -> Result<()> {
 
 fn init(
     root: &Path,
-    objective: String,
+    objective: Option<String>,
+    session_key: Option<String>,
     intent_scope: String,
     modules: Vec<String>,
     hosts: Vec<String>,
 ) -> Result<()> {
-    ensure!(!objective.trim().is_empty(), "objective must not be blank");
-    ensure!(
-        !sessions::enabled(root)?,
-        "the project uses sessions mode; run `chough session new <key>`"
-    );
     ensure!(
         modules.iter().all(|module| valid_module_name(module)),
         "invalid module name: use a module ID SpecSync accepts, such as cli or chat.service"
@@ -293,43 +312,35 @@ fn init(
     } else {
         hosts
     };
-    let mut session = new_checkpoint(objective, intent_scope, modules);
-    let initialize_history =
-        !local_path(root, SESSION)?.exists() && !local_path(root, stage::TRANSITIONS)?.exists();
-    if initialize_history {
-        // A valid same-size placeholder permits the complete checkpoint and all
-        // destination paths to be checked before randomness or directory writes.
-        session.history_cursor = Some(history::Cursor {
-            cycle: "CYC-000000000000000000000000".into(),
-            head: None,
-            legacy: None,
-        });
-    }
-    checkpoint::validate_v2(&session)?;
-    let mut files = vec![(
-        SESSION.to_string(),
-        serde_json::to_string_pretty(&session)? + "\n",
-    )];
-    for (name, content) in skill::planned_files(&hosts)? {
-        files.push((name, content.to_string()));
-    }
+    let files = skill::planned_files(&hosts)?;
     for (name, _) in &files {
         local_path(root, name)?;
     }
-    if initialize_history {
-        local_path(root, &format!("{}/cycles", history::ROOT))?;
-        session.history_cursor = Some(history::new_cursor(root)?);
-        files[0].1 = serde_json::to_string_pretty(&session)? + "\n";
-    }
     let mut created = vec![];
     let mut preserved = vec![];
+    // REQ-cli (0.6.0): `--objective` creates the first session as `chough session new`
+    // would, keyed by `--session` or the objective's slug; without it, none.
+    if let Some(objective) = objective {
+        ensure!(!objective.trim().is_empty(), "objective must not be blank");
+        ensure!(
+            sessions::open_ids(root)?.is_empty(),
+            "the project already has an open session; run `chough session new <key>` for new work"
+        );
+        let key = session_key.unwrap_or_else(|| identity::slug(&objective, "session", 64));
+        let id = sessions::create(root, &key, objective, intent_scope, modules)?;
+        created.push(sessions::session_file(&id));
+    }
+    // REQ-records-002: the records tree's reading guide, create-only; the cases folder
+    // and the Git-ignored local folder.
+    if write_new(root, ".chough/README.md", sessions::README)? {
+        created.push(".chough/README.md".to_string());
+    } else {
+        preserved.push(".chough/README.md".to_string());
+    }
+    std::fs::create_dir_all(local_path(root, ".chough/cases")?)?;
+    write_new(root, ".chough/local/.gitignore", "*\n")?;
     for (name, content) in files {
-        let written = if name == SESSION {
-            write_new_bounded(root, &name, &content, checkpoint::SESSION_LIMIT)?
-        } else {
-            write_new(root, &name, &content)?
-        };
-        if written {
+        if write_new(root, &name, content)? {
             created.push(name);
         } else {
             preserved.push(name);
@@ -337,12 +348,17 @@ fn init(
     }
     // REQ-cli-043: with the librarian on, the knowledge directory exists from the start.
     let library = library::create_at_init(root);
+    // REQ-cli-047: the merge attributes and drivers, so two branches merge clean.
+    let merge = library::merge_at_init(root);
     print_json(&json!({
         "schema_version": 1,
         "created": created,
         "preserved": preserved,
         "hosts": hosts,
         "library": library,
+        "merge": merge,
+        // REQ-records-014: the same advice `chough doctor` gives, or null.
+        "records_in_verification": doctor::exclusions(root).advice(),
     }))
 }
 
@@ -375,24 +391,20 @@ fn assess(root: &Path) -> Result<Assessment> {
     let session = read_session(root)?;
     let checkpoint = match &session {
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
-        Session::V1(_) => None,
     };
     let change = checkpoint.and_then(|checkpoint| checkpoint.native_change.as_deref());
     let native = native_read(root, change)?;
     let open_bugs = bugs::open_backlog(root)?;
     let blocking = bugs::open_blocking(root)?;
-    let history_read = checkpoint
-        .and_then(|checkpoint| checkpoint.history_cursor.as_ref())
-        .map(|cursor| {
-            history::selected(
-                root,
-                cursor,
-                history::RECENT_EVENTS,
-                history::RECENT_BYTES,
-                cursor.head.is_none(),
-            )
-        });
-    let history = history_read.as_ref().map(|read| json!({"partial":read.partial,"events_read":read.records.len(),"bytes_read":read.bytes,"source":history::ROOT}));
+    let history_read = checkpoint.map(|checkpoint| {
+        history::selected(
+            checkpoint,
+            history::RECENT_EVENTS,
+            history::RECENT_BYTES,
+            true,
+        )
+    });
+    let history = history_read.as_ref().map(|read| json!({"partial":read.partial,"events_read":read.records.len(),"bytes_read":read.bytes,"source":"the session timeline"}));
     let (gate, mut action, deltas) = match checkpoint {
         None => (
             None,
@@ -452,9 +464,6 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
     let observation_references = reads.reference_labels(&current, environment)?;
     records::trace_phase("status.references", phase);
     let stage_report = match session {
-        Session::V1(_) => {
-            json!({"schema": 1, "migration": "Run `chough migrate` to adopt the schema 2 checkpoint; the original bytes are kept."})
-        }
         Session::V2(checkpoint) => json!({
             "schema": 2,
             "stage": checkpoint.stage,
@@ -462,6 +471,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             "gate": assessment.gate.as_ref().map(|(target, gate)| json!({"to": target, "allowed": gate.allowed, "label": gate.label, "detail": gate.detail})),
             "valid_transitions": stage::valid_transitions(checkpoint),
             "awaiting_human": checkpoint.awaiting_human,
+            "gates": open_gates(checkpoint, usize::MAX),
             "blockers": checkpoint.blockers,
             "open_questions": checkpoint.open_questions,
             "references": checkpoint.references,
@@ -488,17 +498,47 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
                 }),
         ),
     };
+    // REQ-history-015: the corrected text of a corrected next action or decision.
+    let corrections = match session {
+        Session::V2(checkpoint) => history::corrections(checkpoint),
+    };
+    // BUG-0023: status leads with the short summary `next` gives, so the first screen
+    // holds the stage, the next action and its command, the open gates and blockers.
+    let summary = match session {
+        Session::V2(checkpoint) => json!({
+            "stage": {
+                "current": checkpoint.stage.current,
+                "status": checkpoint.stage.status,
+                "iteration": checkpoint.stage.iteration,
+            },
+            "native_change": checkpoint.native_change,
+            "next_valid_action": {
+                "action": cut(&corrections.apply(&assessment.action.action)),
+                "reason": cut(&assessment.action.reason),
+                "command": assessment.action.command.as_deref().map(cut),
+            },
+            "gates": open_gates(checkpoint, LIST_LIMIT),
+            "blockers": listed(checkpoint.blockers.iter()),
+        }),
+    };
     Ok(json!({
         "schema_version": 1,
+        "summary": summary,
         "objective": session.objective(),
-        "session_next_action": session.next_action(),
-        "next_valid_action": assessment.action.action,
+        "session_next_action": corrections.apply(session.next_action()),
+        "next_valid_action": corrections.apply(&assessment.action.action),
+        "corrections": corrections.view(),
+        "decisions": match session {
+            Session::V2(checkpoint) => checkpoint.decisions.iter().map(|decision| corrections.decision(decision)).collect::<Vec<_>>(),
+        },
         "checkpoint": stage_report,
         "direct_writes": direct_writes::view(root, match session {
             Session::V2(checkpoint) => checkpoint.native_change.as_deref(),
-            Session::V1(_) => None,
         }),
         "transition_history": assessment.history,
+        "last_actor": match session {
+            Session::V2(checkpoint) => history::last_actor(checkpoint),
+        },
         "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
         "native_specsync": native_status,
         "native_summary": native_summary,
@@ -507,11 +547,10 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "evidence_state": if observations.is_empty() { "missing" } else { "observations-present-not-acceptance" },
         "observations": observations,
         "observation_references": observation_references,
-        "observation_label_note": "current: present with matching inputs; historical: present but stale; pruned: removed by retention (see .chough/pruned.jsonl); unavailable: missing and not in the ledger. Pruned and unavailable observations never count as current, passed or verifying evidence.",
+        "observation_label_note": "current: present with matching inputs; historical: present but stale; removed: not carried by the 0.6.0 migration, as its receipt records; ambiguous: a merge left two records with that name, and the row names its places; unavailable: missing. Removed, ambiguous and unavailable observations never count as current, passed or verifying evidence.",
         "environment": environment,
         "open_bugs": assessment.open_bugs,
         "blocking_bugs": assessment.blocking,
-        "removal_holds": match evidence::stale_holds(root) { Ok(holds) => json!(holds), Err(error) => json!({"unknown": error.to_string()}) },
         "human_approval": "unknown; Chough does not authenticate human identity or approval",
         "delivery": "unknown; a recorded observation does not establish deployment or release",
     }))
@@ -572,6 +611,36 @@ fn cut(text: &str) -> String {
     format!("{}{CUT}", &text[..end])
 }
 
+/// Print a report as pretty JSON with its `summary` first (BUG-0023), the rest in the
+/// usual key order.
+fn print_summary_first(report: &Value) -> Result<()> {
+    let mut rest = report.clone();
+    let Some(summary) = rest.as_object_mut().and_then(|map| map.remove("summary")) else {
+        return print_json(report);
+    };
+    let rest = serde_json::to_string_pretty(&rest)?;
+    let summary = serde_json::to_string_pretty(&summary)?.replace('\n', "\n  ");
+    match rest.strip_prefix("{\n") {
+        Some(body) => println!("{{\n  \"summary\": {summary},\n{body}"),
+        None => println!("{{\n  \"summary\": {summary}\n}}"),
+    }
+    Ok(())
+}
+
+/// The first `limit` open gates with the stage each holds and the native step each
+/// drives (REQ-cli-030).
+fn open_gates(checkpoint: &checkpoint::Checkpoint, limit: usize) -> Vec<Value> {
+    checkpoint
+        .awaiting_human
+        .iter()
+        .take(limit)
+        .map(|gate| {
+            let meta = session_md::gate(checkpoint, gate);
+            json!({"gate": cut(gate), "holds": meta.holds, "drives": meta.drives})
+        })
+        .collect()
+}
+
 fn listed<'a>(items: impl ExactSizeIterator<Item = &'a String>) -> Value {
     let total = items.len();
     json!({"total": total, "items": items.take(LIST_LIMIT).map(|item| cut(item)).collect::<Vec<_>>()})
@@ -606,20 +675,46 @@ fn decisions(entries: &[String]) -> Value {
 
 /// The failed observation with the greatest recorded time, ties to the greater ID, and
 /// every bug that links it, by bug ID. Recorded fields only: never file times or order.
+/// It is an open session's entry, or a receipt an archived story or a bug holds, as it
+/// is after a migration or once its session finished (REQ-cli-021).
 fn last_failure(root: &Path) -> Result<Value> {
-    let latest = evidence::load_all(root)?
+    // (observed, id, claim) of every failed observation.
+    let mut failed: Vec<(u64, String, String)> = evidence::load_all(root)?
         .into_iter()
         .filter(|record| record.outcome == evidence::Outcome::Failed)
-        .max_by(|left, right| {
-            (left.observed_at_unix_seconds, &left.id)
-                .cmp(&(right.observed_at_unix_seconds, &right.id))
-        });
-    let Some(latest) = latest else {
+        .map(|record| (record.observed_at_unix_seconds, record.id, record.summary))
+        .collect();
+    let receipt = |map: &[(String, String)]| -> Option<(u64, String, String)> {
+        let get = |key: &str| {
+            map.iter()
+                .find(|(name, _)| name == key)
+                .map(|(_, value)| value.clone())
+        };
+        (get("result")? == "failed").then_some(())?;
+        let observed = session_md::parse_time(&get("observed")?).ok()?;
+        Some((observed, get("id")?, get("claim").unwrap_or_default()))
+    };
+    failed.extend(
+        bugs::receipts(root)?
+            .iter()
+            .filter_map(|(_, map)| receipt(map)),
+    );
+    for (_, story) in bugs::records_in(
+        root,
+        ".chough/archive/sessions",
+        markdown::Kind::Story.bound(),
+    ) {
+        failed.extend(story.maps("receipts").iter().filter_map(|map| receipt(map)));
+    }
+    let Some((observed, id, claim)) = failed
+        .into_iter()
+        .max_by(|left, right| (left.0, &left.1).cmp(&(right.0, &right.1)))
+    else {
         return Ok(Value::Null);
     };
     let mut linked: Vec<(String, String)> = bugs::observation_references(root)?
         .into_iter()
-        .filter(|(_, ids)| ids.contains(&latest.id))
+        .filter(|(_, ids)| ids.contains(&id))
         .filter_map(|(label, _)| {
             let (id, status) = label.split_once(' ')?;
             Some((id.to_string(), status.to_string()))
@@ -627,9 +722,9 @@ fn last_failure(root: &Path) -> Result<Value> {
         .collect();
     linked.sort();
     Ok(json!({
-        "id": latest.id,
-        "observed_at_unix_seconds": latest.observed_at_unix_seconds,
-        "summary": cut(&latest.summary),
+        "id": id,
+        "observed_at_unix_seconds": observed,
+        "summary": cut(&claim),
         "bugs": {
             "total": linked.len(),
             "items": linked.iter().take(LINKED_BUG_LIMIT).map(|(id, status)| json!({"id": id, "status": status})).collect::<Vec<_>>(),
@@ -748,9 +843,10 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     let session = &assessment.session;
     let checkpoint = match session {
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
-        Session::V1(_) => None,
     };
     let change = checkpoint.and_then(|checkpoint| checkpoint.native_change.clone());
+    // REQ-history-015: corrections, and the corrected text of what they correct.
+    let corrections = checkpoint.map(history::corrections).unwrap_or_default();
     let summary = assessment
         .native
         .as_ref()
@@ -777,10 +873,9 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         .iter()
         .filter_map(|entry| entry["id"].as_str())
         .collect();
-    let unreferenced = records::record_names(root, ".chough/evidence")?
-        .iter()
-        .filter(|name| !referenced.contains(name.trim_end_matches(".json")))
-        .count();
+    // The open sessions' entries that nothing references, by ID or alias, from the
+    // index the references were labelled with.
+    let unreferenced = reads.unreferenced_entries(&referenced)?;
     let attention: Vec<&Value> = references
         .iter()
         .filter(|entry| entry["label"] != "current")
@@ -790,19 +885,37 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         .take(LIST_LIMIT)
         .map(|entry| {
             let by = entry["referenced_by"].as_array().cloned().unwrap_or_default();
-            json!({
+            let mut item = json!({
                 "id": entry["id"],
                 "label": entry["label"],
                 "referenced_by": by.iter().take(3).map(|source| cut(source.as_str().unwrap_or_default())).collect::<Vec<_>>(),
                 "referenced_by_total": by.len(),
-            })
+            });
+            // A removed ID names the migration receipt that records it (REQ-records-009);
+            // an ambiguous one its places, and a grouped row the form it resolved through.
+            if let Some(receipt) = entry["receipt"].as_str() {
+                item["receipt"] = json!(cut(receipt));
+            }
+            if let Some(places) = entry["places"].as_array() {
+                item["places"] = json!(
+                    places
+                        .iter()
+                        .take(3)
+                        .map(|place| cut(place.as_str().unwrap_or_default()))
+                        .collect::<Vec<_>>()
+                );
+                item["places_total"] = json!(places.len());
+            }
+            if let Some(resolved) = entry["resolved"].as_str() {
+                item["resolved"] = json!(cut(resolved));
+            }
+            item
         })
         .collect();
 
     let empty = vec![];
     let modules = match session {
         Session::V2(checkpoint) => &checkpoint.modules,
-        Session::V1(session) => &session.modules,
     };
     let view = json!({
         "schema_version": 1,
@@ -819,12 +932,13 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "native": native,
         "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
         "next_valid_action": {
-            "action": cut(&assessment.action.action),
+            "action": cut(&corrections.apply(&assessment.action.action)),
             "reason": cut(&assessment.action.reason),
             "command": assessment.action.command.as_deref().map(cut),
         },
         "gate": assessment.gate.as_ref().map(|(to, gate)| json!({"to": to, "allowed": gate.allowed, "label": cut(&gate.label), "detail": cut(&gate.detail)})),
         "awaiting_human": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.awaiting_human).iter()),
+        "gates": checkpoint.map_or_else(Vec::new, |checkpoint| open_gates(checkpoint, LIST_LIMIT)),
         "blockers": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.blockers).iter()),
         "open_questions": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.open_questions).iter()),
         "blocking_bugs": listed(assessment.blocking.iter()),
@@ -835,10 +949,20 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "referenced_current": references.len() - attention.len(),
             "unreferenced": unreferenced,
         },
-        "decisions": decisions(checkpoint.map_or(&empty, |checkpoint| &checkpoint.decisions)),
+        "decisions": decisions(
+            &checkpoint
+                .map_or(&empty, |checkpoint| &checkpoint.decisions)
+                .iter()
+                .map(|decision| corrections.decision(decision))
+                .collect::<Vec<_>>(),
+        ),
+        "corrections": corrections.view(),
+        "last_actor": checkpoint.and_then(history::last_actor),
         "last_failure": last_failure(root)?,
         "lessons": lessons(root, modules)?,
         "knowledge": library::pointer(root),
+        // REQ-records-014: when Chough's own writes are safe in the native order.
+        "chough_writes": doctor::exclusions(root).writes(),
         "environment": environment.map(cut),
         "full_view": "chough status",
         "truncated": false,
@@ -942,6 +1066,10 @@ fn next_text(view: &Value) -> String {
     }
     lines.extend(native_check::lines(&view["native_check"]));
     let action = &view["next_valid_action"];
+    if let Ok(actor) = serde_json::from_value::<actor::Actor>(view["last_actor"].clone()) {
+        // An unauthenticated claim of which agent wrote the newest entry (REQ-records-007).
+        lines.push(format!("Last actor: {}", actor.display()));
+    }
     lines.push(format!("Next: {}", text(&action["action"])));
     lines.push(format!("  Why: {}", text(&action["reason"])));
     if action["command"].is_string() {
@@ -973,7 +1101,26 @@ fn next_text(view: &Value) -> String {
             continue;
         }
         lines.push(format!("{title}: {total} open"));
-        lines.extend(items.iter().map(|item| format!("  - {}", text(item))));
+        lines.extend(items.iter().map(|item| {
+            // A gate shows the stage it holds and the step it drives (REQ-cli-030).
+            let held = (key == "awaiting_human")
+                .then(|| {
+                    view["gates"]
+                        .as_array()?
+                        .iter()
+                        .find(|gate| gate["gate"] == *item)
+                })
+                .flatten()
+                .map(|gate| {
+                    format!(
+                        " (holds {}; drives {})",
+                        text(&gate["holds"]),
+                        text(&gate["drives"])
+                    )
+                })
+                .unwrap_or_default();
+            format!("  - {}{held}", text(item))
+        }));
         if total > items.len() as u64 {
             lines.push(format!(
                 "  {} more; chough status",
@@ -1152,6 +1299,10 @@ fn handoff_lines(view: &Value, text: &dyn Fn(&Value) -> String) -> Vec<String> {
             _ => "Knowledge index: off (librarian opted out)".into(),
         },
     );
+    lines.push(format!(
+        "Chough writes: {}",
+        text(&view["chough_writes"]["text"])
+    ));
     let bundles = &view["lessons"]["archived_bundles"];
     let shown = items(bundles);
     if let Some(note) = bundles["note"].as_str() {
@@ -1250,7 +1401,8 @@ mod tests {
         git_in(&a, &["init", "-q"]);
         init(
             &a,
-            "Same-second runs".into(),
+            Some("Same-second runs".into()),
+            None,
             String::new(),
             vec!["cli".into()],
             vec![],
@@ -1274,6 +1426,21 @@ mod tests {
         );
         git_in(&a, &["checkout", "-q", "-b", "a"]);
         git_in(&b, &["checkout", "-q", "-b", "b"]);
+        // REQ-cli-023: each root runs the case in its own session on its own branch.
+        sessions::run(
+            &b,
+            sessions::SessionCommand::New {
+                key: "second-root".into(),
+                objective: "Same-second runs, second root".into(),
+                intent_scope: String::new(),
+                modules: vec!["cli".into()],
+            },
+        )
+        .unwrap();
+        let session_of =
+            |root: &Path| sessions::id_of(&sessions::checkpoint_path(root).unwrap()).unwrap();
+        let (session_a, session_b) = (session_of(&a), session_of(&b));
+        assert_ne!(session_a, session_b);
 
         let (run_a, run_b) = records::with_native_stdout("hi", HI, || {
             records::with_pinned_clock(SECOND, || {
@@ -1283,22 +1450,22 @@ mod tests {
                 )
             })
         });
-        assert_ne!(run_a.observation, run_b.observation);
-        let record = |root: &Path, id: &str| {
-            let path = root.join(format!(".chough/evidence/{id}.json"));
-            let text = fs::read(&path).unwrap();
-            let evidence: evidence::Evidence = serde_json::from_slice(&text).unwrap();
-            (text, evidence)
-        };
-        let (text_a, evidence_a) = record(&a, &run_a.observation);
-        let (text_b, evidence_b) = record(&b, &run_b.observation);
-        assert_eq!(evidence_a.observed_at_unix_seconds, SECOND);
-        assert_eq!(evidence_b.observed_at_unix_seconds, SECOND);
-        assert_eq!(evidence_a.artifacts.len(), 1);
-        assert_eq!(evidence_b.artifacts.len(), 1);
-        assert_ne!(evidence_a.artifacts, evidence_b.artifacts);
-        let artifact_a = fs::read(a.join(&evidence_a.artifacts[0])).unwrap();
-        let artifact_b = fs::read(b.join(&evidence_b.artifacts[0])).unwrap();
+        let entry =
+            |session: &str, id: &str| format!(".chough/sessions/{session}/evidence/{id}.md");
+        let (path_a, path_b) = (
+            entry(&session_a, &run_a.observation),
+            entry(&session_b, &run_b.observation),
+        );
+        assert_ne!(path_a, path_b);
+        let text_a = fs::read(a.join(&path_a)).unwrap();
+        let text_b = fs::read(b.join(&path_b)).unwrap();
+        for text in [&text_a, &text_b] {
+            let text = String::from_utf8_lossy(text);
+            assert!(
+                text.contains(&format!("observed: {}", session_md::iso_time(SECOND))),
+                "{text}"
+            );
+        }
 
         git_in(&a, &["add", "-A"]);
         git_in(&a, &["commit", "-q", "-m", "run a"]);
@@ -1316,17 +1483,9 @@ mod tests {
             ],
         );
 
-        // Both sides survive byte for byte under their own names, and still read current.
-        assert_eq!(record(&a, &run_a.observation).0, text_a);
-        assert_eq!(record(&a, &run_b.observation).0, text_b);
-        assert_eq!(
-            fs::read(a.join(&evidence_a.artifacts[0])).unwrap(),
-            artifact_a
-        );
-        assert_eq!(
-            fs::read(a.join(&evidence_b.artifacts[0])).unwrap(),
-            artifact_b
-        );
+        // Both entries survive byte for byte at their own paths, and still read current.
+        assert_eq!(fs::read(a.join(&path_a)).unwrap(), text_a);
+        assert_eq!(fs::read(a.join(&path_b)).unwrap(), text_b);
         let merged = evidence::load_all(&a).unwrap();
         assert_eq!(merged.len(), 2);
         let current = evidence::snapshot(&a);

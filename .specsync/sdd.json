@@ -33,6 +33,11 @@
     ".specsync/",
     "specs/"
   ],
+  "verification_ignored_paths": [
+    ".chough/archive/",
+    ".chough/bugs/",
+    ".chough/sessions/"
+  ],
   "verification_commands": [],
   "custom_artifacts": {},
   "principles_file": null

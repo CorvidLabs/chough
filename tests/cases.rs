@@ -2,8 +2,142 @@
 
 mod common;
 
+/// `YYYY-MM-DDTHH:MM:SSZ` back to Unix seconds (the 0.6.0 entry writes ISO).
+fn unix_of(iso: &str) -> u64 {
+    let (date, time) = iso.split_once('T').unwrap();
+    let (year, month, day) = {
+        let mut parts = date.split('-');
+        (
+            parts.next().unwrap().parse::<i64>().unwrap(),
+            parts.next().unwrap().parse::<i64>().unwrap(),
+            parts.next().unwrap().parse::<i64>().unwrap(),
+        )
+    };
+    let (hour, minute, second) = {
+        let mut parts = time.trim_end_matches('Z').split(':');
+        (
+            parts.next().unwrap().parse::<u64>().unwrap(),
+            parts.next().unwrap().parse::<u64>().unwrap(),
+            parts.next().unwrap().parse::<u64>().unwrap(),
+        )
+    };
+    let year = if month <= 2 { year - 1 } else { year };
+    let month = if month <= 2 { month + 9 } else { month - 3 };
+    let era = year.div_euclid(400);
+    let yoe = year.rem_euclid(400);
+    let doy = (153 * month + 2) / 5 + day - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    let days = era * 146_097 + doe - 719_468;
+    (days * 86_400 + (hour * 3_600 + minute * 60 + second) as i64) as u64
+}
+
+/// An evidence entry in the 0.6.0 layout, read as the 0.5.x JSON shape these tests
+/// assert on. Searches every open session's evidence folder.
+fn read_evidence(fixture: &Fixture, id: &str) -> Value {
+    let mut found = None;
+    for session in fixture.open_ids() {
+        let dir = fixture
+            .root()
+            .join(format!(".chough/sessions/{session}/evidence"));
+        let Ok(entries) = fs::read_dir(&dir) else {
+            continue;
+        };
+        for entry in entries.flatten() {
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if !name.ends_with(".md") {
+                continue;
+            }
+            let text = fs::read_to_string(entry.path()).unwrap();
+            let (front, _) = text
+                .strip_prefix("---\n")
+                .and_then(|rest| rest.split_once("\n---\n"))
+                .expect("an evidence entry");
+            let get = |key: &str| -> Option<String> {
+                front.lines().find_map(|line| {
+                    line.split_once(':')
+                        .filter(|(name, _)| name.trim() == key)
+                        .map(|(_, value)| {
+                            value
+                                .trim()
+                                .trim_matches('"')
+                                .replace("\\n", "\n")
+                                .to_string()
+                        })
+                })
+            };
+            let lines: Vec<&str> = front.lines().collect();
+            let list = |key: &str| -> Vec<String> {
+                let at = lines.iter().position(|line| {
+                    line.split_once(':')
+                        .is_some_and(|(name, _)| name.trim() == key)
+                });
+                let Some(at) = at else {
+                    return vec![];
+                };
+                let (_, value) = lines[at].split_once(':').unwrap();
+                let value = value.trim();
+                if let Some(inner) = value.strip_prefix('[').and_then(|v| v.strip_suffix(']')) {
+                    return inner
+                        .split(", ")
+                        .filter(|item| !item.is_empty())
+                        .map(|item| item.trim().trim_matches('"').to_string())
+                        .collect();
+                }
+                // A block list: `  - item` lines follow.
+                let mut items = vec![];
+                for line in &lines[at + 1..] {
+                    if let Some(item) = line.strip_prefix("  - ") {
+                        items.push(item.trim().trim_matches('"').to_string());
+                    } else if line.starts_with("  ") {
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+                items
+            };
+            let entry_id = get("id").unwrap_or_default();
+            let aliases = list("aliases");
+            if entry_id != id && !aliases.iter().any(|alias| alias == id) {
+                continue;
+            }
+            let cases = list("case");
+            let digests = list("case_digest");
+            found = Some(serde_json::json!({
+                "schema_version": 2,
+                "id": entry_id,
+                "aliases": aliases,
+                "criteria": list("criteria"),
+                "requirements": list("requirements"),
+                "contracts": list("contracts"),
+                "kind": get("evidence_kind"),
+                "outcome": get("result"),
+                "environment": get("environment"),
+                "summary": get("claim"),
+                "artifacts": list("artifacts"),
+                "external": get("external"),
+                "screenshot": get("screenshot"),
+                "fingerprint": get("fingerprint"),
+                "raw_log": get("raw_log"),
+                "observed_at_unix_seconds": get("observed").map(|iso| unix_of(&iso)),
+                "snapshot": {"revision": get("revision"), "content": get("content")},
+                "cases": cases.iter().zip(&digests).map(|(id, digest)| serde_json::json!({"id": id, "digest": digest})).collect::<Vec<_>>(),
+                "method": get("method"),
+                "track": get("track"),
+                "argv": list("command"),
+                "exit_code": get("exit_code").and_then(|code| code.parse::<i32>().ok()),
+                "tests_run": get("tests_run").and_then(|count| count.parse::<u64>().ok()),
+                "limitations": list("limitations"),
+                "duration_seconds": get("duration_seconds").and_then(|d| d.parse::<u64>().ok()),
+            }));
+        }
+    }
+    found.unwrap_or_else(|| panic!("no evidence entry {id}"))
+}
+
 use common::Fixture;
 use serde_json::Value;
+use std::fs;
 
 const HEADER: &str = "profile = \"chough-testing/1\"\nmodule = \"cli\"\n";
 
@@ -371,11 +505,13 @@ fn execution_records_failures_and_vacuous_runs_honestly() {
             .to_string()
             .contains("build or environment failure")
     );
-    let artifact = record("TC-cli-0002")["record"]["artifacts"][0]
+    // The raw log stays machine-local (REQ-records-005), named by the entry's ID.
+    let id = record("TC-cli-0002")["record"]["id"]
         .as_str()
         .unwrap()
         .to_string();
-    assert!(fixture.read(&artifact).contains("1 failed"));
+    let log = format!(".chough/local/logs/{id}.log");
+    assert!(fixture.read(&log).contains("1 failed"));
     assert_eq!(
         record("TC-cli-0001")["record"]["argv"],
         serde_json::json!([
@@ -414,7 +550,7 @@ fn manual_records_need_a_verdict_for_every_expected_outcome() {
     );
     fixture.init();
     fixture.commit("fixture");
-    fixture.write(".chough/artifacts/shot.png", "not really a png");
+    fixture.write("shot.png", "not really a png");
     let base = [
         "cases",
         "record",
@@ -426,7 +562,7 @@ fn manual_records_need_a_verdict_for_every_expected_outcome() {
         "--summary",
         "Compared states",
         "--artifact",
-        ".chough/artifacts/shot.png",
+        "shot.png",
     ];
     let mut partial = base.to_vec();
     partial.extend(["--verdict", "1=pass"]);
@@ -439,7 +575,7 @@ fn manual_records_need_a_verdict_for_every_expected_outcome() {
     assert_eq!(value["outcome"], "failed");
     let recorded = fixture.read(value["recorded"].as_str().unwrap());
     assert!(recorded.contains("Verdicts 1=pass, 2=fail"));
-    assert!(recorded.contains("\"method\": \"agent-assisted\""));
+    assert!(recorded.contains("method: agent-assisted"));
     assert!(
         fixture
             .fails(&["cases", "run", "TC-cli-0007", "--environment", "x"])
@@ -454,10 +590,9 @@ fn schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct() {
     fixture.stubs();
     fixture.init();
     fixture.commit("fixture");
-    fixture.ok(&[
+    let added = fixture.ok(&[
         "evidence",
         "add",
-        "OBS-dry-run-000000000000000000000005",
         "--criterion",
         "LIFE-1",
         "--requirement",
@@ -475,25 +610,17 @@ fn schema_2_evidence_accepts_delivery_kinds_and_keeps_dry_runs_distinct() {
         "--limitation",
         "simulated adapter",
     ]);
-    let record: Value = serde_json::from_str(
-        &fixture.read(".chough/evidence/OBS-dry-run-000000000000000000000005.json"),
-    )
-    .unwrap();
+    let record = read_evidence(&fixture, added["observation"].as_str().unwrap());
     assert_eq!(record["schema_version"], 2);
     assert_eq!(record["kind"], "dry-run");
     assert_eq!(record["limitations"][0], "simulated adapter");
-    // Schema 1 records written by the bootstrap helper remain readable.
-    let mut legacy = record.clone();
-    legacy["schema_version"] = 1.into();
-    legacy["id"] = "legacy".into();
-    legacy["kind"] = "product-test".into();
-    legacy.as_object_mut().unwrap().remove("limitations");
-    fixture.write(".chough/evidence/legacy.json", &legacy.to_string());
-    let status = fixture.ok(&["status", "--environment", "staging-simulated", "--json"]);
-    assert_eq!(status["observations"].as_array().unwrap().len(), 2);
-    legacy["outcome"] = "not-run".into();
-    fixture.write(".chough/evidence/legacy.json", &legacy.to_string());
-    assert!(fixture.fails(&["status", "--json"]).contains("schema 1"));
+    // A 0.5.x JSON record in the tree is refused as unmigrated (REQ-records-010);
+    // migration reads them (step 10).
+    fixture.write(
+        ".chough/evidence/legacy.json",
+        &serde_json::to_string(&record).unwrap(),
+    );
+    assert!(fixture.fails(&["status", "--json"]).contains("unmigrated"));
 }
 
 /// A project whose cases bind the given commands, with native stand-ins on PATH.
@@ -556,9 +683,7 @@ fn timed_run(fixture: &Fixture, id: &str) -> (std::time::Duration, Value, Value)
     let report: Value = serde_json::from_slice(&fs::read(&stdout).unwrap())
         .unwrap_or_else(|_| panic!("{}", fs::read_to_string(&stderr).unwrap()));
     let observation = report["observation"].as_str().unwrap();
-    let record =
-        serde_json::from_str(&fixture.read(&format!(".chough/evidence/{observation}.json")))
-            .unwrap();
+    let record = read_evidence(fixture, observation);
     (elapsed, report, record)
 }
 
@@ -672,7 +797,10 @@ fn output_beyond_the_per_stream_bound_is_counted_not_retained() {
     }
     let (_, report, record) = timed_run(&fixture, "TC-cli-0001");
     assert_eq!(report["outcome"], "passed", "{record}");
-    let artifact = fixture.read(record["artifacts"][0].as_str().unwrap());
+    let artifact = fixture.read(&format!(
+        ".chough/local/logs/{}.log",
+        record["id"].as_str().unwrap()
+    ));
     // The existing 1 MiB artifact bound plus the truncation notes.
     assert!(artifact.len() <= 1_048_576 + 300, "{}", artifact.len());
     assert!(artifact.contains("[truncated: captured output is limited to 1048576 bytes]"));
@@ -986,7 +1114,10 @@ fn a_declared_variable_reaches_the_command_and_is_named_without_its_value() {
     );
     assert!(
         fixture
-            .read(record["artifacts"][0].as_str().unwrap())
+            .read(&format!(
+                ".chough/local/logs/{}.log",
+                record["id"].as_str().unwrap()
+            ))
             .contains("greeting=hello-from-the-case")
     );
 
@@ -1002,7 +1133,10 @@ fn a_declared_variable_reaches_the_command_and_is_named_without_its_value() {
     );
     assert!(
         !fixture
-            .read(record["artifacts"][0].as_str().unwrap())
+            .read(&format!(
+                ".chough/local/logs/{}.log",
+                record["id"].as_str().unwrap()
+            ))
             .contains("hello-from-the-case")
     );
 }
@@ -1045,12 +1179,12 @@ fn coloured_output_matches_its_visible_text_and_the_artifact_keeps_the_raw_bytes
         limitations(&record).contains(&ESCAPES_REMOVED.to_string()),
         "{record}"
     );
-    let artifact = std::fs::read(
-        fixture
-            .root()
-            .join(record["artifacts"][0].as_str().unwrap()),
-    )
-    .unwrap();
+    let artifact = fixture
+        .read(&format!(
+            ".chough/local/logs/{}.log",
+            record["id"].as_str().unwrap()
+        ))
+        .into_bytes();
     let mut raw = b"--- stdout ---\n".to_vec();
     raw.extend(COLOURED);
     raw.extend(b"\n--- stderr ---\n");
@@ -1096,6 +1230,67 @@ fn an_unterminated_escape_never_hides_a_second_test_result() {
     );
 }
 
+/// t38b's F4 (REQ-records-005): a line of the first cargo failure block longer than the
+/// room left, such as a one-line assertion diff, is cut on a character boundary to fit
+/// rather than dropped, so the key lines keep the assertion as well as the panic and the
+/// `test result:` line, within 20 lines and 2,048 bytes.
+#[cfg(unix)]
+#[test]
+fn a_long_assertion_line_is_cut_to_fit_the_key_lines_not_dropped() {
+    let fixture = bounded_fixture(&bound(
+        "TC-cli-0001",
+        "adapter = \"cargo-test\"\ntest_target = \"cli\"\ntest = \"passes\"",
+        "",
+    ));
+    // A multi-byte character sits where the cut falls, so the cut must find a boundary.
+    let diff = "é".repeat(1_500);
+    let output = format!(
+        "running 1 test\ntest passes ... FAILED\n\nfailures:\n\n---- passes stdout ----\nthread 'passes' panicked at tests/cli.rs:1:1:\nassertion `left == right` failed\n  left: \"{diff}\"\n right: \"short\"\n\nfailures:\n    passes\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out\n"
+    );
+    fixture.write("bin/cargo-output.txt", &output);
+    fixture.write(
+        "bin/cargo",
+        "#!/bin/sh\ncat \"$(dirname \"$0\")/cargo-output.txt\"\nexit 101\n",
+    );
+    fixture.executable("bin/cargo");
+    let run = fixture.run(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
+    let report: Value = serde_json::from_slice(&run.stdout)
+        .unwrap_or_else(|_| panic!("{}", String::from_utf8_lossy(&run.stderr)));
+    assert_eq!(report["outcome"], "failed", "{report:#}");
+    let id = report["observation"].as_str().unwrap();
+    let text = fixture.read(&format!(
+        ".chough/sessions/{}/evidence/{id}.md",
+        fixture.active_id()
+    ));
+    let key: Vec<&str> = text
+        .split("\n## Key failing lines\n\n")
+        .nth(1)
+        .unwrap_or_else(|| panic!("no key lines: {text}"))
+        .lines()
+        .take_while(|line| line.starts_with("- "))
+        .map(|line| &line[2..])
+        .collect();
+    assert!(key.len() <= 20, "{key:#?}");
+    assert!(
+        key.iter().map(|line| line.len() + 1).sum::<usize>() <= 2_048,
+        "{key:#?}"
+    );
+    assert!(
+        key.iter().any(|line| line.contains("panicked at")),
+        "{key:#?}"
+    );
+    assert!(
+        key.iter()
+            .any(|line| line.trim_start().starts_with("left: \"é")),
+        "the long assertion line was dropped: {key:#?}"
+    );
+    assert_eq!(
+        key.last().copied(),
+        Some("test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out"),
+        "{key:#?}"
+    );
+}
+
 #[test]
 fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations() {
     let definition = bound(
@@ -1104,7 +1299,21 @@ fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations(
         "",
     );
     let roots = [bounded_fixture(&definition), bounded_fixture(&definition)];
+    // REQ-cli-023: each root runs in its own session, so the same day's entries of the
+    // two roots, named alike by date and slug (REQ-records-003), live at their own
+    // paths. Within a session a same-day repeat takes one clash suffix.
+    roots[1].ok(&[
+        "session",
+        "new",
+        "second-root",
+        "--objective",
+        "SYNTHETIC second root",
+    ]);
+    let second = roots[1].id_of("second-root");
+    roots[1].ok(&["session", "use", &second]);
+    assert_ne!(roots[0].active_id(), roots[1].active_id());
     let mut observations = vec![];
+    let mut entries = vec![];
     for fixture in &roots {
         common::stand_in(
             &fixture.root().join("bin"),
@@ -1119,40 +1328,52 @@ fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations(
                 String::from_utf8_lossy(&output.stderr)
             );
             let report: Value = serde_json::from_slice(&output.stdout).unwrap();
-            observations.push(report["observation"].as_str().unwrap().to_string());
+            let id = report["observation"].as_str().unwrap().to_string();
+            entries.push(format!(
+                ".chough/sessions/{}/evidence/{id}.md",
+                fixture.active_id()
+            ));
+            observations.push(id);
         }
     }
     for id in &observations {
+        // Date and slug names (REQ-records-003): <date>-tc-cli-0001, plus one
+        // 6-hex clash suffix for same-day repeats (REQ-cli-023).
         let suffix = id
-            .strip_prefix("OBS-tc-cli-0001-")
-            .unwrap_or_else(|| panic!("old-form observation allocated: {id}"));
-        assert_eq!(suffix.len(), 24, "{id}");
+            .strip_prefix(&format!("{}-tc-cli-0001", &id[..10]))
+            .unwrap_or_else(|| panic!("not a date-slug observation name: {id}"));
         assert!(
-            suffix
-                .bytes()
-                .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()),
+            suffix.is_empty()
+                || (suffix.len() == 7
+                    && suffix[1..]
+                        .bytes()
+                        .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())),
             "{id}"
         );
-        let artifact = format!(".chough/artifacts/{id}.log");
-        let fixture = roots
-            .iter()
-            .find(|fixture| fixture.exists(&format!(".chough/evidence/{id}.json")))
-            .unwrap();
-        let record: Value =
-            serde_json::from_str(&fixture.read(&format!(".chough/evidence/{id}.json"))).unwrap();
-        assert_eq!(record["artifacts"][0], artifact);
+        // The raw log stays machine-local and uncommitted (REQ-records-005); the entry
+        // carries its fingerprint.
+        let log = format!(".chough/local/logs/{id}.log");
+        let fixture = roots.iter().find(|fixture| fixture.exists(&log)).unwrap();
+        let record: Value = read_evidence(fixture, id);
         assert!(
-            fixture
-                .read(&artifact)
-                .contains("test result: ok. 1 passed")
+            record["artifacts"].as_array().unwrap().is_empty(),
+            "{record}"
         );
-        assert!(record["observed_at_unix_seconds"].is_u64());
-        assert!(record["duration_seconds"].is_u64());
+        let bytes = fixture.read(&log);
+        assert!(bytes.contains("test result: ok. 1 passed"));
+        let digest = {
+            use sha2::{Digest, Sha256};
+            format!("sha256:{:x}", Sha256::digest(bytes.as_bytes()))
+        };
+        assert_eq!(record["fingerprint"].as_str().unwrap(), digest, "{record}");
+        assert!(record["observed_at_unix_seconds"].is_u64(), "{record}");
+        assert!(record["duration_seconds"].is_u64(), "{record}");
     }
-    let unique = observations
-        .iter()
-        .collect::<std::collections::BTreeSet<_>>();
-    assert_eq!(unique.len(), 4, "observations: {observations:?}");
+    // The two repeats in one root are distinct, and so are all four entries' paths.
+    assert_ne!(observations[0], observations[1], "{observations:?}");
+    assert_ne!(observations[2], observations[3], "{observations:?}");
+    let unique = entries.iter().collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(unique.len(), 4, "entries: {entries:?}");
 }
 
 #[test]
@@ -1293,21 +1514,31 @@ fn recorded_id(output: &std::process::Output) -> String {
     );
     let report: Value = serde_json::from_slice(&output.stdout).unwrap();
     let path = report["recorded"].as_str().unwrap();
-    path.strip_prefix(".chough/evidence/")
-        .and_then(|name| name.strip_suffix(".json"))
+    path.strip_suffix(".md")
+        .and_then(|name| name.rsplit_once('/'))
+        .map(|(_, stem)| stem)
         .unwrap()
         .to_string()
 }
 
 fn assert_observation_form(id: &str, slug: &str) {
-    let suffix = id
-        .strip_prefix(&format!("OBS-{slug}-"))
+    // A date and slug name (REQ-records-003): <YYYY-MM-DD>-<slug>, plus one 6-hex
+    // clash suffix on a same-day clash (REQ-cli-023).
+    let (date, rest) = id.split_once('-').unwrap();
+    assert_eq!(date.len(), 4, "{id}");
+    let (month, rest) = rest.split_once('-').unwrap();
+    let (day, slug_part) = rest.split_once('-').unwrap();
+    assert_eq!(month.len(), 2, "{id}");
+    assert_eq!(day.len(), 2, "{id}");
+    let suffix = slug_part
+        .strip_prefix(slug)
         .unwrap_or_else(|| panic!("wrong observation form: {id}"));
-    assert_eq!(suffix.len(), 24, "{id}");
     assert!(
-        suffix
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
+        suffix.is_empty()
+            || (suffix.len() == 7
+                && suffix[1..]
+                    .bytes()
+                    .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())),
         "{id}"
     );
 }
@@ -1322,7 +1553,7 @@ fn direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records()
         None,
         "Automatic from kind",
     ));
-    assert_observation_form(&automatic, "product-test");
+    assert_observation_form(&automatic, "automatic-from-kind");
     let linked = recorded_id(&add_evidence(
         &fixture,
         None,
@@ -1332,7 +1563,7 @@ fn direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records()
     ));
     assert_observation_form(&linked, "tc-cli-0001");
 
-    let explicit = "OBS-product-test-000000000000000000000010";
+    let explicit = "2020-01-01-explicit-new-form";
     assert_eq!(
         recorded_id(&add_evidence(
             &fixture,
@@ -1343,7 +1574,10 @@ fn direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records()
         )),
         explicit
     );
-    let name = format!(".chough/evidence/{explicit}.json");
+    let name = format!(
+        ".chough/sessions/{}/evidence/{explicit}.md",
+        fixture.active_id()
+    );
     let before = fixture.read(&name);
     let collision = add_evidence(
         &fixture,
@@ -1356,22 +1590,11 @@ fn direct_evidence_allocates_accepts_new_explicit_ids_and_reads_legacy_records()
     assert!(String::from_utf8_lossy(&collision.stderr).contains("identity collision"));
     assert_eq!(fixture.read(&name), before);
 
-    let mut legacy: Value = serde_json::from_str(&before).unwrap();
-    legacy["id"] = Value::from("legacy-free-form");
-    legacy["summary"] = Value::from("Stored legacy record");
-    fixture.write(
-        ".chough/evidence/legacy-free-form.json",
-        &(serde_json::to_string_pretty(&legacy).unwrap() + "\n"),
-    );
-    let status = fixture.ok(&["status", "--environment", "local", "--json"]);
-    let ids = status["observations"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|entry| entry["record"]["id"].as_str().unwrap())
-        .collect::<Vec<_>>();
-    assert!(ids.contains(&"legacy-free-form"), "{ids:?}");
-    assert!(ids.contains(&automatic.as_str()), "{ids:?}");
+    // A 0.5.x JSON record in the tree refuses the next command as unmigrated
+    // (REQ-records-010); migration reads them (step 10).
+    fixture.write(".chough/evidence/legacy-free-form.json", &before);
+    let refused = fixture.fails(&["status", "--environment", "local", "--json"]);
+    assert!(refused.contains("unmigrated"), "{refused}");
 }
 
 #[test]
@@ -1438,7 +1661,7 @@ fn old_style_explicit_observation_ids_have_an_omit_remedy_on_every_write_path() 
     assert!(!fixture.exists(".chough/evidence"));
     assert!(!fixture.exists(".chough/artifacts"));
 
-    let explicit = "OBS-tc-cli-0002-000000000000000000000011";
+    let explicit = "2020-01-01-accepted-explicit";
     let accepted = fixture.run(&[
         "cases",
         "record",
@@ -1461,7 +1684,10 @@ fn old_style_explicit_observation_ids_have_an_omit_remedy_on_every_write_path() 
         "{}",
         String::from_utf8_lossy(&accepted.stderr)
     );
-    assert!(fixture.exists(&format!(".chough/evidence/{explicit}.json")));
+    assert!(fixture.exists(&format!(
+        ".chough/sessions/{}/evidence/{explicit}.md",
+        fixture.active_id()
+    )));
 }
 
 #[test]
@@ -1476,9 +1702,26 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
         "cargo",
         "running 1 test\ntest passes ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored",
     );
-    let id = "OBS-tc-cli-0001-000000000000000000000012";
-    let artifact = format!(".chough/artifacts/{id}.log");
-    fixture.write(&artifact, "original artifact bytes\n");
+    // An explicit date-slug ID used twice: the second write is refused with nothing
+    // written, no suffix and no fallback (REQ-cli-023); the first entry and its local
+    // log keep their bytes.
+    let id = "2020-01-01-collision-check";
+    let first = fixture.run(&[
+        "cases",
+        "run",
+        "TC-cli-0001",
+        "--environment",
+        "local",
+        "--observation-id",
+        id,
+    ]);
+    assert!(
+        first.status.success(),
+        "{}",
+        String::from_utf8_lossy(&first.stderr)
+    );
+    let log = format!(".chough/local/logs/{id}.log");
+    let before = fixture.read(&log);
     let output = fixture.run(&[
         "cases",
         "run",
@@ -1490,23 +1733,37 @@ fn an_artifact_collision_preserves_bytes_and_creates_no_observation_or_fallback(
     ]);
     assert!(!output.status.success());
     let error = String::from_utf8_lossy(&output.stderr);
-    assert!(error.contains("artifact identity collision"), "{error}");
+    assert!(error.contains("identity collision"), "{error}");
     assert!(error.contains(id), "{error}");
-    assert_eq!(fixture.read(&artifact), "original artifact bytes\n");
-    assert!(!fixture.exists(&format!(".chough/evidence/{id}.json")));
-    assert!(std::fs::read_dir(fixture.root().join(".chough/evidence")).is_err());
+    assert_eq!(fixture.read(&log), before);
+    let session = fixture.active_id();
+    assert_eq!(
+        std::fs::read_dir(
+            fixture
+                .root()
+                .join(format!(".chough/sessions/{session}/evidence"))
+        )
+        .unwrap()
+        .count(),
+        1,
+        "a second entry was written"
+    );
 }
 
 /// Generated records under `dir` in a fixture: relative path to bytes.
 fn generated(fixture: &Fixture) -> std::collections::BTreeMap<String, Vec<u8>> {
     let mut files = std::collections::BTreeMap::new();
-    for dir in [".chough/evidence", ".chough/artifacts", ".chough/bugs"] {
-        let Ok(entries) = std::fs::read_dir(fixture.root().join(dir)) else {
+    let mut dirs: Vec<String> = vec![".chough/bugs".to_string()];
+    for session in fixture.open_ids() {
+        dirs.push(format!(".chough/sessions/{session}/evidence"));
+    }
+    for dir in dirs {
+        let Ok(entries) = std::fs::read_dir(fixture.root().join(&dir)) else {
             continue;
         };
         for entry in entries {
             let entry = entry.unwrap();
-            let name = format!("{dir}/{}", entry.file_name().to_string_lossy());
+            let name = format!("{}/{}", dir, entry.file_name().to_string_lossy());
             files.insert(name, std::fs::read(entry.path()).unwrap());
         }
     }
@@ -1542,18 +1799,35 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
     b.git(&["clone", "-q", a.root().to_str().unwrap(), "."]);
     a.git(&["checkout", "-q", "-b", "a"]);
     b.git(&["checkout", "-q", "-b", "b"]);
+    // REQ-cli-023: each root records in its own session on its own branch, so their
+    // same-day entries, named alike by date and slug, live at their own paths.
+    b.ok(&[
+        "session",
+        "new",
+        "branch-b",
+        "--objective",
+        "SYNTHETIC records from branch b",
+    ]);
+    let session_b = b.id_of("branch-b");
+    b.ok(&["session", "use", &session_b]);
+    assert_ne!(a.active_id(), b.active_id());
 
+    // Entries by their qualified `<session>/<id>` form; bugs by their names.
     let mut ids = vec![];
+    let mut bug_ids = vec![];
+    // Each root's case run, qualified as <session>/<id>, in root order.
+    let mut runs = vec![];
     for (fixture, side, bug) in [
         (&a, "a", "Version check flakes"),
         (&b, "b", "Version check is slow"),
     ] {
         let run = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
-        ids.push(run["observation"].as_str().unwrap().to_string());
-        fixture.write(
-            &format!(".chough/artifacts/{side}-proof.log"),
-            &format!("proof from {side}\n"),
-        );
+        let session = fixture.active_id();
+        // The bare ID the run printed (REQ-cli-017), which the bug below links.
+        let observation = run["observation"].as_str().unwrap().to_string();
+        ids.push(format!("{session}/{observation}"));
+        runs.push(format!("{session}/{observation}"));
+
         let mut args = vec![
             "evidence",
             "add",
@@ -1574,9 +1848,8 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
             "--summary",
         ];
         let summary = format!("Reviewed on branch {side}");
-        let artifact = format!(".chough/artifacts/{side}-proof.log");
-        args.extend([summary.as_str(), "--artifact", artifact.as_str()]);
-        ids.push(recorded_id(&fixture.run(&args)));
+        args.extend([summary.as_str()]);
+        ids.push(format!("{session}/{}", recorded_id(&fixture.run(&args))));
         let added = fixture.ok(&[
             "bug",
             "add",
@@ -1594,12 +1867,18 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
             "local",
             "--requirement",
             "REQ-cli-001",
+            "--observation",
+            &observation,
         ]);
-        ids.push(added["id"].as_str().unwrap().to_string());
+        bug_ids.push(added["id"].as_str().unwrap().to_string());
         fixture.commit(&format!("records from {side}"));
     }
-    let unique: std::collections::BTreeSet<_> = ids.iter().collect();
-    assert_eq!(unique.len(), ids.len(), "{ids:?}");
+    let unique: std::collections::BTreeSet<_> = ids.iter().chain(&bug_ids).collect();
+    assert_eq!(
+        unique.len(),
+        ids.len() + bug_ids.len(),
+        "{ids:?} {bug_ids:?}"
+    );
     let (from_a, from_b) = (generated(&a), generated(&b));
     assert!(
         from_a.keys().all(|name| !from_b.contains_key(name)),
@@ -1623,9 +1902,44 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         expected,
         "a record was lost or rewritten in the merge"
     );
-    assert_eq!(a.read(".chough/artifacts/b-proof.log"), "proof from b\n");
 
     a.ok(&["cases", "check"]);
+    // Each bug linked its own root's run by the bare ID it printed, unambiguous when
+    // written. After the merge both sessions hold that name, and still both read
+    // (REQ-cli-023): each bug resolves to its own root's run, never the other root's
+    // same-named entry, and status and next report. Every problem is listed at once.
+    let mut problems = vec![];
+    for (bug, run) in bug_ids.iter().zip(&runs) {
+        let shown = a.run(&["bug", "show", bug]);
+        if !shown.status.success() {
+            problems.push(format!(
+                "bug show {bug}: {}",
+                String::from_utf8_lossy(&shown.stderr)
+            ));
+            continue;
+        }
+        let shown: Value = serde_json::from_slice(&shown.stdout).unwrap();
+        let labels = shown["observation_labels"].as_array().unwrap();
+        if labels.len() != 1 || labels[0]["label"] != "entry" || labels[0]["place"] != run.as_str()
+        {
+            problems.push(format!(
+                "bug {bug} does not resolve to its own root's run {run}: {labels:?}"
+            ));
+        }
+    }
+    for args in [
+        &["status", "--environment", "local", "--json"][..],
+        &["next", "--environment", "local", "--json"][..],
+    ] {
+        let output = a.run(args);
+        if !output.status.success() {
+            problems.push(format!(
+                "{args:?}: {}",
+                String::from_utf8_lossy(&output.stderr).trim()
+            ));
+        }
+    }
+    assert!(problems.is_empty(), "{problems:#?}");
     let status = a.ok(&["status", "--environment", "local", "--json"]);
     let observations = status["observations"].as_array().unwrap();
     assert_eq!(observations.len(), 4, "{observations:?}");
@@ -1643,9 +1957,84 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         .collect();
     assert_eq!(bugs.len(), 2);
     assert!(
-        ids.iter()
-            .filter(|id| id.starts_with("BUG-"))
-            .all(|id| bugs.contains(&id.as_str()))
+        bug_ids.iter().all(|id| bugs.contains(&id.as_str())),
+        "{bug_ids:?} {bugs:?}"
+    );
+    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    assert!(next["observations"].is_object(), "{next:#}");
+
+    // A bare link a bug held before links were stored qualified stays ambiguous after
+    // the merge: the reports still read and label it, naming its places, and each
+    // session's own reference reads its own run, naming the form it resolved through.
+    let bare = runs[0].split_once('/').unwrap().1.to_string();
+    assert_eq!(runs[1].split_once('/').unwrap().1, bare, "{runs:?}");
+    let legacy = "2026-01-01-a-bare-link";
+    a.bug_md(legacy, "in-scope", "open", &[&bare]);
+    let status = a.ok(&["status", "--environment", "local", "--json"]);
+    let rows: Vec<&Value> = status["observation_references"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|row| row["id"] == bare.as_str())
+        .collect();
+    let by_bug = rows
+        .iter()
+        .find(|row| row["referenced_by"][0] == format!(".chough/bugs/{legacy}.md"))
+        .unwrap_or_else(|| panic!("{rows:#?}"));
+    assert_eq!(by_bug["label"], "ambiguous", "{by_bug:#}");
+    let mut places: Vec<&str> = by_bug["places"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|place| place.as_str().unwrap())
+        .collect();
+    places.sort_unstable();
+    let mut expected: Vec<&str> = runs.iter().map(String::as_str).collect();
+    expected.sort_unstable();
+    assert_eq!(places, expected, "{by_bug:#}");
+    for run in &runs {
+        let own = rows
+            .iter()
+            .find(|row| row["resolved"] == run.as_str())
+            .unwrap_or_else(|| panic!("no row resolved through {run}: {rows:#?}"));
+        assert_eq!(own["label"], "current", "{own:#}");
+    }
+    // next lists the references that need attention: the ambiguous one names its
+    // places, and once the entries are stale each session's own item names the form it
+    // resolved through (REQ-cli-021).
+    let item = |next: &Value, check: &dyn Fn(&Value) -> bool| -> Value {
+        next["observations"]["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|item| check(item))
+            .cloned()
+            .unwrap_or_else(|| panic!("no such item: {next:#}"))
+    };
+    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    let ambiguous = item(&next, &|item| {
+        item["id"] == bare.as_str() && item["label"] == "ambiguous"
+    });
+    let mut named: Vec<&str> = ambiguous["places"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|place| place.as_str().unwrap())
+        .collect();
+    named.sort_unstable();
+    assert_eq!(named, expected, "{ambiguous:#}");
+    assert_eq!(ambiguous["places_total"], 2, "{ambiguous:#}");
+    a.write("src/stale.txt", "SYNTHETIC edit after the merge\n");
+    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    for run in &runs {
+        let own = item(&next, &|item| item["resolved"] == run.as_str());
+        assert_eq!(own["id"], bare.as_str(), "{own:#}");
+        assert_eq!(own["label"], "historical", "{own:#}");
+    }
+    let shown = a.ok(&["bug", "show", legacy]);
+    assert_eq!(
+        shown["observation_labels"][0]["label"], "ambiguous",
+        "{shown:#}"
     );
 }
 
@@ -2189,12 +2578,11 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
         "delivery-observation",
         "dry-run",
     ];
-    for (index, kind) in kinds.iter().enumerate() {
-        let id = format!("OBS-{kind}-{:024x}", index + 1);
-        fixture.ok(&[
+    let mut ids: Vec<(String, String)> = vec![];
+    for kind in kinds.iter() {
+        let report = fixture.ok(&[
             "evidence",
             "add",
-            &id,
             "--criterion",
             "LIFE-1",
             "--requirement",
@@ -2210,10 +2598,11 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
             "--summary",
             &format!("A {kind} of the 1.2.0 release"),
         ]);
-        let record: Value =
-            serde_json::from_str(&fixture.read(&format!(".chough/evidence/{id}.json"))).unwrap();
+        let id = report["observation"].as_str().unwrap().to_string();
+        let record: Value = read_evidence(&fixture, &id);
         assert_eq!(record["schema_version"], 2, "{record:#}");
         assert_eq!(record["kind"], *kind, "{record:#}");
+        ids.push((id, kind.to_string()));
     }
     let status = fixture.ok(&["status", "--environment", "production", "--json"]);
     let reported: std::collections::BTreeMap<String, String> = status["observations"]
@@ -2228,19 +2617,16 @@ fn every_delivery_kind_is_recorded_as_itself_and_a_dry_run_as_a_dry_run() {
         })
         .collect();
     assert_eq!(reported.len(), kinds.len(), "{status:#}");
-    for (index, kind) in kinds.iter().enumerate() {
-        assert_eq!(
-            reported.get(&format!("OBS-{kind}-{:024x}", index + 1)),
-            Some(&kind.to_string()),
-            "{status:#}"
-        );
+    for (id, kind) in &ids {
+        assert_eq!(reported.get(id), Some(kind), "{status:#}");
     }
-    let dry_runs: Vec<&String> = reported
+    let dry_runs: Vec<&String> = ids
         .iter()
-        .filter(|(id, _)| id.starts_with("OBS-dry-run-"))
-        .map(|(_, kind)| kind)
+        .filter(|(_, kind)| kind == "dry-run")
+        .map(|(id, _)| id)
+        .filter(|id| reported.contains_key(*id))
         .collect();
-    assert_eq!(dry_runs, ["dry-run"], "a dry run read as a delivery kind");
+    assert_eq!(dry_runs.len(), 1, "a dry run read as a delivery kind");
 }
 
 /// #60: `cases record` returns the case and observation IDs that `cases run` returns,
@@ -2274,8 +2660,14 @@ fn manual_case_record_returns_its_case_and_observation_ids() {
         .unwrap_or_else(|| panic!("no observation: {report}"));
     assert_observation_form(observation, "tc-cli-0002");
     let recorded = report["recorded"].as_str().unwrap();
-    assert_eq!(recorded, format!(".chough/evidence/{observation}.json"));
-    let stored: Value = serde_json::from_str(&fixture.read(recorded)).unwrap();
+    assert_eq!(
+        recorded,
+        format!(
+            ".chough/sessions/{}/evidence/{observation}.md",
+            fixture.active_id()
+        )
+    );
+    let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);
 }
 
@@ -2306,7 +2698,13 @@ fn evidence_add_returns_its_observation_id() {
         .unwrap_or_else(|| panic!("no observation: {report}"));
     assert_observation_form(observation, "tc-cli-0001");
     let recorded = report["recorded"].as_str().unwrap();
-    assert_eq!(recorded, format!(".chough/evidence/{observation}.json"));
-    let stored: Value = serde_json::from_str(&fixture.read(recorded)).unwrap();
+    assert_eq!(
+        recorded,
+        format!(
+            ".chough/sessions/{}/evidence/{observation}.md",
+            fixture.active_id()
+        )
+    );
+    let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);
 }

@@ -340,7 +340,7 @@ fn workflow_guidance_from_main_825a380_updates_and_preserves_edits() {
             let fixture = Fixture::new();
             fixture.init();
             let installed = fixture.root().join(".agents/skills/chough-workflow");
-            let checkpoint = fixture.read(".chough/session.json");
+            let checkpoint = fixture.read(&fixture.session_file());
             let mut edited_bytes = None;
             for (name, previous, _) in &previous_files {
                 let name = *name;
@@ -381,7 +381,7 @@ fn workflow_guidance_from_main_825a380_updates_and_preserves_edits() {
                     assert_eq!(file_state(&after, name)["state"], "current");
                 }
             }
-            assert_eq!(fixture.read(".chough/session.json"), checkpoint);
+            assert_eq!(fixture.read(&fixture.session_file()), checkpoint);
         }
     }
 }
@@ -492,14 +492,9 @@ fn native_writer_examples_and_installed_workflows_are_consistent() {
     let canonical = root.join("skills/chough-workflow");
     let mut sources = markdown_files(&canonical);
     sources.extend(
-        [
-            "README.md",
-            "docs/cli.md",
-            "docs/walkthrough.md",
-            "docs/NEXT_CHANGE.md",
-        ]
-        .into_iter()
-        .map(|file| root.join(file)),
+        ["README.md", "docs/cli.md", "docs/walkthrough.md"]
+            .into_iter()
+            .map(|file| root.join(file)),
     );
     let mut found = BTreeSet::new();
     let mut problems = Vec::new();
@@ -513,7 +508,13 @@ fn native_writer_examples_and_installed_workflows_are_consistent() {
             found.insert((relative.to_string(), operation.clone()));
             if !matches!(
                 actor.as_deref(),
-                Some("<agent-account>" | "<project-agent-account>" | "corvid-agent" | "corvid")
+                Some(
+                    "<agent>-<terminal>"
+                        | "<agent-account>"
+                        | "<project-agent-account>"
+                        | "corvid-agent"
+                        | "corvid"
+                )
             ) {
                 problems.push(format!(
                     "{relative}: native {operation} must name the acting agent account, got {actor:?}"
@@ -528,7 +529,6 @@ fn native_writer_examples_and_installed_workflows_are_consistent() {
         ("skills/chough-workflow/references/lifecycle.md", "review"),
         ("docs/cli.md", "approve"),
         ("docs/walkthrough.md", "approve"),
-        ("docs/NEXT_CHANGE.md", "approve"),
     ] {
         if !found.contains(&(file.into(), operation.into())) {
             problems.push(format!(
@@ -746,8 +746,6 @@ fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
     fixture.stubs();
     fixture.native("draft");
     fixture.init();
-    fixture.ok(&["history", "adopt", "--apply"]);
-    fixture.ok(&["session", "adopt", "work"]);
     fixture.ok(&["checkpoint", "--native-change", "draft-change"]);
     fixture.write(".stub-count", "");
     fixture.ok(&[
@@ -755,11 +753,12 @@ fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
         "--decision",
         "decided: approved because corvid-agent approved the PR and every check passed",
     ]);
+    let session_id = fixture.active_id();
     fixture.ok(&[
         "inbox",
         "add",
         "--session",
-        "work",
+        &session_id,
         "--from",
         "reviewer-bot",
         "--kind",
@@ -772,7 +771,7 @@ fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
     fixture.ok(&["stage", "skip", "--reason", "no visuals change"]);
     let refusal = fixture.fails(&["stage", "advance"]);
     assert!(refusal.contains("draft"), "{refusal}");
-    let session: Value = serde_json::from_str(&fixture.read(".chough/sessions/work.json")).unwrap();
+    let session = fixture.checkpoint();
     assert_eq!(session["stage"]["current"], "plan", "{session:#}");
     let calls = fs::read_to_string(fixture.root().join(".stub-calls")).unwrap_or_default();
     assert!(
@@ -787,8 +786,8 @@ fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
 /// passing cold-start result.
 #[test]
 fn the_roadmap_claims_no_passing_cold_start_for_delivered_work() {
-    let raw =
-        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/ROADMAP.md")).unwrap();
+    let raw = fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/roadmap-1.0.md"))
+        .unwrap();
     // A Windows checkout has CRLF line endings (#131), so check both forms.
     for text in [
         raw.replace("\r\n", "\n"),

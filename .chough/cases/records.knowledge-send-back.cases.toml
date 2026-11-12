@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "records"
+
+# Q1 for the 6.3.0 send-back (t37f, red then green): Leif decided posts are time-based,
+# so each new post records its UTC time, and newest means by time.
+
+[[case]]
+id = "TC-records-journal-posts-record-time"
+title = "Each new post records time, UTC ISO 8601 to the second, and keeps its date-slug name; the index's newest posts and the feed sort newest first by time, an untimed post follows its date's timed posts by name and is marked (no time), and an entry's updated is its time"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-33"]
+requirements = ["REQ-records-011"]
+paths = ["src/journal.rs", "src/vault.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::posts_record_a_time_and_sort_newest_first_by_it passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "journal", "--", "--exact", "posts_record_a_time_and_sort_newest_first_by_it"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600

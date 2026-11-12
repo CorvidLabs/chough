@@ -20,7 +20,7 @@ const SPECSYNC: &str = "specsync";
 /// The variable and default of the native read bound, as for every native read.
 const NATIVE_TIMEOUT_VARIABLE: &str = "CHOUGH_NATIVE_TIMEOUT_SECONDS";
 const NATIVE_DEADLINE: Duration = Duration::from_secs(120);
-const INSTALL: &str = "cargo install --locked specsync@6.2.0";
+const INSTALL: &str = "cargo install --locked specsync@6.3.0";
 
 #[derive(Subcommand)]
 pub(super) enum ChangeCommand {
@@ -287,7 +287,8 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     if let Some(other) = open.iter().find(|gate| Some(gate.as_str()) != named) {
         if named.is_some_and(|named| open.iter().any(|gate| gate == named)) {
             bail!(
-                "refused:other-gates-open: ship closes only the gate it names, and gate \"{other}\" is open too, so nothing ran.\nDecide it first with `chough checkpoint --close-gate \"{other}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`, then run `chough change ship {id}` with the review relay again."
+                "refused:other-gates-open: ship closes only the gate it names, and gate \"{other}\" is open too, so nothing ran.\nDecide it first with `chough checkpoint --close-gate \"{other}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"{}`, then run `chough change ship {id}` with the review relay again.",
+                other_gate_flags(root, other)
             );
         }
         bail!(
@@ -301,7 +302,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         ("--where", args.place.as_deref()),
         ("--recorded-by", args.recorded_by.as_deref()),
     ];
-    let relayed = crate::checkpoint::check_relay(&open, named, values).map_err(|problem| {
+    let mut relayed = crate::checkpoint::check_relay(&open, named, values).map_err(|problem| {
         use crate::checkpoint::RelayProblem;
         match problem {
             RelayProblem::WithoutGate(given) => anyhow::anyhow!(
@@ -324,6 +325,45 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
             ),
         }
     })?;
+
+    // REQ-cli-059, REQ-records-008: a gate that drives review ships with the decided
+    // human's review, verdict pass since a ship runs only on acceptance, unless a
+    // scoped review is already current. The identity is resolved before SpecSync runs,
+    // and a refused review stops the ship.
+    let mut native_ran = None;
+    let mut reviewed: Option<(String, String)> = None;
+    if let Some((gate, relay, _)) = relayed.as_mut() {
+        crate::checkpoint::guard_relay(relay)?;
+        let checkpoint = crate::checkpoint::read_checkpoint_unlocked(root)?;
+        let drives = crate::session_md::gate(&checkpoint, gate).drives();
+        if drives != crate::humans::Drives::None {
+            let human = crate::humans::resolve(root, &relay.decided_by)?;
+            native_ran = Some(if drives != crate::humans::Drives::Review {
+                format!(
+                    "no native {} ran: change ship records only a review",
+                    drives.name()
+                )
+            } else if review_is_current(root, id) {
+                format!("the scoped review of {id} was already current, so no review ran")
+            } else {
+                let step = crate::humans::Step::Review {
+                    verdict: "pass".into(),
+                };
+                let ran = crate::humans::run(root, id, &human, &step)?;
+                if ran.code != 0 {
+                    pass_through(&ran.stdout, &ran.stderr)?;
+                    return Ok(ran.code);
+                }
+                pass_through(&[], &ran.stdout)?;
+                pass_through(&[], &ran.stderr)?;
+                reviewed = Some((
+                    format!("specsync change review {id}"),
+                    human.specsync_actor.clone(),
+                ));
+                step.summary(id, &human)
+            });
+        }
+    }
 
     // REQ-cli-060: a direct write before the ship stays pending for the move into done.
     let before = crate::direct_writes::before_step(root, id);
@@ -371,6 +411,20 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                     list.clone(),
                 ]
             }))
+            // The review, if any, ran before the ship; the close names it and runs none.
+            .chain(
+                native_ran
+                    .iter()
+                    .flat_map(|ran| ["--native-ran".to_string(), ran.clone()]),
+            )
+            .chain(reviewed.iter().flat_map(|(command, actor)| {
+                [
+                    "--native-command".to_string(),
+                    command.clone(),
+                    "--native-actor".to_string(),
+                    actor.clone(),
+                ]
+            }))
             .collect(),
         ));
     }
@@ -402,6 +456,30 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         }
     }
     Ok(0)
+}
+
+/// The flags closing `gate` needs beyond the relay: a gate that drives review takes
+/// the human's verdict, or `--no-native` for a decision that is not a review
+/// (REQ-records-008).
+fn other_gate_flags(root: &Path, gate: &str) -> &'static str {
+    let drives = crate::checkpoint::read_checkpoint_unlocked(root)
+        .map(|session| crate::session_md::gate(&session, gate).drives());
+    match drives {
+        Ok(crate::humans::Drives::Review) => {
+            " --verdict <pass|block> (or --no-native for a decision that is not a review)"
+        }
+        _ => "",
+    }
+}
+
+/// Whether SpecSync reports a current scoped review for `id`; an unreadable status
+/// counts as not current, so the review runs and SpecSync decides.
+fn review_is_current(root: &Path, id: &str) -> bool {
+    records::native_json(root, "specsync", &["change", "status", id, "--json"])
+        .value
+        .is_some_and(|value| {
+            value.pointer("/summary/scoped_review_current") == Some(&serde_json::Value::Bool(true))
+        })
 }
 
 /// The native read bound: 120 s unless the variable names a whole number of seconds

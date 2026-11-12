@@ -5,7 +5,6 @@ use crate::identity;
 use crate::records::valid_module_name;
 use crate::records::{
     Captured, Limits, digest_bytes, local_path, now, print_json, run_bounded, valid_name,
-    write_new_bytes,
 };
 use crate::{checkpoint, prefs, stage};
 use anyhow::{Context, Result, bail, ensure};
@@ -21,7 +20,6 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 pub(super) const CASES_DIR: &str = ".chough/cases";
-pub(super) const ARTIFACTS_DIR: &str = ".chough/artifacts";
 const PROFILE: &str = "chough-testing/1";
 const FILE_LIMIT: u64 = 262_144;
 const OUTPUT_LIMIT: usize = 1_048_576;
@@ -528,7 +526,6 @@ impl<'a> DeltaLinks<'a> {
         }
         let change = match checkpoint::read_session(self.root)? {
             checkpoint::Session::V2(checkpoint) => checkpoint.native_change.clone(),
-            checkpoint::Session::V1(_) => None,
         };
         let consulted = match change {
             None => Consulted::Nothing,
@@ -831,7 +828,7 @@ fn execute(
 /// every line keeps its start and the text before its first ESC. Linear: an OSC that
 /// fails to complete fails at the next line break or the end, and so does every OSC
 /// that starts before that point. Returns whether anything was removed.
-fn strip_escapes(input: &[u8]) -> (Vec<u8>, bool) {
+pub(super) fn strip_escapes(input: &[u8]) -> (Vec<u8>, bool) {
     let mut output = Vec::with_capacity(input.len());
     let mut removed = false;
     let mut unterminated_until = 0;
@@ -892,6 +889,87 @@ fn osc_length(bytes: &[u8]) -> std::result::Result<usize, usize> {
 /// whose bytes are not all present. Also returns the text the assertions read, which
 /// excludes those notes and has complete terminal escape sequences removed, and
 /// whether any were.
+/// The text the key failing lines come from (REQ-records-005): for cargo-test the
+/// first failure block and the `test result:` line, otherwise the last non-blank lines
+/// of standard error and then standard output. Escape sequences are already removed
+/// from the text the assertions read.
+fn failing_text(binding: &Binding, execution: &Captured, text: &str) -> String {
+    // The log's own headers are never key lines.
+    let lines: Vec<&str> = text
+        .lines()
+        .filter(|line| *line != "--- stdout ---" && *line != "--- stderr ---")
+        .collect();
+    if binding.adapter == "cargo-test" {
+        let result = lines
+            .iter()
+            .rev()
+            .find(|line| line.starts_with("test result:"))
+            .copied();
+        // The first failure block: from the first `---- <test> ... ----` after
+        // `failures:` up to the next block or the list of failed tests.
+        let mut block = vec![];
+        if let Some(start) = lines.iter().position(|line| line.starts_with("failures:")) {
+            let mut inside = false;
+            for line in &lines[start + 1..] {
+                if line.starts_with("---- ") {
+                    if inside {
+                        break;
+                    }
+                    inside = true;
+                } else if line.starts_with("failures:") || line.starts_with("test result:") {
+                    break;
+                }
+                if inside && !line.trim().is_empty() {
+                    block.push(*line);
+                }
+            }
+        }
+        // Its head, leaving room for the result line within the bounds.
+        let room = KEY_LINE_BYTES.saturating_sub(result.map_or(0, |line| line.len() + 1));
+        let mut kept: Vec<&str> = vec![];
+        let mut bytes = 0;
+        for line in block {
+            if kept.len() + 1 >= KEY_LINES {
+                break;
+            }
+            if bytes + line.len() + 1 > room {
+                // A line longer than the room left, such as a one-line assertion diff,
+                // is cut on a character boundary to fit rather than dropped.
+                let mut end = room.saturating_sub(bytes + 1).min(line.len());
+                while !line.is_char_boundary(end) {
+                    end -= 1;
+                }
+                if end > 0 {
+                    kept.push(&line[..end]);
+                }
+                break;
+            }
+            bytes += line.len() + 1;
+            kept.push(line);
+        }
+        kept.extend(result);
+        kept.join("\n")
+    } else {
+        let stderr_text = String::from_utf8_lossy(&execution.stderr).into_owned();
+        let stderr: Vec<&str> = stderr_text
+            .lines()
+            .filter(|line| !line.trim().is_empty())
+            .collect();
+        if !stderr.is_empty() {
+            return stderr.join("\n");
+        }
+        lines
+            .into_iter()
+            .filter(|line| !line.trim().is_empty())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
+/// The key failing lines' bounds (REQ-records-005).
+const KEY_LINES: usize = 20;
+const KEY_LINE_BYTES: usize = 2_048;
+
 fn artifact(execution: &Captured) -> (Vec<u8>, String, bool) {
     const STDOUT_HEADER: &[u8] = b"--- stdout ---\n";
     const STDERR_HEADER: &[u8] = b"\n--- stderr ---\n";
@@ -991,30 +1069,12 @@ fn observation_id(case: &str, requested: Option<String>) -> Result<String> {
         identity::require_explicit_observation_id(&id)?;
         return Ok(id);
     }
-    identity::observation(case)
-}
-
-fn write_artifact(root: &Path, artifact: &str, output: &[u8]) -> Result<()> {
-    let created = match write_new_bytes(root, artifact, output) {
-        Ok(created) => created,
-        Err(error)
-            if error
-                .downcast_ref::<std::io::Error>()
-                .is_some_and(|error| error.kind() == std::io::ErrorKind::AlreadyExists) =>
-        {
-            false
-        }
-        Err(error) => return Err(error),
-    };
-    if created {
-        return Ok(());
-    }
-    let path = local_path(root, artifact)?;
-    let identical = fs::metadata(&path)?.len() == output.len() as u64 && fs::read(path)? == output;
-    ensure!(!identical, "artifact {artifact} already exists");
-    bail!(
-        "artifact identity collision: {artifact} already exists with different content; refusing to overwrite or retry"
-    );
+    // REQ-cli-023 / REQ-records-003: named from the case ID by date and slug.
+    Ok(identity::dated_name(
+        &identity::utc_date(now()?),
+        case,
+        "observation",
+    ))
 }
 
 /// The outcome of one explicit case execution, already recorded.
@@ -1045,6 +1105,7 @@ pub(super) fn run_case(
     let digest = located.digest()?;
     let argv = argv_for(binding);
     let timeout = Duration::from_secs(binding.timeout_seconds.unwrap_or(600));
+    let explicit = requested_id.is_some();
     let observation = observation_id(id, requested_id)?;
     let env: Vec<(String, String)> = binding
         .env
@@ -1058,7 +1119,7 @@ pub(super) fn run_case(
     let execution = execute(root, &argv, &env, timeout)?;
     let duration_seconds = started.elapsed().as_secs();
     let (output, text, escapes_removed) = artifact(&execution);
-    let artifact = format!("{ARTIFACTS_DIR}/{observation}.log");
+
     let mut limitations = vec![];
     let missing: Vec<&String> = binding
         .expect_output
@@ -1170,10 +1231,18 @@ pub(super) fn run_case(
     // observation are written without running anything, and a stop that arrives
     // meanwhile ends Chough once both are saved.
     crate::records::stop_if_noted();
-    write_artifact(root, &artifact, &output)?;
+    let key_lines = if matches!(outcome, Outcome::Passed) {
+        (vec![], 0)
+    } else {
+        evidence::key_lines(&failing_text(binding, &execution, &text))
+    };
+    if let Some(note) = crate::local::toolchain_limitation(root) {
+        limitations.push(note);
+    }
     let record = Evidence {
-        schema_version: 2,
         id: observation.clone(),
+        explicit_id: explicit,
+        aliases: vec![],
         criteria: case.criteria.clone(),
         requirements: case.requirements.clone(),
         contracts: vec![located.contract()],
@@ -1181,11 +1250,17 @@ pub(super) fn run_case(
         outcome: outcome.clone(),
         environment: environment.into(),
         summary: summary.clone(),
-        artifacts: vec![artifact.clone()],
-        artifact_fingerprints: evidence::artifact_fingerprints(root, &[artifact])?,
+        artifacts: vec![],
+        artifact_fingerprints: Default::default(),
+        external: None,
+        screenshot: None,
+        fingerprint: Some(format!("sha256:{}", crate::records::digest_bytes(&output))),
+        raw_log: None,
+        key_lines: key_lines.0,
+        redacted: key_lines.1,
+        actor: crate::actor::Actor::current(),
         observed_at_unix_seconds: now()?,
         snapshot,
-        provenance: PROVENANCE.into(),
         cases: vec![CaseRef {
             id: id.into(),
             digest,
@@ -1198,7 +1273,18 @@ pub(super) fn run_case(
         limitations,
         duration_seconds: Some(duration_seconds),
     };
-    evidence::record(root, &record)?;
+    // The raw log stays machine-local and uncommitted, named by the entry's final
+    // name (REQ-records-005, REQ-cli-011).
+    // The stored name (with any clash suffix) is the observation ID (REQ-cli-011).
+    let recorded = evidence::record(
+        root,
+        &record,
+        evidence::EntryFiles {
+            log: Some(output),
+            ..evidence::EntryFiles::default()
+        },
+    )?;
+    let observation = evidence::recorded_id(&recorded);
     Ok(RunResult {
         observation,
         outcome,
@@ -1264,10 +1350,13 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         .map(|(index, value)| format!("{index}={value}"))
         .collect::<Vec<_>>()
         .join(", ");
+    let explicit = requested_id.is_some();
     let observation = observation_id(id, requested_id)?;
+    let bound = evidence::bind_artifacts(root, &artifacts)?;
     let record = Evidence {
-        schema_version: 2,
         id: observation.clone(),
+        explicit_id: explicit,
+        aliases: vec![],
         criteria: case.criteria.clone(),
         requirements: case.requirements.clone(),
         contracts: vec![located.contract()],
@@ -1279,11 +1368,20 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         outcome: outcome.clone(),
         environment,
         summary: format!("Verdicts {verdict_text}. {summary}"),
-        artifacts: artifacts.clone(),
-        artifact_fingerprints: evidence::artifact_fingerprints(root, &artifacts)?,
+        artifacts: bound.paths.clone(),
+        artifact_fingerprints: bound.fingerprints.clone(),
+        external: bound.external.as_ref().map(|external| external.id.clone()),
+        screenshot: None,
+        fingerprint: bound
+            .external
+            .as_ref()
+            .map(|external| external.fingerprint.clone()),
+        raw_log: None,
+        key_lines: vec![],
+        redacted: 0,
+        actor: crate::actor::Actor::current(),
         observed_at_unix_seconds: now()?,
         snapshot: evidence::snapshot(root)?,
-        provenance: PROVENANCE.into(),
         cases: vec![CaseRef {
             id: id.into(),
             digest: located.digest()?,
@@ -1296,12 +1394,20 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         limitations,
         duration_seconds: None,
     };
-    let name = evidence::record(root, &record)?;
-    // The same IDs `cases run` returns, so automation never parses a path (#60).
+    let name = evidence::record(
+        root,
+        &record,
+        evidence::EntryFiles {
+            external: bound.external,
+            ..evidence::EntryFiles::default()
+        },
+    )?;
+    // The same IDs `cases run` returns, with any clash suffix, so automation never
+    // parses a path (#60).
     Ok(json!({
         "schema_version": 1,
         "case": id,
-        "observation": observation,
+        "observation": evidence::recorded_id(&name),
         "recorded": name,
         "outcome": outcome,
         "provenance": PROVENANCE,
@@ -1351,7 +1457,6 @@ pub(super) fn run(root: &Path, command: CasesCommand) -> Result<Option<i32>> {
                 "outcome": result.outcome,
                 "summary": result.summary,
                 "provenance": PROVENANCE,
-                "retention": evidence::auto_prune(root),
             }))?;
             Ok((result.outcome != Outcome::Passed).then_some(NOT_PASSED_EXIT))
         }

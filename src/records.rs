@@ -6,7 +6,7 @@ use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::ffi::OsStr;
 use std::fs::{self, File, OpenOptions};
-use std::io::{self, Read, Seek, SeekFrom, Write};
+use std::io::{self, Read, Write};
 use std::path::{Component, Path, PathBuf};
 use std::process::{Child, Command, ExitStatus, Output, Stdio};
 use std::sync::mpsc::{self, RecvTimeoutError};
@@ -16,7 +16,6 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 pub(super) const LIMIT: usize = 16_384;
 pub(super) const RECORD_LIMIT: u64 = 65_536;
-const LOG_TAIL_LIMIT: u64 = 65_536;
 
 /// How often a bounded run checks its child and its readers.
 const POLL: Duration = Duration::from_millis(25);
@@ -334,11 +333,7 @@ pub(super) fn write_replace_bounded(
     let parent = path.parent().context("file has no parent")?;
     fs::create_dir_all(parent)?;
     local_path(root, relative)?;
-    let name = path
-        .file_name()
-        .and_then(|name| name.to_str())
-        .context("record name must be UTF-8")?;
-    let temporary = parent.join(format!(".{name}.{}.tmp", std::process::id()));
+    let temporary = temporary_for(root, relative, &path)?;
     let result = (|| -> Result<()> {
         let mut file = OpenOptions::new()
             .write(true)
@@ -355,100 +350,26 @@ pub(super) fn write_replace_bounded(
     result.with_context(|| format!("writing {relative}"))
 }
 
-/// Append one line to an append-only managed log.
-pub(super) fn append_line(root: &Path, relative: &str, line: &str) -> Result<()> {
-    ensure!(
-        !line.contains('\n') && line.len() as u64 <= RECORD_LIMIT,
-        "log entries are single bounded lines"
-    );
-    let path = local_path(root, relative)?;
-    fs::create_dir_all(path.parent().context("file has no parent")?)?;
-    local_path(root, relative)?;
-    let mut file = OpenOptions::new().create(true).append(true).open(&path)?;
-    file.write_all(line.as_bytes())?;
-    file.write_all(b"\n")?;
-    Ok(())
-}
-
-/// Read the complete lines at the end of a log, bounded to 64 KiB.
-pub(super) fn read_log_tail(path: &Path, lines: usize) -> Result<(Vec<String>, bool)> {
-    let mut file = match File::open(path) {
-        Ok(file) => file,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            return Ok((vec![], false));
-        }
-        Err(error) => return Err(error.into()),
-    };
-    let length = file.metadata()?.len();
-    let truncated = length > LOG_TAIL_LIMIT;
-    if truncated {
-        file.seek(SeekFrom::Start(length - LOG_TAIL_LIMIT))?;
+/// Where a write's temporary file goes before its rename or link: for a record under
+/// `.chough/`, the Git-ignored `.chough/local/`, so no temporary ever sits beside a
+/// committed record and no ignore file is needed among them (REQ-records-002,
+/// REQ-history-007); anything else, beside its target. Both are on the project's file
+/// system, so the rename stays atomic.
+pub(super) fn temporary_for(root: &Path, relative: &str, target: &Path) -> Result<PathBuf> {
+    let name = target
+        .file_name()
+        .and_then(|name| name.to_str())
+        .context("record name must be UTF-8")?;
+    let pid = std::process::id();
+    if relative.starts_with(".chough/") && !relative.starts_with(".chough/local/") {
+        let local = local_path(root, ".chough/local")?;
+        fs::create_dir_all(&local)?;
+        let _ = write_new(root, ".chough/local/.gitignore", "*\n");
+        let digest = format!("{:x}", sha2::Sha256::digest(relative.as_bytes()));
+        return Ok(local.join(format!(".{}.{name}.{pid}.tmp", &digest[..8])));
     }
-    let mut bytes = vec![];
-    file.read_to_end(&mut bytes)?;
-    let text = String::from_utf8_lossy(&bytes);
-    let mut all: Vec<&str> = text.lines().filter(|line| !line.is_empty()).collect();
-    if truncated && !all.is_empty() {
-        all.remove(0);
-    }
-    let start = all.len().saturating_sub(lines);
-    Ok((
-        all[start..]
-            .iter()
-            .map(|line| (*line).to_string())
-            .collect(),
-        truncated || start > 0,
-    ))
-}
-
-/// A log read in full up to a bound: its non-empty lines and how many leading bytes
-/// were skipped to stay within the bound.
-pub(super) struct FullLog {
-    pub(super) lines: Vec<String>,
-    pub(super) skipped_bytes: u64,
-}
-
-/// Read every complete line of a log, bounded to `limit` bytes. Beyond the bound the
-/// earliest bytes are skipped up to the first line boundary, and counted.
-pub(super) fn read_log_full(path: &Path, limit: u64) -> Result<FullLog> {
-    let mut file = match File::open(path) {
-        Ok(file) => file,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            return Ok(FullLog {
-                lines: vec![],
-                skipped_bytes: 0,
-            });
-        }
-        Err(error) => return Err(error.into()),
-    };
-    let length = file.metadata()?.len();
-    let mut skipped_bytes = length.saturating_sub(limit);
-    let mut cut_inside_line = false;
-    if skipped_bytes > 0 {
-        let mut previous = [0_u8; 1];
-        file.seek(SeekFrom::Start(skipped_bytes - 1))?;
-        file.read_exact(&mut previous)?;
-        cut_inside_line = previous[0] != b'\n';
-    }
-    let mut bytes = vec![];
-    (&mut file).take(limit).read_to_end(&mut bytes)?;
-    let mut start = 0;
-    if cut_inside_line {
-        start = bytes
-            .iter()
-            .position(|byte| *byte == b'\n')
-            .map_or(bytes.len(), |index| index + 1);
-        skipped_bytes += start as u64;
-    }
-    let text = String::from_utf8_lossy(&bytes[start..]);
-    Ok(FullLog {
-        lines: text
-            .lines()
-            .filter(|line| !line.trim().is_empty())
-            .map(str::to_string)
-            .collect(),
-        skipped_bytes,
-    })
+    let parent = target.parent().context("file has no parent")?;
+    Ok(parent.join(format!(".{name}.{pid}.tmp")))
 }
 
 pub(super) fn read_record(path: &Path) -> Result<String> {
@@ -1601,31 +1522,124 @@ fn cut(text: &str, limit: usize) -> String {
     text[..end].to_string()
 }
 
-/// List JSON record names in a managed directory in a deterministic order.
-pub(super) fn record_names(root: &Path, directory: &str) -> Result<Vec<String>> {
-    let path = local_path(root, directory)?;
-    if !path.exists() {
-        return Ok(vec![]);
+/// The process ID the project's writer lock file records (REQ-cli-040): the writer
+/// that holds the lock writes it there. None when the file names none.
+pub(super) fn lock_holder(path: &Path) -> Option<u32> {
+    fs::read_to_string(path).ok()?.trim().parse().ok()
+}
+
+/// Record this process as the holder of the writer lock `file`, which it has just
+/// taken. The file is rewritten in place, never replaced, so every writer keeps
+/// locking the same file.
+pub(super) fn record_lock_holder(mut file: &File) -> io::Result<()> {
+    use std::io::{Seek, SeekFrom};
+    file.set_len(0)?;
+    file.seek(SeekFrom::Start(0))?;
+    file.write_all(format!("{}\n", std::process::id()).as_bytes())?;
+    file.flush()
+}
+
+/// Whether process `pid` is running, where that can be told.
+fn process_running(pid: u32) -> Option<bool> {
+    #[cfg(unix)]
+    {
+        let pid = libc::pid_t::try_from(pid).ok()?;
+        // SAFETY: signal 0 sends nothing; kill only checks that the process exists and
+        // that this process may signal it.
+        if unsafe { libc::kill(pid, 0) } == 0 {
+            return Some(true);
+        }
+        Some(io::Error::last_os_error().raw_os_error() == Some(libc::EPERM))
     }
-    let mut names = vec![];
-    for entry in fs::read_dir(path)? {
-        let name = entry?
-            .file_name()
-            .to_str()
-            .context("invalid record filename")?
-            .to_string();
-        ensure!(
-            name.ends_with(".json"),
-            "unexpected file in {directory}: {name}"
-        );
-        names.push(name);
+    #[cfg(not(unix))]
+    {
+        let _ = pid;
+        None
     }
-    names.sort();
-    Ok(names)
+}
+
+/// What a busy refusal says of the lock's holder (REQ-cli-040, #132): the process the
+/// lock file names, and, when it is not running, that a process it forked may still
+/// hold the lock through an inherited descriptor.
+pub(super) fn lock_holder_text(holder: Option<u32>) -> String {
+    match holder {
+        None => "the lock file names no holder".into(),
+        Some(pid) => match process_running(pid) {
+            Some(true) => format!("held by process {pid}"),
+            Some(false) => format!(
+                "the lock file names process {pid}, which is not running, so a process it forked may still hold the lock through an inherited descriptor (#132)"
+            ),
+            None => format!("the lock file names process {pid}"),
+        },
+    }
+}
+
+/// Trace how long a writer waited for the project's writer lock (REQ-cli-040), so a
+/// slow or refused writer in a loaded run shows what it waited on.
+pub(super) fn trace_lock_wait(started: Instant) {
+    trace(&format!(
+        "checkpoint-lock waited_ms={}",
+        started.elapsed().as_millis()
+    ));
+}
+
+/// A wait for people: whole seconds, or milliseconds under one second.
+pub(super) fn wait_text(wait: Duration) -> String {
+    if wait.as_secs() > 0 {
+        format!("{} seconds", wait.as_secs())
+    } else {
+        format!("{} ms", wait.as_millis())
+    }
+}
+
+/// Where the `toolchain` task (tools/toolchain.sh) leaves its verdict, under the
+/// Git-ignored local logs (REQ-history-007, REQ-records-005).
+pub(super) const TOOLCHAIN_LOG: &str = ".chough/local/logs/toolchain.log";
+
+// Plan step 4's evidence writer calls it; until then only its tests do.
+#[cfg_attr(not(test), allow(dead_code))]
+/// The limitation evidence states when the last `toolchain` run found an installed tool
+/// that differs from the CI pins (REQ-cli-019, BUG-0022): `recorded on a toolchain that
+/// differs from CI: <each difference>`. None when it matched, never ran or cannot be read.
+pub(super) fn toolchain_limitation(root: &Path) -> Option<String> {
+    let path = local_path(root, TOOLCHAIN_LOG).ok()?;
+    let text = read_bounded_record(&path, 65_536).ok()?;
+    let differences = text.lines().next()?.strip_prefix("differs: ")?.trim();
+    (!differences.is_empty())
+        .then(|| format!("recorded on a toolchain that differs from CI: {differences}"))
 }
 
 #[cfg(test)]
 mod tests {
+    /// BUG-0022: the verdict the toolchain task records becomes an evidence limitation
+    /// only when it says the toolchain differs.
+    #[test]
+    fn a_differing_toolchain_verdict_becomes_an_evidence_limitation() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        assert_eq!(super::toolchain_limitation(root), None);
+        let log = root.join(super::TOOLCHAIN_LOG);
+        std::fs::create_dir_all(log.parent().unwrap()).unwrap();
+        for (verdict, expected) in [
+            ("matches\n2026-11-11T00:00:00Z\n", None),
+            ("differs: \n", None),
+            ("SYNTHETIC unreadable\n", None),
+            (
+                "differs: Fledge 1.7.2 (CI 1.8.0); HI not installed (CI 0.8.0)\n2026-11-11T00:00:00Z\nFledge: installed 1.7.2, CI pins 1.8.0\n",
+                Some(
+                    "recorded on a toolchain that differs from CI: Fledge 1.7.2 (CI 1.8.0); HI not installed (CI 0.8.0)",
+                ),
+            ),
+        ] {
+            std::fs::write(&log, verdict).unwrap();
+            assert_eq!(
+                super::toolchain_limitation(root).as_deref(),
+                expected,
+                "{verdict:?}"
+            );
+        }
+    }
+
     #[test]
     fn a_long_native_command_keeps_the_trace_state_and_elapsed_fields_within_the_bound() {
         let source = format!("specsync change status {} --json", "é".repeat(4_000));
@@ -1776,25 +1790,6 @@ mod tests {
         let output = run_bounded(root.path(), &argv, &[], &limits(64, 20)).unwrap();
         assert_eq!(output.exit_code, Some(4));
         assert!(!output.timed_out && !output.held_open && !output.capture_incomplete);
-    }
-
-    #[test]
-    fn a_full_log_read_keeps_whole_lines_within_its_bound() {
-        let root = tempfile::tempdir().unwrap();
-        let path = root.path().join("log.jsonl");
-        assert_eq!(read_log_full(&path, 10).unwrap().lines.len(), 0);
-        fs::write(&path, "aaaa\nbbbb\n\ncccc\n").unwrap();
-        let all = read_log_full(&path, 1_000).unwrap();
-        assert_eq!(all.lines, vec!["aaaa", "bbbb", "cccc"]);
-        assert_eq!(all.skipped_bytes, 0);
-        // A cut inside "bbbb" drops the rest of that line and counts it as skipped.
-        let cut = read_log_full(&path, 9).unwrap();
-        assert_eq!(cut.lines, vec!["cccc"]);
-        assert_eq!(cut.skipped_bytes, 10);
-        // A cut on a line boundary keeps the next line whole.
-        let boundary = read_log_full(&path, 11).unwrap();
-        assert_eq!(boundary.lines, vec!["bbbb", "cccc"]);
-        assert_eq!(boundary.skipped_bytes, 5);
     }
 
     #[test]

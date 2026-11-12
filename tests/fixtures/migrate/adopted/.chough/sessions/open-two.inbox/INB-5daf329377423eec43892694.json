@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "id": "INB-5daf329377423eec43892694",
+  "session": "open-two",
+  "from": "subagent-1",
+  "kind": "decision",
+  "text": "Use the smaller fixture",
+  "recorded_at_unix_seconds": 1794428178
+}

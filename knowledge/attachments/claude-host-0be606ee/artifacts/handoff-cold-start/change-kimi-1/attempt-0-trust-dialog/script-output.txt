@@ -1,4 +1,0 @@
-Kimi did not become ready
-{"status":"ok","data":{"action":"stop","name":"chough-coldstart-change","state":"stopped"}}
-
-[exited with code 1]

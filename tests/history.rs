@@ -1,1324 +1,399 @@
+//! The session Timeline and its bounds (REQ-history-002, REQ-history-003).
+//!
+//! The 0.5.x event store, cursors, receipts, adoption and pruning are removed with
+//! REQ-history-001, 004, 008 and 011; their tests went with them.
+
 mod common;
 
-use common::Fixture;
-use serde_json::Value;
-use std::process::Command;
+use common::{Fixture, timeline};
+use serde_json::{Value, json};
 
-fn init(f: &Fixture) {
-    f.ok(&[
-        "init",
-        "--objective",
-        "History regression",
-        "--module",
-        "cli",
-    ]);
-}
-
-fn git(f: &Fixture, args: &[&str]) -> std::process::Output {
-    Command::new("git")
-        .current_dir(f.root())
-        .args([
-            "-c",
-            "user.name=History test",
-            "-c",
-            "user.email=history@example.invalid",
-        ])
-        .args(args)
-        .output()
-        .unwrap()
-}
-
-fn git_ok(f: &Fixture, args: &[&str]) {
-    let r = git(f, args);
-    assert!(
-        r.status.success(),
-        "{args:?}: {}",
-        String::from_utf8_lossy(&r.stderr)
-    );
-}
-
-#[test]
-fn new_projects_use_a_cursor_in_the_single_checkpoint() {
-    let f = Fixture::new();
-    init(&f);
-    assert!(f.session()["history_cursor"].is_object());
-    assert!(!f.exists(".chough/transitions.jsonl"));
-}
-
-#[test]
-fn adoption_preview_preserves_legacy_bytes_and_apply_is_explicit() {
-    let f = Fixture::new();
-    init(&f);
-    let mut session = f.session();
-    session.as_object_mut().unwrap().remove("history_cursor");
-    f.write(".chough/session.json", &session.to_string());
-    let log = "{\"schema_version\":1,\"at_unix_seconds\":100,\"kind\":\"reset\",\"from\":\"done\",\"to\":\"intent\",\"refresh\":[]}\n";
-    f.write(".chough/transitions.jsonl", log);
-    f.write(".chough/session.v1.json", "original migration bytes\n");
-    let before = f.read(".chough/session.json");
-    let report = f.ok(&["history", "adopt"]);
-    assert_eq!(report["applied"], false);
-    assert_eq!(f.read(".chough/session.json"), before);
-    f.ok(&["history", "adopt", "--apply"]);
-    assert!(f.session()["history_cursor"].is_object());
-    assert_eq!(f.read(".chough/transitions.jsonl"), log);
-    assert_eq!(
-        f.read(".chough/session.v1.json"),
-        "original migration bytes\n"
-    );
-    let adopted = f.read(".chough/session.json");
-    f.ok(&["history", "adopt", "--apply"]);
-    assert_eq!(f.read(".chough/session.json"), adopted);
-}
-
-#[test]
-fn real_git_branch_events_survive_while_checkpoint_selection_remains_explicit() {
-    let f = Fixture::new();
-    init(&f);
-    git_ok(&f, &["init"]);
-    git_ok(&f, &["checkout", "-b", "base"]);
-    git_ok(&f, &["add", "."]);
-    git_ok(&f, &["commit", "-m", "baseline"]);
-    git_ok(&f, &["checkout", "-b", "left"]);
-    f.ok(&["stage", "iterate", "--note", "left branch event"]);
-    set_latest_time(&f, 1_700_000_000);
-    let left: Value = f.session();
-    git_ok(&f, &["add", ".chough"]);
-    git_ok(&f, &["commit", "-m", "left"]);
-    git_ok(&f, &["checkout", "-b", "right", "base"]);
-    f.ok(&["stage", "iterate", "--note", "right branch event"]);
-    set_latest_time(&f, 1_700_000_000);
-    git_ok(&f, &["add", ".chough"]);
-    git_ok(&f, &["commit", "-m", "right"]);
-    git_ok(&f, &["checkout", "left"]);
-    let _ = git(&f, &["merge", "right", "--no-edit"]);
-    let conflicts = git(&f, &["diff", "--name-only", "--diff-filter=U"]);
-    assert_eq!(
-        String::from_utf8(conflicts.stdout).unwrap().trim(),
-        ".chough/session.json",
-        "immutable event paths must merge; only the current-cycle checkpoint needs selection"
-    );
-    git_ok(&f, &["checkout", "--ours", ".chough/session.json"]);
-    git_ok(&f, &["add", ".chough/session.json"]);
-    git_ok(&f, &["commit", "-m", "select coherent left checkpoint"]);
-    assert_eq!(f.session()["history_cursor"], left["history_cursor"]);
-    let history = f.ok(&["history", "show"]);
-    assert!(history["cycles"].as_array().unwrap().iter().any(|cycle| {
-        cycle["unselected_tips"]
-            .as_array()
-            .is_some_and(|tips| !tips.is_empty())
-    }));
-}
-
-fn event_path(f: &Fixture) -> String {
-    let cursor = f.session()["history_cursor"].clone();
-    format!(
-        ".chough/history/cycles/{}/{}.json",
-        cursor["cycle"].as_str().unwrap(),
-        cursor["head"].as_str().unwrap()
-    )
-}
-
-#[test]
-fn changing_the_legacy_anchor_refuses_writes_without_advancing_state() {
-    let f = Fixture::new();
-    f.init();
-    f.write(".chough/transitions.jsonl", "");
-    f.ok(&["history", "adopt", "--apply"]);
-    f.write(".chough/transitions.jsonl", "changed legacy proof\n");
-    let checkpoint = f.read(".chough/session.json");
-    assert!(
-        f.fails(&["stage", "iterate", "--note", "must refuse"])
-            .contains("anchor changed")
-    );
-    assert_eq!(f.read(".chough/session.json"), checkpoint);
-    assert_eq!(
-        f.read(".chough/transitions.jsonl"),
-        "changed legacy proof\n"
-    );
-}
-
-#[test]
-fn missing_parents_are_explicit_in_guidance_and_timing() {
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "first"]);
-    let parent = event_path(&f);
-    f.ok(&["stage", "iterate", "--note", "second"]);
-    std::fs::remove_file(f.root().join(parent)).unwrap();
-    let status = f.ok(&["status"]);
-    assert!(
-        !status["transition_history"]["partial"]
-            .as_array()
-            .unwrap()
-            .is_empty()
-    );
-    let next = f.ok(&["next", "--json"]);
-    assert!(next.to_string().contains("History partial or unknown"));
-    let timing = f.ok(&["timing", "--cycle", "current", "--json"]);
-    assert!(
-        timing["partial"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|reason| reason.to_string().contains("unavailable history"))
-    );
-    let before = f.read(".chough/session.json");
-    assert!(
-        f.fails(&["stage", "iterate", "--note", "must refuse"])
-            .contains("partial history")
-    );
-    assert_eq!(f.read(".chough/session.json"), before);
-}
-
-fn chain(f: &Fixture, count: usize, padded_size: Option<usize>) {
-    let mut session = f.session();
-    let cycle = session["history_cursor"]["cycle"]
-        .as_str()
-        .unwrap()
-        .to_string();
-    let mut parent: Option<String> = None;
-    for index in 0..count {
-        let id = format!("EVT-{index:024x}");
-        let record = serde_json::json!({"schema_version":1,"cycle":cycle,"id":id,"parent":parent,"previous_cycle":null,"native_change":null,"transition":{"schema_version":1,"at_unix_seconds":100+index,"kind":"iterate","from":"intent","to":"intent","reason":"bounded fixture","gate":null,"revision":null,"refresh":[]}});
-        let mut text = record.to_string();
-        if let Some(size) = padded_size {
-            assert!(text.len() <= size);
-            text.extend(std::iter::repeat_n(' ', size - text.len()));
-        }
-        f.write(&format!(".chough/history/cycles/{cycle}/{id}.json"), &text);
-        parent = Some(id);
-    }
-    session["history_cursor"]["head"] = serde_json::to_value(parent).unwrap();
-    f.write(".chough/session.json", &session.to_string());
-}
-
-fn event_and_cycle_byte_limits_refuse_without_mutating_the_checkpoint() {
-    let f = Fixture::new();
-    init(&f);
-    chain(&f, 1, Some(65_536));
-    assert_eq!(
-        f.ok(&["stage", "show"])["recent_transitions"]
-            .as_array()
-            .unwrap()
-            .len(),
-        1
-    );
-    let path = event_path(&f);
-    f.write(&path, &(f.read(&path) + " "));
-    let before = f.read(".chough/session.json");
-    assert!(
-        f.fails(&["stage", "iterate", "--note", "oversize"])
-            .contains("partial history")
-    );
-    assert_eq!(f.read(".chough/session.json"), before);
-
-    let f = Fixture::new();
-    init(&f);
-    chain(&f, 256, Some(65_536));
-    let status = f.ok(&["status"]);
-    assert!(status["transition_history"]["bytes_read"].as_u64().unwrap() <= 512 * 1024);
-    let before = f.read(".chough/session.json");
-    assert!(
-        f.fails(&["stage", "iterate", "--note", "full byte cycle"])
-            .contains("capacity reached")
-    );
-    assert_eq!(f.read(".chough/session.json"), before);
-    f.ok(&[
-        "stage",
-        "reset",
-        "--to",
-        "intent",
-        "--reason",
-        "bounded new cycle",
-    ]);
-    assert_ne!(f.read(".chough/session.json"), before);
-}
-
-fn event_count_limit_and_recent_reader_work_are_bounded() {
-    let f = Fixture::new();
-    init(&f);
-    chain(&f, 4_096, None);
-    let status = f.ok(&["status"]);
-    assert_eq!(status["transition_history"]["events_read"], 128);
-    assert!(status["transition_history"]["bytes_read"].as_u64().unwrap() <= 512 * 1024);
-    let before = f.read(".chough/session.json");
-    assert!(
-        f.fails(&["stage", "iterate", "--note", "full event cycle"])
-            .contains("capacity reached")
-    );
-    assert_eq!(f.read(".chough/session.json"), before);
-    f.ok(&[
-        "stage",
-        "reset",
-        "--to",
-        "intent",
-        "--reason",
-        "continue in a fresh bounded cycle",
-    ]);
-}
-
-fn backdate_events(f: &Fixture) {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
-        - 30 * 86_400;
-    let mut cursor = f.session()["history_cursor"].clone();
-    let mut paths = Vec::new();
-    while let Some(head) = cursor["head"].as_str() {
-        let path = format!(
-            ".chough/history/cycles/{}/{head}.json",
-            cursor["cycle"].as_str().unwrap()
-        );
-        let event: Value = serde_json::from_str(&f.read(&path)).unwrap();
-        paths.push(path);
-        if event["parent"].is_null() {
-            cursor = event["previous_cycle"].clone();
-        } else {
-            cursor["head"] = event["parent"].clone();
-        }
-    }
-    paths.reverse();
-    for (index, path) in paths.iter().enumerate() {
-        let mut event: Value = serde_json::from_str(&f.read(path)).unwrap();
-        event["transition"]["at_unix_seconds"] = (at + index as u64).into();
-        f.write(path, &event.to_string());
-    }
-}
-
-#[test]
-fn cycle_retention_is_read_only_until_authorized_and_revalidates_new_references() {
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "initial event"]);
-    for index in 0..6 {
-        f.ok(&[
-            "stage",
-            "reset",
-            "--to",
-            "intent",
-            "--reason",
-            &format!("closed cycle {index}"),
-        ]);
-    }
-    backdate_events(&f);
-    let before = f.read(".chough/session.json");
-    let preview = f.ok(&["history", "prune"]);
-    assert_eq!(preview["applied"], false);
-    assert_eq!(f.read(".chough/session.json"), before);
-    assert_eq!(preview["eligible"].as_array().unwrap().len(), 3);
-    let protected_path = preview["eligible"][0]["files"][0]["path"].as_str().unwrap();
-    let protected_bytes = f.read(protected_path);
-    assert!(
-        f.fails(&["history", "prune", "--apply"])
-            .contains("authorization")
-    );
-    f.ok(&[
-        "consent",
-        "grant",
-        "retention",
-        "--source",
-        "fixture authorization",
-    ]);
-    f.ok(&["checkpoint", "--file", protected_path]);
-    let applied = f.ok(&["history", "prune", "--apply"]);
-    assert_eq!(applied["removed"].as_array().unwrap().len(), 2);
-    assert_eq!(f.read(protected_path), protected_bytes);
-    assert!(f.exists(".chough/session.json"));
-    let timing = f.ok(&["timing", "--cycle", "all", "--json"]);
-    assert!(
-        timing["partial"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|part| part.to_string().contains("pruned"))
-    );
-}
-
-#[cfg(unix)]
-#[test]
-fn a_failed_checkpoint_save_leaves_an_unselected_orphan_and_preserves_active_state() {
-    use std::os::unix::fs::PermissionsExt;
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "selected event"]);
-    let before = f.read(".chough/session.json");
-    let directory = f.root().join(".chough");
-    std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o555)).unwrap();
-    let output = f.run(&["stage", "iterate", "--note", "unselected orphan"]);
-    std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o755)).unwrap();
-    assert!(!output.status.success());
-    assert_eq!(f.read(".chough/session.json"), before);
-    let history = f.ok(&["history", "show"]);
-    assert!(history["cycles"].as_array().unwrap().iter().any(|cycle| {
-        cycle["unselected_tips"]
-            .as_array()
-            .is_some_and(|tips| !tips.is_empty())
-    }));
-    let shown = f.ok(&["stage", "show"]);
-    assert!(!shown.to_string().contains("unselected orphan"));
-}
-
-#[cfg(unix)]
-#[test]
-fn recent_guidance_does_not_scan_unselected_files_and_maintenance_refuses_symlinks() {
-    use std::os::unix::fs::symlink;
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "selected"]);
-    let cycle = f.session()["history_cursor"]["cycle"]
-        .as_str()
-        .unwrap()
-        .to_string();
-    symlink(
-        "/etc/passwd",
-        f.root()
-            .join(format!(".chough/history/cycles/{cycle}/unsafe.json")),
-    )
-    .unwrap();
-    assert_eq!(
-        f.ok(&["stage", "show"])["recent_transitions"]
-            .as_array()
-            .unwrap()
-            .len(),
-        1
-    );
-    let report = f.ok(&["history", "prune"]);
-    assert_eq!(report["complete"], false);
-    assert!(report["eligible"].as_array().unwrap().is_empty());
-}
-
-fn closed_cycles() -> Fixture {
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "initial a"]);
-    f.ok(&["stage", "iterate", "--note", "initial b"]);
-    for index in 0..6 {
-        f.ok(&[
-            "stage",
-            "reset",
-            "--to",
-            "intent",
-            "--reason",
-            &format!("closed group {index}"),
-        ]);
-        f.ok(&["stage", "iterate", "--note", "second event"]);
-    }
-    backdate_events(&f);
-    f
-}
-
-fn simulated_receipt(f: &Fixture, plan: &Value) -> (String, Vec<String>) {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let cycle = plan["cycle"].as_str().unwrap();
-    let show = f.ok(&["history", "show"]);
-    let group = show["cycles"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .find(|group| group["id"] == cycle)
-        .unwrap();
-    let paths: Vec<String> = plan["files"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|file| file["path"].as_str().unwrap().to_string())
-        .collect();
-    let at = paths
-        .iter()
-        .map(|path| {
-            serde_json::from_str::<Value>(&f.read(path)).unwrap()["transition"]["at_unix_seconds"]
-                .as_u64()
-                .unwrap()
+/// A Timeline of `count` advance entries, each with a unique ID.
+fn entries(count: usize) -> String {
+    (0..count)
+        .map(|index| {
+            format!("- 2026-11-11T00:00:00Z · iterate · intent → intent · round {index} ^t-{index:06x}\n")
         })
-        .max()
-        .unwrap();
-    let receipt = serde_json::json!({"schema_version":1,"cycle":cycle,"files":plan["files"],"authority":"fixture authorization","reason":"complete closed cycle outside every protected set","recorded_at_unix_seconds":SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs(),"closed_at":at,"tips":group["tips"]});
-    let path = format!(".chough/history/pruned/{cycle}.json");
-    f.write(&path, &receipt.to_string());
-    (path, paths)
+        .collect()
 }
 
+/// Replace the active session's Timeline with `count` entries.
+fn fill_timeline(fixture: &Fixture, count: usize) -> String {
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let start = text.find("## Timeline\n").expect("a Timeline section");
+    let filled = format!("{}## Timeline\n\n{}", &text[..start], entries(count));
+    fixture.write(&file, &filled);
+    filled
+}
+
+/// REQ-history-003: a timeline holds 4,096 entries; the 4,097th is refused before the
+/// save, naming the bound and the recovery, with the session file byte-identical.
 #[test]
-fn interrupted_cleanup_resumes_only_the_identical_receipted_plan() {
-    let f = closed_cycles();
-    let preview = f.ok(&["history", "prune"]);
-    let plan = preview["eligible"][0].clone();
-    let (receipt, paths) = simulated_receipt(&f, &plan);
-    let receipt_bytes = f.read(&receipt);
-    std::fs::remove_file(f.root().join(&paths[0])).unwrap();
-    let preview = f.ok(&["history", "prune"]);
-    let remaining = preview["eligible"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .find(|cycle| cycle["cycle"] == plan["cycle"])
-        .unwrap();
-    let actual_bytes: u64 = paths
-        .iter()
-        .filter(|path| f.exists(path))
-        .map(|path| std::fs::metadata(f.root().join(path)).unwrap().len())
-        .sum();
-    assert_eq!(
-        remaining["bytes"], actual_bytes,
-        "reclaimable bytes must exclude already removed content"
-    );
-    assert_eq!(
-        remaining["files"].as_array().unwrap().len(),
-        paths.len() - 1
-    );
-    let show = f.ok(&["history", "show"]);
+fn a_timeline_holds_4096_entries_and_refuses_the_4097th() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fill_timeline(&fixture, 4_095);
+    fixture.ok(&["stage", "iterate", "--note", "the 4096th"]);
+    let full = fixture.read(&fixture.session_file());
+    assert_eq!(timeline(&full).len(), 4_096);
+    let refused = fixture.fails(&["stage", "iterate", "--note", "the 4097th"]);
+    assert!(refused.contains("bound of 4096 entries"), "{refused}");
+    assert!(refused.contains("chough session close"), "{refused}");
+    assert!(refused.contains("chough session new <key>"), "{refused}");
+    assert_eq!(fixture.read(&fixture.session_file()), full);
+}
+
+/// REQ-history-003: recent guidance reads at most the newest 128 entries of the active
+/// timeline, so `next` on a full timeline still answers.
+#[test]
+fn next_reads_only_the_newest_128_entries() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fill_timeline(&fixture, 4_096);
+    fixture.ok(&["next", "--json"]);
+    let status = fixture.ok(&["status"]);
+    let read = &status["transition_history"];
+    assert_eq!(read["events_read"], 128, "{read:#}");
     assert!(
-        show["cycles"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|cycle| cycle["id"] == plan["cycle"] && cycle["interrupted"] == true)
+        !read["partial"].as_array().unwrap().is_empty(),
+        "older entries are left unread and said so: {read:#}"
     );
-    f.ok(&[
-        "consent",
-        "grant",
-        "retention",
-        "--source",
-        "fixture authorization",
-    ]);
-    let applied = f.ok(&["history", "prune", "--apply"]);
-    assert_eq!(applied["complete"], true);
-    assert!(paths.iter().all(|path| !f.exists(path)));
-    assert_eq!(f.read(&receipt), receipt_bytes);
 }
 
+/// REQ-records-001, REQ-cli-032: a session record of exactly 1,048,576 bytes is read; a
+/// save that would pass it is refused naming the bound, with the file unchanged; one
+/// byte more is unreadable and names `chough session shelve`.
 #[test]
-fn new_protection_prevents_resuming_an_interrupted_plan() {
-    let f = closed_cycles();
-    let preview = f.ok(&["history", "prune"]);
-    let plan = preview["eligible"][0].clone();
-    let (_, paths) = simulated_receipt(&f, &plan);
-    std::fs::remove_file(f.root().join(&paths[0])).unwrap();
-    let before = f.read(&paths[1]);
-    f.ok(&[
-        "consent",
-        "grant",
-        "retention",
-        "--source",
-        "fixture authorization",
-    ]);
-    f.ok(&["checkpoint", "--file", &paths[0]]);
-    assert!(
-        f.fails(&["history", "prune", "--apply"])
-            .contains("referenced history")
-    );
-    assert_eq!(f.read(&paths[1]), before);
+fn a_session_record_of_exactly_1_mib_is_read_and_one_byte_more_is_refused() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let goal = "## Goal\n\n";
+    let at = text.find(goal).unwrap() + goal.len();
+    let padding = "x".repeat(1_048_576 - text.len() - 1) + "\n";
+    let exact = format!("{}{padding}{}", &text[..at], &text[at..]);
+    assert_eq!(exact.len(), 1_048_576);
+    fixture.write(&file, &exact);
+    assert_eq!(fixture.checkpoint()["objective"], "Ship alpha");
+    let refused = fixture.fails(&["checkpoint", "--decision", "one more decision"]);
+    assert!(refused.contains("1048576"), "{refused}");
+    assert_eq!(fixture.read(&file), exact);
+    fixture.write(&file, &format!("{exact}y"));
+    let refused = fixture.fails(&["checkpoint", "--decision", "x"]);
+    assert!(refused.contains("chough session shelve"), "{refused}");
 }
 
+/// REQ-history-002: each session's timeline holds only its own entries, entries are
+/// only appended, and an earlier entry line is never edited by a later save.
 #[test]
-fn unsafe_or_changed_receipts_cannot_broaden_deletion() {
-    let f = closed_cycles();
-    let plan = f.ok(&["history", "prune"])["eligible"][0].clone();
-    let (receipt, paths) = simulated_receipt(&f, &plan);
-    let before = f.read(&paths[0]);
-    let mut value: Value = serde_json::from_str(&f.read(&receipt)).unwrap();
-    value["files"][0]["path"] = "../outside.json".into();
-    f.write(&receipt, &value.to_string());
-    assert_eq!(f.ok(&["history", "prune"])["complete"], false);
-    f.ok(&[
-        "consent",
-        "grant",
-        "retention",
-        "--source",
-        "fixture authorization",
-    ]);
-    assert!(!f.run(&["history", "prune", "--apply"]).status.success());
-    assert_eq!(f.read(&paths[0]), before);
-}
-
-#[test]
-fn malformed_receipts_leave_missing_history_unavailable() {
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "missing event"]);
-    let cursor = f.session()["history_cursor"].clone();
-    std::fs::remove_file(f.root().join(event_path(&f))).unwrap();
-    f.write(
-        &format!(
-            ".chough/history/pruned/{}.json",
-            cursor["cycle"].as_str().unwrap()
-        ),
-        "{broken receipt",
-    );
-    let status = f.ok(&["status"]);
-    let partial = status["transition_history"]["partial"].to_string();
-    assert!(partial.contains("unavailable history"));
-    assert!(!partial.contains("pruned or interrupted"));
-}
-
-#[test]
-fn full_timing_keeps_unselected_tips_out_of_selected_stage_spans() {
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "selected history"]);
-    let path = event_path(&f);
-    let mut orphan: Value = serde_json::from_str(&f.read(&path)).unwrap();
-    let id = "EVT-ffffffffffffffffffffffff";
-    orphan["id"] = id.into();
-    orphan["transition"]["reason"] = "unselected history".into();
-    f.write(
-        &format!(
-            ".chough/history/cycles/{}/{id}.json",
-            orphan["cycle"].as_str().unwrap()
-        ),
-        &orphan.to_string(),
-    );
-    let timing = f.ok(&["timing", "--cycle", "all", "--json"]);
-    assert_eq!(timing["transitions"]["records"], 1);
-    let unselected = timing["transition_lineages"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .find(|lineage| lineage["selection"] == "unselected")
-        .unwrap();
-    assert_eq!(unselected["tip"], id);
-    assert_eq!(unselected["completion"], "unknown");
-    assert!(unselected["duration"].is_null());
-}
-
-fn source_observation(id: &str) -> String {
-    serde_json::json!({"schema_version":1,"id":id,"criteria":["LIFE-3"],"requirements":["REQ-cli-008"],"contracts":["specs/cli/cli.spec.md"],"kind":"product-test","outcome":"passed","environment":"fixture","summary":"metadata source","artifacts":[],"artifact_fingerprints":{},"observed_at_unix_seconds":1,"snapshot":{"revision":"0".repeat(40),"dirty":false,"fingerprint":"0".repeat(64)},"provenance":"fixture"}).to_string()
-}
-
-fn metadata_scan_file_limit_is_exact_and_overflow_is_a_read_only_incomplete_preview() {
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "one event"]);
-    // One checkpoint and one event consume the first two source-file slots.
-    for index in 0..16_382 {
-        let id = format!("source-{index:05}");
-        f.write(
-            &format!(".chough/evidence/{id}.json"),
-            &source_observation(&id),
-        );
-    }
-    assert_eq!(f.ok(&["history", "prune"])["complete"], true);
-    f.write(".chough/evidence/overflow.json", "{}");
-    let checkpoint = f.read(".chough/session.json");
-    let preview = f.ok(&["history", "prune"]);
-    assert_eq!(preview["complete"], false);
-    assert!(
-        preview["reason"]
-            .as_str()
-            .unwrap()
-            .contains("metadata bound")
-    );
-    assert_eq!(f.read(".chough/session.json"), checkpoint);
-}
-
-fn metadata_byte_limit_is_exact_and_protected_only_data_is_a_no_op() {
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "one event"]);
-    let initial = f.read(".chough/session.json").len() + f.read(&event_path(&f)).len();
-    for index in 0..64 {
-        let size = if index == 63 {
-            1_048_576 - initial
-        } else {
-            1_048_576
-        };
-        f.write(
-            &format!(".chough/artifacts/source-{index:02}.log"),
-            &" ".repeat(size),
-        );
-    }
-    let preview = f.ok(&["history", "prune"]);
-    assert_eq!(preview["complete"], true);
-    assert!(preview["eligible"].as_array().unwrap().is_empty());
-    f.write(".chough/artifacts/overflow.log", "x");
-    assert_eq!(f.ok(&["history", "prune"])["complete"], false);
-}
-
-fn set_latest_time(f: &Fixture, seconds: u64) {
-    let path = event_path(f);
-    let mut event: Value = serde_json::from_str(&f.read(&path)).unwrap();
-    event["transition"]["at_unix_seconds"] = seconds.into();
-    f.write(&path, &event.to_string());
-}
-
-#[test]
-fn real_git_retention_integrates_with_another_branch_new_evidence_and_events() {
-    use sha2::{Digest, Sha256};
-    let f = closed_cycles();
-    f.write(
-        ".gitattributes",
-        ".chough/session.json merge=chough-session\n",
-    );
-    git_ok(&f, &["init"]);
-    let binary = env!("CARGO_BIN_EXE_chough")
-        .replace('\\', "/")
-        .replace('\'', "'\\''");
-    let driver = format!("'{binary}' checkpoint --merge %O %A %B");
-    git_ok(&f, &["config", "merge.chough-session.driver", &driver]);
-    git_ok(&f, &["checkout", "-b", "baseline"]);
-    git_ok(&f, &["add", "."]);
-    git_ok(&f, &["commit", "-m", "shared retained history"]);
-    git_ok(&f, &["checkout", "-b", "cleanup"]);
-    f.ok(&[
-        "consent",
-        "grant",
-        "retention",
-        "--source",
-        "disposable fixture consent",
-    ]);
-    let removal = f.ok(&["history", "prune", "--apply"]);
-    assert!(!removal["removed"].as_array().unwrap().is_empty());
-    git_ok(&f, &["add", ".chough"]);
-    git_ok(&f, &["commit", "-m", "consented closed-cycle retention"]);
-    git_ok(&f, &["checkout", "-b", "writer", "baseline"]);
-    f.ok(&["stage", "iterate", "--note", "independent writer event"]);
-    let selected = f.session()["history_cursor"].clone();
-    let payload = "independent retained artifact\n";
-    let expected = format!("{:x}", Sha256::digest(payload.as_bytes()));
-    let mut record: Value = serde_json::from_str(&source_observation("independent-proof")).unwrap();
-    record["artifacts"] = serde_json::json!([".chough/artifacts/independent-proof.log"]);
-    record["artifact_fingerprints"] =
-        serde_json::json!({".chough/artifacts/independent-proof.log":expected});
-    f.write(
-        ".chough/evidence/independent-proof.json",
-        &record.to_string(),
-    );
-    f.write(".chough/artifacts/independent-proof.log", payload);
-    git_ok(&f, &["add", ".chough"]);
-    git_ok(&f, &["commit", "-m", "independent writer proof"]);
-    let _ = git(&f, &["merge", "cleanup", "--no-edit"]);
-    let conflicts = git(&f, &["diff", "--name-only", "--diff-filter=U"]);
-    assert_eq!(
-        String::from_utf8(conflicts.stdout).unwrap().trim(),
-        ".chough/session.json"
-    );
-    git_ok(&f, &["checkout", "--ours", ".chough/session.json"]);
-    git_ok(&f, &["add", ".chough/session.json"]);
-    git_ok(
-        &f,
-        &[
-            "commit",
-            "-m",
-            "select writer checkpoint and retain both histories",
-        ],
-    );
-    assert_eq!(f.session()["history_cursor"], selected);
-    assert_eq!(f.read(".chough/artifacts/independent-proof.log"), payload);
-    assert_eq!(
-        serde_json::from_str::<Value>(&f.read(".chough/evidence/independent-proof.json")).unwrap()
-            ["artifact_fingerprints"][".chough/artifacts/independent-proof.log"],
-        expected
-    );
-    assert!(
-        f.ok(&["timing", "--cycle", "all", "--json"])["partial"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|partial| partial.to_string().contains("pruned"))
-    );
-    assert_eq!(f.ok(&["history", "show"])["complete"], true);
-}
-
-#[test]
-fn history_bounds_cover_all_resource_limits() {
-    event_and_cycle_byte_limits_refuse_without_mutating_the_checkpoint();
-    event_count_limit_and_recent_reader_work_are_bounded();
-    metadata_scan_file_limit_is_exact_and_overflow_is_a_read_only_incomplete_preview();
-    metadata_byte_limit_is_exact_and_protected_only_data_is_a_no_op();
-}
-
-#[test]
-fn schema_one_migration_and_adoption_preserve_the_original_backup() {
-    let f = Fixture::new();
-    let original = serde_json::json!({"schema_version":1,"objective":"legacy migration","intent_scope":"LIFE","modules":["cli"],"decisions":[],"open_questions":[],"next_action":"continue legacy work"}).to_string();
-    f.write(".chough/session.json", &original);
-    f.ok(&["migrate"]);
-    assert_eq!(f.read(".chough/session.v1.json"), original);
-    f.ok(&["history", "adopt", "--apply"]);
-    assert_eq!(f.read(".chough/session.v1.json"), original);
-    f.ok(&[
+fn entries_are_appended_in_order_and_never_rewritten() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "Approve the design"]);
+    let before = timeline(&fixture.read(&fixture.session_file()));
+    assert_eq!(before.len(), 2, "{before:?}");
+    assert!(before[1].contains(" · gate-opened · design → design · Approve the design ^t-"));
+    fixture.ok(&[
         "stage",
-        "iterate",
-        "--note",
-        "after explicit migration and adoption",
+        "back",
+        "--to",
+        "intent",
+        "--reason",
+        "Redo the intent",
     ]);
-    assert_eq!(f.read(".chough/session.v1.json"), original);
-}
-
-#[test]
-fn adoption_refuses_future_legacy_payloads_without_changing_any_record() {
-    let f = Fixture::new();
-    f.init();
-    let event = serde_json::json!({"schema_version":99,"at_unix_seconds":100,"kind":"reset","from":"done","to":"intent","refresh":[]});
-    let legacy = event.to_string() + "\n";
-    f.write(".chough/transitions.jsonl", &legacy);
-    let checkpoint = f.read(".chough/session.json");
+    let after = timeline(&fixture.read(&fixture.session_file()));
+    assert_eq!(&after[..2], &before[..]);
     assert!(
-        f.fails(&["history", "adopt", "--apply"])
-            .contains("adoption refused")
+        after[2].contains(" · back · design → intent · Redo the intent ^t-"),
+        "{after:?}"
     );
-    assert_eq!(f.read(".chough/session.json"), checkpoint);
-    assert_eq!(f.read(".chough/transitions.jsonl"), legacy);
+    let mut ids: Vec<&str> = after
+        .iter()
+        .map(|line| line.rsplit(" ^").next().unwrap())
+        .collect();
+    ids.sort_unstable();
+    ids.dedup();
+    assert_eq!(ids.len(), after.len());
+    let shown = fixture.ok(&["history", "show"]);
+    assert_eq!(shown["entries"].as_array().unwrap().len(), 3, "{shown:#}");
+    assert_eq!(shown["entries"][2]["kind"], "back", "{shown:#}");
 }
 
+/// Append one hand-written entry line, with its field lines, to the active session's
+/// Timeline, the way a person or another build could; `history show` then reads it.
+fn with_entry(fixture: &Fixture, original: &str, entry: &str) {
+    fixture.write(&fixture.session_file(), &format!("{original}{entry}"));
+}
+
+/// The time of the Timeline's last entry, so a hand-written entry after it keeps order.
+fn last_time(text: &str) -> String {
+    let section = &text[text.find("\n## Timeline\n").expect("a Timeline section")..];
+    let start = section.rfind("\n- ").expect("an entry") + 3;
+    section[start..start + 20].to_string()
+}
+
+/// TC-history-timeline-bounds (REQ-history-003). The timeline's bounds that a command
+/// can reach:
+/// - the 4,097th entry is refused before the save, naming the bound and the recovery,
+///   with the session file byte-identical, and `next` on 4,096 entries reads only the
+///   newest 128 (the two tests above, run here as part of the case);
+/// - `chough timing` over more than 16 MiB of timelines reports what it did not read as
+///   partial.
+///
+/// No command can write an entry over 65,536 bytes: every text it takes is at most
+/// 4,096 bytes, and so is a relayed decision as a whole. The entry bound is proved by
+/// the unit test `session_md::tests::a_timeline_over_its_bound_is_refused`.
 #[test]
-fn directory_references_protect_cycles_across_case_and_separator_aliases() {
-    let f = closed_cycles();
-    assert!(
-        !f.ok(&["history", "prune"])["eligible"]
-            .as_array()
-            .unwrap()
-            .is_empty()
-    );
-    f.ok(&["checkpoint", "--file", ".CHOUGH\\history\\CYCLES"]);
-    let preview = f.ok(&["history", "prune"]);
-    assert_eq!(preview["complete"], true);
-    assert!(preview["eligible"].as_array().unwrap().is_empty());
-    assert!(
-        preview["protected"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|cycle| cycle["reasons"].to_string().contains("session.json"))
-    );
-}
+fn the_timeline_is_bounded() {
+    a_timeline_holds_4096_entries_and_refuses_the_4097th();
+    next_reads_only_the_newest_128_entries();
 
-#[test]
-fn frozen_artifact_directory_aliases_protect_cycles_through_preview_and_apply() {
-    fn saved_files(
-        root: &std::path::Path,
-    ) -> std::collections::BTreeMap<std::path::PathBuf, Vec<u8>> {
-        fn visit(
-            directory: &std::path::Path,
-            files: &mut std::collections::BTreeMap<std::path::PathBuf, Vec<u8>>,
-        ) {
-            for entry in std::fs::read_dir(directory).unwrap() {
-                let path = entry.unwrap().path();
-                if path.is_dir() {
-                    visit(&path, files);
-                } else {
-                    files.insert(path.clone(), std::fs::read(path).unwrap());
-                }
-            }
-        }
-        let mut files = std::collections::BTreeMap::new();
-        visit(&root.join(".chough"), &mut files);
-        files
-    }
-
-    for alias in [
-        ".chough/history/cycles",
-        r".CHOUGH\history\CYCLES",
-        r".CHOUGH\\history\\CYCLES",
-        r".CHOUGH//history/./CYCLES\",
-    ] {
-        for (open, close) in [
-            ("`", "`"),
-            ("\"", "\""),
-            ("", ""),
-            ("", "."),
-            ("(", ")"),
-            ("(", ")."),
-        ] {
-            let f = closed_cycles();
-            assert!(
-                !f.ok(&["history", "prune"])["eligible"]
-                    .as_array()
-                    .unwrap()
-                    .is_empty()
-            );
-            let artifact = ".chough/artifacts/frozen-path-reference.log";
-            f.write(
-                artifact,
-                &format!("Frozen reference: preserve {open}{alias}{close}\n"),
-            );
-            let before = saved_files(f.root());
-            let preview = f.ok(&["history", "prune"]);
-            assert_eq!(preview["complete"], true);
-            assert_eq!(before, saved_files(f.root()), "preview changed {alias}");
-            assert!(
-                preview["eligible"].as_array().unwrap().is_empty(),
-                "{alias}: {preview}"
-            );
-            assert_eq!(preview["protected"].as_array().unwrap().len(), 7);
-            assert!(
-                preview["protected"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .all(|cycle| { cycle["reasons"].to_string().contains(artifact) }),
-                "{alias}: {preview}"
-            );
-            f.ok(&[
-                "consent",
-                "grant",
-                "retention",
-                "--source",
-                "fixture authorization",
-            ]);
-            let authorized = saved_files(f.root());
-            let applied = f.ok(&["history", "prune", "--apply"]);
-            assert_eq!(applied["complete"], true);
-            assert_eq!(
-                applied["removed"],
-                serde_json::json!([]),
-                "{alias}: {applied}"
-            );
-            assert_eq!(applied["reclaimed_bytes"], 0);
-            assert_eq!(authorized, saved_files(f.root()), "apply changed {alias}");
-        }
-    }
-}
-
-fn idle_closed_cycle_fixture(closed_at: u64) -> (Fixture, String, String) {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
-    let f = Fixture::new();
-    init(&f);
-    f.ok(&["stage", "iterate", "--note", "before a long idle interval"]);
-    set_latest_time(&f, now - 30 * 86_400);
-    let old_path = event_path(&f);
-    let mut closing_path = String::new();
-    for index in 0..4 {
-        f.ok(&[
-            "stage",
-            "reset",
-            "--to",
-            "intent",
-            "--reason",
-            &format!("close idle cycle {index}"),
-        ]);
-        if index == 0 {
-            set_latest_time(&f, closed_at);
-            closing_path = event_path(&f);
-        } else {
-            set_latest_time(&f, now - 4 + index);
-        }
-    }
-    (f, old_path, closing_path)
-}
-
-#[test]
-fn idle_cycle_age_uses_the_selected_closure_and_receipts_record_it() {
-    use std::time::{SystemTime, UNIX_EPOCH};
-    for days_since_closure in [7, 15] {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_secs();
-        let closed_at = now - days_since_closure * 86_400;
-        let (f, old_path, closing_path) = idle_closed_cycle_fixture(closed_at);
-        let cycle = old_path.split('/').nth(3).unwrap();
-        let old_bytes = f.read(&old_path);
-        let closing_bytes = f.read(&closing_path);
-        let preview = f.ok(&["history", "prune"]);
-        assert_eq!(preview["complete"], true);
-        if days_since_closure == 7 {
-            assert!(
-                preview["eligible"].as_array().unwrap().is_empty(),
-                "{preview}"
-            );
-            let protected = preview["protected"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .find(|entry| entry["cycle"] == cycle)
-                .unwrap();
-            assert!(
-                protected["reasons"]
-                    .to_string()
-                    .contains("younger than 14 days")
-            );
-            assert!(!protected["reasons"].to_string().contains("newest three"));
-        } else {
-            assert!(
-                preview["eligible"]
-                    .as_array()
-                    .unwrap()
-                    .iter()
-                    .any(|entry| entry["cycle"] == cycle),
-                "{preview}"
-            );
-        }
-        assert_eq!(f.read(&old_path), old_bytes);
-        f.ok(&[
-            "consent",
-            "grant",
-            "retention",
-            "--source",
-            "fixture authorization",
-        ]);
-        let checkpoint = f.read(".chough/session.json");
-        let applied = f.ok(&["history", "prune", "--apply"]);
-        assert_eq!(applied["complete"], true);
-        let receipt_path = format!(".chough/history/pruned/{cycle}.json");
-        if days_since_closure == 7 {
-            assert_eq!(applied["removed"], serde_json::json!([]));
-            assert_eq!(f.read(&old_path), old_bytes);
-            assert!(!f.exists(&receipt_path));
-        } else {
-            assert_eq!(applied["removed"], serde_json::json!([old_path]));
-            let receipt: Value = serde_json::from_str(&f.read(&receipt_path)).unwrap();
-            assert_eq!(receipt["closed_at"], closed_at);
-        }
-        assert_eq!(f.read(".chough/session.json"), checkpoint);
-        assert_eq!(f.read(&closing_path), closing_bytes);
-    }
-}
-
-#[test]
-fn stale_receipt_age_cannot_override_a_recent_selected_closure() {
-    use sha2::{Digest, Sha256};
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let now = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
-    let (f, old_path, _) = idle_closed_cycle_fixture(now - 7 * 86_400);
-    let cycle = old_path.split('/').nth(3).unwrap();
-    let old_bytes = f.read(&old_path);
-    let plan = serde_json::json!({"cycle":cycle,"files":[{"path":old_path,"bytes":old_bytes.len(),"digest":format!("{:x}",Sha256::digest(old_bytes.as_bytes()))}]});
-    let (receipt_path, _) = simulated_receipt(&f, &plan);
-    let receipt_bytes = f.read(&receipt_path);
-    let preview = f.ok(&["history", "prune"]);
-    assert!(
-        preview["eligible"].as_array().unwrap().is_empty(),
-        "{preview}"
-    );
-    assert!(
-        preview["protected"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|entry| {
-                entry["cycle"] == cycle
-                    && entry["reasons"]
-                        .to_string()
-                        .contains("younger than 14 days")
-            })
-    );
-    f.ok(&[
-        "consent",
-        "grant",
-        "retention",
-        "--source",
-        "fixture authorization",
+    // Timing's bound: 17 archived stories of 1,000,000 bytes each pass 16 MiB, so the
+    // oldest is left unread and reported partial, never counted as zero.
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "story", "--objective", "Ship a story"]);
+    let id = fixture.id_of("story");
+    fixture.ok(&[
+        "session",
+        "close",
+        &id,
+        "--reason",
+        "Closed for the timing bound",
     ]);
-    let applied = f.ok(&["history", "prune", "--apply"]);
-    assert_eq!(applied["removed"], serde_json::json!([]));
-    assert_eq!(f.read(&old_path), old_bytes);
-    assert_eq!(f.read(&receipt_path), receipt_bytes);
+    let story = fixture.read(&format!(".chough/archive/sessions/{id}.md"));
+    for index in 1..=17 {
+        let copy = format!("2026-10-{index:02}-story");
+        let text = story.replacen(&format!("id: {id}\n"), &format!("id: {copy}\n"), 1);
+        assert_ne!(text, story, "the story's id line");
+        let goal = "## Goal\n\n";
+        let at = text.find(goal).expect("a Goal section") + goal.len();
+        let padding = "p".repeat(1_000_000 - text.len() - 1) + "\n";
+        let padded = format!("{}{padding}{}", &text[..at], &text[at..]);
+        assert_eq!(padded.len(), 1_000_000);
+        fixture.write(&format!(".chough/archive/sessions/{copy}.md"), &padded);
+    }
+    let report = fixture.ok(&["timing", "--json"]);
+    let partial = report["partial"].to_string();
+    assert!(
+        partial.contains("older stories skipped beyond the 16777216-byte bound"),
+        "{partial}"
+    );
 }
 
-#[test]
-fn real_git_post_prune_references_report_unavailable_until_exact_restoration() {
-    #[derive(Clone, Copy)]
-    enum Reference {
-        CheckpointFile,
-        Directory(&'static str, &'static str, bool),
-        CycleMention,
-        FileSuffix(&'static str),
-        FilePrefix(&'static str),
-        FileProse(&'static str, &'static str),
+/// The relay values, or a native field, of a gate-closed entry that `history show`
+/// reads back: on the entry, or inside its `relayed_by`.
+fn relay_field<'a>(entry: &'a Value, key: &str) -> &'a Value {
+    match &entry[key] {
+        Value::Null => &entry["relayed_by"][key],
+        value => value,
     }
-    for reference in [
-        Reference::CheckpointFile,
-        Reference::Directory("", "", false),
-        Reference::Directory("'", "'", false),
-        Reference::Directory("`", "`", false),
-        Reference::Directory("\"", "\"", false),
-        Reference::Directory("", ".", true),
-        Reference::Directory("", ".", false),
-        Reference::Directory("(", ")", false),
-        Reference::Directory("(", ").", true),
-        Reference::CycleMention,
-        Reference::FileSuffix(".bak"),
-        Reference::FileSuffix("/child"),
-        Reference::FileSuffix("_copy"),
-        Reference::FilePrefix("backup/"),
-        Reference::FileProse("", "."),
-        Reference::FileProse("\"", "\""),
-        Reference::FileProse("(", ")."),
-    ] {
-        let f = closed_cycles();
-        let preview = f.ok(&["history", "prune"]);
-        let target = preview["eligible"][0]["files"][0]["path"]
-            .as_str()
-            .unwrap()
-            .to_string();
-        let target_bytes = f.read(&target);
-        let cycle = target.split('/').nth(3).unwrap();
-        let receipt_path = format!(".chough/history/pruned/{cycle}.json");
-        let cycle_directory = format!(".chough/history/cycles/{cycle}");
-        let artifact = ".chough/artifacts/post-prune-cycle-directory.log";
-        let reference_source = if matches!(reference, Reference::CheckpointFile) {
-            ".chough/session.json"
+}
+
+const HUMANS: &str = "[[human]]\nname = \"SYNTHETIC Person\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-actor\"\n";
+
+/// TC-history-relay-fields-on-gate-entries (REQ-history-010).
+/// - A relayed `gate-closed` entry reads back with its four values byte for byte, and
+///   one that drove an approval also reads back `native`, the SpecSync command run,
+///   and `actor`, the SpecSync actor it ran as.
+/// - An entry with three of the four, a blank or over-long value, or relay fields on a
+///   `gate-opened` or stage entry, is refused as invalid.
+#[cfg(unix)]
+#[test]
+fn relay_fields_live_on_gate_closed_entries() {
+    // The refusals, on hand-written entries.
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "iterate", "--note", "A first entry"]);
+    let good = json!({"decided_by": "SYNTHETIC-human", "words": "Approved", "where": "chat", "recorded_by": "SYNTHETIC-agent"});
+    let mut invalid = vec![];
+    for key in ["decided_by", "words", "where", "recorded_by"] {
+        let mut three = good.clone();
+        three.as_object_mut().unwrap().remove(key);
+        invalid.push(("gate-closed", three));
+        let mut blank = good.clone();
+        blank[key] = json!("  ");
+        invalid.push(("gate-closed", blank));
+        let mut long = good.clone();
+        long[key] = json!("x".repeat(4_097));
+        invalid.push(("gate-closed", long));
+    }
+    invalid.push(("gate-opened", good.clone()));
+    invalid.push(("advance", good.clone()));
+    invalid.push(("iterate", good.clone()));
+    let original = fixture.read(&fixture.session_file());
+    let time = last_time(&original);
+    let entry = |kind: &str, relay: &Value| {
+        let to = if kind == "advance" {
+            "design"
         } else {
-            artifact
+            "intent"
         };
-        let mixed = matches!(
-            reference,
-            Reference::Directory(_, _, true) | Reference::FileSuffix(_) | Reference::FilePrefix(_)
-        );
-        let whole_cycle = !matches!(
-            reference,
-            Reference::CheckpointFile | Reference::FileProse(_, _)
-        );
-        f.write(
-            ".gitattributes",
-            ".chough/session.json merge=chough-session\n",
-        );
-        git_ok(&f, &["init"]);
-        let binary = env!("CARGO_BIN_EXE_chough")
-            .replace('\\', "/")
-            .replace('\'', "'\\''");
-        git_ok(
-            &f,
-            &[
-                "config",
-                "merge.chough-session.driver",
-                &format!("'{binary}' checkpoint --merge %O %A %B"),
-            ],
-        );
-        git_ok(&f, &["checkout", "-b", "baseline"]);
-        git_ok(&f, &["add", "."]);
-        git_ok(&f, &["commit", "-m", "shared pre-prune history"]);
-        git_ok(&f, &["checkout", "-b", "cleanup"]);
-        f.ok(&[
-            "consent",
-            "grant",
-            "retention",
-            "--source",
-            "fixture authorization",
-        ]);
-        let removal = f.ok(&["history", "prune", "--apply"]);
+        format!(
+            "- {time} · {kind} · intent → {to} · Gate ^t-aaaaaa\n  - relayed_by: {}\n",
+            serde_json::to_string(relay).unwrap()
+        )
+    };
+    with_entry(&fixture, &original, &entry("gate-closed", &good));
+    let shown = fixture.ok(&["history", "show"]);
+    assert_eq!(
+        shown["entries"].as_array().unwrap().last().unwrap()["relayed_by"],
+        good
+    );
+    for (kind, relay) in &invalid {
+        with_entry(&fixture, &original, &entry(kind, relay));
+        let error = fixture.fails(&["history", "show"]);
         assert!(
-            removal["removed"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .any(|path| path == &target)
+            error.contains("invalid transition"),
+            "{kind} {relay}: {error}"
         );
-        assert_eq!(f.ok(&["history", "show"])["complete"], true);
-        git_ok(&f, &["add", ".chough"]);
-        git_ok(&f, &["commit", "-m", "prune unreferenced old cycles"]);
-        git_ok(&f, &["checkout", "-b", "new-reference", "baseline"]);
-        assert_eq!(f.read(&target), target_bytes);
-        if matches!(reference, Reference::CheckpointFile) {
-            f.ok(&["checkpoint", "--file", &target]);
-            git_ok(&f, &["add", ".chough/session.json"]);
-        } else {
-            let reference_text = match reference {
-                Reference::Directory(open, close, mixed) => {
-                    let directory = format!("Retain {open}{cycle_directory}{close}\n");
-                    if mixed {
-                        format!("Retain {target}\n{directory}")
-                    } else {
-                        directory
+    }
+
+    // Through the CLI: a gate that drives nothing keeps the four values byte for byte,
+    // whatever characters they hold, with the decision they make within its 4,096 bytes.
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("approved");
+    fixture.init();
+    fixture.ok(&["checkpoint", "--native-change", "relay-change"]);
+    fixture.write(".chough/local/identity.toml", HUMANS);
+    let words = "yes — ship it \"now\" · intent → done ^t-000000 # not a heading \\ end";
+    let place = format!("SYNTHETIC chat {}", "w".repeat(2_000));
+    fixture.ok(&["checkpoint", "--awaiting-human", "Copy review"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--close-gate",
+        "Copy review",
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        words,
+        "--where",
+        &place,
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ]);
+    let closed = |fixture: &Fixture| -> Value {
+        fixture.ok(&["history", "show"])["entries"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .rev()
+            .find(|entry| entry["kind"] == "gate-closed")
+            .expect("a gate-closed entry")
+            .clone()
+    };
+    let entry = closed(&fixture);
+    for (key, value) in [
+        ("decided_by", "SYNTHETIC-human"),
+        ("words", words),
+        ("where", place.as_str()),
+        ("recorded_by", "SYNTHETIC-agent"),
+    ] {
+        assert_eq!(relay_field(&entry, key), value, "{key}: {entry:#}");
+    }
+    assert_eq!(relay_field(&entry, "native"), &Value::Null, "{entry:#}");
+
+    // A gate held at plan drives the approval, which runs as the configured human's
+    // SpecSync actor; its entry also names the command and the actor.
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Scope approval",
+        "--holds",
+        "plan",
+    ]);
+    let output = fixture.ok(&[
+        "checkpoint",
+        "--close-gate",
+        "Scope approval",
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "yes, go",
+        "--where",
+        "SYNTHETIC chat",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ]);
+    assert_eq!(
+        output["relayed_decision"]["native_step"]["specsync_actor"], "SYNTHETIC-actor",
+        "{output:#}"
+    );
+    let entry = closed(&fixture);
+    assert_eq!(relay_field(&entry, "words"), "yes, go", "{entry:#}");
+    let native = relay_field(&entry, "native").as_str().unwrap_or_default();
+    assert!(
+        native.contains("change approve relay-change"),
+        "the gate-closed entry names no native command: {entry:#}"
+    );
+    assert_eq!(relay_field(&entry, "actor"), "SYNTHETIC-actor", "{entry:#}");
+}
+
+/// TC-history-direct-write-entries (REQ-history-013).
+/// - A `direct-native-write` entry reads back with its change, its files (each added,
+///   changed or removed) and its states, and the same fields on any other kind are
+///   refused as invalid.
+/// - `chough timing` reads a timeline holding one as complete: no unrecognised kind
+///   and no partial mark.
+#[test]
+fn direct_write_entries_are_known_to_timing() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "iterate", "--note", "A first entry"]);
+    let write = json!({
+        "change": "some-change",
+        "files": [
+            {"path": "approvals.json", "change": "changed"},
+            {"path": "state.json", "change": "added"},
+            {"path": "review.json", "change": "removed"},
+        ],
+        "before_state": "none",
+        "after_state": "approved",
+    });
+    let original = fixture.read(&fixture.session_file());
+    let time = last_time(&original);
+    let entry = |kind: &str| {
+        format!(
+            "- {time} · {kind} · intent → intent ·  ^t-aaaaaa\n  - direct_write: {}\n",
+            serde_json::to_string(&write).unwrap()
+        )
+    };
+    for kind in ["gate-closed", "gate-opened", "iterate", "reset"] {
+        with_entry(&fixture, &original, &entry(kind));
+        let error = fixture.fails(&["history", "show"]);
+        assert!(error.contains("invalid transition"), "{kind}: {error}");
+    }
+    with_entry(&fixture, &original, &entry("direct-native-write"));
+    let shown = fixture.ok(&["history", "show"]);
+    let last = shown["entries"].as_array().unwrap().last().unwrap().clone();
+    assert_eq!(last["kind"], "direct-native-write", "{last:#}");
+    assert_eq!(last["from"], "intent", "{last:#}");
+    assert_eq!(last["to"], "intent", "{last:#}");
+    assert_eq!(last["direct_write"], write, "{last:#}");
+
+    let report = fixture.ok(&["timing", "--json"]);
+    assert_eq!(report["partial"], json!([]), "{report:#}");
+    fn counts<'a>(value: &'a Value, found: &mut Vec<&'a Value>) {
+        match value {
+            Value::Object(map) => {
+                for (name, inner) in map {
+                    if name == "unrecognised_kinds" {
+                        found.push(inner);
                     }
+                    counts(inner, found);
                 }
-                Reference::CycleMention => {
-                    // The candidate span cuts through a multibyte prefix.
-                    format!("{}{}{}", "é".repeat(16), cycle, "é".repeat(100))
-                }
-                Reference::FileSuffix(suffix) => format!("Retain {target}\nAnd {target}{suffix}\n"),
-                Reference::FilePrefix(prefix) => format!("Retain {target}\nAnd {prefix}{target}\n"),
-                Reference::FileProse(open, close) => format!("Retain {open}{target}{close}\n"),
-                Reference::CheckpointFile => unreachable!(),
-            };
-            f.write(artifact, &reference_text);
-            git_ok(&f, &["add", artifact]);
-        }
-        git_ok(
-            &f,
-            &["commit", "-m", "reference the retained baseline event"],
-        );
-        git_ok(&f, &["merge", "cleanup", "--no-edit"]);
-        assert!(!f.exists(&target));
-        let before = git(&f, &["status", "--porcelain"]).stdout;
-        let checkpoint = f.read(".chough/session.json");
-        let receipt = f.read(&receipt_path);
-        for report in [f.ok(&["history", "show"]), f.ok(&["history", "prune"])] {
-            assert_eq!(report["complete"], false, "{report}");
-            assert!(
-                report["partial"].as_array().unwrap().iter().any(|entry| {
-                    entry["path"] == target
-                        && entry["sources"]
-                            .as_array()
-                            .unwrap()
-                            .iter()
-                            .any(|source| source == reference_source)
-                }),
-                "{report}"
-            );
-        }
-        assert!(
-            f.fails(&["history", "prune", "--apply"])
-                .contains("referenced history")
-        );
-        assert_eq!(f.read(".chough/session.json"), checkpoint);
-        assert_eq!(f.read(&receipt_path), receipt);
-        assert_eq!(git(&f, &["status", "--porcelain"]).stdout, before);
-        assert!(!f.exists(&target));
-        if mixed {
-            git_ok(&f, &["restore", "--source", "baseline", "--", &target]);
-            assert_eq!(f.read(&target), target_bytes);
-            let before_partial_restore = git(&f, &["status", "--porcelain"]).stdout;
-            for report in [f.ok(&["history", "show"]), f.ok(&["history", "prune"])] {
-                assert_eq!(report["complete"], false, "{report}");
-                assert!(
-                    report["partial"].as_array().unwrap().iter().any(|entry| {
-                        entry["path"] != target
-                            && entry["sources"]
-                                .as_array()
-                                .unwrap()
-                                .iter()
-                                .any(|source| source == reference_source)
-                    }),
-                    "{report}"
-                );
             }
-            assert!(
-                f.fails(&["history", "prune", "--apply"])
-                    .contains("referenced history")
-            );
-            assert_eq!(f.read(&target), target_bytes);
-            assert_eq!(f.read(&receipt_path), receipt);
-            assert_eq!(
-                git(&f, &["status", "--porcelain"]).stdout,
-                before_partial_restore
-            );
-        }
-        let restore_path = if whole_cycle {
-            &cycle_directory
-        } else {
-            &target
-        };
-        git_ok(&f, &["restore", "--source", "baseline", "--", restore_path]);
-        assert_eq!(f.read(&target), target_bytes);
-        assert_eq!(f.ok(&["history", "show"])["complete"], true);
-        assert_eq!(f.ok(&["history", "prune"])["complete"], true);
-    }
-}
-
-/// CH-19 (REQ-history-003): recent traversal stops at exactly 512 KiB. Events of 8,192
-/// bytes reach 524,288 bytes after 64 events, before the 128-event bound, so routine
-/// reads take exactly 64; a bound one byte larger would read a 65th.
-#[test]
-fn recent_traversal_stops_at_exactly_512_kib() {
-    let f = Fixture::new();
-    init(&f);
-    chain(&f, 100, Some(8_192));
-    let status = f.ok(&["status"]);
-    assert_eq!(
-        status["transition_history"]["events_read"], 64,
-        "{status:#}"
-    );
-    assert_eq!(
-        status["transition_history"]["bytes_read"], 524_288,
-        "{status:#}"
-    );
-
-    // Events are read newest first, so the 64th read is index 36 of 100. One byte more
-    // there does not fit the 8,192 bytes left of 512 KiB: the read stops at 63 events,
-    // where a bound one byte larger would read it.
-    let f = Fixture::new();
-    init(&f);
-    chain(&f, 100, Some(8_192));
-    let cycle = f.session()["history_cursor"]["cycle"]
-        .as_str()
-        .unwrap()
-        .to_string();
-    let path = format!(".chough/history/cycles/{cycle}/EVT-{:024x}.json", 36);
-    let text = f.read(&path);
-    f.write(&path, &format!("{text} "));
-    let status = f.ok(&["status"]);
-    assert_eq!(
-        status["transition_history"]["events_read"], 63,
-        "{status:#}"
-    );
-    assert_eq!(
-        status["transition_history"]["bytes_read"], 516_096,
-        "{status:#}"
-    );
-}
-
-/// CH-19 (REQ-history-003): a cycle of exactly 16 MiB is read whole and is full (the
-/// next event does not fit: "capacity reached"); one byte more is past the 16 MiB read
-/// budget, so the cycle reads as partial and appending refuses ("partial history"). The
-/// checkpoint is unchanged either way.
-#[test]
-fn a_cycle_of_exactly_16_mib_is_full_and_one_byte_more_is_over_its_bound() {
-    for (extra, expected) in [(0usize, "capacity reached"), (1, "partial history")] {
-        let f = Fixture::new();
-        init(&f);
-        // 257 events, each within the 65,536-byte event bound: 255 of 65,536, one of
-        // 64,537 and one of 999 + extra bytes, 16,777,216 + extra in all.
-        chain(&f, 257, None);
-        let session = f.session();
-        let cycle = session["history_cursor"]["cycle"]
-            .as_str()
-            .unwrap()
-            .to_string();
-        for index in 0..257usize {
-            let size = match index {
-                0..=254 => 65_536,
-                255 => 64_537,
-                _ => 999 + extra,
-            };
-            let path = format!(".chough/history/cycles/{cycle}/EVT-{index:024x}.json");
-            let text = f.read(&path);
-            assert!(text.len() <= size, "{index}");
-            f.write(&path, &format!("{text}{}", " ".repeat(size - text.len())));
-        }
-        let before = f.read(".chough/session.json");
-        let refused = f.fails(&["stage", "iterate", "--note", "one more"]);
-        assert!(refused.contains(expected), "{extra}: {refused}");
-        assert_eq!(f.read(".chough/session.json"), before, "{extra}");
-    }
-}
-
-/// CH-19 (REQ-history-003): a retention receipt of exactly 1 MiB is read and an
-/// interrupted plan resumes; one byte more is refused and nothing is removed.
-#[test]
-fn a_receipt_of_exactly_1_mib_is_read_and_one_byte_more_is_refused() {
-    for (size, resumes) in [(1_048_576usize, true), (1_048_577, false)] {
-        let f = closed_cycles();
-        let preview = f.ok(&["history", "prune"]);
-        let plan = preview["eligible"][0].clone();
-        let (receipt, paths) = simulated_receipt(&f, &plan);
-        let text = f.read(&receipt);
-        assert!(text.len() < size);
-        f.write(
-            &receipt,
-            &format!("{text}{}", " ".repeat(size - text.len())),
-        );
-        std::fs::remove_file(f.root().join(&paths[0])).unwrap();
-        f.ok(&[
-            "consent",
-            "grant",
-            "retention",
-            "--source",
-            "fixture authorization",
-        ]);
-        let output = f.run(&["history", "prune", "--apply"]);
-        assert_eq!(
-            output.status.success(),
-            resumes,
-            "{size}: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-        if !resumes {
-            assert!(
-                paths[1..].iter().all(|path| f.exists(path)),
-                "{size}: nothing else removed"
-            );
+            Value::Array(items) => items.iter().for_each(|item| counts(item, found)),
+            _ => {}
         }
     }
+    let mut found = vec![];
+    counts(&report, &mut found);
+    assert!(!found.is_empty(), "no unrecognised_kinds count: {report:#}");
+    assert!(found.iter().all(|count| **count == json!(0)), "{found:?}");
 }

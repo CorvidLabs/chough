@@ -3,19 +3,18 @@ module = "history"
 
 [[case]]
 id = "TC-history-shelve-and-robust-sessions"
-title = "Shelving an oversized session or legacy checkpoint lets work continue, and one unreadable session never breaks the others"
+title = "An unreadable session is listed with shelve, others keep working, and shelving moves its folder byte for byte"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-14", "DRIVE-13"]
 requirements = ["REQ-history-006"]
-paths = ["src/sessions.rs"]
-environments = ["local-linux-aarch64", "ci-linux"]
+paths = ["src/sessions.rs", "src/session_md.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["the sessions tests for shelve and per-session robustness pass"]
+expected = ["tests/sessions.rs::an_unreadable_session_is_listed_and_shelving_moves_its_folder_byte_for_byte passes"]
 
 [case.bind]
 adapter = "command"
-argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "shelv", "one_oversized_or_unreadable_session_does_not_break_the_others"]
-expect_output = ["test result: ok. 3 passed"]
-timeout_seconds = 600
+argv = ["cargo", "test", "--locked", "--test", "sessions", "--", "--exact", "an_unreadable_session_is_listed_and_shelving_moves_its_folder_byte_for_byte"]
+expect_output = ["test result: ok. 1 passed"]

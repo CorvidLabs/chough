@@ -49,7 +49,7 @@ observations and evidence named in the refresh list must be redone by their owne
 - Completion evidence: rendered review of states and viewports, companion mappings to HI and FRD.
 - Approval: the human approves the rendered prototype and companion together.
 - Questions: design choices that change scope go back to intent.
-- Checkpoint: prototype and companion paths in `references.design`, pending design approval in `awaiting_human`.
+- Checkpoint: prototype and companion paths in `design`, the pending design approval as a gate in `waiting_on_human`.
 - Transitions: advance to plan; back to intent.
 
 ## plan
@@ -59,9 +59,9 @@ observations and evidence named in the refresh list must be redone by their owne
 - Outputs: native change package and deltas (SpecSync), estimates and ownership (plan artifact).
 - Roles and tools: engineering, architecture, QA; `chough change new/answer`.
 - Completion evidence: native artifacts complete and status ready for approval.
-- Approval: one human scope approval over the concrete definition, recorded natively.
+- Approval: one human scope approval over the concrete definition, recorded natively: the human's decision at the scope gate runs it as that human, or the agent records it on authority given in advance (see plan.md).
 - Questions: consequential open choices, batched into the one approval question.
-- Checkpoint: `native_change`, the approval request in `awaiting_human`.
+- Checkpoint: `native_change`, the scope gate in `waiting_on_human` (holds plan, drives approval).
 - Transitions: advance to build only after native approval; back to intent or design.
 
 ## build
@@ -80,7 +80,7 @@ observations and evidence named in the refresh list must be redone by their owne
 
 - Purpose: focused verification of the affected criteria and behavior.
 - Inputs: selected cases (`chough cases select`), project-required lane.
-- Outputs: observations (`.chough/evidence/`), artifacts, bugs for failures.
+- Outputs: evidence entries in the session's `evidence/` folder (raw logs stay local and in CI), bugs for failures.
 - Roles and tools: QA; `chough cases run/record`; browser for design QA.
 - Completion evidence: selected cases observed; failures captured; omissions explained.
 - Approval: none; blocking bugs send work back to build.
@@ -93,24 +93,26 @@ observations and evidence named in the refresh list must be redone by their owne
 - Purpose: present the implementation and evidence for the human's review, then close natively.
 - Inputs: verification, product evidence, remaining bugs and limits.
 - Outputs: native review and archive (SpecSync), lessons (native module sources).
-- Roles and tools: the human reviewer; `chough change check`, `specsync change review`, then `chough change ship`.
+- Roles and tools: the human reviewer; `chough change check`, then `chough change ship`, which records the human's review through their gate decision.
 - Completion evidence: native state `archived`.
-- Approval: the human implementation review, recorded natively only after it happens.
+- Approval: the human implementation review, recorded natively as that human only after it happens.
 - Questions: the review itself.
-- Checkpoint: the pending review in `awaiting_human`, PR and CI references.
+- Checkpoint: the review gate in `waiting_on_human` (holds accept, drives review), PR and CI references.
 - Transitions: advance to done only once archived; back to build or test.
 
 ## done
 
 - Purpose: the change is archived. Merge follows the repository's process.
-- Transitions: release only with authorization; reset to start new work.
+- Outputs: the move into done archives the session into one story in `.chough/archive/sessions/`, a journal post and a refreshed knowledge index. Commit them, then run `chough doctor --fix` and commit that.
+- Transitions: release only with authorization, asked before done so the session stays open; start new work with `chough session new <key>`.
 
 ## release
 
 - Purpose: optional publication, installation or deployment with real project commands.
 - Entry: a human request recorded as run consent, or a standing project setting.
 - Outputs: distinct publication, installation, deployment and live-health observations.
-- Transitions: advance to done.
+- Checkpoint: a decision still to come, such as a publish approval, is a gate that holds release, so earlier stages keep moving.
+- Transitions: advance to done, which archives the session.
 
 ## bugs
 
@@ -124,5 +126,5 @@ observations and evidence named in the refresh list must be redone by their owne
 
 ## librarian
 
-- Side stage for adding to or organizing the optional project library and preparing briefs.
-- Returns to its caller; the librarian never becomes a second current source.
+- Side stage for keeping the knowledge vault current: its generated index and feed, journal posts and cross-project lessons.
+- Returns to its caller; the vault links records and never copies them, so it never becomes a second current source.
