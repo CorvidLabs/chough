@@ -571,3 +571,52 @@ fn a_summary_with_no_base_says_so_instead_of_a_broken_diff_command() {
     assert!(!diff.contains("unknown.."), "{diff}");
     assert!(diff.contains("unknown"), "{diff}");
 }
+
+/// REQ-cli-061, TC-cli-gate-summary-shows-the-scope (t38j's fresh-eyes report): at a gate
+/// that drives approval, the summary counts and names the change's own Markdown files
+/// (its `change.md`, deltas and plan) first, since they are what the human approves,
+/// while its `state.json` and `approvals.json` stay left out as bookkeeping.
+#[test]
+fn a_scope_gate_summary_names_the_changes_delta_and_plan_first() {
+    let fixture = project(&[]);
+    fixture.write(&format!("{DIR}/approvals.json"), "{}\n");
+    fixture.write(
+        &format!("{DIR}/change.md"),
+        "# g1\n\n## Intent\n\nFree shipping.\n",
+    );
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--drives",
+        "approve",
+    ]);
+    fixture.commit("the scope to approve");
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    let lines: Vec<&str> = summary.lines().collect();
+    let at = lines
+        .iter()
+        .position(|line| line.starts_with("What changed:"))
+        .expect(summary);
+    let named: Vec<&str> = lines[at + 1..]
+        .iter()
+        .take_while(|line| line.starts_with("  "))
+        .map(|line| line.trim())
+        .collect();
+    for (index, file) in ["change.md", "deltas/cli.md", "plan.md"].iter().enumerate() {
+        assert!(
+            named
+                .get(index)
+                .is_some_and(|line| line.starts_with(&format!("{DIR}/"))),
+            "the change's own files come first: {summary}"
+        );
+        assert!(
+            summary.contains(&format!("{DIR}/{file} +")),
+            "{file}: {summary}"
+        );
+    }
+    assert!(!summary.contains("state.json"), "{summary}");
+    assert!(!summary.contains("approvals.json"), "{summary}");
+    assert!(summary.contains("src/input.txt"), "{summary}");
+}

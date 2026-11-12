@@ -353,3 +353,35 @@ fn timing_skips_direct_write_events_without_marking_the_report_partial() {
     );
     assert!(found.iter().all(|count| **count == json!(0)), "{found:?}");
 }
+
+/// REQ-history-002, TC-history-direct-write-fields-are-labelled-lines (t38j's fresh-eyes
+/// report): a direct write's `direct_write` is written as labelled lines, its files one
+/// level further as `<path>: <change>`, never a JSON object, and reads back whole.
+#[test]
+fn a_direct_write_is_written_as_labelled_lines() {
+    let fixture = project();
+    iterate(&fixture, "first sight");
+    fixture.write(
+        &format!("{DIR}/approvals.json"),
+        "{\"approvals\":[{\"gate\":\"definition\",\"actor\":\"SYNTHETIC-direct\",\"approved_delta_digests\":{}}],\"reopenings\":[]}\n",
+    );
+    iterate(&fixture, "after a direct approval");
+    let text = fixture.read(&fixture.session_file());
+    assert!(!text.contains("direct_write: {"), "{text}");
+    assert!(
+        text.contains(&format!(
+            "  - direct_write:\n    - change: {ID}\n    - files:\n      - approvals.json: changed\n    - before_state: approved\n    - after_state: approved\n"
+        )),
+        "{text}"
+    );
+    let found = direct_writes(&fixture);
+    assert_eq!(
+        found[0]["direct_write"],
+        json!({
+            "change": ID,
+            "files": [{"path": "approvals.json", "change": "changed"}],
+            "before_state": "approved",
+            "after_state": "approved",
+        })
+    );
+}

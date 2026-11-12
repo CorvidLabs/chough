@@ -1342,3 +1342,52 @@ fn journal_add_record_backfills_an_archived_story() {
     assert_eq!(field(front, "time"), "", "{text}");
     fixture.ok(&["library", "index", "--check"]);
 }
+
+/// REQ-history-006, TC-history-story-receipts-in-time-order (t38j's fresh-eyes report): a
+/// story's receipts are in observation-time order, oldest first, whatever order their
+/// names sort in.
+#[test]
+fn a_storys_receipts_are_in_observation_time_order() {
+    let fixture = at_accept();
+    let add = |summary: &str| -> String {
+        fixture.ok(&[
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            summary,
+        ])["observation"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string()
+    };
+    let zeta = add("Zeta, the first run");
+    std::thread::sleep(std::time::Duration::from_millis(1_100));
+    let alpha = add("Alpha, the second run");
+    assert!(
+        alpha < zeta,
+        "the names must sort against time: {alpha} {zeta}"
+    );
+    let (_, _, story) = advance_to_done(&fixture);
+    let first = story
+        .find(&format!("  - id: {zeta}"))
+        .unwrap_or_else(|| panic!("no receipt for {zeta}: {story}"));
+    let second = story
+        .find(&format!("  - id: {alpha}"))
+        .unwrap_or_else(|| panic!("no receipt for {alpha}: {story}"));
+    assert!(
+        first < second,
+        "receipts are not in observation-time order: {story}"
+    );
+}

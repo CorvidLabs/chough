@@ -409,3 +409,73 @@ fn invalid_relays_are_refused_as_invalid_payloads() {
         );
     }
 }
+
+/// REQ-history-002, TC-history-relay-fields-are-labelled-lines (t38j's fresh-eyes
+/// report): a relayed decision's `relayed_by` is written as labelled lines under its
+/// field, never a JSON object, with a value that starts with `"` written as a JSON
+/// string; `history show` reads both that entry and an earlier one whose value is JSON.
+#[test]
+fn a_relayed_decision_is_written_as_labelled_lines_and_reads_back() {
+    let fixture = new_history_project();
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Pick a colour",
+        "--awaiting-human",
+        "Pick a size",
+    ]);
+    fixture.ok(&close(
+        "Pick a colour",
+        &relay(
+            "SYNTHETIC-human",
+            "Blue: the calm one",
+            "a test, 2026-11-12",
+            "SYNTHETIC-agent",
+        ),
+    ));
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    assert!(!text.contains("relayed_by: {"), "{text}");
+    assert!(
+        text.contains(
+            "  - relayed_by:\n    - decided_by: SYNTHETIC-human\n    - words: Blue: the calm one\n    - where: a test, 2026-11-12\n    - recorded_by: SYNTHETIC-agent\n"
+        ),
+        "{text}"
+    );
+    fixture.ok(&close(
+        "Pick a size",
+        &relay(
+            "SYNTHETIC-human",
+            "\"Large\" please",
+            "a test",
+            "SYNTHETIC-agent",
+        ),
+    ));
+    let text = fixture.read(&file);
+    assert!(
+        text.contains("    - words: \"\\\"Large\\\" please\"\n"),
+        "{text}"
+    );
+    // An entry written before this rule, with a JSON value, still reads.
+    fixture.write(
+        &file,
+        &format!(
+            "{}- 2026-11-01T00:00:00Z · gate-closed · intent → intent · An old gate ^t-0abc00\n  - relayed_by: {{\"decided_by\":\"SYNTHETIC-human\",\"words\":\"ok\",\"where\":\"old\",\"recorded_by\":\"SYNTHETIC-agent\"}}\n",
+            text
+        ),
+    );
+    let closed: Vec<Value> = events(&fixture)
+        .into_iter()
+        .filter(|event| event["kind"] == "gate-closed")
+        .collect();
+    let words: Vec<&str> = closed
+        .iter()
+        .map(|event| event["relayed_by"]["words"].as_str().unwrap_or_default())
+        .collect();
+    assert_eq!(
+        words,
+        ["Blue: the calm one", "\"Large\" please", "ok"],
+        "{closed:#?}"
+    );
+    assert_eq!(closed[0]["relayed_by"]["where"], "a test, 2026-11-12");
+}

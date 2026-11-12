@@ -39,3 +39,39 @@ expected = ["tests/cases.rs::the_cli_reference_names_what_cases_run_returns pass
 adapter = "cargo-test"
 test_target = "cases"
 test = "the_cli_reference_names_what_cases_run_returns"
+
+[[case]]
+id = "TC-cli-next-at-plan-names-the-scope-gate"
+title = "At plan, while the change waits for approval, next and status name the human scope gate and never pass on SpecSync's own specsync change approve with an actor"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_plan_next_names_the_scope_gate_and_never_specsyncs_approve passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_plan_next_names_the_scope_gate_and_never_specsyncs_approve"
+
+[[case]]
+id = "TC-cli-gate-summary-shows-the-scope"
+title = "At a scope gate the summary counts and names the change's own deltas, plan and change.md first, and leaves out its state.json and approvals.json"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_scope_gate_summary_names_the_changes_delta_and_plan_first passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_scope_gate_summary_names_the_changes_delta_and_plan_first"

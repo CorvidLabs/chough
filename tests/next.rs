@@ -2375,3 +2375,58 @@ fn text_of(fixture: &Fixture) -> String {
     let output = fixture.run(&["next"]);
     String::from_utf8_lossy(&output.stdout).to_string()
 }
+
+/// REQ-cli-021, TC-cli-next-at-plan-names-the-scope-gate (t38j's fresh-eyes report): at
+/// plan, while the native change waits for approval, `next` and `status` name the human
+/// scope gate, opening it and closing it with the human's decision, and pass on none of
+/// SpecSync's own `specsync change approve <id> --actor <name>`, so no agent is routed to
+/// approve its own scope; once the gate is open, `next` waits for the human.
+#[cfg(unix)]
+#[test]
+fn at_plan_next_names_the_scope_gate_and_never_specsyncs_approve() {
+    let fixture = approved_at_plan("scope-change");
+    fixture.write(".stub-state", "draft\n");
+    let approve = "run `specsync change approve scope-change --actor <name>`";
+    fixture.write(".stub-next", &format!("{approve}\n"));
+    let next = fixture.ok(&["next", "--json"]);
+    let text = next["next_valid_action"]["action"].as_str().unwrap();
+    for part in [
+        "chough checkpoint --awaiting-human",
+        "--drives approve",
+        "chough checkpoint --close-gate",
+    ] {
+        assert!(text.contains(part), "missing {part}: {text}");
+    }
+    let mut found = vec![];
+    strings(&next, &mut found);
+    strings(&fixture.ok(&["status", "--json"]), &mut found);
+    let text_view = String::from_utf8_lossy(&fixture.run(&["next"]).stdout).into_owned();
+    found.push(text_view);
+    for text in &found {
+        assert!(
+            !text.contains("specsync change approve scope-change --actor"),
+            "SpecSync's approve is passed on at plan: {text}"
+        );
+    }
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Approve the scope of scope-change",
+        "--drives",
+        "approve",
+    ]);
+    let next = fixture.ok(&["next", "--json"]);
+    let text = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Waiting for a human decision: Approve the scope of scope-change."),
+        "{text}"
+    );
+    let mut found = vec![];
+    strings(&next, &mut found);
+    assert!(
+        found
+            .iter()
+            .all(|text| !text.contains("specsync change approve scope-change --actor")),
+        "SpecSync's approve is passed on while the gate waits"
+    );
+}
