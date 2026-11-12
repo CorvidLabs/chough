@@ -993,7 +993,8 @@ Every file the migration writes passes the leak check with redaction, so no home
 folder path, user name or credential survives in a rewritten record. Git history is not
 rewritten, and the receipt says so: earlier commits keep what they held. Upgrade every
 agent first: Chough 0.5.x finds no checkpoint in a migrated tree. The migration plan and
-receipt also list the `records_in_verification` advice as a follow-up.
+receipt also list the `records_in_verification` advice as a follow-up. The receipt holds
+every follow-up under one `## Follow-up` heading, one paragraph each.
 
 ## SpecSync change steps
 
