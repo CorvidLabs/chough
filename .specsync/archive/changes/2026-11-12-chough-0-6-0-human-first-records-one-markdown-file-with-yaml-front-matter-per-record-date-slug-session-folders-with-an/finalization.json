@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an",
+  "implementation_commit": "8421201d62da1748427a4e863d67e5ba01d41201",
+  "implementation_tree": "604ac7ecde7201cca131e71b423893c922757c20",
+  "contract_digest": "483f356b9c4f5b1cb204e6998f5acc700c15c150de35d0717bdf9251eaa9aa79",
+  "workspace_digest": "5868858ccbb2741999195b3e4ec51cf8d2c996696837ab4d5a7f6990a387b7c3",
+  "closing_digest": "e351925414caf3df393905ba474e2385b84d96b184ef90d0440723ac1941ea88",
+  "review_digest": "4176d049d2850d6b21cb9bbbd1f9bbe9d92c995fc103dffceac8c3beb5d2a59f",
+  "finalization_digest": "ed6873e37d52742bd5a05d80c36609f81d2f22830b2034f8310f3218f5cd4724",
+  "timestamp": 1794493603
+}
