@@ -75,3 +75,21 @@ expected = ["tests/gates.rs::a_scope_gate_summary_names_the_changes_delta_and_pl
 adapter = "cargo-test"
 test_target = "gates"
 test = "a_scope_gate_summary_names_the_changes_delta_and_plan_first"
+
+[[case]]
+id = "TC-cli-docs-show-a-new-project-and-a-delta"
+title = "README, docs/cli.md and the workflow skill give a new project's path with specsync change adopt and show the delta format"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "docs/cli.md", "skills/chough-workflow/references/plan.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::a_new_project_path_and_the_delta_format_are_documented passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "a_new_project_path_and_the_delta_format_are_documented"

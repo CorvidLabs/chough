@@ -1595,3 +1595,45 @@ fn the_knowledge_table_names_the_repository_root_library() {
         rows[0]
     );
 }
+
+/// TC-cli-docs-show-a-new-project-and-a-delta (t38j's fresh-eyes report): README,
+/// docs/cli.md and the workflow skill give a new project's path, with `specsync change
+/// adopt` to turn SpecSync's change gates on, and show what a delta looks like.
+#[test]
+fn a_new_project_path_and_the_delta_format_are_documented() {
+    let readme = read("README.md");
+    for part in [
+        "specsync change adopt",
+        "docs/cli.md#a-new-project-and-its-first-change",
+    ] {
+        assert!(readme.contains(part), "README.md does not name {part:?}");
+    }
+    let cli = read("docs/cli.md");
+    let start = cli
+        .find("### A new project and its first change")
+        .expect("docs/cli.md has no new-project section");
+    let section = &cli[start..];
+    let section = &section[..section[4..]
+        .find("\n## ")
+        .map_or(section.len(), |at| at + 4)];
+    for part in [
+        "specsync change adopt",
+        "deltas/<module>.md",
+        "## ADDED",
+        "## MODIFIED",
+        "### REQUIREMENT",
+        "Acceptance Criteria",
+    ] {
+        assert!(
+            section.contains(part),
+            "the new-project section does not show {part:?}"
+        );
+    }
+    let plan = read("skills/chough-workflow/references/plan.md");
+    for part in ["specsync change adopt", "## ADDED", "### REQUIREMENT"] {
+        assert!(
+            plan.contains(part),
+            "the skill's plan reference does not name {part:?}"
+        );
+    }
+}
