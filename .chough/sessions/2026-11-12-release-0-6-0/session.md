@@ -236,6 +236,13 @@ observations:
   - 2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-a94f38
   - 2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag
   - 2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag-b09962
+  - 2026-11-12-tc-cli-next-shows-specsyncs-step-for-reference-only
+  - 2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line
+  - 2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate
+  - 2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage
+  - 2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first
+  - 2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files
+  - 2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -257,6 +264,11 @@ bugs:
   - 2026-11-12-at-accept-next-and-status-pass-on-specsync-s-own-review
   - 2026-11-12-session-close-drops-an-open-human-gate-without-recording-or
   - 2026-11-12-chough-init-host-claude-does-not-print-the-claude-md-line-the
+  - 2026-11-12-gate-summaries-name-neither-the-intent-at-an-intent-gate-nor
+  - 2026-11-12-a-duplicate-bug-add-prints-a-raw-json-array-and-a-near-miss
+  - 2026-11-12-at-test-after-every-case-passed-next-asks-for-more-test-runs
+  - 2026-11-12-timing-puts-intent-before-the-first-record-although-the-start
+  - 2026-11-12-at-plan-after-approval-next-shows-specsync-s-next-step-as-if
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -490,6 +502,13 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test next -- --exact next_at_accept_never_passes_on_specsyncs_review_command for TC-cli-next-at-accept-never-passes-on-the-review-command: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-a94f38.md)
 - [Ran cargo test --locked --test migrate -- --exact the_preview_prints_the_plan_as_text_and_the_same_plan_as_json for TC-records-migrate-preview-is-text-with-json-behind-a-flag: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag.md)
 - [Ran cargo test --locked --test migrate -- --exact the_preview_prints_the_plan_as_text_and_the_same_plan_as_json for TC-records-migrate-preview-is-text-with-json-behind-a-flag: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag-b09962.md)
+- [Ran cargo test --locked --test next -- --exact at_plan_after_approval_next_shows_specsyncs_step_for_reference_only for TC-cli-next-shows-specsyncs-step-for-reference-only: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-next-shows-specsyncs-step-for-reference-only.md)
+- [Ran cargo test --locked --test bugs -- --exact a_duplicate_bug_add_lists_each_similar_bug_as_a_line for TC-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line.md)
+- [Ran cargo test --locked --test relay -- --exact a_near_miss_gate_close_names_the_closest_open_gate for TC-cli-near-miss-gate-close-names-the-closest-open-gate: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate.md)
+- [Ran cargo test --locked --test next -- --exact at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run for TC-cli-next-at-test-after-every-case-passed-names-stage-advance: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage.md)
+- [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_names_each_delta_first_with_its_requirements for TC-cli-scope-gate-summary-names-each-delta-first: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first.md)
+- [Ran cargo test --locked --test gates -- --exact an_intent_gate_summary_names_the_criteria_and_their_hi_files for TC-cli-intent-gate-summary-names-the-criteria-and-hi-files: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files.md)
+- [Ran cargo test --locked --test timing -- timing_starts_cycle_1_at_the_start_entry_and_says_elapsed_wall_clock_once init_and_session_new_write_a_start_entry_that_timing_reads for TC-reporting-timing-starts-cycle-1-at-the-start-entry: failed (exit 101).](evidence/2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry.md)
 
 ## Open threads
 
