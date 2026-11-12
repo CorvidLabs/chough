@@ -71,3 +71,7 @@ summary showing the delta and plan, and record polish: labelled Timeline fields,
 Fix line, a labelled trigger, receipts in time order and `none` in empty receipt
 sections). The CHANGELOG and docs corrections the report also found were already in
 scope.
+
+On 2026-11-12T16:38Z Leif also chose "Yes, fix it (Recommended)" for a finding from
+jackdaw's real migration (t38f): `chough migrate --apply` can write a `session.md` that
+ends with a blank line, which `git diff --check` rejects.
