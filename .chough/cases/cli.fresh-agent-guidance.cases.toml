@@ -57,3 +57,21 @@ expected = ["tests/reduce.rs::next_at_done_names_what_keeps_the_session_open pas
 adapter = "cargo-test"
 test_target = "reduce"
 test = "next_at_done_names_what_keeps_the_session_open"
+
+[[case]]
+id = "TC-cli-next-last-failure-from-receipts"
+title = "next names the latest failed observation by recorded time even when only a bug or an archived story holds it as a receipt, with the bugs that link it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1", "FLOW-13"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/bugs.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_names_the_latest_failure_held_only_as_a_receipt passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_names_the_latest_failure_held_only_as_a_receipt"

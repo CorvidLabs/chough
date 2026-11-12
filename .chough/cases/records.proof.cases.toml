@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "records"
+
+# #215 and #14 item 3 (REQ-records-005): raw logs stay machine-local, the committed entry
+# is a digest receipt with key failing lines, and an outside artifact is fingerprinted
+# in place.
+
+[[case]]
+id = "TC-records-proof-split-and-external"
+title = "A case run's raw log stays machine-local, its committed entry gives the command, the output's SHA-256 and the key failing lines, and an absolute artifact is fingerprinted in place"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-35", "LIFE-19", "LIFE-26"]
+requirements = ["REQ-records-005"]
+paths = ["src/evidence.rs", "src/cases.rs", "src/local.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::logs_stay_local_and_failures_keep_key_lines passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "logs_stay_local_and_failures_keep_key_lines"

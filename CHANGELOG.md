@@ -81,13 +81,14 @@ digest and does not apply. The release date and the dogfood results are added wh
 - **Tool versions and the lock.** A `toolchain` Fledge task runs first in the verify
   lane and names each local tool that differs from the CI pins (BUG-0022). A busy lock
   refusal names the process that holds the lock (#132).
-<!-- depends on plan step 4 -->
 - **Evidence lives in its session** (REQ-cli-017, REQ-records-005, REQ-records-013). Each
   observation is one entry in `.chough/sessions/<id>/evidence/` with the exact command,
-  a SHA-256 fingerprint and, for a failure, at most 20 key failing lines. Raw logs stay
-  in `.chough/local/logs/` and in CI and are never committed. External artifacts are
+  a SHA-256 fingerprint and, for a failure, at most 20 key failing lines. A repeated
+  validation run is one entry that holds every attempt. Raw logs stay in
+  `.chough/local/logs/` and in CI and are never committed. External artifacts are
   fingerprinted in place, and up to 5 small key screenshots per session are committed
-  without metadata.
+  without metadata. When the session finishes, each entry becomes a receipt in its
+  story.
 
 Removed: `chough checkpoint --merge` and the `chough-session` merge driver;
 `chough session adopt`, `chough history adopt` and `chough history prune`;
@@ -99,7 +100,8 @@ notes, attachments and session roll-up; and, with evidence moving into sessions,
 New: `chough migrate` (preview, `--apply`, `--consent`), `chough correct`,
 `chough journal add`, `chough library merge`, `--holds` and `--drives` on
 `--awaiting-human`, `--verdict` and `--no-native` on `--close-gate` and `gate record`,
-the global `--redact`, and the human identity file.
+the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
+`chough evidence add`, and the human identity file.
 
 ### Also unreleased
 

@@ -1,0 +1,131 @@
+profile = "chough-testing/1"
+module = "history"
+
+# The 0.6.0 timeline requirements (t37f's history map, bound by t38b for t382).
+
+[[case]]
+id = "TC-history-timeline-bounds"
+title = "A session's timeline keeps its entry and count bounds, a timeline over its bound is refused, next reads 128 entries and timing reports partial"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "LIFE-7", "LIFE-10", "FLOW-13"]
+requirements = ["REQ-history-003"]
+paths = ["src/session_md.rs", "src/timing.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["session_md::tests::a_timeline_over_its_bound_is_refused and tests/history.rs::the_timeline_is_bounded pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--test", "history", "--", "--exact", "session_md::tests::a_timeline_over_its_bound_is_refused", "the_timeline_is_bounded"]
+expect_output = ["test session_md::tests::a_timeline_over_its_bound_is_refused ... ok", "test the_timeline_is_bounded ... ok"]
+timeout_seconds = 900
+
+[[case]]
+id = "TC-history-backfill-on-entries"
+title = "A backfilled move keeps its original time and quoted evidence on its timeline entry"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-5", "LIFE-7"]
+requirements = ["REQ-history-005"]
+paths = ["src/stage.rs", "src/session_md.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_backfilled_move_keeps_its_original_time_and_quoted_evidence passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_backfilled_move_keeps_its_original_time_and_quoted_evidence"
+
+[[case]]
+id = "TC-history-relay-summary-digests"
+title = "A relayed gate's summary digests are recorded both or neither"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-history-014"]
+paths = ["src/gates.rs", "src/session_md.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::relay_summary_fields_are_both_or_neither passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "relay_summary_fields_are_both_or_neither"
+
+[[case]]
+id = "TC-history-direct-write-entries"
+title = "Direct-write timeline entries carry their fields, are refused elsewhere, and timing knows them"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-history-013"]
+paths = ["src/direct_writes.rs", "src/session_md.rs", "src/timing.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::direct_write_entries_are_known_to_timing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "direct_write_entries_are_known_to_timing"
+
+[[case]]
+id = "TC-history-inbox-in-agent-folder"
+title = "Inbox entries live in the session's agent/inbox/ folder, are published whole under the lock and fold once"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-24", "LIFE-8"]
+requirements = ["REQ-history-009"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::inbox_entries_live_in_the_agent_folder passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "inbox_entries_live_in_the_agent_folder"
+
+[[case]]
+id = "TC-history-relay-fields-on-gate-entries"
+title = "A relayed gate-closed entry carries its four relay values together, its native step fields when it drove an approval, and refuses partial or misplaced relay fields"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-13", "FLOW-23"]
+requirements = ["REQ-history-010"]
+paths = ["src/gates.rs", "src/session_md.rs", "tests/history.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/history.rs::relay_fields_live_on_gate_closed_entries passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "history"
+test = "relay_fields_live_on_gate_closed_entries"
+
+[[case]]
+id = "TC-history-local-only-ignored"
+title = "Every file under .chough/local/ is ignored by Git"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-11", "LIFE-26"]
+requirements = ["REQ-history-007"]
+paths = ["src/local.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::local_state_is_ignored_by_git passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "local_state_is_ignored_by_git"

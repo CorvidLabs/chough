@@ -155,6 +155,12 @@ pub(super) struct RelayedBy {
     pub(super) summary_digest: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) list: Option<String>,
+    /// The SpecSync command the close ran as the human and the SpecSync actor it ran as
+    /// (REQ-records-008), when the gate drove a native step; both or neither.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) native: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) actor: Option<String>,
 }
 
 /// Whether `value` is exactly `length` lowercase hex digits.
@@ -204,6 +210,20 @@ pub(super) fn validate_relay(transition: &Transition) -> Result<()> {
         ),
         _ => anyhow::bail!(
             "invalid transition payload: relayed_by.summary_digest and relayed_by.list go together"
+        ),
+    }
+    match (&relay.native, &relay.actor) {
+        (None, None) => {}
+        (Some(native), Some(actor)) => {
+            for (key, value) in [("native", native), ("actor", actor)] {
+                ensure!(
+                    !value.trim().is_empty() && value.len() <= RELAY_TEXT_LIMIT,
+                    "invalid transition payload: relayed_by.{key} must be non-blank and at most {RELAY_TEXT_LIMIT} bytes"
+                );
+            }
+        }
+        _ => anyhow::bail!(
+            "invalid transition payload: relayed_by.native and relayed_by.actor go together"
         ),
     }
     Ok(())

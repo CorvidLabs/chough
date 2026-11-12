@@ -21,7 +21,9 @@
 # Commands run in a cleared environment, so no agent, model, hc terminal or identity of
 # the capturing session reaches the records.
 #
-# Usage: sh capture-060.sh <path-to-a-chough-0.6.0-binary>
+# Usage: sh capture-060.sh <path-to-a-chough-0.6.0-binary> [<build label>]
+# The optional label, such as the commit the binary was built from, is added to the
+# block's comment beside the binary's --version.
 # Needs: sh, git, python3.
 set -eu
 
@@ -29,7 +31,8 @@ fail() { printf 'capture failed: %s\n' "$*" >&2; exit 1; }
 
 here=$(cd "$(dirname "$0")" && pwd)
 binary=${1:-}
-[ -n "$binary" ] || fail "usage: sh capture-060.sh <path-to-a-chough-0.6.0-binary>"
+label=${2:-}
+[ -n "$binary" ] || fail "usage: sh capture-060.sh <path-to-a-chough-0.6.0-binary> [<build label>]"
 case "$binary" in /*) ;; *) binary=$(pwd)/$binary ;; esac
 [ -f "$binary" ] && [ -x "$binary" ] || fail "$binary is not an executable file"
 for tool in git python3; do
@@ -50,6 +53,7 @@ run() {
 
 run sh "$here/seed.sh" "$work/seed" --records=0.1.0 >/dev/null
 version=$(run "$binary" --version)
+[ -z "$label" ] || version="$version ($label)"
 
 run "$binary" migrate --root "$work/seed" >"$work/plan.json" 2>"$work/plan.err" ||
     fail "chough migrate refused: $(cat "$work/plan.json" "$work/plan.err")"
@@ -72,6 +76,7 @@ day=$(date -u +%Y-%m-%d)
 python3 -I - "$work/seed" "$work/status" "$here/seed.sh" "$day" "$version" "$digest" "$work/plan.json" <<'PY'
 import json
 import os
+import re
 import socket
 import stat
 import sys
@@ -136,8 +141,11 @@ for path in written:
     for marker in markers:
         if marker in text:
             leaks.append(f"{path}: a local path ({marker})")
+    # A name counts as Chough's own guard counts it: as a whole word, not inside
+    # another one (a host named `mac` is not found in `machine-local`).
     for word, kind in ((user, "the capturing user name"), (host, "this host name")):
-        if len(word) >= 3 and word.lower() in text.lower():
+        whole = r"(?<![A-Za-z0-9-])" + re.escape(word) + r"(?![A-Za-z0-9-])"
+        if len(word) >= 3 and re.search(whole, text, re.IGNORECASE):
             leaks.append(f"{path}: {kind}")
     line = f"    printf '%s' {quote(text)} >{quote(path)}"
     if info.st_mode & 0o111:

@@ -1,0 +1,37 @@
+--- stdout ---
+
+running 5 tests
+test claude_code_and_hc_fill_in_without_overrides ... ok
+test a_terminal_holding_a_home_path_is_left_out_with_a_warning ... ok
+test with_nothing_set_no_entry_has_an_actor ... ok
+test the_override_variables_name_the_agent_model_and_terminal ... ok
+test the_evidence_entry_names_the_acting_agent ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.78s
+
+
+running 1 test
+test bugs_record_the_acting_agent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.11s
+
+
+--- stderr ---
+warning: constant `EVIDENCE_DIR` is never used
+  --> src/evidence.rs:32:18
+   |
+32 | pub(super) const EVIDENCE_DIR: &str = ".chough/evidence";
+   |                  ^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `validation_run_text` is never used
+    --> src/evidence.rs:2398:15
+     |
+2398 | pub(super) fn validation_run_text(run: &ValidationRun, aliases: &[String]) -> Result<String> {
+     |               ^^^^^^^^^^^^^^^^^^^
+
+warning: `chough` (bin "chough") generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/actor.rs (target/debug/deps/actor-6860519fe161e062)
+     Running tests/bugs.rs (target/debug/deps/bugs-24a5606d0085572f)

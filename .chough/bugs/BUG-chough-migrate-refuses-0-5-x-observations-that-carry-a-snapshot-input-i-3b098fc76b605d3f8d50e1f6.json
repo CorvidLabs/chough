@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "BUG-chough-migrate-refuses-0-5-x-observations-that-carry-a-snapshot-input-i-3b098fc76b605d3f8d50e1f6",
+  "title": "chough migrate refuses 0.5.x observations that carry a snapshot input inventory",
+  "symptom": "The migration preview of this repository stops with 'unknown field input_inventory' on 9 tc-cli-release observations, so no plan is made",
+  "trigger": "Run chough migrate on a 0.5.x project holding an observation written since #203 with snapshot.input_inventory",
+  "expected": "The observation migrates; its input inventory follows #203's rule (absent, null or advisory data never changes authoritative freshness) and round-trips on the entry (REQ-cli-017, REQ-records-009)",
+  "actual": "The 0.5.x reader denies the field, refusing the whole plan",
+  "criteria": [
+    "DRIVE-27"
+  ],
+  "requirements": [
+    "REQ-records-009",
+    "REQ-cli-017"
+  ],
+  "cases": [
+    "TC-cli-inventory-historical"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "981954086af9b7805e282579164ebf019edafd70",
+  "steps": [
+    "Commit a 0.5.x observation whose snapshot holds input_inventory",
+    "Run chough migrate"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-inventory-historical-5eee57a4d6b333d2e3c163e5",
+    "OBS-tc-cli-inventory-historical-140254ee4702585e7583c1fa"
+  ],
+  "impact": "This repository, and any project that ran 0.5.x release checks, cannot migrate",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37j's second migration rehearsal (plan Migration step 2) at d57d3aea",
+  "notes": [
+    {
+      "at_unix_seconds": 1794441124,
+      "text": "status: open -> verified. Green after t37j's 15d88ca1: TC-cli-inventory-historical passes; all 8 inventory cases pass, and the migration preview of this repository makes a plan (t37j's rehearsal at 247da9d6: unaccounted [], the apply succeeds in a throwaway clone).",
+      "observations": [
+        "OBS-tc-cli-inventory-historical-140254ee4702585e7583c1fa"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794439492,
+  "updated_at_unix_seconds": 1794441124
+}

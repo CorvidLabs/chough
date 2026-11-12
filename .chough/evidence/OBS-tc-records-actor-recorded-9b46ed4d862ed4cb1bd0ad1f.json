@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-actor-recorded-9b46ed4d862ed4cb1bd0ad1f",
+  "criteria": [
+    "LIFE-17",
+    "LIFE-26",
+    "FLOW-16"
+  ],
+  "requirements": [
+    "REQ-records-007"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test actor --test bugs -- the_override_variables_name_the_agent_model_and_terminal claude_code_and_hc_fill_in_without_overrides with_nothing_set_no_entry_has_an_actor a_terminal_holding_a_home_path_is_left_out_with_a_warning the_evidence_entry_names_the_acting_agent bugs_record_the_acting_agent for TC-records-actor-recorded: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-actor-recorded-9b46ed4d862ed4cb1bd0ad1f.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-actor-recorded-9b46ed4d862ed4cb1bd0ad1f.log": "b322cc0dcacb094a1e960dee909c376e66a0fcc027513f7f7aeb6bb3dad0a929"
+  },
+  "observed_at_unix_seconds": 1794440814,
+  "snapshot": {
+    "revision": "9490c5f1eac3a5f0cc75fb13cb5f2fef50db94c7",
+    "dirty": false,
+    "fingerprint": "aa65f4cd7cd9f45d4315fb260bd795bab20a8816c2c2349298bf47140c9c5631",
+    "content": "538d6cb893605c92e86ad45e97f59a674bc6cedef01ecd64432646ed2a6ee33e"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-actor-recorded",
+      "digest": "3b5df40eba9a911d1e45e17d5a3b8e63fd9a4a4835d0ef0ae25d933c37caddb3"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "actor",
+    "--test",
+    "bugs",
+    "--",
+    "the_override_variables_name_the_agent_model_and_terminal",
+    "claude_code_and_hc_fill_in_without_overrides",
+    "with_nothing_set_no_entry_has_an_actor",
+    "a_terminal_holding_a_home_path_is_left_out_with_a_warning",
+    "the_evidence_entry_names_the_acting_agent",
+    "bugs_record_the_acting_agent"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

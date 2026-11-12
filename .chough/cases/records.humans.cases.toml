@@ -25,19 +25,19 @@ timeout_seconds = 600
 
 [[case]]
 id = "TC-records-actor-recorded"
-title = "Timeline entries and bugs record the acting agent from the override or detected variables, none when unknown, and drop an unsafe terminal with a warning"
+title = "Timeline entries, evidence entries, case runs and bugs record the acting agent from the override or detected variables, none when unknown, and drop an unsafe terminal with a warning"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["LIFE-17", "LIFE-26", "FLOW-16"]
 requirements = ["REQ-records-007"]
-paths = ["src/actor.rs", "src/history.rs", "src/session_md.rs", "src/bugs.rs", "tests/actor.rs", "tests/bugs.rs"]
+paths = ["src/actor.rs", "src/history.rs", "src/session_md.rs", "src/bugs.rs", "src/evidence.rs", "src/cases.rs", "tests/actor.rs", "tests/bugs.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["the four tests in tests/actor.rs and tests/bugs.rs::bugs_record_the_acting_agent pass"]
+expected = ["the five tests in tests/actor.rs and tests/bugs.rs::bugs_record_the_acting_agent pass"]
 
 [case.bind]
 adapter = "command"
-argv = ["cargo", "test", "--locked", "--test", "actor", "--test", "bugs", "--", "the_override_variables_name_the_agent_model_and_terminal", "claude_code_and_hc_fill_in_without_overrides", "with_nothing_set_no_entry_has_an_actor", "a_terminal_holding_a_home_path_is_left_out_with_a_warning", "bugs_record_the_acting_agent"]
-expect_output = ["test result: ok. 4 passed", "test result: ok. 1 passed"]
+argv = ["cargo", "test", "--locked", "--test", "actor", "--test", "bugs", "--", "the_override_variables_name_the_agent_model_and_terminal", "claude_code_and_hc_fill_in_without_overrides", "with_nothing_set_no_entry_has_an_actor", "a_terminal_holding_a_home_path_is_left_out_with_a_warning", "the_evidence_entry_names_the_acting_agent", "bugs_record_the_acting_agent"]
+expect_output = ["test result: ok. 5 passed", "test result: ok. 1 passed"]
 timeout_seconds = 600

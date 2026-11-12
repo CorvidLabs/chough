@@ -118,6 +118,13 @@ pub(super) struct Checkpoint {
     /// Transitions to append to the Timeline in the next save (REQ-history-002).
     #[serde(skip)]
     pub(super) pending: Vec<crate::stage::Transition>,
+    /// For a save: each referenced observation's entry, as a link relative to the
+    /// session folder with its claim, for its What was verified line (REQ-records-004).
+    #[serde(skip)]
+    pub(super) evidence_links: std::collections::BTreeMap<String, (String, String)>,
+    /// For a save: the answer each question resolved now was given (REQ-records-004).
+    #[serde(skip)]
+    pub(super) answers: std::collections::BTreeMap<String, String>,
 }
 
 /// A readable session.
@@ -187,6 +194,8 @@ pub(super) fn new_checkpoint(
         meta: crate::session_md::Meta::default(),
         source: None,
         pending: vec![],
+        evidence_links: Default::default(),
+        answers: Default::default(),
     }
 }
 
@@ -565,11 +574,38 @@ pub(super) fn render_checkpoint(session: &Checkpoint) -> Result<crate::markdown:
     Ok(record)
 }
 
+/// Each referenced observation that resolves to an open session's entry, as a link
+/// relative to this session's folder with the entry's claim (REQ-records-004). An
+/// observation held only as a receipt, or by no record, has no link.
+fn evidence_links(
+    root: &Path,
+    session: &Checkpoint,
+) -> std::collections::BTreeMap<String, (String, String)> {
+    let mut links = std::collections::BTreeMap::new();
+    for id in &session.observations {
+        // `<session id>/<evidence id>` of the entry that holds `id` by name or alias.
+        let Ok(Some((qualified, entry))) = crate::evidence::resolve_entry(root, id) else {
+            continue;
+        };
+        let Some((owner, name)) = qualified.split_once('/') else {
+            continue;
+        };
+        let link = if owner == session.meta.id {
+            format!("evidence/{name}.md")
+        } else {
+            format!("../{owner}/evidence/{name}.md")
+        };
+        links.insert(id.clone(), (link, entry.summary));
+    }
+    links
+}
+
 /// Save the checkpoint and its queued Timeline entries in one atomic replace; the
 /// checkpoint then holds the record written and no queued entry.
 pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<()> {
     lock_checkpoint(root)?;
     remove_orphaned_session_temps(root)?;
+    session.evidence_links = evidence_links(root, session);
     let record = render_checkpoint(session)?;
     write_replace_bounded(
         root,
@@ -595,9 +631,12 @@ pub(super) struct CheckpointArgs {
     decisions: Vec<String>,
     #[arg(long = "question")]
     questions: Vec<String>,
-    /// Remove an open question by its exact text.
+    /// Resolve an open question by its exact text; its line stays, marked resolved.
     #[arg(long = "resolve-question")]
     resolved: Vec<String>,
+    /// The answer to the one question `--resolve-question` names, appended to its line.
+    #[arg(long, requires = "resolved")]
+    answer: Option<String>,
     #[arg(long = "completed")]
     completed: Vec<String>,
     /// Remove a completed entry by its exact text, before `--completed` adds any, so the
@@ -788,6 +827,8 @@ pub(super) fn check_relay(
         recorded_by: text(3),
         summary_digest: None,
         list: None,
+        native: None,
+        actor: None,
     };
     let decision = decision_text(gate, &relay, None);
     if decision.len() > stage::RELAY_TEXT_LIMIT {
@@ -1059,6 +1100,16 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
                 args.no_native,
             )?,
         };
+        // REQ-history-010: the entry names the SpecSync command the close runs and the
+        // actor it runs as.
+        if let Some(step) = &native {
+            let verb = match step.step {
+                crate::humans::Step::Approve { .. } => "approve",
+                crate::humans::Step::Review { .. } => "review",
+            };
+            relay.native = Some(format!("specsync change {verb} {}", step.change));
+            relay.actor = Some(step.human.specsync_actor.clone());
+        }
         *decision = decision_text(gate, relay, native_text.as_deref());
         if decision.len() > stage::RELAY_TEXT_LIMIT {
             bail!(
@@ -1120,6 +1171,14 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .map(|(_, relay, _)| relay.clone())
     };
     let open_before_additions = session.awaiting_human.clone();
+    ensure!(
+        args.answer.is_none() || args.resolved.len() == 1,
+        "--answer answers one question: name exactly one --resolve-question"
+    );
+    if let (Some(answer), [question]) = (&args.answer, args.resolved.as_slice()) {
+        ensure!(!answer.trim().is_empty(), "--answer must not be blank");
+        session.answers.insert(question.clone(), answer.clone());
+    }
     for resolved in &args.resolved {
         let before = session.open_questions.len();
         session
@@ -1178,6 +1237,10 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         }
         changed |= !values.is_empty();
         push_unique(list, values);
+    }
+    // A linked bug ID resolves to a bug record, by its ID or an alias (REQ-records-003).
+    for bug in &args.bugs {
+        crate::bugs::resolve_id(root, bug)?;
     }
     for (list, values) in [
         (&mut session.references.criteria, args.criteria),

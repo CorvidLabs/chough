@@ -55,9 +55,9 @@ an existing one stays byte-identical.
 `native-writes/` and an optional `identity.toml` (see [Human identity](#human-identity)).
 Every machine-specific fact Chough keeps is there and nowhere else.
 
-<!-- depends on plan step 4 -->
-It also holds the raw logs of case runs in `logs/` and the paths of external artifacts
-in `external-artifacts.toml` (see [Evidence entries](#evidence-entries)).
+It also holds the raw logs of case runs in `logs/`, the paths of external artifacts in
+`external-artifacts.toml` (see [Evidence entries](#evidence-entries)) and a pending
+`validate stop` request, `validation.stop`.
 
 A project that still holds 0.5.x records (`.chough/session.json`,
 `.chough/sessions/*.json`, `.chough/sessions/archive/`, `.chough/history/`,
@@ -78,10 +78,10 @@ for example by an older Chough, is refused the same way. See [Migration](#migrat
 | `status [--environment NAME]` | The full view, always JSON (`--json` is accepted and changes nothing). It starts with a `summary` object (see [The status view](#the-status-view)), then the checkpoint, the native gate for the next main stage in `checkpoint.gate` (`null` when that stage has no prerequisite), valid transitions, `next_valid_action`, `corrections`, native status, the snapshot, observations with freshness, and open and blocking bugs. |
 | `next [--environment NAME] [--json]` | The focused action view, text by default and compact JSON with `--json`; see [The next view](#the-next-view). |
 | `migrate [--apply DIGEST] [--consent TEXT]` | Without `--apply`, previews the migration of a 0.5.x project's records to 0.6.0 and writes nothing; with `--apply` and the preview's digest, applies that plan with the human's consent. See [Migration](#migration). |
-| `checkpoint` | Show or update: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question`, `--completed`, `--remove-completed` (marks one exact completed entry withdrawn before any `--completed` additions, so a mistaken entry is corrected in one call; an entry that is not present is refused), `--blocker`, `--clear-blockers`, `--awaiting-human` with `--holds` and `--drives` (see [Human gates](#human-gates)), `--clear-awaiting-human`, `--close-gate` with `--decided-by`, `--words`, `--where` and `--recorded-by`, and `--verdict` or `--no-native` for a gate that drives a native step (see [Relayed decisions at gates](#relayed-decisions-at-gates)), `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug`. A gate added with `--awaiting-human` that was not already open appends one `gate-opened` Timeline entry with its `holds` and `drives`, and `--clear-awaiting-human` appends one `gate-closed` entry per gate it withdraws, in the same save as the checkpoint change; `--clear-awaiting-human` records no decision. With SpecSync configured, `--native-change <id>` first runs `specsync change status <id> --json` and refuses as `refused:native-change-unknown`, saving nothing from the call, unless that read succeeds with JSON (a missing change, a failed or timed-out read, or non-JSON output refuses), and as `refused:native-change-mismatch` when the reply's `summary.id` or `change.id` names a different change; a JSON reply that names no change ID, such as `[]` or `{}`, also refuses as `refused:native-change-unknown`; without a SpecSync configuration only the ID format is checked. That read happens on every `--native-change` call: under a second for an open change, and seconds longer for an archived one, since SpecSync re-reads its acceptance records. |
+| `checkpoint` | Show or update: `--objective` (clears run consents), `--next-action`, `--native-change`, `--decision`, `--question`, `--resolve-question` (with `--answer` when it resolves exactly one), `--completed`, `--remove-completed` (marks one exact completed entry withdrawn before any `--completed` additions, so a mistaken entry is corrected in one call; an entry that is not present is refused), `--blocker`, `--clear-blockers`, `--awaiting-human` with `--holds` and `--drives` (see [Human gates](#human-gates)), `--clear-awaiting-human`, `--close-gate` with `--decided-by`, `--words`, `--where` and `--recorded-by`, and `--verdict` or `--no-native` for a gate that drives a native step (see [Relayed decisions at gates](#relayed-decisions-at-gates)), `--criterion`, `--requirement`, `--case`, `--design`, `--file`, `--observation`, `--bug` (a bug's name or alias; an unknown one, or an alias two bugs hold, is refused). A gate added with `--awaiting-human` that was not already open appends one `gate-opened` Timeline entry with its `holds` and `drives`, and `--clear-awaiting-human` appends one `gate-closed` entry per gate it withdraws, in the same save as the checkpoint change; `--clear-awaiting-human` records no decision. With SpecSync configured, `--native-change <id>` first runs `specsync change status <id> --json` and refuses as `refused:native-change-unknown`, saving nothing from the call, unless that read succeeds with JSON (a missing change, a failed or timed-out read, or non-JSON output refuses), and as `refused:native-change-mismatch` when the reply's `summary.id` or `change.id` names a different change; a JSON reply that names no change ID, such as `[]` or `{}`, also refuses as `refused:native-change-unknown`; without a SpecSync configuration only the ID format is checked. That read happens on every `--native-change` call: under a second for an open change, and seconds longer for an archived one, since SpecSync re-reads its acceptance records. |
 | `stage show\|advance\|skip\|iterate\|back\|reset\|pause\|resume\|enter\|return\|backfill` | Moves between stages with reasons, each one Timeline entry. `reset` starts a new cycle and replaces the checkpoint's next action with `New cycle from <stage> after reset: <reason>. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.`, the reason on one line and cut so the next action stays within 4096 bytes (the entry keeps it whole); `back` keeps it. Every move meets its destination's native prerequisite, whichever command makes it (advance, skip, back, reset, return, release → done): build needs state approved, implementing or verifying (another state is refused as `refused:native-<state>`) with `approval_valid` true (`refused:native-approval-invalid` otherwise) and `correction_valid` not false (`refused:native-correction-invalid` otherwise) and the approved semantic deltas unchanged (see [Approved-delta guard](#approved-delta-guard)); test and accept need that or an archived change whose terminal evidence authenticates; done needs archived (`refused:native-<state>` otherwise) with `terminal_evidence` validity `authenticated-history`, `exact` or `successor-covered` (`refused:native-archive-<validity>` otherwise). With no native change recorded a gated move is refused as `refused:no-native-change`; ungated moves are labelled `ungated:not-configured` or `ungated:sdd-disabled`. `release` is entered only from `done`, and side stages (`bugs`, `validate`, `librarian`) nest at most 4 deep. Intent, design and plan stay reachable. A malformed or ill-typed `.specsync/sdd.json` refuses gated moves as `refused:sdd-policy-invalid`; a valid `"enabled": false` or no policy file leaves them ungated, and a missing `enabled` means enabled, as in SpecSync. Leaving test for accept (advance or skip) needs no open blocking bug (`refused:blocking-bugs`) and, for each case referenced in the checkpoint, a latest executed (passed or failed) observation (by recorded time, then ID; a later `not-run` does not replace it) that passed or that a local bug of any status links (`refused:unlinked-failure` otherwise, naming the case and observation; rerun the case, or link it with `chough bug add ... --observation <id>` or `chough bug update <bug> --observation <id>`); `next` and `status` at test name the same refusal; entering validate or release needs consent or a standing preference. While an open human gate holds a stage the move would leave, `advance` and `skip` are refused as `refused:awaiting-human` before any native read (see [Human gates](#human-gates)); `back`, `iterate`, `reset`, `pause`, `resume`, `enter` and `return` are never refused by a gate. `backfill` records an advance that already happened; see [Backfilled moves](#backfilled-moves). `advance --to <stage>` moves through each main stage up to `<stage>` on one native read; see [Batched advance](#batched-advance). The move into done also archives the session; see [Moving into done](#moving-into-done). |
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding with `--environment`; record a manual or agent-assisted run with `--environment`, `--method manual\|agent-assisted`, `--summary`, optional `--artifact` and `--limitation`, and `--verdict N=pass\|fail` for every expected outcome. `run` and `record` name the evidence when `--observation-id` is omitted (see [Record names](#record-names)), return it as `observation` with the case ID as `case` beside `recorded`, and exit 3 when the recorded outcome is not passed. |
-| `evidence add [ID]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional artifacts (spelled canonically: relative, `/`-separated), `--case`, `--method`, `--track`, `--limitation`. Omitting ID names the evidence for you; an explicit ID must be a new-form name for a new write. Returns the stored ID as `observation` beside `recorded`. Never replaces an ID. There is no evidence retention in 0.6.0; see [Retention](#retention). |
+| `evidence add [ID]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional `--artifact` (a project file spelled canonically: relative, `/`-separated; or one absolute path outside the project, fingerprinted in place), `--case`, `--method`, `--track`, `--limitation`, `--failing-lines` (a manual failure's key failing lines), `--screenshot` (one key screenshot committed beside the entry) and `--raw-log` (the CI run that holds the raw log); see [Evidence entries](#evidence-entries). Omitting ID names the evidence for you; an explicit ID must be a new-form name for a new write. Returns the stored ID as `observation` beside `recorded`. Never replaces an ID. There is no evidence retention in 0.6.0; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report\|merge` | Local backlog, one Markdown file per bug; see [Bugs](#bugs). `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual` and `--environment` (required), and optionally `--impact`, `--criterion`, `--requirement`, `--case`, `--step` (in order), `--fixture`, `--observation`, `--classification`, `--scope`, `--regression-baseline` and `--source`; it refuses likely duplicates unless `--distinct REASON`, and regression needs `--regression-baseline`. `update ID` (the bug's name or any alias) appends one Log entry and takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix` or `fixed-upstream`, which needs `--note`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification` and `--regression-baseline`; an update never renames the bug. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)); without them the refusal names `chough bug update ID --observation OBS`. `--duplicate-of` and `--related` must name another existing bug: a link to the bug itself or to an unknown bug, and an update or report of an unknown bug, are refused with nothing written and name `chough bug list --all`. Changing a duplicate's status clears its `duplicate_of` and notes it, so `--status open` reopens a bug marked duplicate by mistake (REQ-cli-054). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared `--criterion`, `--requirement` and `--case` IDs; `report` prints Markdown and posts nothing. `merge BASE OURS THEIRS` is the Git merge driver for `.chough/bugs/*.md` that `.gitattributes` declares as `merge=chough-bug` (see [Merging branches](#merging-branches)). |
 | `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `migration` on-request, standing (a standing `migration` preference gives the human's consent to `chough migrate --apply`); `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty); `retention` off, auto, manual (still accepted, but nothing reads it since 0.6.0 retired retention). Only `always` and `standing` authorize without a run consent. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring, release, and retention, which nothing reads since 0.6.0 retired retention. |
@@ -200,7 +200,8 @@ first, with their total.
 | Timing | 4,096 entries and 16 MiB in one request |
 
 An entry that is not a valid transition (an unknown stage or kind, a direct-write
-field on another kind, or a relay with only one of `summary_digest` and `list`) is
+field on another kind, or a relay with only one of `summary_digest` and `list`, or of
+`native` and `actor`) is
 refused by every reader, never shown as history. A line in the Timeline that is not an
 entry, such as the closing line of an archived story, is prose and is skipped.
 
@@ -286,9 +287,10 @@ does not count as a user name. This build checks session values and Timeline ent
 relay values, corrections, bugs and journal posts, and `chough migrate` always redacts
 what it writes.
 
-<!-- depends on plan step 4 -->
-Evidence entries and case runs get the same check with plan step 4, and the key
-failing lines of a run are redacted, never refused (see [Evidence entries](#evidence-entries)).
+Evidence entries, case runs and validation runs get the same check. The key failing
+lines a case run keeps are redacted, never refused, and the entry says how many were;
+the lines `evidence add --failing-lines` gives are checked like any other value (see
+[Evidence entries](#evidence-entries)).
 
 ### Concurrent record writers
 
@@ -372,16 +374,16 @@ other slugs, but later title edits do not rename a case. Exact legacy
 `TC-<module>-NNNN` definitions remain valid with unchanged IDs, positions, serialized
 fields and definition digests, without renumbering or migration.
 
-<!-- depends on plan step 4 -->
-An automated case run's evidence entry is named `<date>-<case slug>`; a repeated
-validation run is one entry, `<date>-<case slug>-run`, that holds every attempt; and
-identical runs on one day in one session get clash suffixes (REQ-cli-011, REQ-cli-023).
+An automated case run's evidence entry is named `<date>-<case slug>`, and
+`evidence add` names its entry from its first `--case`, or from its summary when it
+has none. A repeated validation run is one entry, `<date>-<case slug>-run`, that holds
+every attempt, and each attempt is also its own case-run entry. Identical runs on one
+day in one session get clash suffixes (REQ-cli-011, REQ-cli-023).
 `cases run --observation-id`, `cases record --observation-id` and the positional ID of
-`evidence add` stay optional; a supplied ID must be a date and slug name not in use for
-a new write, and an old-style ID is refused with a remedy to omit it. 0.5.x
-observation and validation IDs stay readable and resumable as aliases. Until step 4,
-this build still names observations `OBS-<slug>-<24 hex>` and validation runs
-`VAL-<slug>-<24 hex>`, under `.chough/evidence/`.
+`evidence add` stay optional. A supplied ID must be a date and slug name not in use for
+a new write: a name already in use is refused with nothing written and no clash
+suffix, and an old-style ID is refused with a remedy to omit it. 0.5.x observation and
+validation IDs stay readable and resumable as aliases.
 
 ## Bugs
 
@@ -498,7 +500,10 @@ records the step in the human's name instead.
 
 The gate's `gate-closed` entry carries `relayed_by` with the four values under
 `decided_by`, `words`, `where` and `recorded_by` (REQ-history-010), the shape agreed
-with SpecSync's side for its approval and review records (spec-sync#633). One decision
+with SpecSync's side for its approval and review records (spec-sync#633). When the
+close drove a SpecSync step, `relayed_by` also gives `native`, the command it ran
+(`specsync change approve` or `specsync change review`, then the change ID), and
+`actor`, the SpecSync actor it ran as, both or neither. One decision
 is added to Decisions and why for the handoff, ending with the native step when one
 ran:
 
@@ -640,10 +645,23 @@ The front matter gives `kind: session`, `id`, `aliases`, `objective`, `intent_sc
 verified`, `## Open threads` and `## Timeline`. Chough writes the Goal from the
 objective once and never rewrites the Goal or Where it stands paragraphs. A decision
 from `checkpoint --decision` is one item in Decisions and why, completed work one item
-in Where it stands, and an open question one item in Open threads; `--resolve-question`
-appends the answer to that item's line, and `--remove-completed` marks an item
-withdrawn on its own line. `next` and `status` read decisions, completed work and open
-questions from these sections, so no field repeats them.
+in Where it stands, and an open question one item in Open threads.
+`--resolve-question` keeps the question's line and marks it ` (resolved)`; with
+`--answer <text>` and exactly one `--resolve-question`, the line becomes
+`<question> (resolved: <answer>)`. `--remove-completed` marks an item withdrawn on its
+own line. `next` and `status` read decisions, completed work and open questions from
+these sections, so no field repeats them.
+
+Each observation the session references is one What was verified item that links its
+entry:
+
+```text
+- [<claim>](evidence/<id>.md)
+```
+
+An entry another open session holds is linked as `../<session>/evidence/<id>.md`, and
+an observation held only as a receipt, or by no record, stays a plain `- <id>` item. A
+person's edit to an item's claim keeps the item.
 
 - `chough session new <key> [--objective T] [--intent-scope S] [--module M]...`
   creates the folder by create-new and makes it active. A key another session holds as
@@ -793,14 +811,22 @@ regenerated index and feed. The session's own `session.md` changed in the move, 
 bytes were not yet committed and it stayed. Then run `chough doctor --fix`, which
 removes the session folder now that its bytes are committed, and commit that.
 
-<!-- depends on plan step 4 -->
 Each evidence entry the session holds becomes one map in the story's `receipts`, with
-its `id`, `aliases`, `claim`, `result`, `command`, `revision`, `environment`,
-`content`, `fingerprint`, `case`, `case_digest` and `screenshot` when present, and one
-What was verified line (its claim, its command and the first 12 digits of its
-fingerprint, ending `^<evidence id>`) for each entry not already listed. Screenshots
-move beside the story. Evidence and bug links into an archived session resolve to its
-story's receipts. Until step 4, `receipts` is an empty list.
+its `id`, `aliases` (one value, comma and space separated), `claim`, `result`,
+`observed`, `command`, `revision`, `environment`, `content`, `fingerprint`, `raw_log`,
+`case`, `case_digest`, `duration_seconds`, `screenshot` and `actor` when present, and
+one What was verified line per receipt:
+
+```text
+- <claim> — `<command>` <first 12 fingerprint digits> [screenshot](<session>/<file>) ^<evidence id>
+```
+
+The command, the digits and the screenshot link appear only when the receipt has them,
+and a receipt without a claim shows its ID. The line replaces the item that linked the
+entry while the session was open, since that folder leaves with the session; an item a
+person wrote that names the entry is kept, and that entry gets no second line.
+Screenshots move beside the story. Evidence and bug links into an archived session
+resolve to its story's receipts.
 
 ## Migration
 
@@ -815,6 +841,8 @@ story's receipts. Until step 4, `receipts` is an empty list.
   the bug that keeps it;
 - `kept_with_leaks`: files it keeps byte for byte (an open bug's fixture, a `library/`
   snapshot or brief) that hold a leak, listed for a person to fix and never changed;
+- `gaps`: what carried records held that their entries or receipts do not, one counted
+  line per field, which the receipt lists under Not carried;
 - `unaccounted`, `aliases` (old ID to new), `follow_ups` and `git_history`;
 - `plan_digest`, the plan's SHA-256, and the exact apply command.
 
@@ -862,11 +890,18 @@ What becomes what:
 - an open gate holds the stage its session was at;
 - case definitions and `.chough/preferences.json` stay byte-identical.
 
-<!-- depends on the migrate evidence mapper (step 4) -->
 Each observation an open session references becomes an evidence entry of that session;
-each one an archived session or a bug references becomes a receipt of that story or
-bug; others are removed. A small PNG or JPEG artifact of a carried observation stays
-beside its session or story, and other artifacts are removed. The generated and copied
+when several open sessions reference it, the one whose new ID sorts first holds it. Each
+one only an archived session or a bug references becomes a receipt of that story or
+bug, and others are removed. A repeated validation run becomes one entry. Entries are
+named as `evidence add` names them, from the observed date and the first case or the
+claim, or the case and `run`; a clash takes the first 6 hexadecimal digits of the
+SHA-256 of the old ID, so the preview and the apply name everything alike, and every old
+ID is an alias. A raw log under `.chough/artifacts/` is removed and its recorded digest
+becomes the fingerprint. A PNG or JPEG artifact of a carried observation is stripped of
+its metadata and kept beside its session or story within the bounds of
+[key screenshots](#evidence-entries); an artifact elsewhere in the project stays where
+it is, its path and digest on the entry. The generated and copied
 vault content of earlier releases is removed after it is listed, and so are
 `.chough/transitions.jsonl`, `.chough/history/`, `.chough/pruned.jsonl`,
 `.chough/session.v1.json`, `.chough/artifacts/` other than files an open bug names, and
@@ -1327,7 +1362,6 @@ other artifacts makes them stale. A record written without a content identity, b
 earlier Chough, keeps the revision-bound comparison and stays stale after any new
 commit; a malformed one is refused.
 
-<!-- depends on plan step 4 -->
 Freshness reads an evidence entry, and a receipt in an archived story or bug, the same
 way, and a receipt migrated from an observation with no content identity keeps the
 revision-bound result.
@@ -1360,22 +1394,28 @@ unauthenticated claim by whoever recorded it.
 
 ## Evidence entries
 
-<!-- depends on plan step 4 -->
 Each observation is an evidence entry of the active session,
 `.chough/sessions/<session>/evidence/<id>.md` (REQ-cli-017). Its front matter gives
 `kind: evidence`, `id`, `aliases`, `claim` (the summary), `result` (`passed`, `failed`
 or `not-run`), `evidence_kind`, `method`, `track`, `case` and `case_digest` when it is
 bound to a case, `command` (the executed argument vector), `exit_code`, `tests_run`,
 `revision`, `content` (the working content identity), `environment`, `fingerprint`,
-`raw_log`, `external` or `screenshot` when present, `criteria`, `requirements`,
-`contracts`, `limitations`, `observed` (the UTC time), `duration_seconds` when known
-and `actor`. Its body is the claim as one bold sentence and one plain sentence saying
-what the receipt shows, followed by the key failing lines when it failed. A repeated
-validation run's single entry also gives `state`, `started`, `completed`, `failures`,
-`not_run`, `elapsed_seconds` and `attempts`, one flat map per attempt with `started`,
-`observed`, `result` and `duration_seconds`.
+`raw_log`, `external` or `screenshot` when present, `artifacts` and
+`artifact_fingerprints` for project files given with `--artifact`, `criteria`,
+`requirements`, `contracts`, `limitations`, `observed` (the UTC time),
+`duration_seconds` when known and `actor`. Its body is the claim as one bold sentence
+and one plain sentence saying what the receipt shows, followed by the key failing lines
+when it failed.
 
-<!-- depends on plan step 4 -->
+A repeated validation run's single entry gives `validation_run: true`, `run_case` (its
+case, in place of `case`), `authority`, `times`, `interval_seconds`, `state`,
+`started`, `completed`, `failures`, `not_run`, `elapsed_seconds`, `bugs` and
+`attempts`, one flat map per attempt with `started`, `observed`, `result`,
+`duration_seconds` and `observation`, the case-run entry that attempt recorded. Its
+`result` is `not-run` and its `evidence_kind` is `structural`: the run is a summary, and
+its attempts are the observations. Chough rewrites it in place as each attempt
+finishes.
+
 A raw log is never committed (REQ-records-005). The raw output of an executed case is
 written to `.chough/local/logs/<evidence id>.log`, and the entry gives the exact
 command, the SHA-256 of the captured output as its `fingerprint` and, when a CI run
@@ -1385,36 +1425,37 @@ with complete terminal escape sequences removed, taken for the `cargo-test` adap
 from the first failure block and the `test result:` line, and otherwise from the last
 non-blank lines of standard error and then standard output. A failing line that holds a
 local path or credential is redacted, never refused, and the entry says how many were.
-A manual failure can keep its own key failing lines within the same bounds.
+`evidence add --failing-lines <text>` keeps a manual failure's own key failing lines
+within the same bounds.
 
-<!-- depends on plan step 4 -->
-An artifact given as an absolute path outside the project is fingerprinted in place
-with SHA-256, within a 64 MiB bound, and never copied into the repository; a missing
-path, a directory, a symlink and a file over 64 MiB are refused, naming the path on
-standard error only. Its path and fingerprint go to `.chough/local/external-artifacts.toml`
+An artifact given to `evidence add --artifact` or `cases record --artifact` as an
+absolute path outside the project, one per entry, is fingerprinted in place with
+SHA-256, within a 64 MiB bound, and never copied into the repository; a missing path, a
+directory, a symlink and a file over 64 MiB are refused, naming the path on standard
+error only. Its path and fingerprint go to `.chough/local/external-artifacts.toml`
 under a neutral ID, `ext-<6 hex>`, and the committed entry gives only `external:
 ext-<hex>` and `fingerprint: sha256:<64 hex>`. On the machine that holds the ID,
 freshness re-reads the file and reports the artifact `current` or `changed`; elsewhere
 it reads `external, not checkable here`, which is neither a pass nor a staleness of the
 entry's own content.
 
-<!-- depends on plan step 4 -->
-A key screenshot is committed with its entry (REQ-records-013): a PNG or JPEG of at
-most 524,288 bytes, at most 5 per session and 2,097,152 bytes per session in all.
+`evidence add --screenshot <path>` commits one key screenshot with its entry
+(REQ-records-013): a PNG or JPEG of at most 524,288 bytes, at most 5 per session and
+2,097,152 bytes per session in all.
 Chough removes its metadata (PNG `tEXt`, `zTXt`, `iTXt`, `tIME` and `eXIf` chunks; JPEG
 `APP1` to `APP15` and `COM` segments) and writes it by create-new as
 `.chough/sessions/<session>/evidence/<evidence id>.png` (or `.jpg`) beside the entry,
 which gives `screenshot` and the `fingerprint` of the committed bytes. Another format,
 a file over a bound, a symlink, and a sixth screenshot or one past the session total
 are refused with nothing written, saying to crop or compress it, or to record it by
-fingerprint as an external artifact. At finish each screenshot moves beside the story,
+fingerprint with `--artifact`. At finish each screenshot moves beside the story,
 to `.chough/archive/sessions/<session>/<evidence id>.<ext>`. Chough cannot see what an
 image shows: check a screenshot for personal information before adding it.
 
-Until step 4 this build still writes observations as JSON under `.chough/evidence/` and
-case logs under `.chough/artifacts/<observation-id>.log`, creating each record, log and
-validation run by atomic create-new; a same-ID different-content creation is refused
-and the existing bytes stay.
+Chough creates each entry, raw log, screenshot and validation run entry by atomic
+create-new: a same-name different-content creation is refused and the existing bytes
+stay. A validation run's entry is the one entry rewritten afterwards, as its attempts
+finish.
 
 ## Retention
 
@@ -1573,7 +1614,7 @@ reads (above).
 |---|---|
 | Stages | The Timeline of every open session and every archived story, within 4,096 entries and 16 MiB in one request; a session or story that cannot be read is named and the report marked partial. Each `advance`, `iterate`, `back`, `reset`, `skip`, `pause`, `resume`, `enter` and `return` entry ends the open segment and starts the next; `gate-opened`, `gate-closed`, `direct-native-write` and `correction` entries start or end none. Every `reset` starts a new cycle and `back` never does; the first cycle starts at the first entry. The segment before it has an unknown start, because `init` writes no transition. Time in `done` until the next reset is idle between cycles. Iterations, side-stage visits and paused time are shown separately; active time is stage time minus waiting on a human, and paused segments are not stage time. The open segment ends now and is `ongoing`. |
 | Human gates | `gate-opened` and `gate-closed` entries paired by gate text and reconciled with the checkpoint's awaiting gates: opened and still listed is open (elapsed so far); opened, never closed and no longer listed was `cleared without a gate record` (close time unknown); listed with no entry, or closed with no opening, was `opened before gate records or record missing`. A second `gate-opened` for a gate already open means it was cleared in between without a record: the earlier opening is closed at an unknown time and a new gate starts. A gate whose close is before its open (or that is open with an open time after now) has one wrong time, so every segment it could overlap under either reading has unknown waiting and active time. Overlapping gates are merged, so waiting time is never counted twice; a gate with an unknown end leaves the affected segments' active time unknown. A gate entry says when; a relayed one also carries a claim of who decided (REQ-cli-050), which timing does not report. |
-| Tests | Case runs per case and environment: time, outcome and run time, from evidence entries and the receipts of archived stories and bugs (this build also still reads 0.5.x observation files until plan step 4). `cases run` records `duration_seconds` in whole seconds, and a run under one second is `recorded together`, not a measured zero; manual records and earlier runs have no run time, shown unknown. |
+| Tests | Case runs per case and environment: time, outcome and run time, from evidence entries and the receipts of archived stories and bugs. `cases run` records `duration_seconds` in whole seconds, and a run under one second is `recorded together`, not a measured zero; manual records and earlier runs have no run time, shown unknown. |
 | Validation runs | Started, completed, failures, not run, recorded attempts and `elapsed_seconds`, labelled total run wall-clock, including intervals and resumes: it is never a per-test time. |
 | Bugs | Created; reproduced is the earliest linked failed observation (unknown with reason `unavailable` when a linked observation is not present); verified is the first Log entry that records `status: <old> -> verified` (labelled `from the bug Log`); fix time is reproduced to verified. |
 | Native | The current change (one status read) and, only for an unfiltered report, the 10 most recent archived changes, by archive directory date and, on the same date, by `finalization.json` timestamp (one read each, reusing the current change's read when it is also archived; older ones are skipped and reported partial). See [Timing native reads](#timing-native-reads). Created and updated come from status. From the change's record files only `approvals[].gate`, `approvals[].timestamp`, `reopenings[].timestamp` and the `timestamp` of `verification.json`, `review.json` and `finalization.json` are read, within SpecSync's change-artifact bound; actor, note, reviewer and every other field are never read. Validity comes only from status: a definition approval is `current` only when status reports `approval_valid` true; an acceptance or finalization approval that a later native reopening supersedes is `reopened` (a reopening never supersedes the definition approval), and one superseded by a later approval of its gate, or that status reports invalid, is `not current`. |
