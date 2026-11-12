@@ -879,3 +879,134 @@ fn init_appends_only_the_missing_merge_lines_and_keeps_a_set_driver() {
         "chough library merge %O %A %B"
     );
 }
+
+/// REQ-records-011, KNOW-33 (Q1, Leif's decision: posts are time-based): each new post
+/// records `time`, the UTC time it was written to the second, and keeps its
+/// `<date>-<slug>` name. The index's newest posts and the feed sort newest first by
+/// time; a post without one sorts by date and then name after the timed posts of its
+/// date, and the index marks it "(no time)". An entry's `<updated>` is its time, and
+/// the same posts give identical bytes.
+#[test]
+fn posts_record_a_time_and_sort_newest_first_by_it() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let added = fixture.ok(&[
+        "journal",
+        "add",
+        "--kind",
+        "learned",
+        "--title",
+        "Written now",
+        "--body",
+        "One line.",
+    ]);
+    let name = added["post"].as_str().unwrap_or_default().to_string();
+    let text = fixture.read(&name);
+    let (front, _) = split(&text);
+    let (date, time) = (field(front, "date"), field(front, "time"));
+    let stem = name
+        .trim_start_matches("knowledge/journal/")
+        .trim_end_matches(".md")
+        .to_string();
+    assert!(stem.starts_with(&format!("{date}-")), "{text}");
+    let shape = time.len() == 20
+        && time.starts_with(&format!("{date}T"))
+        && time.ends_with('Z')
+        && [13, 16].iter().all(|at| time.as_bytes()[*at] == b':');
+    assert!(
+        shape,
+        "time {time:?} is not UTC ISO 8601 to the second: {text}"
+    );
+    let post = |name: &str, date: &str, time: Option<&str>| {
+        let time = time.map_or(String::new(), |time| format!("time: {time}\n"));
+        fixture.write(
+            &format!("knowledge/journal/{name}.md"),
+            &format!(
+                "---\nid: {name}\ntitle: SYNTHETIC {name}\ntype: journal\ndate: {date}\n{time}kind: learned\n---\n\n# SYNTHETIC {name}\n\nBody.\n"
+            ),
+        );
+    };
+    post(
+        "2026-05-01-older",
+        "2026-05-01",
+        Some("2026-05-01T23:00:00Z"),
+    );
+    post(
+        "2026-05-02-a-early",
+        "2026-05-02",
+        Some("2026-05-02T08:00:00Z"),
+    );
+    post("2026-05-02-m-untimed", "2026-05-02", None);
+    post("2026-05-02-b-untimed", "2026-05-02", None);
+    post(
+        "2026-05-02-z-late",
+        "2026-05-02",
+        Some("2026-05-02T20:00:00Z"),
+    );
+    post("2026-05-03-next-day", "2026-05-03", None);
+    fixture.ok(&["library", "index"]);
+    let order = [
+        stem.as_str(),
+        "2026-05-03-next-day",
+        "2026-05-02-z-late",
+        "2026-05-02-a-early",
+        "2026-05-02-b-untimed",
+        "2026-05-02-m-untimed",
+        "2026-05-01-older",
+    ];
+    let index = fixture.read("knowledge/index.md");
+    let listed: Vec<&str> = index
+        .lines()
+        .filter(|line| line.starts_with("- ["))
+        .filter_map(|line| line.split("](journal/").nth(1)?.split(".md)").next())
+        .collect();
+    assert_eq!(listed, order, "{index}");
+    for (name, untimed) in [
+        ("2026-05-03-next-day", true),
+        ("2026-05-02-b-untimed", true),
+        ("2026-05-02-z-late", false),
+        (stem.as_str(), false),
+    ] {
+        let line = index
+            .lines()
+            .find(|line| line.contains(&format!("](journal/{name}.md)")))
+            .unwrap_or_default();
+        assert_eq!(line.ends_with(" (no time)"), untimed, "{line}");
+    }
+    let feed = fixture.read("knowledge/journal/feed.xml");
+    let entries: Vec<&str> = feed
+        .split("<id>urn:chough:journal:")
+        .skip(1)
+        .filter_map(|rest| rest.split('<').next())
+        .collect();
+    assert_eq!(entries, order, "{feed}");
+    for (name, updated) in [
+        ("2026-05-02-z-late", "2026-05-02T20:00:00Z"),
+        ("2026-05-02-b-untimed", "2026-05-02T00:00:00Z"),
+        (stem.as_str(), time.as_str()),
+    ] {
+        assert!(
+            feed.contains(&format!(
+                "<id>urn:chough:journal:{name}</id>\n    <updated>{updated}</updated>"
+            )),
+            "{name}: {feed}"
+        );
+    }
+    assert_eq!(
+        feed.split("<updated>")
+            .nth(1)
+            .and_then(|rest| rest.split('<').next()),
+        Some(time.as_str()),
+        "the feed's updated is the newest entry's time: {feed}"
+    );
+    fixture.ok(&["library", "index", "--check"]);
+    let first = (fixture.read("knowledge/index.md"), feed.clone());
+    fixture.ok(&["library", "index"]);
+    assert_eq!(
+        (
+            fixture.read("knowledge/index.md"),
+            fixture.read("knowledge/journal/feed.xml")
+        ),
+        first
+    );
+}
