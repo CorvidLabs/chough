@@ -15,16 +15,26 @@
   "revision": "30ac761f13feef4cc3ac765ad077d30630e4650a",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8"
+  ],
   "impact": "Two readings of one requirement",
   "classification": "requirement-gap",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37b, test stage, area approvals and gates",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794493185,
+      "text": "status: open -> investigating. Red at 18c04614, after Leif's re-approval and before change check --commit: the cli requirements do not yet hold the approved wording (TC-cli-send-back-wording-in-the-specs).",
+      "observations": [
+        "OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794450243,
-  "updated_at_unix_seconds": 1794450243
+  "updated_at_unix_seconds": 1794493185
 }

@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8",
+  "criteria": [
+    "KNOW-1",
+    "KNOW-5"
+  ],
+  "requirements": [
+    "REQ-cli-044",
+    "REQ-cli-012",
+    "REQ-cli-059"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test spec_split -- --exact the_send_back_wording_is_in_the_cli_requirements for TC-cli-send-back-wording-in-the-specs: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8.log": "798b58f11c8ecbccbd40b08c89624559ca824579ef2bb4e6138c1e932a4cf310"
+  },
+  "observed_at_unix_seconds": 1794493178,
+  "snapshot": {
+    "revision": "18c04614cfc4318fd4a219d4c8f42a3bf00f7e0b",
+    "dirty": false,
+    "fingerprint": "7bf0354ddab2e504408077689cb94b7ab661ae8af9b85a33ebc073830f5332e3",
+    "content": "5fcbeae90b2dfe5515964344c355f099de6ef2bb570bb17f4719da618bc59404"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-send-back-wording-in-the-specs",
+      "digest": "7fc001a83d34dbfa573b0b9dc5b005b74f43fe51fc753b687d196cdfeef53afa"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "spec_split",
+    "--",
+    "--exact",
+    "the_send_back_wording_is_in_the_cli_requirements"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

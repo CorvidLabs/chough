@@ -16,16 +16,26 @@
   "revision": "d854ce1ac06a195e0c81d2aaf22d61bd64e2c556",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8"
+  ],
   "impact": "Folder links do nothing in Obsidian",
   "classification": "requirement-gap",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37f, test stage, area knowledge",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794493185,
+      "text": "status: open -> investigating. Red at 18c04614, after Leif's re-approval and before change check --commit: the cli requirements do not yet hold the approved wording (TC-cli-send-back-wording-in-the-specs).",
+      "observations": [
+        "OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794447528
+  "updated_at_unix_seconds": 1794493185
 }
