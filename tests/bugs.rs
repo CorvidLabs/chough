@@ -2155,3 +2155,69 @@ fn verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision() 
     let text = fixture.read(&bug_path(&id));
     assert!(!text.contains("Not fixed yet."), "{text}");
 }
+
+/// REQ-cli-012, F8 of the second fresh-eyes round: `bug add` and `bug update` given
+/// `--observation` with an entry of the active session add the bug to that session's
+/// checkpoint once, so its archived story names the bugs found in it; one naming another
+/// session's entry leaves the active checkpoint unchanged.
+#[test]
+fn a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story() {
+    let fixture = Fixture::new();
+    fixture.init();
+    // Entries carry HEAD as their revision, which the archived story's receipts need.
+    fixture.commit("a project");
+    let session = fixture.active_id();
+    let failed = entry(&fixture, "found-fails", "failed", 1_793_000_000);
+    let passed = entry(&fixture, "found-passes", "passed", 1_793_000_100);
+    let add = |title: &str, extra: &[&str]| {
+        let mut args = vec![
+            "bug",
+            "add",
+            "--title",
+            title,
+            "--symptom",
+            title,
+            "--trigger",
+            title,
+            "--expected",
+            "SYNTHETIC pass",
+            "--actual",
+            "SYNTHETIC fail",
+            "--environment",
+            "local",
+        ];
+        args.extend(extra);
+        json(&fixture.run(&args))["id"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    let bugs = || fixture.ok(&["checkpoint"])["checkpoint"]["bugs"].clone();
+    let first = add(
+        "SYNTHETIC checkout charges shipping at the threshold",
+        &["--observation", &failed],
+    );
+    assert_eq!(bugs(), json!([first]));
+    let second = add("SYNTHETIC receipt email omits the order number", &[]);
+    assert_eq!(bugs(), json!([first]));
+    for bug in [&second, &first] {
+        fixture.ok(&["bug", "update", bug, "--observation", &passed]);
+    }
+    assert_eq!(bugs(), json!([first, second]));
+
+    fixture.ok(&["session", "new", "beta", "--objective", "SYNTHETIC beta"]);
+    let beta = fixture.session_file_of("beta");
+    let before = fixture.read(&beta);
+    add(
+        "SYNTHETIC search ignores accented letters",
+        &["--observation", &format!("{session}/{failed}")],
+    );
+    assert_eq!(fixture.read(&beta), before, "the active checkpoint changed");
+
+    fixture.commit("the bugs");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
+    for bug in [&first, &second] {
+        assert!(story.contains(bug.as_str()), "{bug} missing from\n{story}");
+    }
+}
