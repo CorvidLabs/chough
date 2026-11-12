@@ -140,7 +140,11 @@ pub(super) struct Before {
 
 /// Before a `chough change` step for `change`. Nothing is written.
 pub(super) fn before_step(root: &Path, change: &str) -> Option<Before> {
-    if !safe(change) {
+    // A change with no workspace has no lifecycle files to baseline, so a step SpecSync
+    // refuses for an unknown ID leaves nothing under `.chough/` (REQ-cli-057).
+    if !safe(change)
+        || !local_path(root, &format!(".specsync/changes/{change}")).is_ok_and(|path| path.is_dir())
+    {
         return None;
     }
     let local = read_local(root, change).ok().flatten();

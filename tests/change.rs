@@ -200,6 +200,8 @@ fn no_change_command_writes_a_tracked_file_under_dot_chough() {
     // A checkpoint save, as in any project past init: the writer's lock creates the
     // `.gitignore` that keeps `.chough/local/` untracked.
     fixture.ok(&["checkpoint", "--next-action", "Run the change steps"]);
+    // The change's workspace, which a baseline needs (A3-2).
+    fixture.write(".specsync/changes/free-shipping/state.json", "{}\n");
     fixture.write(".stub-out", "{}\n");
     let split = |files: BTreeMap<String, Vec<u8>>| {
         let (local, tracked): (BTreeMap<_, _>, BTreeMap<_, _>) = files
