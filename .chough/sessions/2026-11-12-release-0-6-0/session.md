@@ -80,6 +80,9 @@ observations:
   - 2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta
   - 2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta-a22092
   - 2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta-342bc4
+  - 2026-11-12-tc-cli-gate-record-reports-the-approval-it-ran
+  - 2026-11-12-tc-cli-stage-move-authority-line-says-when-chough-runs-native
+  - 2026-11-12-tc-history-direct-write-entry-says-what-changed
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -172,6 +175,9 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Red: cargo test --locked --test docs -- --exact a_new_project_path_and_the_delta_format_are_documented, run in a throwaway worktree at 56c3f4d3 (before the new-project docs) with only tests/docs.rs from a87b54ec added, failed (exit 101): README.md does not name specsync change adopt](evidence/2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta.md)
 - [Ran cargo test --locked --test docs -- --exact a_new_project_path_and_the_delta_format_are_documented for TC-cli-docs-show-a-new-project-and-a-delta: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta-a22092.md)
 - [Ran cargo test --locked --test docs -- --exact a_new_project_path_and_the_delta_format_are_documented for TC-cli-docs-show-a-new-project-and-a-delta: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta-342bc4.md)
+- [Ran cargo test --locked --test humans -- --exact gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record for TC-cli-gate-record-reports-the-approval-it-ran: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-gate-record-reports-the-approval-it-ran.md)
+- [Ran cargo test --locked --test stages -- --exact every_stage_move_says_when_chough_runs_native_approval_or_review for TC-cli-stage-move-authority-line-says-when-chough-runs-native-steps: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-stage-move-authority-line-says-when-chough-runs-native.md)
+- [Ran cargo test --locked --test direct_writes -- --exact a_direct_write_entry_says_what_changed_outside_chough for TC-history-direct-write-entry-says-what-changed: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-direct-write-entry-says-what-changed.md)
 
 ## Open threads
 
