@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "166d1ea1d37971e4c95ee8ba02249a1a46b2a0d2",
   "created_at": 1794494442,
-  "updated_at": 1794494531,
+  "updated_at": 1794494830,
   "affected_specs": [
     "cli",
     "history",
@@ -22,7 +22,8 @@
     "CHANGELOG.md",
     "src/",
     "tests/",
-    ".chough/cases/"
+    ".chough/cases/",
+    "docs/"
   ],
   "no_spec_change": true,
   "no_spec_change_rationale": "Release preparation and dogfood fixes within the 0.6.0 contract: D1 makes the pointer resolve as REQ-records-009 already requires ('every record, alias and timeline entry is readable by next, status...'), and the rest is the version, the CHANGELOG, test-only renames, case links and evidence",
