@@ -223,6 +223,8 @@ observations:
   - 2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-11d611
   - 2026-11-12-tc-history-session-close-records-withdrawn-gates
   - 2026-11-12-tc-history-session-close-records-withdrawn-gates-9c73cd
+  - 2026-11-12-tc-cli-docs-show-a-lessons-dated-form
+  - 2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -243,6 +245,7 @@ bugs:
   - 2026-11-12-an-archived-story-s-what-was-verified-lists-superseded-runs
   - 2026-11-12-at-accept-next-and-status-pass-on-specsync-s-own-review
   - 2026-11-12-session-close-drops-an-open-human-gate-without-recording-or
+  - 2026-11-12-chough-init-host-claude-does-not-print-the-claude-md-line-the
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -464,6 +467,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test next -- --exact next_at_accept_never_passes_on_specsyncs_review_command for TC-cli-next-at-accept-never-passes-on-the-review-command: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-11d611.md)
 - [Ran cargo test --locked --test sessions -- --exact session_close_records_the_gates_it_withdraws for TC-history-session-close-records-withdrawn-gates: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-session-close-records-withdrawn-gates.md)
 - [Ran cargo test --locked --test sessions -- --exact session_close_records_the_gates_it_withdraws for TC-history-session-close-records-withdrawn-gates: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-session-close-records-withdrawn-gates-9c73cd.md)
+- [Ran cargo test --locked --test docs -- --exact a_lessons_dated_form_is_documented_and_its_example_counts for TC-cli-docs-show-a-lessons-dated-form: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-lessons-dated-form.md)
+- [Ran cargo test --locked --test optional -- --exact init_with_the_claude_host_prints_the_claude_md_line_and_writes_none for TC-cli-init-claude-host-prints-the-claude-md-line: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line.md)
 
 ## Open threads
 
