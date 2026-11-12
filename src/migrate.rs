@@ -990,10 +990,25 @@ fn plan(root: &Path) -> Result<Plan> {
     }
     // REQ-records-014: the plan lists the missing verification exclusions as a
     // follow-up; Chough never writes SpecSync's policy.
-    let follow_ups = crate::doctor::exclusions(root)
+    let mut follow_ups = crate::doctor::exclusions(root)
         .advice()
         .into_iter()
         .collect::<Vec<_>>();
+    // REQ-cli-047: a migrated project declares Chough's merge lines and sets its merge
+    // drivers as one `chough init` sets up. The migration writes create-new only, so it
+    // names what to add; the lines come from the committed `.gitattributes`, so the plan
+    // is the same in every clone.
+    let lines = crate::library::missing_merge_lines(root)?;
+    if !lines.is_empty() {
+        follow_ups.push(format!(
+            "Declare Chough's merge drivers so generated files and bugs merge without a hand-resolved conflict (REQ-cli-047): add {} to `.gitattributes` and commit it, then run `chough doctor --fix` in each clone, which sets `merge.chough-bug.driver` and `merge.chough-generated.driver`.",
+            lines
+                .iter()
+                .map(|line| format!("`{line}`"))
+                .collect::<Vec<_>>()
+                .join(", ")
+        ));
+    }
     Ok(Plan {
         sources,
         legacy,
