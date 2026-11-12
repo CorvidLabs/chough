@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-12-a-journal-post-s-title-is-the-raw-objective-and-its-body-a
 aliases: []
 title: A journal post's title is the raw objective and its body a stale first bullet, and the stories archived before the journal have no post
-status: fix-pending-verification
+status: verified
 classification: requirement-gap
 scope: blocking
 impact: The journal, the timeline of archived changes, reads badly and covers one change of 69
@@ -28,7 +28,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T16:04:18Z
-updated: 2026-11-12T16:20:05Z
+updated: 2026-11-12T16:40:22Z
 ---
 # A journal post's title is the raw objective and its body a stale first bullet, and the stories archived before the journal have no post
 
@@ -47,3 +47,4 @@ Actual: REQ-records-011 makes the title the objective and the body the first Out
 
 - 2026-11-12T16:04:18Z · Reported (Leif, reviewing knowledge/journal in the coordinator chat (hc t370), 2026-11-12T15:35Z, relayed by t370; red at 423169de by t382); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-uses-the-title-and-summary, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-derives-a-title-and-body, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-add-record-backfills-a-story, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-and-feed · by claude-code (hc t382)
 - 2026-11-12T16:20:05Z · status: open -> fix-pending-verification; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-uses-the-title-and-summary-8c54e8, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-derives-a-title-and-body-4b516b, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-add-record-backfills-a-story-92c347, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-and-feed-d0e01b. Green at 69b60a68: the three journal cases and TC-records-journal-and-feed passed (journal target 18/18, doctor 15/15 before the commit). Verified once the backfill and 0.6.0's own post are written with it · by claude-code (hc t382)
+- 2026-11-12T16:40:22Z · status: fix-pending-verification -> verified. Backfill done at e9179a9b: all 69 archived stories have a post written with journal add --record (69 written, 0 refused), 0.6.0's own post now 'Chough 0.6.0: human-first records' with a real summary, library index --check passes and doctor is clean; the green observations at 69b60a68 stand · by claude-code (hc t382)
