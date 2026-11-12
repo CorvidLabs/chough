@@ -481,7 +481,7 @@ fn read_observations(root: &Path, carried: &mut Carried) -> Result<Vec<Observati
         }
         let text = read_bounded_record(&local_path(root, &path)?, LEGACY_BOUND)
             .with_context(|| format!("{path} cannot be read, so no plan was made"))?;
-        let evidence = without_schema_1_content(
+        let evidence = carried_form(
             crate::evidence::legacy_observation(&path, &text).with_context(|| {
                 format!("{path} is not a 0.5.x observation, so no plan was made")
             })?,
@@ -521,7 +521,7 @@ fn read_observations(root: &Path, carried: &mut Carried) -> Result<Vec<Observati
             let Ok(evidence) = read_bounded_record(&local_path(root, &path)?, LEGACY_BOUND)
                 .and_then(|text| {
                     crate::evidence::legacy_observation(&path, &text)
-                        .map(|evidence| without_schema_1_content(evidence, &text))
+                        .map(|evidence| carried_form(evidence, &text))
                 })
             else {
                 continue;
@@ -571,6 +571,27 @@ fn read_runs(root: &Path, carried: &mut Carried) -> Result<Vec<Run>> {
     Ok(found)
 }
 
+/// A 0.5.x observation as 0.6.0 reads it: its digests lowercased, and a schema 1
+/// record's content identity left out.
+fn carried_form(evidence: Evidence, text: &str) -> Evidence {
+    without_schema_1_content(lowercase_digests(evidence), text)
+}
+
+/// Every SHA-256 digest an observation carries, lowercased: 0.5.x accepted either
+/// case, and 0.6.0 reads only lowercase digests (REQ-cli-017). It is the same digest.
+fn lowercase_digests(mut evidence: Evidence) -> Evidence {
+    if let Some(content) = &mut evidence.snapshot.content {
+        *content = content.to_ascii_lowercase();
+    }
+    for digest in evidence.artifact_fingerprints.values_mut() {
+        *digest = digest.to_ascii_lowercase();
+    }
+    for case in &mut evidence.cases {
+        case.digest = case.digest.to_ascii_lowercase();
+    }
+    evidence
+}
+
 /// A schema 1 observation without its content identity: 0.5.x compared content only for
 /// schema 2 records, so a schema 1 record's freshness rested on its revision-bound
 /// fingerprint, and its entry stays stale after a commit as it did (REQ-cli-017).
@@ -585,14 +606,11 @@ fn without_schema_1_content(mut evidence: Evidence, text: &str) -> Evidence {
     evidence
 }
 
-/// A fingerprint as REQ-records-005 writes it, `sha256:<64 hex>`, from a 0.5.x digest,
-/// which was bare hex.
+/// A fingerprint as REQ-records-005 writes it, `sha256:<64 lowercase hex>`, from a
+/// 0.5.x digest, which was bare hex in either case.
 fn fingerprint(digest: &str) -> String {
-    if digest.starts_with("sha256:") {
-        digest.to_string()
-    } else {
-        format!("sha256:{digest}")
-    }
+    let hex = digest.strip_prefix("sha256:").unwrap_or(digest);
+    format!("sha256:{}", hex.to_ascii_lowercase())
 }
 
 /// Every file under `relative`, project-relative and sorted.
