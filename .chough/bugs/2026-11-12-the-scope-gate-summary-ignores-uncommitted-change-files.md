@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-12-the-scope-gate-summary-ignores-uncommitted-change-files
 aliases: []
 title: The scope gate summary ignores uncommitted change files
-status: open
+status: verified
 classification: product-defect
 scope: in-scope
 impact: The human sees an empty scope at the scope gate (t38n F2)
@@ -12,6 +12,7 @@ requirements: [REQ-cli-061]
 cases: [TC-cli-scope-gate-summary-counts-uncommitted-change-files]
 evidence:
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files-e361cf
 receipts: []
 environment: local-macos-arm64
 revision: 730aba9f2157cb64d9df9c89788b5df975ad6e9d
@@ -21,7 +22,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T23:48:41Z
-updated: 2026-11-12T23:48:41Z
+updated: 2026-11-12T23:53:24Z
 ---
 # The scope gate summary ignores uncommitted change files
 
@@ -36,9 +37,10 @@ Actual: 0 files and no delta
 
 **Why it matters:** The human sees an empty scope at the scope gate (t38n F2)
 
-**Fix:** Not fixed yet.
+**Fix:** f618819b (t37f's 53294c32): the scope gate summary counts what changed in the working tree, uncommitted and untracked files included, the delta first (REQ-cli-061)
 
 ## Log
 
 - 2026-11-12T23:48:41Z · Reported (t38n's fourth fresh-eyes round report, F2 (relayed by t370); fixed by t37f); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files · by claude-code (hc t382)
 - 2026-11-12T23:48:41Z · Added despite similar reports: The verified gate-summary bugs fixed the base commit, the delta's place and the intent; this one is a summary that counts only committed files, so an uncommitted change shows an empty scope · by claude-code (hc t382)
+- 2026-11-12T23:53:24Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files-e361cf; fix: f618819b (t37f's 53294c32): the scope gate summary counts what changed in the working tree, uncommitted and untracked files included, the delta first (REQ-cli-061). Red at 730aba9f, green at f618819b · by claude-code (hc t382)
