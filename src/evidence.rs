@@ -1315,17 +1315,37 @@ impl Index {
     /// holding it are ambiguous; then the bugs' receipts, where copies of one receipt
     /// are one; then the migration's removals.
     pub(super) fn resolve(&self, id: &str) -> Result<Resolved> {
+        match self.lookup(id)? {
+            Ok(resolved) => Ok(resolved),
+            Err(ambiguous) => bail!("{}", ambiguous.refusal),
+        }
+    }
+
+    /// As [`Index::resolve`], with an ambiguous ID as a value naming its places, so a
+    /// report can label it instead of refusing (REQ-cli-023).
+    fn lookup(&self, id: &str) -> Result<std::result::Result<Resolved, Ambiguous>> {
         let (place, name) = split_qualified(id);
+        let places = |holders: &[&Holder]| -> Vec<String> {
+            holders
+                .iter()
+                .map(|holder| format!("{}/{name}", holder.place))
+                .collect()
+        };
         match self.named(name, place, false).as_slice() {
-            [one] => return Ok(Resolved::Present(Box::new(one.evidence()?))),
+            [one] => return Ok(Ok(Resolved::Present(Box::new(one.evidence()?)))),
             [] => {}
-            many => bail!(
-                "refused: {id} names evidence in more than one place ({}); qualify it as <session-id>/<evidence-id>",
-                many.iter()
-                    .map(|holder| holder.place.as_str())
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            ),
+            many => {
+                return Ok(Err(Ambiguous {
+                    refusal: format!(
+                        "refused: {id} names evidence in more than one place ({}); qualify it as <session-id>/<evidence-id>",
+                        many.iter()
+                            .map(|holder| holder.place.as_str())
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    ),
+                    places: places(many),
+                }));
+            }
         }
         let bugs = self.named(name, place, true);
         if let Some(first) = bugs.first() {
@@ -1333,23 +1353,42 @@ impl Index {
                 (Held::Receipt(map), Held::Receipt(other)) => map == other,
                 _ => false,
             });
-            ensure!(
-                same,
-                "refused: {id} names differing receipts in bugs {}; qualify it as <bug-id>/<evidence-id>",
-                bugs.iter()
-                    .map(|holder| holder.place.as_str())
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            );
-            return Ok(Resolved::Present(Box::new(first.evidence()?)));
+            if !same {
+                return Ok(Err(Ambiguous {
+                    refusal: format!(
+                        "refused: {id} names differing receipts in bugs {}; qualify it as <bug-id>/<evidence-id>",
+                        bugs.iter()
+                            .map(|holder| holder.place.as_str())
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    ),
+                    places: places(&bugs),
+                }));
+            }
+            return Ok(Ok(Resolved::Present(Box::new(first.evidence()?))));
         }
         if place.is_none()
             && let Some(receipt) = self.removed.get(name)
         {
-            return Ok(Resolved::Removed(receipt.clone()));
+            return Ok(Ok(Resolved::Removed(receipt.clone())));
         }
-        Ok(Resolved::Missing)
+        Ok(Ok(Resolved::Missing))
     }
+}
+
+/// An ID more than one record holds: the refusal naming the qualified form, and each
+/// place as `<place>/<id>`.
+struct Ambiguous {
+    refusal: String,
+    places: Vec<String>,
+}
+
+/// One reference's label (REQ-cli-021), with the receipt that records a removed one
+/// (REQ-records-009) and the places of an ambiguous one (REQ-cli-023).
+struct ReferenceLabel {
+    label: &'static str,
+    receipt: Option<String>,
+    places: Vec<String>,
 }
 
 /// `<place>/<id>` as (place, id); a bare ID has no place.
@@ -2159,10 +2198,10 @@ impl<'a> Labels<'a> {
             root == self.reads.root,
             "observation labels belong to another project root"
         );
-        let (label, _) = self
+        Ok(self
             .reads
-            .label_reference(id, &self.snapshot, environment)?;
-        Ok(label)
+            .label_reference(id, &self.snapshot, environment)?
+            .label)
     }
 }
 
@@ -2178,31 +2217,41 @@ fn reference_label(state: &str, environment: Option<&str>) -> &'static str {
 }
 
 impl Reads<'_> {
-    /// One reference's label, with the receipt that records a removed one
-    /// (REQ-records-009).
+    /// One reference's label: current, historical, removed (naming the receipt),
+    /// unavailable, or ambiguous (naming its places), never a refusal of the report.
     fn label_reference(
         &self,
         id: &str,
         current: &Result<Snapshot>,
         environment: Option<&str>,
-    ) -> Result<(&'static str, Option<String>)> {
-        Ok(match self.index()?.resolve(id)? {
-            Resolved::Present(evidence) => (
+    ) -> Result<ReferenceLabel> {
+        let label = |label, receipt, places| ReferenceLabel {
+            label,
+            receipt,
+            places,
+        };
+        Ok(match self.index()?.lookup(id)? {
+            Ok(Resolved::Present(evidence)) => label(
                 reference_label(
                     self.freshness(&evidence, current, environment)?,
                     environment,
                 ),
                 None,
+                vec![],
             ),
-            Resolved::Removed(receipt) => ("removed", Some(receipt)),
-            Resolved::Missing => ("unavailable", None),
+            Ok(Resolved::Removed(receipt)) => label("removed", Some(receipt), vec![]),
+            Ok(Resolved::Missing) => label("unavailable", None, vec![]),
+            Err(ambiguous) => label("ambiguous", None, ambiguous.places),
         })
     }
 
     /// Every observation an open session or a bug references, labelled, one row per ID.
     /// When the bare ID is ambiguous because two sessions hold same-named entries
     /// (REQ-cli-023), a session's own reference resolves in that session, as
-    /// `<session>/<id>`, and the ID is one row per group of sources resolving alike.
+    /// `<session>/<id>`, and the ID is one row per group of sources resolving alike,
+    /// each naming the form it resolved through as `resolved`. A reference that stays
+    /// ambiguous, such as a bare link a bug held before the merge, reads `ambiguous`,
+    /// naming its places.
     pub(super) fn reference_labels(
         &self,
         current: &Result<Snapshot>,
@@ -2212,7 +2261,7 @@ impl Reads<'_> {
         let mut values = vec![];
         for (id, sources) in references_from(self.root)? {
             let mut groups: Vec<(String, Vec<String>)> = vec![];
-            if index.resolve(&id).is_ok() {
+            if index.lookup(&id)?.is_ok() {
                 groups.push((id.clone(), sources));
             } else {
                 for source in sources {
@@ -2229,10 +2278,16 @@ impl Reads<'_> {
                 }
             }
             for (key, by) in groups {
-                let (label, receipt) = self.label_reference(&key, current, environment)?;
-                let mut value = json!({"id": id, "label": label, "referenced_by": by});
-                if let Some(receipt) = receipt {
+                let found = self.label_reference(&key, current, environment)?;
+                let mut value = json!({"id": id, "label": found.label, "referenced_by": by});
+                if key != id {
+                    value["resolved"] = json!(key);
+                }
+                if let Some(receipt) = found.receipt {
                     value["receipt"] = json!(receipt);
+                }
+                if !found.places.is_empty() {
+                    value["places"] = json!(found.places);
                 }
                 values.push(value);
             }

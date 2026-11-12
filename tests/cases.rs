@@ -1901,6 +1901,49 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
     );
     let next = a.ok(&["next", "--environment", "local", "--json"]);
     assert!(next["observations"].is_object(), "{next:#}");
+
+    // A bare link a bug held before links were stored qualified stays ambiguous after
+    // the merge: the reports still read and label it, naming its places, and each
+    // session's own reference reads its own run, naming the form it resolved through.
+    let bare = runs[0].split_once('/').unwrap().1.to_string();
+    assert_eq!(runs[1].split_once('/').unwrap().1, bare, "{runs:?}");
+    let legacy = "2026-01-01-a-bare-link";
+    a.bug_md(legacy, "in-scope", "open", &[&bare]);
+    let status = a.ok(&["status", "--environment", "local", "--json"]);
+    let rows: Vec<&Value> = status["observation_references"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|row| row["id"] == bare.as_str())
+        .collect();
+    let by_bug = rows
+        .iter()
+        .find(|row| row["referenced_by"][0] == format!(".chough/bugs/{legacy}.md"))
+        .unwrap_or_else(|| panic!("{rows:#?}"));
+    assert_eq!(by_bug["label"], "ambiguous", "{by_bug:#}");
+    let mut places: Vec<&str> = by_bug["places"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|place| place.as_str().unwrap())
+        .collect();
+    places.sort_unstable();
+    let mut expected: Vec<&str> = runs.iter().map(String::as_str).collect();
+    expected.sort_unstable();
+    assert_eq!(places, expected, "{by_bug:#}");
+    for run in &runs {
+        let own = rows
+            .iter()
+            .find(|row| row["resolved"] == run.as_str())
+            .unwrap_or_else(|| panic!("no row resolved through {run}: {rows:#?}"));
+        assert_eq!(own["label"], "current", "{own:#}");
+    }
+    a.ok(&["next", "--environment", "local", "--json"]);
+    let shown = a.ok(&["bug", "show", legacy]);
+    assert_eq!(
+        shown["observation_labels"][0]["label"], "ambiguous",
+        "{shown:#}"
+    );
 }
 
 // ---------------------------------------------------------------------------
