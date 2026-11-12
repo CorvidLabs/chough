@@ -349,3 +349,21 @@ expected = ["tests/cases.rs::evidence_add_needs_a_criterion_and_resolves_the_ses
 adapter = "cargo-test"
 test_target = "cases"
 test = "evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements"
+
+[[case]]
+id = "TC-cli-bug-observation-joins-the-session"
+title = "bug add and bug update with an observation of the active session add the bug to its checkpoint and story, and another session's entry leaves the active checkpoint unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story"
