@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "BUG-after-two-roots-merge-a-bug-s-bare-evidence-link-turns-ambiguous-and-st-e0c0f5e9cb4891137251f9d1",
+  "title": "After two roots merge, a bug's bare evidence link turns ambiguous and status, next and bug show refuse",
+  "symptom": "Each root's bug links its own case run by the bare ID cases run printed; after the branches merge, both entries share that name, and status, next and bug show refuse the whole report as ambiguous",
+  "trigger": "In two roots on separate branches, each in its own session, run the same case and add a bug linking the run's printed ID, then merge",
+  "expected": "Both roots' records read after the merge with no hand edit: a bug's link resolves to its own root's run (REQ-cli-023)",
+  "actual": "refused: evidence <id> is ambiguous ...; link one as <session-id>/<evidence-id>",
+  "criteria": [
+    "DRIVE-12"
+  ],
+  "requirements": [
+    "REQ-cli-023"
+  ],
+  "cases": [
+    "TC-cli-independently-added-records-merge-cleanly"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "cf09ccef8881a57b79ff0ce122701ff2623bad5a",
+  "steps": [
+    "Run the merge test with each root's bug linking its run by the bare ID"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-independently-added-records-merge-cleanly-a9f84d2d7eb56edd2a095987"
+  ],
+  "impact": "Parallel branches that record Chough work break status and next on merge, against DRIVE-12",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t38b's review (F1) of t37j's item 8; red at 18ae842d (leif/0.6.0-step4-evidence-fixes)",
+  "notes": [],
+  "created_at_unix_seconds": 1794444554,
+  "updated_at_unix_seconds": 1794444554
+}

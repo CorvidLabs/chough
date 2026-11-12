@@ -1,0 +1,29 @@
+--- stdout ---
+
+running 1 test
+test independently_added_records_merge_without_conflict_or_replacement ... FAILED
+
+failures:
+
+---- independently_added_records_merge_without_conflict_or_replacement stdout ----
+
+thread 'independently_added_records_merge_without_conflict_or_replacement' (901029826) panicked at tests/cases.rs:1881:5:
+[
+    "bug show 2026-11-12-version-check-flakes: Error: refused: evidence 2026-11-12-tc-cli-0001 is ambiguous: it is 2026-11-12-branch-b/2026-11-12-tc-cli-0001 and 2026-11-12-ship-a-focused-change/2026-11-12-tc-cli-0001; link one as <session-id>/<evidence-id>\n",
+    "bug show 2026-11-12-version-check-is-slow: Error: refused: evidence 2026-11-12-tc-cli-0001 is ambiguous: it is 2026-11-12-branch-b/2026-11-12-tc-cli-0001 and 2026-11-12-ship-a-focused-change/2026-11-12-tc-cli-0001; link one as <session-id>/<evidence-id>\n",
+    "[\"status\", \"--environment\", \"local\", \"--json\"]: Error: refused: evidence 2026-11-12-tc-cli-0001 is ambiguous: it is 2026-11-12-branch-b/2026-11-12-tc-cli-0001 and 2026-11-12-ship-a-focused-change/2026-11-12-tc-cli-0001; link one as <session-id>/<evidence-id>",
+    "[\"next\", \"--environment\", \"local\", \"--json\"]: Error: refused: evidence 2026-11-12-tc-cli-0001 is ambiguous: it is 2026-11-12-branch-b/2026-11-12-tc-cli-0001 and 2026-11-12-ship-a-focused-change/2026-11-12-tc-cli-0001; link one as <session-id>/<evidence-id>",
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    independently_added_records_merge_without_conflict_or_replacement
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 31 filtered out; finished in 2.09s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running tests/cases.rs (target/debug/deps/cases-3cbac5f7aae7e444)
+error: test failed, to rerun pass `--test cases`
