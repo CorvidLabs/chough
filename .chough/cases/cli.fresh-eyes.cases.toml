@@ -129,3 +129,76 @@ expected = ["tests/stages.rs::every_stage_move_says_when_chough_runs_native_appr
 adapter = "cargo-test"
 test_target = "stages"
 test = "every_stage_move_says_when_chough_runs_native_approval_or_review"
+
+[[case]]
+id = "TC-cli-cases-check-a-module-without-requirements-md"
+title = "cases check accepts a link to a requirement only the approved delta adds when the module has no requirements.md yet, and refuses one the delta does not add"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-009"]
+paths = ["src/evidence.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::a_module_without_requirements_md_links_what_its_approved_delta_adds passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_module_without_requirements_md_links_what_its_approved_delta_adds"
+
+[[case]]
+id = "TC-cli-context-reads-agents-md-from-the-git-root"
+title = "chough context reads AGENTS.md from the Git root down to the project only, named relative to the project, with no absolute path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["src/context.rs", "tests/subdirectory.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/subdirectory.rs::context_reads_agents_md_from_the_git_root_down_only passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "subdirectory"
+test = "context_reads_agents_md_from_the_git_root_down_only"
+
+[[case]]
+id = "TC-cli-status-gives-the-next-action-whole"
+title = "chough status's summary gives the next valid action whole, while next keeps its bounded view"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::status_gives_the_next_valid_action_whole passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "status_gives_the_next_valid_action_whole"
+
+[[case]]
+id = "TC-cli-gate-close-replaces-a-stale-next-action"
+title = "Closing the last gate holding the stage, with no --next-action in the same call, replaces the stale next action with the gate's outcome and chough next; another gate holding the stage changes nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-23"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["both humans tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "humans", "--", "approving_the_scope_gate_replaces_the_next_action_it_left_stale", "a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600
