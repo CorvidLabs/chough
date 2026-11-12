@@ -808,3 +808,23 @@ expected = ["tests/cli.rs::context_gives_the_timeline_and_open_bugs_as_markdown 
 adapter = "cargo-test"
 test_target = "cli"
 test = "context_gives_the_timeline_and_open_bugs_as_markdown"
+
+# The fourth fresh-eyes round (t38n, 2026-11-12), fixed on leif/0.6.0-r5-t37f.
+
+[[case]]
+id = "TC-cli-scope-gate-summary-counts-uncommitted-change-files"
+title = "With a change's delta and plan written but not committed, the scope gate's summary counts them in the working tree, untracked files too, names the delta first as after the commit, and gives the same digest for the same tree"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_scope_gate_summary_counts_uncommitted_and_untracked_change_files passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_scope_gate_summary_counts_uncommitted_and_untracked_change_files"

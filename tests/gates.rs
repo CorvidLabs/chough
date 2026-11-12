@@ -803,3 +803,106 @@ fn an_intent_gate_summary_names_the_criteria_and_their_hi_files() {
     assert!(held.contains(&"in no hi/ file: LIFE-99"), "{summary}");
     assert!(lines.len() <= 24 && summary.len() <= 4_096, "{summary}");
 }
+
+/// Fresh-eyes round 4, F2 (2026-11-12; REQ-cli-061): with the change's delta, plan and
+/// other files written but not committed, the scope gate's summary said "What changed: 0
+/// files, +0 −0" and named no delta; after a commit it named them. What changed is
+/// counted in the working tree, so uncommitted and untracked files count: the summary
+/// names the deltas first, with their requirements, as it does after the commit, leaves
+/// Chough's records out, and gives the same digest for the same tree.
+#[test]
+fn a_scope_gate_summary_counts_uncommitted_and_untracked_change_files() {
+    let fixture = project(&[]);
+    // The change begins at HEAD, so only what is not committed yet is its work.
+    let head = git_head(&fixture);
+    fixture.write(
+        &format!("{DIR}/state.json"),
+        &json!({"id": ID, "title": "Free shipping at the threshold", "state": "approved", "base_commit": head}).to_string(),
+    );
+    fixture.write(&format!("{DIR}/approvals.json"), "{}\n");
+    // An untracked delta, a committed delta and plan edited in place, and an untracked
+    // product file.
+    fixture.write(
+        &format!("{DIR}/deltas/history.md"),
+        "## MODIFIED\n\n### REQUIREMENT REQ-history-002\n\nThe Timeline SHALL read.\n",
+    );
+    fixture.write(
+        &format!("{DIR}/deltas/cli.md"),
+        "## ADDED\n\n### REQUIREMENT REQ-cli-001\n\nPreserve files.\n\n### REQUIREMENT REQ-cli-002\n\nKeep them.\n",
+    );
+    fixture.write(
+        &format!("{DIR}/plan.md"),
+        "# Plan\n\n## Approach\n\nx\ny\nz\n\n## Risks\n\n- A rounding edge at exactly fifty dollars.\n\n## Constraints consulted\n\nnone\n",
+    );
+    fixture.write("src/added.txt", "one\ntwo\nthree\n");
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--drives",
+        "approve",
+    ]);
+    let changed = |summary: &str| -> Vec<String> {
+        let lines: Vec<&str> = summary.lines().collect();
+        let at = lines
+            .iter()
+            .position(|line| line.starts_with("What changed:"))
+            .unwrap_or_else(|| panic!("{summary}"));
+        std::iter::once(lines[at].split(" since ").next().unwrap())
+            .chain(
+                lines[at + 1..]
+                    .iter()
+                    .take_while(|line| line.starts_with("  "))
+                    .copied(),
+            )
+            .map(String::from)
+            .collect()
+    };
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap().to_string();
+    let uncommitted = changed(&summary);
+    assert_eq!(uncommitted[0], "What changed: 4 files, +14 −0", "{summary}");
+    let mut deltas: Vec<String> = uncommitted[1..3]
+        .iter()
+        .map(|line| line.trim().to_string())
+        .collect();
+    deltas.sort();
+    assert!(
+        deltas[0].starts_with(&format!("{DIR}/deltas/cli.md +"))
+            && deltas[0].ends_with("(adds or modifies REQ-cli-001, REQ-cli-002)"),
+        "{summary}"
+    );
+    assert!(
+        deltas[1].starts_with(&format!("{DIR}/deltas/history.md +5 −0"))
+            && deltas[1].ends_with("(adds or modifies REQ-history-002)"),
+        "{summary}"
+    );
+    for named in [
+        format!("{DIR}/plan.md +"),
+        "src/added.txt +3 −0".to_string(),
+    ] {
+        assert!(
+            uncommitted
+                .iter()
+                .any(|line| line.trim().starts_with(&named)),
+            "{named}: {summary}"
+        );
+    }
+    assert!(!summary.contains(".chough/"), "{summary}");
+    assert!(
+        summary.lines().count() <= 24 && summary.len() <= 4_096,
+        "{summary}"
+    );
+    // The same tree gives the same summary and digest.
+    let again = list(&fixture);
+    assert_eq!(again["gates"][0]["digest"], listed["gates"][0]["digest"]);
+    assert_eq!(again["gates"][0]["summary"], listed["gates"][0]["summary"]);
+
+    // Committed, the change's files count the same.
+    fixture.commit("the change's own files");
+    let committed = list(&fixture)["gates"][0]["summary"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert_eq!(changed(&committed), uncommitted, "{committed}");
+}
