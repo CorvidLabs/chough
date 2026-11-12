@@ -92,3 +92,15 @@ entry for timing, output polish and an outdated `chough` on `PATH` for the merge
 drivers (F10 to F13); `evidence add` and requirements a delta adds (Kimi 2); and the
 docs gaps (F2, F7, Kimi 1). Each fix gets a failing test first, and a third fresh
 tester re-rates the result against the 90% bar.
+
+On 2026-11-12T21:47Z Leif chose "Yes, fix all + re-rate (Recommended)" for the 12
+findings of the third fresh-eyes round (t38m, 8/10 at 425fa948): `next` at accept
+passing on SpecSync's own review command (F1) and `session close` dropping an open
+human gate unrecorded (F2), the two gate bugs; the dated lesson form undocumented (F3);
+gate summaries that name neither the intent nor the delta (F4, F5); two messages (F6);
+`next` at test and at plan (F7, F8); about 150 lines of JSON per stage move, now a
+short summary with the full JSON behind `--json` so agents lose nothing (F9); the
+story's readability: receipts before the story, its bug unnamed, a failed run's body
+without its reason, `context`'s JSON block, a migrated bare ID (F10); timing's first
+segment (F11); and the init hint for Claude Code and a text migrate preview (F12).
+Each fix gets a failing test first, and a fourth fresh tester re-rates the result.

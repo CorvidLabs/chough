@@ -73,6 +73,15 @@ back to Leif as a send-back.
     (REQ-history-012); the migrate preview on a migrated tree (REQ-records-009); the
     output polish and the docs gaps. Helpers t37f, t38b and t38c write the red and fix
     commits on their own branches; t382 runs and records red and green.
+13b. The third fresh-eyes round (t38m's F1 to F12), each red then green with its bug
+    record where it is a bug: `next` at accept never passes on SpecSync's review command,
+    and at test leaves superseded runs out (REQ-cli-021); `session close` records the
+    gates it withdraws, and the story puts its receipts last and names its bugs
+    (REQ-history-006); gate summaries name the intent and the delta (REQ-cli-061); a
+    failed run's body says why (REQ-cli-017); stage moves print a short summary, the
+    full JSON behind `--json` (REQ-cli-008); the migrate preview is text with `--json`
+    (REQ-records-009); and the docs and polish items. Helpers t37f, t38b and t38c write
+    the red and fix commits; t382 runs and records red and green, then a full local run.
 13. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
     section with the dogfood results in its upgrade notes.
 14. This session's post title and summary, then `change check --commit`, Leif's review as him through `chough change ship
