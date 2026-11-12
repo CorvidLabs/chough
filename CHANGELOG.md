@@ -136,38 +136,22 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
   of `recorded` (#60, REQ-cli-011, REQ-cli-017).
-
 - `chough session new` and `session use` keep a finished session that still holds an open
   human gate open, reporting it under `kept_open` with its gate count and recovery,
   instead of archiving the gate silently (#181, REQ-history-006).
-
-- Rebuilding the knowledge index no longer makes the observations it lists stale: the
-  working content identity leaves out the generated knowledge directory (#136, REQ-cli-004).
-
-- Read strict bounded optional v1 diagnostic input inventories while preserving
-  aggregate freshness and original observations; reject noncanonical inventory paths.
-
-- `chough skill update` recognizes the exact pinned 0.1.0 through 0.5.0 released
-  bundle files (#102, REQ-cli-016). Six missing filename/SHA256 pairs restore pristine
-  updates while keeping edited bytes/modes and host/legacy rules unchanged.
-- A new session refuses to write events when its adopted frozen legacy log is missing
-  (#113, REQ-history-002/006), including when an earlier independent session has no
-  anchor. Existing open/archive/shelved/vault holders remain supported; a project
-  that never adopted a legacy log still writes with an independent cursor.
-
-- `chough evidence prune --apply` now rechecks protections immediately before each
-  byte-checked removal and restores earlier removals when a later check or removal
-  fails (#65, REQ-history-004). Rollback preserves recreated files and original
-  permissions, keeps uncommitted bytes in named recovery holds, and appends the
-  existing `restored` ledger event without changing successful output or retention
-  eligibility.
-
-- `chough timing` no longer marks its report partial for `direct-native-write` events
-  (#189, REQ-history-013, REQ-reporting-001). Since #183 it counted that valid kind as
-  unrecognised. It is now skipped as part of no stage segment, as gate records are.
-  Kinds that really are unknown still mark the report partial. Builds before 0.5.0
-  still refuse a history holding the event;
-  the oldest Chough that reads such a history is still 0.5.0.
+- Rebuilding the knowledge index no longer makes current evidence stale: the content a
+  run is checked against leaves out the generated knowledge directory (#136, REQ-cli-004).
+- An evidence entry may list the inputs its run read (its input inventory). Chough reads
+  that list strictly and within its bounds and refuses a path in it that is not a plain
+  project path; freshness is still decided from the whole working content, never from
+  the list.
+- `chough skill update` recognizes the unedited skill files of every release from 0.1.0
+  to 0.5.0, so it updates them, while a file a person edited is kept as it is (#102,
+  REQ-cli-016).
+- `chough timing` skips a direct lifecycle write in the Timeline (a SpecSync file
+  changed outside SpecSync's commands) as part of no stage, as it skips gate records,
+  instead of marking the report partial (#189, REQ-history-013, REQ-reporting-001). An
+  entry of a kind it really does not know still marks the report partial.
 - `chough change new` takes `--no-spec-change` and `--rationale` and passes them to
   `specsync change new` (#189, REQ-cli-057). `--no-spec-change` without `--rationale`
   is refused before SpecSync runs.
@@ -176,29 +160,24 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   !important; }`, so a rule such as `.surface section { display: grid }` no longer shows
   every state at once. An unedited `styles.css` from 0.1.0 to 0.4.0 updates as
   known-outdated.
-- Right after `chough stage advance` into done, `chough library index --check` passes with
-  no command in between (#191, KNOW-4, REQ-cli-043, REQ-cli-051). A session rolled into
-  the vault now links its change's archive note even when the same move builds that note,
-  so a first build and a rebuild give the same bytes. When the change's archive lists the
-  session file that archives itself at done, the move regenerates the directory once more
-  after that self-archive, so the entry places the file in Git. Before, `done` reported
-  `librarian_index: refreshed` and the check then failed until `chough library index` ran.
+- Right after `chough stage advance` into done, `chough library index --check` passes
+  with no command in between (#191, KNOW-4, REQ-cli-043): the move writes the story, the
+  journal post, the index and the feed in one step.
 - `chough gate list` and `chough gate record` show the human what each gate decides
   and take one reply for listed gates only (#184, FLOW-19, FLOW-20, REQ-cli-061,
   REQ-history-014). `gate list` numbers every open human gate, each with a one-screen
   summary and the SHA-256 digest of that summary. The summary covers what changed since
-  the change's base commit, the tests, the plan's risks and a diff link. The tests are
-  the latest observation of each case that links a requirement the change's deltas add
-  or modify. It reads files and Git only, and saves the list untracked in
+  the change's own base commit, the tests, the plan's risks and a diff link; the tests
+  are the latest observation of each case that links a requirement the change's deltas
+  add or modify. It reads files and Git only, and saves the list untracked in
   `.chough/local/gate-lists/`. `gate record <list> --gates 1,3` with the four relay
   values closes exactly those gates, each relay keeping the same words, its own
-  `summary_digest` and the `list`. It closes all of them or none. It refuses an unknown
+  `summary_digest` and the `list`; it closes all of them or none. It refuses an unknown
   list, an unlisted number, a gate no longer open, a summary changed since listing, a
-  gate of another open session, or a change that is verifying; each refusal names its
-  recovery. `chough change ship` takes `--list` and `--gate` in place of `--close-gate`.
-  Older builds refuse a relay holding `summary_digest` (unknown field), so
-  the oldest Chough that reads such a history is 0.6.0, the first release with this
-  change. 0.5.0 does not read it.
+  gate of another open session, or a change that is verifying, and each refusal names
+  its recovery. `chough change ship` takes `--list` and `--gate` in place of
+  `--close-gate`.
+
 ## [0.5.0] - 2026-11-06
 
 - Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,
