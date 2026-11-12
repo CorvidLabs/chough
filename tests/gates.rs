@@ -621,3 +621,66 @@ fn a_scope_gate_summary_names_the_changes_delta_and_plan_first() {
     assert!(!summary.contains("approvals.json"), "{summary}");
     assert!(summary.contains("src/input.txt"), "{summary}");
 }
+
+/// Fresh-eyes F6 (second round, 2026-11-12; REQ-cli-061): the list ended by suggesting
+/// `chough gate record` for every gate, which refuses a gate whose change is verifying,
+/// and that refusal said nothing may write .chough/ before the ship, which
+/// verification_ignored_paths contradicts. The list ends with `chough gate record` for
+/// the gates whose change is not verifying and `chough change ship <id> --list <list>
+/// --gate <n>` for each verifying one, and the refusal says such a gate closes through
+/// the ship.
+#[test]
+fn the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why() {
+    let fixture = project(&[SCOPE]);
+    // A second open session, now active, whose change is verifying, with its review gate.
+    let review = "Implementation review of g2";
+    fixture.ok(&["session", "new", "other-g2", "--objective", "Other work"]);
+    fixture.ok(&["checkpoint", "--native-change", "g2"]);
+    fixture.write(
+        ".specsync/changes/g2/state.json",
+        &json!({"id": "g2", "state": "verifying"}).to_string(),
+    );
+    fixture.ok(&["checkpoint", "--awaiting-human", review]);
+    fixture.commit("g2 verifying");
+    let output = fixture.run(&["gate", "list"]);
+    assert!(output.status.success());
+    let shown = String::from_utf8(output.stdout).unwrap();
+    let listed = list(&fixture);
+    let list_id = listed["list"].as_str().unwrap().to_string();
+    let number = |gate: &str| {
+        listed["gates"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|listed| listed["gate"] == gate)
+            .unwrap()["number"]
+            .to_string()
+    };
+    let (scope, verifying) = (number(SCOPE), number(review));
+    // The list ends with how to reply, after the last gate's digest.
+    let footer = &shown[shown.rfind("Digest: ").unwrap()..];
+    let reply = footer
+        .lines()
+        .find(|line| line.contains("`chough gate record "))
+        .unwrap_or_else(|| panic!("no gate record in:\n{footer}"));
+    assert!(reply.contains(&format!("for gate {scope} with")), "{reply}");
+    assert!(
+        footer.contains(&format!(
+            "`chough change ship g2 --list {list_id} --gate {verifying} --decided-by"
+        )),
+        "{footer}"
+    );
+
+    let before = records(fixture.root());
+    let error = fixture.fails(&record(&list_id, &verifying, "yes"));
+    assert!(error.contains("closes through the ship"), "{error}");
+    assert!(error.contains("runs the review as the human"), "{error}");
+    assert!(!error.contains("nothing may write"), "{error}");
+    assert!(
+        error.contains(&format!(
+            "`chough change ship g2 --list {list_id} --gate {verifying} --decided-by"
+        )),
+        "{error}"
+    );
+    assert_eq!(records(fixture.root()), before, "something was written");
+}
