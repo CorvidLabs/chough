@@ -137,6 +137,7 @@ observations:
   - 2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-b3ee78
   - 2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta
   - 2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta-4437de
+  - 2026-11-12-tc-cli-bug-observation-joins-the-session
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -288,6 +289,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test docs -- --exact the_new_project_section_shows_a_minimal_hi_file_and_requirements_md for TC-cli-docs-show-a-minimal-hi-file-and-requirements-md: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-b3ee78.md)
 - [Ran cargo test --locked --test cases -- --exact evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements for TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta.md)
 - [Ran cargo test --locked --test cases -- --exact evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements for TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta-4437de.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story for TC-cli-bug-observation-joins-the-session: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-bug-observation-joins-the-session.md)
 
 ## Open threads
 
