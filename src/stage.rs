@@ -1251,6 +1251,14 @@ pub(super) fn assess(
             })
             .clone()
     };
+    // Read once, and only at test, where the unlinked-failure refusal and the check that
+    // every referenced case's latest run passed both need the open sessions' entries.
+    let observations = std::cell::OnceCell::new();
+    let observations = || {
+        observations
+            .get_or_init(|| evidence::load_all(root).ok())
+            .as_deref()
+    };
     let action = if session.stage.status == "paused" {
         Action {
             action: format!(
@@ -1297,7 +1305,9 @@ pub(super) fn assess(
             command: Some("chough stage back --to build --reason \"<why>\"".into()),
         }
     } else if let Some(refusal) = (current == "test")
-        .then(|| unlinked_failure(root, session).ok().flatten())
+        .then(|| {
+            observations().and_then(|all| unlinked_failure_in(root, session, all).ok().flatten())
+        })
         .flatten()
     {
         Action {
@@ -1442,15 +1452,28 @@ pub(super) fn assess(
             }
         }
     } else if current == "test" {
-        // REQ-cli-038 (FLOW-15): native verification alone is not test evidence.
-        // #76: name how to select and run the cases, and record a failure as a bug.
-        Action {
-            action: format!(
-                "Continue test: {} Select the cases this change affects with `chough cases select --requirement <id>` (or --criterion, --path), run each with `chough cases run <case-id> --environment <env>`, and record a failed run with `chough bug add`.",
-                session.next_action.trim_end()
-            ),
-            reason: "Recorded test evidence is needed before accept: run the affected cases or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
-            command: Some("chough cases run <case-id> --environment <env>".into()),
+        // F7: the checkpoint's own next action is a sentence of its own.
+        let next = sentence(&session.next_action);
+        if observations().is_some_and(|all| every_case_passed(session, all)) {
+            // F7 (REQ-cli-021): blocking bugs were handled above, so with every referenced
+            // case's latest run passed, test is done.
+            Action {
+                action: format!(
+                    "Continue test: {next}Every referenced case's latest run passed and no blocking bug is open, so move to accept with `chough stage advance`."
+                ),
+                reason: "Each case the checkpoint references passed on its latest run, and no acceptance-blocking bug is open.".into(),
+                command: Some("chough stage advance".into()),
+            }
+        } else {
+            // REQ-cli-038 (FLOW-15): native verification alone is not test evidence.
+            // #76: name how to select and run the cases, and record a failure as a bug.
+            Action {
+                action: format!(
+                    "Continue test: {next}Select the cases this change affects with `chough cases select --requirement <id>` (or --criterion, --path), run each with `chough cases run <case-id> --environment <env>`, and record a failed run with `chough bug add`."
+                ),
+                reason: "Recorded test evidence is needed before accept: run the affected cases or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
+                command: Some("chough cases run <case-id> --environment <env>".into()),
+            }
         }
     } else {
         Action {
@@ -2041,23 +2064,26 @@ fn unlinked_failure(root: &Path, session: &Checkpoint) -> Result<Option<String>>
     if session.references.cases.is_empty() {
         return Ok(None);
     }
-    let observations = evidence::load_all(root)?;
+    unlinked_failure_in(root, session, &evidence::load_all(root)?)
+}
+
+/// [`unlinked_failure`] on entries already read.
+fn unlinked_failure_in(
+    root: &Path,
+    session: &Checkpoint,
+    observations: &[evidence::Evidence],
+) -> Result<Option<String>> {
+    if session.references.cases.is_empty() {
+        return Ok(None);
+    }
     let linked: BTreeSet<String> = bugs::observation_references(root)?
         .into_iter()
         .flat_map(|(_, ids)| ids)
         .collect();
-    let referenced: BTreeSet<&String> = session.references.cases.iter().collect();
-    let failures: Vec<(&String, &String)> = referenced
+    let failures: Vec<(&String, &String)> = latest_runs(session, observations)
         .into_iter()
-        .filter_map(|case| {
-            observations
-                .iter()
-                .filter(|record| record.cases.iter().any(|link| &link.id == case))
-                // A not-run attempt executed nothing; the latest executed result decides.
-                .filter(|record| record.outcome != evidence::Outcome::NotRun)
-                .max_by(|a, b| {
-                    (a.observed_at_unix_seconds, &a.id).cmp(&(b.observed_at_unix_seconds, &b.id))
-                })
+        .filter_map(|(case, latest)| {
+            latest
                 .filter(|latest| {
                     latest.outcome == evidence::Outcome::Failed && !linked.contains(&latest.id)
                 })
@@ -2075,6 +2101,50 @@ fn unlinked_failure(root: &Path, session: &Checkpoint) -> Result<Option<String>>
     Ok(Some(format!(
         "case {case} latest observation {observation} failed and no bug links it{others}; rerun the case until it passes, or link the failure with `chough bug add ... --observation {observation}` or `chough bug update <bug> --observation {observation}`"
     )))
+}
+
+/// Each case the checkpoint references, once, with its latest executed observation by
+/// recorded time, then ID, or None when it has none; a not-run attempt executed nothing.
+fn latest_runs<'a>(
+    session: &'a Checkpoint,
+    observations: &'a [evidence::Evidence],
+) -> Vec<(&'a String, Option<&'a evidence::Evidence>)> {
+    let referenced: BTreeSet<&String> = session.references.cases.iter().collect();
+    referenced
+        .into_iter()
+        .map(|case| {
+            let latest = observations
+                .iter()
+                .filter(|record| record.cases.iter().any(|link| &link.id == case))
+                .filter(|record| record.outcome != evidence::Outcome::NotRun)
+                .max_by(|a, b| {
+                    (a.observed_at_unix_seconds, &a.id).cmp(&(b.observed_at_unix_seconds, &b.id))
+                });
+            (case, latest)
+        })
+        .collect()
+}
+
+/// Whether every case the checkpoint references passed on its latest executed run (F7);
+/// false when it references none.
+fn every_case_passed(session: &Checkpoint, observations: &[evidence::Evidence]) -> bool {
+    !session.references.cases.is_empty()
+        && latest_runs(session, observations)
+            .iter()
+            .all(|(_, latest)| latest.is_some_and(|run| run.outcome == evidence::Outcome::Passed))
+}
+
+/// The checkpoint's next action as a sentence of its own, ended and followed by a space,
+/// so the guidance after it never runs on (F7); empty when there is none.
+fn sentence(text: &str) -> String {
+    let text = text.trim();
+    if text.is_empty() {
+        String::new()
+    } else if text.ends_with(['.', '!', '?']) {
+        format!("{text} ")
+    } else {
+        format!("{text}. ")
+    }
 }
 
 /// Apply a move to the next stage, checking the gates that apply to it.
