@@ -998,13 +998,16 @@ gate's relay keeps that digest and the list (REQ-history-014).
 with the stage it holds and the native step it drives (REQ-cli-061, FLOW-19, FLOW-20).
 Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
 
-- what changed: the files, insertions and deletions from the merge base of HEAD with
-  the default branch (`origin/HEAD`, else `main`), or from the change's `base_commit`
-  (from its `state.json`) when there is no merge base, leaving out `.chough/`, the
-  knowledge directory and SpecSync's lifecycle bookkeeping, and naming the five files
-  with the most changed lines among the rest (#190). For a second native change on one
-  branch, the merge base comes first, so the count includes the earlier change's work;
-  counting from the change's own base is planned after 0.6.0;
+- what changed: the files, insertions and deletions since the change's own
+  `base_commit` (from its `state.json`), so an earlier change on the same branch is not
+  counted again, leaving out `.chough/`, the knowledge directory and SpecSync's
+  lifecycle bookkeeping, and naming the five files with the most changed lines among the
+  rest (#190). It counts from the merge base of HEAD with the default branch
+  (`origin/HEAD`, else `main`) instead when that merge base is not an ancestor of the
+  `base_commit`, meaning default-branch work came in after the change began, and when
+  the change records no `base_commit`. A merge base that is HEAD itself, as on the
+  default branch, is not used; with no usable base, the summary says the base is
+  unknown;
 - the tests: how many cases passed, failed and were not run, by the latest observation
   of each case that links a requirement the change's deltas add or modify (or that the
   session's observations name), with the failing case IDs;
