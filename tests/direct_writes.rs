@@ -160,14 +160,14 @@ fn chough_change_steps_are_not_flagged_but_an_earlier_direct_write_is() {
     assert_eq!(found[0]["direct_write"]["before_state"], "verifying");
 }
 
-/// The fresh-eyes finding on plain `specsync change check`: the docs name it for
-/// materializing an approved delta without committing, and the direct write it leaves
-/// is recorded with text that says what changed, never as an empty Timeline entry.
+/// The fresh-eyes finding on plain `specsync change check`: run directly, not as
+/// `chough change check <id> --no-commit`, the direct write it leaves is recorded with
+/// text that says what changed, never as an empty Timeline entry.
 #[test]
 fn a_direct_write_entry_says_what_changed_outside_chough() {
     let fixture = project();
     iterate(&fixture, "first sight");
-    // The plain check, run with `specsync` as the docs say, not through Chough.
+    // The plain check, run with `specsync` directly, not through Chough.
     let checked = std::process::Command::new(fixture.root().join("bin/specsync"))
         .args(["change", "check", ID])
         .current_dir(fixture.root())

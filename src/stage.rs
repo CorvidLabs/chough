@@ -1540,9 +1540,11 @@ fn log_transition_at(
         corrects: None,
     };
     validate_records(&transition)?;
-    // REQ-cli-060 (DRIVE-21): a stage move first records the direct lifecycle writes
-    // found since the baseline, in the stage it leaves.
-    if STAGE_KINDS.contains(&kind) {
+    // REQ-cli-060 (DRIVE-21): a stage move, and a gate close with a relayed decision
+    // (REQ-cli-050, REQ-cli-059, REQ-cli-061), first records the direct lifecycle
+    // writes found since the baseline, in the stage it leaves or holds, so the story
+    // reads in the order the writes happened (F9). A withdrawn gate records none.
+    if STAGE_KINDS.contains(&kind) || (kind == GATE_CLOSED && transition.relayed_by.is_some()) {
         for write in crate::direct_writes::to_record(root, session.native_change.as_deref()) {
             let event = Transition {
                 schema_version: 1,

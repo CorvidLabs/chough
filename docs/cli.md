@@ -1012,6 +1012,7 @@ through `chough` alone (REQ-cli-057, REQ-cli-059, DRIVE-20):
 | `chough change new <description> [--kind K] [--spec S]... [--path P]... [--no-spec-change --rationale R]` | `specsync change new <description> [--kind K] [--spec S]... [--path P]... [--no-spec-change --rationale R] --json` |
 | `chough change answer <id> <question> <answer>` | `specsync change answer <id> <question> <answer> --json` |
 | `chough change check <id>` | `specsync change check <id> --commit` |
+| `chough change check <id> --no-commit` | `specsync change check <id>` |
 | `chough change status [<id>]` | `specsync change status [<id>] --json` |
 
 Each runs in the `--root` directory with the `specsync` on `PATH`, the one Chough's
@@ -1030,9 +1031,10 @@ nothing and writes nothing under `.chough/`.
   naming `cargo install --locked specsync@6.3.0` and the step to run again.
 
 A human's approval and review run through their gate (see
-[Relayed decisions at gates](#relayed-decisions-at-gates)). The plain `specsync change
-check <id>` that materializes a delta without committing still runs with `specsync`
-directly.
+[Relayed decisions at gates](#relayed-decisions-at-gates)).
+`chough change check <id> --no-commit` runs SpecSync's check without `--commit`, the
+check the workflow's accept step runs first to materialize requirement text; like
+every `chough change` step, it is never recorded as a direct lifecycle write.
 
 ### A new project and its first change
 
@@ -1230,13 +1232,16 @@ removed (DRIVE-21, REQ-cli-060, REQ-history-013).
   ignored. `chough change new`, `answer`, `check` and `ship`, and a native step a
   human's gate decision runs, update it after their SpecSync step, so Chough's own steps
   are never flagged. A difference they find before their step stays pending.
-- **Recording:** the next successful `chough stage` move records each pending write and
-  any current difference as a `direct-native-write` entry before its own entry. The
+- **Recording:** the next successful `chough stage` move, or gate close with a human's
+  decision (`checkpoint --close-gate`, `gate record` or `change ship --close-gate`),
+  records each pending write and any current difference as a `direct-native-write`
+  entry before its own entry, so the story reads in the order the writes happened. The
   entry has `from` and `to` equal to the current stage and the fields `change`, one
   `file` line per changed file (its path under `.specsync/changes/<id>/` and `added`,
   `changed` or `removed`), `before_state` and `after_state` (the change's state from
-  `state.json`, or `none` when it is absent). With no baseline, the first move only sets
-  one. Nothing is recorded outside a stage move.
+  `state.json`, or `none` when it is absent). With no baseline, the first move or close
+  only sets one. Nothing is recorded outside a stage move or a gate close, and
+  withdrawing a gate with `--clear-awaiting-human` records nothing.
 - **Views:** `chough next` prints `Direct lifecycle writes: N not yet recorded (…)` and
   carries `direct_writes`, and `chough status` adds `direct_writes` (`baseline`,
   `pending`). Neither writes anything.

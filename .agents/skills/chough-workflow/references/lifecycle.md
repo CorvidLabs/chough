@@ -89,9 +89,10 @@ boundaries separate.
 
 ## Verification
 
-`specsync change check <id>` materializes the approved delta. Cases may link the
-requirements it adds or modifies before then while the checkpoint records the
-approved change (see testing.md). `chough change check <id>`
+`chough change check <id> --no-commit`, SpecSync's check without `--commit`,
+materializes the approved delta. Cases may link the requirements it adds or
+modifies before then while the checkpoint records the approved change (see
+testing.md). `chough change check <id>`
 (SpecSync's `change check <id> --commit`) also records targeted structural verification; run it after committing the
 source. Stage new source files first. It does not run the project's
 tests; product checks are separate observations. It refuses an edited delta and
@@ -129,8 +130,9 @@ specsync change review <id> --reviewer "<agent>-<terminal>" --verdict pass
 Show the human the gates being decided with `chough gate list`. Each has a one-screen
 summary and its digest, and one reply covers only listed gates (`chough gate record`).
 
-Direct `specsync` lifecycle calls still work. The next stage move records them as
-`direct-native-write` Timeline entries, so the need can be seen (DRIVE-21).
+Direct `specsync` lifecycle calls still work. The next stage move or gate close
+records them as `direct-native-write` Timeline entries, before its own entry, so the
+need can be seen (DRIVE-21).
 
 The native review is a recorded claim bound to the reviewed content, not proof of who
 reviewed; the relay is a claim too. The reviewer may be the scope approver. Do not
