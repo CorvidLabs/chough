@@ -13,13 +13,14 @@ use std::process::{Command, Output, Stdio};
 use std::time::{Duration, Instant};
 
 /// A `specsync` stand-in that records each argument on its own line in `.stub-argv`
-/// and its working directory in `.stub-cwd`, writes its PID to `.stub-pid`, sleeps
-/// `.stub-sleep` seconds when that file exists, then prints `.stub-out` to stdout and
-/// `.stub-err` to stderr byte for byte and exits with `.stub-exit` (0 when absent).
+/// and its working directory in `.stub-cwd`, publishes its PID in `.stub-pid` whole (a
+/// complete file renamed into place, so a test polling for it never reads it empty),
+/// sleeps `.stub-sleep` seconds when that file exists, then prints `.stub-out` to stdout
+/// and `.stub-err` to stderr byte for byte and exits with `.stub-exit` (0 when absent).
 const STUB: &str = r#"#!/bin/sh
 for argument in "$@"; do printf '%s\n' "$argument"; done >.stub-argv
 pwd -P >.stub-cwd
-echo $$ >.stub-pid
+echo $$ >.stub-pid.tmp && mv .stub-pid.tmp .stub-pid
 if [ -f .stub-sleep ]; then sleep "$(cat .stub-sleep)"; fi
 if [ -f .stub-out ]; then cat .stub-out; fi
 if [ -f .stub-err ]; then cat .stub-err >&2; fi
@@ -412,15 +413,15 @@ const SHIP_KEY: &str = "ship-a5";
 const REVIEW_GATE: &str = "Implementation review of a5";
 
 /// A stand-in for `specsync change ship` and `change status`. Ship records each
-/// argument on its own line in `.stub-ship-calls` (appending), writes its PID to
-/// `.stub-pid`, sleeps `.stub-ship-sleep` seconds when that file exists, prints
-/// `.stub-ship-out` and `.stub-ship-err`, and exits with `.stub-ship-exit` (0 when
-/// absent). Status reports an archived change, or exits 2 while `.stub-status-fail`
-/// exists.
+/// argument on its own line in `.stub-ship-calls` (appending), publishes its PID in
+/// `.stub-pid` whole (renamed into place), sleeps `.stub-ship-sleep` seconds when that
+/// file exists, prints `.stub-ship-out` and `.stub-ship-err`, and exits with
+/// `.stub-ship-exit` (0 when absent). Status reports an archived change, or exits 2
+/// while `.stub-status-fail` exists.
 const SHIP_STUB: &str = r#"#!/bin/sh
 if [ "$2" = ship ]; then
     for argument in "$@"; do printf '%s\n' "$argument"; done >>.stub-ship-calls
-    echo $$ >.stub-pid
+    echo $$ >.stub-pid.tmp && mv .stub-pid.tmp .stub-pid
     if [ -f .stub-ship-sleep ]; then sleep "$(cat .stub-ship-sleep)"; fi
     if [ -f .stub-ship-out ]; then cat .stub-ship-out; fi
     if [ -f .stub-ship-err ]; then cat .stub-ship-err >&2; fi

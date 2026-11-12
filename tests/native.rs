@@ -17,7 +17,7 @@ if [ "$1" = --version ]; then printf 'specsync 6.3.0\n'; exit 0; fi
 if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
 if [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi
 if [ -f .stub-sleep ]; then
-    echo $$ >.stub-native-pid
+    echo $$ >.stub-native-pid.tmp && mv .stub-native-pid.tmp .stub-native-pid
     sleep "$(cat .stub-sleep)"
 fi
 state=$(cat .stub-state 2>/dev/null || echo draft)
