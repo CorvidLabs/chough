@@ -396,7 +396,11 @@ fn derived_body(record: &Record, room: usize) -> String {
         ("Why: ", decision, 1),
         (
             "Verified: ",
-            items(record, VERIFIED).into_iter().next_back(),
+            items(record, VERIFIED)
+                .into_iter()
+                .rev()
+                .map(|line| claim_of(&line))
+                .find(|claim| claim.contains(' ')),
             1,
         ),
         ("Next: ", open_threads(record).into_iter().next(), 1),
@@ -457,6 +461,12 @@ fn first_paragraph(record: &Record, heading: &str) -> String {
         .unwrap_or_default()
 }
 
+/// The claim of a What was verified line: the text before a receipt line's ` — ` and its
+/// command, so a post never copies an evidence ID into the vault (REQ-cli-044).
+fn claim_of(line: &str) -> String {
+    line.split(" — ").next().unwrap_or(line).to_string()
+}
+
 /// `text` as one plain line: Markdown links become their text, so a link relative to the
 /// story never breaks in the post, and escaped brackets lose their backslash.
 fn plain(text: &str) -> String {
@@ -484,9 +494,11 @@ fn plain(text: &str) -> String {
         }
     }
     out.push_str(rest);
+    // A `^<id>` block anchor names a record, which the vault links and never copies.
     out.replace("\\[", "[")
         .replace("\\]", "]")
         .split_whitespace()
+        .filter(|word| !word.starts_with('^'))
         .collect::<Vec<_>>()
         .join(" ")
 }
