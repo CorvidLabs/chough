@@ -2829,3 +2829,178 @@ pub(super) fn validation_run_text(run: &ValidationRun, aliases: &[String]) -> Re
     record.set_scalar("evidence_kind", "structural")?;
     record.render_within(markdown::Kind::Evidence)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A receipt map's lines under `receipts:`, as a story or a bug writes them.
+    fn receipt(id: &str, aliases: &str, claim: &str) -> String {
+        let mut text = format!("  - id: {id}\n");
+        if !aliases.is_empty() {
+            text.push_str(&format!("    aliases: {aliases}\n"));
+        }
+        text.push_str(&format!(
+            "    claim: {claim}\n    result: passed\n    revision: {}\n    environment: local\n    observed: 2026-01-01T00:00:00Z\n",
+            "1".repeat(40)
+        ));
+        text
+    }
+
+    fn write(root: &Path, name: &str, text: &str) {
+        let path = root.join(name);
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        fs::write(path, text).unwrap();
+    }
+
+    fn holder(root: &Path, name: &str, receipts: &[String]) {
+        write(
+            root,
+            name,
+            &format!("---\nreceipts:\n{}---\n\n# A record\n", receipts.concat()),
+        );
+    }
+
+    const MIGRATION: &str = ".chough/archive/migrations/2026-01-05-from-0-5.md";
+
+    /// Two stories and two bugs holding receipts, a tombstone and a migration receipt.
+    fn project() -> tempfile::TempDir {
+        let root = tempfile::tempdir().unwrap();
+        let root_path = root.path();
+        let tombstone = format!("  - id: OBS-tombstoned\n    removed: {MIGRATION}\n");
+        holder(
+            root_path,
+            ".chough/archive/sessions/2026-01-01-story-a.md",
+            &[receipt(
+                "2026-01-01-x",
+                "OBS-shared",
+                "SYNTHETIC in story a",
+            )],
+        );
+        holder(
+            root_path,
+            ".chough/archive/sessions/2026-01-02-story-b.md",
+            &[receipt("2026-01-01-x", "", "SYNTHETIC in story b")],
+        );
+        holder(
+            root_path,
+            ".chough/bugs/2026-01-01-bug-a.md",
+            &[
+                receipt("2026-01-03-y", "", "SYNTHETIC in bug a"),
+                receipt("2026-01-04-z", "", "SYNTHETIC copy"),
+                tombstone,
+            ],
+        );
+        holder(
+            root_path,
+            ".chough/bugs/2026-01-02-bug-b.md",
+            &[
+                receipt("2026-01-03-y", "", "SYNTHETIC in bug b"),
+                receipt("2026-01-04-z", "", "SYNTHETIC copy"),
+            ],
+        );
+        write(
+            root_path,
+            MIGRATION,
+            "---\nkind: receipt\n---\n\n# Migration from Chough 0.5.x\n\n## Aliases\n\n- `OBS-carried` → `.chough/archive/sessions/2026-01-01-story-a.md`\n- `OBS-gone` → `removed`\n",
+        );
+        root
+    }
+
+    fn present(resolved: Resolved) -> Evidence {
+        match resolved {
+            Resolved::Present(evidence) => *evidence,
+            Resolved::Removed(receipt) => panic!("removed, as {receipt} records"),
+            Resolved::Missing => panic!("missing"),
+        }
+    }
+
+    /// t38b's R2 (a): a qualified `<story>/<id>` or `<bug>/<id>` resolves where the bare
+    /// ID is ambiguous, and names the place's own receipt.
+    #[test]
+    fn qualified_story_and_bug_ids_resolve_where_the_bare_id_is_ambiguous() {
+        let root = project();
+        let index = Index::build(root.path()).unwrap();
+        let error = index.resolve("2026-01-01-x").err().unwrap().to_string();
+        assert!(
+            error.contains("names evidence in more than one place")
+                && error.contains("2026-01-01-story-a")
+                && error.contains("2026-01-02-story-b"),
+            "{error}"
+        );
+        for (place, claim) in [
+            ("2026-01-01-story-a", "SYNTHETIC in story a"),
+            ("2026-01-02-story-b", "SYNTHETIC in story b"),
+        ] {
+            let found = present(index.resolve(&format!("{place}/2026-01-01-x")).unwrap());
+            assert_eq!(found.summary, claim);
+        }
+        // An alias resolves too, bare or qualified.
+        assert_eq!(
+            present(index.resolve("OBS-shared").unwrap()).summary,
+            "SYNTHETIC in story a"
+        );
+        let found = present(index.resolve("2026-01-02-bug-b/2026-01-03-y").unwrap());
+        assert_eq!(found.summary, "SYNTHETIC in bug b");
+        assert!(index.holds("2026-01-01-bug-a/2026-01-03-y"));
+        assert!(matches!(
+            index.resolve("2026-01-02-story-b/2026-01-03-y").unwrap(),
+            Resolved::Missing
+        ));
+    }
+
+    /// t38b's R2 (b): two bugs holding differing receipts for one ID refuse, naming the
+    /// bugs and the qualified form; identical copies are one receipt.
+    #[test]
+    fn differing_bug_receipts_refuse_and_identical_copies_are_one() {
+        let root = project();
+        let index = Index::build(root.path()).unwrap();
+        let error = index.resolve("2026-01-03-y").err().unwrap().to_string();
+        assert!(
+            error.contains("names differing receipts in bugs 2026-01-01-bug-a, 2026-01-02-bug-b")
+                && error.contains("<bug-id>/<evidence-id>"),
+            "{error}"
+        );
+        assert_eq!(
+            present(index.resolve("2026-01-04-z").unwrap()).summary,
+            "SYNTHETIC copy"
+        );
+    }
+
+    /// t38b's R2 (c), and E1 and E2: an ID the migration removed resolves as removed,
+    /// naming its receipt, from a tombstone or the receipt's aliases; `load` refuses it
+    /// with that receipt; a tombstone is never a receipt; an ID held nowhere is missing.
+    #[test]
+    fn removed_ids_name_their_receipt_and_load_refuses_them() {
+        let root = project();
+        let index = Index::build(root.path()).unwrap();
+        for id in ["OBS-gone", "OBS-tombstoned"] {
+            match index.resolve(id).unwrap() {
+                Resolved::Removed(receipt) => assert_eq!(receipt, MIGRATION, "{id}"),
+                _ => panic!("{id} is not removed"),
+            }
+            assert!(!index.holds(id), "{id}");
+            let error = load(root.path(), id).err().unwrap().to_string();
+            assert_eq!(
+                error,
+                format!("evidence {id} was removed by the 0.5.x migration, as {MIGRATION} records")
+            );
+        }
+        // An alias the migration carried is not removed.
+        assert!(matches!(
+            index.resolve("OBS-carried").unwrap(),
+            Resolved::Missing
+        ));
+        assert!(matches!(
+            index.resolve("never-recorded").unwrap(),
+            Resolved::Missing
+        ));
+        let error = load(root.path(), "never-recorded")
+            .err()
+            .unwrap()
+            .to_string();
+        assert_eq!(error, "evidence not found: never-recorded");
+        assert!(!is_present(root.path(), "OBS-gone").unwrap());
+        assert!(is_present(root.path(), "2026-01-04-z").unwrap());
+    }
+}
