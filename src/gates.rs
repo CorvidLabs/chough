@@ -355,20 +355,28 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
         }
         None => lines.push("Change: none recorded".into()),
     }
-    // #190 (REQ-cli-061): count from the merge base with the default branch, so work
-    // merged from main is not this change's, and from the change's base commit only
-    // when there is no merge base.
-    // Work on the default branch itself has HEAD as its merge base, so the change's
-    // base commit decides there.
+    // REQ-cli-061: count from the change's own base commit, so an earlier change on
+    // the same branch is not counted again (D2). Count from the merge base with the
+    // default branch instead when default-branch work came in after that base, so the
+    // merge base is not one of its ancestors (#190), or when the change records no base.
+    // Work on the default branch itself has HEAD as its merge base, which is ignored.
     let base_commit = state
         .as_ref()
         .and_then(|state| state["base_commit"].as_str())
         .map(String::from);
-    let base = ["origin/HEAD", "main"]
+    let merge_base = ["origin/HEAD", "main"]
         .iter()
         .find_map(|branch| git(root, &["merge-base", "HEAD", branch]))
-        .filter(|merge_base| *merge_base != head)
-        .or(base_commit);
+        .filter(|merge_base| *merge_base != head);
+    let base = match (base_commit, merge_base) {
+        (Some(own), Some(merge_base))
+            if git(root, &["merge-base", "--is-ancestor", &merge_base, &own]).is_none() =>
+        {
+            Some(merge_base)
+        }
+        (Some(own), _) => Some(own),
+        (None, merge_base) => merge_base,
+    };
     let left_out = left_out_of_summary(root);
     match &base {
         Some(base) => {
