@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bba430d2b716c0f8fa00897f",
-    "head": "EVT-ab90595e424905c88adc65d0",
+    "head": "EVT-0df48b2acd0fad71ad72c6f8",
     "legacy": null
   },
   "schema_version": 2,
@@ -13,7 +13,7 @@
     "history"
   ],
   "stage": {
-    "current": "test",
+    "current": "plan",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -47,7 +47,8 @@
     "Leif (0xLeif) said on 2026-11-11: \"we need to make sure we use chough to fix and close all the bugs and tickets for 0.6.0 before tagging 0.6.0.. we need to dogfood and make sure chough is perfect\". The coordinator set from it a ticket ledger (one disposition per open issue, pull request and local bug; only #221-#229, #231, #232 and items Leif defers himself may wait for after 0.6.0), a Chough 0.6.0 milestone, and the release gate: every item in that milestone closed through Chough (bug record -> fix -> regression case -> evidence -> closed), the chough-repo dogfood complete with every bug it finds fixed the same way, then Leif says go (Coordinator chat with Leif, relayed by t370 on 2026-11-11, Leif's words quoted as relayed); recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated",
     "0xLeif decided \"Scope approval of the Chough 0.6.0 native change\": \"ok i approve\" (coordinator chat, 2026-11-11 (relayed by the coordinator agent t370)); recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated",
     "decided: test by area with five independent testers on fresh clones, none writing Chough records, because Leif reviews area by area (t370 relaying Leif, 2026-11-12)",
-    "decided: Chough 0.6.0 ships with SpecSync 6.3.0. Leif: 'yes chough 0.6.0 ships with spec-sync 6.3.0' (coordinator chat, 2026-11-12, relayed by t370). When 6.3.0 is released: send the change back, add .specsync/config.toml to its paths (its version comment is an SDD policy file the audit always counts), move every pin, rerun the full suite and the SpecSync-dependent test areas on 6.3.0, then one re-approval by Leif"
+    "decided: Chough 0.6.0 ships with SpecSync 6.3.0. Leif: 'yes chough 0.6.0 ships with spec-sync 6.3.0' (coordinator chat, 2026-11-12, relayed by t370). When 6.3.0 is released: send the change back, add .specsync/config.toml to its paths (its version comment is an SDD policy file the audit always counts), move every pin, rerun the full suite and the SpecSync-dependent test areas on 6.3.0, then one re-approval by Leif",
+    "decided: sent the native change back to draft on SpecSync 6.3.0 (send-back as 0xLeif, quoting his decision 'yes chough 0.6.0 ships with spec-sync 6.3.0', relayed by t370, who gave the go after the v6.3.0 release), added .specsync/config.toml to its affected paths, and folded the test stage's contract fixes K1, K2, K6, S6, U2, R9, G1 and Q1 into the deltas; rejected: a separate change for the pins, because Leif asked for them inside this change"
   ],
   "open_questions": [],
   "completed": [
