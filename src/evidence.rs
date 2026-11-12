@@ -2213,24 +2213,26 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 // The seam for the archived story (plan step 4, wired by the step 3 owner):
 // a session's entries as `receipts:` values.
 
-/// The evidence entries of one session as receipt values for its archived story:
-/// id, result, claim, observed, revision, content, fingerprint, raw_log, case,
-/// duration_seconds and the actor, each only when known (REQ-cli-017, REQ-history-006;
-/// duration_seconds per the plan's delta correction 4). Front-matter-native maps.
-#[cfg_attr(not(test), allow(dead_code))] // step 4's seam; wired in sessions.rs
+/// The evidence entries of one session as receipt values for its archived story, in
+/// the order and shape the migration writes them (REQ-history-006, REQ-cli-017):
+/// id; aliases as one scalar, comma-and-space separated; claim; result; command, the
+/// executed argument vector joined by spaces; revision; environment; content;
+/// fingerprint; raw_log; case and case_digest; screenshot; observed; duration_seconds;
+/// and the actor. Each field is written only when known. Front-matter-native maps.
 pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(String, String)>>> {
     let mut receipts = vec![];
     for evidence in load_session(root, session_id)? {
-        let mut map = vec![
-            ("id".into(), evidence.id.clone()),
-            ("result".into(), evidence.outcome.name().to_string()),
-            ("claim".into(), evidence.summary.clone()),
-            (
-                "observed".into(),
-                iso_time(evidence.observed_at_unix_seconds),
-            ),
-            ("revision".into(), evidence.snapshot.revision.clone()),
-        ];
+        let mut map: Vec<(String, String)> = vec![("id".into(), evidence.id.clone())];
+        if !evidence.aliases.is_empty() {
+            map.push(("aliases".into(), evidence.aliases.join(", ")));
+        }
+        map.push(("claim".into(), evidence.summary.clone()));
+        map.push(("result".into(), evidence.outcome.name().to_string()));
+        if !evidence.argv.is_empty() {
+            map.push(("command".into(), evidence.argv.join(" ")));
+        }
+        map.push(("revision".into(), evidence.snapshot.revision.clone()));
+        map.push(("environment".into(), evidence.environment.clone()));
         if let Some(content) = &evidence.snapshot.content {
             map.push(("content".into(), content.clone()));
         }
@@ -2242,7 +2244,15 @@ pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(Stri
         }
         if let Some(case) = evidence.cases.first() {
             map.push(("case".into(), case.id.clone()));
+            map.push(("case_digest".into(), case.digest.clone()));
         }
+        if let Some(screenshot) = &evidence.screenshot {
+            map.push(("screenshot".into(), screenshot.clone()));
+        }
+        map.push((
+            "observed".into(),
+            iso_time(evidence.observed_at_unix_seconds),
+        ));
         if let Some(duration) = evidence.duration_seconds {
             map.push(("duration_seconds".into(), duration.to_string()));
         }

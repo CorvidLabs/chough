@@ -262,6 +262,222 @@ fn rebuilding_the_knowledge_index_keeps_the_observation_current() {
     assert_eq!(label(&fixture).as_deref(), Some("current"));
 }
 
+/// The `receipts:` maps of a story's front matter, each as its fields in order.
+fn story_receipts(text: &str) -> Vec<Vec<(String, String)>> {
+    let (front, _) = text
+        .strip_prefix("---\n")
+        .and_then(|rest| rest.split_once("\n---\n"))
+        .expect("a story");
+    let unquote = |value: &str| {
+        value
+            .strip_prefix('"')
+            .and_then(|inner| inner.strip_suffix('"'))
+            .map_or_else(
+                || value.to_string(),
+                |inner| inner.replace("\\\"", "\"").replace("\\\\", "\\"),
+            )
+    };
+    let mut maps: Vec<Vec<(String, String)>> = vec![];
+    let mut inside = false;
+    for line in front.lines() {
+        if line == "receipts:" {
+            inside = true;
+            continue;
+        }
+        if !inside {
+            continue;
+        }
+        let (fresh, rest) = if let Some(rest) = line.strip_prefix("  - ") {
+            (true, rest)
+        } else if let Some(rest) = line.strip_prefix("    ") {
+            (false, rest)
+        } else {
+            break;
+        };
+        let (key, value) = rest.split_once(": ").expect("a map field");
+        if fresh {
+            maps.push(vec![]);
+        }
+        maps.last_mut()
+            .expect("a map")
+            .push((key.to_string(), unquote(value)));
+    }
+    maps
+}
+
+/// A small PNG with a metadata chunk, as a key screenshot (REQ-records-013).
+fn png() -> Vec<u8> {
+    let chunk = |kind: &[u8], data: &[u8]| {
+        let mut out = (data.len() as u32).to_be_bytes().to_vec();
+        out.extend_from_slice(kind);
+        out.extend_from_slice(data);
+        out.extend_from_slice(&[0, 0, 0, 0]);
+        out
+    };
+    let mut bytes = b"\x89PNG\r\n\x1a\n".to_vec();
+    bytes.extend(chunk(b"IHDR", &[0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0, 0, 0]));
+    bytes.extend(chunk(b"tEXt", b"Comment\0SYNTHETIC"));
+    bytes.extend(chunk(b"IDAT", &[7u8; 32]));
+    bytes.extend(chunk(b"IEND", &[]));
+    bytes
+}
+
+/// REQ-history-006 (the plan's delta correction 2): a finished session's story holds
+/// one receipt per entry, in the order and shape the migration writes: id; aliases as
+/// one comma-and-space scalar; claim; result; the command; revision; environment;
+/// content; fingerprint; raw_log; case and case_digest; screenshot; observed;
+/// duration_seconds; the actor. Each only when known, and nothing else.
+#[cfg(unix)]
+#[test]
+fn a_story_receipt_carries_each_field_its_entry_knows() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Probe\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"Probe reports healthy\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"sh\", \"-c\", \"echo healthy: yes\"]\nexpect_output = [\"healthy: yes\"]\n",
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    let session = fixture.active_id();
+    let run = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
+    let case_entry = run["observation"].as_str().unwrap().to_string();
+    // Aliases, as a migration gives an entry its 0.5.x IDs.
+    let file = format!(".chough/sessions/{session}/evidence/{case_entry}.md");
+    let text = fixture.read(&file);
+    assert!(text.contains("\naliases: []\n"), "{text}");
+    fixture.write(
+        &file,
+        &text.replace(
+            "\naliases: []\n",
+            "\naliases: [OBS-synthetic-a, OBS-synthetic-b]\n",
+        ),
+    );
+    let shot = fixture.root().join("shot.png");
+    fs::write(&shot, png()).unwrap();
+    let add = |extra: &[&str]| {
+        let mut args = vec![
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+        ];
+        args.extend_from_slice(extra);
+        fixture.ok(&args)["observation"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    let shot_entry = add(&[
+        "--summary",
+        "SYNTHETIC screenshot check",
+        "--screenshot",
+        shot.to_str().unwrap(),
+        "--raw-log",
+        "SYNTHETIC-ci-run-7",
+    ]);
+    let plain_entry = add(&["--summary", "SYNTHETIC plain check"]);
+    let screenshot = fixture
+        .read(&format!(
+            ".chough/sessions/{session}/evidence/{shot_entry}.md"
+        ))
+        .lines()
+        .find_map(|line| line.strip_prefix("screenshot: ").map(str::to_string))
+        .expect("the entry names its screenshot");
+    fs::remove_file(&shot).unwrap();
+    fixture.commit("the entries");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
+    let receipts = story_receipts(&story);
+    assert_eq!(receipts.len(), 3, "{story}");
+    let order = [
+        "id",
+        "aliases",
+        "claim",
+        "result",
+        "command",
+        "revision",
+        "environment",
+        "content",
+        "fingerprint",
+        "raw_log",
+        "case",
+        "case_digest",
+        "screenshot",
+        "observed",
+        "duration_seconds",
+        "actor",
+    ];
+    for receipt in &receipts {
+        let keys: Vec<&str> = receipt.iter().map(|(key, _)| key.as_str()).collect();
+        let positions: Vec<usize> = keys
+            .iter()
+            .map(|key| {
+                order
+                    .iter()
+                    .position(|known| known == key)
+                    .unwrap_or_else(|| panic!("{key} on a receipt: {story}"))
+            })
+            .collect();
+        assert!(
+            positions.windows(2).all(|pair| pair[0] < pair[1]),
+            "out of order: {keys:?}"
+        );
+        for key in [
+            "id",
+            "claim",
+            "result",
+            "revision",
+            "environment",
+            "observed",
+        ] {
+            assert!(keys.contains(&key), "{key} missing: {keys:?}");
+        }
+    }
+    let receipt = |id: &str| -> BTreeMap<String, String> {
+        receipts
+            .iter()
+            .find(|map| map[0] == ("id".to_string(), id.to_string()))
+            .unwrap_or_else(|| panic!("no receipt {id}: {story}"))
+            .iter()
+            .cloned()
+            .collect()
+    };
+    let case = receipt(&case_entry);
+    assert_eq!(case["aliases"], "OBS-synthetic-a, OBS-synthetic-b");
+    assert_eq!(case["command"], "sh -c echo healthy: yes");
+    assert_eq!(case["environment"], "local");
+    assert_eq!(case["result"], "passed");
+    assert_eq!(case["case"], "TC-cli-0001");
+    assert!(
+        case["case_digest"].len() == 64
+            && case["case_digest"].bytes().all(|b| b.is_ascii_hexdigit()),
+        "{case:?}"
+    );
+    assert!(case.contains_key("duration_seconds"), "{case:?}");
+    assert!(!case.contains_key("screenshot"), "{case:?}");
+    let shown = receipt(&shot_entry);
+    assert_eq!(shown["screenshot"], screenshot);
+    assert_eq!(shown["raw_log"], "SYNTHETIC-ci-run-7");
+    assert_eq!(shown["environment"], "local");
+    for key in ["aliases", "command", "case", "case_digest"] {
+        assert!(!shown.contains_key(key), "{key}: {shown:?}");
+    }
+    let plain = receipt(&plain_entry);
+    for key in ["aliases", "command", "screenshot", "raw_log", "case"] {
+        assert!(!plain.contains_key(key), "{key}: {plain:?}");
+    }
+}
+
 /// REQ-cli-004 (#203): an entry carries a 0.5.x diagnostic input inventory as front
 /// matter and reads it back unchanged, and it never changes freshness; an inventory
 /// edited out of #203's rule (a non-canonical or bookkeeping path, a wrong key or a
