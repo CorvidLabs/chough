@@ -19,6 +19,16 @@ files: []
 observations:
   - 2026-11-12-tc-records-a-0-5-pointer-still-names-its-session
   - 2026-11-12-tc-records-a-0-5-pointer-still-names-its-session-b81047
+  - 2026-11-12-tc-cli-init-preserves-knowledge
+  - 2026-11-12-tc-cli-init-unbounded-knowledge-refused
+  - 2026-11-12-tc-cli-vault-crlf-readme-unmatched-backtick
+  - 2026-11-12-tc-cli-vault-links-and-copies-no-text
+  - 2026-11-12-tc-cli-vault-readme-upgrade
+  - 2026-11-12-tc-cli-vault-regenerates-identically
+  - 2026-11-12-tc-cli-vault-rules-note
+  - 2026-11-12-tc-cli-vault-snapshots-and-briefs-stay
+  - 2026-11-12-tc-records-tree-and-readme
+  - 2026-11-12-the-know-gap-list-216-is-empty-computed-from-hi-knowledge-md
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -42,6 +52,16 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 
 - [Ran cargo test --locked --test migrate -- --exact a_pointer_naming_a_migrated_key_still_names_its_session for TC-records-a-0-5-pointer-still-names-its-session: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-a-0-5-pointer-still-names-its-session.md)
 - [Ran cargo test --locked --test migrate -- --exact a_pointer_naming_a_migrated_key_still_names_its_session for TC-records-a-0-5-pointer-still-names-its-session: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-a-0-5-pointer-still-names-its-session-b81047.md)
+- [Ran cargo test --locked --test knowledge_default -- --exact init_preserves_an_existing_knowledge_directory for TC-cli-init-preserves-knowledge: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-init-preserves-knowledge.md)
+- [Ran cargo test --locked --test knowledge_default -- --exact init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bounded for TC-cli-init-unbounded-knowledge-refused: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-init-unbounded-knowledge-refused.md)
+- [Ran cargo test --locked --test vault -- --exact crlf_earlier_readmes_upgrade_and_unmatched_backticks_keep_the_trace_list for TC-cli-vault-crlf-readme-unmatched-backtick: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-vault-crlf-readme-unmatched-backtick.md)
+- [Ran cargo test --locked --test vault -- --exact the_index_links_lessons_bundles_and_the_journal_and_copies_no_text for TC-cli-vault-links-and-copies-no-text: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-vault-links-and-copies-no-text.md)
+- [Ran cargo test --locked --test vault -- --exact an_untouched_earlier_readme_is_upgraded_and_an_edited_one_kept for TC-cli-vault-readme-upgrade: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-vault-readme-upgrade.md)
+- [Ran cargo test --locked --test vault -- --exact the_vault_regenerates_identically for TC-cli-vault-regenerates-identically: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-vault-regenerates-identically.md)
+- [Ran cargo test --locked --test vault -- --exact the_rules_note_links_rules_skills_and_decisions_that_exist for TC-cli-vault-rules-note: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-vault-rules-note.md)
+- [Ran cargo test --locked --test vault -- --exact snapshots_and_briefs_stay_as_they_are_and_snapshot_and_archive_are_gone for TC-cli-vault-snapshots-and-briefs-stay: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-vault-snapshots-and-briefs-stay.md)
+- [Ran cargo test --locked --test records -- --exact the_tree_holds_only_the_listed_paths for TC-records-tree-and-readme: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-tree-and-readme.md)
+- [The KNOW gap list (#216) is empty: computed from hi/knowledge.md and the recorded evidence (stories, bugs and this session's entries), all 17 live KNOW criteria have an active case whose latest receipt passed, and all 18 retired ones show as retired](evidence/2026-11-12-the-know-gap-list-216-is-empty-computed-from-hi-knowledge-md.md)
 
 ## Open threads
 
