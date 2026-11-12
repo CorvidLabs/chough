@@ -83,6 +83,12 @@ observations:
   - 2026-11-12-tc-cli-gate-record-reports-the-approval-it-ran
   - 2026-11-12-tc-cli-stage-move-authority-line-says-when-chough-runs-native
   - 2026-11-12-tc-history-direct-write-entry-says-what-changed
+  - 2026-11-12-tc-cli-gate-record-reports-the-approval-it-ran-a49bfe
+  - 2026-11-12-tc-cli-stage-move-authority-line-says-when-chough-runs-native-42c872
+  - 2026-11-12-tc-history-direct-write-entry-says-what-changed-ff8f62
+  - 2026-11-12-tc-cli-delivery-kinds-kept-dry-run-not
+  - 2026-11-12-tc-cli-delivery-kinds-kept-dry-run-not-5f607b
+  - 2026-11-12-tc-records-journal-post-derives-a-title-and-body-36c430
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -178,6 +184,12 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test humans -- --exact gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record for TC-cli-gate-record-reports-the-approval-it-ran: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-gate-record-reports-the-approval-it-ran.md)
 - [Ran cargo test --locked --test stages -- --exact every_stage_move_says_when_chough_runs_native_approval_or_review for TC-cli-stage-move-authority-line-says-when-chough-runs-native-steps: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-stage-move-authority-line-says-when-chough-runs-native.md)
 - [Ran cargo test --locked --test direct_writes -- --exact a_direct_write_entry_says_what_changed_outside_chough for TC-history-direct-write-entry-says-what-changed: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-direct-write-entry-says-what-changed.md)
+- [Ran cargo test --locked --test humans -- --exact gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record for TC-cli-gate-record-reports-the-approval-it-ran: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-gate-record-reports-the-approval-it-ran-a49bfe.md)
+- [Ran cargo test --locked --test stages -- --exact every_stage_move_says_when_chough_runs_native_approval_or_review for TC-cli-stage-move-authority-line-says-when-chough-runs-native-steps: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-stage-move-authority-line-says-when-chough-runs-native-42c872.md)
+- [Ran cargo test --locked --test direct_writes -- --exact a_direct_write_entry_says_what_changed_outside_chough for TC-history-direct-write-entry-says-what-changed: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-direct-write-entry-says-what-changed-ff8f62.md)
+- [Ran cargo test --locked --test reduce -- --exact delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not for TC-cli-delivery-kinds-kept-dry-run-not: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-delivery-kinds-kept-dry-run-not.md)
+- [Ran cargo test --locked --test reduce -- --exact delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not for TC-cli-delivery-kinds-kept-dry-run-not: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-delivery-kinds-kept-dry-run-not-5f607b.md)
+- [Ran cargo test --locked --test journal -- --exact without_a_title_or_summary_the_post_derives_both_from_the_story for TC-records-journal-post-derives-a-title-and-body: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-journal-post-derives-a-title-and-body-36c430.md)
 
 ## Open threads
 
