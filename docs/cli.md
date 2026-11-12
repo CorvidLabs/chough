@@ -1454,6 +1454,15 @@ The next valid action follows these rules in order:
    says to commit that gate and run `chough change check <id>` again before the ship.
    With the review gate open, the waiting action names the same ship. It never suggests
    an agent review.
+   While the native change is still approved or implementing, the action is the review
+   preparation of the workflow's accept step, in its order: `chough change check <id>
+   --no-commit` first when a delta of the change adds or modifies requirements, so the
+   requirement text the cases link is materialized; then the affected cases with
+   `chough cases run`; the review gate with `chough checkpoint --awaiting-human
+   "Implementation review of <id>" --holds accept --drives review`; the commit of the
+   source with Chough's records; and `chough change check <id>`. Its command is the
+   first of those steps. It never shows the refused move into done or a bare native
+   status read.
 6a. At plan, while the native change is a complete draft that waits for its definition
    approval (SpecSync's next action names `specsync change approve`), the human
    approves the scope next. The action opens the scope gate with `chough checkpoint
