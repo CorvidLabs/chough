@@ -15,16 +15,26 @@
   "revision": "4c450dd587bc89738118fb50a0883855e708fe4c",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-records-migrate-plan-says-what-each-file-becomes-f7b471a433f8e08a07239738"
+  ],
   "impact": "A reviewer cannot see where session.json or the EVT files went before consenting",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t384, test stage, area upgrade",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794449520,
+      "text": "status: open -> investigating. Red at 57b88a8a (leif/0.6.0-test1-red: d854ce1a plus the regression tests): TC-records-migrate-plan-says-what-each-file-becomes failed, the plan has no becomes; fix in 2de0e7cd.",
+      "observations": [
+        "OBS-tc-records-migrate-plan-says-what-each-file-becomes-f7b471a433f8e08a07239738"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794449018,
-  "updated_at_unix_seconds": 1794449018
+  "updated_at_unix_seconds": 1794449520
 }
