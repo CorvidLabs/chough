@@ -1,6 +1,6 @@
 ---
 id: chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an
-state: draft
+state: approved
 type: feature
 base_commit: 50eb4f5f5c2d571c1b4465292b36449baf3a10e0
 ---
