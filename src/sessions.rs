@@ -1002,29 +1002,10 @@ fn story_verified_lines(
             }
             continue;
         }
-        let claim = get(receipt, "claim").unwrap_or_else(|| entry.clone());
-        // The receipt follows one ` — `, with or without a command.
-        let mut parts = vec![];
-        if let Some(command) = get(receipt, "command").filter(|command| !claim.contains(command)) {
-            parts.push(format!("`{command}`"));
-        }
-        if let Some(fingerprint) = get(receipt, "fingerprint") {
-            parts.push(
-                fingerprint
-                    .trim_start_matches("sha256:")
-                    .chars()
-                    .take(12)
-                    .collect(),
-            );
-        }
-        let mut line = claim;
-        if !parts.is_empty() {
-            line.push_str(&format!(" — {}", parts.join(" ")));
-        }
-        if let Some(name) = screenshots.get(&entry) {
-            line.push_str(&format!(" [screenshot]({id}/{name})"));
-        }
-        line.push_str(&format!(" ^{entry}"));
+        let screenshot = screenshots.get(&entry).map(|name| format!("{id}/{name}"));
+        let Some(line) = receipt_line(receipt, screenshot.as_deref()) else {
+            continue;
+        };
         // The open line becomes the receipt line, so each entry is listed once.
         if let Some(open) = open {
             record.replace_item(VERIFIED, open, &line)?;
@@ -1039,6 +1020,49 @@ fn story_verified_lines(
         record.insert_first_item(VERIFIED, &earlier_runs(earlier))?;
     }
     Ok(())
+}
+
+/// A receipt's What was verified line (REQ-history-006): its claim, or its ID without
+/// one; after one ` — `, its command unless the claim already holds it and the first 12
+/// digits of its fingerprint, when it has them; a link to `screenshot`, its key
+/// screenshot beside the story, when given; ending `^<evidence id>`. A story at
+/// archiving and the migration write the same line (REQ-records-009). None for a
+/// receipt with no ID.
+pub(super) fn receipt_line(
+    receipt: &[(String, String)],
+    screenshot: Option<&str>,
+) -> Option<String> {
+    let get = |key: &str| {
+        receipt
+            .iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.clone())
+            .filter(|value| !value.is_empty())
+    };
+    let entry = get("id")?;
+    let claim = get("claim").unwrap_or_else(|| entry.clone());
+    let mut parts = vec![];
+    if let Some(command) = get("command").filter(|command| !claim.contains(command)) {
+        parts.push(format!("`{command}`"));
+    }
+    if let Some(fingerprint) = get("fingerprint") {
+        parts.push(
+            fingerprint
+                .trim_start_matches("sha256:")
+                .chars()
+                .take(12)
+                .collect(),
+        );
+    }
+    let mut line = claim;
+    if !parts.is_empty() {
+        line.push_str(&format!(" — {}", parts.join(" ")));
+    }
+    if let Some(link) = screenshot {
+        line.push_str(&format!(" [screenshot]({link})"));
+    }
+    line.push_str(&format!(" ^{entry}"));
+    Some(line)
 }
 
 /// The story line counting the earlier runs of its cases, which only its `receipts`
