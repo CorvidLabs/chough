@@ -811,6 +811,23 @@ fn search(
     matches.into_iter().map(|(_, value)| value).collect()
 }
 
+/// The bugs whose ID or an alias is a word of `text`, such as a migrated bug's
+/// `BUG-NNNN`, each with score 1.0 and `matched: id or alias`.
+fn named_in(bugs: &[Stored], text: &str) -> Vec<Value> {
+    let words: Vec<&str> = text
+        .split(|character: char| {
+            !(character.is_ascii_alphanumeric() || character == '-' || character == '_')
+        })
+        .filter(|word| !word.is_empty())
+        .collect();
+    bugs.iter()
+        .filter(|bug| words.iter().any(|word| bug.holds(word)))
+        .map(|bug| {
+            json!({"id": bug.id(), "title": bug.text("title"), "status": bug.status(), "score": 1.0, "matched": "id or alias"})
+        })
+        .collect()
+}
+
 /// What a new bug says, before it has a name.
 struct Draft {
     title: String,
@@ -2134,6 +2151,8 @@ pub(super) fn run(root: &Path, command: BugCommand) -> Result<()> {
                 if !bug.is_open() {
                     value["closed_as"] = json!(bug.status().replace('-', " "));
                 }
+                // A migrated bug answers to its 0.5.x ID (REQ-cli-012).
+                value["aliases"] = json!(bug.list("aliases"));
                 listed.push(value);
             }
             print_json(&json!({"schema_version": 1, "open_only": !all, "bugs": listed}))
@@ -2143,11 +2162,22 @@ pub(super) fn run(root: &Path, command: BugCommand) -> Result<()> {
             criteria,
             requirements,
             cases,
-        } => print_json(&json!({
-            "schema_version": 1,
-            "matches": search(&read_all(root)?, &text, &criteria, &requirements, &cases),
-            "note": "Scores compare words in title, symptom and trigger plus shared IDs; decide duplicates from the evidence.",
-        })),
+        } => {
+            let bugs = read_all(root)?;
+            // A bug the text names by its ID or an alias comes first (REQ-cli-012), then
+            // the word matches; `bug add`'s duplicate check compares words only.
+            let mut matches = named_in(&bugs, &text);
+            for found in search(&bugs, &text, &criteria, &requirements, &cases) {
+                if !matches.iter().any(|named| named["id"] == found["id"]) {
+                    matches.push(found);
+                }
+            }
+            print_json(&json!({
+                "schema_version": 1,
+                "matches": matches,
+                "note": "A bug the text names by its ID or an alias is listed first; other scores compare words in title, symptom and trigger plus shared IDs; decide duplicates from the evidence.",
+            }))
+        }
         BugCommand::Show { id } => {
             let bug = load(root, &id)?;
             let evidence = Evidence::new(root);
