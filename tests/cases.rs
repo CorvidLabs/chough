@@ -2820,3 +2820,82 @@ fn evidence_add_returns_its_observation_id() {
     let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);
 }
+
+/// REQ-cli-005, Kimi 2 and F12h of the second fresh-eyes round: `evidence add` needs at
+/// least one `--criterion`, and `--requirement` and `--contract` are optional, each
+/// validated when given. A requirement only the active session's native change adds in
+/// its approved delta records, as it does for a case run; one in neither the companion
+/// nor the delta is refused naming both. docs/cli.md says which flags are required.
+#[cfg(unix)]
+#[test]
+fn evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements() {
+    let fixture = delta_fixture(true);
+    let add = |extra: &[&str]| {
+        let mut args = vec![
+            "evidence",
+            "add",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            "SYNTHETIC looked",
+        ];
+        args.extend(extra);
+        fixture.run(&args)
+    };
+    for extra in [
+        &["--criterion", "LIFE-1", "--requirement", "REQ-cli-090"][..],
+        &[
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-090",
+            "--contract",
+            "specs/cli/cli.spec.md",
+        ][..],
+        &["--criterion", "LIFE-1"][..],
+    ] {
+        let output = add(extra);
+        assert!(
+            output.status.success(),
+            "{extra:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let refused = add(&["--criterion", "LIFE-1", "--requirement", "REQ-cli-091"]);
+    let error = String::from_utf8_lossy(&refused.stderr);
+    assert_eq!(refused.status.code(), Some(1), "{error}");
+    for part in [
+        "requirement REQ-cli-091 not found in specs/cli/requirements.md",
+        &format!(".specsync/changes/{LINK_CHANGE}/deltas/cli.md"),
+    ] {
+        assert!(error.contains(part), "expected {part:?} in {error}");
+    }
+    let refused = add(&["--requirement", "REQ-cli-090"]);
+    assert!(!refused.status.success());
+    assert!(
+        String::from_utf8_lossy(&refused.stderr).contains("--criterion"),
+        "{}",
+        String::from_utf8_lossy(&refused.stderr)
+    );
+    let docs = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/cli.md"),
+    )
+    .unwrap();
+    let row = docs
+        .lines()
+        .find(|line| line.starts_with("| `evidence add [ID]`"))
+        .expect("the evidence add row of docs/cli.md");
+    for part in [
+        "at least one `--criterion`",
+        "optional `--requirement` and `--contract`",
+    ] {
+        assert!(
+            row.contains(part),
+            "the evidence add row does not say {part:?}: {row}"
+        );
+    }
+}
