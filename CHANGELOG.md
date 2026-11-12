@@ -150,8 +150,10 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   other Markdown files first, since they are what the human approves (REQ-cli-061).
 - Timeline fields with parts, such as a relayed decision's `relayed_by` and a direct
   write's `direct_write`, are labelled lines instead of JSON; entries written with JSON
-  still read (REQ-history-002). A story's receipts are in observation-time order
-  (REQ-history-006).
+  still read (REQ-history-002). A story's receipts are in observation-time order, its
+  What was verified gives each case's latest run once, with its command once, and one
+  line counting the earlier runs, which stay in its receipts, and its front matter says
+  `stage_status: archived` with no stale `next` (REQ-history-006).
 - `chough doctor` no longer reports a path under `/tmp/` or `/private/tmp/` in a case
   definition as a leak, since a case may set its own temporary data folder; a home path,
   user or host name, email or credential there still counts (REQ-records-006).
