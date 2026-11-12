@@ -949,6 +949,11 @@ pub(super) fn delta_requirements(
         return Err(format!("refused:native-delta-changed: {relative} (edited)"));
     }
     let text = String::from_utf8(bytes).map_err(|_| format!("{relative} is not UTF-8"))?;
+    Ok(added_or_modified(&text))
+}
+
+/// The requirement IDs a delta's `ADDED` and `MODIFIED` sections hold.
+fn added_or_modified(text: &str) -> BTreeSet<String> {
     let mut section = "";
     let mut ids = BTreeSet::new();
     for line in text.lines().map(str::trim_end) {
@@ -961,7 +966,30 @@ pub(super) fn delta_requirements(
             ids.insert(id.to_string());
         }
     }
-    Ok(ids)
+    ids
+}
+
+/// Whether a delta of `change` in its workspace adds or modifies a requirement, so the
+/// accept step materializes the requirement text before the cases that link it run
+/// (F4). A delta that cannot be read counts as one that does, so the materializing check
+/// is named rather than skipped.
+fn deltas_add_or_modify(root: &Path, change: &str) -> bool {
+    let relative = format!(".specsync/changes/{change}/deltas");
+    let Ok(entries) = local_path(root, &relative).and_then(|dir| Ok(std::fs::read_dir(dir)?))
+    else {
+        return false;
+    };
+    entries.flatten().any(|entry| {
+        let name = entry.file_name().to_string_lossy().into_owned();
+        name.ends_with(".md")
+            && match native_file(root, &format!("{relative}/{name}")) {
+                Ok(Some(bytes)) => {
+                    !String::from_utf8(bytes).is_ok_and(|text| added_or_modified(&text).is_empty())
+                }
+                Ok(None) => false,
+                Err(_) => true,
+            }
+    })
 }
 
 /// The build gate's native checks for `change`, which a case link to a requirement only
@@ -1310,6 +1338,35 @@ pub(super) fn assess(
                 None => format!(
                     "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
                 ),
+            }),
+        }
+    } else if current == "accept"
+        && let NativeState::State(name, _) = state
+        && matches!(name.as_str(), "approved" | "implementing")
+    {
+        // F4: before the human's review, the accept step's preparation, in its order;
+        // never the refused move into done or a bare native status read.
+        let id = session.native_change.as_deref().unwrap_or("<id>");
+        let materialize = deltas_add_or_modify(root, id);
+        let cases = "chough cases run <case-id> --environment <env>";
+        Action {
+            action: format!(
+                "Prepare the human's review, in order: {}run the affected cases with `{cases}`; open the review gate with `chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review`; commit the source with Chough's records; then run `chough change check {id}`. The human reviews after that.",
+                if materialize {
+                    format!(
+                        "run `chough change check {id} --no-commit` first, so the requirement text the cases link is materialized; "
+                    )
+                } else {
+                    String::new()
+                }
+            ),
+            reason: format!(
+                "Native change is {name}: the human's review comes next, once the cases ran, the review gate is open and the committed work is checked."
+            ),
+            command: Some(if materialize {
+                format!("chough change check {id} --no-commit")
+            } else {
+                cases.into()
             }),
         }
     } else if current == "plan" && native_next.is_some_and(names_native_approval) {
