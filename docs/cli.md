@@ -1492,7 +1492,7 @@ has no other home (REQ-cli-044, KNOW-30, KNOW-31). It links to `hi/`, `specs/`,
 | `journal/<date>-<slug>.md` | Short posts (`type: journal`), written once by create-new and never rewritten by Chough (REQ-records-011) |
 | `journal/feed.xml` | An Atom feed of the newest 20 posts by date and then name, generated |
 | `lessons/<date>-<slug>.md` | Lessons that span projects (`type: lesson`, with `applies_to` and `source`) |
-| `snapshots/`, `briefs/`, `library/` | Content from earlier releases, kept as it is and linked from the index |
+| `snapshots/`, `briefs/` | Content from earlier releases, kept as it is and linked from the index (a snapshot by its `manifest.json`). The index also links the repository-root `library/` of earlier releases, outside this directory, unless `library-dir` makes it the vault itself |
 
 Every note Chough writes starts with YAML front matter giving at least `id`, `title`,
 `type` and `tags`, with ISO 8601 dates, and links with standard relative Markdown links
