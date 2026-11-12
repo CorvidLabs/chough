@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test a_summary_with_no_base_says_so_instead_of_a_broken_diff_command ... FAILED
+
+failures:
+
+---- a_summary_with_no_base_says_so_instead_of_a_broken_diff_command stdout ----
+
+thread 'a_summary_with_no_base_says_so_instead_of_a_broken_diff_command' (907991878) panicked at tests/gates.rs:536:5:
+Diff: git diff unknown..4c9e84db47e38cdd6df4681fbc219c76fd01194d
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_summary_with_no_base_says_so_instead_of_a_broken_diff_command
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 4.06s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/gates.rs (target/debug/deps/gates-3038db1f384ba4a4)
+error: test failed, to rerun pass `--test gates`
