@@ -37,15 +37,23 @@ Newest posts:
 
 ## Open bugs
 
-7 open bugs, blocking first, then newest.
+15 open bugs, blocking first, then newest.
 
+- [2026-11-12-a-journal-post-s-title-is-the-raw-objective-and-its-body-a](../.chough/bugs/2026-11-12-a-journal-post-s-title-is-the-raw-objective-and-its-body-a.md) A journal post's title is the raw objective and its body a stale first bullet, and the stories archived before the journal have no post (fix-pending-verification)
+- [2026-11-12-chough-status-cuts-its-next-action-mid-command-and-the](../.chough/bugs/2026-11-12-chough-status-cuts-its-next-action-mid-command-and-the.md) chough status cuts its next action mid-command, and the checkpoint's next action goes stale after a gate closes (open)
+- [2026-11-12-chough-context-includes-agents-md-files-from-above-the-git](../.chough/bugs/2026-11-12-chough-context-includes-agents-md-files-from-above-the-git.md) chough context includes AGENTS.md files from above the Git root, with their absolute path in the heading (open)
+- [2026-11-12-every-stage-move-prints-an-authority-line-saying-chough-never](../.chough/bugs/2026-11-12-every-stage-move-prints-an-authority-line-saying-chough-never.md) Every stage move prints an authority line saying Chough never writes native approval or review, which 0.6.0 gates do (open)
+- [2026-11-12-gate-record-on-a-gate-that-drives-approval-reports-only-closed](../.chough/bugs/2026-11-12-gate-record-on-a-gate-that-drives-approval-reports-only-closed.md) gate record on a gate that drives approval reports only closed, and the SpecSync approval note names chough checkpoint --close-gate (open)
+- [2026-11-12-plain-specsync-change-check-to-materialize-records-an-empty](../.chough/bugs/2026-11-12-plain-specsync-change-check-to-materialize-records-an-empty.md) Plain specsync change check to materialize records an empty direct-native-write Timeline entry, and Chough has no wrapper for the non-commit check (open)
+- [2026-11-12-record-readability-raw-json-in-timeline-fields-a-stale-bug-fix](../.chough/bugs/2026-11-12-record-readability-raw-json-in-timeline-fields-a-stale-bug-fix.md) Record readability: raw JSON in Timeline fields, a stale bug Fix line, an unlabelled trigger, unordered receipts, and empty receipt sections (open)
+- [2026-11-12-the-scope-gate-summary-leaves-out-the-change-s-delta-and-plan](../.chough/bugs/2026-11-12-the-scope-gate-summary-leaves-out-the-change-s-delta-and-plan.md) The scope-gate summary leaves out the change's delta and plan (open)
+- [2026-11-12-at-plan-chough-next-routes-to-specsync-change-approve-with-an](../.chough/bugs/2026-11-12-at-plan-chough-next-routes-to-specsync-change-approve-with-an.md) At plan, chough next routes to specsync change approve with an actor and never names the scope gate, so an agent following it approves its own scope (open)
+- [2026-11-12-chough-cases-check-fails-with-a-raw-no-such-file-or-directory](../.chough/bugs/2026-11-12-chough-cases-check-fails-with-a-raw-no-such-file-or-directory.md) chough cases check fails with a raw No such file or directory when the module has no requirements.md yet, though the approved delta adds the requirement (open)
+- [2026-11-12-no-documented-path-for-a-brand-new-project-specsync-change](../.chough/bugs/2026-11-12-no-documented-path-for-a-brand-new-project-specsync-change.md) No documented path for a brand-new project: specsync change adopt is buried and the delta format is documented nowhere (open)
 - [2026-11-11-verify-lane-test-step-fails-intermittently-under-load-green-on](../.chough/bugs/2026-11-11-verify-lane-test-step-fails-intermittently-under-load-green-on.md) Verify lane test step fails intermittently under load, green on isolated rerun (open)
 - [2026-11-07-full-macos-lane-checkpoint-writer-lock-timeout](../.chough/bugs/2026-11-07-full-macos-lane-checkpoint-writer-lock-timeout.md) Full macOS lane checkpoint writer lock timeout (open)
-- [2026-11-06-an-empty-change-directory-left-by-a-branch-switch-counts-as-an](../.chough/bugs/2026-11-06-an-empty-change-directory-left-by-a-branch-switch-counts-as-an.md) An empty change directory left by a branch switch counts as an open native change (open)
 - [2026-11-06-timing-trace-test-flakes-under-load-when-paired-runs-cross-a](../.chough/bugs/2026-11-06-timing-trace-test-flakes-under-load-when-paired-runs-cross-a.md) timing trace test flakes under load when paired runs cross a second (open)
 - [2026-11-02-timing-native-budget-regression-sometimes-records-no-initial](../.chough/bugs/2026-11-02-timing-native-budget-regression-sometimes-records-no-initial.md) Timing native-budget regression sometimes records no initial stub call on MSRV (open)
-- [2026-10-31-a-failing-specsync-change-check-may-still-record-passed](../.chough/bugs/2026-10-31-a-failing-specsync-change-check-may-still-record-passed.md) A failing SpecSync change check may still record passed verification (open)
-- [2026-10-31-specsync-change-status-keeps-approval-valid-true-after-an](../.chough/bugs/2026-10-31-specsync-change-status-keeps-approval-valid-true-after-an.md) SpecSync change status keeps approval_valid true after an approved delta is edited (open)
 
 ## Rules, skills and decisions
 
@@ -72,7 +80,9 @@ Each module's lessons stay in its lesson source:
 
 Lessons that span projects:
 
-- none
+- [lessons/2026-11-12-build-test-targets-before-a-recorded-run.md](lessons/2026-11-12-build-test-targets-before-a-recorded-run.md)
+- [lessons/2026-11-12-merge-main-back-with-ours-only-when-the-trees-match.md](lessons/2026-11-12-merge-main-back-with-ours-only-when-the-trees-match.md)
+- [lessons/2026-11-12-re-scoping-a-specsync-change.md](lessons/2026-11-12-re-scoping-a-specsync-change.md)
 
 Lesson bundles of the newest 3 archived changes:
 
