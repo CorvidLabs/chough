@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "BUG-a-story-s-what-was-verified-line-with-no-command-runs-the-fingerprint-d-9f57960e6480ce3b46f00d51",
+  "title": "A story's What was verified line with no command runs the fingerprint digits on from the claim",
+  "symptom": "The line reads '<claim> ef9e4cbbc26a [screenshot](...)' with no separator",
+  "trigger": "An evidence entry with no command, such as a human observation with a screenshot, when the story is written",
+  "expected": "The claim and the receipt are separated as when a command is shown (REQ-records-004)",
+  "actual": "The ' — ' separator is dropped with the command",
+  "criteria": [],
+  "requirements": [
+    "REQ-records-004"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "18025ad47c730af7589317f76608634b2487896f",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "Hard to read",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37j, test stage, areas sessions and bugs",
+  "notes": [],
+  "created_at_unix_seconds": 1794447672,
+  "updated_at_unix_seconds": 1794447672
+}

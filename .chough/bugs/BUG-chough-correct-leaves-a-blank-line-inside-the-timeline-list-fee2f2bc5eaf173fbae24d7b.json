@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "BUG-chough-correct-leaves-a-blank-line-inside-the-timeline-list-fee2f2bc5eaf173fbae24d7b",
+  "title": "chough correct leaves a blank line inside the Timeline list",
+  "symptom": "A correction is appended after the file's trailing blank line, so the Timeline becomes a loose Markdown list for good",
+  "trigger": "chough correct on a session whose Timeline ends the file",
+  "expected": "The correction joins the Timeline list as ordinary saves do (REQ-history-010)",
+  "actual": "A blank line separates the correction from the entries before it",
+  "criteria": [],
+  "requirements": [
+    "REQ-history-010"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "18025ad47c730af7589317f76608634b2487896f",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "The Timeline renders as a loose list; every byte is kept",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37j, test stage, areas sessions and bugs",
+  "notes": [],
+  "created_at_unix_seconds": 1794447672,
+  "updated_at_unix_seconds": 1794447672
+}

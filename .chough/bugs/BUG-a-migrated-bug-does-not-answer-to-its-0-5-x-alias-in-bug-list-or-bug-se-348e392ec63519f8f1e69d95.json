@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "BUG-a-migrated-bug-does-not-answer-to-its-0-5-x-alias-in-bug-list-or-bug-se-348e392ec63519f8f1e69d95",
+  "title": "A migrated bug does not answer to its 0.5.x alias in bug list or bug search",
+  "symptom": "bug list --all shows no aliases, and bug search for the BUG-NNNN alias returns no match, while show, update and report by the alias work",
+  "trigger": "A bug whose front matter has aliases [BUG-0007], then chough bug search BUG-0007 or bug list --all",
+  "expected": "A migrated bug answers to its BUG-NNNN alias in list, search, show, update and report (REQ-cli-012)",
+  "actual": "list and search ignore aliases",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "18025ad47c730af7589317f76608634b2487896f",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "A person holding an old bug ID cannot find it from list or search",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37j, test stage, areas sessions and bugs",
+  "notes": [],
+  "created_at_unix_seconds": 1794447672,
+  "updated_at_unix_seconds": 1794447672
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "BUG-automatic-failure-capture-links-an-existing-bug-s-evidence-by-the-bare-dd9c999ec885746264802557",
+  "title": "Automatic failure capture links an existing bug's evidence by the bare ID while bug add and bug update store it session-qualified",
+  "symptom": "The captured link is bare, so the two writers disagree and a merge can make it ambiguous again",
+  "trigger": "A failure captured onto an existing bug",
+  "expected": "One stored form for a bug's link to a session entry, <session>/<id>",
+  "actual": "The capture appends finding.observation as stored by the run",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "18025ad47c730af7589317f76608634b2487896f",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "Captured links can read as ambiguous after a merge",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37j, test stage, areas sessions and bugs",
+  "notes": [],
+  "created_at_unix_seconds": 1794447672,
+  "updated_at_unix_seconds": 1794447672
+}

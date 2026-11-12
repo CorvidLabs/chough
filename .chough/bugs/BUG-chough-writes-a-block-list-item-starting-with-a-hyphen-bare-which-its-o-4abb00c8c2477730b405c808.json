@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "BUG-chough-writes-a-block-list-item-starting-with-a-hyphen-bare-which-its-o-4abb00c8c2477730b405c808",
+  "title": "Chough writes a block list item starting with a hyphen bare, which its own reader refuses, so status and next fail",
+  "symptom": "After one cases run of a command binding such as sh -c with a quoted argument, chough status and chough next exit 1: the evidence entry's command list has a bare '- -c' item, read as a nested list outside the subset; doctor reports nothing",
+  "trigger": "A command-bound case whose argv needs a block list (an item needing quotes) and holds an item starting with a hyphen",
+  "expected": "Chough never writes front matter outside the subset it reads (REQ-records-001); a record Chough cannot read is named by doctor",
+  "actual": "plain_safe lets an item starting with '-' stay bare in a block list, and parse_block refuses it",
+  "criteria": [],
+  "requirements": [
+    "REQ-records-001"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "18025ad47c730af7589317f76608634b2487896f",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "sh -c, bash -lc, python -m or node -e bindings leave status and next failing until a hand edit",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t38b, test stage, area records",
+  "notes": [],
+  "created_at_unix_seconds": 1794447637,
+  "updated_at_unix_seconds": 1794447637
+}
