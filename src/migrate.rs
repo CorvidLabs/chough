@@ -838,9 +838,12 @@ fn prune_empty_folders(root: &Path) -> Result<()> {
     Ok(())
 }
 
+/// What a receipt section with nothing to list says (REQ-records-009).
+const NOTHING_LISTED: &str = "none\n";
+
 /// The migration receipt: every file before and after with its size and SHA-256, the
 /// redactions, every removed file with why and the commit that holds it, the alias map
-/// and the consent (REQ-records-009).
+/// and the consent (REQ-records-009), with `none` under a section with nothing to list.
 fn receipt_record(
     plan: &Plan,
     digest: &str,
@@ -871,29 +874,55 @@ fn receipt_record(
     record.set_scalar("consent", consent)?;
     record.set_scalar("removed_at_commit", &head)?;
     let mut body = String::from(
-        "# Migration from Chough 0.5.x\n\nGit history still holds what earlier commits recorded; this migration does not rewrite it.\n\n## Before\n\n",
+        "# Migration from Chough 0.5.x\n\nGit history still holds what earlier commits recorded; this migration does not rewrite it.\n",
     );
-    for (path, sha) in &plan.sources {
-        body.push_str(&format!("- `{path}` {sha}\n"));
-    }
-    body.push_str("\n## After\n\n");
-    for written in &plan.files {
-        body.push_str(&format!(
-            "- `{}` {} bytes {}\n",
-            written.path,
-            written.bytes.len(),
-            sha256(&written.bytes)
-        ));
-    }
-    body.push_str("\n## Redactions\n\n");
-    for redaction in &plan.redactions {
-        body.push_str(&format!(
-            "- `{}` {}: {}\n",
-            redaction.file, redaction.field, redaction.kind
-        ));
-    }
-    body.push_str("\n## Removed\n\n");
+    let section = |body: &mut String, heading: &str, items: Vec<String>| {
+        body.push_str(&format!("\n## {heading}\n\n"));
+        if items.is_empty() {
+            body.push_str(NOTHING_LISTED);
+        }
+        for item in items {
+            body.push_str(&item);
+        }
+    };
+    section(
+        &mut body,
+        "Before",
+        plan.sources
+            .iter()
+            .map(|(path, sha)| format!("- `{path}` {sha}\n"))
+            .collect(),
+    );
+    section(
+        &mut body,
+        "After",
+        plan.files
+            .iter()
+            .map(|written| {
+                format!(
+                    "- `{}` {} bytes {}\n",
+                    written.path,
+                    written.bytes.len(),
+                    sha256(&written.bytes)
+                )
+            })
+            .collect(),
+    );
+    section(
+        &mut body,
+        "Redactions",
+        plan.redactions
+            .iter()
+            .map(|redaction| {
+                format!(
+                    "- `{}` {}: {}\n",
+                    redaction.file, redaction.field, redaction.kind
+                )
+            })
+            .collect(),
+    );
     let becomes = plan.becomes();
+    let mut removed = vec![];
     for path in removals {
         let why = match plan.carried.removed.get(path) {
             Some(why) => why.clone(),
@@ -909,20 +938,36 @@ fn receipt_record(
                 None => "carried into the 0.6.0 records above".to_string(),
             },
         };
-        body.push_str(&format!("- `{path}`: {why}; held by commit {head}\n"));
+        removed.push(format!("- `{path}`: {why}; held by commit {head}\n"));
     }
-    body.push_str("\n## Kept with leaks\n\n");
-    for (path, kinds) in &plan.carried.kept_with_leaks {
-        body.push_str(&format!("- `{path}`: {} (fix by hand)\n", kinds.join(", ")));
-    }
-    body.push_str("\n## Not carried\n\n");
-    for gap in &plan.carried.gaps {
-        body.push_str(&format!("- {gap}\n"));
-    }
-    body.push_str("\n## Aliases\n\n");
-    for (old, new) in &plan.carried.aliases {
-        body.push_str(&format!("- `{old}` → `{new}`\n"));
-    }
+    section(&mut body, "Removed", removed);
+    section(
+        &mut body,
+        "Kept with leaks",
+        plan.carried
+            .kept_with_leaks
+            .iter()
+            .map(|(path, kinds)| format!("- `{path}`: {} (fix by hand)\n", kinds.join(", ")))
+            .collect(),
+    );
+    section(
+        &mut body,
+        "Not carried",
+        plan.carried
+            .gaps
+            .iter()
+            .map(|gap| format!("- {gap}\n"))
+            .collect(),
+    );
+    section(
+        &mut body,
+        "Aliases",
+        plan.carried
+            .aliases
+            .iter()
+            .map(|(old, new)| format!("- `{old}` → `{new}`\n"))
+            .collect(),
+    );
     for follow_up in &plan.follow_ups {
         body.push_str(&format!("\n## Follow-up\n\n{follow_up}\n"));
     }
