@@ -216,8 +216,8 @@ fn every_record_is_markdown_and_keeps_human_edits() {
             found.next().unwrap()
         });
     let text = fixture.read(&bug);
-    let steps = "**Steps:** Run it, as a person wrote it out in full.\n";
-    let edited = text.replacen("**Steps:** Run it\n", steps, 1);
+    let steps = "**Steps:** Trigger: Run it, as a person wrote it out in full.\n";
+    let edited = text.replacen("**Steps:** Trigger: Run it\n", steps, 1);
     assert_ne!(edited, text, "{text}");
     fixture.write(&bug, &edited);
     let bug_id = edited

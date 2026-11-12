@@ -1647,7 +1647,7 @@ fn bugs_are_markdown_with_an_append_only_log() {
     let body = text.split_once("\n---\n").unwrap().1;
     assert!(
         body.starts_with(
-            "# Shipping is charged at exactly the free threshold\n\n**What happened:** Order of exactly 50.00 is charged shipping\nActual: Shipping fee of 4.99 applied\n\n**Steps:** Checkout total equal to the free shipping threshold\n1. Open checkout\n\n**Expected:** Free shipping at 50.00\n\n**Why it matters:** Not yet assessed.\n\n**Fix:** Not fixed yet.\n\n## Log\n\n- "
+            "# Shipping is charged at exactly the free threshold\n\n**What happened:** Order of exactly 50.00 is charged shipping\nActual: Shipping fee of 4.99 applied\n\n**Steps:** Trigger: Checkout total equal to the free shipping threshold\n1. Open checkout\n\n**Expected:** Free shipping at 50.00\n\n**Why it matters:** Not yet assessed.\n\n**Fix:** Not fixed yet.\n\n## Log\n\n- "
         ),
         "{body}"
     );
@@ -1683,7 +1683,8 @@ fn bugs_are_markdown_with_an_append_only_log() {
         let entries = log(&fixture, &id);
         assert_eq!(entries.len(), previous.len() + 1, "{now}");
         assert_eq!(entries[..previous.len()], previous[..], "{now}");
-        // Every paragraph a person wrote is unchanged.
+        // Every paragraph a person wrote is unchanged; marking the bug verified with no
+        // Fix set names what verified it in Fix (REQ-cli-012).
         let write_up = |text: &str| {
             text.split_once("\n---\n")
                 .unwrap()
@@ -1693,7 +1694,14 @@ fn bugs_are_markdown_with_an_append_only_log() {
                 .0
                 .to_string()
         };
-        assert_eq!(write_up(&now), write_up(&edited));
+        let expected = match now
+            .lines()
+            .find(|line| line.starts_with("**Fix:** Verified: "))
+        {
+            Some(fix) => write_up(&edited).replace("**Fix:** Not fixed yet.", fix),
+            None => write_up(&edited),
+        };
+        assert_eq!(write_up(&now), expected);
         assert!(
             now.ends_with("\n## Notes\n\nA person's own section.\n"),
             "{now}"
