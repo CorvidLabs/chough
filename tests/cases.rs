@@ -441,6 +441,41 @@ fn run_case(fixture: &Fixture, id: &str) -> (Option<i32>, Value) {
     )
 }
 
+/// TC-cli-docs-name-what-cases-run-returns (t38j's fresh-eyes report): the cases row of
+/// docs/cli.md names every key `cases run` prints but `schema_version` and `provenance`,
+/// and does not say `run` returns `recorded`, which only `record` returns.
+#[cfg(unix)]
+#[test]
+fn the_cli_reference_names_what_cases_run_returns() {
+    let fixture = execution_fixture();
+    let (_, passed) = run_case(&fixture, "TC-cli-0001");
+    let docs = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/cli.md"),
+    )
+    .unwrap();
+    let row = docs
+        .lines()
+        .find(|line| line.starts_with("| `cases check"))
+        .expect("the cases row of docs/cli.md");
+    let returns = row
+        .split("`run` returns")
+        .nth(1)
+        .unwrap_or_else(|| panic!("the cases row does not say what `run` returns: {row}"));
+    let returns = returns.split(['.', ';']).next().unwrap_or_default();
+    for key in passed
+        .as_object()
+        .unwrap()
+        .keys()
+        .filter(|key| !matches!(key.as_str(), "schema_version" | "provenance"))
+    {
+        assert!(
+            returns.contains(&format!("`{key}`")),
+            "`{key}` is not named: {row}"
+        );
+    }
+    assert!(!returns.contains("`recorded`"), "{row}");
+}
+
 #[cfg(unix)]
 #[test]
 fn execution_records_failures_and_vacuous_runs_honestly() {

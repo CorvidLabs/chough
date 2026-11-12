@@ -129,3 +129,24 @@ expected = ["tests/migrate.rs::the_preview_names_open_native_changes_that_make_a
 adapter = "cargo-test"
 test_target = "migrate"
 test = "the_preview_names_open_native_changes_that_make_apply_refuse"
+
+# t38j's fresh-eyes report (0.6.0): the migrate preview's becomes and the apply's
+# unstaged keys were undocumented.
+
+[[case]]
+id = "TC-records-migration-docs-name-every-key"
+title = "The Migration section of docs/cli.md names every key chough migrate's preview and apply print"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["docs/cli.md", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::the_migration_docs_name_every_key_the_preview_and_apply_print passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "the_migration_docs_name_every_key_the_preview_and_apply_print"

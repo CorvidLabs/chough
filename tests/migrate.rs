@@ -1395,3 +1395,30 @@ fn the_preview_names_open_native_changes_that_make_apply_refuse() {
     let plan = fixture.ok(&["migrate"]);
     assert!(plan["apply_refused"].is_null(), "{plan:#}");
 }
+
+/// TC-records-migration-docs-name-every-key (t38j's fresh-eyes report): the Migration
+/// section of docs/cli.md names every key the preview and the apply print, so `becomes`
+/// and `unstaged` are no longer undocumented.
+#[test]
+fn the_migration_docs_name_every_key_the_preview_and_apply_print() {
+    let fixture = migrate_project("adopted", &[]);
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    let docs =
+        std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/cli.md")).unwrap();
+    let section = docs
+        .split("\n## Migration\n")
+        .nth(1)
+        .expect("a Migration section");
+    let section = &section[..section.find("\n## ").unwrap_or(section.len())];
+    for (output, value) in [("preview", &plan), ("apply", &applied)] {
+        for key in value.as_object().unwrap().keys() {
+            if key == "schema_version" {
+                continue;
+            }
+            assert!(
+                section.contains(&format!("`{key}`")),
+                "the Migration section does not name the {output}'s `{key}`"
+            );
+        }
+    }
+}

@@ -155,3 +155,32 @@ fn the_package_version_has_a_dated_section_and_a_release_link() {
         "CHANGELOG.md links [{version}] to v{version}"
     );
 }
+
+/// TC-cli-changelog-0-6-0-names-only-what-ships (t38j's fresh-eyes report): the 0.6.0
+/// section's "Also in 0.6.0" list names no command or record 0.6.0 removed, so an
+/// upgrader is not told about features that are gone.
+#[test]
+fn the_0_6_0_also_list_names_nothing_0_6_0_removed() {
+    let text = changelog();
+    let release = section(&text, "0.6.0");
+    let also = release
+        .split("### Also in 0.6.0")
+        .nth(1)
+        .expect("an Also in 0.6.0 list");
+    let also = also.split_whitespace().collect::<Vec<_>>().join(" ");
+    for removed in [
+        "evidence prune",
+        "history prune",
+        "session adopt",
+        "history adopt",
+        "frozen legacy log",
+        "write events",
+        "rolled into the vault",
+        "archive note",
+    ] {
+        assert!(
+            !also.contains(removed),
+            "Also in 0.6.0 still describes {removed:?}, which 0.6.0 removed"
+        );
+    }
+}
