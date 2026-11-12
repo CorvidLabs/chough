@@ -758,6 +758,43 @@ fn installed_hosts(root: &Path, requested: Vec<String>) -> Result<Vec<String>> {
     distinct(&hosts)
 }
 
+/// The follow-up a migration names while an installed skill copy is not current, as
+/// `chough skill status` reports it (REQ-records-009, REQ-cli-016): each installed copy's
+/// directory, once however many hosts share it, with how many of its files are not
+/// current and in what state, and `chough skill update`. None when every installed copy
+/// is current or none is installed.
+pub(super) fn update_advice(root: &Path) -> Result<Option<String>> {
+    let mut stale = vec![];
+    let mut seen = std::collections::BTreeSet::new();
+    for host in installed_hosts(root, vec![])? {
+        let base = directory(&host)?;
+        if !seen.insert(base.clone()) {
+            continue;
+        }
+        let mut states: std::collections::BTreeMap<&str, usize> = Default::default();
+        for (name, content) in BUNDLE {
+            let state = file_state(root, &base, name, content)?;
+            if state != "current" {
+                *states.entry(state).or_default() += 1;
+            }
+        }
+        if !states.is_empty() {
+            let counts: Vec<String> = states
+                .iter()
+                .map(|(state, count)| format!("{count} {state}"))
+                .collect();
+            stale.push(format!("`{base}` ({})", counts.join(", ")));
+        }
+    }
+    if stale.is_empty() {
+        return Ok(None);
+    }
+    Ok(Some(format!(
+        "Update the installed skill copy, which is not current and may still name 0.5.x commands and paths: {}. Run `chough skill update`, which replaces known-outdated files and adds missing ones and keeps edited ones, then `chough skill status` to check it (REQ-cli-016).",
+        stale.join("; ")
+    )))
+}
+
 fn report(root: &Path, hosts: &[String], update: bool) -> Result<Value> {
     let mut reports = vec![];
     for host in hosts {

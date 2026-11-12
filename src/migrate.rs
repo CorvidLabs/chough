@@ -1245,6 +1245,10 @@ fn plan(root: &Path) -> Result<Plan> {
                 .join(", ")
         ));
     }
+    // REQ-records-009, REQ-cli-016 (F3): the installed skill copy is not migrated, so
+    // while it is not current, as `chough skill status` reports it, the plan names
+    // `chough skill update`; the copy still names 0.5.x commands and paths until then.
+    follow_ups.extend(crate::skill::update_advice(root)?);
     Ok(Plan {
         sources,
         legacy,
