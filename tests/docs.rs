@@ -1804,3 +1804,65 @@ fn the_accept_steps_first_check_runs_through_chough() {
         "docs/cli.md does not name chough change check <id> --no-commit"
     );
 }
+
+/// The fenced Markdown example in `text` that holds `## Lessons`, without its fence.
+fn lessons_example(page: &str, text: &str) -> String {
+    let mut block: Option<String> = None;
+    for line in text.lines() {
+        let fence = line.trim_start().starts_with("```");
+        match &mut block {
+            None if fence => block = Some(String::new()),
+            Some(found) if fence => {
+                if found.contains("## Lessons") {
+                    return found.clone();
+                }
+                block = None;
+            }
+            Some(found) => {
+                found.push_str(line.trim_start());
+                found.push('\n');
+            }
+            None => {}
+        }
+    }
+    panic!("{page} has no fenced `## Lessons` example")
+}
+
+/// REQ-cli-015, F3 of the third fresh-eyes round: the knowledge index counts a lesson in
+/// `context.md`'s `## Lessons` only when it starts with its `YYYY-MM-DD` date, so every
+/// page that describes a lesson's format gives the date, and the skill's and the CLI
+/// reference's examples each count as one lesson in a real index.
+#[test]
+fn a_lessons_dated_form_is_documented_and_its_example_counts() {
+    for page in [
+        "skills/chough-workflow/references/accept.md",
+        "skills/chough-workflow/references/librarian.md",
+        "docs/cli.md",
+    ] {
+        assert!(
+            read(page).contains("YYYY-MM-DD"),
+            "{page} does not say a lesson starts with its YYYY-MM-DD date"
+        );
+    }
+    for page in ["skills/chough-workflow/references/accept.md", "docs/cli.md"] {
+        let example = lessons_example(page, &read(page));
+        let project = initialized_project();
+        let root = project.path();
+        fs::create_dir_all(root.join("specs/shipping")).unwrap();
+        fs::write(
+            root.join("specs/shipping/context.md"),
+            format!("# Shipping context\n\n{example}"),
+        )
+        .unwrap();
+        chough(Some(root), &["library", "index"]);
+        let index = fs::read_to_string(root.join("knowledge/index.md")).unwrap();
+        let line = index
+            .lines()
+            .find(|line| line.contains("shipping: "))
+            .unwrap_or_else(|| panic!("no shipping lesson source in\n{index}"));
+        assert!(
+            line.ends_with(", 1 lesson"),
+            "{page}'s example does not count as one lesson: {line}"
+        );
+    }
+}
