@@ -246,7 +246,7 @@ fn alias(plan: &Value, old: &str) -> String {
 }
 
 /// The new session ID a 0.5.x session key migrates to, from the plan's aliases.
-fn session_id(plan: &Value, key: &str) -> String {
+fn session_folder(plan: &Value, key: &str) -> String {
     let path = alias(plan, key);
     path.trim_start_matches(".chough/sessions/")
         .trim_start_matches(".chough/archive/sessions/")
@@ -327,8 +327,8 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
     let before = tree(fixture.root());
 
     let (plan, applied) = migrate(&fixture);
-    let open = session_id(&plan, "fixture-first");
-    let story = session_id(&plan, "fixture-second");
+    let open = session_folder(&plan, "fixture-first");
+    let story = session_folder(&plan, "fixture-second");
     let date = utc_date(case_run["observed_at_unix_seconds"].as_u64().unwrap());
     let case_entry = format!(".chough/sessions/{open}/evidence/{date}-tc-fixture-0001.md");
     let product_entry = format!(
@@ -567,8 +567,8 @@ fn one_observation_two_open_sessions_reference_is_one_entry_in_the_first() {
     reference(&fixture, ".chough/sessions/open-two.json", &[PRODUCT]);
     fixture.commit("two open sessions reference one observation");
     let (plan, _) = migrate(&fixture);
-    let first = session_id(&plan, "open-one");
-    let second = session_id(&plan, "open-two");
+    let first = session_folder(&plan, "open-one");
+    let second = session_folder(&plan, "open-two");
     assert!(first < second);
     let path = alias(&plan, PRODUCT);
     assert!(
@@ -699,8 +699,8 @@ fn key_screenshots_are_stripped_bounded_and_kept_beside_their_session_or_story()
     fixture.commit("observations with key screenshots");
 
     let (plan, _) = migrate(&fixture);
-    let open = session_id(&plan, "fixture-first");
-    let story = session_id(&plan, "fixture-second");
+    let open = session_folder(&plan, "fixture-first");
+    let story = session_folder(&plan, "fixture-second");
     let kept: Vec<bool> = open_ids
         .iter()
         .map(|id| {
@@ -820,7 +820,7 @@ fn validation_runs_carry_like_observations() {
     fixture.commit("validation runs");
 
     let (plan, _) = migrate(&fixture);
-    let open = session_id(&plan, "fixture-first");
+    let open = session_folder(&plan, "fixture-first");
     let path = alias(&plan, referenced);
     assert_eq!(
         path,
@@ -985,7 +985,7 @@ fn rolled_observations_in_the_vault_become_receipts_of_their_story() {
     fixture.commit("rolled observations in the vault");
 
     let (plan, _) = migrate(&fixture);
-    let story = session_id(&plan, "archived-1");
+    let story = session_folder(&plan, "archived-1");
     assert_eq!(
         alias(&plan, rolled),
         format!(".chough/archive/sessions/{story}.md")
