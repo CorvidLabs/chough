@@ -93,6 +93,10 @@ observations:
   - 2026-11-12-tc-cli-context-reads-agents-md-from-the-git-root
   - 2026-11-12-tc-cli-status-gives-the-next-action-whole
   - 2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action
+  - 2026-11-12-tc-cli-cases-check-a-module-without-requirements-md-acf483
+  - 2026-11-12-tc-cli-context-reads-agents-md-from-the-git-root-bad891
+  - 2026-11-12-tc-cli-status-gives-the-next-action-whole-6c7235
+  - 2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action-188881
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -198,6 +202,10 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test subdirectory -- --exact context_reads_agents_md_from_the_git_root_down_only for TC-cli-context-reads-agents-md-from-the-git-root: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-context-reads-agents-md-from-the-git-root.md)
 - [Ran cargo test --locked --test next -- --exact status_gives_the_next_valid_action_whole for TC-cli-status-gives-the-next-action-whole: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-status-gives-the-next-action-whole.md)
 - [Ran cargo test --locked --test humans -- approving_the_scope_gate_replaces_the_next_action_it_left_stale a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage for TC-cli-gate-close-replaces-a-stale-next-action: failed (exit 101).](evidence/2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action.md)
+- [Ran cargo test --locked --test cases -- --exact a_module_without_requirements_md_links_what_its_approved_delta_adds for TC-cli-cases-check-a-module-without-requirements-md: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-cases-check-a-module-without-requirements-md-acf483.md)
+- [Ran cargo test --locked --test subdirectory -- --exact context_reads_agents_md_from_the_git_root_down_only for TC-cli-context-reads-agents-md-from-the-git-root: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-context-reads-agents-md-from-the-git-root-bad891.md)
+- [Ran cargo test --locked --test next -- --exact status_gives_the_next_valid_action_whole for TC-cli-status-gives-the-next-action-whole: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-status-gives-the-next-action-whole-6c7235.md)
+- [Ran cargo test --locked --test humans -- approving_the_scope_gate_replaces_the_next_action_it_left_stale a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage for TC-cli-gate-close-replaces-a-stale-next-action: passed (exit 0).](evidence/2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action-188881.md)
 
 ## Open threads
 
