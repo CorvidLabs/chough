@@ -1108,6 +1108,12 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
                 if let (Some(command), Some(actor)) = (&args.native_command, &args.native_actor) {
                     relay.native = Some(command.clone());
                     relay.actor = Some(actor.clone());
+                    // The report names the step that ran, as a close that runs it does.
+                    native_report = Some(json!({
+                        "ran": ran,
+                        "specsync_actor": actor,
+                        "ran_by": "chough change ship",
+                    }));
                 }
                 (None, Some(ran.clone()))
             }
