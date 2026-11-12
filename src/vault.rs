@@ -103,26 +103,42 @@ fn lesson_source(root: &Path, module: &str) -> (String, usize) {
     (context, count)
 }
 
-/// Lessons recorded in a `## Lessons` section: entries that start with a date, as a
-/// paragraph or as a list item.
+/// Lessons recorded in a `## Lessons` section: entries that start with a `YYYY-MM-DD`
+/// date followed by a space, comma or colon, as a list item or a paragraph, and
+/// `### YYYY-MM-DD` headings, whose date may stand alone.
 fn dated_lessons(text: &str) -> usize {
     text.lines()
         .skip_while(|line| line.trim_end() != "## Lessons")
         .skip(1)
         .take_while(|line| !line.starts_with("## "))
-        .filter(|line| {
-            let entry = line
-                .strip_prefix("- ")
-                .or_else(|| line.strip_prefix("* "))
-                .unwrap_or(line);
-            let bytes = entry.as_bytes();
-            bytes.len() > 11
-                && bytes[..4].iter().all(u8::is_ascii_digit)
-                && bytes[4] == b'-'
-                && bytes[7] == b'-'
-                && bytes[10] == b','
+        .filter(|line| match line.strip_prefix("### ") {
+            Some(heading) => starts_with_date(heading.trim_end(), true),
+            None => {
+                let entry = line
+                    .strip_prefix("- ")
+                    .or_else(|| line.strip_prefix("* "))
+                    .unwrap_or(line);
+                starts_with_date(entry, false)
+            }
         })
         .count()
+}
+
+/// Whether `text` starts with a `YYYY-MM-DD` date followed by a space, comma or colon;
+/// a heading's date may also end the line.
+fn starts_with_date(text: &str, heading: bool) -> bool {
+    let bytes = text.as_bytes();
+    let dated = bytes.len() >= 10
+        && bytes[..10].iter().enumerate().all(|(at, byte)| match at {
+            4 | 7 => *byte == b'-',
+            _ => byte.is_ascii_digit(),
+        });
+    dated
+        && match bytes.get(10) {
+            None => heading,
+            Some(b' ' | b',' | b':') => true,
+            Some(_) => false,
+        }
 }
 
 /// The title of the archived change in `dir`: the first `# ` heading of its `change.md`
@@ -205,6 +221,21 @@ fn bug_file(root: &Path, id: &str) -> Option<String> {
 
 fn one_line(text: &str) -> String {
     text.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+/// Text from a record or a file name, inert in Markdown (REQ-cli-044): one line, with each
+/// backslash, bracket, angle bracket and backtick escaped. So it can neither end a link
+/// early nor start another, open a code span past its own text, or become HTML, and a
+/// reader sees it unchanged.
+fn inert(text: &str) -> String {
+    let mut out = String::new();
+    for c in one_line(text).chars() {
+        if matches!(c, '\\' | '[' | ']' | '<' | '>' | '`') {
+            out.push('\\');
+        }
+        out.push(c);
+    }
+    out
 }
 
 fn list(items: Vec<String>, empty: &str) -> String {
@@ -295,7 +326,7 @@ impl Pending {
 /// path and count.
 pub(super) fn index(root: &Path, dir: &str, posts: &[Post], pending: &Pending) -> Result<String> {
     let up = "../".repeat(dir.split('/').filter(|part| !part.is_empty()).count());
-    let link = |path: &str| format!("[{path}]({up}{path})");
+    let link = |path: &str| format!("[{}]({up}{path})", inert(path));
     let newest: Vec<String> = posts
         .iter()
         .take(RECENT_POSTS)
@@ -307,7 +338,7 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post], pending: &Pending) -
             };
             format!(
                 "[{title}](journal/{name}.md) ({date}{kind})",
-                title = one_line(&post.title),
+                title = inert(&post.title),
                 name = post.name,
                 date = post.date,
             )
@@ -329,8 +360,8 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post], pending: &Pending) -
         .open_bugs(root)?
         .into_iter()
         .map(|(file, id, title, status)| {
-            let named = file.map_or(id.clone(), |path| format!("[{id}]({up}{path})"));
-            format!("{named} {} ({status})", one_line(&title))
+            let named = file.map_or(inert(&id), |path| format!("[{}]({up}{path})", inert(&id)));
+            format!("{named} {} ({})", inert(&title), inert(&status))
         })
         .collect();
     let rules: Vec<String> = rule_files(root)?.iter().map(|path| link(path)).collect();
@@ -351,7 +382,7 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post], pending: &Pending) -
         .into_iter()
         .map(|path| {
             let inside = path.strip_prefix(&format!("{dir}/")).unwrap_or(&path);
-            format!("[{inside}]({inside})")
+            format!("[{}]({inside})", inert(inside))
         })
         .collect();
     // An archive that cannot be read refuses the index, with the error `chough next`
@@ -368,12 +399,12 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post], pending: &Pending) -
                 dir = archive.dir,
             );
             let named = if archive.lesson_bundle {
-                format!("[{id}]({up}{path})", id = archive.id)
+                format!("[{id}]({up}{path})", id = inert(&archive.id))
             } else {
-                format!("{id}: `{path}` (missing)", id = archive.id)
+                format!("{id}: `{path}` (missing)", id = inert(&archive.id))
             };
             match archive_title(root, &archive.dir) {
-                Some(title) => format!("{named}, {title}"),
+                Some(title) => format!("{named}, {}", inert(&title)),
                 None => named,
             }
         })
@@ -390,7 +421,7 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post], pending: &Pending) -
         .into_iter()
         .map(|path| {
             let inside = path.strip_prefix(&prefix).unwrap_or(&path).to_string();
-            format!("[{inside}]({inside})")
+            format!("[{}]({inside})", inert(&inside))
         })
         .collect();
     if dir != "library" {
