@@ -351,14 +351,9 @@ pub(super) fn migrate_0_5(
                 continue;
             }
             let record = crate::markdown::parse(&file.path, &file.bytes)?;
-            let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
-            if !crate::bugs::is_closed_status(&field("status")) {
-                pending.bugs.push((
-                    file.path.clone(),
-                    field("id"),
-                    field("title"),
-                    field("status"),
-                ));
+            let bug = crate::vault::OpenBug::of(Some(file.path.clone()), &record);
+            if !crate::bugs::is_closed_status(&bug.status) {
+                pending.bugs.push(bug);
             }
         }
         for (path, bytes) in build_pending(root, &dir, &pending)? {

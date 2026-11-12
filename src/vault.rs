@@ -8,7 +8,7 @@
 use crate::journal::Post;
 use crate::records::{local_path, read_native_text};
 use anyhow::Result;
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 /// One front matter value.
@@ -56,6 +56,10 @@ fn list_item(item: &str) -> String {
 
 /// The newest journal posts the index lists (REQ-cli-043).
 const RECENT_POSTS: usize = 10;
+
+/// The open bugs the index lists at most, so their number never takes it over its bound
+/// (REQ-cli-043); the rest are counted and linked through `.chough/bugs/`.
+const OPEN_BUGS: usize = 20;
 
 /// The module folders under `specs/`, sorted.
 pub(super) fn modules(root: &Path) -> Result<Vec<String>> {
@@ -250,9 +254,33 @@ fn list(items: Vec<String>, empty: &str) -> String {
 /// files the earlier mappers write count as present, files the plan removes as gone, and
 /// the bug records it writes join the open bugs, so the planned `index.md` is the one
 /// `chough library index` builds after the apply. Outside a migration it is empty.
-/// One open bug as the index lists it: its record file (None without one), ID, title
-/// and status.
-type OpenBug = (Option<String>, String, String, String);
+/// One open bug as the index lists it: its record file (None without one), ID, title,
+/// status, whether its scope is `blocking`, and its recorded `created` time ("" when it
+/// has none, which sorts oldest).
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct OpenBug {
+    pub(crate) file: Option<String>,
+    pub(crate) id: String,
+    pub(crate) title: String,
+    pub(crate) status: String,
+    pub(crate) blocking: bool,
+    pub(crate) created: String,
+}
+
+impl OpenBug {
+    /// The bug a Markdown bug record in `file` holds.
+    pub(crate) fn of(file: Option<String>, record: &crate::markdown::Record) -> Self {
+        let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
+        Self {
+            file,
+            id: field("id"),
+            title: field("title"),
+            status: field("status"),
+            blocking: field("scope") == "blocking",
+            created: field("created"),
+        }
+    }
+}
 
 #[derive(Default)]
 pub(super) struct Pending {
@@ -263,8 +291,8 @@ pub(super) struct Pending {
     pub(crate) present: BTreeSet<String>,
     /// Paths the plan removes.
     pub(crate) gone: BTreeSet<String>,
-    /// Open bugs the plan writes: (file, id, title, status).
-    pub(crate) bugs: Vec<(String, String, String, String)>,
+    /// Open bugs the plan writes, each with its file.
+    pub(crate) bugs: Vec<OpenBug>,
 }
 
 impl Pending {
@@ -281,39 +309,47 @@ impl Pending {
         !self.gone.contains(relative) && exists(root, relative)
     }
 
-    /// The open bugs once the plan applies, by file name as `chough bug` reads them:
-    /// (file, id, title, status), the file None when the bug has no record file.
+    /// The open bugs once the plan applies, by file name as `chough bug` reads them,
+    /// the file None when the bug has no record file.
     fn open_bugs(&self, root: &Path) -> Result<Vec<OpenBug>> {
+        let bound = crate::markdown::Kind::Bug.bound();
+        let records = crate::bugs::records_in(root, crate::bugs::BUGS_DIR, bound);
         if !self.migrating {
+            let created: BTreeMap<String, String> = records
+                .iter()
+                .map(|(_, record)| {
+                    let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
+                    (field("id"), field("created"))
+                })
+                .collect();
             return Ok(crate::bugs::open_backlog(root)?
                 .into_iter()
                 .map(|bug| {
                     let id = bug["id"].as_str().unwrap_or("?").to_string();
-                    let title = bug["title"].as_str().unwrap_or("").to_string();
-                    let status = bug["status"].as_str().unwrap_or("?").to_string();
-                    (bug_file(root, &id), id, title, status)
+                    OpenBug {
+                        file: bug_file(root, &id),
+                        title: bug["title"].as_str().unwrap_or("").to_string(),
+                        status: bug["status"].as_str().unwrap_or("?").to_string(),
+                        blocking: bug["scope"].as_str() == Some("blocking"),
+                        created: created.get(&id).cloned().unwrap_or_default(),
+                        id,
+                    }
                 })
                 .collect());
         }
-        let bound = crate::markdown::Kind::Bug.bound();
-        let mut found: Vec<OpenBug> = crate::bugs::records_in(root, crate::bugs::BUGS_DIR, bound)
+        let mut found: Vec<OpenBug> = records
             .into_iter()
             .map(|(name, record)| {
-                let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
-                let file = format!("{}/{name}", crate::bugs::BUGS_DIR);
-                (Some(file), field("id"), field("title"), field("status"))
+                OpenBug::of(Some(format!("{}/{name}", crate::bugs::BUGS_DIR)), &record)
             })
-            .filter(|(file, ..)| file.as_ref().is_some_and(|file| !self.gone.contains(file)))
-            .filter(|(.., status)| !crate::bugs::is_closed_status(status))
+            .filter(|bug| {
+                bug.file
+                    .as_ref()
+                    .is_some_and(|file| !self.gone.contains(file))
+            })
+            .filter(|bug| !crate::bugs::is_closed_status(&bug.status))
             .collect();
-        found.extend(self.bugs.iter().map(|(file, id, title, status)| {
-            (
-                Some(file.clone()),
-                id.clone(),
-                title.clone(),
-                status.clone(),
-            )
-        }));
+        found.extend(self.bugs.iter().cloned());
         found.sort();
         found.dedup();
         Ok(found)
@@ -356,12 +392,41 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post], pending: &Pending) -
     .filter(|(_, path)| pending.exists(root, path))
     .map(|(what, path)| format!("{what}: {}", link(path)))
     .collect();
-    let bugs: Vec<String> = pending
-        .open_bugs(root)?
+    // REQ-cli-043: at most OPEN_BUGS, blocking first and then the newest, with the total.
+    let mut open = pending.open_bugs(root)?;
+    open.sort_by(|left, right| {
+        right
+            .blocking
+            .cmp(&left.blocking)
+            .then_with(|| right.created.cmp(&left.created))
+            .then_with(|| left.id.cmp(&right.id))
+    });
+    let total = open.len();
+    let bugs_total = match total {
+        0 => String::new(),
+        _ => {
+            let rest = if total <= OPEN_BUGS {
+                String::new()
+            } else if pending.exists(root, &format!("{}/", crate::bugs::BUGS_DIR)) {
+                format!(
+                    " The first {OPEN_BUGS} are listed; every one is in {}, and `chough bug list` lists them.",
+                    link(&format!("{}/", crate::bugs::BUGS_DIR))
+                )
+            } else {
+                format!(" The first {OPEN_BUGS} are listed; `chough bug list` lists every one.")
+            };
+            let noun = if total == 1 { "bug" } else { "bugs" };
+            format!("{total} open {noun}, blocking first, then newest.{rest}\n\n")
+        }
+    };
+    let bugs: Vec<String> = open
         .into_iter()
-        .map(|(file, id, title, status)| {
-            let named = file.map_or(inert(&id), |path| format!("[{}]({up}{path})", inert(&id)));
-            format!("{named} {} ({})", inert(&title), inert(&status))
+        .take(OPEN_BUGS)
+        .map(|bug| {
+            let named = bug.file.map_or(inert(&bug.id), |path| {
+                format!("[{}]({up}{path})", inert(&bug.id))
+            });
+            format!("{named} {} ({})", inert(&bug.title), inert(&bug.status))
         })
         .collect();
     let rules: Vec<String> = rule_files(root)?.iter().map(|path| link(path)).collect();
@@ -454,7 +519,7 @@ The [journal](journal/) and its [feed](journal/feed.xml) are the timeline of arc
 changes. {archives_link}\n\n\
 Newest posts:\n\n{newest}\n\
 ## Where things live\n\n{places}\n\
-## Open bugs\n\n{bugs}\n\
+## Open bugs\n\n{bugs_total}{bugs}\n\
 ## Rules, skills and decisions\n\n{rules}\n\
 ## Lessons\n\n\
 Each module's lessons stay in its lesson source:\n\n{sources}\n\
