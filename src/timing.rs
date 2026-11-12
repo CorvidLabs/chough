@@ -222,12 +222,16 @@ struct Transitions {
     unrecognised: usize,
     history_partial: Vec<String>,
     lineages: Vec<Value>,
+    /// The session file the Timeline was read from, which partial results name.
+    source: String,
 }
 
 /// Read transitions leniently: a line that is not a transition is counted and skipped,
 /// and a missing or non-numeric time is unknown.
 fn read_transitions(_root: &Path, session: &Session, all: bool) -> Result<Transitions> {
     let _ = all;
+    let Session::V2(selected) = session;
+    let source = crate::sessions::session_file(&selected.meta.id);
     let (lines, skipped_bytes, history_partial, lineages) = {
         let Session::V2(checkpoint) = session;
         let read = crate::history::timing(checkpoint);
@@ -289,6 +293,7 @@ fn read_transitions(_root: &Path, session: &Session, all: bool) -> Result<Transi
         unrecognised,
         history_partial,
         lineages,
+        source,
     })
 }
 
@@ -1668,13 +1673,13 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
         partial.push(json!({"source":history_source,"reason":reason}));
     }
     if transitions.skipped_bytes > 0 {
-        partial.push(json!({"source": stage::TRANSITIONS, "reason": format!("earliest {} bytes skipped beyond the {TRANSITIONS_LIMIT}-byte bound", transitions.skipped_bytes)}));
+        partial.push(json!({"source": transitions.source, "reason": format!("earliest {} bytes skipped beyond the {TRANSITIONS_LIMIT}-byte bound", transitions.skipped_bytes)}));
     }
     if transitions.unreadable > 0 {
-        partial.push(json!({"source": stage::TRANSITIONS, "reason": format!("{} unreadable lines skipped", transitions.unreadable)}));
+        partial.push(json!({"source": transitions.source, "reason": format!("{} unreadable Timeline entries skipped", transitions.unreadable)}));
     }
     if transitions.unrecognised > 0 {
-        partial.push(json!({"source": stage::TRANSITIONS, "reason": format!("{} records of unrecognised kinds skipped", transitions.unrecognised)}));
+        partial.push(json!({"source": transitions.source, "reason": format!("{} Timeline entries of unrecognised kinds skipped", transitions.unrecognised)}));
     }
     let derived = derive(&transitions, &session, at);
     let selected = match &session {
@@ -1798,7 +1803,7 @@ pub(super) fn run(root: &Path, args: TimingArgs) -> Result<()> {
             "unrecognised_kinds": transitions.unrecognised,
             "bound_bytes": TRANSITIONS_LIMIT,
             "selected_session": match &session { Session::V2(checkpoint) => Value::String(checkpoint.meta.id.clone()) },
-            "lineage_selection": "Only the checkpoint-selected parent chain is derived; unselected branch timelines remain separate and their durations are unknown. Inspect chough history show for other tips.",
+            "lineage_selection": "The selected session is derived from its own Timeline; every other session and story is read from its own file, and one that cannot be read is named in partial.",
         },
         "transition_lineages": transitions.lineages,
         "backfilled": backfilled_moves(&transitions.records),

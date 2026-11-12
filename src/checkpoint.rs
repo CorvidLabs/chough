@@ -577,7 +577,7 @@ pub(super) fn render_checkpoint(session: &Checkpoint) -> Result<crate::markdown:
 /// Each referenced observation that resolves to an open session's entry, as a link
 /// relative to this session's folder with the entry's claim (REQ-records-004). An
 /// observation held only as a receipt, or by no record, has no link.
-fn evidence_links(
+pub(super) fn evidence_links(
     root: &Path,
     session: &Checkpoint,
 ) -> std::collections::BTreeMap<String, (String, String)> {
@@ -613,6 +613,11 @@ pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<(
         &record.render(),
         SESSION_LIMIT,
     )?;
+    // Under `--redact` the checkpoint then holds the values saved, so what a command
+    // prints is what the session record says (REQ-records-006).
+    if crate::leaks::redacting() {
+        guard_leaks(session)?;
+    }
     session.source = Some(record);
     session.pending.clear();
     Ok(())

@@ -736,13 +736,14 @@ pub(super) fn append_correction(
     let end = text[start + heading.len()..]
         .find("\n## ")
         .map_or(text.len(), |at| start + heading.len() + at + 1);
+    // Join the list right after its last entry, before any blank lines that end the
+    // section, as ordinary saves do, so the Timeline stays one tight list.
+    let keep = text[..end].trim_end_matches('\n').len();
     let mut updated = String::with_capacity(text.len() + entry.len() + 1);
-    updated.push_str(&text[..end]);
-    if !updated.ends_with('\n') {
-        updated.push('\n');
-    }
+    updated.push_str(&text[..keep]);
+    updated.push('\n');
     updated.push_str(&entry);
-    updated.push_str(&text[end..]);
+    updated.push_str(&text[(keep + 1).min(end)..]);
     Ok((updated, id))
 }
 

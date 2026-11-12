@@ -157,6 +157,39 @@ pub(crate) fn check(local: &Local, field: &str, value: &str) -> Result<()> {
     )
 }
 
+/// Refuse a name a person gives, such as a session key or an explicit entry ID, that
+/// holds this machine's host name as hyphen-separated words: a name becomes a committed
+/// folder or file name, its `id` and its alias, and `--redact` cannot rename it
+/// (REQ-records-006). Every other kind is checked as in any value.
+pub(crate) fn check_name(local: &Local, field: &str, name: &str) -> Result<()> {
+    check(local, field, name)?;
+    let words = |text: &str| -> String {
+        let mut out = String::from("-");
+        for character in text.chars() {
+            if character.is_ascii_alphanumeric() {
+                out.push(character.to_ascii_lowercase());
+            } else if !out.ends_with('-') {
+                out.push('-');
+            }
+        }
+        if !out.ends_with('-') {
+            out.push('-');
+        }
+        out
+    };
+    let name_words = words(name);
+    if local
+        .hosts
+        .iter()
+        .any(|host| name_words.contains(&words(host)))
+    {
+        bail!(
+            "refused:leak: {field} holds host-name; choose a name without it; nothing was written"
+        );
+    }
+    Ok(())
+}
+
 /// Replace every match with `<redacted:<kind>>`; returns the text and the count.
 pub(crate) fn redact(local: &Local, value: &str) -> (String, usize) {
     let found = find(local, value);
@@ -541,9 +574,19 @@ fn credentials(value: &str, all: &mut Vec<Match>) {
             if matches!(bytes.get(cursor), Some(b'$' | b'<' | b'{' | b'*')) {
                 continue;
             }
-            let end = run(bytes, cursor, |byte| {
+            let mut end = run(bytes, cursor, |byte| {
                 !byte.is_ascii_whitespace() && !matches!(byte, b'"' | b'\'' | b',' | b';')
             });
+            // The value ends where Markdown takes over: at a link's `](`, and before
+            // closing emphasis, code, brackets or a sentence's full stop, so the markup
+            // Chough adds around a claim never lengthens it (REQ-records-006).
+            if let Some(link) = value[cursor..end].find("](") {
+                end = cursor + link;
+            }
+            while end > cursor && matches!(bytes[end - 1], b'.' | b'*' | b'_' | b'`' | b')' | b']')
+            {
+                end -= 1;
+            }
             if end - cursor >= 8 {
                 let start = lower[..at]
                     .rfind(|character: char| {

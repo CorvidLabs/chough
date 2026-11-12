@@ -137,11 +137,19 @@ impl Record {
 
     /// Set a key, in place when it exists and at the end otherwise. Setting the value
     /// it already has keeps its exact text.
-    pub(crate) fn set(&mut self, key: &str, value: Value) -> Result<()> {
+    pub(crate) fn set(&mut self, key: &str, mut value: Value) -> Result<()> {
         ensure!(
             valid_key(key),
             "front matter key {key:?} is outside the subset"
         );
+        // The subset holds no tab, so a tab in a value, such as pasted terminal output,
+        // is stored as one space: Chough never writes front matter its reader refuses
+        // (REQ-records-001).
+        match &mut value {
+            Value::Scalar(text) => untab(text),
+            Value::List(items) => items.iter_mut().for_each(untab),
+            Value::Maps(maps) => maps.iter_mut().flatten().for_each(|(_, text)| untab(text)),
+        }
         if let Value::Maps(maps) = &value {
             for map in maps {
                 ensure!(
@@ -745,6 +753,13 @@ fn valid_key(key: &str) -> bool {
         && bytes.all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-' | b'.'))
 }
 
+/// Replace each tab in `text` with one space.
+fn untab(text: &mut String) {
+    if text.contains('\t') {
+        *text = text.replace('\t', " ");
+    }
+}
+
 fn render_entry(key: &str, value: &Value) -> String {
     match value {
         Value::Scalar(text) => format!("{key}: {}\n", render_scalar(text, false)),
@@ -760,7 +775,13 @@ fn render_entry(key: &str, value: &Value) -> String {
             } else {
                 let mut out = format!("{key}:\n");
                 for item in items {
-                    out.push_str(&format!("  - {}\n", render_scalar(item, false)));
+                    // A block item that starts with `-` would read as a nested list.
+                    let rendered = if item.starts_with('-') {
+                        quoted(item)
+                    } else {
+                        render_scalar(item, false)
+                    };
+                    out.push_str(&format!("  - {rendered}\n"));
                 }
                 out
             }
@@ -784,18 +805,23 @@ fn render_scalar(text: &str, in_flow: bool) -> String {
     if plain_safe(text, in_flow) {
         text.to_string()
     } else {
-        let mut out = String::from("\"");
-        for character in text.chars() {
-            match character {
-                '"' => out.push_str("\\\""),
-                '\\' => out.push_str("\\\\"),
-                '\n' => out.push_str("\\n"),
-                other => out.push(other),
-            }
-        }
-        out.push('"');
-        out
+        quoted(text)
     }
+}
+
+/// A double-quoted scalar with the subset's `\"`, `\\` and `\n` escapes.
+fn quoted(text: &str) -> String {
+    let mut out = String::from("\"");
+    for character in text.chars() {
+        match character {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            other => out.push(other),
+        }
+    }
+    out.push('"');
+    out
 }
 
 fn plain_safe(text: &str, in_flow: bool) -> bool {

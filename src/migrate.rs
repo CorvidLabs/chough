@@ -556,6 +556,23 @@ fn apply(
                 .join(", ")
         );
     }
+    // On a case-insensitive file system a case-only rename, such as knowledge/INDEX.md
+    // to knowledge/index.md, is one file, and Git keeps its index entry under the old
+    // name, so the commit would hold the new bytes under the 0.5.x name. Drop that
+    // entry from Git's index (never the work tree) before writing the new name, so the
+    // next `git add` records the rename and the receipt matches the commit
+    // (REQ-records-009).
+    let mut unstaged = vec![];
+    for (path, _) in &kept_bytes {
+        if plan
+            .files
+            .iter()
+            .any(|written| written.path != *path && written.path.eq_ignore_ascii_case(path))
+        {
+            unstage(root, path)?;
+            unstaged.push(path.clone());
+        }
+    }
     for written in plan
         .files
         .iter()
@@ -573,8 +590,30 @@ fn apply(
         "written": written_now,
         "removed": kept_bytes.iter().map(|(path, _)| path).collect::<Vec<_>>(),
         "archives_checked": affected,
+        "unstaged": unstaged,
         "git_history": "Git history still holds what earlier commits recorded; this migration does not rewrite it.",
     }))
+}
+
+/// Drop `path` from Git's index only, as `git rm --cached` does, leaving the work tree.
+fn unstage(root: &Path, path: &str) -> Result<()> {
+    let output = crate::records::run_owned(
+        std::process::Command::new("git").arg("-C").arg(root).args([
+            "rm",
+            "--cached",
+            "--quiet",
+            "--ignore-unmatch",
+            "--",
+            path,
+        ]),
+        None,
+    )?;
+    ensure!(
+        output.status.success(),
+        "git rm --cached {path} failed: {}; the written files and the receipt stay for review",
+        String::from_utf8_lossy(&output.stderr).trim()
+    );
+    Ok(())
 }
 
 /// Whether `path` differs only in case from a planned removal, such as
@@ -1241,13 +1280,20 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
                 &text("text"),
                 None,
                 &crate::session_md::iso_time(added),
+                // The 0.5.x INB- ID stays the entry's alias (REQ-records-003), and the
+                // receipt maps it to the new file (REQ-records-009).
+                &[text("id")]
+                    .into_iter()
+                    .filter(|old| !old.is_empty())
+                    .collect::<Vec<_>>(),
             )?;
+            let new_path = format!(".chough/sessions/{id}/agent/inbox/{name}.md");
             carried.written.push(Written {
-                path: format!(".chough/sessions/{id}/agent/inbox/{name}.md"),
+                path: new_path.clone(),
                 bytes: rendered,
             });
             carried.sources.insert(entry_path.clone());
-            carried.aliases.insert(text("id"), entry_path);
+            carried.aliases.insert(text("id"), new_path);
         }
         homes.insert(
             key,

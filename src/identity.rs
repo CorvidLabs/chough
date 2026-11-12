@@ -17,7 +17,17 @@ thread_local! {
     static RANDOM_DRAWS: Cell<usize> = const { Cell::new(0) };
 }
 
+/// The slug of `source`: lowercase letters and digits joined by single hyphens, cut to
+/// `limit`. Under `--redact` it is the slug of the redacted text, so a name drawn from a
+/// value never keeps what the value's redaction removed (REQ-records-006).
 pub(crate) fn slug(source: &str, fallback: &str, limit: usize) -> String {
+    let redacted;
+    let source = if crate::leaks::redacting() {
+        redacted = crate::leaks::redact(crate::leaks::Local::current(), source).0;
+        redacted.as_str()
+    } else {
+        source
+    };
     let mut normalized = String::new();
     let mut separated = false;
     for byte in source.bytes() {
@@ -214,6 +224,7 @@ pub(crate) fn create_named(
 /// old-style 0.5.x ID (OBS-, VAL- or SNAP-) is refused with the omit-ID remedy
 /// (REQ-cli-023).
 pub(crate) fn require_explicit_observation_id(id: &str) -> Result<()> {
+    crate::leaks::check_name(crate::leaks::Local::current(), "id", id)?;
     ensure!(
         !valid_observation_id(id) && !valid_validation_id(id) && !valid_snapshot_id(id),
         "old-style observation ID {id:?} cannot be used for a new write; omit the ID for automatic allocation"

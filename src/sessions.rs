@@ -630,6 +630,8 @@ pub(super) fn create(
     modules: Vec<String>,
 ) -> Result<String> {
     ensure_key(key)?;
+    // The key names the session folder and stays its alias (REQ-records-006).
+    crate::leaks::check_name(crate::leaks::Local::current(), "key", key)?;
     ensure!(!objective.trim().is_empty(), "objective must not be blank");
     ensure!(
         modules.iter().all(|module| valid_module_name(module)),
@@ -813,7 +815,11 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
         !local_path(root, &story)?.exists(),
         "{story} already exists; archiving never replaces a file"
     );
-    let mut record = checkpoint::render_checkpoint(session)?;
+    // Render with the session's evidence links, as every save does, so each entry's
+    // line links its file and becomes its receipt line below, never a bare ID beside it.
+    let mut linked = session.clone();
+    linked.evidence_links = checkpoint::evidence_links(root, &linked);
+    let mut record = checkpoint::render_checkpoint(&linked)?;
     let date = crate::identity::utc_date(now()?);
     record.set_scalar("closed", &date)?;
     record.set_scalar("outcome", outcome)?;
@@ -835,7 +841,12 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
         "{story} did not read back as written; nothing was removed"
     );
     let mut kept = crate::evidence::move_screenshots_at_finish(root, id)?;
-    kept.extend(remove_committed(root, &format!("{DIR}/{id}"))?);
+    // A screenshot that is not committed yet is kept by both steps; list it once.
+    for file in remove_committed(root, &format!("{DIR}/{id}"))? {
+        if !kept.contains(&file) {
+            kept.push(file);
+        }
+    }
     if pointer(root).ok().flatten().as_deref() == Some(id) {
         let _ = fs::remove_file(local_path(root, POINTER)?);
     }
@@ -880,16 +891,22 @@ fn story_verified_lines(
             continue;
         };
         let mut line = get("claim").unwrap_or_else(|| entry.clone());
+        // The receipt follows one ` — `, with or without a command.
+        let mut receipt = vec![];
         if let Some(command) = get("command") {
-            line.push_str(&format!(" — `{command}`"));
+            receipt.push(format!("`{command}`"));
         }
         if let Some(fingerprint) = get("fingerprint") {
-            let digits: String = fingerprint
-                .trim_start_matches("sha256:")
-                .chars()
-                .take(12)
-                .collect();
-            line.push_str(&format!(" {digits}"));
+            receipt.push(
+                fingerprint
+                    .trim_start_matches("sha256:")
+                    .chars()
+                    .take(12)
+                    .collect(),
+            );
+        }
+        if !receipt.is_empty() {
+            line.push_str(&format!(" — {}", receipt.join(" ")));
         }
         if let Some(name) = screenshots.get(&entry) {
             line.push_str(&format!(" [screenshot]({id}/{name})"));
@@ -902,12 +919,18 @@ fn story_verified_lines(
             .filter_map(|line| line.strip_prefix("- "))
             .map(str::to_string)
             .collect();
+        // The open session's line for this entry, a link to `evidence/<id>.md` or, when
+        // the checkpoint was rendered without its links, the bare ID, becomes the
+        // receipt line, so each entry is listed once.
         let linked = format!("(evidence/{entry}.md)");
-        if let Some(open) = present.iter().find(|line| line.ends_with(&linked)) {
+        if let Some(open) = present
+            .iter()
+            .find(|line| line.ends_with(&linked) || **line == entry)
+        {
             record.replace_item(VERIFIED, open, &line)?;
         } else if !present
             .iter()
-            .any(|line| *line == entry || line.ends_with(&format!("^{entry}")))
+            .any(|line| line.ends_with(&format!("^{entry}")))
         {
             record.append_to_section(VERIFIED, &format!("- {line}\n"))?;
         }
@@ -1256,10 +1279,14 @@ pub(super) fn render_entry(
     text: &str,
     recorded: Option<bool>,
     added: &str,
+    aliases: &[String],
 ) -> Result<String> {
     let mut record = crate::markdown::Record::new(&format!("{text}\n"));
     record.set_scalar("kind", kind.name())?;
     record.set_scalar("id", name)?;
+    if !aliases.is_empty() {
+        record.set("aliases", crate::markdown::Value::List(aliases.to_vec()))?;
+    }
     record.set_scalar("session", session)?;
     record.set_scalar("from", from)?;
     record.set_scalar("value", text)?;
@@ -1330,7 +1357,7 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             if !publish_entry(
                 root,
                 &file,
-                &render_entry(&id, &session, &from, kind, &text, recorded, &added)?,
+                &render_entry(&id, &session, &from, kind, &text, recorded, &added, &[])?,
             )? {
                 id = crate::identity::suffixed(&base)?;
                 file = format!("{dir}/{id}.md");
@@ -1338,7 +1365,7 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                     publish_entry(
                         root,
                         &file,
-                        &render_entry(&id, &session, &from, kind, &text, recorded, &added)?
+                        &render_entry(&id, &session, &from, kind, &text, recorded, &added, &[])?
                     )?,
                     "refused: {file} also exists; nothing was written and no other name was drawn"
                 );

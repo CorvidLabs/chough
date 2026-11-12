@@ -3,10 +3,12 @@
 profile = "chough-testing/1"
 module = "history"
 
+# Retired with REQ-history-001 in 0.6.0; its test now binds
+# TC-records-removed-and-missing-observations-never-count (REQ-records-009).
 [[case]]
 id = "TC-history-0054"
 title = "Removed and missing observations are labeled and never count"
-status = "active"
+status = "retired"
 track = "functional"
 method = "automated"
 criteria = ["LIFE-8"]
@@ -46,7 +48,7 @@ status = "active"
 track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-7"]
-requirements = ["REQ-history-001", "REQ-history-002", "REQ-history-003", "REQ-history-004"]
+requirements = ["REQ-history-002", "REQ-history-003"]
 paths = ["specs/cli/requirements.md", "specs/history/requirements.md", "tests/spec_split.rs"]
 environments = ["local-linux-x86_64", "local-macos-arm64", "ci-linux", "ci-windows"]
 artifacts = ["test-log"]
@@ -93,10 +95,12 @@ adapter = "cargo-test"
 test_target = "sessions"
 test = "an_inbox_add_killed_while_writing_leaves_no_partial_entry"
 
+# Retired with REQ-history-008 in 0.6.0; its test now binds
+# TC-cli-session-use-waits-for-stage-advance (REQ-cli-040).
 [[case]]
 id = "TC-history-session-use-waits-for-stage-advance"
 title = "session use waits for a running stage advance"
-status = "active"
+status = "retired"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-3"]

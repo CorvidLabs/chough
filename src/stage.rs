@@ -16,8 +16,6 @@ use sha2::{Digest, Sha256};
 use std::collections::BTreeSet;
 use std::path::Path;
 
-pub(super) const TRANSITIONS: &str = ".chough/transitions.jsonl";
-
 /// Every stage with its kind. `references/stages.md` documents the same names.
 pub(super) const STAGES: &[(&str, &str)] = &[
     ("intent", "main"),
