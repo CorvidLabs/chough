@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -276,6 +276,51 @@ observations:
   - 2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-540c6d
   - 2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-784592
   - 2026-11-12-the-full-test-suite-passed-722-of-722-across-48-targets-cargo
+  - 2026-11-12-tc-records-every-gate-close-names-a-configured-human-1fe1d8
+  - 2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-82c4ba
+  - 2026-11-12-tc-cli-close-running-no-native-step-says-why-630681
+  - 2026-11-12-tc-history-session-list-archived-story-is-finished-f51502
+  - 2026-11-12-tc-cli-executed-case-run-provenance-7a39dd
+  - 2026-11-12-tc-cli-docs-show-the-requirement-evidence-table-a009fa
+  - 2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-eb8604
+  - 2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta-51f01e
+  - 2026-11-12-tc-cli-bug-observation-joins-the-session-60b2bd
+  - 2026-11-12-tc-records-migrate-preview-with-nothing-to-migrate-15c207
+  - 2026-11-12-tc-records-migration-receipt-has-one-follow-up-heading-57c9c7
+  - 2026-11-12-tc-cli-a-close-that-runs-no-native-step-says-closed-once-fe311f
+  - 2026-11-12-tc-cli-next-with-no-native-change-says-only-none-recorded-56e648
+  - 2026-11-12-tc-cli-next-and-status-reasons-name-no-trace-id-d0f752
+  - 2026-11-12-tc-cli-stage-skip-docs-say-it-skips-the-current-stage-d61e77
+  - 2026-11-12-tc-cli-a-gate-close-names-the-step-its-decision-allows-813147
+  - 2026-11-12-tc-cli-next-at-accept-while-approved-names-the-review-9437ca
+  - 2026-11-12-tc-cli-next-and-status-show-every-command-whole-0bc94b
+  - 2026-11-12-tc-cli-gate-list-names-the-ship-for-a-verifying-gate-848d43
+  - 2026-11-12-tc-cli-change-check-no-commit-b7e0ec
+  - 2026-11-12-tc-cli-gate-close-records-direct-writes-first-a5484b
+  - 2026-11-12-tc-cli-accept-step-checks-through-chough-06f35e
+  - 2026-11-12-tc-history-doctor-names-an-outdated-merge-driver-chough-8fd361
+  - 2026-11-12-tc-history-story-lists-each-cases-latest-run-c4e085
+  - 2026-11-12-tc-history-archived-story-says-archived-95ac81
+  - 2026-11-12-tc-history-start-entry-starts-the-first-segment-b9ad0c
+  - 2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-257682
+  - 2026-11-12-tc-history-session-close-records-withdrawn-gates-96da83
+  - 2026-11-12-tc-cli-docs-show-a-lessons-dated-form-e4aca2
+  - 2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line-f074cf
+  - 2026-11-12-tc-cli-stage-move-prints-a-short-summary-a207e8
+  - 2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag-b30fe5
+  - 2026-11-12-tc-cli-next-shows-specsyncs-step-for-reference-only-b9234d
+  - 2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line-71b42e
+  - 2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate-bc21e0
+  - 2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage-4123c0
+  - 2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first-b33e1f
+  - 2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files-c0561c
+  - 2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry-7dd487
+  - 2026-11-12-tc-cli-context-gives-the-session-as-markdown-3d2b6a
+  - 2026-11-12-tc-cli-failed-run-body-says-why-c26686
+  - 2026-11-12-tc-cli-context-gives-the-timeline-and-bugs-as-markdown-1cb351
+  - 2026-11-12-tc-history-story-receipts-last-and-bugs-named-bca1ad
+  - 2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-ceebe5
+  - 2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-7c81c5
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -307,7 +352,11 @@ bugs:
   - 2026-11-12-migrated-sessions-and-stories-keep-bare-0-5-x-observation-ids
   - 2026-11-12-an-archived-story-opens-with-its-receipts-and-never-names-the
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+    holds: accept
+    drives: review
+    opened: 2026-11-12T23:27:31Z
 run_consents: []
 next: "Gate \"Approve the 0.6.0 release prep re-scoped for the 12 third-round fresh-eyes findings\" closed (approved); run `chough stage advance` to move on."
 title: "Chough 0.6.0 release prep: the dogfood cycle and three fresh-eyes rounds"
@@ -568,6 +617,51 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_sessions_verified_lines_link_the_carried_entries for TC-records-migrate-evidence-verified-lines-link-entries: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-540c6d.md)
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_storys_verified_lines_are_receipt_lines for TC-records-migrate-evidence-story-lines-are-receipt-lines: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-784592.md)
 - [The full test suite passed 722 of 722 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at a7d6406a, the head with every third-round fix integrated; clippy --all-targets -D warnings and rustfmt --check were clean there](evidence/2026-11-12-the-full-test-suite-passed-722-of-722-across-48-targets-cargo.md)
+- [Ran cargo test --locked --test humans -- --exact every_gate_close_names_a_configured_human for TC-records-every-gate-close-names-a-configured-human: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-every-gate-close-names-a-configured-human-1fe1d8.md)
+- [Ran cargo test --locked --test change -- --exact ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing for TC-records-ship-names-a-configured-human-at-any-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-82c4ba.md)
+- [Ran cargo test --locked --test humans -- --exact a_close_that_runs_no_native_step_says_why for TC-cli-close-running-no-native-step-says-why: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-close-running-no-native-step-says-why-630681.md)
+- [Ran cargo test --locked --test sessions -- --exact session_list_reports_an_archived_story_as_finished for TC-history-session-list-archived-story-is-finished: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-session-list-archived-story-is-finished-f51502.md)
+- [Ran cargo test --locked --test cases -- --exact an_executed_case_runs_provenance_does_not_deny_the_execution for TC-cli-executed-case-run-provenance: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-executed-case-run-provenance-7a39dd.md)
+- [Ran cargo test --locked --test docs -- --exact the_requirement_evidence_table_in_a_changes_testing_md_is_documented for TC-cli-docs-show-the-requirement-evidence-table: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-the-requirement-evidence-table-a009fa.md)
+- [Ran cargo test --locked --test docs -- --exact the_new_project_section_shows_a_minimal_hi_file_and_requirements_md for TC-cli-docs-show-a-minimal-hi-file-and-requirements-md: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-eb8604.md)
+- [Ran cargo test --locked --test cases -- --exact evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements for TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta-51f01e.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story for TC-cli-bug-observation-joins-the-session: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-bug-observation-joins-the-session-60b2bd.md)
+- [Ran cargo test --locked --test migrate -- --exact a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest for TC-records-migrate-preview-with-nothing-to-migrate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-preview-with-nothing-to-migrate-15c207.md)
+- [Ran cargo test --locked --test migrate -- --exact a_receipt_has_one_follow_up_heading_for_every_follow_up for TC-records-migration-receipt-has-one-follow-up-heading: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migration-receipt-has-one-follow-up-heading-57c9c7.md)
+- [Ran cargo test --locked --test humans -- --exact a_close_that_runs_no_native_step_says_closed_once for TC-cli-a-close-that-runs-no-native-step-says-closed-once: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-a-close-that-runs-no-native-step-says-closed-once-fe311f.md)
+- [Ran cargo test --locked --test next -- --exact next_with_no_native_change_says_only_that_none_is_recorded for TC-cli-next-with-no-native-change-says-only-none-recorded: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-with-no-native-change-says-only-none-recorded-56e648.md)
+- [Ran cargo test --locked --test next -- --exact next_and_status_reasons_name_no_trace_id for TC-cli-next-and-status-reasons-name-no-trace-id: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-and-status-reasons-name-no-trace-id-d0f752.md)
+- [Ran cargo test --locked --test docs -- --exact stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design for TC-cli-stage-skip-docs-say-it-skips-the-current-stage: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-stage-skip-docs-say-it-skips-the-current-stage-d61e77.md)
+- [Ran cargo test --locked --test humans -- --exact a_gate_close_names_the_step_its_decision_allows_never_chough_next for TC-cli-a-gate-close-names-the-step-its-decision-allows: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-a-gate-close-names-the-step-its-decision-allows-813147.md)
+- [Ran cargo test --locked --test next -- --exact at_accept_while_approved_next_names_the_review_preparation_in_order for TC-cli-next-at-accept-while-approved-names-the-review-preparation: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-while-approved-names-the-review-9437ca.md)
+- [Ran cargo test --locked --test next -- next_and_status_show_every_command_whole_for_a_long_change_id status_gives_the_next_valid_action_whole both_forms_stay_within_the_cap_with_totals_for_large_records for TC-cli-next-and-status-show-every-command-whole: passed (exit 0).](evidence/2026-11-12-tc-cli-next-and-status-show-every-command-whole-0bc94b.md)
+- [Ran cargo test --locked --test gates -- --exact the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why for TC-cli-gate-list-names-the-ship-for-a-verifying-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-gate-list-names-the-ship-for-a-verifying-gate-848d43.md)
+- [Ran cargo test --locked --test direct_writes -- --exact change_check_no_commit_runs_the_plain_check_and_is_never_flagged for TC-cli-change-check-no-commit: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-change-check-no-commit-b7e0ec.md)
+- [Ran cargo test --locked --test direct_writes -- --exact a_direct_write_before_a_gate_close_is_recorded_before_its_entry for TC-cli-gate-close-records-direct-writes-first: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-gate-close-records-direct-writes-first-a5484b.md)
+- [Ran cargo test --locked --test docs -- --exact the_accept_steps_first_check_runs_through_chough for TC-cli-accept-step-checks-through-chough: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-accept-step-checks-through-chough-06f35e.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_reports_merge_drivers_that_would_run_an_older_chough for TC-history-doctor-names-an-outdated-merge-driver-chough: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-doctor-names-an-outdated-merge-driver-chough-8fd361.md)
+- [Ran cargo test --locked --test sessions -- --exact a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones for TC-history-story-lists-each-cases-latest-run: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-story-lists-each-cases-latest-run-c4e085.md)
+- [Ran cargo test --locked --test sessions -- --exact an_archived_story_says_archived_and_keeps_no_next for TC-history-archived-story-says-archived: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-archived-story-says-archived-95ac81.md)
+- [Ran cargo test --locked --test timing -- --exact init_and_session_new_write_a_start_entry_that_timing_reads for TC-history-start-entry-starts-the-first-segment: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-start-entry-starts-the-first-segment-b9ad0c.md)
+- [Ran cargo test --locked --test next -- --exact next_at_accept_never_passes_on_specsyncs_review_command for TC-cli-next-at-accept-never-passes-on-the-review-command: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-257682.md)
+- [Ran cargo test --locked --test sessions -- --exact session_close_records_the_gates_it_withdraws for TC-history-session-close-records-withdrawn-gates: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-session-close-records-withdrawn-gates-96da83.md)
+- [Ran cargo test --locked --test docs -- --exact a_lessons_dated_form_is_documented_and_its_example_counts for TC-cli-docs-show-a-lessons-dated-form: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-lessons-dated-form-e4aca2.md)
+- [Ran cargo test --locked --test optional -- --exact init_with_the_claude_host_prints_the_claude_md_line_and_writes_none for TC-cli-init-claude-host-prints-the-claude-md-line: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line-f074cf.md)
+- [Ran cargo test --locked --test stages -- --exact a_stage_move_prints_a_short_summary_and_its_full_report_under_json for TC-cli-stage-move-prints-a-short-summary: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-stage-move-prints-a-short-summary-a207e8.md)
+- [Ran cargo test --locked --test migrate -- --exact the_preview_prints_the_plan_as_text_and_the_same_plan_as_json for TC-records-migrate-preview-is-text-with-json-behind-a-flag: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag-b30fe5.md)
+- [Ran cargo test --locked --test next -- --exact at_plan_after_approval_next_shows_specsyncs_step_for_reference_only for TC-cli-next-shows-specsyncs-step-for-reference-only: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-shows-specsyncs-step-for-reference-only-b9234d.md)
+- [Ran cargo test --locked --test bugs -- --exact a_duplicate_bug_add_lists_each_similar_bug_as_a_line for TC-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line-71b42e.md)
+- [Ran cargo test --locked --test relay -- --exact a_near_miss_gate_close_names_the_closest_open_gate for TC-cli-near-miss-gate-close-names-the-closest-open-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate-bc21e0.md)
+- [Ran cargo test --locked --test next -- --exact at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run for TC-cli-next-at-test-after-every-case-passed-names-stage-advance: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage-4123c0.md)
+- [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_names_each_delta_first_with_its_requirements for TC-cli-scope-gate-summary-names-each-delta-first: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first-b33e1f.md)
+- [Ran cargo test --locked --test gates -- --exact an_intent_gate_summary_names_the_criteria_and_their_hi_files for TC-cli-intent-gate-summary-names-the-criteria-and-hi-files: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files-c0561c.md)
+- [Ran cargo test --locked --test timing -- timing_starts_cycle_1_at_the_start_entry_and_says_elapsed_wall_clock_once init_and_session_new_write_a_start_entry_that_timing_reads for TC-reporting-timing-starts-cycle-1-at-the-start-entry: passed (exit 0).](evidence/2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry-7dd487.md)
+- [Ran cargo test --locked --test cli -- --exact context_gives_the_session_as_markdown for TC-cli-context-gives-the-session-as-markdown: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-context-gives-the-session-as-markdown-3d2b6a.md)
+- [Ran cargo test --locked --test cases -- --exact a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines for TC-cli-failed-run-body-says-why: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-failed-run-body-says-why-c26686.md)
+- [Ran cargo test --locked --test cli -- --exact context_gives_the_timeline_and_open_bugs_as_markdown for TC-cli-context-gives-the-timeline-and-bugs-as-markdown: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-context-gives-the-timeline-and-bugs-as-markdown-1cb351.md)
+- [Ran cargo test --locked --test sessions -- --exact a_story_puts_its_receipts_last_and_names_its_bugs for TC-history-story-receipts-last-and-bugs-named: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-story-receipts-last-and-bugs-named-bca1ad.md)
+- [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_sessions_verified_lines_link_the_carried_entries for TC-records-migrate-evidence-verified-lines-link-entries: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-ceebe5.md)
+- [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_storys_verified_lines_are_receipt_lines for TC-records-migrate-evidence-story-lines-are-receipt-lines: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-7c81c5.md)
 
 ## Open threads
 
@@ -816,5 +910,21 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - gate: native:approved
   - revision: b1a04a70a5f06ddd08cd6d3e76bda1f895be5b58
+  - by: claude-code (hc t382)
+- 2026-11-12T23:15:51Z · advance · build → test · Every third-round finding fixed and verified; the counting full run passed; preparing Leif's review ^t-a1ec2d
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - gate: native:approved
+  - revision: 67c851b9e28401894bddb7dd318026ff10274858
+  - by: claude-code (hc t382)
+- 2026-11-12T23:15:51Z · advance · test → accept · Every third-round finding fixed and verified; the counting full run passed; preparing Leif's review ^t-b4ec86
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - gate: native:approved
+  - revision: 67c851b9e28401894bddb7dd318026ff10274858
+  - by: claude-code (hc t382)
+- 2026-11-12T23:27:25Z · gate-opened · accept → accept · Implementation review of prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood ^t-aea8ef
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 67c851b9e28401894bddb7dd318026ff10274858
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t382)
 

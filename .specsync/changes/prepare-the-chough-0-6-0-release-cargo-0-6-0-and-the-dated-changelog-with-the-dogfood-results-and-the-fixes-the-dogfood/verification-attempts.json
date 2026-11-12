@@ -126,6 +126,76 @@
         "REQ-records-009",
         "REQ-records-011"
       ]
+    },
+    {
+      "timestamp": 1794525365,
+      "commit": "67c851b9e28401894bddb7dd318026ff10274858",
+      "contract_digest": "d59abaabed323b62fa848c4efbf22e832385cd614c13d6a756f4daab47fba0d8",
+      "execution_digest": "49e1467807761fa731f2137055ba2d5d977a0098944e6fab601e19a4eddbb7a4",
+      "workspace_digest": "6c1b28b8b5ef3bc7e22ff0dbe4f3ff2bcfecbc5e8e31ffd295db628ced7340a9",
+      "passed": false,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history --spec records --spec reporting",
+          "success": true,
+          "exit_code": 0
+        },
+        {
+          "command": "specsync change check prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood (effective contract: records)",
+          "success": false,
+          "exit_code": 1,
+          "output": "effective contract `records`: 102/107 exports documented\neffective contract `records`: Undocumented export 'RECEIPTS' from src/markdown.rs\neffective contract `records`: Undocumented export 'receipts_section' from src/markdown.rs\neffective contract `records`: Undocumented export 'with_receipts_section' from src/markdown.rs\neffective contract `records`: Undocumented export 'story_receipts' from src/markdown.rs\neffective contract `records`: Undocumented export 'insert_section_before' from src/markdown.rs"
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-005",
+        "REQ-cli-008",
+        "REQ-cli-012",
+        "REQ-cli-017",
+        "REQ-cli-021",
+        "REQ-cli-057",
+        "REQ-cli-060",
+        "REQ-cli-061",
+        "REQ-history-002",
+        "REQ-history-006",
+        "REQ-history-012",
+        "REQ-records-006",
+        "REQ-records-008",
+        "REQ-records-009",
+        "REQ-records-011"
+      ]
+    },
+    {
+      "timestamp": 1794525383,
+      "commit": "67c851b9e28401894bddb7dd318026ff10274858",
+      "contract_digest": "d59abaabed323b62fa848c4efbf22e832385cd614c13d6a756f4daab47fba0d8",
+      "execution_digest": "49e1467807761fa731f2137055ba2d5d977a0098944e6fab601e19a4eddbb7a4",
+      "workspace_digest": "45540900b3b8f47a0b68d4ff3ed7bde042a7b29db1966170064da81363d34cd7",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history --spec records --spec reporting",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-005",
+        "REQ-cli-008",
+        "REQ-cli-012",
+        "REQ-cli-017",
+        "REQ-cli-021",
+        "REQ-cli-057",
+        "REQ-cli-060",
+        "REQ-cli-061",
+        "REQ-history-002",
+        "REQ-history-006",
+        "REQ-history-012",
+        "REQ-records-006",
+        "REQ-records-008",
+        "REQ-records-009",
+        "REQ-records-011"
+      ]
     }
   ]
 }

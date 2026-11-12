@@ -81,6 +81,11 @@ or redacting every value before it is written.
 | `append_to_section` | Appends lines to the end of a `## ` section, or creates it at the end of the body. |
 | `remove_item` | Removes the line of one item of a `## ` section, matched by its exact text, such as a superseded case run's link once its session has finished. |
 | `insert_first_item` | Inserts one item before the first item of a `## ` section, or appends it as `append_to_section` does when the section has none, keeping every other byte. |
+| `insert_section_before` | Inserts a `## ` section before the first of the given sections the body has, or appends it at the end of the body, keeping every other byte. |
+| `RECEIPTS` | The heading of the section an archived story ends with, holding its receipts. |
+| `receipts_section` | Writes an archived story's `## Receipts` section: `receipts` as one fenced YAML block, one map per receipt, by the front matter's rules. |
+| `with_receipts_section` | An archived story's text with its last `## Receipts` section replaced by one holding the given receipts, or added when it has none. |
+| `story_receipts` | An archived story's receipts, from its `## Receipts` section or, for a story written before that section, from its front matter; a block that does not read is an error naming the file. |
 | `replace_item` | Replaces one item of a `## ` section by its exact text, for a line Chough wrote whose target no longer exists, such as a session entry's link once the session has finished. |
 | `mark_item` | Marks one item of a `## ` section on its own line, the one in-place edit Chough makes to a section it owns. |
 | `render` | The whole record file. |

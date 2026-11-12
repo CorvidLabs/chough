@@ -1,9 +1,9 @@
 {
-  "timestamp": 1794518845,
-  "commit": "9769d088c1c55d2b65f847bf036d1194aedee7f1",
-  "contract_digest": "12a53bb496f6117b1b5aafffe6d511ffdaa21009f7a55c0d1a032fea4a683ade",
-  "execution_digest": "aef43cecb8e9367fab3bc23f02051ba24a1bfa1de4ee6dfe914a4bcf3390be61",
-  "workspace_digest": "5244fef9347ebaf7f619005cb59bfac71df7ec1fd2579ddd33442d0a13c44eab",
+  "timestamp": 1794525383,
+  "commit": "67c851b9e28401894bddb7dd318026ff10274858",
+  "contract_digest": "d59abaabed323b62fa848c4efbf22e832385cd614c13d6a756f4daab47fba0d8",
+  "execution_digest": "49e1467807761fa731f2137055ba2d5d977a0098944e6fab601e19a4eddbb7a4",
+  "workspace_digest": "45540900b3b8f47a0b68d4ff3ed7bde042a7b29db1966170064da81363d34cd7",
   "passed": true,
   "commands": [
     {
@@ -14,7 +14,9 @@
   ],
   "requirement_ids": [
     "REQ-cli-005",
+    "REQ-cli-008",
     "REQ-cli-012",
+    "REQ-cli-017",
     "REQ-cli-021",
     "REQ-cli-057",
     "REQ-cli-060",
