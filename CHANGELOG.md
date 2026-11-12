@@ -156,8 +156,10 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   `stage_status: archived` with no stale `next` (REQ-history-006).
 - `chough init` and `chough session new` each write a `start` entry first, from and to
   the stage the session starts in, with its objective or key, so `chough timing` right
-  after reports when the first stage started instead of an unknown start; a timeline
-  without one still reads (REQ-history-002).
+  after reports when the first stage started, in Cycle 1, which starts at that entry,
+  instead of an unknown start before the first record; a timeline without one still
+  reads (REQ-history-002). The timing text says "elapsed wall-clock" once, in its
+  header, rather than after every number.
 - `chough change check <id> --no-commit` runs SpecSync's check without `--commit`, the
   check the accept step runs first to materialize requirement text, so following the
   workflow records no direct lifecycle write; and a gate close with a human's decision

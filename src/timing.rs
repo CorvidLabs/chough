@@ -164,6 +164,9 @@ impl Span {
 
     fn text(&self) -> String {
         match self {
+            // Round 3's F11: the report's header says every duration is elapsed
+            // wall-clock time, once; only the other labels follow a number.
+            Self::Known(seconds, ELAPSED) => clock(*seconds),
             Self::Known(seconds, label) => format!("{} ({label})", clock(*seconds)),
             Self::Unknown(reason) => format!("unknown ({reason})"),
         }
@@ -597,41 +600,67 @@ fn derive(transitions: &Transitions, session: &Session, at: u64) -> Derived {
     };
     // REQ-history-002 (F11): the session's `start` entry, its first, starts the first
     // segment; a timeline without one, as an older or migrated one is, leaves that start
-    // unknown.
-    let started = transitions
+    // unknown. The start entry is a record, so it also starts the first cycle, which holds
+    // that segment (round 3's F11); without one, the segment comes before the first
+    // record and the first cycle starts at the first stage move.
+    let start_entry = transitions
         .records
         .first()
-        .filter(|record| record.kind == stage::START)
-        .map_or_else(
-            || Time::Unknown(NO_FIRST.into()),
-            |record| record.at.clone(),
-        );
+        .filter(|record| record.kind == stage::START);
+    let started = start_entry.map_or_else(
+        || Time::Unknown(NO_FIRST.into()),
+        |record| record.at.clone(),
+    );
+    let mut cycles: Vec<Cycle> = start_entry
+        .map(|record| Cycle {
+            number: 1,
+            start: record.at.clone(),
+            segments: vec![],
+            completed: false,
+        })
+        .into_iter()
+        .collect();
     let Some(first) = moves.first() else {
         // No stage record yet: the current stage since the session started.
-        let open = blank(&current, paused, started);
-        return Derived {
-            before_first: Some(close(open, Time::Known(at), true, &gates, at)),
-            cycles: vec![],
-            gates,
+        let open = close(
+            blank(&current, paused, started),
+            Time::Known(at),
+            true,
+            &gates,
+            at,
+        );
+        return match cycles.first_mut() {
+            Some(cycle) => {
+                cycle.completed = open.state == "idle";
+                cycle.segments.push(open);
+                Derived {
+                    before_first: None,
+                    cycles,
+                    gates,
+                }
+            }
+            None => Derived {
+                before_first: Some(open),
+                cycles,
+                gates,
+            },
         };
     };
     let mut open = blank(&first.from, first.kind == "resume", started);
     let mut before_first = None;
-    let mut cycles: Vec<Cycle> = vec![];
     let mut visits: BTreeMap<String, u32> = BTreeMap::new();
-    for (index, record) in moves.iter().enumerate() {
+    if !cycles.is_empty() {
+        // The first segment is the first cycle's first visit of its stage.
+        visits.insert(first.from.clone(), 1);
+    }
+    for record in &moves {
         let mut ended = close(open, record.at.clone(), false, &gates, at);
         ended.backfilled |= record.backfill.is_some();
-        if index == 0 {
-            before_first = Some(ended);
-        } else {
-            cycles
-                .last_mut()
-                .expect("a cycle starts at the first record")
-                .segments
-                .push(ended);
+        match cycles.last_mut() {
+            Some(cycle) => cycle.segments.push(ended),
+            None => before_first = Some(ended),
         }
-        if index == 0 || record.kind == "reset" {
+        if cycles.is_empty() || record.kind == "reset" {
             cycles.push(Cycle {
                 number: cycles.len() + 1,
                 start: record.at.clone(),
@@ -796,7 +825,7 @@ fn estimate_text(value: &Value) -> String {
         value["max"].as_u64(),
     ) {
         (Some(min), Some(median), Some(max)) => format!(
-            "{}: min {}, median {}, max {} (elapsed wall-clock)",
+            "{}: min {}, median {}, max {}",
             value["label"].as_str().unwrap_or_default(),
             clock(min),
             clock(median),
