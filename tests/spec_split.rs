@@ -197,3 +197,42 @@ fn every_cli_requirement_before_the_reporting_split_is_still_in_cli_or_mapped() 
         );
     }
 }
+
+/// REQ-cli-009, TC-cli-every-active-case-links-a-current-requirement (S1): every active
+/// case links only requirements its module's companion holds, so `chough cases check`
+/// in the verify and ci lanes passes once this change's removed requirements are gone
+/// from the specs; a retired case keeps its links as history.
+#[test]
+fn every_active_case_links_a_requirement_the_specs_hold() {
+    let cases = Path::new(env!("CARGO_MANIFEST_DIR")).join(".chough/cases");
+    let mut missing = vec![];
+    let mut files: Vec<_> = std::fs::read_dir(&cases)
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.path())
+        .filter(|path| path.to_string_lossy().ends_with(".cases.toml"))
+        .collect();
+    files.sort();
+    for file in files {
+        let text = std::fs::read_to_string(&file).unwrap();
+        let parsed: toml::Value = toml::from_str(&text).unwrap();
+        let module = parsed["module"].as_str().unwrap();
+        let held = blocks(&companion(module));
+        for case in parsed["case"].as_array().into_iter().flatten() {
+            if case["status"].as_str() != Some("active") {
+                continue;
+            }
+            for requirement in case["requirements"].as_array().into_iter().flatten() {
+                let requirement = requirement.as_str().unwrap();
+                if !held.contains_key(requirement) {
+                    missing.push(format!(
+                        "{}: {} links {requirement}",
+                        file.file_name().unwrap().to_string_lossy(),
+                        case["id"].as_str().unwrap()
+                    ));
+                }
+            }
+        }
+    }
+    assert!(missing.is_empty(), "{missing:#?}");
+}

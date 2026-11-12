@@ -349,3 +349,185 @@ fn no_write_leaks_and_doctor_finds_old_leaks() {
     // The untracked file is never scanned, so nothing is left.
     assert_eq!(run(&fixture, &["doctor", "--leaks"]).status.code(), Some(0));
 }
+
+/// The arguments of an `evidence add` with `summary`, for the fixture's stubbed specs.
+fn evidence_add(summary: &str) -> Vec<String> {
+    [
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        summary,
+    ]
+    .iter()
+    .map(|argument| argument.to_string())
+    .collect()
+}
+
+/// The file names under `dir` in the fixture.
+fn names_in(fixture: &Fixture, dir: &str) -> Vec<String> {
+    fs::read_dir(fixture.root().join(dir))
+        .map(|entries| {
+            entries
+                .flatten()
+                .map(|entry| entry.file_name().to_string_lossy().into_owned())
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+/// REQ-records-006, TC-records-credential-value-ends-at-markup (R1): only an
+/// assignment whose value has 8 or more characters is a credential, measured without
+/// the bold, full stop, bracket or link markup Chough adds around a claim. A claim
+/// ending in a 5-character assignment is written; a 4-character one leaves no `leak`
+/// finding on the session's What was verified line; an 8-character one is still
+/// refused.
+#[test]
+fn a_short_assignment_ending_a_claim_is_written_and_leaves_no_leak_finding() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    for summary in ["SYNTHETIC password=abcde", "SYNTHETIC password=abcd"] {
+        let arguments = evidence_add(summary);
+        let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
+        let output = run(&fixture, &arguments);
+        assert!(
+            output.status.success(),
+            "{summary}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    fixture.commit("short assignments");
+    let doctor = run(&fixture, &["doctor", "--leaks"]);
+    let said = String::from_utf8_lossy(&doctor.stdout).into_owned();
+    assert!(
+        doctor.status.success() && !said.contains("credential"),
+        "doctor reported a leak on Chough's own lines: {said}{}",
+        String::from_utf8_lossy(&doctor.stderr)
+    );
+    let arguments = evidence_add("SYNTHETIC password=hunter2hunter2.");
+    let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
+    let output = run(&fixture, &arguments);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        !output.status.success() && stderr.contains("holds credential"),
+        "an 8-character value was written: {stderr}"
+    );
+    assert!(!stderr.contains("hunter2hunter2"), "{stderr}");
+}
+
+/// REQ-records-006, REQ-records-003, TC-records-redacted-writes-are-named-from-the-redacted-text
+/// (R2): under `--redact`, an evidence entry and a journal post are named from the
+/// redacted text, so no file name, `id`, link or feed entry keeps the value, and the
+/// checkpoint a command prints holds what it saved.
+#[test]
+fn redacted_writes_are_named_from_the_redacted_text() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let arguments = evidence_add("SYNTHETIC check /Users/SYNTHETIC-person/notes.txt");
+    let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
+    redacted(&fixture, &arguments);
+    let session = fixture.active_id();
+    let entries = names_in(&fixture, &format!(".chough/sessions/{session}/evidence"));
+    assert!(
+        entries
+            .iter()
+            .any(|name| name.contains("redacted-home-path")),
+        "{entries:?}"
+    );
+    redacted(
+        &fixture,
+        &[
+            "journal",
+            "add",
+            "--kind",
+            "learned",
+            "--title",
+            "SYNTHETIC post ghp_abcdefghijklmnopqrstuvwxyz0123456789",
+            "--body",
+            "SYNTHETIC body",
+        ],
+    );
+    let posts = names_in(&fixture, "knowledge/journal");
+    assert!(
+        posts.iter().any(|name| name.contains("redacted-token")),
+        "{posts:?}"
+    );
+    let said = redacted(
+        &fixture,
+        &[
+            "checkpoint",
+            "--decision",
+            "decided: keep it because ran in /Users/SYNTHETIC-person/src/app",
+        ],
+    );
+    for needle in [
+        "synthetic-person",
+        "SYNTHETIC-person",
+        "ghp_abcdefghij",
+        "ghp-abcdefghij",
+        "abcdefghijklmnopqrstuvwxyz0123456789",
+    ] {
+        assert_eq!(
+            holding(fixture.root(), needle),
+            Vec::<String>::new(),
+            "{needle}"
+        );
+        assert!(
+            !said.contains(needle),
+            "the printed checkpoint holds {needle}: {said}"
+        );
+    }
+}
+
+/// This machine's short host name as the leak guard reads it, when it is one the guard
+/// matches (3 or more characters, not `localhost`).
+fn guarded_host() -> Option<String> {
+    let output = std::process::Command::new("hostname").output().ok()?;
+    let host = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    let short = host.split('.').next().unwrap_or_default().to_string();
+    (short.len() >= 3 && !short.eq_ignore_ascii_case("localhost")).then_some(short)
+}
+
+/// REQ-records-006, TC-records-given-names-hold-no-host-name (R3): a session key or an
+/// explicit evidence ID that holds this machine's host name is refused as
+/// `refused:leak` naming the field and `host-name`, with every file unchanged.
+#[test]
+fn a_given_name_holding_the_host_name_is_refused() {
+    let Some(host) = guarded_host() else {
+        eprintln!("skipped: this machine's host name is one the guard never matches");
+        return;
+    };
+    let words = common::slug(&host);
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let key = format!("synthetic-{words}-key");
+    refused(
+        &fixture,
+        &["session", "new", &key, "--objective", "SYNTHETIC ok"],
+        "key",
+        "host-name",
+        &words,
+    );
+    let id = format!("2026-11-12-built-on-{words}");
+    let mut arguments = evidence_add("SYNTHETIC explicit id");
+    arguments.insert(2, id);
+    let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
+    refused(&fixture, &arguments, "id", "host-name", &words);
+}

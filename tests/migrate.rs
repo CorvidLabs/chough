@@ -1138,3 +1138,46 @@ fn a_receipt_past_the_ordinary_record_bound_applies() {
     );
     assert!(receipt.contains(".chough/artifacts/stray/run-0399.log"));
 }
+
+/// REQ-records-009, REQ-records-003, TC-records-migrated-inbox-entries-keep-their-ids
+/// (U3): each migrated inbox entry keeps its 0.5.x `INB-` ID as an alias, and the plan's
+/// and the receipt's ID map send that ID to the new `agent/inbox/` file, never to the
+/// removed 0.5.x one.
+#[test]
+fn migrated_inbox_entries_keep_their_ids_and_the_map_names_the_new_files() {
+    let fixture = migrate_project("adopted", &[]);
+    let inbox = fixture.root().join(".chough/sessions/open-two.inbox");
+    let old: Vec<String> = std::fs::read_dir(&inbox)
+        .unwrap()
+        .flatten()
+        .map(|entry| {
+            entry
+                .file_name()
+                .to_string_lossy()
+                .trim_end_matches(".json")
+                .to_string()
+        })
+        .filter(|name| name.starts_with("INB-"))
+        .collect();
+    assert_eq!(old.len(), 2, "{old:?}");
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    for id in &old {
+        let home = plan["aliases"][id]
+            .as_str()
+            .unwrap_or_else(|| panic!("{id} has no alias home: {plan:#}"));
+        assert!(
+            home.contains("/agent/inbox/") && home.ends_with(".md"),
+            "{id} maps to {home}"
+        );
+        let entry = fixture.read(home);
+        assert!(
+            entry.contains(&format!("aliases: [{id}]")),
+            "{home} does not keep {id}:\n{entry}"
+        );
+        assert!(
+            receipt.contains(&format!("- `{id}` → `{home}`")),
+            "the receipt maps {id} elsewhere:\n{receipt}"
+        );
+    }
+}

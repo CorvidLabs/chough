@@ -1,0 +1,149 @@
+profile = "chough-testing/1"
+module = "records"
+
+# Regressions for the 0.6.0 test stage's records and upgrade bugs (U1, U3, R1 to R5) and the
+# removed-and-missing case moved here when REQ-history-001 was retired (S1).
+
+[[case]]
+id = "TC-records-removed-and-missing-observations-never-count"
+title = "Removed and missing observations are labeled and never count"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-records-009"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::removed_and_missing_observations_are_labeled_and_never_count passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "removed_and_missing_observations_are_labeled_and_never_count"
+
+[[case]]
+id = "TC-records-credential-value-ends-at-markup"
+title = "A credential's value is measured without the markup Chough adds, so a short assignment ending a claim is written and leaves no leak finding"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-17", "FLOW-22"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::a_short_assignment_ending_a_claim_is_written_and_leaves_no_leak_finding passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "a_short_assignment_ending_a_claim_is_written_and_leaves_no_leak_finding"
+
+[[case]]
+id = "TC-records-redacted-writes-are-named-from-the-redacted-text"
+title = "Under --redact an evidence entry and a journal post are named from the redacted text, and the printed checkpoint holds what was saved"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-17", "FLOW-22"]
+requirements = ["REQ-records-006", "REQ-records-003"]
+paths = ["src/identity.rs", "src/checkpoint.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::redacted_writes_are_named_from_the_redacted_text passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "redacted_writes_are_named_from_the_redacted_text"
+
+[[case]]
+id = "TC-records-given-names-hold-no-host-name"
+title = "A session key or explicit evidence ID holding the host name is refused as refused:leak naming the field"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-17", "FLOW-22"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "src/identity.rs", "src/sessions.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::a_given_name_holding_the_host_name_is_refused passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "a_given_name_holding_the_host_name_is_refused"
+
+[[case]]
+id = "TC-records-hyphen-led-block-items-read-back"
+title = "A block list item starting with a hyphen is written quoted and reads back, so a sh -c case run leaves status and next working"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25", "DRIVE-26", "KNOW-32", "LIFE-3"]
+requirements = ["REQ-records-001"]
+paths = ["src/markdown.rs", "tests/front_matter_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/front_matter_writes.rs::a_block_list_item_starting_with_a_hyphen_reads_back passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "front_matter_writes"
+test = "a_block_list_item_starting_with_a_hyphen_reads_back"
+
+[[case]]
+id = "TC-records-tabs-in-values-read-back"
+title = "A tab in a front matter value is stored as a space, so the record stays readable"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25", "DRIVE-26", "KNOW-32", "LIFE-3"]
+requirements = ["REQ-records-001"]
+paths = ["src/markdown.rs", "tests/front_matter_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/front_matter_writes.rs::a_tab_in_a_value_is_stored_as_a_space_and_reads_back passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "front_matter_writes"
+test = "a_tab_in_a_value_is_stored_as_a_space_and_reads_back"
+
+[[case]]
+id = "TC-records-migrate-case-only-rename-reaches-git"
+title = "After migrate on any file system, a commit holds knowledge/index.md with the receipt's bytes and no knowledge/INDEX.md"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-8", "KNOW-30", "LIFE-26"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate_knowledge.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_knowledge.rs::a_case_only_rename_reaches_git_under_the_new_name passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_knowledge"
+test = "a_case_only_rename_reaches_git_under_the_new_name"
+
+[[case]]
+id = "TC-records-migrated-inbox-entries-keep-their-ids"
+title = "A migrated inbox entry keeps its INB- ID as an alias, and the plan and receipt map it to the new file"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-8", "KNOW-30", "LIFE-26"]
+requirements = ["REQ-records-009", "REQ-records-003"]
+paths = ["src/migrate.rs", "src/sessions.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::migrated_inbox_entries_keep_their_ids_and_the_map_names_the_new_files passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "migrated_inbox_entries_keep_their_ids_and_the_map_names_the_new_files"

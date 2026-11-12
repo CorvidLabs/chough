@@ -17,6 +17,24 @@ fn newest_id(text: &str) -> String {
         .to_string()
 }
 
+/// The one span `after` adds to `before`, asserting every byte of `before` is still
+/// there, in order, around it (REQ-history-015: the file is otherwise byte-identical).
+fn inserted(before: &str, after: &str) -> String {
+    let start = before
+        .bytes()
+        .zip(after.bytes())
+        .take_while(|(old, new)| old == new)
+        .count();
+    let added = after.len() - before.len();
+    assert_eq!(&after[..start], &before[..start], "an earlier byte changed");
+    assert_eq!(
+        &after[start + added..],
+        &before[start..],
+        "a byte after the correction changed"
+    );
+    after[start..start + added].to_string()
+}
+
 fn reset(fixture: &Fixture, reason: &str) -> String {
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["stage", "reset", "--to", "intent", "--reason", reason]);
@@ -38,8 +56,7 @@ fn a_correction_appends_one_linked_entry_and_changes_no_earlier_byte() {
     ]);
     assert_eq!(corrected["corrects"], format!("^{id}"));
     let after = fixture.read(&file);
-    assert!(after.starts_with(&before), "an earlier byte changed");
-    let added = &after[before.len()..];
+    let added = &inserted(&before, &after);
     let lines: Vec<&str> = added.lines().filter(|line| !line.is_empty()).collect();
     assert_eq!(lines.len(), 2, "{added}");
     assert!(
@@ -128,11 +145,7 @@ fn an_archived_story_gets_the_correction_appended_and_nothing_else() {
         "Done was reached on review, not on tests",
     ]);
     let after = fixture.read(&story);
-    assert!(
-        after.starts_with(&before),
-        "an earlier byte of the story changed"
-    );
-    assert!(after[before.len()..].contains(&format!("  - corrects: ^{entry}")));
+    assert!(inserted(&before, &after).contains(&format!("  - corrects: ^{entry}")));
     // The story's Timeline still reads, the correction last.
     let shown = fixture.ok(&["history", "show"]);
     let last: &Value = shown["entries"].as_array().unwrap().last().unwrap();
@@ -171,4 +184,40 @@ fn next_lists_the_ten_newest_corrections_and_the_total() {
     let mut sorted = keys.clone();
     sorted.sort_by(|left, right| right.cmp(left));
     assert_eq!(keys, sorted);
+}
+
+/// REQ-history-015, REQ-history-010, TC-history-a-correction-keeps-the-timeline-one-list
+/// (S4): the correction joins the Timeline right after its last entry, as ordinary
+/// saves do, so no blank line ever splits the list, and the next save still appends
+/// after it.
+#[test]
+fn a_correction_joins_the_timeline_list_with_no_blank_line() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = reset(&fixture, "Start the paging work");
+    fixture.ok(&[
+        "correct",
+        &format!("^{id}"),
+        "--reason",
+        "Start the search work; paging was a slip",
+    ]);
+    fixture.ok(&["stage", "advance"]);
+    let text = fixture.read(&fixture.session_file());
+    let start = text.find("\n## Timeline\n").unwrap() + "\n## Timeline\n".len();
+    let section = &text[start..];
+    let section = &section[..section.find("\n## ").unwrap_or(section.len())];
+    let list = section.trim_matches('\n');
+    assert!(
+        !list.contains("\n\n"),
+        "a blank line splits the Timeline:\n{list}"
+    );
+    let entries = timeline(&text);
+    assert!(
+        entries[entries.len() - 2].contains(" · correction · "),
+        "{entries:#?}"
+    );
+    assert!(
+        entries.last().unwrap().contains(" · advance · "),
+        "{entries:#?}"
+    );
 }
