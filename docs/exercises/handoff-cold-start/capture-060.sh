@@ -55,7 +55,7 @@ run sh "$here/seed.sh" "$work/seed" --records=0.1.0 >/dev/null
 version=$(run "$binary" --version)
 [ -z "$label" ] || version="$version ($label)"
 
-run "$binary" migrate --root "$work/seed" >"$work/plan.json" 2>"$work/plan.err" ||
+run "$binary" migrate --root "$work/seed" --json >"$work/plan.json" 2>"$work/plan.err" ||
     fail "chough migrate refused: $(cat "$work/plan.json" "$work/plan.err")"
 digest=$(python3 -I -c 'import json, sys; print(json.load(open(sys.argv[1]))["plan_digest"])' \
     "$work/plan.json") || fail "no plan_digest in the preview"

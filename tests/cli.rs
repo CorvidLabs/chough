@@ -2679,7 +2679,7 @@ fn legacy_writers_racing_adopt_each_save_or_refuse_with_nothing_saved() {
             let _ = fs::remove_dir_all(fixture.root().join(folder));
         }
         fixture.commit("a 0.5.x project");
-        let digest = fixture.ok(&["migrate"])["plan_digest"]
+        let digest = fixture.ok(&["migrate", "--json"])["plan_digest"]
             .as_str()
             .unwrap()
             .to_string();

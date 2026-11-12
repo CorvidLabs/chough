@@ -924,7 +924,11 @@ resolve to its story's receipts.
 ## Migration
 
 `chough migrate` reads a project's 0.5.x records, writes nothing, and prints the plan
-(REQ-records-009):
+(REQ-records-009). A person consents to it, so it prints the plan as text by default:
+each 0.5.x file with its SHA-256 and what it becomes, each file it writes, the
+redactions, removals and kept files, what is not carried, the aliases and follow-ups,
+any refusal the apply would give now, then the plan digest and the apply command.
+`chough migrate --json` prints the same plan and digest as JSON, with these keys:
 
 - `sources`: each 0.5.x file with its SHA-256;
 - `becomes`: each 0.5.x file with the 0.6.0 files it becomes;
@@ -943,9 +947,9 @@ resolve to its story's receipts.
   refusal `refused:change-open` that `--apply` would give, each open change by name
   and why. It is not part of the digest.
 
-On a tree with no 0.5.x record, migrated already or never 0.5.x, the preview prints
-only `nothing_to_do`, saying there is nothing to migrate, with no `plan_digest` and no
-`apply`, and writes nothing.
+On a tree with no 0.5.x record, migrated already or never 0.5.x, the preview says
+there is nothing to migrate (only `nothing_to_do` under `--json`), with no plan digest
+and no apply command, and writes nothing. The apply prints JSON either way.
 
 `chough migrate --apply <digest> --consent "<who consented, their words and where>"`
 applies exactly that plan. Run the preview and the apply on the same machine and

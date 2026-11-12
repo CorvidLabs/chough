@@ -132,7 +132,7 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
     fixture.write(&bug_file, &serde_json::to_string_pretty(&bug).unwrap());
     let old_bug = bug["id"].as_str().unwrap().to_string();
     fixture.commit("a 0.5.x project");
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert_eq!(plan["aliases"]["old-pass"], "removed", "{plan:#}");
     assert_eq!(plan["aliases"]["old-fail"], "removed", "{plan:#}");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
