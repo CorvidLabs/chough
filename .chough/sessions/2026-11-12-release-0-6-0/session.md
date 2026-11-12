@@ -61,6 +61,7 @@ cases:
   - TC-history-story-receipts-last-and-bugs-named
   - TC-records-migrate-evidence-verified-lines-link-entries
   - TC-records-migrate-evidence-story-lines-are-receipt-lines
+  - TC-cli-a-stage-move-replaces-a-gate-close-next-action
 design: []
 files: []
 observations:
@@ -321,6 +322,8 @@ observations:
   - 2026-11-12-tc-history-story-receipts-last-and-bugs-named-bca1ad
   - 2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-ceebe5
   - 2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-7c81c5
+  - 2026-11-12-tc-cli-a-stage-move-replaces-a-gate-close-next-action
+  - 2026-11-12-tc-cli-a-stage-move-replaces-a-gate-close-next-action-ee36e0
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -351,6 +354,7 @@ bugs:
   - 2026-11-12-chough-context-in-markdown-prints-the-session-its-timeline-and
   - 2026-11-12-migrated-sessions-and-stories-keep-bare-0-5-x-observation-ids
   - 2026-11-12-an-archived-story-opens-with-its-receipts-and-never-names-the
+  - 2026-11-12-a-gate-close-s-next-action-outlives-the-stage-move-it-named
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -385,6 +389,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Round-3 F12b (t38c, REQ-records-009): the migrate preview prints the plan as text, the same plan and digest under --json; red at dc25d77d, green at c6859854
 - t37f's round-3 batch: F8, F6, F11, F7, F4 and F5; red at 7fb91195, green at e0131c09, five bugs verified
 - t38b's round-3 batch: F10a to F10e (the story's layout and bugs, a failed run's reason, context as Markdown, migrated lines); red at 4e245263, green at 421a7034, four bugs verified; every round-3 finding integrated
+- Round-4 F1: a stage move replaces a gate close's next action (REQ-cli-021); red at 00f8f8d8, green at 3f28a915, bug verified
 
 ## Decisions and why
 
@@ -659,6 +664,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test sessions -- --exact a_story_puts_its_receipts_last_and_names_its_bugs for TC-history-story-receipts-last-and-bugs-named: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-story-receipts-last-and-bugs-named-bca1ad.md)
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_sessions_verified_lines_link_the_carried_entries for TC-records-migrate-evidence-verified-lines-link-entries: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-ceebe5.md)
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_storys_verified_lines_are_receipt_lines for TC-records-migrate-evidence-story-lines-are-receipt-lines: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-7c81c5.md)
+- [Ran cargo test --locked --test humans -- --exact a_stage_move_replaces_the_next_action_a_gate_close_left for TC-cli-a-stage-move-replaces-a-gate-close-next-action: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-a-stage-move-replaces-a-gate-close-next-action.md)
+- [Ran cargo test --locked --test humans -- --exact a_stage_move_replaces_the_next_action_a_gate_close_left for TC-cli-a-stage-move-replaces-a-gate-close-next-action: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-a-stage-move-replaces-a-gate-close-next-action-ee36e0.md)
 
 ## Open threads
 
