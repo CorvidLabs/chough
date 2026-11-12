@@ -313,3 +313,21 @@ expected = ["tests/docs.rs::the_requirement_evidence_table_in_a_changes_testing_
 adapter = "cargo-test"
 test_target = "docs"
 test = "the_requirement_evidence_table_in_a_changes_testing_md_is_documented"
+
+[[case]]
+id = "TC-cli-docs-show-a-minimal-hi-file-and-requirements-md"
+title = "docs/cli.md's new-project section shows a minimal HI file and a baseline specs/<module>/requirements.md, and README's new-project path points at them"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "docs/cli.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_new_project_section_shows_a_minimal_hi_file_and_requirements_md passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_new_project_section_shows_a_minimal_hi_file_and_requirements_md"

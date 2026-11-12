@@ -1693,3 +1693,36 @@ fn the_requirement_evidence_table_in_a_changes_testing_md_is_documented() {
         }
     }
 }
+
+/// REQ-cli-019, F7 of the second fresh-eyes round: the minimal HI file and the baseline
+/// `specs/<module>/requirements.md` are in docs/cli.md's new-project section, not only in
+/// the walkthrough, and README's new-project path points at them.
+#[test]
+fn the_new_project_section_shows_a_minimal_hi_file_and_requirements_md() {
+    let section = new_project_section();
+    for part in [
+        "hi: 1",
+        "families: [",
+        "## Intent",
+        "## Criteria",
+        "specs/<module>/requirements.md",
+        "### REQ-",
+        " SHALL ",
+    ] {
+        assert!(
+            section.contains(part),
+            "the new-project section does not show {part:?}"
+        );
+    }
+    let readme = read("README.md");
+    let path = readme
+        .split("\n\n")
+        .find(|paragraph| paragraph.contains("docs/cli.md#a-new-project-and-its-first-change"))
+        .expect("README's new-project path links the new-project section");
+    for part in ["minimal HI file", "requirements.md"] {
+        assert!(
+            path.contains(part),
+            "README's new-project path does not point at the {part:?}: {path}"
+        );
+    }
+}
