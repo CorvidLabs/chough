@@ -48,6 +48,65 @@
       },
       "approved_delta_digests": {},
       "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794497077,
+      "digest": "5a8838960eb58db1bae0597ca9ea233ac7ae45168f5becbe113b11668e2d1c95",
+      "note": "Approved by Leif at the Chough gate \"Approve the re-scoped 0.6.0 release preparation\": \"Yes, go ahead\" (coordinator chat (Claude Code, hc t370), 2026-11-12T15:24Z, answering the coordinator's plain summary of the three contract sentences (REQ-cli-061, REQ-records-009, REQ-history-006) for the re-scoped 0.6.0 release prep; relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-12T15:24:30Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood",
+        "title": "Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found",
+        "description": "Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found",
+        "kind": "operations",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/",
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "Cargo.toml",
+          "docs/",
+          "src/",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "After an in-place migration, the local pointer that names a 0.5.x key resolves to its session through the alias, so next and status read it (D1, red then green)",
+          "CHANGELOG.md has a dated [0.6.0] section whose upgrade notes give the dogfood results, and tests/changelog.rs passes",
+          "Cargo.toml and Cargo.lock name version 0.6.0, and chough --version prints chough 0.6.0",
+          "Each of the four flaky-test bugs is settled through Chough: fixed and verified, or left open with its diagnostics and named to Leif",
+          "Every live KNOW criterion has an active case linking it with a passing receipt recorded through Chough, so the KNOW gap list of #216 is empty",
+          "For a second native change on one branch, the gate summary counts only that change's own work since its base_commit (D2, REQ-cli-061, red then green), and #190's merged-main case still counts from the merge base",
+          "No test helper is named session_id, so CodeQL rust/cleartext-logging has nothing to flag in the tests",
+          "The #148 bug record is verified through Chough: a red run against the code before #157, then a later green run",
+          "The closeout leaves chough doctor clean and every earlier archived story byte-identical",
+          "chough migrate's preview says up front that --apply will refuse while native changes are open, naming them, and still writes nothing (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "AGENTS.md: SpecSync owns the lifecycle, Chough only its records; the 0.6.0 build only (never the 0.5.0 driver) now that this repository is migrated; no tag, release or merge of #238 without Leif; evidence before change check --commit; a flaky test is never closed just to clear the gate; full suites run on hosted CI",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "54d0c94e1f3353b737374f34ecfffcae6ffe15635aac9f241d720a56c42391be",
+        "history": "65859d27895abb4758ef246f6eaaf67a8c20e48bdac1c1e1d316a8aa1006e5ca",
+        "records": "6aa6965a8545d5eaf6e505791ef686f53c75e6f34c9b3c65049a39fa73580a7d"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-061": "17e1e798283207f156b23a2fe3974c65b3c047c139acfa53361aa2a1d86e2461",
+        "history: REQUIREMENT REQ-history-006": "5065f47e343ad4e4b482ad98e26ac1eb6f38e1b111cb6d72453a46e8d83fc00e",
+        "records: REQUIREMENT REQ-records-009": "5752412d630dc4cb20ce7297893bf372157ee5be98b33118274c233d533c92cf"
+      }
     }
   ],
   "reopenings": [],

@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -34,13 +34,9 @@ observations:
   - 2026-11-12-dogfood-check-the-0-5-0-build-on-a-clone-of-the-migrated-tree
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Approve the re-scoped 0.6.0 release preparation
-    holds: plan
-    drives: approve
-    opened: 2026-11-12T15:21:31Z
+waiting_on_human: []
 run_consents: []
-next: "Integrate the four flake fixes from t37f (timing) and t38b (lock timeout, verify lane): re-run each red and green, record bugs verified; then change check --commit and Leif's review via chough change ship --close-gate"
+next: D2 red then green (TC-cli-gate-summary-counts-from-the-changes-own-base), then the migrate preview warning red then green, then the flake fixes; change check --commit last
 ---
 # Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
@@ -55,6 +51,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - decided: the 0.6.0 release preparation is the dogfood cycle, one small native change driven with the 0.6.0 build only, scoped by t370 (relaying Leif's plan): Cargo 0.6.0 and the dated CHANGELOG with dogfood results, D1, the CodeQL helper rename, the KNOW case links and runs, #148 red then green, and settling the four flaky-test bugs; no tag, release or merge without Leif
 - Leif decided "Approve the scope of the 0.6.0 release preparation": "Yes I approve" (coordinator chat (Claude Code, hc t370), 2026-11-12T14:44Z, replying to the coordinator's summary of the 0.6.0 release-prep scope; D2 deferred by Leif's choice 'Fix after 0.6.0' at 2026-11-12T14:46Z; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 - decided: re-scoped the release prep on Leif's 'Block the tag' (2026-11-12T15:14Z): D2's REQ-cli-061 delta, the migrate preview warning (a REQ-records-009 delta) and D1's pointer clarification (a REQ-history-006 delta, since delta modules must match the affected specs cli, history and records, which own the code this change touches); SpecSync offers no command to clear no_spec_change, which approve refuses with a public contract change, so I set it false in state.json by hand (a direct lifecycle write); rehearsed approve and change check --commit in a throwaway clone with a synthetic actor first, verified
+- Leif decided "Approve the re-scoped 0.6.0 release preparation": "Yes, go ahead" (coordinator chat (Claude Code, hc t370), 2026-11-12T15:24Z, answering the coordinator's plain summary of the three contract sentences (REQ-cli-061, REQ-records-009, REQ-history-006) for the re-scoped 0.6.0 release prep; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 
 ## What was verified
 
@@ -120,5 +117,20 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - revision: 15b3212a03f78a07c143467ff4eb21a0379e0144
   - holds: plan
   - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-12T15:24:30Z · gate-closed · plan → plan · Approve the re-scoped 0.6.0 release preparation ^t-ddbf99
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 7b1794d936f4e292f6431478e68611f0ed092ccf
+  - relayed_by: {"decided_by":"Leif","words":"Yes, go ahead","where":"coordinator chat (Claude Code, hc t370), 2026-11-12T15:24Z, answering the coordinator's plain summary of the three contract sentences (REQ-cli-061, REQ-records-009, REQ-history-006) for the re-scoped 0.6.0 release prep; relayed by claude-code-t370","recorded_by":"claude-code-t382","native":"specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood","actor":"0xLeif"}
+  - by: claude-code (hc t382)
+- 2026-11-12T15:25:02Z · direct-native-write · plan → plan ·  ^t-a07144
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 7b1794d936f4e292f6431478e68611f0ed092ccf
+  - direct_write: {"change":"prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood","files":[{"path":"state.json","change":"changed"}],"before_state":"draft","after_state":"draft"}
+  - by: claude-code (hc t382)
+- 2026-11-12T15:25:02Z · advance · plan → build · Leif approved the re-scoped definition (relayed by t370, 15:24Z); build D2 and the migrate preview warning red then green, and integrate the flake fixes ^t-3dd925
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - gate: native:approved
+  - revision: 7b1794d936f4e292f6431478e68611f0ed092ccf
   - by: claude-code (hc t382)
 
