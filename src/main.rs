@@ -200,10 +200,21 @@ fn main() -> Result<()> {
     ensure!(root.is_dir(), "project root must be a directory");
     // REQ-records-010: one guard before any record is read or written. Clap has already
     // answered --help and --version.
-    if matches!(
-        cli.command,
-        Commands::Migrate(_) | Commands::Doctor(_) | Commands::Skill { .. }
-    ) {
+    // `pref set|unset migration` writes only `.chough/preferences.json`, which the
+    // migration keeps byte for byte, so the standing consent route of REQ-records-009
+    // works before the first migration.
+    let migration_preference = matches!(
+        &cli.command,
+        Commands::Pref {
+            command: prefs::PrefCommand::Set { key, .. } | prefs::PrefCommand::Unset { key, .. },
+        } if key == "migration"
+    );
+    if migration_preference
+        || matches!(
+            cli.command,
+            Commands::Migrate(_) | Commands::Doctor(_) | Commands::Skill { .. }
+        )
+    {
         migrate::exempt_from_guard();
     } else {
         migrate::ensure_migrated(&root)?;
