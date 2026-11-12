@@ -1042,10 +1042,9 @@ fn next_text(view: &Value) -> String {
     }
     let native = &view["native"];
     if native["change"].is_null() {
-        lines.push(format!(
-            "Native change: none recorded (read {})",
-            text(&native["read"])
-        ));
+        // F12e: with no change recorded there is no read of it to report; SpecSync's own
+        // next step, when it gives one, follows on its line.
+        lines.push("Native change: none recorded".into());
     } else {
         lines.push(format!(
             "Native change: {}: {} (read {}; approval_valid {}, correction_valid {}, terminal evidence {})",
