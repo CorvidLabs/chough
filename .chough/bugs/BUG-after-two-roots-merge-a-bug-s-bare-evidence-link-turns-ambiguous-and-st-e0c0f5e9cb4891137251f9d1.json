@@ -22,17 +22,26 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-independently-added-records-merge-cleanly-a9f84d2d7eb56edd2a095987"
+    "OBS-tc-cli-independently-added-records-merge-cleanly-a9f84d2d7eb56edd2a095987",
+    "OBS-tc-cli-independently-added-records-merge-cleanly-c10279b664da101b072cacbf"
   ],
   "impact": "Parallel branches that record Chough work break status and next on merge, against DRIVE-12",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t38b's review (F1) of t37j's item 8; red at 18ae842d (leif/0.6.0-step4-evidence-fixes)",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794445028,
+      "text": "status: open -> verified. Green after t37j's 7667e63e (bug links stored as <session>/<id>) and 8ff04aeb (a link that stays ambiguous reads 'ambiguous', naming its places): after the merge, each root's bug resolves to its own root's run and status and next read.",
+      "observations": [
+        "OBS-tc-cli-independently-added-records-merge-cleanly-c10279b664da101b072cacbf"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794444554,
-  "updated_at_unix_seconds": 1794444554
+  "updated_at_unix_seconds": 1794445028
 }
