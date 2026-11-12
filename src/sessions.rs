@@ -713,8 +713,10 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
             print_json(&json!({"schema_version":1,"active":id}))
         }
         SessionCommand::List => {
+            // Archived stories are sessions too: a tree whose sessions are all finished,
+            // such as one migrated from 0.5.x, has no `.chough/sessions/` (REQ-records-009).
             ensure!(
-                enabled(root)?,
+                enabled(root)? || !archived_ids(root)?.is_empty(),
                 "no sessions; run `chough session new <key>`"
             );
             let current = active(root).ok();
