@@ -66,8 +66,10 @@ reads the human from `.chough/local/identity.toml`, or else `chough/identity.tom
 the user configuration directory: each `[[human]]` has a `name`, optional `aliases`
 and the `specsync_actor` SpecSync records. A decision that is neither an approval nor
 a review, such as "change this first", closes with `--no-native` and runs nothing.
-`refused:human-identity-unknown` means `--decided-by` matches no configured human, or
-two: add them to the identity file, never fall back to an agent account. A SpecSync
+Every close names a configured human, whatever the gate drives and with or without
+`--no-native`: `refused:human-identity-unknown` means `--decided-by` matches no
+configured human, or two: add them to the identity file, never fall back to an agent
+account. A SpecSync
 refusal passes through and records nothing. The relay is a claim, not authenticated.
 Each refusal saves nothing and names its recovery.
 

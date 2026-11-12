@@ -542,6 +542,8 @@ fn a_vaulted_adopter_migrates_and_writes_work() {
     assert!(!fixture.exists("knowledge/attachments/adopter"));
 
     fixture.ok(&["checkpoint", "--awaiting-human", "Review"]);
+    // Every gate close names a configured human (REQ-records-008).
+    fixture.configure_human();
     fixture.ok(&[
         "checkpoint",
         "--close-gate",

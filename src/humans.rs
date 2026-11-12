@@ -120,8 +120,9 @@ fn configured(root: &Path) -> Result<Vec<Human>> {
 }
 
 /// The one configured human `decided_by` names, by name or alias, ignoring case and
-/// surrounding space. None, or two, is refused before anything runs; there is no
-/// guess and no fallback to an agent account.
+/// surrounding space. Every gate close resolves it, whatever the gate drives. None, or
+/// two, is refused before anything runs; there is no guess and no fallback to an agent
+/// account.
 pub(crate) fn resolve(root: &Path, decided_by: &str) -> Result<Human> {
     let wanted = decided_by.trim();
     let humans = configured(root)?;
@@ -136,7 +137,7 @@ pub(crate) fn resolve(root: &Path, decided_by: &str) -> Result<Human> {
     match matches.as_slice() {
         [human] => Ok((*human).clone()),
         [] => bail!(
-            "refused:human-identity-unknown: --decided-by \"{wanted}\" names no configured human, so no native step ran and nothing was written.\nAdd them to {LOCAL_FILE} or to {USER_FILE_SHOWN} as:\n[[human]]\nname = \"<display name>\"\naliases = [\"{wanted}\"]\nspecsync_actor = \"<their SpecSync actor>\"\nThen close the gate again. A decision that is neither an approval nor a review closes with --no-native."
+            "refused:human-identity-unknown: --decided-by \"{wanted}\" names no configured human, so no native step ran and nothing was written.\nAdd them to {LOCAL_FILE} or to {USER_FILE_SHOWN} as:\n[[human]]\nname = \"<display name>\"\naliases = [\"{wanted}\"]\nspecsync_actor = \"<their SpecSync actor>\"\nThen close the gate again."
         ),
         several => bail!(
             "refused:human-identity-unknown: --decided-by \"{wanted}\" names {} configured humans ({}), so no native step ran and nothing was written.\nMake the name or alias unique in {LOCAL_FILE} or {USER_FILE_SHOWN}, then close the gate again.",

@@ -189,7 +189,7 @@ fn no_native_closes_a_driving_gate_and_runs_nothing() {
         "accept",
     ]);
     let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
-    let mut changes = relay(REVIEW, "someone not configured");
+    let mut changes = relay(REVIEW, "SYNTHETIC-human");
     changes.push("--no-native".into());
     fixture.ok(&args(&changes));
     assert!(calls(&fixture).is_empty());
@@ -198,9 +198,10 @@ fn no_native_closes_a_driving_gate_and_runs_nothing() {
         decision.ends_with("; no native review ran (--no-native)"),
         "{decision}"
     );
-    // A gate that drives nothing closes with no native call and records no human.
+    // A gate that drives nothing closes with no native call, still in a configured
+    // human's name (REQ-records-008).
     fixture.ok(&["checkpoint", "--awaiting-human", "Name the release"]);
-    fixture.ok(&args(&relay("Name the release", "someone not configured")));
+    fixture.ok(&args(&relay("Name the release", "SYNTHETIC-human")));
     assert!(calls(&fixture).is_empty());
     let decision = decisions(&fixture).pop().unwrap();
     assert!(

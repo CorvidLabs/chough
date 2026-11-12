@@ -336,8 +336,10 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         crate::checkpoint::guard_relay(relay)?;
         let checkpoint = crate::checkpoint::read_checkpoint_unlocked(root)?;
         let drives = crate::session_md::gate(&checkpoint, gate).drives();
+        // REQ-records-008: every close names one configured human, whatever the gate
+        // drives, before SpecSync runs.
+        let human = crate::humans::resolve(root, &relay.decided_by)?;
         if drives != crate::humans::Drives::None {
-            let human = crate::humans::resolve(root, &relay.decided_by)?;
             native_ran = Some(if drives != crate::humans::Drives::Review {
                 format!(
                     "no native {} ran: change ship records only a review",

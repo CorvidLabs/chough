@@ -74,8 +74,10 @@ agent before a project migrates.
   `.chough/local/identity.toml`.
   - A review gate needs `--verdict pass|block`.
   - `--no-native` records a decision that is neither an approval nor a review.
-  - An unknown `--decided-by` is refused as `refused:human-identity-unknown` before
-    anything runs.
+  - Every gate close names a configured human, whatever the gate drives and with or
+    without `--no-native`, so an intent or design approval is in a configured name
+    too: an unknown `--decided-by` is refused as `refused:human-identity-unknown`
+    before anything runs, through `--close-gate`, `gate record` and `change ship`.
   - On authority given in advance, the agent records the step as
     `<agent>-<terminal>` and quotes the human (FLOW-24).
 - **No leaks in committed records** (#234, REQ-records-006). A local path, user or host

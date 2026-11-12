@@ -137,8 +137,10 @@ that authorization without asking you to repeat permission for each internal too
 step. It asks when a consequential decision or permission is still missing. Native
 checks and your separate implementation acceptance and merge decision remain.
 
-For a gate you decide to record SpecSync's approval or review in your name, Chough
-needs to know who you are. Add yourself once, in `chough/identity.toml` under your
+Every gate you decide is recorded in your name, whatever it drives: your intent and
+design approvals as much as the scope and review gates, where Chough also records
+SpecSync's approval or review as you. So Chough needs to know who you are before the
+first gate. Add yourself once, in `chough/identity.toml` under your
 configuration directory (`$XDG_CONFIG_HOME`, by default `~/.config`), or for one
 project in `.chough/local/identity.toml`, which is never committed:
 
@@ -150,7 +152,8 @@ specsync_actor = "<the actor SpecSync records for you>"
 ```
 
 Chough refuses a decision by someone it cannot find there
-(`refused:human-identity-unknown`); it never guesses or falls back to an agent.
+(`refused:human-identity-unknown`) at every gate, with or without `--no-native`; it
+never guesses or falls back to an agent.
 
 To resume, either run `chough next --environment local` yourself and paste its
 output to the agent, or tell the agent: "Read AGENTS.md, run

@@ -116,6 +116,16 @@ impl Fixture {
         fs::write(path, content).unwrap();
     }
 
+    /// Configure `SYNTHETIC-human` in the user identity file under [`USER_CONFIG`]:
+    /// every gate close names a configured human (REQ-records-008), and a project
+    /// file a test writes still overrides it.
+    pub(super) fn configure_human(&self) {
+        self.write(
+            &format!("{USER_CONFIG}/chough/identity.toml"),
+            "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-actor\"\n",
+        );
+    }
+
     pub(super) fn read(&self, name: &str) -> String {
         fs::read_to_string(self.root().join(name)).unwrap()
     }

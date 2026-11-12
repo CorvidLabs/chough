@@ -523,7 +523,9 @@ direct-write baseline, so it is not reported as a direct write.
 `--no-native` closes a gate that drives a native step with the relay and runs nothing,
 for a human decision that is neither an approval nor a review, such as a request for
 changes. Chough never decides which case applies from the words. A gate that drives no
-native step records no human and runs nothing.
+native step runs nothing. Every close, whatever its gate drives and with or without
+`--no-native`, still names a configured human: `--decided-by` is checked against the
+identity file before anything runs (see [Human identity](#human-identity)).
 
 A next action written while a gate held the stage describes waiting on it. So when a
 close (`--close-gate`, `gate record` or `change ship --close-gate`) leaves no open gate
@@ -594,7 +596,9 @@ specsync_actor = "<their SpecSync actor>"
 ```
 
 `name` is how records show the person, `aliases` is optional, and `specsync_actor` is
-the actor SpecSync records. `--decided-by` must name exactly one configured human, by
+the actor SpecSync records. At every gate close, through `checkpoint --close-gate`,
+`gate record` or `change ship --close-gate`, whatever the gate drives and with or
+without `--no-native`, `--decided-by` must name exactly one configured human, by
 name or alias, ignoring case and surrounding space; otherwise the close is refused as
 `refused:human-identity-unknown` before anything runs, naming both files and the keys
 to add. Chough never guesses an identity and never falls back to an agent account. No
@@ -1026,7 +1030,8 @@ directly.
    them off, and until you adopt, stage moves pass as `ungated:sdd-disabled` and no
    native lifecycle gates them.
 4. `chough init --objective "<outcome>" --intent-scope <FAMILY> --module <module>`, then
-   follow `chough next`.
+   follow `chough next`. Add the human to the identity file before the first gate,
+   since every gate they decide names them (see [Human identity](#human-identity)).
 5. At plan, `chough change new "<description>" --spec <module>`, then `chough change
    answer` for each question SpecSync asks, and one delta file per affected spec.
 

@@ -79,6 +79,7 @@ fn git_head(fixture: &Fixture) -> String {
 /// `gates` open.
 fn project(gates: &[&str]) -> Fixture {
     let fixture = Fixture::new();
+    fixture.configure_human();
     fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
     fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
     fixture.write("bin/specsync", STUB);

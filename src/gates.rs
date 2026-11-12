@@ -646,6 +646,9 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
             )
         })?;
     }
+    // REQ-records-008: every reply names one configured human, whatever its gates
+    // drive, before anything runs or is written.
+    crate::humans::resolve(root, args.decided_by.as_deref().unwrap_or_default())?;
     // REQ-cli-061: at most one named gate may drive a native step, and it runs first,
     // as the decided human, before any gate is closed.
     let drives = |listed: &Listed| {

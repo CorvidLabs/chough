@@ -922,6 +922,9 @@ pub(super) fn native_step_for(
         ),
         _ => {}
     }
+    // REQ-records-008: every close names one configured human, whatever the gate drives
+    // and with or without --no-native, before anything runs or is written.
+    let human = crate::humans::resolve(root, &relay.decided_by)?;
     if drives == Drives::None {
         return Ok((None, None));
     }
@@ -944,7 +947,6 @@ pub(super) fn native_step_for(
             drives.name()
         );
     };
-    let human = crate::humans::resolve(root, &relay.decided_by)?;
     let step = match drives {
         Drives::Approve => Step::Approve {
             note: crate::humans::approval_note(

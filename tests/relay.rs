@@ -74,6 +74,7 @@ fn events(fixture: &Fixture) -> Vec<Value> {
 
 fn new_history_project() -> Fixture {
     let fixture = Fixture::new();
+    fixture.configure_human();
     fixture.ok(&["init", "--objective", "Relay decisions", "--module", "cli"]);
     assert!(!fixture.session_file().is_empty());
     fixture
@@ -235,6 +236,7 @@ fn relay_refusals_save_nothing_and_their_recovery_succeeds() {
 #[test]
 fn a_relayed_decision_never_touches_native_state_or_its_gate() {
     let fixture = Fixture::new();
+    fixture.configure_human();
     fixture.stubs();
     fixture.native("draft");
     fixture.init();
@@ -309,6 +311,7 @@ fn a_relayed_decision_never_touches_native_state_or_its_gate() {
 #[test]
 fn clearing_records_no_relay_and_a_relayed_close_lets_advance_apply() {
     let fixture = Fixture::new();
+    fixture.configure_human();
     fixture.init();
     fixture.ok(&[
         "checkpoint",
