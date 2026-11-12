@@ -1525,3 +1525,30 @@ fn a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest() 
     assert_eq!(applied["applied"], false, "{applied:#}");
     assert!(applied["nothing_to_do"].is_string(), "{applied:#}");
 }
+
+/// REQ-records-009, F12d of the second fresh-eyes round: a receipt with two follow-ups,
+/// the verification exclusions and the merge lines, has one `## Follow-up` heading
+/// holding both.
+#[test]
+fn a_receipt_has_one_follow_up_heading_for_every_follow_up() {
+    let policy =
+        "{\n  \"version\": 2,\n  \"enabled\": true,\n  \"verification_ignored_paths\": []\n}\n";
+    let fixture = migrate_project("adopted", &[(".specsync/sdd.json", policy)]);
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    let follow_ups: Vec<&str> = plan["follow_ups"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|follow_up| follow_up.as_str().unwrap())
+        .collect();
+    assert_eq!(follow_ups.len(), 2, "{plan:#}");
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    assert_eq!(receipt.matches("\n## Follow-up\n").count(), 1, "{receipt}");
+    let section = receipt.split_once("\n## Follow-up\n").unwrap().1;
+    for follow_up in follow_ups {
+        assert!(
+            section.contains(follow_up),
+            "{follow_up} missing from\n{section}"
+        );
+    }
+}
