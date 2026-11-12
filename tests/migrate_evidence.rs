@@ -1276,3 +1276,51 @@ fn a_migrated_sessions_verified_lines_link_the_carried_entries() {
     ]);
     check("after a save");
 }
+
+/// Fresh-eyes finding F10e, the rest of it (REQ-records-009, REQ-history-006): a migrated
+/// archived story's What was verified gives an observation carried as its receipt as a
+/// 0.6.0 story writes it, `<claim> — <first 12 fingerprint digits> ^<receipt id>`, never
+/// the bare 0.5.x ID.
+#[test]
+fn a_migrated_storys_verified_lines_are_receipt_lines() {
+    let fixture = project("releases/v0.5.0");
+    let archived_id = "OBS-product-test-00000000000000000000a001";
+    let observed = legacy(&fixture, PRODUCT)["observed_at_unix_seconds"]
+        .as_u64()
+        .unwrap();
+    observation_like(
+        &fixture,
+        PRODUCT,
+        archived_id,
+        "SYNTHETIC archived proof",
+        observed + 60,
+    );
+    reference(
+        &fixture,
+        ".chough/sessions/archive/fixture-second.json",
+        &[archived_id],
+    );
+    fixture.commit("a 0.5.x project whose archived session references an observation");
+    let (plan, _) = migrate(&fixture);
+    let story = fixture.read(&alias(&plan, archived_id));
+    let receipt = maps(&story, "receipts")
+        .into_iter()
+        .find(|receipt| receipt["aliases"] == archived_id)
+        .unwrap_or_else(|| panic!("no receipt for {archived_id}: {story}"));
+    let digits: String = receipt["fingerprint"]
+        .trim_start_matches("sha256:")
+        .chars()
+        .take(12)
+        .collect();
+    let lines = verified_lines(&story);
+    assert!(
+        !lines.iter().any(|line| line.contains(archived_id)),
+        "the bare {archived_id} is still listed: {lines:#?}"
+    );
+    let expected = format!("- SYNTHETIC archived proof — {digits} ^{}", receipt["id"]);
+    assert_eq!(
+        lines.iter().filter(|line| **line == expected).count(),
+        1,
+        "{expected:?} in {lines:#?}"
+    );
+}
