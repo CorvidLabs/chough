@@ -149,3 +149,21 @@ expected = ["tests/migrate_evidence.rs::a_schema_1_observation_is_carried_withou
 adapter = "cargo-test"
 test_target = "migrate_evidence"
 test = "a_schema_1_observation_is_carried_without_content_and_stays_stale"
+
+[[case]]
+id = "TC-records-migrate-evidence-uppercase-digests"
+title = "A 0.5.x observation with uppercase digests migrates with every digest lowercased, and status and next read it (REQ-cli-017's lowercase content rule)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-2"]
+requirements = ["REQ-records-009"]
+paths = ["src/evidence_migrate.rs", "tests/migrate_evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::uppercase_digests_migrate_lowercased_and_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "uppercase_digests_migrate_lowercased_and_read"
