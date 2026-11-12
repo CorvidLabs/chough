@@ -1013,7 +1013,9 @@ named as `evidence add` names them, from the observed date and the first case or
 claim, or the case and `run`; a clash takes the first 6 hexadecimal digits of the
 SHA-256 of the old ID, so the preview and the apply name everything alike, and every old
 ID is an alias. The session's What was verified item for such an entry links it, as a
-0.6.0 save writes it (see [Sessions](#sessions)), never the bare old ID. A raw log under
+0.6.0 save writes it (see [Sessions](#sessions)), and a story's item for an observation
+it holds as a receipt is that receipt's line, as at archiving (see
+[Moving into done](#moving-into-done)), never the bare old ID. A raw log under
 `.chough/artifacts/` is removed and its recorded digest becomes the fingerprint. A PNG or JPEG artifact of a carried observation is stripped of
 its metadata and kept beside its session or story within the bounds of
 [key screenshots](#evidence-entries); an artifact elsewhere in the project stays where

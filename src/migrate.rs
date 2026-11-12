@@ -1549,8 +1549,20 @@ fn story_receipts(
         if receipts.is_empty() {
             continue;
         }
+        // F10e: the bare 0.5.x ID line of each observation carried as a receipt becomes
+        // the line a 0.6.0 story writes for it; a line a person wrote is kept.
+        let mut record = crate::markdown::parse(&path, &written.bytes)?;
+        let listed = crate::session_md::items(&record, crate::session_md::VERIFIED);
+        for id in &home.observations {
+            let (Some(map), true) = (homes.receipts.get(id), listed.contains(id)) else {
+                continue;
+            };
+            if let Some(line) = crate::sessions::receipt_line(map, None) {
+                record.replace_item(crate::session_md::VERIFIED, id, &line)?;
+            }
+        }
         // REQ-history-006 (F10a): the receipts go in the story's last section.
-        let text = crate::markdown::with_receipts_section(&written.bytes, receipts)?;
+        let text = crate::markdown::with_receipts_section(&record.render(), receipts)?;
         let bound = crate::markdown::Kind::Story.bound();
         ensure!(
             text.len() as u64 <= bound,
