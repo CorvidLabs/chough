@@ -1004,3 +1004,26 @@ fn a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay() {
     );
     assert_eq!(relay["actor"], "SYNTHETIC-reviewer", "{story}");
 }
+
+/// REQ-cli-057, REQ-cli-060, TC-cli-an-unknown-change-leaves-no-baseline (A3-2): a
+/// `chough change answer` or `check` that SpecSync refuses for a change ID with no
+/// workspace under `.specsync/changes/` writes nothing under `.chough/`, not even a
+/// direct-write baseline for that ID.
+#[test]
+fn a_refused_step_for_an_unknown_change_leaves_no_baseline() {
+    let fixture = fixture();
+    fixture.init();
+    fixture.ok(&["checkpoint", "--next-action", "Run the change steps"]);
+    fixture.write(".stub-exit", "1");
+    for args in [
+        vec!["change", "answer", "nosuch-change", "kind", "bug-fix"],
+        vec!["change", "check", "nosuch-change"],
+    ] {
+        let output = run_env(&fixture, &args, &[]);
+        assert!(!output.status.success(), "{args:?} was not refused");
+    }
+    assert!(
+        !fixture.exists(".chough/local/native-writes/nosuch-change.json"),
+        "a baseline was written for an unknown change"
+    );
+}

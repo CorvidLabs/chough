@@ -111,3 +111,21 @@ expected = ["tests/change.rs::a_ship_that_runs_the_review_records_it_on_the_gate
 adapter = "cargo-test"
 test_target = "change"
 test = "a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay"
+
+[[case]]
+id = "TC-cli-an-unknown-change-leaves-no-baseline"
+title = "A refused chough change step for a change with no workspace writes no direct-write baseline"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "FLOW-16"]
+requirements = ["REQ-cli-057"]
+paths = ["src/direct_writes.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::a_refused_step_for_an_unknown_change_leaves_no_baseline passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "a_refused_step_for_an_unknown_change_leaves_no_baseline"
