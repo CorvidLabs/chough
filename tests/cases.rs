@@ -2218,6 +2218,42 @@ fn a_requirement_the_approved_delta_adds_is_linkable_before_materialization() {
     );
 }
 
+/// Fresh-eyes finding 1 (t38j, 2026-11-12): on a module's first change the module has
+/// only its `.spec.md`, scaffolded without `requirements.md`, and the approved delta adds
+/// the requirement. A missing companion holds no requirement, as an empty one would, so
+/// the link resolves through the approved delta instead of a raw "No such file or
+/// directory"; a link the delta does not add is the ordinary refusal.
+#[cfg(unix)]
+#[test]
+fn a_module_without_requirements_md_links_what_its_approved_delta_adds() {
+    let fixture = delta_fixture(true);
+    fs::remove_file(fixture.root().join("specs/cli/requirements.md")).unwrap();
+    fixture.write(".chough/cases/cli.cases.toml", &delta_cases("REQ-cli-090"));
+
+    let checked = fixture.ok(&["cases", "check"]);
+    let links = checked["approved_delta_requirements"].as_array().unwrap();
+    assert_eq!(links.len(), 2, "{checked}");
+    for (link, case) in links.iter().zip(["TC-cli-0001", "TC-cli-delta-run"]) {
+        assert_eq!(link["case"], case, "{checked}");
+        assert_eq!(link["requirement"], "REQ-cli-090");
+        assert_eq!(link["module"], "cli");
+    }
+    let ran = fixture.ok(&["cases", "run", "TC-cli-delta-run", "--environment", "local"]);
+    assert_eq!(ran["outcome"], "passed", "{ran}");
+
+    fixture.write(".chough/cases/cli.cases.toml", &delta_cases("REQ-cli-091"));
+    let error = fixture.fails(&["cases", "check"]);
+    assert!(
+        error.contains("requirement REQ-cli-091 not found in specs/cli/requirements.md"),
+        "{error}"
+    );
+    assert!(
+        error.contains("its cli delta does not add or modify REQ-cli-091"),
+        "{error}"
+    );
+    assert!(!error.contains("os error"), "{error}");
+}
+
 #[cfg(unix)]
 #[test]
 fn an_unapproved_or_changed_delta_does_not_resolve_a_requirement() {
