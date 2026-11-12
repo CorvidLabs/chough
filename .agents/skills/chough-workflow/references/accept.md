@@ -16,8 +16,12 @@ records. Follow native status where it names a different next action.
    from the approved delta while the checkpoint records the change). It refuses while
    `tasks.md` has an unchecked box, so the cases in step 2 are never a box there. Run
    through Chough, it is never recorded as a direct lifecycle write.
-2. Run the affected cases: `chough cases run <ID> --environment <env>`, plus the
-   project lanes.
+2. Write any lesson from this change now, in its module's lesson source (see
+   [Compounding](#compounding)): a change under `specs/` makes every run not current,
+   so with the lesson written first, one run covers it. Then run the affected cases:
+   `chough cases run <ID> --environment <env>`, plus the project lanes, and rerun any
+   case whose latest run is not current, as after step 1; `chough next` names each
+   rerun before the review gate.
 3. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.
    At accept it holds accept and drives the native review by default.
 4. Commit the source together with Chough's records.
@@ -146,6 +150,8 @@ A project decision, meaning a
 checkpoint decision, a `docs/DECISIONS.md` entry or an approved contract, always
 outranks a lesson. A lesson never changes a decision; if a lesson argues against one,
 raise it with the human. A lesson that changes behavior or policy may need its own
-native change. Write lessons from a change during closeout, inside the open native
-change (see [librarian.md](librarian.md)). Archival does not mean no bug remains;
+native change. Write lessons from a change before its cases run at accept (step 2 of
+[Prepare the review](#prepare-the-review)), inside the open native change (see
+[librarian.md](librarian.md)), since a change under `specs/` makes every run not
+current. Archival does not mean no bug remains;
 open bugs stay in the backlog.

@@ -1252,7 +1252,9 @@ pub(super) fn assess(
             .clone()
     };
     // Read once, and only at test, where the unlinked-failure refusal and the check that
-    // every referenced case's latest run passed both need the open sessions' entries.
+    // every referenced case's latest run passed both need the open sessions' entries,
+    // and at accept, where a referenced case's latest run that is not current is rerun
+    // before the review gate (F4).
     let observations = std::cell::OnceCell::new();
     let observations = || {
         observations
@@ -1350,9 +1352,24 @@ pub(super) fn assess(
         // gate is committed and the change checked again before the ship.
         let exclusions = crate::doctor::exclusions(root);
         let commit_first = !exclusions.no_policy && !exclusions.in_force();
+        // REQ-cli-021 (F4): the review is never opened on runs that are not current, as
+        // the runs are after the first check materializes the requirement text.
+        let reruns = if open_review.is_some() {
+            vec![]
+        } else {
+            rerun_commands(root, session, observations())
+        };
+        let rerun_first = if reruns.is_empty() {
+            String::new()
+        } else {
+            format!(
+                " First rerun each referenced case whose latest run is not current: {}.",
+                quoted_list(&reruns)
+            )
+        };
         Action {
             action: format!(
-                "The human reviews next.{} Show them `chough gate list`. Not to ship: `chough checkpoint --close-gate \"<gate>\"`, the relay and `--verdict block`. To ship: {}.",
+                "The human reviews next.{rerun_first}{} Show them `chough gate list`. Not to ship: `chough checkpoint --close-gate \"<gate>\"`, the relay and `--verdict block`. To ship: {}.",
                 if open_review.is_some() {
                     String::new()
                 } else if commit_first {
@@ -1368,9 +1385,10 @@ pub(super) fn assess(
             ),
             // FLOW-10.
             reason: "Native change is verifying: only the human's review and the ship remain, and an agent's review never stands in for theirs.".into(),
-            command: Some(match open_review {
-                Some(_) => "chough gate list".into(),
-                None => format!(
+            command: Some(match (open_review, reruns.first()) {
+                (Some(_), _) => "chough gate list".into(),
+                (None, Some(rerun)) => rerun.clone(),
+                (None, None) => format!(
                     "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
                 ),
             }),
@@ -1384,9 +1402,28 @@ pub(super) fn assess(
         let id = session.native_change.as_deref().unwrap_or("<id>");
         let materialize = deltas_add_or_modify(root, id);
         let cases = "chough cases run <case-id> --environment <env>";
+        let gate = format!(
+            "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
+        );
+        // REQ-cli-021 (F4): a referenced case whose latest run is not current is rerun
+        // by name before the review gate; once every referenced case's latest run passed
+        // and is current, the review gate is next.
+        let reruns = rerun_commands(root, session, observations());
+        let cases_ready =
+            reruns.is_empty() && observations().is_some_and(|all| every_case_passed(session, all));
+        let cases_step = if !reruns.is_empty() {
+            format!(
+                "rerun each referenced case whose latest run is not current, {}",
+                quoted_list(&reruns)
+            )
+        } else if cases_ready {
+            "the referenced cases' latest runs passed and are current".to_string()
+        } else {
+            format!("run the affected cases with `{cases}`")
+        };
         Action {
             action: format!(
-                "Prepare the human's review, in order: {}run the affected cases with `{cases}`; open the review gate with `chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review`; commit the source with Chough's records; then run `chough change check {id}`. The human reviews after that.",
+                "Prepare the human's review, in order: {}{cases_step}; open the review gate with `{gate}`; commit the source with Chough's records; then run `chough change check {id}`. The human reviews after that.",
                 if materialize {
                     format!(
                         "run `chough change check {id} --no-commit` first, so the requirement text the cases link is materialized; "
@@ -1400,6 +1437,10 @@ pub(super) fn assess(
             ),
             command: Some(if materialize {
                 format!("chough change check {id} --no-commit")
+            } else if let Some(rerun) = reruns.first() {
+                rerun.clone()
+            } else if cases_ready {
+                gate.clone()
             } else {
                 cases.into()
             }),
@@ -2123,6 +2164,43 @@ fn latest_runs<'a>(
             (case, latest)
         })
         .collect()
+}
+
+/// The `chough cases run` command for each case the checkpoint references whose latest
+/// executed run is not current, in the environment that run recorded (REQ-cli-021, F4),
+/// as after the accept step's first check materializes the requirement text. None when
+/// the entries cannot be read; a run whose freshness cannot be read is not rerun.
+fn rerun_commands(
+    root: &Path,
+    session: &Checkpoint,
+    observations: Option<&[evidence::Evidence]>,
+) -> Vec<String> {
+    let Some(all) = observations else {
+        return vec![];
+    };
+    let reads = evidence::Reads::new(root);
+    let current = evidence::snapshot(root);
+    latest_runs(session, all)
+        .into_iter()
+        .filter_map(|(case, latest)| {
+            let run = latest?;
+            (!reads.is_current(run, &current).unwrap_or(true))
+                .then(|| format!("chough cases run {case} --environment {}", run.environment))
+        })
+        .collect()
+}
+
+/// Each command in backticks, joined with commas and a final `and`.
+fn quoted_list(commands: &[String]) -> String {
+    let quoted: Vec<String> = commands
+        .iter()
+        .map(|command| format!("`{command}`"))
+        .collect();
+    match quoted.as_slice() {
+        [] => String::new(),
+        [one] => one.clone(),
+        [rest @ .., last] => format!("{} and {last}", rest.join(", ")),
+    }
 }
 
 /// Whether every case the checkpoint references passed on its latest executed run (F7);

@@ -1521,7 +1521,12 @@ The next valid action follows these rules in order:
    "Implementation review of <id>" --holds accept --drives review`; the commit of the
    source with Chough's records; and `chough change check <id>`. Its command is the
    first of those steps. It never shows the refused move into done or a bare native
-   status read.
+   status read. In either state, while the latest run of a case the checkpoint
+   references is not current, as after that first check materializes the requirement
+   text, the action names rerunning each such case, `chough cases run <case>
+   --environment <env>` in the environment that run recorded, before it names opening
+   the review gate, and its command is the first rerun; once every referenced case's
+   latest run passed and is current, the command is the review gate (REQ-cli-021).
 6a. At plan, while the native change is a complete draft that waits for its definition
    approval (SpecSync's next action names `specsync change approve`), the human
    approves the scope next. The action opens the scope gate with `chough checkpoint

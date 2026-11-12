@@ -232,6 +232,11 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   and its open bugs as Markdown; a migrated session's verified lines link their entries
   and a migrated story's are receipt lines; and `chough timing` starts Cycle 1 at the
   start entry.
+- From a fourth fresh-eyes round: at accept, while the latest run of a case the
+  checkpoint references is not current, as after the first check materializes the
+  requirement text, `chough next` names rerunning it with `chough cases run` before the
+  review gate, and names the review gate once it passed (REQ-cli-021). The workflow's
+  accept reference has any lesson written before the case runs, so one rerun covers it.
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.
 - Stopping a command on macOS no longer leaves behind a child the command forked as the
