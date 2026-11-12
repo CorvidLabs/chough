@@ -25,7 +25,8 @@
   "fixture": null,
   "observations": [
     "OBS-tc-records-journal-and-feed-8bf0043fc731ac0f5b8c6663",
-    "OBS-tc-records-journal-and-feed-a1dff57a20a259ad7fccfaed"
+    "OBS-tc-records-journal-and-feed-a1dff57a20a259ad7fccfaed",
+    "OBS-tc-records-tree-and-readme-fd25ddb1a81d344f37dc5f4c"
   ],
   "impact": "Two sources of truth that drift, and churn at every done (GitHub #216)",
   "classification": "product-defect",
@@ -42,8 +43,15 @@
       "observations": [
         "OBS-tc-records-journal-and-feed-a1dff57a20a259ad7fccfaed"
       ]
+    },
+    {
+      "at_unix_seconds": 1794442357,
+      "text": "Also proved by TC-records-tree-and-readme, passed at 7b4cd3eb (the records tree's reading guide links hi/, specs/ and .specsync/archive/). The KNOW gap list check is a step 14 dogfood check.",
+      "observations": [
+        "OBS-tc-records-tree-and-readme-fd25ddb1a81d344f37dc5f4c"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794429417,
-  "updated_at_unix_seconds": 1794429582
+  "updated_at_unix_seconds": 1794442357
 }
