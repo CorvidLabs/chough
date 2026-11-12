@@ -865,13 +865,16 @@ done and its save succeeds, the same command goes on, with no further native rea
 1. It archives the session. It writes `.chough/archive/sessions/<id>.md` by create-new:
    the session's front matter with `stage: done`, `stage_status: archived` and no
    `next`, since the session's next action no longer applies, `closed` (the UTC date),
-   `outcome` (`done`) and `receipts`, then the story as written, the Timeline and a
-   closing line `Closed <date>: <outcome>.` It reads the story back, then removes each
-   file of the session folder whose exact bytes are committed at HEAD
-   (REQ-records-012); any other file stays, and the folder counts as archived because
-   its story exists. It clears the active pointer. The move's `--json` report gives it
-   as `applied.session_archive`, and its text summary's `Closeout:` line names the
-   status of this and the next two steps: `archived` with the `id`, the `story` and the files
+   `outcome` (`done`), and no receipts and no empty value, so the story comes first;
+   then the story as written, with a `## Bugs` section after What was verified that
+   names each bug of the session's checkpoint with its title and status, linked to its
+   record; then the Timeline and a closing line `Closed <date>: <outcome>.`; and last a
+   `## Receipts` section holding the receipts as one fenced YAML block. It reads the
+   story back, then removes each file of the session folder whose exact bytes are
+   committed at HEAD (REQ-records-012); any other file stays, and the folder counts as
+   archived because its story exists. It clears the active pointer. The move's `--json`
+   report gives it as `applied.session_archive`, and its text summary's `Closeout:` line
+   names the status of this and the next two steps: `archived` with the `id`, the `story` and the files
    `kept`. A session with unfolded inbox entries stays open as `kept_open` with
    `inbox_unfolded`, and one for which release is authorized stays open as `kept_open`
    with that `reason`, to archive itself at the move from release into done.
@@ -899,12 +902,15 @@ regenerated index and feed. The session's own `session.md` changed in the move, 
 bytes were not yet committed and it stayed. Then run `chough doctor --fix`, which
 removes the session folder now that its bytes are committed, and commit that.
 
-Each evidence entry the session holds becomes one map in the story's `receipts`, in
-observation-time order, oldest first, with its `id`, `aliases` (one value, comma and
-space separated), `claim`, `result`, `observed`, `command`, `revision`, `environment`,
-`content`, `fingerprint`, `raw_log`, `case`, `case_digest`, `duration_seconds`,
-`screenshot` and `actor` when present. What was verified gives the latest receipt of
-each case and every receipt bound to no case, one line each:
+Each evidence entry the session holds becomes one map in the story's `receipts`, the
+fenced YAML block of its last section, `## Receipts`, in observation-time order, oldest
+first, with its `id`, `aliases` (one value, comma and space separated), `claim`,
+`result`, `observed`, `command`, `revision`, `environment`, `content`, `fingerprint`,
+`raw_log`, `case`, `case_digest`, `duration_seconds`, `screenshot` and `actor` when
+present. Every reader (bug verification, evidence links, timing, doctor) takes the
+receipts from that section, and from the front matter of a story written before it.
+What was verified gives the latest receipt of each case and every receipt bound to no
+case, one line each:
 
 ```text
 - <claim> — `<command>` <first 12 fingerprint digits> [screenshot](<session>/<file>) ^<evidence id>

@@ -521,7 +521,11 @@ fn unreadable_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
             continue;
         }
         let parts: Vec<&str> = path.split('/').collect();
-        let mut refused = crate::markdown::parse(path, &text).err();
+        let parsed = crate::markdown::parse(path, &text);
+        let mut refused = parsed
+            .as_ref()
+            .err()
+            .map(|error| anyhow::anyhow!("{error:#}"));
         if refused.is_none()
             && matches!(
                 parts.as_slice(),
@@ -529,6 +533,14 @@ fn unreadable_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
             )
         {
             refused = sessions::read_at(root, path).err();
+        }
+        // An archived story's receipts, in its `## Receipts` section or an older story's
+        // front matter, are read too (REQ-history-006).
+        if refused.is_none()
+            && matches!(parts.as_slice(), [".chough", "archive", "sessions", _])
+            && let Ok(record) = &parsed
+        {
+            refused = record.story_receipts(path).err();
         }
         let Some(error) = refused else {
             continue;

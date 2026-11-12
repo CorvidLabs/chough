@@ -770,12 +770,19 @@ fn last_failure(root: &Path) -> Result<Value> {
             .iter()
             .filter_map(|(_, map)| receipt(map)),
     );
-    for (_, story) in bugs::records_in(
+    for (name, story) in bugs::records_in(
         root,
         ".chough/archive/sessions",
         markdown::Kind::Story.bound(),
     ) {
-        failed.extend(story.maps("receipts").iter().filter_map(|map| receipt(map)));
+        // REQ-history-006: `## Receipts`, or an older story's front matter.
+        failed.extend(
+            story
+                .story_receipts(&name)
+                .unwrap_or_default()
+                .iter()
+                .filter_map(|map| receipt(map)),
+        );
     }
     let Some((observed, id, claim)) = failed
         .into_iter()

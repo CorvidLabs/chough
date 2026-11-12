@@ -872,7 +872,8 @@ fn case_runs(root: &Path, stories: &[Story], partial: &mut Vec<Value>) -> Vec<Ru
         }
     }
     for story in stories {
-        for map in story.record.maps("receipts") {
+        // REQ-history-006: `## Receipts`, or an older story's front matter.
+        for map in story.record.story_receipts(&story.id).unwrap_or_default() {
             runs.extend(run_from(&map, format!("receipt in {}", story.id)));
         }
     }
