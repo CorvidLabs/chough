@@ -655,6 +655,37 @@ fn ship_refuses_an_unknown_human_and_stops_on_a_refused_review() {
     assert_eq!(records(fixture.root()), before);
 }
 
+/// F1 of the second fresh-eyes round (REQ-records-008): a ship that closes a gate
+/// driving nothing still names a configured human, refused before SpecSync ships.
+#[test]
+fn ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing() {
+    const NOTES: &str = "Approve the release notes";
+    let fixture = shipping_session("accept", true, &[]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        NOTES,
+        "--holds",
+        "accept",
+        "--drives",
+        "none",
+    ]);
+    let before = records(fixture.root());
+    let mut relay = review_relay();
+    relay[1] = NOTES;
+    relay[3] = "nobody";
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &relay), &[]);
+    assert!(!output.status.success(), "the ship took any name");
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("refused:human-identity-unknown"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(ship_calls(&fixture).is_empty(), "SpecSync shipped");
+    assert!(!fixture.exists(".stub-native-calls"));
+    assert_eq!(records(fixture.root()), before);
+}
+
 #[test]
 fn a_specsync_ship_refusal_passes_through_and_records_nothing() {
     let fixture = shipping_session_at("accept");

@@ -209,6 +209,85 @@ fn no_native_closes_a_driving_gate_and_runs_nothing() {
     );
 }
 
+/// F1 of the second fresh-eyes round (REQ-records-008): every gate close names a
+/// configured human, whatever the gate drives and with or without `--no-native`, so an
+/// intent or design approval cannot be recorded in any name.
+#[cfg(unix)]
+#[test]
+fn every_gate_close_names_a_configured_human() {
+    const INTENT: &str = "Approve the intent";
+    let fixture = project();
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        INTENT,
+        "--holds",
+        "intent",
+    ]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        REVIEW,
+        "--holds",
+        "accept",
+    ]);
+    let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+    let before = records(fixture.root());
+    let stranger = "someone not configured";
+    let refused = fixture.fails(&args(&relay(INTENT, stranger)));
+    assert!(
+        refused.contains("refused:human-identity-unknown"),
+        "a gate that drives nothing took any name: {refused}"
+    );
+    let mut no_native = relay(REVIEW, stranger);
+    no_native.push("--no-native".into());
+    let refused = fixture.fails(&args(&no_native));
+    assert!(
+        refused.contains("refused:human-identity-unknown"),
+        "--no-native took any name: {refused}"
+    );
+    let listed = fixture.ok(&["gate", "list", "--json"]);
+    let list = listed["list"].as_str().unwrap().to_string();
+    let number = listed["gates"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|listed| listed["gate"] == INTENT)
+        .unwrap()["number"]
+        .to_string();
+    let refused = fixture.fails(&[
+        "gate",
+        "record",
+        &list,
+        "--gates",
+        &number,
+        "--decided-by",
+        stranger,
+        "--words",
+        "yes",
+        "--where",
+        "SYNTHETIC chat",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ]);
+    assert!(
+        refused.contains("refused:human-identity-unknown"),
+        "gate record took any name: {refused}"
+    );
+    assert!(calls(&fixture).is_empty(), "a SpecSync process started");
+    assert_eq!(records(fixture.root()), before, "something was written");
+    // A configured human closes both, and still nothing native runs.
+    fixture.ok(&args(&relay(INTENT, "SYNTHETIC-human")));
+    let mut no_native = relay(REVIEW, "SYNTHETIC-human");
+    no_native.push("--no-native".into());
+    fixture.ok(&args(&no_native));
+    assert!(calls(&fixture).is_empty());
+    assert_eq!(
+        fixture.checkpoint()["awaiting_human"],
+        serde_json::json!([])
+    );
+}
+
 #[cfg(unix)]
 #[test]
 fn a_specsync_refusal_passes_through_and_nothing_is_written() {

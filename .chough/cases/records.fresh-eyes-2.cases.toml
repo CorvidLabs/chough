@@ -1,0 +1,42 @@
+profile = "chough-testing/1"
+module = "records"
+
+# The second fresh-eyes round (t38k's F1, Leif's 'Yes, fix all + re-rate
+# (Recommended)', 2026-11-12): every gate close names a configured human, whatever the
+# gate drives and with or without --no-native (REQ-records-008).
+
+[[case]]
+id = "TC-records-every-gate-close-names-a-configured-human"
+title = "Closing a gate that drives nothing, a driving gate with --no-native, and the same through gate record, each refuse an unconfigured --decided-by with refused:human-identity-unknown and write nothing; a configured human closes them"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-records-008"]
+paths = ["src/checkpoint.rs", "src/gates.rs", "src/humans.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::every_gate_close_names_a_configured_human passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "every_gate_close_names_a_configured_human"
+
+[[case]]
+id = "TC-records-ship-names-a-configured-human-at-any-gate"
+title = "chough change ship --close-gate at a gate that drives nothing refuses an unconfigured --decided-by before SpecSync ships, with nothing written"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-records-008"]
+paths = ["src/change.rs", "src/humans.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing"
