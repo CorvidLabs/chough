@@ -1612,10 +1612,19 @@ fn a_new_project_path_and_the_delta_format_are_documented() {
     let start = cli
         .find("### A new project and its first change")
         .expect("docs/cli.md has no new-project section");
-    let section = &cli[start..];
-    let section = &section[..section[4..]
-        .find("\n## ")
-        .map_or(section.len(), |at| at + 4)];
+    // The section runs to the next `## ` heading outside a fenced block, since its own
+    // delta example holds `## ADDED` and `## MODIFIED` lines.
+    let mut in_fence = false;
+    let mut section = String::new();
+    for line in cli[start..].lines() {
+        if line.starts_with("```") {
+            in_fence = !in_fence;
+        } else if !in_fence && line.starts_with("## ") {
+            break;
+        }
+        section.push_str(line);
+        section.push('\n');
+    }
     for part in [
         "specsync change adopt",
         "deltas/<module>.md",

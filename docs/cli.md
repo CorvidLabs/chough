@@ -1018,8 +1018,8 @@ directly.
    answer` for each question SpecSync asks, and one delta file per affected spec.
 
 A delta, `.specsync/changes/<id>/deltas/<module>.md`, says how the change's contract
-differs: each requirement it adds under `## ADDED`, and each one it changes under `##
-MODIFIED` with its whole new text, not a diff:
+differs: each requirement it adds under `## ADDED`, and each one it changes, with its
+whole new text and not a diff, under `## MODIFIED`:
 
 ```markdown
 ## ADDED
