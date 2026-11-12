@@ -331,3 +331,21 @@ expected = ["tests/docs.rs::the_new_project_section_shows_a_minimal_hi_file_and_
 adapter = "cargo-test"
 test_target = "docs"
 test = "the_new_project_section_shows_a_minimal_hi_file_and_requirements_md"
+
+[[case]]
+id = "TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta"
+title = "evidence add needs only a criterion, records a requirement only the session's approved delta adds, and refuses one in neither naming the companion and the delta"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5", "FLOW-7"]
+requirements = ["REQ-cli-005"]
+paths = ["src/evidence.rs", "src/cases.rs", "docs/cli.md", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements"
