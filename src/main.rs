@@ -1122,9 +1122,11 @@ fn next_text(view: &Value) -> String {
     if let Some(warning) = view["native_verification_warning"].as_str() {
         lines.push(format!("Warning: {warning}"));
     }
+    // F8: SpecSync's next step is its own lifecycle's, often a later step than the one
+    // to take now, so it is shown for reference and Next alone is the step.
     if native["next_action"].is_string() {
         lines.push(format!(
-            "  Native next action: {}",
+            "  SpecSync's own next step, for reference (the step to take now is Next): {}",
             text(&native["next_action"])
         ));
     }

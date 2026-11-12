@@ -1408,7 +1408,11 @@ stage on that response, and shows:
 | `chough_writes` | `{"state", "text", "missing", "policy"}`: when Chough's own records are safe to write (REQ-records-014). `any-point` while `.specsync/sdd.json` leaves `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` out of verification (or there is no policy): they may be written and committed at any point of the native order. `commit-first` otherwise: commit them before `specsync change check --commit` and write nothing under `.chough/` until finalize; `missing` names the entries. The text form prints it as a `Chough writes:` line |
 | `environment`, `full_view`, `truncated` | The requested environment, `chough status`, and whether entries were dropped |
 
-The text form (the default) carries the same fields as short lines. Each form is at
+The text form (the default) carries the same fields as short lines. SpecSync's own next
+action, often a later step of its lifecycle than the one to take now, is shown under the
+native change as `SpecSync's own next step, for reference (the step to take now is
+Next): <text>`, so `Next:` alone is the step to take now; the JSON keeps it as
+`native.next_action`. Each form is at
 most 16384 bytes: every list shows at most 10 entries beside its total, every string
 taken from a record is cut to at most 512 bytes, counted as JSON escapes it (a control
 character takes six), ending in ` [cut]`. A command is never cut, whatever its length
