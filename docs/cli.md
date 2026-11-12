@@ -1168,7 +1168,7 @@ stage on that response, and shows:
 | `gate` | `to`, `allowed`, `label`, `detail` for the next main stage, or `null` |
 | `awaiting_human`, `blockers`, `open_questions`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest. `open_questions` are the session's Open threads, from `checkpoint --question` or a folded inbox question; `status` reports all of them in its `checkpoint` section |
 | `gates` | Each open gate as `{"gate", "holds", "drives"}`, at most 10 |
-| `observations` | `needs_attention_total` and `items` (referenced and `historical`, `removed` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
+| `observations` | `needs_attention_total` and `items` (referenced and `historical`, `removed`, `ambiguous` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`; a removed one's `receipt`; an ambiguous one's at most 3 `places` and `places_total`; and `resolved`, the `<session>/<id>` form a reference through its own session resolved as), `referenced_current` and `unreferenced` counts |
 | `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest items of the session's Decisions and why, newest first, a corrected one as its newest statement; see [Decision prefixes](#decision-prefixes) |
 | `corrections` | The 10 newest corrections, newest first, each cut to 512 bytes, with their total; see [Corrections](#corrections) |
 | `last_actor` | The `by` of the newest Timeline entry that has one, or `null` |
@@ -1382,9 +1382,10 @@ entry in `observations`), `next` (the referenced ones that are not current, in
 `observations.items`), `bug show` (`observation_labels`) and `validate status` (each
 run's `observation_labels`): `current` (present, and its inputs, artifacts and case
 definition match now, and the requested environment when one is given), `historical`
-(present but stale) and `unavailable` (absent). An ID whose record `chough migrate`
-removed without carrying it resolves as `removed`, naming the receipt. None of these
-but `current` counts as current, passed or verifying evidence.
+(present but stale), `ambiguous` (a merge left two records with that name, and the
+row names each place as `<place>/<id>`) and `unavailable` (absent). An ID whose record
+`chough migrate` removed without carrying it resolves as `removed`, naming the receipt.
+None of these but `current` counts as current, passed or verifying evidence.
 
 A bug reads `reproduced-and-later-passed`, and accepts `bug update --status verified`,
 only when a present linked passed observation was observed strictly after its most
@@ -1476,7 +1477,8 @@ files leave the tree only when their bytes are committed. There is no prune comm
 no `.chough/pruned.jsonl`. `chough pref set retention` and
 `chough consent grant retention` are refused, naming why, with nothing written; a value
 an earlier release recorded still reads, and nothing acts on it. Never delete evidence
-by hand, and never report a `removed` or `unavailable` observation as passed.
+by hand, and never report a `removed`, `ambiguous` or `unavailable` observation as
+passed.
 
 ## Knowledge vault
 

@@ -111,8 +111,9 @@ A fresh agent with none of the earlier conversation:
 3. Checks native status for `native_change`, freshness of the referenced evidence,
    open blocking bugs and the gates in `waiting_on_human`. A referenced entry is
    `current`, `historical` (present but stale), `removed` (dropped by the 0.6.0
-   migration, naming its receipt) or `unavailable` (missing); only a current one
-   counts, so rerun the others rather than treat them as passed. `chough next` also
+   migration, naming its receipt), `ambiguous` (a merge left two records with that
+   name, naming their places) or `unavailable` (missing); only a current one counts,
+   so rerun the others rather than treat them as passed. `chough next` also
    shows the last acting agent and, with its count, each corrected decision.
 4. Continues with `next_valid_action` under the same scope, preferences and gates. It
    never records a pending human decision itself. The move into done archives the
