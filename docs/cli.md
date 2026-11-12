@@ -65,11 +65,12 @@ A project that still holds 0.5.x records (`.chough/session.json`,
 `.chough/pruned.jsonl`) is refused by every command other than `chough migrate`,
 `chough doctor`, `chough skill`, `chough pref set|unset migration`, `--help` and
 `--version`, as `refused:unmigrated` (REQ-records-010). The migration preference runs
-there because it writes only `.chough/preferences.json`, which the migration keeps
-byte for byte, so a standing consent can be given before the first migration. The message names up to 5 such paths with the count of the rest,
-says the project uses the Chough 0.5.x layout, and names `chough migrate` to preview
-and `chough migrate --apply` to convert. A 0.5.x file written into a migrated tree,
-for example by an older Chough, is refused the same way. See [Migration](#migration).
+there because it writes no committed file other than `.chough/preferences.json`, which
+the migration keeps byte for byte, so a standing consent can be given before the first
+migration. The message names up to 5 such paths with the count of the rest, says the
+project uses the Chough 0.5.x layout, and names `chough migrate` to preview and
+`chough migrate --apply` to convert. A 0.5.x file written into a migrated tree, for
+example by an older Chough, is refused the same way. See [Migration](#migration).
 
 ## Commands
 

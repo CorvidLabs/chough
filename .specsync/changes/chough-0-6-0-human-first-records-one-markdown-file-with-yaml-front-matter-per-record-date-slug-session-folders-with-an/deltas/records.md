@@ -116,7 +116,7 @@ Acceptance Criteria
 - On an unmigrated fixture, `next`, `status`, `stage advance`, `checkpoint`, `evidence add`, `bug add`, `cases run` and `init` each refuse with `refused:unmigrated` naming `chough migrate`, and every file is byte-identical.
 - With 12 such paths the message names 5 and says 7 more.
 - `chough migrate`, `chough doctor`, `chough skill status`, `--help` and `--version` run on the same fixture.
-- On the same fixture, `chough pref set migration standing --source <source>` and `pref unset migration` run and write only `.chough/preferences.json`, which the migration keeps byte for byte; the standing preference then gives `chough migrate --apply` its consent, and any other preference key is still refused as `refused:unmigrated`.
+- On the same fixture, `chough pref set migration standing --source <source>` and `pref unset migration` run and write no committed file other than `.chough/preferences.json`, which the migration keeps byte for byte; the standing preference then gives `chough migrate --apply` its consent, and any other preference key is still refused as `refused:unmigrated`.
 - A `.chough/session.json` written into a migrated tree makes the next command refuse, and `chough doctor` reports it as `unmigrated`.
 
 ### REQUIREMENT REQ-records-011

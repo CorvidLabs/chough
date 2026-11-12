@@ -1269,7 +1269,8 @@ fn a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove() {
 
 /// REQ-records-010, REQ-records-009, TC-records-the-standing-migration-preference-is-set-before-migrating
 /// (U2): on an unmigrated tree, `pref set migration` and `pref unset migration` run and
-/// write only `.chough/preferences.json`, which the migration keeps byte for byte; the
+/// write no committed file other than `.chough/preferences.json`, which the migration keeps
+/// byte for byte; the
 /// standing preference then gives the apply its consent, and any other key is still
 /// refused as unmigrated.
 #[test]
