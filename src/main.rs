@@ -510,6 +510,8 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
     };
     // BUG-0023: status leads with the short summary `next` gives, so the first screen
     // holds the stage, the next action and its command, the open gates and blockers.
+    // Status is the full report, so the next valid action is whole, never cut
+    // mid-command as `next`'s bounded view cuts it (fresh-eyes finding 12).
     let summary = match session {
         Session::V2(checkpoint) => json!({
             "stage": {
@@ -519,9 +521,9 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             },
             "native_change": checkpoint.native_change,
             "next_valid_action": {
-                "action": cut(&corrections.apply(&assessment.action.action)),
-                "reason": cut(&assessment.action.reason),
-                "command": assessment.action.command.as_deref().map(cut),
+                "action": corrections.apply(&assessment.action.action),
+                "reason": assessment.action.reason,
+                "command": assessment.action.command,
             },
             "gates": open_gates(checkpoint, LIST_LIMIT),
             "blockers": listed(checkpoint.blockers.iter()),

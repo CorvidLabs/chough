@@ -1081,6 +1081,48 @@ pub(super) fn withdraw_gates(root: &Path) -> Result<Vec<String>> {
     Ok(cleared)
 }
 
+/// What a gate close decided, as the next action it leaves names it: `approved` for the
+/// native approval, `review pass` or `review block` for the native review (the review
+/// `chough change ship` ran is a pass), and `closed` for a gate that drives no native
+/// step, a close with `--no-native`, or a ship that ran no step for the gate.
+fn close_decision(
+    drives: crate::humans::Drives,
+    verdict: Option<&str>,
+    no_native: bool,
+    native_ran: bool,
+) -> String {
+    use crate::humans::Drives;
+    match drives {
+        Drives::None => "closed".into(),
+        _ if no_native => "closed".into(),
+        Drives::Review if native_ran => "review pass".into(),
+        _ if native_ran => "closed".into(),
+        Drives::Approve => "approved".into(),
+        Drives::Review => format!("review {}", verdict.unwrap_or("pass")),
+    }
+}
+
+/// The next action a close of the last gate holding the current stage leaves: the gate,
+/// on one line and cut so the next action stays within 4096 bytes, and the decision.
+fn closed_gate_next_action(gate: &str, decision: &str) -> String {
+    let head = "Gate \"";
+    let tail = format!("\" closed ({decision}); run `chough next` for the next action.");
+    let room = 4_096 - head.len() - tail.len();
+    let mut name = String::new();
+    for character in gate
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .chars()
+    {
+        if name.len() + character.len_utf8() > room {
+            break;
+        }
+        name.push(character);
+    }
+    format!("{head}{name}{tail}")
+}
+
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
     let mut session = read_checkpoint(root)?;
     let mut relayed = relayed_decision(&session, &args)?;
@@ -1159,6 +1201,19 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             );
         }
     }
+    // Fresh-eyes finding 12: what a close decided and the stage its gate holds, read
+    // before the gate leaves the session, and whether this call gives its own next action.
+    let closing = relayed.as_ref().map(|(gate, _, _)| {
+        let meta = crate::session_md::gate(&session, gate);
+        let decision = close_decision(
+            meta.drives(),
+            args.verdict.as_deref(),
+            args.no_native,
+            args.native_ran.is_some(),
+        );
+        (gate.clone(), meta.holds, decision)
+    });
+    let next_given = args.next_action.is_some();
     if let Some(holds) = &args.holds {
         ensure!(
             stage::is_stage(holds),
@@ -1301,6 +1356,21 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     ] {
         changed |= !values.is_empty();
         push_unique(list, values);
+    }
+    // Fresh-eyes finding 12 (t382's rule): a next action set while a gate held the stage
+    // describes waiting on it, so once the last open gate holding the current stage
+    // closes it is stale. Unless this call gives its own, it names the gate and the
+    // decision and sends the reader to `chough next`; the Timeline keeps the decision.
+    if let Some((gate, holds, decision)) = &closing
+        && !next_given
+        && *holds == session.stage.current
+        && !session
+            .awaiting_human
+            .iter()
+            .any(|open| crate::session_md::gate(&session, open).holds == session.stage.current)
+    {
+        session.next_action = closed_gate_next_action(gate, decision);
+        changed = true;
     }
     if changed {
         let current_stage = session.stage.current.clone();
