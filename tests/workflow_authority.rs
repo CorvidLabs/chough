@@ -441,6 +441,11 @@ fn native_writer_arguments(markdown: &str) -> Vec<(String, Option<String>)> {
             if prefix[0] != "specsync" || prefix[1] != "change" {
                 continue;
             }
+            // A Timeline entry's `native:` field names the command a gate close ran; it
+            // is a recorded value, not an example to run.
+            if index > 0 && words[index - 1] == "native:" {
+                continue;
+            }
             let option = match prefix[2].as_str() {
                 "approve" => "--actor",
                 "review" => "--reviewer",

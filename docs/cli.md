@@ -1390,7 +1390,7 @@ The next valid action follows these rules in order:
    --awaiting-human "Approve the scope of <id>" --drives approve`, says to show them
    `chough gate list`, and names `chough checkpoint --close-gate` to record their
    decision, which runs the approval as them. Neither `next` nor `status` passes on
-   SpecSync's own `specsync change approve <id> --actor <name>`; where they show
+   SpecSync's own approve command, which names an `--actor`; where they show
    SpecSync's next action, it reads as the human's scope approval (REQ-cli-021). An
    approval on authority the human gave in advance stays as
    [Approved-delta guard](#approved-delta-guard) describes.
