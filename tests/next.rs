@@ -2399,7 +2399,11 @@ fn at_plan_next_names_the_scope_gate_and_never_specsyncs_approve() {
     }
     let mut found = vec![];
     strings(&next, &mut found);
-    strings(&fixture.ok(&["status", "--json"]), &mut found);
+    // Status keeps SpecSync's raw output as SpecSync printed it; Chough passes none of it
+    // on as an action.
+    let mut status = fixture.ok(&["status", "--json"]);
+    status["native_specsync"] = Value::Null;
+    strings(&status, &mut found);
     let text_view = String::from_utf8_lossy(&fixture.run(&["next"]).stdout).into_owned();
     found.push(text_view);
     for text in &found {

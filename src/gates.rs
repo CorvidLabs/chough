@@ -378,6 +378,21 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
         (None, merge_base) => merge_base,
     };
     let left_out = left_out_of_summary(root);
+    // REQ-cli-061 (t38j): at a gate that drives approval, the change's own definition is
+    // what the human approves, so its Markdown files count and come first.
+    let meta = &session["gate_meta"][gate];
+    let drives = crate::humans::Drives::parse(meta["drives"].as_str().unwrap_or_default())
+        .unwrap_or_else(|| {
+            crate::humans::Drives::default_for(meta["holds"].as_str().unwrap_or_default())
+        });
+    let definition = change
+        .filter(|_| drives == crate::humans::Drives::Approve)
+        .map(|change| format!(".specsync/changes/{change}/"));
+    let is_definition = |path: &str| {
+        definition
+            .as_ref()
+            .is_some_and(|own| path.starts_with(own.as_str()) && path.ends_with(".md"))
+    };
     match &base {
         Some(base) => {
             let numstat =
@@ -391,9 +406,10 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                     Some((added, deleted, parts.next()?.to_string()))
                 })
                 .filter(|(_, _, path)| {
-                    !left_out
-                        .iter()
-                        .any(|prefix| path.starts_with(prefix.as_str()))
+                    is_definition(path)
+                        || !left_out
+                            .iter()
+                            .any(|prefix| path.starts_with(prefix.as_str()))
                 })
                 .collect();
             let insertions: u64 = files.iter().map(|file| file.0).sum();
@@ -404,8 +420,9 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                 &base[..base.len().min(8)]
             ));
             files.sort_by(|left, right| {
-                (right.0 + right.1)
-                    .cmp(&(left.0 + left.1))
+                is_definition(&right.2)
+                    .cmp(&is_definition(&left.2))
+                    .then((right.0 + right.1).cmp(&(left.0 + left.1)))
                     .then(left.2.cmp(&right.2))
             });
             for (added, deleted, path) in files.iter().take(TOP_FILES) {

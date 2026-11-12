@@ -110,7 +110,6 @@ pub(super) fn run(root: &Path, command: JournalCommand) -> Result<()> {
                         body.trim(),
                         (&labelled, &links),
                         None,
-                        None,
                     )?;
                     (kind, post)
                 }
@@ -181,8 +180,7 @@ fn post_for_story(root: &Path, id: &str, kind: &str) -> Result<Option<String>> {
         &title,
         &body,
         (&links, &targets),
-        Some(&story),
-        None,
+        Some((&story, None)),
     )
     .map(Some)
 }
@@ -230,8 +228,7 @@ fn post_for_record(
         title,
         body,
         (&links, &targets),
-        Some(&story),
-        Some((closed.to_string(), time)),
+        Some((&story, Some((closed.to_string(), time)))),
     )?;
     Ok((kind.to_string(), post))
 }
@@ -592,6 +589,9 @@ fn tracked(root: &Path, link: &str) -> bool {
 /// http(s) URL.
 type Link = (String, Option<String>);
 
+/// A backfilled post's date and, when known, its time (REQ-records-011).
+type Dated = (String, Option<String>);
+
 /// `Read more:` with each link as a standard relative Markdown link (REQ-cli-044).
 fn links_line(links: &[Link], up: &str) -> String {
     if links.is_empty() {
@@ -617,9 +617,9 @@ fn write_post(
     title: &str,
     paragraph: &str,
     (links, targets): (&[Link], &[String]),
-    story: Option<&str>,
-    when: Option<(String, Option<String>)>,
+    story: Option<(&str, Option<Dated>)>,
 ) -> Result<String> {
+    let (story, when) = story.map_or((None, None), |(story, when)| (Some(story), when));
     ensure!(
         KINDS.contains(&kind),
         "--kind {kind:?} is not a journal kind; use one of {}",

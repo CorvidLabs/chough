@@ -587,10 +587,12 @@ fn native_gate(
     value: &Value,
     status: &str,
 ) -> Gate {
-    let next = value
-        .pointer("/summary/next_action")
-        .and_then(Value::as_str)
-        .unwrap_or("unknown");
+    let next = shown_native_next(
+        value
+            .pointer("/summary/next_action")
+            .and_then(Value::as_str)
+            .unwrap_or("unknown"),
+    );
     let archived = state == "archived";
     if need == Prerequisite::Archived || (need == Prerequisite::ApprovedOrArchived && archived) {
         if !archived {
@@ -598,7 +600,7 @@ fn native_gate(
                 format!("refused:native-{state}"),
                 format!(
                     "{purpose} needs native state archived; it is {state}. {}",
-                    native_hint(next, status)
+                    native_hint(&next, status)
                 ),
             );
         }
@@ -616,7 +618,7 @@ fn native_gate(
                 format!(
                     "{purpose} needs an archive whose terminal evidence authenticates; summary.terminal_evidence.validity is {}. {}",
                     other.unwrap_or("not reported"),
-                    native_hint(next, status)
+                    native_hint(&next, status)
                 ),
             ),
         };
@@ -631,7 +633,7 @@ fn native_gate(
             format!("refused:native-{state}"),
             format!(
                 "{purpose} needs native state {wanted}; it is {state}. {}",
-                native_hint(next, status)
+                native_hint(&next, status)
             ),
         );
     }
@@ -644,7 +646,7 @@ fn native_gate(
             format!(
                 "{purpose} needs a valid definition approval; native status reports approval_valid {}. {}",
                 approval.map_or("missing".to_string(), |valid| valid.to_string()),
-                native_hint(next, status)
+                native_hint(&next, status)
             ),
         );
     }
@@ -657,7 +659,7 @@ fn native_gate(
             "refused:native-correction-invalid".into(),
             format!(
                 "{purpose} needs valid native corrections; native status reports correction_valid false. {}",
-                native_hint(next, status)
+                native_hint(&next, status)
             ),
         );
     }
@@ -1307,6 +1309,21 @@ pub(super) fn assess(
                 ),
             }),
         }
+    } else if current == "plan" && native_next.is_some_and(names_native_approval) {
+        // REQ-cli-021 (t38j): the definition waits for its approval, which is the human's
+        // decision at the scope gate; SpecSync's own `specsync change approve <id>
+        // --actor <name>` is never passed on, so no agent approves its own scope.
+        let id = session.native_change.as_deref().unwrap_or("<id>");
+        let open = format!(
+            "chough checkpoint --awaiting-human \"Approve the scope of {id}\" --drives approve"
+        );
+        Action {
+            action: format!(
+                "The human approves the scope next. Open the scope gate: `{open}`, and show them `chough gate list`. When they decide, record their words with `{CLOSE_GATE_COMMAND}`, which runs the approval as them. Do not approve it yourself."
+            ),
+            reason: "Native change is a complete draft waiting for its definition approval, which only the human gives (FLOW-23).".into(),
+            command: Some(open),
+        }
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
         if archived_cycle() == Some(Ok(true)) {
             // The archive is the previous cycle's: keep the reset's guidance and name
@@ -1720,6 +1737,22 @@ fn ship_command(id: &str) -> String {
     format!(
         "`chough change ship {id} --close-gate \"<gate>\"` and the relay, which reviews as them, ships, then closes the gate"
     )
+}
+
+/// Whether SpecSync's next action names its definition approval, which is the human's
+/// decision at the scope gate (REQ-cli-021).
+pub(super) fn names_native_approval(next: &str) -> bool {
+    next.contains("specsync change approve")
+}
+
+/// SpecSync's next action as Chough shows it (REQ-cli-021, t38j): an approval it names
+/// for an actor is shown as the human's scope gate, never as a command for the agent.
+pub(super) fn shown_native_next(next: &str) -> String {
+    if names_native_approval(next) {
+        "the human's scope approval: open the scope gate with `chough checkpoint --awaiting-human \"<gate>\" --drives approve` and record their decision with `chough checkpoint --close-gate`; never approve it yourself".into()
+    } else {
+        next.to_string()
+    }
 }
 
 pub(super) const CLOSE_GATE_COMMAND: &str = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";

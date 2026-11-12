@@ -494,7 +494,13 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
                 .as_ref()
                 .and_then(|value| value.get("summary"))
                 .map_or(Value::Null, |summary| {
-                    json!({"state": summary.get("state"), "next_action": summary.get("next_action")})
+                    json!({
+                        "state": summary.get("state"),
+                        "next_action": summary.get("next_action").map(|next| match next.as_str() {
+                            Some(text) => Value::from(stage::shown_native_next(text)),
+                            None => next.clone(),
+                        }),
+                    })
                 }),
         ),
     };
@@ -539,7 +545,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "last_actor": match session {
             Session::V2(checkpoint) => history::last_actor(checkpoint),
         },
-        "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
+        "native_next_action_authority": "Read native_specsync output for the native state and its next action before changing lifecycle state; an approval or review it names is the human's decision, recorded at a human gate, never run by the agent.",
         "native_specsync": native_status,
         "native_summary": native_summary,
         "native_verification_warning": verification_warning,
@@ -860,7 +866,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "approval_valid": field("/approval_valid").and_then(Value::as_bool),
         "correction_valid": field("/correction_valid").and_then(Value::as_bool),
         "terminal_evidence": field("/terminal_evidence/validity").and_then(Value::as_str).map(cut),
-        "next_action": field("/next_action").and_then(Value::as_str).map(cut),
+        "next_action": field("/next_action").and_then(Value::as_str).map(|next| cut(&stage::shown_native_next(next))),
         "approved_deltas": assessment.deltas.as_deref().map(cut),
     });
 

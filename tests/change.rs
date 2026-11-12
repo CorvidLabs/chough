@@ -556,23 +556,43 @@ fn gate_closed_with_relay(fixture: &Fixture) -> bool {
     } else {
         fixture.session_file_of(SHIP_KEY)
     };
-    let story = fixture.read(&file);
+    relays(&fixture.read(&file)).iter().any(|relay| {
+        let four = serde_json::json!({
+            "decided_by": relay["decided_by"], "words": relay["words"],
+            "where": relay["where"], "recorded_by": relay["recorded_by"]
+        });
+        four == expected
+    })
+}
+
+/// The `relayed_by` of each gate-closed Timeline entry in `story`, in order, read from
+/// its labelled lines (REQ-history-002), as JSON.
+fn relays(story: &str) -> Vec<serde_json::Value> {
+    let mut found = vec![];
     let mut gate_closed = false;
+    let mut in_relay = false;
     for line in story.lines() {
         if line.starts_with("- ") {
             gate_closed = line.contains("· gate-closed ·");
-        } else if gate_closed && let Some(payload) = line.strip_prefix("  - relayed_by: ") {
-            let relay: serde_json::Value = serde_json::from_str(payload).unwrap();
-            let four = serde_json::json!({
-                "decided_by": relay["decided_by"], "words": relay["words"],
-                "where": relay["where"], "recorded_by": relay["recorded_by"]
-            });
-            if four == expected {
-                return true;
+            in_relay = false;
+        } else if gate_closed && line == "  - relayed_by:" {
+            found.push(serde_json::json!({}));
+            in_relay = true;
+        } else if in_relay && let Some(part) = line.strip_prefix("    - ") {
+            let (key, value) = part.split_once(": ").expect("a relay part is `key: value`");
+            let value = if value.starts_with('"') {
+                serde_json::from_str(value).unwrap()
+            } else {
+                serde_json::Value::from(value)
+            };
+            if let Some(relay) = found.last_mut() {
+                relay[key] = value;
             }
+        } else if line.starts_with("  - ") {
+            in_relay = false;
         }
     }
-    false
+    found
 }
 
 #[test]
@@ -991,15 +1011,7 @@ fn a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay() {
         fixture.session_file_of(SHIP_KEY)
     };
     let story = fixture.read(&file);
-    let mut gate_closed = false;
-    let mut relay = serde_json::Value::Null;
-    for line in story.lines() {
-        if line.starts_with("- ") {
-            gate_closed = line.contains("· gate-closed ·");
-        } else if gate_closed && let Some(payload) = line.strip_prefix("  - relayed_by: ") {
-            relay = serde_json::from_str(payload).unwrap();
-        }
-    }
+    let relay = relays(&story).pop().unwrap_or(serde_json::Value::Null);
     assert_eq!(
         relay["native"],
         format!("specsync change review {SHIP_ID}"),

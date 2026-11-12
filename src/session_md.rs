@@ -12,7 +12,7 @@
 use crate::checkpoint::{Caller, Checkpoint, Consent, References, StageState};
 use crate::markdown::{Kind, Record, Value};
 use crate::stage::Transition;
-use anyhow::{Context, Result, ensure};
+use anyhow::{Context, Result, bail, ensure};
 
 pub(super) const GOAL: &str = "Goal";
 pub(super) const STANDS: &str = "Where it stands";
@@ -364,29 +364,19 @@ pub(super) fn timeline(record: &Record) -> Result<Vec<Entry>> {
         return Ok(vec![]);
     };
     let mut entries: Vec<Entry> = vec![];
-    for line in section.lines() {
-        if let Some(head) = line.strip_prefix("- ") {
-            entries.push(
-                parse_head(head)
-                    .with_context(|| format!("invalid transition at timeline line `- {head}`"))?,
-            );
-        } else if let Some(field) = line.strip_prefix("  - ") {
-            let entry = entries
-                .last_mut()
-                .context("invalid transition: a timeline field line comes after its entry")?;
-            let id = entry.id.clone();
-            let (key, value) = field
-                .split_once(": ")
-                .map(|(key, value)| (key, value.to_string()))
-                .or_else(|| field.strip_suffix(':').map(|key| (key, String::new())))
-                .with_context(|| {
-                    format!("invalid transition at timeline entry ^{id}: a field is `key: value`")
-                })?;
-            apply_field(entry, key, value).with_context(|| {
+    for (head, fields) in group_entries(section) {
+        let mut entry = parse_head(&head)
+            .with_context(|| format!("invalid transition at timeline line `- {head}`"))?;
+        let id = entry.id.clone();
+        for (field, parts) in fields {
+            let (key, value) = split_field(&field).with_context(|| {
+                format!("invalid transition at timeline entry ^{id}: a field is `key: value`")
+            })?;
+            apply_field(&mut entry, key, value, &parts).with_context(|| {
                 format!("invalid transition at timeline entry ^{id}: field `{key}`")
             })?;
         }
-        // Any other line is prose a person or the closing line wrote; it is not an entry.
+        entries.push(entry);
     }
     for entry in &mut entries {
         // An entry whose text is its gate has no separate reason.
@@ -467,28 +457,14 @@ pub(super) fn timeline_for_timing(record: &Record) -> Vec<serde_json::Value> {
     let Some(section) = record.section(TIMELINE) else {
         return vec![];
     };
-    let mut groups: Vec<(String, Vec<String>)> = vec![];
-    for line in section.lines() {
-        if let Some(head) = line.strip_prefix("- ") {
-            groups.push((head.to_string(), vec![]));
-        } else if let Some(field) = line.strip_prefix("  - ")
-            && let Some((_, fields)) = groups.last_mut()
-        {
-            fields.push(field.to_string());
-        }
-    }
-    groups
+    group_entries(section)
         .into_iter()
         .map(|(head, fields)| {
             let read = || -> Result<serde_json::Value> {
                 let (mut entry, known) = parse_head_with(&head, true)?;
-                for field in &fields {
-                    let (key, value) = field
-                        .split_once(": ")
-                        .map(|(key, value)| (key, value.to_string()))
-                        .or_else(|| field.strip_suffix(':').map(|key| (key, String::new())))
-                        .context("a field is `key: value`")?;
-                    apply_field(&mut entry, key, value)?;
+                for (field, parts) in &fields {
+                    let (key, value) = split_field(field).context("a field is `key: value`")?;
+                    apply_field(&mut entry, key, value, parts)?;
                 }
                 if entry.transition.reason.as_deref() == entry.transition.gate.as_deref() {
                     entry.transition.reason = None;
@@ -504,7 +480,122 @@ pub(super) fn timeline_for_timing(record: &Record) -> Vec<serde_json::Value> {
         .collect()
 }
 
-fn apply_field(entry: &mut Entry, key: &str, value: String) -> Result<()> {
+/// An entry's field lines, each with the part lines indented under it (REQ-history-002).
+type Fields = Vec<(String, Vec<String>)>;
+
+/// Each Timeline entry's head line with its field lines, each field with the lines
+/// indented under it (its parts, REQ-history-002). Any other line is prose a person or
+/// the closing line wrote; it is not an entry.
+fn group_entries(section: &str) -> Vec<(String, Fields)> {
+    let mut groups: Vec<(String, Fields)> = vec![];
+    for line in section.lines() {
+        if let Some(head) = line.strip_prefix("- ") {
+            groups.push((head.to_string(), vec![]));
+        } else if let Some(part) = line.strip_prefix("    ")
+            && let Some((_, fields)) = groups.last_mut()
+            && let Some((_, parts)) = fields.last_mut()
+        {
+            parts.push(part.to_string());
+        } else if let Some(field) = line.strip_prefix("  - ")
+            && let Some((_, fields)) = groups.last_mut()
+        {
+            fields.push((field.to_string(), vec![]));
+        }
+    }
+    groups
+}
+
+/// A field line as its key and value; `key:` alone has an empty value.
+fn split_field(field: &str) -> Option<(&str, String)> {
+    field
+        .split_once(": ")
+        .map(|(key, value)| (key, value.to_string()))
+        .or_else(|| field.strip_suffix(':').map(|key| (key, String::new())))
+}
+
+/// A part's value as written: a JSON string when it starts with `"`, else the text.
+fn part_value(text: &str) -> Result<String> {
+    if text.starts_with('"') {
+        Ok(serde_json::from_str(text)?)
+    } else {
+        Ok(text.to_string())
+    }
+}
+
+/// A part's value to write (REQ-history-002): the text, or a JSON string when it holds
+/// a line break, starts or ends with a space or starts with `"`, or (`as_key`) holds
+/// `: `, so it reads back exactly.
+fn written_part(text: &str, as_key: bool) -> String {
+    if text.is_empty()
+        || text.contains(['\n', '\r'])
+        || text.starts_with([' ', '"'])
+        || text.ends_with(' ')
+        || (as_key && text.contains(": "))
+    {
+        serde_json::to_string(text).unwrap_or_default()
+    } else {
+        text.to_string()
+    }
+}
+
+/// The parts written under a field as one JSON object (REQ-history-002): each
+/// `- <part>: <value>` line, and a `- <part>:` line followed by its list, each item
+/// `- <path>: <change>`.
+fn parts_object(parts: &[String]) -> Result<serde_json::Value> {
+    let mut object = serde_json::Map::new();
+    let mut list: Option<String> = None;
+    for line in parts {
+        if let Some(item) = line.strip_prefix("  - ") {
+            let key = list.as_ref().context("a list item comes after its part")?;
+            let (path, change) = if item.starts_with('"') {
+                let mut stream = serde_json::Deserializer::from_str(item).into_iter::<String>();
+                let path = stream.next().context("a list item's quoted path")??;
+                let rest = item[stream.byte_offset()..]
+                    .strip_prefix(": ")
+                    .context("a list item is `<path>: <change>`")?;
+                (path, rest.to_string())
+            } else {
+                let (path, change) = item
+                    .split_once(": ")
+                    .context("a list item is `<path>: <change>`")?;
+                (path.to_string(), change.to_string())
+            };
+            if let Some(serde_json::Value::Array(items)) = object.get_mut(key) {
+                items.push(serde_json::json!({"path": path, "change": part_value(&change)?}));
+            }
+        } else if let Some(part) = line.strip_prefix("- ") {
+            let (key, value) = split_field(part).context("a part is `key: value`")?;
+            if value.is_empty() {
+                object.insert(key.to_string(), serde_json::Value::Array(vec![]));
+                list = Some(key.to_string());
+            } else {
+                object.insert(
+                    key.to_string(),
+                    serde_json::Value::String(part_value(&value)?),
+                );
+                list = None;
+            }
+        } else {
+            bail!("a part line is `- <part>: <value>`");
+        }
+    }
+    Ok(serde_json::Value::Object(object))
+}
+
+/// A field with parts as its value (REQ-history-002): the parts written under it, or the
+/// JSON value an entry written before the labelled form holds.
+fn parts_field<Output: serde::de::DeserializeOwned>(
+    value: &str,
+    parts: &[String],
+) -> Result<Output> {
+    if value.is_empty() {
+        Ok(serde_json::from_value(parts_object(parts)?)?)
+    } else {
+        Ok(serde_json::from_str(value)?)
+    }
+}
+
+fn apply_field(entry: &mut Entry, key: &str, value: String, parts: &[String]) -> Result<()> {
     let transition = &mut entry.transition;
     match key {
         "native_change" => entry.native_change = Some(value),
@@ -531,8 +622,8 @@ fn apply_field(entry: &mut Entry, key: &str, value: String) -> Result<()> {
                 _ => backfill.quote = value,
             }
         }
-        "relayed_by" => transition.relayed_by = Some(serde_json::from_str(&value)?),
-        "direct_write" => transition.direct_write = Some(serde_json::from_str(&value)?),
+        "relayed_by" => transition.relayed_by = Some(parts_field(&value, parts)?),
+        "direct_write" => transition.direct_write = Some(parts_field(&value, parts)?),
         "by" => transition.actor = crate::actor::Actor::from_by(&value),
         "holds" => transition.holds = Some(value),
         "drives" => transition.drives = Some(value),
@@ -557,59 +648,79 @@ fn render_entry(transition: &Transition, native_change: Option<&str>, id: &str) 
         transition.from,
         transition.to
     );
-    let mut field =
-        |key: &str, value: &str| out.push_str(&format!("  - {key}: {}\n", one_line(value)));
+    let field = |out: &mut String, key: &str, value: &str| {
+        out.push_str(&format!("  - {key}: {}\n", one_line(value)));
+    };
+    // REQ-history-002: a field with parts is labelled lines under it, never JSON.
+    let part = |out: &mut String, key: &str, value: Option<&str>| {
+        if let Some(value) = value {
+            out.push_str(&format!("    - {key}: {}\n", written_part(value, false)));
+        }
+    };
     if let Some(change) = native_change {
-        field("native_change", change);
+        field(&mut out, "native_change", change);
     }
     if let Some(gate) = &transition.gate {
-        field("gate", gate);
+        field(&mut out, "gate", gate);
     }
     if let Some(revision) = &transition.revision {
-        field("revision", revision);
+        field(&mut out, "revision", revision);
     }
     if !transition.refresh.is_empty() {
-        field("refresh", &transition.refresh.join(", "));
+        field(&mut out, "refresh", &transition.refresh.join(", "));
     }
-    let json = |value: &dyn erased_json::ToJson| value.to_json();
     if let Some(backfill) = &transition.backfill {
         // REQ-history-005: the original record time, the commit and the quoted evidence.
-        field("recorded_at", &iso_time(backfill.recorded_at_unix_seconds));
-        field("commit", &backfill.commit);
-        field("quote", &backfill.quote);
+        field(
+            &mut out,
+            "recorded_at",
+            &iso_time(backfill.recorded_at_unix_seconds),
+        );
+        field(&mut out, "commit", &backfill.commit);
+        field(&mut out, "quote", &backfill.quote);
     }
     if let Some(relayed) = &transition.relayed_by {
-        field("relayed_by", &json(relayed));
+        out.push_str("  - relayed_by:\n");
+        part(&mut out, "decided_by", Some(&relayed.decided_by));
+        part(&mut out, "words", Some(&relayed.words));
+        part(&mut out, "where", Some(&relayed.place));
+        part(&mut out, "recorded_by", Some(&relayed.recorded_by));
+        part(
+            &mut out,
+            "summary_digest",
+            relayed.summary_digest.as_deref(),
+        );
+        part(&mut out, "list", relayed.list.as_deref());
+        part(&mut out, "native", relayed.native.as_deref());
+        part(&mut out, "actor", relayed.actor.as_deref());
     }
     if let Some(write) = &transition.direct_write {
-        field("direct_write", &json(write));
+        out.push_str("  - direct_write:\n");
+        part(&mut out, "change", Some(&write.change));
+        out.push_str("    - files:\n");
+        for file in &write.files {
+            out.push_str(&format!(
+                "      - {}: {}\n",
+                written_part(&file.path, true),
+                written_part(&file.change, false)
+            ));
+        }
+        part(&mut out, "before_state", write.before_state.as_deref());
+        part(&mut out, "after_state", write.after_state.as_deref());
     }
     if let Some(holds) = &transition.holds {
-        field("holds", holds);
+        field(&mut out, "holds", holds);
     }
     if let Some(drives) = &transition.drives {
-        field("drives", drives);
+        field(&mut out, "drives", drives);
     }
     if let Some(corrects) = &transition.corrects {
-        field("corrects", corrects);
+        field(&mut out, "corrects", corrects);
     }
     if let Some(actor) = &transition.actor {
-        field("by", &actor.display());
+        field(&mut out, "by", &actor.display());
     }
     out
-}
-
-mod erased_json {
-    /// One-line JSON for a structured timeline field.
-    pub(super) trait ToJson {
-        fn to_json(&self) -> String;
-    }
-
-    impl<Item: serde::Serialize> ToJson for Item {
-        fn to_json(&self) -> String {
-            serde_json::to_string(self).unwrap_or_default()
-        }
-    }
 }
 
 /// The text of each top-level list item of a section, first line only.

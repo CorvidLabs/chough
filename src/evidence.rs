@@ -2369,7 +2369,15 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 /// and the actor. Each field is written only when known. Front-matter-native maps.
 pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(String, String)>>> {
     let mut receipts = vec![];
-    for evidence in load_session(root, session_id)? {
+    // REQ-history-006 (t38j): receipts in observation-time order, oldest first, then by
+    // ID, whatever order the entries' names sort in.
+    let mut entries = load_session(root, session_id)?;
+    entries.sort_by(|left, right| {
+        left.observed_at_unix_seconds
+            .cmp(&right.observed_at_unix_seconds)
+            .then_with(|| left.id.cmp(&right.id))
+    });
+    for evidence in entries {
         let mut map: Vec<(String, String)> = vec![("id".into(), evidence.id.clone())];
         if !evidence.aliases.is_empty() {
             map.push(("aliases".into(), evidence.aliases.join(", ")));
