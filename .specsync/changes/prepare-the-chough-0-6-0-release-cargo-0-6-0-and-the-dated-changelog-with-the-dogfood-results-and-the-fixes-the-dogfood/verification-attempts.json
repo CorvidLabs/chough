@@ -196,6 +196,38 @@
         "REQ-records-009",
         "REQ-records-011"
       ]
+    },
+    {
+      "timestamp": 1794526057,
+      "commit": "65acf527bbca4e37e35421d366843485fbe8589f",
+      "contract_digest": "d59abaabed323b62fa848c4efbf22e832385cd614c13d6a756f4daab47fba0d8",
+      "execution_digest": "49e1467807761fa731f2137055ba2d5d977a0098944e6fab601e19a4eddbb7a4",
+      "workspace_digest": "4668fafe99330981fc5360d603ca5302497284075b1664101e2b0bc638778ae1",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history --spec records --spec reporting",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-005",
+        "REQ-cli-008",
+        "REQ-cli-012",
+        "REQ-cli-017",
+        "REQ-cli-021",
+        "REQ-cli-057",
+        "REQ-cli-060",
+        "REQ-cli-061",
+        "REQ-history-002",
+        "REQ-history-006",
+        "REQ-history-012",
+        "REQ-records-006",
+        "REQ-records-008",
+        "REQ-records-009",
+        "REQ-records-011"
+      ]
     }
   ]
 }
