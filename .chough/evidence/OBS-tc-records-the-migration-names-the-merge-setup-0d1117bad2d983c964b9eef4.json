@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-the-migration-names-the-merge-setup-0d1117bad2d983c964b9eef4",
+  "criteria": [
+    "DRIVE-27",
+    "LIFE-20",
+    "LIFE-8",
+    "KNOW-30",
+    "LIFE-26"
+  ],
+  "requirements": [
+    "REQ-records-009"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test migrate -- --exact the_migration_follow_ups_name_the_merge_lines_and_drivers for TC-records-the-migration-names-the-merge-setup: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-the-migration-names-the-merge-setup-0d1117bad2d983c964b9eef4.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-the-migration-names-the-merge-setup-0d1117bad2d983c964b9eef4.log": "28712caca9cf03a4efaf7bb5bcf6c7e86c952eb1e55477fdf84e9a104b513052"
+  },
+  "observed_at_unix_seconds": 1794467043,
+  "snapshot": {
+    "revision": "f59f10fe6a8af7b596e9d39b5852319e687f1a6b",
+    "dirty": false,
+    "fingerprint": "3da29425b4174f16280f212401a85128a6501858a934da33be7bc21985a7e9a0",
+    "content": "ab1326202bcc3ce4d6298061ee4546dd057608a66bc0e713f6452ea4fa68e1bb"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-the-migration-names-the-merge-setup",
+      "digest": "e6e303d6c78853044af68cc8ff597e2177783b4e4b4f7414eb9bbaf7b71d86c3"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "migrate",
+    "--",
+    "--exact",
+    "the_migration_follow_ups_name_the_merge_lines_and_drivers"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

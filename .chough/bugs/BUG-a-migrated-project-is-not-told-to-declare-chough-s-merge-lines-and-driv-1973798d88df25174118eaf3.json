@@ -16,16 +16,34 @@
   "revision": "6360516bdac4f5480902097986c2218b411356f5",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-records-the-migration-names-the-merge-setup-0d1117bad2d983c964b9eef4",
+    "OBS-tc-records-the-migration-names-the-merge-setup-6775163a23ce48da839d02ce"
+  ],
   "impact": "A migrated project merges its generated files with Git's text merge until someone runs doctor",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t384, 6.3.0 re-run, area upgrade (N1)",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794467079,
+      "text": "status: open -> investigating. Red at f59f10fe (before its fix, SpecSync 6.3.0 on PATH): the plan's follow-ups named no merge line; fix in a2591337.",
+      "observations": [
+        "OBS-tc-records-the-migration-names-the-merge-setup-0d1117bad2d983c964b9eef4"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794467079,
+      "text": "status: investigating -> verified. Green at a2591337: TC-records-the-migration-names-the-merge-setup passed; migrate, migrate_knowledge, migrate_bugs, migrate_evidence and docs tests pass.",
+      "observations": [
+        "OBS-tc-records-the-migration-names-the-merge-setup-6775163a23ce48da839d02ce"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794466925,
-  "updated_at_unix_seconds": 1794466925
+  "updated_at_unix_seconds": 1794467079
 }
