@@ -426,3 +426,41 @@ fn snapshots_and_briefs_stay_as_they_are_and_snapshot_and_archive_are_gone() {
     let help = String::from_utf8_lossy(&help.stdout);
     assert!(help.contains("index"), "{help}");
 }
+
+/// REQ-cli-043, KNOW-12 (BUG-the-lesson-count-misses-dated-lessons-not-written-as-a-date-followed-by-bbd611173226150c9f13f54c):
+/// the index counts every lesson entry of a `## Lessons` section that starts with a
+/// `YYYY-MM-DD` date followed by a space, comma or colon, as a list item or a paragraph,
+/// and every `### YYYY-MM-DD` heading; other lines, and dates outside the section, do
+/// not count.
+#[test]
+fn the_lesson_count_reads_every_dated_entry() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write("specs/csv/csv.spec.md", "# CSV\n");
+    fixture.write(
+        "specs/csv/context.md",
+        "# Context\n\n2026-10-01, a dated line before the section does not count.\n\n\
+         ## Lessons\n\n\
+         - 2026-11-01 a list item with a space.\n\
+         - 2026-11-02: a list item with a colon.\n\
+         * 2026-11-03, a starred item with a comma.\n\n\
+         2026-11-04 a paragraph lesson that wraps\n\
+         onto a second line.\n\n\
+         ### 2026-11-05\n\n\
+         The heading above is the lesson.\n\n\
+         ### 2026-11-06: a heading with its gist\n\n\
+         Not dated.\n\
+         - 2026-1-07 a date with one-digit month.\n\
+         - 20261108 a date without dashes.\n\
+         - 2026-11-09x a date with no separator.\n\
+         - Learned on 2026-11-10, a date not at the start.\n\n\
+         ## Decisions\n\n\
+         - 2026-11-11, a dated decision after the section does not count.\n",
+    );
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/index.md");
+    assert!(
+        index.contains("csv: [specs/csv/context.md](../specs/csv/context.md), 6 lessons\n"),
+        "{index}"
+    );
+}
