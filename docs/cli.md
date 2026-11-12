@@ -1398,7 +1398,7 @@ stage on that response, and shows:
 | `gate` | `to`, `allowed`, `label`, `detail` for the next main stage, or `null` |
 | `awaiting_human`, `blockers`, `open_questions`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest. `open_questions` are the session's Open threads, from `checkpoint --question` or a folded inbox question; `status` reports all of them in its `checkpoint` section |
 | `gates` | Each open gate as `{"gate", "holds", "drives"}`, at most 10 |
-| `observations` | `needs_attention_total` and `items` (referenced and `historical`, `removed`, `ambiguous` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`; a removed one's `receipt`; an ambiguous one's at most 3 `places` and `places_total`; and `resolved`, the `<session>/<id>` form a reference through its own session resolved as), `referenced_current` and `unreferenced` counts |
+| `observations` | `needs_attention_total` and `items` (referenced, each entry once however it is referenced, and `historical`, `removed`, `ambiguous` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`; a removed one's `receipt`; an ambiguous one's at most 3 `places` and `places_total`; and `resolved`, the `<session>/<id>` form a reference through its own session resolved as), `referenced_current`, `superseded` (runs not current left out because the checkpoint references a later run of the same case; the text shows it only when not 0) and `unreferenced` counts |
 | `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest items of the session's Decisions and why, newest first, a corrected one as its newest statement; see [Decision prefixes](#decision-prefixes) |
 | `corrections` | The 10 newest corrections, newest first, each cut to 512 bytes, with their total; see [Corrections](#corrections) |
 | `last_actor` | The `by` of the newest Timeline entry that has one, or `null` |
@@ -1559,9 +1559,12 @@ The next valid action follows these rules in order:
 10. A closed gate for the next main stage shows its label and detail (with no native
     change recorded, `refused:no-native-change` suggests `specsync change new` rather
     than a status read).
-11. At test, when nothing else stops it, the action is `Continue test: <next action>`
-    and names `chough cases select` for the cases this change affects, `chough cases
-    run <case-id> --environment <env>` for each, and `chough bug add` for a failed run.
+11. At test, when nothing else stops it, the action is `Continue test: <next action>`,
+    the checkpoint's next action ended as a sentence of its own, and names `chough cases
+    select` for the cases this change affects, `chough cases run <case-id> --environment
+    <env>` for each, and `chough bug add` for a failed run. Once every case the
+    checkpoint references passed on its latest executed run, and no blocking bug is
+    open, it names `chough stage advance` to accept instead, with that command.
 12. Otherwise `Continue <stage>: <checkpoint next action>`.
 
 Every reset Chough suggests carries `--reason`.

@@ -945,11 +945,13 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     // The open sessions' entries that nothing references, by ID or alias, from the
     // index the references were labelled with.
     let unreferenced = reads.unreferenced_entries(&referenced)?;
-    let attention: Vec<&Value> = references
-        .iter()
-        .filter(|entry| entry["label"] != "current")
-        .collect();
+    // F7: each entry once, a superseded run counted apart.
+    let attention = reads.needing_attention(
+        &references,
+        checkpoint.map_or(&[][..], |checkpoint| checkpoint.observations.as_slice()),
+    )?;
     let items: Vec<Value> = attention
+        .rows
         .iter()
         .take(LIST_LIMIT)
         .map(|entry| {
@@ -1015,9 +1017,10 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "blocking_bugs": listed(assessment.blocking.iter()),
         "other_open_bugs": assessment.open_bugs.len().saturating_sub(assessment.blocking.len()),
         "observations": {
-            "needs_attention_total": attention.len(),
+            "needs_attention_total": attention.rows.len(),
             "items": items,
-            "referenced_current": references.len() - attention.len(),
+            "referenced_current": attention.current,
+            "superseded": attention.superseded,
             "unreferenced": unreferenced,
         },
         "decisions": decisions(
@@ -1251,14 +1254,20 @@ fn next_text(view: &Value) -> String {
         ));
     }
     let more = total.saturating_sub(items.len() as u64);
+    let superseded = observations["superseded"].as_u64().unwrap_or(0);
     lines.push(format!(
-        "  {}{} referenced current, {} unreferenced.",
+        "  {}{} referenced current, {}{} unreferenced.",
         if more > 0 {
             format!("{more} more; ")
         } else {
             String::new()
         },
         text(&observations["referenced_current"]),
+        if superseded > 0 {
+            format!("{superseded} superseded, ")
+        } else {
+            String::new()
+        },
         text(&observations["unreferenced"])
     ));
     lines.extend(handoff_lines(view, &text));

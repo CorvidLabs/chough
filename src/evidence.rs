@@ -1145,6 +1145,13 @@ fn receipt_names(map: &[(String, String)]) -> Vec<String> {
 const MIGRATIONS_DIR: &str = ".chough/archive/migrations";
 
 /// What an evidence ID names (REQ-records-003, REQ-records-009).
+/// What [`Reads::needing_attention`] finds: the rows to list and the counts of the rest.
+pub(super) struct Attention {
+    pub(super) rows: Vec<Value>,
+    pub(super) current: usize,
+    pub(super) superseded: usize,
+}
+
 pub(super) enum Resolved {
     /// An open session's entry, or an archived story's or a bug's receipt read as one.
     Present(Box<Evidence>),
@@ -1323,6 +1330,19 @@ impl Index {
     pub(super) fn holds(&self, id: &str) -> bool {
         let (place, name) = split_qualified(id);
         !self.named(name, place, false).is_empty() || !self.named(name, place, true).is_empty()
+    }
+
+    /// The one entry or receipt `id` resolves to, as `<place>/<its first name>`, so a
+    /// bare ID, an alias and a qualified form of one entry are one (F7); None when it
+    /// resolves to no single holder.
+    fn holder_key(&self, id: &str) -> Option<String> {
+        let (place, name) = split_qualified(id);
+        let holder = match self.named(name, place, false).as_slice() {
+            [one] => *one,
+            [] => *self.named(name, place, true).first()?,
+            _ => return None,
+        };
+        Some(format!("{}/{}", holder.place, holder.names.first()?))
     }
 
     /// Resolve an ID (bare, a 0.5.x alias, or qualified as `<place>/<id>`) as bugs.rs
@@ -2381,6 +2401,95 @@ impl Reads<'_> {
             Ok(Resolved::Removed(receipt)) => label("removed", Some(receipt), vec![]),
             Ok(Resolved::Missing) => label("unavailable", None, vec![]),
             Err(ambiguous) => label("ambiguous", None, ambiguous.places),
+        })
+    }
+
+    /// The referenced observations `chough next` lists as needing attention (F7,
+    /// REQ-cli-021): those `labelled` not current, each entry once however it is
+    /// referenced (bare, by alias or as `<session>/<id>`), leaving out a superseded run,
+    /// an earlier run of a case whose later run `checkpoint` (the active session's
+    /// observation references) also references; with the entries counted current and the
+    /// superseded runs counted apart.
+    pub(super) fn needing_attention(
+        &self,
+        labelled: &[Value],
+        checkpoint: &[String],
+    ) -> Result<Attention> {
+        let index = self.index()?;
+        let present = |id: &str| -> Result<Option<Evidence>> {
+            Ok(match index.lookup(id)? {
+                Ok(Resolved::Present(evidence)) => Some(*evidence),
+                _ => None,
+            })
+        };
+        // The latest run the checkpoint references of each case, by recorded time, then ID.
+        let mut latest: BTreeMap<String, (u64, String)> = BTreeMap::new();
+        for id in checkpoint {
+            let Some(evidence) = present(id)? else {
+                continue;
+            };
+            let run = (evidence.observed_at_unix_seconds, evidence.id.clone());
+            for case in &evidence.cases {
+                let entry = latest.entry(case.id.clone()).or_insert_with(|| run.clone());
+                if run > *entry {
+                    *entry = run.clone();
+                }
+            }
+        }
+        let mut current = BTreeSet::new();
+        let mut superseded = BTreeSet::new();
+        let mut listed: BTreeMap<String, usize> = BTreeMap::new();
+        let mut rows: Vec<Value> = vec![];
+        for row in labelled {
+            let id = row["resolved"]
+                .as_str()
+                .or(row["id"].as_str())
+                .unwrap_or_default();
+            let key = index.holder_key(id).unwrap_or_else(|| id.to_string());
+            if row["label"] == "current" {
+                current.insert(key);
+                continue;
+            }
+            if let Some(evidence) = present(id)? {
+                let run = (evidence.observed_at_unix_seconds, evidence.id.clone());
+                if evidence
+                    .cases
+                    .iter()
+                    .any(|case| latest.get(&case.id).is_some_and(|later| *later > run))
+                {
+                    superseded.insert(key);
+                    continue;
+                }
+            }
+            // One row per entry: the bare reference's row when there is one, naming every
+            // place that references the entry.
+            match listed.get(&key) {
+                None => {
+                    listed.insert(key, rows.len());
+                    rows.push(row.clone());
+                }
+                Some(&at) => {
+                    let mut by = rows[at]["referenced_by"]
+                        .as_array()
+                        .cloned()
+                        .unwrap_or_default();
+                    for source in row["referenced_by"].as_array().into_iter().flatten() {
+                        if !by.contains(source) {
+                            by.push(source.clone());
+                        }
+                    }
+                    let bare = |row: &Value| !row["id"].as_str().unwrap_or_default().contains('/');
+                    if bare(row) && !bare(&rows[at]) {
+                        rows[at] = row.clone();
+                    }
+                    rows[at]["referenced_by"] = Value::Array(by);
+                }
+            }
+        }
+        Ok(Attention {
+            rows,
+            current: current.len(),
+            superseded: superseded.len(),
         })
     }
 
