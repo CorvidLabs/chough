@@ -155,6 +155,21 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   user or host name, email or credential there still counts (REQ-records-006).
 - `knowledge/lessons/` holds the first cross-project lessons, each from recorded
   evidence.
+- From a fresh-eyes test of 0.6.0: `chough cases check` accepts a link to a
+  requirement only the approved delta adds when the module has no `requirements.md`
+  yet, instead of a raw file error (REQ-cli-009); `chough context` reads `AGENTS.md`
+  from the Git root down only, named relative to the project; `chough gate record`
+  reports the native step each close ran, and the approval note names the command the
+  decision came through; a stage move's authority line says when Chough runs a native
+  approval or review; a direct lifecycle write's Timeline entry says which files
+  changed and how the state moved; `chough status` gives its next action whole, and
+  closing the last gate holding a stage replaces a next action left stale by it; a
+  bug's Steps start with `Trigger:`, `chough bug update --fix` sets its Fix, and
+  verifying a bug with no Fix names the passing run (REQ-cli-012); a migration receipt
+  says `none` under an empty section (REQ-records-009); and every `session.md` ends
+  with exactly one newline, so `git diff --check` passes on a migration commit.
+- README, `docs/cli.md` and the workflow skill give a new project's path, with
+  `specsync change adopt` and the format of a change's delta.
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
   of `recorded` (#60, REQ-cli-011, REQ-cli-017).
