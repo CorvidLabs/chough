@@ -1461,14 +1461,32 @@ fn a_malformed_content_identity_is_refused() {
     let fixture = Fixture::new();
     fixture.evidence_fixture();
     fixture.observe("malformed");
-    fixture.edit_entry("malformed", &[("content", Some("not-a-sha256-digest"))]);
-    let output = fixture.run(&["status", "--environment", "test-local", "--json"]);
-    assert!(!output.status.success());
-    assert!(
-        String::from_utf8_lossy(&output.stderr).contains("invalid evidence"),
-        "{}",
-        String::from_utf8_lossy(&output.stderr)
-    );
+    let written = fixture.read(&fixture.entry_file("malformed"));
+    // Not a digest, a digest one digit short, and the writer's digest in uppercase: a
+    // content identity is 64 lowercase hexadecimal digits (REQ-cli-017).
+    let digest = written
+        .lines()
+        .find_map(|line| line.strip_prefix("content: "))
+        .unwrap()
+        .to_string();
+    for bad in [
+        "not-a-sha256-digest".to_string(),
+        digest[..63].to_string(),
+        digest.to_uppercase(),
+    ] {
+        fixture.write(&fixture.entry_file("malformed"), &written);
+        fixture.edit_entry("malformed", &[("content", Some(&bad))]);
+        let output = fixture.run(&["status", "--environment", "test-local", "--json"]);
+        assert!(!output.status.success(), "{bad}");
+        assert!(
+            String::from_utf8_lossy(&output.stderr).contains("invalid evidence"),
+            "{bad}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    // The entry as written reads.
+    fixture.write(&fixture.entry_file("malformed"), &written);
+    assert_eq!(fixture.freshness("malformed"), "current-observation");
 }
 
 #[test]

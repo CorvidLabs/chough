@@ -294,6 +294,19 @@ impl Evidence {
         };
         let observed = crate::session_md::parse_time(&need("observed")?)
             .context("evidence entry's observed time")?;
+        // The working content identity is a SHA-256 digest when present (REQ-cli-017),
+        // as the writer spells it: 64 lowercase hexadecimal digits.
+        let content = scalar("content");
+        if let Some(content) = &content {
+            ensure!(
+                content.len() == 64
+                    && content
+                        .bytes()
+                        .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)),
+                "invalid evidence entry {}: content must be a SHA-256 digest (64 lowercase hexadecimal digits)",
+                scalar("id").unwrap_or_default()
+            );
+        }
         let actor = record.maps("actor").first().and_then(|map| {
             crate::actor::Actor::from_front(&markdown::Value::Maps(vec![map.clone()]))
         });
@@ -330,7 +343,7 @@ impl Evidence {
                 revision: need("revision")?,
                 dirty: false,
                 fingerprint: String::new(),
-                content: scalar("content"),
+                content,
                 input_inventory: InputInventory::from_record(record)?,
             },
             cases: {
