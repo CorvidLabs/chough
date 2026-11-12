@@ -24,16 +24,34 @@
     "git status shows dozens of modified and new files under knowledge/."
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-records-done-touches-only-its-own-post-dda883ef8447da2d71961304",
+    "OBS-tc-records-done-touches-only-its-own-post-71ebc3909a0cce4378df2bc1"
+  ],
   "impact": "Unrelated changes carry dozens of generated knowledge files, which collide on a shared repository and blur review.",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "spec-sync repository, Chough 0.5.0, worker t38b; relayed by t370 on 2026-11-11",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794442854,
+      "text": "Red on 0.5.0 (t38b, bc802047 on leif/0.6.0-ledger-red): the move into done wrote two other knowledge files from the session roll-up and no journal post.",
+      "observations": [
+        "OBS-tc-records-done-touches-only-its-own-post-dda883ef8447da2d71961304"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794442885,
+      "text": "status: open -> verified. Green on integration: tests/journal.rs done_changes_no_knowledge_file_but_its_own_post_and_the_feed passes; the move into done writes only its own post and the feed lines.",
+      "observations": [
+        "OBS-tc-records-done-touches-only-its-own-post-71ebc3909a0cce4378df2bc1"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794415065,
-  "updated_at_unix_seconds": 1794415065
+  "updated_at_unix_seconds": 1794442885
 }

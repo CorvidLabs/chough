@@ -21,7 +21,9 @@
     "chough library index: knowledge/INDEX.md Active lists give-real-...-138; a fresh clone of the same commit generates no such line"
   ],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-empty-change-dir-not-open-6bb0ab6972683f13461a9239"
+  ],
   "impact": "A branch-switching agent commits an index that CI's knowledge check rejects; library archive --apply may refuse with a false open change",
   "classification": "product-defect",
   "scope": "out-of-scope",
@@ -35,8 +37,15 @@
       "at_unix_seconds": 1793947855,
       "text": "Filed as GitHub issue CorvidLabs/chough#148 (2026-11-05, at the orc's request deciding for Leif overnight).",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1794442854,
+      "text": "Fresh re-check on 0.5.0 (t38b, bc802047): TC-cli-empty-change-dir-not-open passes there, next included, since #157 fixed the index before 0.5.0. Disposition 2: closed with the #157 link at plan step 14; 0.6.0 keeps the rule for every reader (its test is ported in t37j's item 8).",
+      "observations": [
+        "OBS-tc-cli-empty-change-dir-not-open-6bb0ab6972683f13461a9239"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793943400,
-  "updated_at_unix_seconds": 1793947855
+  "updated_at_unix_seconds": 1794442854
 }

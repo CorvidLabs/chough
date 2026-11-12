@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-bug-0022-toolchain-matches-ci-738989a073f6e19b43e012a3",
+  "criteria": [
+    "LIFE-6",
+    "FLOW-13"
+  ],
+  "requirements": [
+    "REQ-cli-019"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test package -- toolchain_task_names_a_version_that_differs toolchain_failure_names_each_copy_on_path_with_its_version for TC-cli-bug-0022-toolchain-matches-ci: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-bug-0022-toolchain-matches-ci-738989a073f6e19b43e012a3.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-bug-0022-toolchain-matches-ci-738989a073f6e19b43e012a3.log": "7f5c37ea0aba7808983276354e6f9266b9d27e1398d9dc439c16520013ca636d"
+  },
+  "observed_at_unix_seconds": 1794442872,
+  "snapshot": {
+    "revision": "54ed7c4cd8cfbbf8574a1b685b680bd25e767c27",
+    "dirty": false,
+    "fingerprint": "fc1df0537f65cd9715a386648e0913f61d38629ff53d84005e0ba120ff06d64e",
+    "content": "f4706304eb513cc26319b7fb72787977781ccff31bfe4ba11e6a37108ffc82c5"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-bug-0022-toolchain-matches-ci",
+      "digest": "53a7ec2f1894f3d050ece157d1f43a6393eaac22aab78decb403fc224848c2d8"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "package",
+    "--",
+    "toolchain_task_names_a_version_that_differs",
+    "toolchain_failure_names_each_copy_on_path_with_its_version"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 4
+}

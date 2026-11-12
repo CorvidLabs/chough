@@ -21,12 +21,14 @@
     "kimi-cold-start-5af3f78",
     "kimi-cold-start-5af3f78-scope",
     "tc-cli-0106-kimi-original",
-    "OBS-tc-cli-bug-0022-toolchain-matches-ci-2858359e45fc0c99ab80ad5e"
+    "OBS-tc-cli-bug-0022-toolchain-matches-ci-2858359e45fc0c99ab80ad5e",
+    "OBS-tc-cli-bug-0022-toolchain-matches-ci-24db0bde2060c1cadcfc949a",
+    "OBS-tc-cli-bug-0022-toolchain-matches-ci-738989a073f6e19b43e012a3"
   ],
   "impact": "The first verify lane is not evidence from the exact CI toolchain",
   "classification": "environment",
   "scope": "out-of-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -64,8 +66,22 @@
       "observations": [
         "OBS-tc-cli-bug-0022-toolchain-matches-ci-2858359e45fc0c99ab80ad5e"
       ]
+    },
+    {
+      "at_unix_seconds": 1794442854,
+      "text": "Red on 0.5.0 (t38b, bc802047 on leif/0.6.0-ledger-red): 0.5.0 has no toolchain task, so nothing compares the local tools with the CI pins or names a binary path and its PATH copies.",
+      "observations": [
+        "OBS-tc-cli-bug-0022-toolchain-matches-ci-24db0bde2060c1cadcfc949a"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794442885,
+      "text": "status: open -> verified. Green on integration after its red run on 0.5.0: the toolchain step names each tool that differs from the CI pins, with the binary path and the other copies on PATH.",
+      "observations": [
+        "OBS-tc-cli-bug-0022-toolchain-matches-ci-738989a073f6e19b43e012a3"
+      ]
     }
   ],
   "created_at_unix_seconds": 1793546202,
-  "updated_at_unix_seconds": 1794428234
+  "updated_at_unix_seconds": 1794442885
 }

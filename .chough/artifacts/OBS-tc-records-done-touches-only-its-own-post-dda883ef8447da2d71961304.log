@@ -1,0 +1,27 @@
+--- stdout ---
+
+running 1 test
+test done_changes_no_knowledge_file_but_its_own_post_and_the_feed ... FAILED
+
+failures:
+
+---- done_changes_no_knowledge_file_but_its_own_post_and_the_feed stdout ----
+
+thread 'done_changes_no_knowledge_file_but_its_own_post_and_the_feed' (899573471) panicked at tests/journal.rs:159:5:
+[
+    "the move into done created 0 journal posts, not one",
+    "the move into done created 2 other knowledge files: [\"knowledge/attachments/earlier-1/sessions/earlier-1.json\", \"knowledge/sessions/earlier-1.md\"]",
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    done_changes_no_knowledge_file_but_its_own_post_and_the_feed
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.12s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/journal.rs (target/debug/deps/journal-43c8f9c057e108c5)
+error: test failed, to rerun pass `--test journal`
