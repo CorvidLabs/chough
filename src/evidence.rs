@@ -27,9 +27,15 @@ use std::path::{Component, Path};
 use std::process::{Command, Output};
 use std::time::{Duration, Instant};
 
-/// What every evidence view says an observation is, and is not.
+/// What every evidence view says an observation is, and is not: a manual entry, which
+/// Chough did not run, and the sentence a 0.5.x record holds.
 pub(super) const PROVENANCE: &str =
     "unauthenticated observation; not proof of human approval, test execution, or deployment";
+
+/// What a case run Chough executed says it is, and is not (F12g): the test did run, so it
+/// does not deny the execution.
+pub(super) const EXECUTED_PROVENANCE: &str =
+    "unauthenticated observation; not proof of human approval or deployment";
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ValueEnum)]
 #[serde(rename_all = "kebab-case")]
@@ -1428,6 +1434,16 @@ pub(super) fn is_present(root: &Path, id: &str) -> Result<bool> {
 
 /// The JSON view of an entry, as `status` and the case reports show it.
 impl Evidence {
+    /// What the entry is, and is not: an entry that holds the command Chough ran is an
+    /// executed case run; any other is a manual entry.
+    pub(super) fn provenance(&self) -> &'static str {
+        if self.argv.is_empty() {
+            PROVENANCE
+        } else {
+            EXECUTED_PROVENANCE
+        }
+    }
+
     pub(super) fn to_json(&self) -> Value {
         json!({
             "schema_version": 2,
@@ -1462,7 +1478,7 @@ impl Evidence {
                 markdown::Value::Maps(maps) => maps.first().cloned(),
                 _ => None,
             }).map(|map| map.into_iter().collect::<BTreeMap<_, _>>()),
-            "provenance": PROVENANCE,
+            "provenance": self.provenance(),
         })
     }
 }

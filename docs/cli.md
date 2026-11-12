@@ -1570,6 +1570,12 @@ bound to a case, `command` (the executed argument vector), `exit_code`, `tests_r
 and one plain sentence saying what the receipt shows, followed by the key failing lines
 when it failed.
 
+Every view of an entry, and what `cases run`, `cases record` and `evidence add` print,
+carries `provenance`, what the entry is and is not. A case run Chough executed, one with
+a `command`, says "unauthenticated observation; not proof of human approval or
+deployment"; a manual entry says "unauthenticated observation; not proof of human
+approval, test execution, or deployment".
+
 A repeated validation run's single entry gives `validation_run: true`, `run_case` (its
 case, in place of `case`), `authority`, `times`, `interval_seconds`, `state`,
 `started`, `completed`, `failures`, `not_run`, `elapsed_seconds`, `bugs` and

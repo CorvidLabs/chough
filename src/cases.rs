@@ -1456,7 +1456,8 @@ pub(super) fn run(root: &Path, command: CasesCommand) -> Result<Option<i32>> {
                 "observation": result.observation,
                 "outcome": result.outcome,
                 "summary": result.summary,
-                "provenance": PROVENANCE,
+                // The binding ran: an executed case run (F12g).
+                "provenance": evidence::EXECUTED_PROVENANCE,
             }))?;
             Ok((result.outcome != Outcome::Passed).then_some(NOT_PASSED_EXIT))
         }
