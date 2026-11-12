@@ -559,7 +559,9 @@ ran:
 
 The output carries `relayed_decision` with the gate, `relayed_by`, `provenance`: "a
 relayed claim, not authenticated: it records who is said to have decided, not proof
-that they did", and `native_step`, what ran or why nothing did. Chough does not
+that they did", and `native_step`, what ran or why nothing did: when nothing ran, `ran`
+is null and `why` reads `no native step ran (the gate drives none)` or, for
+`--no-native`, `no native approval ran (--no-native)` (or `review`). Chough does not
 authenticate any of the four values. A relayed decision writes a SpecSync record only
 through the native step above, and satisfies no stage gate: build, test, accept and
 done still read native state. Every value passes the leak check before anything runs.
