@@ -895,9 +895,14 @@ pub(super) struct NativeStep {
     pub(super) step: crate::humans::Step,
 }
 
+/// Why the close of a gate that drives no native step ran none: its report's
+/// `native_step` says so, while its decision names no step (REQ-records-008).
+const DRIVES_NONE: &str = "no native step ran (the gate drives none)";
+
 /// What closing `gate` with `relay` runs, checked before anything runs: the step the
 /// gate drives as the configured human, or nothing for a gate that drives nothing or a
-/// close with `--no-native`. Returns the step and the text the decision names it by.
+/// close with `--no-native`. Returns the step and the text the decision names it by;
+/// only a gate that drives nothing has no text, and its report gives [`DRIVES_NONE`].
 pub(super) fn native_step_for(
     root: &Path,
     session: &Checkpoint,
@@ -1398,11 +1403,14 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     }
     let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
     if let Some((gate, relay, _)) = &relayed {
+        // A close that ran nothing says why: the step `--no-native` skipped, or that
+        // the gate drives none (F12b).
+        let why = native_text.as_deref().unwrap_or(DRIVES_NONE);
         output["relayed_decision"] = json!({
             "gate": gate,
             "relayed_by": relay,
             "provenance": RELAY_PROVENANCE,
-            "native_step": native_report.clone().unwrap_or_else(|| json!({"ran": null, "why": native_text})),
+            "native_step": native_report.clone().unwrap_or_else(|| json!({"ran": null, "why": why})),
         });
     }
     print_json(&output)
