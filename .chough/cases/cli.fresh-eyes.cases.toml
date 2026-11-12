@@ -700,3 +700,21 @@ expected = ["tests/relay.rs::a_near_miss_gate_close_names_the_closest_open_gate 
 adapter = "cargo-test"
 test_target = "relay"
 test = "a_near_miss_gate_close_names_the_closest_open_gate"
+
+[[case]]
+id = "TC-cli-next-at-test-after-every-case-passed-names-stage-advance"
+title = "At test once every referenced case's latest run passed and no blocking bug is open, next names chough stage advance with the checkpoint's next action a sentence of its own, counts a superseded run apart and lists no observation twice"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/evidence.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run"

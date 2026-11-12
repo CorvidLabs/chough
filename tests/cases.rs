@@ -2076,8 +2076,10 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         assert_eq!(own["label"], "current", "{own:#}");
     }
     // next lists the references that need attention: the ambiguous one names its
-    // places, and once the entries are stale each session's own item names the form it
-    // resolved through (REQ-cli-021).
+    // places, and once the entries are stale each session's own row in status names the
+    // form it resolved through, while next leaves out a's earlier run, superseded by the
+    // later run of the same case its checkpoint references, and lists no entry twice
+    // (REQ-cli-021, F7).
     let item = |next: &Value, check: &dyn Fn(&Value) -> bool| -> Value {
         next["observations"]["items"]
             .as_array()
@@ -2101,12 +2103,43 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
     assert_eq!(named, expected, "{ambiguous:#}");
     assert_eq!(ambiguous["places_total"], 2, "{ambiguous:#}");
     a.write("src/stale.txt", "SYNTHETIC edit after the merge\n");
-    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    let status = a.ok(&["status", "--environment", "local", "--json"]);
     for run in &runs {
-        let own = item(&next, &|item| item["resolved"] == run.as_str());
+        let own = status["observation_references"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["resolved"] == run.as_str())
+            .unwrap_or_else(|| panic!("no row resolved through {run}: {status:#}"));
         assert_eq!(own["id"], bare.as_str(), "{own:#}");
         assert_eq!(own["label"], "historical", "{own:#}");
     }
+    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    let items = next["observations"]["items"].as_array().unwrap();
+    assert!(
+        items
+            .iter()
+            .all(|item| item["resolved"] != runs[0].as_str()),
+        "a's superseded run is listed: {next:#}"
+    );
+    assert!(
+        next["observations"]["superseded"].as_u64() >= Some(1),
+        "{next:#}"
+    );
+    let mut listed: Vec<String> = items
+        .iter()
+        .map(|item| {
+            item["resolved"]
+                .as_str()
+                .or(item["id"].as_str())
+                .unwrap()
+                .to_string()
+        })
+        .collect();
+    let all = listed.len();
+    listed.sort();
+    listed.dedup();
+    assert_eq!(listed.len(), all, "{next:#}");
     let shown = a.ok(&["bug", "show", legacy]);
     assert_eq!(
         shown["observation_labels"][0]["label"], "ambiguous",
