@@ -23,6 +23,7 @@ cases:
   - TC-cli-executed-case-run-provenance
   - TC-cli-docs-show-the-requirement-evidence-table
   - TC-cli-docs-show-a-minimal-hi-file-and-requirements-md
+  - TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta
 design: []
 files: []
 observations:
@@ -135,6 +136,7 @@ observations:
   - 2026-11-12-tc-cli-docs-show-the-requirement-evidence-table-d97158
   - 2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-b3ee78
   - 2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta
+  - 2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta-4437de
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -160,6 +162,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - F1 (t38k round 2): every gate close names a configured human (REQ-records-008), red at ab5426a5, green at f5d8ed79, bug verified
 - F12b and F12c (t38k round 2, t38b): a close running no native step says why; an archived story lists as finished; red at 731aba24, green at c53da06c, bugs verified
 - t38c's batch one (t38k round 2): F10 migrate preview on a migrated tree, F12d one Follow-up heading, F12g executed-run provenance, F2 the Requirement evidence table, F7 minimal HI and requirements.md; red at a0152789, green at 34b7cbb7, three bugs verified
+- Kimi 2 and F12h (t38c, REQ-cli-005): evidence add needs only a criterion and resolves a requirement the session's delta adds; red then green, a contract change so no bug. REQ-cli-005's kept criterion on the check-first hint holds when no native change is recorded (tests/cli.rs)
 
 ## Decisions and why
 
@@ -284,6 +287,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test docs -- --exact the_requirement_evidence_table_in_a_changes_testing_md_is_documented for TC-cli-docs-show-the-requirement-evidence-table: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-the-requirement-evidence-table-d97158.md)
 - [Ran cargo test --locked --test docs -- --exact the_new_project_section_shows_a_minimal_hi_file_and_requirements_md for TC-cli-docs-show-a-minimal-hi-file-and-requirements-md: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-b3ee78.md)
 - [Ran cargo test --locked --test cases -- --exact evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements for TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta.md)
+- [Ran cargo test --locked --test cases -- --exact evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements for TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta-4437de.md)
 
 ## Open threads
 
