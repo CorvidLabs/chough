@@ -1760,10 +1760,9 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
     ] {
         let run = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
         let session = fixture.active_id();
-        ids.push(format!(
-            "{session}/{}",
-            run["observation"].as_str().unwrap()
-        ));
+        // The bare ID the run printed (REQ-cli-017), which the bug below links.
+        let observation = run["observation"].as_str().unwrap().to_string();
+        ids.push(format!("{session}/{observation}"));
 
         let mut args = vec![
             "evidence",
@@ -1804,6 +1803,8 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
             "local",
             "--requirement",
             "REQ-cli-001",
+            "--observation",
+            &observation,
         ]);
         bug_ids.push(added["id"].as_str().unwrap().to_string());
         fixture.commit(&format!("records from {side}"));
@@ -1859,6 +1860,17 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         bug_ids.iter().all(|id| bugs.contains(&id.as_str())),
         "{bug_ids:?} {bugs:?}"
     );
+    // Each bug linked its own root's run by the bare ID it printed, unambiguous when
+    // written. After the merge both sessions hold that name, and still both read
+    // (REQ-cli-023): next and status report, and each bug shows its link.
+    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    assert!(next["observations"].is_object(), "{next:#}");
+    for bug in &bug_ids {
+        let shown = a.ok(&["bug", "show", bug]);
+        let labels = shown["observation_labels"].as_array().unwrap();
+        assert_eq!(labels.len(), 1, "{shown:#}");
+        assert_ne!(labels[0]["label"], "missing", "{shown:#}");
+    }
 }
 
 // ---------------------------------------------------------------------------
