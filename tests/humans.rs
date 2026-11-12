@@ -473,6 +473,75 @@ fn gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record() {
     );
 }
 
+/// Fresh-eyes finding F12b (REQ-cli-050, REQ-records-008): a close that runs no native
+/// step says why in its `native_step`, for a gate that drives none and for a close with
+/// `--no-native`, through `checkpoint --close-gate` and `gate record` alike, and nothing
+/// runs.
+#[cfg(unix)]
+#[test]
+fn a_close_that_runs_no_native_step_says_why() {
+    const GO: &str = "SYNTHETIC go-ahead";
+    let fixture = project();
+    let drives_none =
+        serde_json::json!({"ran": null, "why": "no native step ran (the gate drives none)"});
+    let no_native = serde_json::json!({"ran": null, "why": "no native approval ran (--no-native)"});
+    let open = || {
+        fixture.ok(&["checkpoint", "--awaiting-human", GO, "--drives", "none"]);
+        fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    };
+    let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+
+    // checkpoint --close-gate, one gate at a time.
+    open();
+    let closed = fixture.ok(&args(&relay(GO, "SYNTHETIC-human")));
+    assert_eq!(
+        closed["relayed_decision"]["native_step"], drives_none,
+        "{closed:#}"
+    );
+    let mut list = relay(SCOPE, "SYNTHETIC-human");
+    list.push("--no-native".into());
+    let closed = fixture.ok(&args(&list));
+    assert_eq!(
+        closed["relayed_decision"]["native_step"], no_native,
+        "{closed:#}"
+    );
+
+    // gate record, both gates in one reply.
+    open();
+    let listed = fixture.ok(&["gate", "list", "--json"]);
+    assert_eq!(listed["gates"][0]["gate"], GO, "{listed:#}");
+    assert_eq!(listed["gates"][1]["gate"], SCOPE, "{listed:#}");
+    let list = listed["list"].as_str().unwrap().to_string();
+    let reply = fixture.ok(&[
+        "gate",
+        "record",
+        &list,
+        "--gates",
+        "1,2",
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "yes, go",
+        "--where",
+        "SYNTHETIC chat, 2026-11-11",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+        "--no-native",
+    ]);
+    let step = |gate: &str| {
+        reply["closed"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|closed| closed["gate"] == gate)
+            .unwrap_or_else(|| panic!("{gate} was not closed: {reply:#}"))["native_step"]
+            .clone()
+    };
+    assert_eq!(step(GO), drives_none, "{reply:#}");
+    assert_eq!(step(SCOPE), no_native, "{reply:#}");
+    assert!(calls(&fixture).is_empty(), "{:?}", calls(&fixture));
+}
+
 /// #237: a gate that holds a later stage does not stop moves out of earlier ones; it
 /// holds the stage it names.
 #[test]
