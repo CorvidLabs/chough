@@ -535,12 +535,20 @@ identity file before anything runs (see [Human identity](#human-identity)).
 A next action written while a gate held the stage describes waiting on it. So when a
 close (`--close-gate`, `gate record` or `change ship --close-gate`) leaves no open gate
 holding the current stage, and the same call gives no `--next-action`, the checkpoint's
-next action becomes ``Gate "<gate>" closed (<decision>); run `chough next` for the next
-action.``, the decision being `approved`, `review pass` or `review block`. A gate that
-drives no native step, or a close that runs none, decided nothing beyond closing, so it
-leaves ``Gate "<gate>" closed; run `chough next` for the next action.``, with "closed"
-said once. A `--next-action` given in
-the same call is kept, and a close that leaves another gate holding the stage changes
+next action becomes ``Gate "<gate>" closed (<decision>); <step>.``, naming the step that
+decision allows, never `chough next` (REQ-cli-021):
+
+| Close | Next action |
+|---|---|
+| Native approval ran | ``Gate "<gate>" closed (approved); run `chough stage advance` to move on.`` |
+| Gate drives no native step | ``Gate "<gate>" closed; run `chough stage advance` to move on.`` |
+| Native review, `--verdict pass` | ``Gate "<gate>" closed (review pass); run `chough change ship <id>` to ship.`` |
+| Native review, `--verdict block` | ``Gate "<gate>" closed (review block); run `chough stage back --to build --reason "<why>"` to address the review.`` |
+| `--no-native` | ``Gate "<gate>" closed; record the next action the decision calls for with `chough checkpoint --next-action "<action>"`.`` |
+| `change ship --close-gate`, after the ship | ``Gate "<gate>" closed (review pass); the change shipped, so run `chough stage advance --to done`.``, without "(review pass)" for a gate that drives approval |
+
+A close that decided nothing beyond closing says "closed" once. A `--next-action` given
+in the same call is kept, and a close that leaves another gate holding the stage changes
 nothing. The decision itself stays in the Timeline.
 
 Only a decision made at that gate is in the human's name. When an agent approves or

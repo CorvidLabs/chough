@@ -1088,35 +1088,77 @@ pub(super) fn withdraw_gates(root: &Path) -> Result<Vec<String>> {
     Ok(cleared)
 }
 
-/// What a gate close decided beyond closing, as the next action it leaves names it:
-/// `approved` for the native approval, `review pass` or `review block` for the native
-/// review (the review `chough change ship` ran is a pass). None for a gate that drives
-/// no native step, a close with `--no-native`, or a ship that ran no step for the gate:
-/// such a close decided nothing more, so its next action says "closed" once (F12a).
+/// What a gate close decided, which the next action it leaves names with the step that
+/// decision allows (F3, REQ-cli-021).
+#[derive(Clone, Copy)]
+enum Closed {
+    /// The native approval ran: the stage can move on.
+    Approved,
+    /// The gate drives no native step: the close is the decision, and the stage can move
+    /// on. It decided nothing more, so "closed" is said once (F12a).
+    Nothing,
+    /// The native review recorded pass: the change ships next.
+    ReviewPass,
+    /// The native review recorded block: the work goes back to build.
+    ReviewBlock,
+    /// `chough change ship` shipped before this close, with the review it ran or found
+    /// current (`reviewed`), or none for a gate that drives approval: the move into done.
+    Shipped { reviewed: bool },
+    /// `--no-native`: a decision that is neither an approval nor a review, so the agent
+    /// records the next action it calls for.
+    NoNative,
+}
+
 fn close_decision(
     drives: crate::humans::Drives,
     verdict: Option<&str>,
     no_native: bool,
     native_ran: bool,
-) -> Option<String> {
+) -> Closed {
     use crate::humans::Drives;
     match drives {
-        Drives::None => None,
-        _ if no_native => None,
-        Drives::Review if native_ran => Some("review pass".into()),
-        _ if native_ran => None,
-        Drives::Approve => Some("approved".into()),
-        Drives::Review => Some(format!("review {}", verdict.unwrap_or("pass"))),
+        Drives::None => Closed::Nothing,
+        _ if no_native => Closed::NoNative,
+        _ if native_ran => Closed::Shipped {
+            reviewed: drives == Drives::Review,
+        },
+        Drives::Approve => Closed::Approved,
+        Drives::Review if verdict == Some("block") => Closed::ReviewBlock,
+        Drives::Review => Closed::ReviewPass,
     }
 }
 
 /// The next action a close of the last gate holding the current stage leaves: the gate,
-/// on one line and cut so the next action stays within 4096 bytes, and the decision, if
-/// the close made one beyond closing.
-fn closed_gate_next_action(gate: &str, decision: Option<&str>) -> String {
+/// on one line and cut so the next action stays within 4096 bytes, the decision when it
+/// made one beyond closing, and the step it allows, never `chough next` (F3). `change`
+/// is the session's native change, which a review pass ships.
+fn closed_gate_next_action(gate: &str, closed: Closed, change: Option<&str>) -> String {
+    let advance = "run `chough stage advance` to move on".to_string();
+    let (decided, step) = match closed {
+        Closed::Approved => (" (approved)", advance),
+        Closed::Nothing => ("", advance),
+        Closed::ReviewPass => (
+            " (review pass)",
+            format!(
+                "run `chough change ship {}` to ship",
+                change.unwrap_or("<id>")
+            ),
+        ),
+        Closed::ReviewBlock => (
+            " (review block)",
+            "run `chough stage back --to build --reason \"<why>\"` to address the review".into(),
+        ),
+        Closed::Shipped { reviewed } => (
+            if reviewed { " (review pass)" } else { "" },
+            "the change shipped, so run `chough stage advance --to done`".into(),
+        ),
+        Closed::NoNative => (
+            "",
+            "record the next action the decision calls for with `chough checkpoint --next-action \"<action>\"`".into(),
+        ),
+    };
     let head = "Gate \"";
-    let decided = decision.map_or_else(String::new, |decision| format!(" ({decision})"));
-    let tail = format!("\" closed{decided}; run `chough next` for the next action.");
+    let tail = format!("\" closed{decided}; {step}.");
     let room = 4_096 - head.len() - tail.len();
     let mut name = String::new();
     for character in gate
@@ -1379,7 +1421,8 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .iter()
             .any(|open| crate::session_md::gate(&session, open).holds == session.stage.current)
     {
-        session.next_action = closed_gate_next_action(gate, decision.as_deref());
+        session.next_action =
+            closed_gate_next_action(gate, *decision, session.native_change.as_deref());
         changed = true;
     }
     if changed {
