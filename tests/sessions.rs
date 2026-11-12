@@ -433,6 +433,51 @@ fn session_list_reports_an_archived_session_as_archived() {
     assert!(refused.contains("archived"), "{refused}");
 }
 
+/// Fresh-eyes finding F12c (REQ-history-006): an archived story is finished, whether
+/// it closed at done or without done, so `session list` reports it `finished: true`
+/// with no fix to run; an open session short of done stays unfinished.
+#[test]
+fn session_list_reports_an_archived_story_as_finished() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    fixture.ok(&[
+        "session",
+        "close",
+        "alpha",
+        "--reason",
+        "superseded by beta",
+    ]);
+    fixture.ok(&["session", "use", "beta"]);
+    advance_to(&fixture, "accept");
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        moved["applied"]["session_archive"]["status"], "archived",
+        "{moved:#}"
+    );
+    fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    let list = fixture.ok(&["session", "list"]);
+    let entry = |key: &str| {
+        let id = fixture.id_of(key);
+        list["sessions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|session| session["id"] == id)
+            .unwrap_or_else(|| panic!("{key} is not listed: {list:#}"))
+            .clone()
+    };
+    for key in ["alpha", "beta"] {
+        let story = entry(key);
+        assert_eq!(story["archived"], true, "{key}: {story}");
+        assert_eq!(story["finished"], true, "{key}: {story}");
+        assert_eq!(story["fix"], Value::Null, "{key}: {story}");
+    }
+    let open = entry("gamma");
+    assert_eq!(open["archived"], false, "{open}");
+    assert_eq!(open["finished"], false, "{open}");
+    assert_eq!(open["fix"], Value::Null, "{open}");
+}
+
 /// DRIVE-16: `chough session close <key> --reason` archives abandoned work with the
 /// reason in its decisions and outcome `closed-without-done`; a blank reason, an
 /// archived or missing session and one with unfolded inbox entries refuse unchanged.

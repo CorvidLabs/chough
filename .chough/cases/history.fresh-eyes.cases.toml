@@ -75,3 +75,21 @@ expected = ["tests/direct_writes.rs::a_direct_write_entry_says_what_changed_outs
 adapter = "cargo-test"
 test_target = "direct_writes"
 test = "a_direct_write_entry_says_what_changed_outside_chough"
+
+[[case]]
+id = "TC-history-session-list-archived-story-is-finished"
+title = "session list reports an archived story finished, closed at done or without done, with no fix, and an open session short of done unfinished"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_list_reports_an_archived_story_as_finished passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_list_reports_an_archived_story_as_finished"
