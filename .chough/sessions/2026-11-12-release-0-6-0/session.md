@@ -257,6 +257,12 @@ observations:
   - 2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first-8533eb
   - 2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files-5c688e
   - 2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry-b3df6a
+  - 2026-11-12-tc-cli-context-gives-the-session-as-markdown
+  - 2026-11-12-tc-cli-failed-run-body-says-why
+  - 2026-11-12-tc-cli-context-gives-the-timeline-and-bugs-as-markdown
+  - 2026-11-12-tc-history-story-receipts-last-and-bugs-named
+  - 2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries
+  - 2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -283,6 +289,10 @@ bugs:
   - 2026-11-12-at-test-after-every-case-passed-next-asks-for-more-test-runs
   - 2026-11-12-timing-puts-intent-before-the-first-record-although-the-start
   - 2026-11-12-at-plan-after-approval-next-shows-specsync-s-next-step-as-if
+  - 2026-11-12-a-failed-case-run-s-body-does-not-say-why-it-failed
+  - 2026-11-12-chough-context-in-markdown-prints-the-session-its-timeline-and
+  - 2026-11-12-migrated-sessions-and-stories-keep-bare-0-5-x-observation-ids
+  - 2026-11-12-an-archived-story-opens-with-its-receipts-and-never-names-the
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -531,6 +541,12 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_names_each_delta_first_with_its_requirements for TC-cli-scope-gate-summary-names-each-delta-first: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first-8533eb.md)
 - [Ran cargo test --locked --test gates -- --exact an_intent_gate_summary_names_the_criteria_and_their_hi_files for TC-cli-intent-gate-summary-names-the-criteria-and-hi-files: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files-5c688e.md)
 - [Ran cargo test --locked --test timing -- timing_starts_cycle_1_at_the_start_entry_and_says_elapsed_wall_clock_once init_and_session_new_write_a_start_entry_that_timing_reads for TC-reporting-timing-starts-cycle-1-at-the-start-entry: passed (exit 0).](evidence/2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry-b3df6a.md)
+- [Ran cargo test --locked --test cli -- --exact context_gives_the_session_as_markdown for TC-cli-context-gives-the-session-as-markdown: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-context-gives-the-session-as-markdown.md)
+- [Ran cargo test --locked --test cases -- --exact a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines for TC-cli-failed-run-body-says-why: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-failed-run-body-says-why.md)
+- [Ran cargo test --locked --test cli -- --exact context_gives_the_timeline_and_open_bugs_as_markdown for TC-cli-context-gives-the-timeline-and-bugs-as-markdown: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-context-gives-the-timeline-and-bugs-as-markdown.md)
+- [Ran cargo test --locked --test sessions -- --exact a_story_puts_its_receipts_last_and_names_its_bugs for TC-history-story-receipts-last-and-bugs-named: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-story-receipts-last-and-bugs-named.md)
+- [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_sessions_verified_lines_link_the_carried_entries for TC-records-migrate-evidence-verified-lines-link-entries: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries.md)
+- [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_storys_verified_lines_are_receipt_lines for TC-records-migrate-evidence-story-lines-are-receipt-lines: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines.md)
 
 ## Open threads
 
