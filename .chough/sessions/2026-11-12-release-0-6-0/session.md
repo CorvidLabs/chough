@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: accept
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -352,11 +352,7 @@ bugs:
   - 2026-11-12-migrated-sessions-and-stories-keep-bare-0-5-x-observation-ids
   - 2026-11-12-an-archived-story-opens-with-its-receipts-and-never-names-the
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
-    holds: accept
-    drives: review
-    opened: 2026-11-12T23:27:31Z
+waiting_on_human: []
 run_consents: []
 next: "Gate \"Approve the 0.6.0 release prep re-scoped for the 12 third-round fresh-eyes findings\" closed (approved); run `chough stage advance` to move on."
 title: "Chough 0.6.0 release prep: the dogfood cycle and three fresh-eyes rounds"
@@ -926,5 +922,25 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - revision: 67c851b9e28401894bddb7dd318026ff10274858
   - holds: accept
   - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-12T23:32:44Z · gate-closed · accept → accept · Implementation review of prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood ^t-815dcf
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 2bd80ec92fa0c3986d32a2b5acf8b194babef5bb
+  - by: claude-code (hc t382)
+- 2026-11-12T23:32:51Z · direct-native-write · accept → accept · prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-1f9c90
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 2bd80ec92fa0c3986d32a2b5acf8b194babef5bb
+  - direct_write:
+    - change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: claude-code (hc t382)
+- 2026-11-12T23:32:51Z · back · accept → plan · Leif chose to fix the fourth round's 4 real findings, then release (23:32Z, relayed by t370); native change sent back to draft to add their contract text ^t-3a8259
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 2bd80ec92fa0c3986d32a2b5acf8b194babef5bb
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 47 case(s) and 257 observation(s) to re-check with `chough status`
   - by: claude-code (hc t382)
 

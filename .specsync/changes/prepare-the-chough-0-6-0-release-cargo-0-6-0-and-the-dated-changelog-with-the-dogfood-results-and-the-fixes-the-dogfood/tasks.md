@@ -21,6 +21,7 @@ artifact: tasks
 - [x] A stopped command leaves no child it forked as the stop arrived (t38b): the stop stress red then green, bug verified.
 - [x] The second fresh-eyes round (t38k's F1 to F13, t38h's 1, 2 and 6): each fixed red then green, bugs verified, the docs gaps closed.
 - [x] The third fresh-eyes round (t38m's F1 to F12): each fixed red then green, bugs verified, the docs gap closed, a full local run green.
+- [ ] The fourth round's four real findings (t38n's F1 to F4): each fixed red then green, bugs verified; F5 to F11 and the host-name rule recorded as deferred bugs; a full local run green.
 - [x] Cargo 0.6.0 and the dated CHANGELOG [0.6.0] section with the dogfood results.
 
 Plain steps, not boxes: Leif's scope approval at the Chough gate; this session's post

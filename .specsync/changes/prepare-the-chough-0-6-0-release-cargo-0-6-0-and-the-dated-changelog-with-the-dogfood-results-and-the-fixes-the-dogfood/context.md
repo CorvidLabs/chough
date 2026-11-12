@@ -104,3 +104,13 @@ story's readability: receipts before the story, its bug unnamed, a failed run's 
 without its reason, `context`'s JSON block, a migrated bare ID (F10); timing's first
 segment (F11); and the init hint for Claude Code and a text migrate preview (F12).
 Each fix gets a failing test first, and a fourth fresh tester re-rates the result.
+
+On 2026-11-12T23:32Z, after a fourth fresh-eyes round (t38n, 7.5/10 at a7d6406a), Leif
+chose "Fix 4 real ones, then release (Recommended)": fix the 4 real problems with failing
+tests first, run the full suite, then his review and the tag; "Polish and the Mac
+leak-check go to 0.6.1. Real use on jackdaw will tell us more than another tester." The
+four: a gate close's next action outliving the move it named (F1); the scope summary
+ignoring uncommitted change files (F2); no pointer to `chough skill update` after a
+migration leaves the skill copy outdated (F3); and accept steps that stale the evidence
+twice, with `next` routing to the review gate past stale cases (F4). F5 to F11 and the
+host-name leak rule are recorded as deferred bugs, quoting him. No fifth tester.

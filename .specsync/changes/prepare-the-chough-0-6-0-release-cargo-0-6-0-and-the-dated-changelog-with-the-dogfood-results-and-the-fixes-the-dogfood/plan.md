@@ -82,6 +82,13 @@ back to Leif as a send-back.
     full JSON behind `--json` (REQ-cli-008); the migrate preview is text with `--json`
     (REQ-records-009); and the docs and polish items. Helpers t37f, t38b and t38c write
     the red and fix commits; t382 runs and records red and green, then a full local run.
+13c. The fourth round's four real findings, each red then green with its bug record: a
+    stage move replaces a gate close's next action, and at accept `next` names the
+    stale cases' rerun before the review gate (REQ-cli-021); the scope summary counts
+    the working tree (REQ-cli-061); the migration's follow-ups name `chough skill
+    update` for an outdated skill copy (REQ-records-009); accept.md writes lessons before
+    the case rerun. F5 to F11 and the host-name rule recorded as deferred bugs. Then the
+    full local suite.
 13. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
     section with the dogfood results in its upgrade notes.
 14. This session's post title and summary, then `change check --commit`, Leif's review as him through `chough change ship
