@@ -1999,7 +1999,38 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
             .unwrap_or_else(|| panic!("no row resolved through {run}: {rows:#?}"));
         assert_eq!(own["label"], "current", "{own:#}");
     }
-    a.ok(&["next", "--environment", "local", "--json"]);
+    // next lists the references that need attention: the ambiguous one names its
+    // places, and once the entries are stale each session's own item names the form it
+    // resolved through (REQ-cli-021).
+    let item = |next: &Value, check: &dyn Fn(&Value) -> bool| -> Value {
+        next["observations"]["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|item| check(item))
+            .cloned()
+            .unwrap_or_else(|| panic!("no such item: {next:#}"))
+    };
+    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    let ambiguous = item(&next, &|item| {
+        item["id"] == bare.as_str() && item["label"] == "ambiguous"
+    });
+    let mut named: Vec<&str> = ambiguous["places"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|place| place.as_str().unwrap())
+        .collect();
+    named.sort_unstable();
+    assert_eq!(named, expected, "{ambiguous:#}");
+    assert_eq!(ambiguous["places_total"], 2, "{ambiguous:#}");
+    a.write("src/stale.txt", "SYNTHETIC edit after the merge\n");
+    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    for run in &runs {
+        let own = item(&next, &|item| item["resolved"] == run.as_str());
+        assert_eq!(own["id"], bare.as_str(), "{own:#}");
+        assert_eq!(own["label"], "historical", "{own:#}");
+    }
     let shown = a.ok(&["bug", "show", legacy]);
     assert_eq!(
         shown["observation_labels"][0]["label"], "ambiguous",
