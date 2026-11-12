@@ -15,7 +15,7 @@ questions; what to checkpoint; and transitions.
 |---|---|---|
 | Next stage | `chough stage advance` | Every move meets its destination's native prerequisite (build, test, accept, done) |
 | Several stages at once | `chough stage advance --to <stage>` | Every step is checked first, on one native read; a refused step records nothing, and into done it reads native status once |
-| Not applicable | `chough stage skip --reason "<why>"` | The reason is required and kept |
+| Not applicable | `chough stage skip --reason "<why>"` | `skip` skips the current stage, not the next one, and records `skip · <current> → <next>`; the reason is required and kept |
 | Another pass | `chough stage iterate --note "<what changed>"` | |
 | Go back | `chough stage back --to <stage> --reason "<why>"` | Lists what to refresh; history is kept |
 | Start over | `chough stage reset [--to <stage>] --reason "<why>"` | History is kept; intent, design and plan are always reachable |
@@ -42,7 +42,11 @@ observations and evidence named in the refresh list must be redone by their owne
 ## design
 
 - Purpose: define visuals and interactions in one canonical local HTML and CSS prototype.
-- Applicability: skip with a reason when the change has no relevant visuals or interactions.
+- Applicability: when the change has no relevant visuals or interactions, skip design at
+  design. Once the intent is approved, advance from intent into design with
+  `chough stage advance`, then run `chough stage skip --reason "<why>"` at design, which
+  records `skip · design → plan`. A skip at intent records `skip · intent → design` and
+  skips intent.
 - Inputs: approved intent, FRD, project conventions and design tokens.
 - Outputs: canonical prototype and `COMPANION.md` (design owner), rendered review notes.
 - Roles and tools: design, accessibility, user advocate; a browser-capable agent for rendered review.
