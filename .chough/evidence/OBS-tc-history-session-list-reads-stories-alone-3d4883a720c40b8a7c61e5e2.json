@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-session-list-reads-stories-alone-3d4883a720c40b8a7c61e5e2",
+  "criteria": [
+    "KNOW-34",
+    "KNOW-30"
+  ],
+  "requirements": [
+    "REQ-history-006"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact session_list_lists_archived_stories_when_no_session_folder_is_left for TC-history-session-list-reads-stories-alone: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-session-list-reads-stories-alone-3d4883a720c40b8a7c61e5e2.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-session-list-reads-stories-alone-3d4883a720c40b8a7c61e5e2.log": "209ec5b32b5f8d702f950764a29e65c2dae1aa445c39723a81341f1e112fb9f6"
+  },
+  "observed_at_unix_seconds": 1794449041,
+  "snapshot": {
+    "revision": "0ee296aaab0e7d9cc584cc5be2d446701940fcf3",
+    "dirty": false,
+    "fingerprint": "c587a60636b3466d01b89326b8b6eed66d7ee82950da8f0c619d729e3ab2ea8b",
+    "content": "2cafae9b427ce78cfa15d45b1fa80e7f728962a43bca0270971aa2af6e280d2b"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-session-list-reads-stories-alone",
+      "digest": "c1a8723b648ed3d524f81a53e5ecb798873ddf4e26d0d11f4b0d9aa477070c60"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "session_list_lists_archived_stories_when_no_session_folder_is_left"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

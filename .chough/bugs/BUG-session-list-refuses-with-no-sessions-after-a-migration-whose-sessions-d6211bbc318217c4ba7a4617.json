@@ -16,16 +16,26 @@
   "revision": "ebb812d8adfecacba8bacee838f42f996bd2c056",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-history-session-list-reads-stories-alone-3d4883a720c40b8a7c61e5e2"
+  ],
   "impact": "A migrated project cannot list its history until a new session is made",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t384, test stage, area upgrade",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794449059,
+      "text": "status: open -> investigating. Red at 0ee296aa (leif/0.6.0-test1-red: d854ce1a plus the regression tests): TC-history-session-list-reads-stories-alone failed for this bug's reason; fix in 4936b629.",
+      "observations": [
+        "OBS-tc-history-session-list-reads-stories-alone-3d4883a720c40b8a7c61e5e2"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794448930,
-  "updated_at_unix_seconds": 1794448930
+  "updated_at_unix_seconds": 1794449059
 }
