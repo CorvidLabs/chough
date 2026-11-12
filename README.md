@@ -202,8 +202,10 @@ Chough 0.5.x cannot read 0.6.0 records. Then, with no native change open, run
 the human's consent run the
 `chough migrate --apply <digest> --consent "<who, their words, where>"` command it
 prints. It applies exactly the previewed plan, writes a receipt in
-`.chough/archive/migrations/` and keeps every old ID as an alias. Until a project
-migrates, every other command refuses with `refused:unmigrated`.
+`.chough/archive/migrations/` and keeps every old ID as an alias. It leaves the
+installed skill copy as it is, so when its follow-ups name `chough skill update`, run
+that next. Until a project migrates, every other command refuses with
+`refused:unmigrated`.
 
 ## The loop
 

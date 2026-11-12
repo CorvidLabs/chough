@@ -232,6 +232,10 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   and its open bugs as Markdown; a migrated session's verified lines link their entries
   and a migrated story's are receipt lines; and `chough timing` starts Cycle 1 at the
   start entry.
+- From a fourth fresh-eyes round: while the project's installed skill copy is not
+  current, as `chough skill status` reports it, the `chough migrate` plan's and
+  receipt's follow-ups name `chough skill update`, since migration leaves a 0.5.x copy
+  that still names removed commands and paths (REQ-records-009).
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.
 - Stopping a command on macOS no longer leaves behind a child the command forked as the
