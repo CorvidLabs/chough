@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: build
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -375,5 +375,21 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - gate: native:approved
   - revision: d41602783f6445c612f180b0fa9bd62b4530a082
+  - by: claude-code (hc t382)
+- 2026-11-12T19:50:06Z · direct-native-write · build → build · prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-a57f4c
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 73873a97888b78fd8a30ba0fe92b164d75a75ca3
+  - direct_write:
+    - change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: claude-code (hc t382)
+- 2026-11-12T19:50:06Z · back · build → plan · Leif chose to fix all 16 findings of the second fresh-eyes round in 0.6.0 (19:43Z, relayed by t370); native change sent back to draft to add their contract text ^t-6fa383
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 73873a97888b78fd8a30ba0fe92b164d75a75ca3
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, checkpoint references: 0 case(s) and 88 observation(s) to re-check with `chough status`
   - by: claude-code (hc t382)
 

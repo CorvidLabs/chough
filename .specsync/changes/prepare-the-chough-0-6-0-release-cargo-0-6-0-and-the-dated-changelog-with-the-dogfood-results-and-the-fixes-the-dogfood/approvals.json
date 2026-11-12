@@ -377,6 +377,18 @@
       "cancelled_approvals": 4,
       "cancelled_review_attempts": 0,
       "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood",
+      "actor": "0xLeif",
+      "reason": "Leif chose 'Yes, fix all + re-rate (Recommended)' (coordinator chat, Claude Code, hc t370, 2026-11-12T19:43Z) to fix all 16 findings of the second fresh-eyes round in 0.6.0, each with a failing test first, then a third fresh tester's re-rate: t38k's F1 to F13 and t38h's (1), (2) and (6). Contract text stays within those 16: REQ-records-008 (every gate close names a configured human), REQ-cli-021, REQ-cli-061, REQ-cli-012, REQ-cli-005, REQ-cli-057, REQ-cli-060, REQ-history-006, REQ-history-002, REQ-history-012 and REQ-records-009. Relayed by claude-code-t370; run by claude-code-t382.",
+      "timestamp": 1794513005,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 5,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
     }
   ]
 }

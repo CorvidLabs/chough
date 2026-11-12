@@ -79,3 +79,16 @@ ends with a blank line, which `git diff --check` rejects.
 On 2026-11-12T17:42Z Leif chose "Yes, fix it (Recommended)" for a fifth flaky test that
 t38b traced to Chough itself: on macOS, one SIGKILL to a stopped command's process
 group can miss a child the group gains while it is signalled, so the child survives.
+
+On 2026-11-12T19:43Z Leif chose "Yes, fix all + re-rate (Recommended)" for the 16
+findings of the second fresh-eyes round: t38k's F1 to F13 (rated 7/10 at f69889a9) and
+t38h's (1), (2) and (6). Most important: a gate that drives no native step, or a close
+with `--no-native`, accepted any `--decided-by`, so intent and design approvals could
+be recorded in any name (F1). The rest: `next` looping on itself after a gate, a
+confusing accept, a cut ship command, a gate list footer that names a refused reply
+(F3 to F6); the story's verified list, its bug links, its stale `next` and its
+direct-write order (F8, F9, Kimi 6); the migrate preview on a migrated tree, a start
+entry for timing, output polish and an outdated `chough` on `PATH` for the merge
+drivers (F10 to F13); `evidence add` and requirements a delta adds (Kimi 2); and the
+docs gaps (F2, F7, Kimi 1). Each fix gets a failing test first, and a third fresh
+tester re-rates the result against the 90% bar.

@@ -62,6 +62,17 @@ back to Leif as a send-back.
     `session.md` can end with a blank line, red then green; and t38b's stop survivor,
     a child forked as a stop arrives, fixed in `src/records.rs` and rerun red then green
     under load.
+13a. The second fresh-eyes round (t38k's F1 to F13, t38h's (1), (2) and (6)), each red
+    then green with its bug record where it is a bug: every gate close names a
+    configured human (REQ-records-008); `next` after a close, at accept and with long
+    IDs (REQ-cli-021); the gate list's reply line (REQ-cli-061); bugs found in a session
+    linked to it (REQ-cli-012); `evidence add` with delta requirements and optional
+    links (REQ-cli-005); `chough change check --no-commit` and direct writes recorded
+    in order (REQ-cli-057, REQ-cli-060); the story's verified list and front matter
+    (REQ-history-006); a `start` entry (REQ-history-002); `merge_driver_outdated`
+    (REQ-history-012); the migrate preview on a migrated tree (REQ-records-009); the
+    output polish and the docs gaps. Helpers t37f, t38b and t38c write the red and fix
+    commits on their own branches; t382 runs and records red and green.
 13. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
     section with the dogfood results in its upgrade notes.
 14. This session's post title and summary, then `change check --commit`, Leif's review as him through `chough change ship
