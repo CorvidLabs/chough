@@ -190,6 +190,7 @@ observations:
   - 2026-11-12-tc-history-story-lists-each-cases-latest-run-9199cb
   - 2026-11-12-tc-history-archived-story-says-archived-64087b
   - 2026-11-12-tc-history-start-entry-starts-the-first-segment-c3fc99
+  - 2026-11-12-the-full-test-suite-passed-703-of-703-across-48-targets-cargo
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -212,6 +213,11 @@ blockers: []
 waiting_on_human: []
 run_consents: []
 next: "Gate \"Approve the 0.6.0 release prep re-scoped for the 16 second-round fresh-eyes findings\" closed (approved); run `chough next` for the next action."
+title: "Chough 0.6.0 release prep: the dogfood cycle and two fresh-eyes rounds"
+summary:
+  - "Chough 0.6.0 was prepared as its own dogfood cycle, driven only with the 0.6.0 build: Cargo 0.6.0 and the dated CHANGELOG, the dogfood's fixes, journal posts with short titles and real summaries for every archived story, the first cross-project lessons, and the flaky-test bugs settled."
+  - "Two fresh-eyes rounds by new testers found 12 and then 16 problems; each was fixed with a failing test first, helpers t37f, t38b and t38c sharing the work. The most serious: every gate decision, intent and design included, now names a configured human."
+  - "Verified: the full suite passed 703 of 703 locally on Rust 1.96.0, with clippy and rustfmt clean and no open bug. Next: the 0.6.0 tag and release, which Leif decides."
 ---
 # Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
@@ -390,6 +396,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test sessions -- --exact a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones for TC-history-story-lists-each-cases-latest-run: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-story-lists-each-cases-latest-run-9199cb.md)
 - [Ran cargo test --locked --test sessions -- --exact an_archived_story_says_archived_and_keeps_no_next for TC-history-archived-story-says-archived: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-archived-story-says-archived-64087b.md)
 - [Ran cargo test --locked --test timing -- --exact init_and_session_new_write_a_start_entry_that_timing_reads for TC-history-start-entry-starts-the-first-segment: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-start-entry-starts-the-first-segment-c3fc99.md)
+- [The full test suite passed 703 of 703 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 55684263, the head with every second-round fix integrated; clippy --all-targets -D warnings and rustfmt --check were clean there](evidence/2026-11-12-the-full-test-suite-passed-703-of-703-across-48-targets-cargo.md)
 
 ## Open threads
 
