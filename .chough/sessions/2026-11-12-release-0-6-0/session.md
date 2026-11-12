@@ -229,6 +229,7 @@ observations:
   - 2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line
   - 2026-11-12-tc-cli-docs-show-a-lessons-dated-form-3af8bf
   - 2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line-e06091
+  - 2026-11-12-tc-cli-stage-move-prints-a-short-summary
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -476,6 +477,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test optional -- --exact init_with_the_claude_host_prints_the_claude_md_line_and_writes_none for TC-cli-init-claude-host-prints-the-claude-md-line: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line.md)
 - [Ran cargo test --locked --test docs -- --exact a_lessons_dated_form_is_documented_and_its_example_counts for TC-cli-docs-show-a-lessons-dated-form: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-lessons-dated-form-3af8bf.md)
 - [Ran cargo test --locked --test optional -- --exact init_with_the_claude_host_prints_the_claude_md_line_and_writes_none for TC-cli-init-claude-host-prints-the-claude-md-line: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line-e06091.md)
+- [Ran cargo test --locked --test stages -- --exact a_stage_move_prints_a_short_summary_and_its_full_report_under_json for TC-cli-stage-move-prints-a-short-summary: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-stage-move-prints-a-short-summary.md)
 
 ## Open threads
 
