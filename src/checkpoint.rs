@@ -691,6 +691,13 @@ pub(super) struct CheckpointArgs {
     /// decision names; nothing more runs (REQ-cli-059).
     #[arg(long, hide = true, requires = "close_gate", conflicts_with_all = ["verdict", "no_native"])]
     native_ran: Option<String>,
+    /// The SpecSync command `chough change ship` ran for this gate, which the relay
+    /// records as `native` with the actor it ran as (REQ-history-010).
+    #[arg(long, hide = true, requires_all = ["native_ran", "native_actor"])]
+    native_command: Option<String>,
+    /// The SpecSync actor the shipped review ran as.
+    #[arg(long, hide = true, requires = "native_command")]
+    native_actor: Option<String>,
     /// The stage the gates added by --awaiting-human hold (REQ-cli-030); by default the
     /// current stage.
     #[arg(long, requires = "awaiting_human")]
@@ -1095,7 +1102,15 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     if let Some((gate, relay, decision)) = relayed.as_mut() {
         guard_relay(relay)?;
         (native, native_text) = match &args.native_ran {
-            Some(ran) => (None, Some(ran.clone())),
+            Some(ran) => {
+                // REQ-history-010: the review `chough change ship` ran for this gate is
+                // named on the relay as a close that runs it would name it.
+                if let (Some(command), Some(actor)) = (&args.native_command, &args.native_actor) {
+                    relay.native = Some(command.clone());
+                    relay.actor = Some(actor.clone());
+                }
+                (None, Some(ran.clone()))
+            }
             None => native_step_for(
                 root,
                 &session,

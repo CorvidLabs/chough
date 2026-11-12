@@ -331,6 +331,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     // scoped review is already current. The identity is resolved before SpecSync runs,
     // and a refused review stops the ship.
     let mut native_ran = None;
+    let mut reviewed: Option<(String, String)> = None;
     if let Some((gate, relay, _)) = relayed.as_mut() {
         crate::checkpoint::guard_relay(relay)?;
         let checkpoint = crate::checkpoint::read_checkpoint_unlocked(root)?;
@@ -355,6 +356,10 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 }
                 pass_through(&[], &ran.stdout)?;
                 pass_through(&[], &ran.stderr)?;
+                reviewed = Some((
+                    format!("specsync change review {id}"),
+                    human.specsync_actor.clone(),
+                ));
                 step.summary(id, &human)
             });
         }
@@ -412,6 +417,14 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                     .iter()
                     .flat_map(|ran| ["--native-ran".to_string(), ran.clone()]),
             )
+            .chain(reviewed.iter().flat_map(|(command, actor)| {
+                [
+                    "--native-command".to_string(),
+                    command.clone(),
+                    "--native-actor".to_string(),
+                    actor.clone(),
+                ]
+            }))
             .collect(),
         ));
     }
