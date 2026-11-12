@@ -50,7 +50,8 @@ chough stage return --note "Journal post written"
 - `journal add --kind <kind> --title <title> --body <text> [--link <link>]...` writes
   one post by create-new. The kind is `shipped`, `closed`, `intent`, `spec`, `broke`
   or `learned`. The body is at most 1,200 bytes: say less and link the record that
-  holds the rest. Each link is a project path Git tracks or an http(s) URL.
+  holds the rest. Each link is a project path Git tracks or an http(s) URL. A
+  leading `./` is dropped, and a `#fragment` is kept on the link.
 - `library index` regenerates `index.md` and the feed. A `README.md` that an earlier
   release generated is removed once its bytes are committed; an edited one is kept.
 - Briefs in `briefs/` are focused next-session summaries written from
