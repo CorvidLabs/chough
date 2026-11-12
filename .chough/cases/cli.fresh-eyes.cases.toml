@@ -387,3 +387,21 @@ expected = ["tests/next.rs::next_with_no_native_change_says_only_that_none_is_re
 adapter = "cargo-test"
 test_target = "next"
 test = "next_with_no_native_change_says_only_that_none_is_recorded"
+
+[[case]]
+id = "TC-cli-next-and-status-reasons-name-no-trace-id"
+title = "The reasons next and status give for the next valid action name no internal trace ID such as FLOW-23, at plan, at accept or anywhere the source writes one"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_and_status_reasons_name_no_trace_id passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_and_status_reasons_name_no_trace_id"
