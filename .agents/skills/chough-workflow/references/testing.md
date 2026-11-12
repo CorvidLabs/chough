@@ -19,6 +19,19 @@ meaningful omission and record test debt in the native `testing.md`.
 | copy-localization | Visible text or locale behavior changed | Deterministic string assertions plus reviewer notes |
 | design-qa | Visuals or interactions changed | Rendered comparison with the canonical prototype at the target viewports and states |
 
+SpecSync's `specsync change check` (which `chough change check` runs) refuses until the
+change's `.specsync/changes/<id>/testing.md` names every requirement its deltas add or
+modify, saying "no requirement evidence for <ID>". Give each one a row of that file's
+`## Requirement evidence` table, naming the test or check that shows it:
+
+```markdown
+## Requirement evidence
+
+| Requirement | Evidence |
+|---|---|
+| REQ-shipping-004 | `tests/shipping.rs`: an order of exactly fifty dollars ships free |
+```
+
 ## Definitions are not observations
 
 Definitions live in `.chough/cases/<module>.cases.toml`, or for one change's cases
