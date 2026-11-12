@@ -21,8 +21,9 @@ const MOVED: [(&str, &str, &str); 4] = [
         "REQ-history-002",
         // Modified by native change keep-one-session-per-objective (#77): per-session
         // cursor; then by chough-0-6-0-human-first-records-...: the append-only Timeline
-        // of session.md.
-        "c1f64664020694fd1a24c4e7ed2e792860b9c4fbd2f6ed36399b72baea297a63",
+        // of session.md; then by prepare-the-chough-0-6-0-release-...: labelled lines for
+        // fields with parts, and the start entry.
+        "336e87bfe0fe9d03609babc4f1bc68ed79b36243151b5a950f0c8a7ccf4f2347",
     ),
     (
         "REQ-cli-026",
