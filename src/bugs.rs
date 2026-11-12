@@ -1916,12 +1916,34 @@ pub(super) fn open_fixtures_0_5(root: &Path) -> Result<BTreeSet<String>> {
     Ok(open_fixture_owners_0_5(root)?.into_keys().collect())
 }
 
-/// Each fixture file of an open 0.5.x bug, folders expanded, with why the migration
-/// keeps it byte for byte, naming the bug (REQ-records-009).
+/// Each fixture file of an open bug, folders expanded, with why the migration keeps it
+/// byte for byte, naming the bug (REQ-records-009). A 0.5.x JSON bug and a migrated
+/// 0.6.0 Markdown bug both count, so a second migrate on a migrated tree never reads an
+/// open bug's kept fixture as an orphan artifact.
 pub(super) fn open_fixture_owners_0_5(
     root: &Path,
 ) -> Result<std::collections::BTreeMap<String, String>> {
     let mut owners = std::collections::BTreeMap::new();
+    for stored in read_all(root)? {
+        if is_closed_status(stored.record.scalar("status").unwrap_or_default()) {
+            continue;
+        }
+        let Some(fixture) = stored
+            .record
+            .scalar("fixture")
+            .filter(|fixture| !fixture.is_empty())
+        else {
+            continue;
+        };
+        for file in fixture_files(root, fixture) {
+            owners.entry(file).or_insert_with(|| {
+                format!(
+                    "the fixture of open bug {}, kept byte for byte",
+                    stored.id()
+                )
+            });
+        }
+    }
     for (_, legacy) in legacy_bugs(root)? {
         if !legacy.is_open() {
             continue;
