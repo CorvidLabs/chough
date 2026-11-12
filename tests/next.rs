@@ -19,6 +19,22 @@ fn text(fixture: &Fixture, args: &[&str]) -> String {
     String::from_utf8(output.stdout).unwrap()
 }
 
+/// `text` without its commands, each backticked span: the bound of a string the next
+/// view shows counts only this text, since a command is never cut (F5).
+fn outside_commands(text: &str) -> String {
+    let mut outside = String::new();
+    let mut rest = text;
+    while let Some(open) = rest.find('`') {
+        let Some(close) = rest[open + 1..].find('`') else {
+            break;
+        };
+        outside.push_str(&rest[..open]);
+        rest = &rest[open + close + 2..];
+    }
+    outside.push_str(rest);
+    outside
+}
+
 /// Every string anywhere in a JSON value.
 fn strings(value: &Value, found: &mut Vec<String>) {
     match value {
@@ -338,7 +354,8 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     let mut found = vec![];
     strings(&next, &mut found);
     for value in &found {
-        assert!(value.len() <= 512, "{} bytes: {value:.80}", value.len());
+        let outside = outside_commands(value);
+        assert!(outside.len() <= 512, "{} bytes: {value:.80}", outside.len());
     }
     assert!(next["objective"].as_str().unwrap().ends_with(" [cut]"));
     assert!(
@@ -389,15 +406,22 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
         40
     );
     assert_eq!(status["observations"].as_array().unwrap().len(), 508);
-    // The view cuts the shared action; status shows it whole.
+    // The view cuts the shared action around its commands, which follow the cut whole
+    // (F5); status shows it whole.
     let action = next["next_valid_action"]["action"].as_str().unwrap();
-    assert!(action.ends_with(" [cut]"), "{action}");
+    let (kept, commands) = action.split_once(" [cut]").expect(action);
+    let whole = status["next_valid_action"].as_str().unwrap();
+    assert!(whole.starts_with(kept), "{action}");
     assert!(
-        status["next_valid_action"]
-            .as_str()
-            .unwrap()
-            .starts_with(action.trim_end_matches(" [cut]"))
+        commands.trim_start().starts_with('`') && commands.ends_with('`'),
+        "{action}"
     );
+    for command in commands.split("` `") {
+        assert!(
+            whole.contains(command.trim_matches([' ', '`'])),
+            "{command}"
+        );
+    }
 
     // Strings that JSON escapes to six bytes per character stay within the cap too:
     // each string is bounded by its escaped length, not its raw length.
@@ -443,7 +467,10 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     let mut found = vec![];
     strings(&next, &mut found);
     for value in &found {
-        let width = serde_json::to_string(value).unwrap().len() - 2;
+        let width = serde_json::to_string(&outside_commands(value))
+            .unwrap()
+            .len()
+            - 2;
         assert!(width <= 512, "{width} escaped bytes: {value:?}");
     }
     assert!(next["objective"].as_str().unwrap().ends_with(" [cut]"));
@@ -1703,7 +1730,8 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     let mut found = vec![];
     strings(&next, &mut found);
     for value in &found {
-        assert!(value.len() <= 512, "{} bytes: {value:.80}", value.len());
+        let outside = outside_commands(value);
+        assert!(outside.len() <= 512, "{} bytes: {value:.80}", outside.len());
     }
     for total in [
         "Decisions (",
@@ -2341,7 +2369,7 @@ fn status_leads_with_the_same_summary_as_next() {
 /// Fresh-eyes finding 12 (t38j, 2026-11-12): `chough status` is the full report, so its
 /// summary gives the next valid action whole, never cut mid-command as
 /// "`chough stage  [cut]"; `chough next`, the bounded view, keeps its per-string bound and
-/// marks the cut.
+/// marks the cut, cutting the text around a command and never the command (F5).
 #[test]
 fn status_gives_the_next_valid_action_whole() {
     let fixture = Fixture::new();
@@ -2368,7 +2396,11 @@ fn status_gives_the_next_valid_action_whole() {
 
     let next = fixture.ok(&["next", "--json"]);
     let shown = next["next_valid_action"]["action"].as_str().unwrap();
-    assert!(shown.ends_with(" [cut]") && shown.len() <= 512, "{shown}");
+    let command = " `chough stage advance`";
+    assert!(
+        shown.ends_with(&format!(" [cut]{command}")) && shown.len() <= 512 + command.len(),
+        "{shown}"
+    );
 }
 
 /// t37f's seed capture: after a migration, or once a session has finished, the latest
@@ -2634,5 +2666,80 @@ fn at_accept_while_approved_next_names_the_review_preparation_in_order() {
             status["summary"]["next_valid_action"]["action"], action,
             "{state}"
         );
+    }
+}
+
+/// Whether every line of `text` has its backticks in pairs, so no command in it is cut
+/// open.
+fn commands_closed(text: &str) -> bool {
+    text.lines().all(|line| line.matches('`').count() % 2 == 0)
+}
+
+/// Fresh-eyes F5 (second round, 2026-11-12; REQ-cli-021): with a long change ID, next
+/// cut the ship command to keep its 512-byte string bound. A command that next or status
+/// shows, in the next valid action, a gate or a refusal, appears whole whatever its
+/// length; the bound cuts the other text. A 120-character ID, at plan while the scope
+/// waits for approval and at accept while verifying, in text and JSON.
+#[cfg(unix)]
+#[test]
+fn next_and_status_show_every_command_whole_for_a_long_change_id() {
+    let id = format!("long-{}", "x".repeat(115));
+    assert_eq!(id.len(), 120);
+    let plan = approved_at_plan(&id);
+    plan.write(".stub-state", "draft\n");
+    plan.write(
+        ".stub-next",
+        &format!("run `specsync change approve {id} --actor <name>`\n"),
+    );
+    let accept = approved_at_plan(&id);
+    while accept.checkpoint()["stage"]["current"] != "accept" {
+        accept.ok(&["stage", "advance"]);
+    }
+    accept.write(".stub-state", "verifying\n");
+    let scope = format!(
+        "chough checkpoint --awaiting-human \"Approve the scope of {id}\" --drives approve"
+    );
+    let review = format!(
+        "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
+    );
+    let close = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
+    let ship = format!("chough change ship {id} --close-gate \"<gate>\"");
+    for (fixture, command, shown) in [
+        (&plan, &scope, vec![scope.as_str(), close]),
+        (&accept, &review, vec![review.as_str(), ship.as_str()]),
+    ] {
+        let next = fixture.ok(&["next", "--json"]);
+        let action = &next["next_valid_action"];
+        assert_eq!(action["command"], command.as_str(), "{action:#}");
+        let status = fixture.ok(&["status", "--json"]);
+        let text_view = text(fixture, &["next"]);
+        for whole in &shown {
+            let quoted = format!("`{whole}`");
+            for (form, text) in [
+                ("next --json", action["action"].as_str().unwrap()),
+                (
+                    "status --json",
+                    status["summary"]["next_valid_action"]["action"]
+                        .as_str()
+                        .unwrap(),
+                ),
+                ("next", text_view.as_str()),
+            ] {
+                assert!(text.contains(&quoted), "{form} cuts {quoted}:\n{text}");
+            }
+        }
+        assert!(
+            text_view.contains(&format!("  Run: {command}\n")),
+            "{text_view}"
+        );
+        for text in [
+            action["action"].as_str().unwrap(),
+            action["reason"].as_str().unwrap(),
+            next["gate"]["label"].as_str().unwrap_or_default(),
+            next["gate"]["detail"].as_str().unwrap_or_default(),
+            text_view.as_str(),
+        ] {
+            assert!(commands_closed(text), "a command is cut open:\n{text}");
+        }
     }
 }
