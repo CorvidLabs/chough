@@ -926,10 +926,22 @@ fn failing_text(binding: &Binding, execution: &Captured, text: &str) -> String {
         }
         // Its head, leaving room for the result line within the bounds.
         let room = KEY_LINE_BYTES.saturating_sub(result.map_or(0, |line| line.len() + 1));
-        let mut kept = vec![];
+        let mut kept: Vec<&str> = vec![];
         let mut bytes = 0;
         for line in block {
-            if kept.len() + 1 >= KEY_LINES || bytes + line.len() + 1 > room {
+            if kept.len() + 1 >= KEY_LINES {
+                break;
+            }
+            if bytes + line.len() + 1 > room {
+                // A line longer than the room left, such as a one-line assertion diff,
+                // is cut on a character boundary to fit rather than dropped.
+                let mut end = room.saturating_sub(bytes + 1).min(line.len());
+                while !line.is_char_boundary(end) {
+                    end -= 1;
+                }
+                if end > 0 {
+                    kept.push(&line[..end]);
+                }
                 break;
             }
             bytes += line.len() + 1;

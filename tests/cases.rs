@@ -1230,6 +1230,67 @@ fn an_unterminated_escape_never_hides_a_second_test_result() {
     );
 }
 
+/// t38b's F4 (REQ-records-005): a line of the first cargo failure block longer than the
+/// room left, such as a one-line assertion diff, is cut on a character boundary to fit
+/// rather than dropped, so the key lines keep the assertion as well as the panic and the
+/// `test result:` line, within 20 lines and 2,048 bytes.
+#[cfg(unix)]
+#[test]
+fn a_long_assertion_line_is_cut_to_fit_the_key_lines_not_dropped() {
+    let fixture = bounded_fixture(&bound(
+        "TC-cli-0001",
+        "adapter = \"cargo-test\"\ntest_target = \"cli\"\ntest = \"passes\"",
+        "",
+    ));
+    // A multi-byte character sits where the cut falls, so the cut must find a boundary.
+    let diff = "é".repeat(1_500);
+    let output = format!(
+        "running 1 test\ntest passes ... FAILED\n\nfailures:\n\n---- passes stdout ----\nthread 'passes' panicked at tests/cli.rs:1:1:\nassertion `left == right` failed\n  left: \"{diff}\"\n right: \"short\"\n\nfailures:\n    passes\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out\n"
+    );
+    fixture.write("bin/cargo-output.txt", &output);
+    fixture.write(
+        "bin/cargo",
+        "#!/bin/sh\ncat \"$(dirname \"$0\")/cargo-output.txt\"\nexit 101\n",
+    );
+    fixture.executable("bin/cargo");
+    let run = fixture.run(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
+    let report: Value = serde_json::from_slice(&run.stdout)
+        .unwrap_or_else(|_| panic!("{}", String::from_utf8_lossy(&run.stderr)));
+    assert_eq!(report["outcome"], "failed", "{report:#}");
+    let id = report["observation"].as_str().unwrap();
+    let text = fixture.read(&format!(
+        ".chough/sessions/{}/evidence/{id}.md",
+        fixture.active_id()
+    ));
+    let key: Vec<&str> = text
+        .split("\n## Key failing lines\n\n")
+        .nth(1)
+        .unwrap_or_else(|| panic!("no key lines: {text}"))
+        .lines()
+        .take_while(|line| line.starts_with("- "))
+        .map(|line| &line[2..])
+        .collect();
+    assert!(key.len() <= 20, "{key:#?}");
+    assert!(
+        key.iter().map(|line| line.len() + 1).sum::<usize>() <= 2_048,
+        "{key:#?}"
+    );
+    assert!(
+        key.iter().any(|line| line.contains("panicked at")),
+        "{key:#?}"
+    );
+    assert!(
+        key.iter()
+            .any(|line| line.trim_start().starts_with("left: \"é")),
+        "the long assertion line was dropped: {key:#?}"
+    );
+    assert_eq!(
+        key.last().copied(),
+        Some("test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out"),
+        "{key:#?}"
+    );
+}
+
 #[test]
 fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations() {
     let definition = bound(
