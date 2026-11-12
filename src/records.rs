@@ -682,7 +682,38 @@ fn stop_tree(child: &mut Child) -> bool {
     }
     // std never signals a child it has already reaped.
     let _ = child.kill();
+    if stopped {
+        settle_group(child);
+    }
     stopped
+}
+
+/// How long [`settle_group`] keeps signalling a stopped command's process group.
+#[cfg(unix)]
+const GROUP_SETTLE: Duration = Duration::from_millis(500);
+
+/// Signal the process group `child` led until no live member is left (#132). One
+/// SIGKILL to a group does not reach a member the group gains while it is being
+/// signalled: on macOS a shell forking its background `sleep` as the stop arrived left
+/// that `sleep` running after the shell died (3 of 320 loaded trials, none of 320 with
+/// this loop). The loop ends when kill(2) finds no live member it may signal: ESRCH,
+/// or EPERM when only zombies are left (macOS), or after [`GROUP_SETTLE`]. The leader
+/// is not reaped here, so its ID stays taken and is never reused as another group's
+/// while this loop signals it; the caller's own wait reaps it.
+#[cfg(unix)]
+fn settle_group(child: &Child) {
+    let Ok(group) = i32::try_from(child.id()) else {
+        return;
+    };
+    let deadline = Instant::now() + GROUP_SETTLE;
+    loop {
+        // SAFETY: kill(2) takes plain integers and has no memory-safety preconditions;
+        // the negative ID names the command's process group.
+        if unsafe { libc::kill(-group, libc::SIGKILL) } != 0 || Instant::now() >= deadline {
+            return;
+        }
+        std::thread::sleep(Duration::from_millis(10));
+    }
 }
 
 /// Stop the command and its descendants with `taskkill /T /F`. Returns true when
