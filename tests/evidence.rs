@@ -260,10 +260,17 @@ fn rebuilding_the_knowledge_index_keeps_the_observation_current() {
 
 /// The `receipts:` maps of a story's front matter, each as its fields in order.
 fn story_receipts(text: &str) -> Vec<Vec<(String, String)>> {
-    let (front, _) = text
-        .strip_prefix("---\n")
-        .and_then(|rest| rest.split_once("\n---\n"))
-        .expect("a story");
+    // REQ-history-006: the `## Receipts` section's YAML block, or an older story's front
+    // matter.
+    let front = match text.split_once("\n## Receipts\n\n```yaml\n") {
+        Some((_, rest)) => rest.split_once("```").map_or(rest, |(block, _)| block),
+        None => {
+            text.strip_prefix("---\n")
+                .and_then(|rest| rest.split_once("\n---\n"))
+                .expect("a story")
+                .0
+        }
+    };
     let unquote = |value: &str| {
         value
             .strip_prefix('"')

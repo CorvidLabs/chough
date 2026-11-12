@@ -20,6 +20,38 @@ pub(crate) const RECORD_BOUND: u64 = 65_536;
 pub(crate) const SESSION_BOUND: u64 = 1_048_576;
 /// The bound of a migration receipt.
 pub(crate) const RECEIPT_BOUND: u64 = 4_194_304;
+/// The section an archived story ends with, holding its receipts (REQ-history-006).
+pub(crate) const RECEIPTS: &str = "Receipts";
+
+/// An archived story's `## Receipts` section (REQ-history-006, F10a): `receipts` as one
+/// fenced YAML block, one map per receipt, written by the front matter's rules, so its
+/// reader is the front matter's. It starts with a blank line, to follow the closing line.
+pub(crate) fn receipts_section(receipts: Vec<Vec<(String, String)>>) -> Result<String> {
+    let mut holder = Record::new("");
+    holder.set("receipts", Value::Maps(receipts))?;
+    let rendered = holder.render();
+    let yaml = rendered
+        .strip_prefix("---\n")
+        .and_then(|rest| rest.strip_suffix("---\n"))
+        .ok_or_else(|| anyhow::anyhow!("the receipts did not render as front matter"))?;
+    Ok(format!("\n## {RECEIPTS}\n\n```yaml\n{yaml}```\n"))
+}
+
+/// `text`, an archived story, with its `## Receipts` section, the last one, replaced by
+/// one holding `receipts`, or added when it has none.
+pub(crate) fn with_receipts_section(
+    text: &str,
+    receipts: Vec<Vec<(String, String)>>,
+) -> Result<String> {
+    let marker = format!("\n## {RECEIPTS}\n");
+    let story = text.rfind(&marker).map_or(text, |at| &text[..at]);
+    let mut out = story.to_string();
+    if !out.ends_with('\n') {
+        out.push('\n');
+    }
+    out.push_str(&receipts_section(receipts)?);
+    Ok(out)
+}
 
 /// The record kinds Chough writes, each with its byte bound.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -308,6 +340,58 @@ impl Record {
             }
         }
         self.append_to_section(heading, &format!("- {item}\n"))
+    }
+
+    /// An archived story's receipts (REQ-history-006): the maps of its `## Receipts`
+    /// section's fenced YAML block, or, for a story written before that section, of its
+    /// front matter `receipts`. A section whose block does not read is an error naming
+    /// `file`.
+    pub(crate) fn story_receipts(&self, file: &str) -> Result<Vec<Vec<(String, String)>>> {
+        let Some(section) = self.section(RECEIPTS) else {
+            return Ok(self.maps("receipts"));
+        };
+        let block = section
+            .split_once("```yaml\n")
+            .and_then(|(_, rest)| rest.rsplit_once("```"))
+            .map(|(block, _)| block)
+            .ok_or_else(|| {
+                anyhow::anyhow!("{file}: its ## {RECEIPTS} section holds no ```yaml block")
+            })?;
+        let holder = parse(file, &format!("---\n{block}---\n"))
+            .map_err(|error| anyhow::anyhow!("{file}: its ## {RECEIPTS} block: {error:#}"))?;
+        Ok(holder.maps("receipts"))
+    }
+
+    /// Insert the section `## <heading>` holding `text` (whole lines) before the first of
+    /// the `before` sections the body has, or append it at the end of the body when it has
+    /// none. Every other body byte is kept.
+    pub(crate) fn insert_section_before(
+        &mut self,
+        heading: &str,
+        before: &[&str],
+        text: &str,
+    ) -> Result<()> {
+        ensure!(
+            !heading.is_empty() && !heading.contains('\n'),
+            "a section heading is one non-empty line"
+        );
+        let mut text = text.replace("\r\n", "\n");
+        if !text.ends_with('\n') {
+            text.push('\n');
+        }
+        for next in before {
+            if let Some((start, _)) = section_span(&self.body, next) {
+                // The start of the `## <next>` line, which ends just before `start`.
+                let at = self.body[..start]
+                    .trim_end_matches('\n')
+                    .rfind('\n')
+                    .map_or(0, |newline| newline + 1);
+                self.body
+                    .insert_str(at, &format!("## {heading}\n\n{text}\n"));
+                return Ok(());
+            }
+        }
+        self.append_to_section(heading, &text)
     }
 
     pub(crate) fn mark_item(&mut self, heading: &str, item: &str, mark: &str) -> Result<()> {

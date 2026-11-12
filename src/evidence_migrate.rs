@@ -449,8 +449,15 @@ fn existing_names(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
         (".chough/archive/sessions", crate::markdown::SESSION_BOUND),
         (crate::bugs::BUGS_DIR, crate::markdown::RECORD_BOUND),
     ] {
-        for (_, record) in crate::bugs::records_in(root, folder, bound) {
-            for map in record.maps("receipts") {
+        for (name, record) in crate::bugs::records_in(root, folder, bound) {
+            // A story's receipts are its `## Receipts` section's, or an older story's
+            // front matter's (REQ-history-006); a bug's are its front matter's.
+            let maps = if folder == ".chough/archive/sessions" {
+                record.story_receipts(&name).unwrap_or_default()
+            } else {
+                record.maps("receipts")
+            };
+            for map in maps {
                 let held = crate::bugs::receipt_names(&map);
                 if let Some((id, aliases)) = held.split_first() {
                     names.insert(id.clone(), aliases.to_vec());

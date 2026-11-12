@@ -316,7 +316,11 @@ fn sessions_live_in_folders_and_finish_into_one_story() {
             .unwrap()
             .contains(" · advance · accept → done · ")
     );
-    assert!(story.trim_end().ends_with(": done."), "{story}");
+    // The closing line ends the story, before its `## Receipts` (REQ-history-006).
+    let (told, _) = story
+        .split_once("\n## Receipts\n")
+        .unwrap_or_else(|| panic!("no Receipts section: {story}"));
+    assert!(told.trim_end().ends_with(": done."), "{story}");
     // session.md changed with the move, so it stays until it is committed; the
     // committed agent note goes.
     assert_eq!(

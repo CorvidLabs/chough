@@ -156,7 +156,10 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   still read (REQ-history-002). A story's receipts are in observation-time order, its
   What was verified gives each case's latest run once, with its command once, and one
   line counting the earlier runs, which stay in its receipts, and its front matter says
-  `stage_status: archived` with no stale `next` (REQ-history-006).
+  `stage_status: archived` with no stale `next` (REQ-history-006). The story comes
+  first: its receipts sit last, in a `## Receipts` section, a `## Bugs` section names
+  each bug of the session with its title and status, and a story written with its
+  receipts in the front matter still reads.
 - `chough init` and `chough session new` each write a `start` entry first, from and to
   the stage the session starts in, with its objective or key, so `chough timing` right
   after reports when the first stage started, in Cycle 1, which starts at that entry,

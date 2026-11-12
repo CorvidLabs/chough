@@ -167,6 +167,9 @@ pub(super) fn archive_file(id: &str) -> String {
 /// The objective `chough session new` records when none is given.
 const DEFAULT_OBJECTIVE: &str = "Describe the current objective before beginning work.";
 
+/// The section of an archived story that names its session's bugs (REQ-history-006).
+const STORY_BUGS: &str = "Bugs";
+
 /// The stage status an archived story's front matter gives (REQ-history-006).
 pub(super) const ARCHIVED_STATUS: &str = "archived";
 
@@ -869,12 +872,43 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     record.set_scalar("outcome", outcome)?;
     let receipts = crate::evidence::receipts_of(root, id)?;
     story_verified_lines(root, &mut record, id, &receipts)?;
-    record.set("receipts", Value::Maps(receipts))?;
+    // REQ-history-006 (F10b): the bugs the session's checkpoint holds, after What was
+    // verified, each with its title and status, linked to its record.
+    let bugs = crate::bugs::story_lines(root, &session.bugs);
+    let bugs = if bugs.is_empty() {
+        "None.\n".to_string()
+    } else {
+        bugs.iter().map(|line| format!("- {line}\n")).collect()
+    };
+    record.insert_section_before(
+        STORY_BUGS,
+        &[crate::session_md::THREADS, crate::session_md::TIMELINE],
+        &bugs,
+    )?;
+    // REQ-history-006 (F10a): no receipts in the front matter, so the story comes first;
+    // it ends with the Timeline and its closing line, then `## Receipts`. The front
+    // matter also leaves out each empty value, which a reader takes as empty.
+    record.remove("receipts");
+    let empty: Vec<String> = record
+        .keys()
+        .into_iter()
+        .filter(|key| match record.get(key) {
+            Some(Value::Scalar(text)) => text.is_empty(),
+            Some(Value::List(items)) => items.is_empty(),
+            Some(Value::Maps(maps)) => maps.is_empty(),
+            None => false,
+        })
+        .map(str::to_string)
+        .collect();
+    for key in empty {
+        record.remove(&key);
+    }
     let mut text = record.render_within(RecordKind::Story)?;
     if !text.ends_with('\n') {
         text.push('\n');
     }
     text.push_str(&format!("\nClosed {date}: {outcome}.\n"));
+    text.push_str(&crate::markdown::receipts_section(receipts)?);
     ensure!(
         write_new_bounded(root, &story, &text, RecordKind::Story.bound())?,
         "{story} already exists; archiving never replaces a file"

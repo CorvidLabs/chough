@@ -1511,12 +1511,14 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             };
             record.set_scalar("closed", &date)?;
             record.set_scalar("outcome", outcome)?;
-            record.set("receipts", crate::markdown::Value::Maps(vec![]))?;
+            // REQ-history-006 (F10a): the story first, then its closing line, then
+            // `## Receipts`, which the evidence mapper's receipts fill in later.
             let mut text = record.render();
             if !text.ends_with('\n') {
                 text.push('\n');
             }
             text.push_str(&format!("\nClosed {date}: {outcome}.\n"));
+            text.push_str(&crate::markdown::receipts_section(vec![])?);
             (format!(".chough/archive/sessions/{id}.md"), text)
         } else {
             (format!(".chough/sessions/{id}/session.md"), record.render())
@@ -1707,11 +1709,15 @@ fn story_receipts(
         if receipts.is_empty() {
             continue;
         }
-        let mut record = crate::markdown::parse(&path, &written.bytes)?;
-        record.set("receipts", crate::markdown::Value::Maps(receipts))?;
-        written.bytes = record
-            .render_within(crate::markdown::Kind::Story)
-            .with_context(|| format!("{path} with its receipts"))?;
+        // REQ-history-006 (F10a): the receipts go in the story's last section.
+        let text = crate::markdown::with_receipts_section(&written.bytes, receipts)?;
+        let bound = crate::markdown::Kind::Story.bound();
+        ensure!(
+            text.len() as u64 <= bound,
+            "refused: {path} with its receipts would be {} bytes, over its bound of {bound} bytes; nothing was written",
+            text.len()
+        );
+        written.bytes = text;
     }
     Ok(())
 }
@@ -1972,7 +1978,10 @@ mod tests {
             ("id".to_string(), "OBS-gone".to_string()),
             ("removed".to_string(), receipt_path().unwrap()),
         ];
-        assert_eq!(record.maps("receipts"), vec![carried_map, tombstone]);
+        assert_eq!(
+            record.story_receipts(&story).unwrap(),
+            vec![carried_map, tombstone]
+        );
         assert_eq!(carried.aliases["OBS-gone"], "removed");
         assert!(!carried.aliases.contains_key("OBS-entry"));
         crate::session_md::read(&written.path, &written.bytes).unwrap();

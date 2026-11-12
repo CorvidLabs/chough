@@ -1092,6 +1092,9 @@ fn evidence_from_receipt(map: &[(String, String)]) -> Result<Evidence> {
 type ReceiptMaps = Vec<(String, Vec<(String, String)>)>;
 
 /// Every `receipts:` map in the Markdown records under a folder, with the record name.
+/// Where archived session stories are (REQ-history-006).
+const STORIES_DIR: &str = ".chough/archive/sessions";
+
 fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     let folder = local_path(root, dir)?;
     let mut found = vec![];
@@ -1107,7 +1110,14 @@ fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     for name in names {
         let text = read_bounded_record(&folder.join(&name), markdown::SESSION_BOUND)?;
         let record = markdown::parse(&name, &text)?;
-        for map in record.maps(key) {
+        // REQ-history-006: an archived story's receipts are its `## Receipts` section's,
+        // or an older story's front matter's.
+        let maps = if dir == STORIES_DIR {
+            record.story_receipts(&name)?
+        } else {
+            record.maps(key)
+        };
+        for map in maps {
             found.push((name.trim_end_matches(".md").to_string(), map));
         }
     }
@@ -1237,10 +1247,7 @@ impl Index {
             vec![]
         };
         for (in_bugs, maps) in [
-            (
-                false,
-                receipt_maps(root, ".chough/archive/sessions", "receipts")?,
-            ),
+            (false, receipt_maps(root, STORIES_DIR, "receipts")?),
             (true, bug_maps),
         ] {
             for (place, map) in maps {
@@ -2970,7 +2977,7 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
         for name in names {
             let text = read_bounded_record(&archive.join(&name), markdown::SESSION_BOUND)?;
             let record = markdown::parse(&name, &text)?;
-            for map in record.maps("receipts") {
+            for map in record.story_receipts(&name)? {
                 if tombstone_of(&map).is_none() {
                     views.push(receipt_view(&map));
                 }

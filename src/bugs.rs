@@ -375,6 +375,34 @@ fn read_all(root: &Path) -> Result<Vec<Stored>> {
     Ok(bugs)
 }
 
+/// The items of an archived story's `## Bugs` section (REQ-history-006, F10b): each bug
+/// of the session's checkpoint, once, as `[<title>](../../bugs/<file>): <status>`,
+/// linked from the story to its record; an ID no one bug record holds is named as such.
+pub(super) fn story_lines(root: &Path, ids: &[String]) -> Vec<String> {
+    let bugs = read_all(root).unwrap_or_default();
+    let mut seen = BTreeSet::new();
+    let mut lines = vec![];
+    for id in ids {
+        let Ok(bug) = find(&bugs, id) else {
+            lines.push(format!("{id}: no one bug record holds this ID"));
+            continue;
+        };
+        if !seen.insert(bug.id().to_string()) {
+            continue;
+        }
+        let title = bug
+            .text("title")
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+            .replace('[', "\\[")
+            .replace(']', "\\]");
+        let file = bug.path.trim_start_matches(".chough/");
+        lines.push(format!("[{title}](../../{file}): {}", bug.status()));
+    }
+    lines
+}
+
 /// The ID of the bug whose name or alias is `id`, refusing an unknown ID or an alias
 /// two bugs hold (REQ-records-003), for a command that links a bug.
 pub(super) fn resolve_id(root: &Path, id: &str) -> Result<String> {
@@ -503,7 +531,8 @@ impl<'a> Evidence<'a> {
             }
             for (name, record) in records_in(self.root, STORIES_DIR, Kind::Story.bound()) {
                 let story = name.trim_end_matches(".md");
-                for map in record.maps("receipts") {
+                // REQ-history-006: from `## Receipts`, or an older story's front matter.
+                for map in record.story_receipts(&name).unwrap_or_default() {
                     let names = receipt_names(&map);
                     let Some(id) = names.first() else {
                         continue;
