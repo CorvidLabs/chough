@@ -218,7 +218,20 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   applied, the move, the stage reached and the next action, with its full JSON report,
   every field as before, under `--json` (REQ-cli-008); and `chough migrate` previews the
   plan as text, since a person consents to it, with the same plan and digest as JSON
-  under `--json` (REQ-records-009).
+  under `--json` (REQ-records-009). At accept, `chough next` and `status` show
+  SpecSync's review command as the human's review at the review gate, never as a step
+  for the agent; at test, once every case's latest run passed, `next` names `chough
+  stage advance` and counts superseded runs apart; and SpecSync's own next step is
+  labelled for reference (REQ-cli-021). `chough session close` withdraws each open human
+  gate with a `gate-closed` entry and names it under `withdrawn_gates`, never dropping
+  it silently (REQ-history-006). A scope gate's summary names every delta first with its
+  requirement IDs, and an intent gate's names the criteria and their HI files
+  (REQ-cli-061). A duplicate `bug add` lists each similar bug as a line, and a near-miss
+  `--close-gate` names the closest open gate. A failed run's body says why it failed
+  before its key lines (REQ-cli-017); `chough context` gives the session, its Timeline
+  and its open bugs as Markdown; a migrated session's verified lines link their entries
+  and a migrated story's are receipt lines; and `chough timing` starts Cycle 1 at the
+  start entry.
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.
 - Stopping a command on macOS no longer leaves behind a child the command forked as the

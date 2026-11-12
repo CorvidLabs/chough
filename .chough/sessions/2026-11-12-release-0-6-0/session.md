@@ -275,6 +275,7 @@ observations:
   - 2026-11-12-tc-history-story-receipts-last-and-bugs-named-9a5af0
   - 2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-540c6d
   - 2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-784592
+  - 2026-11-12-the-full-test-suite-passed-722-of-722-across-48-targets-cargo
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -309,11 +310,11 @@ blockers: []
 waiting_on_human: []
 run_consents: []
 next: "Gate \"Approve the 0.6.0 release prep re-scoped for the 12 third-round fresh-eyes findings\" closed (approved); run `chough stage advance` to move on."
-title: "Chough 0.6.0 release prep: the dogfood cycle and two fresh-eyes rounds"
+title: "Chough 0.6.0 release prep: the dogfood cycle and three fresh-eyes rounds"
 summary:
   - "Chough 0.6.0 was prepared as its own dogfood cycle, driven only with the 0.6.0 build: Cargo 0.6.0 and the dated CHANGELOG, the dogfood's fixes, journal posts with short titles and real summaries for every archived story, the first cross-project lessons, and the flaky-test bugs settled."
-  - "Two fresh-eyes rounds by new testers found 12 and then 16 problems; each was fixed with a failing test first, helpers t37f, t38b and t38c sharing the work. The most serious: every gate decision, intent and design included, now names a configured human."
-  - "Verified: the full suite passed 703 of 703 locally on Rust 1.96.0, with clippy and rustfmt clean and no open bug. Next: the 0.6.0 tag and release, which Leif decides."
+  - Three fresh-eyes rounds by new testers found 12, 16 and 12 problems; each was fixed with a failing test first, helpers t37f, t38b and t38c sharing the work. Every gate decision now names a configured human, no agent is routed to approve or review its own work, and stage moves print a short summary.
+  - "Verified: the full suite passed 722 of 722 locally on Rust 1.96.0, with clippy and rustfmt clean and no open bug. Next: the 0.6.0 tag and release, which Leif decides."
 ---
 # Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
@@ -566,6 +567,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test sessions -- --exact a_story_puts_its_receipts_last_and_names_its_bugs for TC-history-story-receipts-last-and-bugs-named: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-story-receipts-last-and-bugs-named-9a5af0.md)
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_sessions_verified_lines_link_the_carried_entries for TC-records-migrate-evidence-verified-lines-link-entries: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-540c6d.md)
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_storys_verified_lines_are_receipt_lines for TC-records-migrate-evidence-story-lines-are-receipt-lines: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-784592.md)
+- [The full test suite passed 722 of 722 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at a7d6406a, the head with every third-round fix integrated; clippy --all-targets -D warnings and rustfmt --check were clean there](evidence/2026-11-12-the-full-test-suite-passed-722-of-722-across-48-targets-cargo.md)
 
 ## Open threads
 
