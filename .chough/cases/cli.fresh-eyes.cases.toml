@@ -479,3 +479,22 @@ expected = ["tests/next.rs::at_accept_while_approved_next_names_the_review_prepa
 adapter = "cargo-test"
 test_target = "next"
 test = "at_accept_while_approved_next_names_the_review_preparation_in_order"
+
+[[case]]
+id = "TC-cli-next-and-status-show-every-command-whole"
+title = "With a 120-character change ID, every command next and status show in the next valid action and the gate appears whole, in text and JSON, and next's bound cuts only the text around them"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the three next tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "next", "--", "next_and_status_show_every_command_whole_for_a_long_change_id", "status_gives_the_next_valid_action_whole", "both_forms_stay_within_the_cap_with_totals_for_large_records"]
+expect_output = ["test result: ok. 3 passed"]
+timeout_seconds = 600
