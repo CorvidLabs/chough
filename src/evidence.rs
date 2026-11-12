@@ -647,6 +647,12 @@ pub(super) fn bind_artifacts(root: &Path, artifacts: &[String]) -> Result<BoundA
                 bound.external.is_none(),
                 "one external artifact per entry; record another with its own entry"
             );
+            // The path is kept one quoted line in the local map; a control character
+            // would break that record and every later read of it.
+            ensure!(
+                !artifact.chars().any(char::is_control),
+                "external artifact {artifact:?} has a control character in its path; rename or move it, then record it; nothing was recorded"
+            );
             bound.external = Some(bind_external(root, artifact)?);
         } else {
             ensure!(

@@ -402,6 +402,85 @@ fn a_log_name_taken_in_another_session_is_a_clash_and_the_claim_ends_once() {
     )));
 }
 
+/// t38b's F3 (REQ-records-005): an external artifact's path is kept on one quoted line
+/// of `.chough/local/external-artifacts.toml`, so a path holding a newline or another
+/// control character is refused, naming the path escaped, with no entry and nothing
+/// recorded; a later read of the map is never broken by one.
+#[cfg(unix)]
+#[test]
+fn an_external_artifact_path_with_a_control_character_is_refused() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let outside = tempfile::tempdir().unwrap();
+    let add = |path: &str| {
+        fixture.run(&[
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            "SYNTHETIC external proof",
+            "--artifact",
+            path,
+        ])
+    };
+    for name in [
+        "SYNTHETIC\nproof.bin",
+        "SYNTHETIC\tproof.bin",
+        "SYNTHETIC\rproof.bin",
+    ] {
+        let file = outside.path().join(name);
+        fs::write(&file, b"SYNTHETIC proof bytes\n").unwrap();
+        let output = add(file.to_str().unwrap());
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success(), "{name:?} was accepted");
+        assert!(stderr.contains("control character"), "{stderr}");
+        assert!(
+            stderr.contains(&format!("{:?}", file.to_str().unwrap())),
+            "the refusal does not name the path: {stderr}"
+        );
+        assert!(!fixture.exists(".chough/local/external-artifacts.toml"));
+        let session = fixture.active_id();
+        assert!(
+            fs::read_dir(
+                fixture
+                    .root()
+                    .join(format!(".chough/sessions/{session}/evidence"))
+            )
+            .map(|entries| entries.count())
+            .unwrap_or(0)
+                == 0,
+            "an entry was written"
+        );
+    }
+    // A plain path still records, and the map reads back.
+    let file = outside.path().join("SYNTHETIC-proof.bin");
+    fs::write(&file, b"SYNTHETIC proof bytes\n").unwrap();
+    let output = add(file.to_str().unwrap());
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let status = fixture.ok(&["status", "--environment", "local"]);
+    assert_ne!(
+        status["observations"][0]["artifact"], "changed",
+        "{status:#}"
+    );
+}
+
 /// REQ-history-006 (the plan's delta correction 2): a finished session's story holds
 /// one receipt per entry, in the order and shape the migration writes: id; aliases as
 /// one comma-and-space scalar; claim; result; the command; revision; environment;
