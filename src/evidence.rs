@@ -1852,11 +1852,19 @@ pub(super) fn validate_requirements(
             .context("contract parent missing")?
             .join("requirements.md");
         let companion = companion.to_str().context("non-UTF-8 contract companion")?;
-        text.push_str(
-            &crate::records::read_spec_file(&local_path(root, companion)?)
-                .context("contract requires its native requirements.md companion")?,
-        );
-        text.push('\n');
+        // On a module's first change, `specsync new` has scaffolded no requirements.md
+        // and the approved delta adds the requirement: a companion that does not exist
+        // yet holds no requirement, as an empty one would, so the link is a miss the
+        // caller decides like any other (cli.md, Approved delta links). One that exists
+        // but cannot be read is still refused.
+        let path = local_path(root, companion)?;
+        if path.exists() {
+            text.push_str(
+                &crate::records::read_spec_file(&path)
+                    .context("contract requires its native requirements.md companion")?,
+            );
+            text.push('\n');
+        }
         // Named with `/` on every platform, as contracts and messages spell paths.
         #[cfg(windows)]
         searched.push(companion.replace('\\', "/"));
