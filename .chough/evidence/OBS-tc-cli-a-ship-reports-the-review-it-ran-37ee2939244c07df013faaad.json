@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-a-ship-reports-the-review-it-ran-37ee2939244c07df013faaad",
+  "criteria": [
+    "DRIVE-20",
+    "FLOW-16"
+  ],
+  "requirements": [
+    "REQ-cli-059"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact a_ship_that_runs_the_review_reports_it_in_native_step for TC-cli-a-ship-reports-the-review-it-ran: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-a-ship-reports-the-review-it-ran-37ee2939244c07df013faaad.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-a-ship-reports-the-review-it-ran-37ee2939244c07df013faaad.log": "92e982f866d36299767f503af30b57815c76513430b58f804e53247579aa0742"
+  },
+  "observed_at_unix_seconds": 1794469099,
+  "snapshot": {
+    "revision": "f9c268fd243e6614f0054b4ce62aa5333695ea4c",
+    "dirty": false,
+    "fingerprint": "08408e32432bb9e93c3cecf1c1ee4b039539ded10cc11172fd01e573d4de3b10",
+    "content": "178603b27723196cd051013d6fb93e64bce082adb4af1fb1de2fe52bb8387aad"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-a-ship-reports-the-review-it-ran",
+      "digest": "8091cd53f515c0cc6a1f4992705bfb49996d311a56b205ad67920ad6001ece4b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "a_ship_that_runs_the_review_reports_it_in_native_step"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

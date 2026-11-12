@@ -1,0 +1,242 @@
+--- stdout ---
+
+running 1 test
+test a_ship_that_runs_the_review_reports_it_in_native_step ... FAILED
+
+failures:
+
+---- a_ship_that_runs_the_review_reports_it_in_native_step stdout ----
+
+thread 'a_ship_that_runs_the_review_reports_it_in_native_step' (915628944) panicked at tests/change.rs:1020:5:
+SHIPPED a5
+{
+  "checkpoint": {
+    "awaiting_human": [],
+    "blockers": [],
+    "bugs": [],
+    "completed": [],
+    "decisions": [
+      "SYNTHETIC-human decided \"Implementation review of a5\": \"pass\" (a test); recorded by SYNTHETIC-agent; a relayed claim, not authenticated; ran specsync change review a5 as SYNTHETIC-reviewer with verdict pass"
+    ],
+    "intent_scope": "",
+    "modules": [],
+    "native_change": "a5",
+    "next_action": "New cycle from intent after reset: Ready to ship. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action.",
+    "objective": "Ship a5",
+    "observations": [],
+    "open_questions": [],
+    "references": {
+      "cases": [],
+      "criteria": [],
+      "design": [],
+      "files": [],
+      "requirements": []
+    },
+    "run_consents": [],
+    "schema_version": 2,
+    "stage": {
+      "callers": [],
+      "current": "accept",
+      "iteration": 1,
+      "status": "active"
+    }
+  },
+  "relayed_decision": {
+    "gate": "Implementation review of a5",
+    "native_step": {
+      "ran": null,
+      "why": "ran specsync change review a5 as SYNTHETIC-reviewer with verdict pass"
+    },
+    "provenance": "a relayed claim, not authenticated: it records who is said to have decided, not proof that they did",
+    "relayed_by": {
+      "actor": "SYNTHETIC-reviewer",
+      "decided_by": "SYNTHETIC-human",
+      "native": "specsync change review a5",
+      "recorded_by": "SYNTHETIC-agent",
+      "where": "a test",
+      "words": "pass"
+    }
+  },
+  "saved": true,
+  "schema_version": 1
+}
+{
+  "applied": {
+    "from": "accept",
+    "gate": "native:archived",
+    "journal_post": {
+      "post": "knowledge/journal/2026-11-12-ship-a5.md",
+      "status": "written"
+    },
+    "kind": "advance",
+    "librarian_index": {
+      "index": "knowledge/index.md",
+      "status": "refreshed"
+    },
+    "session_archive": {
+      "id": "2026-11-12-ship-a5",
+      "kept": [
+        ".chough/sessions/2026-11-12-ship-a5/session.md"
+      ],
+      "status": "archived",
+      "story": ".chough/archive/sessions/2026-11-12-ship-a5.md"
+    },
+    "steps": [
+      {
+        "from": "accept",
+        "gate": "native:archived",
+        "to": "done"
+      }
+    ],
+    "to": "done"
+  },
+  "authority": "Native SpecSync status decides lifecycle gates; Chough never writes native approval or review, and a relayed decision it keeps is a claim, not authenticated.",
+  "awaiting_human": [],
+  "native_change": "a5",
+  "recent_transitions": [
+    {
+      "at_unix_seconds": 1794469098,
+      "from": "intent",
+      "gate": "native:archived",
+      "id": "t-1b4874",
+      "kind": "reset",
+      "reason": "Ready to ship",
+      "refresh": [
+        "accept: native verification and the human implementation review"
+      ],
+      "revision": null,
+      "schema_version": 1,
+      "to": "accept"
+    },
+    {
+      "at_unix_seconds": 1794469098,
+      "drives": "review",
+      "from": "accept",
+      "gate": null,
+      "holds": "accept",
+      "id": "t-4664cc",
+      "kind": "gate-opened",
+      "reason": "Implementation review of a5",
+      "refresh": [],
+      "revision": null,
+      "schema_version": 1,
+      "to": "accept"
+    },
+    {
+      "at_unix_seconds": 1794469099,
+      "by": {
+        "agent": "claude-code",
+        "terminal": "t382"
+      },
+      "from": "accept",
+      "gate": null,
+      "id": "t-d9b8d3",
+      "kind": "gate-closed",
+      "reason": "Implementation review of a5",
+      "refresh": [],
+      "relayed_by": {
+        "actor": "SYNTHETIC-reviewer",
+        "decided_by": "SYNTHETIC-human",
+        "native": "specsync change review a5",
+        "recorded_by": "SYNTHETIC-agent",
+        "where": "a test",
+        "words": "pass"
+      },
+      "revision": "0d0048e609761071534fd5e5d4a77ea716521e7d",
+      "schema_version": 1,
+      "to": "accept"
+    },
+    {
+      "at_unix_seconds": 1794469099,
+      "by": {
+        "agent": "claude-code",
+        "terminal": "t382"
+      },
+      "from": "accept",
+      "gate": "native:archived",
+      "id": "t-8a5660",
+      "kind": "advance",
+      "reason": null,
+      "refresh": [],
+      "revision": "0d0048e609761071534fd5e5d4a77ea716521e7d",
+      "schema_version": 1,
+      "to": "done"
+    }
+  ],
+  "schema_version": 1,
+  "stage": {
+    "callers": [],
+    "current": "done",
+    "iteration": 1,
+    "status": "active"
+  },
+  "stages": [
+    {
+      "kind": "main",
+      "name": "intent"
+    },
+    {
+      "kind": "conditional",
+      "name": "design"
+    },
+    {
+      "kind": "main",
+      "name": "plan"
+    },
+    {
+      "kind": "main",
+      "name": "build"
+    },
+    {
+      "kind": "main",
+      "name": "test"
+    },
+    {
+      "kind": "main",
+      "name": "accept"
+    },
+    {
+      "kind": "terminal",
+      "name": "done"
+    },
+    {
+      "kind": "optional",
+      "name": "release"
+    },
+    {
+      "kind": "side",
+      "name": "bugs"
+    },
+    {
+      "kind": "side",
+      "name": "validate"
+    },
+    {
+      "kind": "side",
+      "name": "librarian"
+    }
+  ],
+  "transitions_partial": false,
+  "valid_transitions": [
+    "chough stage enter release --reason <request>  [needs release consent or standing preference]",
+    "chough stage iterate --note <what changed>",
+    "chough stage back --to <intent|design|plan|build|test|accept> --reason <why>",
+    "chough stage reset [--to <stage>] --reason <why>",
+    "chough stage pause --reason <why>",
+    "chough stage enter <bugs|validate|librarian> --reason <why>  [validate needs consent or preference]"
+  ]
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_ship_that_runs_the_review_reports_it_in_native_step
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 17 filtered out; finished in 1.30s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/change.rs (target/debug/deps/change-c5f0a8258a2c0971)
+error: test failed, to rerun pass `--test change`
