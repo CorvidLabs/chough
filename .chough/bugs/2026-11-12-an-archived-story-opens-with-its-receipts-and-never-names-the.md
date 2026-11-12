@@ -3,14 +3,16 @@ kind: bug
 id: 2026-11-12-an-archived-story-opens-with-its-receipts-and-never-names-the
 aliases: []
 title: An archived story opens with its receipts and never names the bug it found
-status: open
+status: verified
 classification: product-defect
 scope: in-scope
 impact: A person reading the record meets YAML before the story and misses its bug (t38m F10a, F10b)
 criteria: []
 requirements: [REQ-history-006]
 cases: [TC-history-story-receipts-last-and-bugs-named]
-evidence: [2026-11-12-release-0-6-0/2026-11-12-tc-history-story-receipts-last-and-bugs-named]
+evidence:
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-history-story-receipts-last-and-bugs-named
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-history-story-receipts-last-and-bugs-named-9a5af0
 receipts: []
 environment: local-macos-arm64
 revision: 4e245263fe4e35b757d9b0531a0992c7cf0f884d
@@ -20,7 +22,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T23:05:20Z
-updated: 2026-11-12T23:05:20Z
+updated: 2026-11-12T23:06:39Z
 ---
 # An archived story opens with its receipts and never names the bug it found
 
@@ -36,9 +38,11 @@ Actual: Receipts first; no bug named in the body
 
 **Why it matters:** A person reading the record meets YAML before the story and misses its bug (t38m F10a, F10b)
 
-**Fix:** Not fixed yet.
+**Fix:** 5b2b5a58 (t38b's a43a34fb): the story's front matter holds no receipts; a Bugs section names each bug with its status; the receipts follow the closing line under ## Receipts; older stories still read (REQ-history-006)
 
 ## Log
 
 - 2026-11-12T23:05:20Z · Reported (t38m's third fresh-eyes round report, F10 (relayed by t370); fixed by t38b); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-history-story-receipts-last-and-bugs-named · by claude-code (hc t382)
 - 2026-11-12T23:05:20Z · Added despite similar reports: The verified story bugs fixed its verified list and its stale stage_status and next; this one is the story's layout: receipts before the body, and no bug named in it · by claude-code (hc t382)
+- 2026-11-12T23:06:28Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-history-story-receipts-last-and-bugs-named-9a5af0; fix: t38b's a43a34fb: the story's front matter holds no receipts; a Bugs section names each bug with its status; the receipts follow the closing line under ## Receipts; older stories still read (REQ-history-006). Red at 4e245263, green at 421a7034 · by claude-code (hc t382)
+- 2026-11-12T23:06:39Z · fix: 5b2b5a58 (t38b's a43a34fb): the story's front matter holds no receipts; a Bugs section names each bug with its status; the receipts follow the closing line under ## Receipts; older stories still read (REQ-history-006). Fix line names the commits on leif/human-first-records · by claude-code (hc t382)

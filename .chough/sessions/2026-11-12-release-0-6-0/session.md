@@ -55,6 +55,12 @@ cases:
   - TC-cli-scope-gate-summary-names-each-delta-first
   - TC-cli-intent-gate-summary-names-the-criteria-and-hi-files
   - TC-reporting-timing-starts-cycle-1-at-the-start-entry
+  - TC-cli-context-gives-the-session-as-markdown
+  - TC-cli-failed-run-body-says-why
+  - TC-cli-context-gives-the-timeline-and-bugs-as-markdown
+  - TC-history-story-receipts-last-and-bugs-named
+  - TC-records-migrate-evidence-verified-lines-link-entries
+  - TC-records-migrate-evidence-story-lines-are-receipt-lines
 design: []
 files: []
 observations:
@@ -263,6 +269,12 @@ observations:
   - 2026-11-12-tc-history-story-receipts-last-and-bugs-named
   - 2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries
   - 2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines
+  - 2026-11-12-tc-cli-context-gives-the-session-as-markdown-ae263f
+  - 2026-11-12-tc-cli-failed-run-body-says-why-ed1722
+  - 2026-11-12-tc-cli-context-gives-the-timeline-and-bugs-as-markdown-4a8787
+  - 2026-11-12-tc-history-story-receipts-last-and-bugs-named-9a5af0
+  - 2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-540c6d
+  - 2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-784592
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -326,6 +338,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Round-3 F9 (t38c, REQ-cli-008): a stage move prints a short summary and its full JSON under --json; red at fc6ec27a, green at 0ad3ad56; the full suite passed 708 of 708 there
 - Round-3 F12b (t38c, REQ-records-009): the migrate preview prints the plan as text, the same plan and digest under --json; red at dc25d77d, green at c6859854
 - t37f's round-3 batch: F8, F6, F11, F7, F4 and F5; red at 7fb91195, green at e0131c09, five bugs verified
+- t38b's round-3 batch: F10a to F10e (the story's layout and bugs, a failed run's reason, context as Markdown, migrated lines); red at 4e245263, green at 421a7034, four bugs verified; every round-3 finding integrated
 
 ## Decisions and why
 
@@ -547,6 +560,12 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test sessions -- --exact a_story_puts_its_receipts_last_and_names_its_bugs for TC-history-story-receipts-last-and-bugs-named: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-story-receipts-last-and-bugs-named.md)
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_sessions_verified_lines_link_the_carried_entries for TC-records-migrate-evidence-verified-lines-link-entries: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries.md)
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_storys_verified_lines_are_receipt_lines for TC-records-migrate-evidence-story-lines-are-receipt-lines: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines.md)
+- [Ran cargo test --locked --test cli -- --exact context_gives_the_session_as_markdown for TC-cli-context-gives-the-session-as-markdown: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-context-gives-the-session-as-markdown-ae263f.md)
+- [Ran cargo test --locked --test cases -- --exact a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines for TC-cli-failed-run-body-says-why: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-failed-run-body-says-why-ed1722.md)
+- [Ran cargo test --locked --test cli -- --exact context_gives_the_timeline_and_open_bugs_as_markdown for TC-cli-context-gives-the-timeline-and-bugs-as-markdown: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-context-gives-the-timeline-and-bugs-as-markdown-4a8787.md)
+- [Ran cargo test --locked --test sessions -- --exact a_story_puts_its_receipts_last_and_names_its_bugs for TC-history-story-receipts-last-and-bugs-named: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-story-receipts-last-and-bugs-named-9a5af0.md)
+- [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_sessions_verified_lines_link_the_carried_entries for TC-records-migrate-evidence-verified-lines-link-entries: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-verified-lines-link-entries-540c6d.md)
+- [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_storys_verified_lines_are_receipt_lines for TC-records-migrate-evidence-story-lines-are-receipt-lines: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-784592.md)
 
 ## Open threads
 
