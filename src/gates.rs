@@ -537,10 +537,51 @@ fn list(root: &Path, as_json: bool) -> Result<()> {
             gate.number, gate.session, gate.holds, gate.drives, gate.summary, gate.digest
         );
     }
-    println!(
-        "List {id}. Record one reply for listed gates with `chough gate record {id} --gates <n>[,<n>…] --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`."
-    );
+    // F6 (REQ-cli-061): the list ends with how to reply, `gate record` for the gates
+    // whose change is not verifying and the ship for each verifying one, which
+    // `gate record` refuses.
+    let (ships, records): (Vec<&Listed>, Vec<&Listed>) = saved
+        .gates
+        .iter()
+        .partition(|gate| verifying(root, gate).is_some());
+    let mut footer = format!("List {id}.");
+    if !records.is_empty() {
+        let numbers: Vec<String> = records.iter().map(|gate| gate.number.to_string()).collect();
+        footer.push_str(&format!(
+            " Record one reply for {} {} with `chough gate record {id} --gates <n>[,<n>…] {RELAY}`.",
+            if numbers.len() == 1 { "gate" } else { "gates" },
+            spoken_list(&numbers)
+        ));
+    }
+    for gate in ships {
+        let change = verifying(root, gate).unwrap_or_default();
+        footer.push_str(&format!(
+            "\nGate {}'s change {change} is verifying, so it closes through the ship, which runs the review as the human and closes the gate after the native ship: `chough change ship {change} --list {id} --gate {} {RELAY}`.",
+            gate.number, gate.number
+        ));
+    }
+    println!("{footer}");
     Ok(())
+}
+
+/// The relay placeholders a reply names.
+const RELAY: &str = "--decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
+
+/// The change of listed `gate` when its `state.json` says it is verifying.
+fn verifying<'a>(root: &Path, gate: &'a Listed) -> Option<&'a str> {
+    let change = gate.change.as_deref()?;
+    change_state(root, change)
+        .is_some_and(|state| state["state"] == "verifying")
+        .then_some(change)
+}
+
+/// `items` read aloud: "1", "1 and 2", "1, 2 and 3".
+fn spoken_list(items: &[String]) -> String {
+    match items {
+        [] => String::new(),
+        [only] => only.clone(),
+        [head @ .., last] => format!("{} and {last}", head.join(", ")),
+    }
 }
 
 /// The active session's key, when one is clear.
@@ -615,15 +656,11 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
     let mut checked: Vec<Listed> = vec![];
     for number in &numbers {
         let listed = check_listed(root, &args.list, *number)?;
-        let verifying = listed
-            .change
-            .as_deref()
-            .and_then(|change| change_state(root, change))
-            .is_some_and(|state| state["state"] == "verifying");
-        if verifying {
-            let change = listed.change.as_deref().unwrap_or_default();
+        // F6: the reason is how such a gate closes, never that Chough's records may not
+        // be written, which verification_ignored_paths allows.
+        if let Some(change) = verifying(root, &listed) {
             bail!(
-                "refused:verifying: gate {number} (\"{}\") belongs to {change}, which is verifying, and nothing may write .chough/ before it ships, so nothing was written.\nRun `chough change ship {change} --list {} --gate {number} --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+                "refused:verifying: gate {number} (\"{}\") belongs to {change}, which is verifying, so it closes through the ship, which runs the review as the human and closes the gate after the native ship; nothing was written.\nRun `chough change ship {change} --list {} --gate {number} {RELAY}`.",
                 listed.gate,
                 args.list
             );

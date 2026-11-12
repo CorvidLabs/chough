@@ -1202,7 +1202,11 @@ Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
 
 Each summary's digest is the SHA-256 of its text. The list is saved untracked as
 `.chough/local/gate-lists/<list>.json`, where `<list>` is the first 12 hex digits of its
-SHA-256. Listing makes no native read and writes no tracked file.
+SHA-256. Listing makes no native read and writes no tracked file. The text list ends
+with how to reply: one `chough gate record <list> --gates <n>[,<n>…]` reply, with the
+relay, for the gates whose change is not verifying, and for each gate whose change's
+`state.json` state is `verifying`, `chough change ship <id> --list <list> --gate <n>`
+with the relay, since such a gate closes through the ship.
 
 `chough gate record <list> --gates <n>[,<n>…] --decided-by <who> --words <words>
 --where <where> --recorded-by <agent> [--verdict pass|block] [--no-native]` is one reply
@@ -1216,8 +1220,11 @@ recovery for:
   a gate no longer open (`refused:gate-not-open`), or a summary that changed since it
   was listed (`refused:summary-changed`): run `chough gate list`;
 - a gate of another open session (`refused:other-session`): `chough session use <key>`;
-- a gate whose change is verifying (`refused:verifying`): `chough change ship <id>
-  --list <list> --gate <n>` with the relay;
+- a gate whose change is verifying (`refused:verifying`): such a gate closes through
+  the ship, which runs the review as the human and closes the gate after the native
+  ship, so the refusal names `chough change ship <id> --list <list> --gate <n>` with
+  the relay. Chough's records may still be written meanwhile where
+  `verification_ignored_paths` lists them;
 - more than one named gate that drives a native step (`refused:several-native-steps`):
   record them one at a time.
 
