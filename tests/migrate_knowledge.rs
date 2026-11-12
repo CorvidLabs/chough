@@ -61,7 +61,7 @@ fn preview(root: &Path) -> Value {
     command
         .arg("--root")
         .arg(root)
-        .arg("migrate")
+        .args(["migrate", "--json"])
         .env("XDG_CONFIG_HOME", root.join(common::USER_CONFIG));
     for name in common::ACTOR_VARIABLES {
         command.env_remove(name);
@@ -264,7 +264,7 @@ fn a_0_5_vault_is_planned_with_removals_kept_files_leaks_and_a_current_index() {
     // rebuild: the planned writes are byte for byte what `library index` builds, and
     // every kept file is unchanged.
     fixture.commit("the 0.5.x vault");
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     fixture.ok(&[
         "migrate",
@@ -364,7 +364,7 @@ fn a_case_only_rename_reaches_git_under_the_new_name() {
     let fixture = Fixture::new();
     vault_0_5(&fixture);
     fixture.commit("the 0.5.x vault");
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     fixture.ok(&[
         "migrate",

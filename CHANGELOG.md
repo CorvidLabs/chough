@@ -204,10 +204,12 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
 - From a third fresh-eyes round: the workflow skill and `docs/cli.md` say that a lesson
   in `context.md` starts with its `YYYY-MM-DD` date, the only form the knowledge index
   counts, with an example (REQ-cli-015); `chough init --host claude` prints the line
-  to add to `CLAUDE.md` as `claude_md`, writing nothing to it (REQ-cli-016); and every
+  to add to `CLAUDE.md` as `claude_md`, writing nothing to it (REQ-cli-016); every
   `chough stage` move prints a short text summary, at most 10 lines naming what it
   applied, the move, the stage reached and the next action, with its full JSON report,
-  every field as before, under `--json` (REQ-cli-008).
+  every field as before, under `--json` (REQ-cli-008); and `chough migrate` previews the
+  plan as text, since a person consents to it, with the same plan and digest as JSON
+  under `--json` (REQ-records-009).
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.
 - Stopping a command on macOS no longer leaves behind a child the command forked as the

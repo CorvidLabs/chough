@@ -51,7 +51,7 @@ fn preview(root: &Path) -> Value {
     let output = Command::new(env!("CARGO_BIN_EXE_chough"))
         .arg("--root")
         .arg(root)
-        .arg("migrate")
+        .args(["migrate", "--json"])
         .output()
         .unwrap();
     assert!(

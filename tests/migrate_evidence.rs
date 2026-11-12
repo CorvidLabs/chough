@@ -229,7 +229,7 @@ fn legacy(fixture: &Fixture, id: &str) -> Value {
 
 /// Preview, then apply with the preview's digest and consent; returns both.
 fn migrate(fixture: &Fixture) -> (Value, Value) {
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert_eq!(plan["unaccounted"], json!([]), "{plan:#}");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
@@ -897,8 +897,11 @@ fn names_are_deterministic_and_an_interrupted_apply_resumes() {
         &[PRODUCT, twin],
     );
     fixture.commit("two observations that would take one name");
-    let plan = fixture.ok(&["migrate"]);
-    assert_eq!(fixture.ok(&["migrate"])["plan_digest"], plan["plan_digest"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        fixture.ok(&["migrate", "--json"])["plan_digest"],
+        plan["plan_digest"]
+    );
     // Named in observed-then-old-ID order: the twin's ID sorts first and keeps the
     // name; the other takes the suffix of its own old ID.
     let first = alias(&plan, twin);
@@ -925,7 +928,7 @@ fn names_are_deterministic_and_an_interrupted_apply_resumes() {
     let interrupted = fixture.root().join(&first);
     fs::create_dir_all(interrupted.parent().unwrap()).unwrap();
     fs::write(&interrupted, &planned).unwrap();
-    let resumed = fixture.ok(&["migrate"]);
+    let resumed = fixture.ok(&["migrate", "--json"]);
     assert_eq!(resumed["plan_digest"], plan["plan_digest"], "{resumed:#}");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);

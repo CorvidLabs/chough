@@ -136,7 +136,8 @@ report through the inbox.
 
 A 0.5.x project (`.chough/session.json`, JSON sessions or bugs, `history/`,
 `transitions.jsonl`) is refused as `refused:unmigrated`. `chough migrate` previews its
-upgrade, writes nothing and prints a digest. Then
+upgrade as text for the human (`--json` for JSON), writes nothing and prints a digest.
+Then
 `chough migrate --apply <digest> --consent "<who, their words, where>"` applies that
 exact plan, only with the human's consent, never while a native change is open, and
 only when Git holds every byte it removes. It writes a receipt in

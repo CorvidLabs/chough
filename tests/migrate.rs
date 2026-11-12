@@ -74,7 +74,7 @@ fn sha256(bytes: &[u8]) -> String {
 fn migrate_previews_applies_and_keeps_every_byte_in_git() {
     let fixture = sessions_project("v0.5.0");
     let before = files(fixture.root());
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert_eq!(files(fixture.root()), before, "the preview wrote something");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     assert_eq!(plan["unaccounted"], serde_json::json!([]), "{plan:#}");
@@ -128,7 +128,7 @@ fn migrate_previews_applies_and_keeps_every_byte_in_git() {
     let session = ".chough/sessions/fixture-first.json";
     let committed = fixture.read(session);
     fixture.write(session, &committed.replace("\"plan\"", "\"plan\" "));
-    let replanned = fixture.ok(&["migrate"])["plan_digest"]
+    let replanned = fixture.ok(&["migrate", "--json"])["plan_digest"]
         .as_str()
         .unwrap()
         .to_string();
@@ -140,7 +140,7 @@ fn migrate_previews_applies_and_keeps_every_byte_in_git() {
     fixture.write(session, &committed);
     assert_eq!(files(fixture.root()), before);
 
-    let replanned = fixture.ok(&["migrate"]);
+    let replanned = fixture.ok(&["migrate", "--json"]);
     for key in plan.as_object().unwrap().keys() {
         assert_eq!(
             replanned[key], plan[key],
@@ -203,7 +203,7 @@ fn every_release_fixture_previews_with_nothing_unaccounted_for_sessions() {
     for tag in ["v0.1.0", "v0.2.0", "v0.3.0", "v0.4.0", "v0.5.0"] {
         let fixture = sessions_project(tag);
         let before = files(fixture.root());
-        let plan = fixture.ok(&["migrate"]);
+        let plan = fixture.ok(&["migrate", "--json"]);
         assert_eq!(
             plan["unaccounted"],
             serde_json::json!([]),
@@ -215,7 +215,7 @@ fn every_release_fixture_previews_with_nothing_unaccounted_for_sessions() {
             before,
             "{tag}: the preview wrote something"
         );
-        let again = fixture.ok(&["migrate"]);
+        let again = fixture.ok(&["migrate", "--json"]);
         assert_eq!(
             again["plan_digest"], plan["plan_digest"],
             "{tag}: the plan is not stable"
@@ -260,7 +260,7 @@ fn fixture_dir(name: &str) -> std::path::PathBuf {
 
 /// Preview, then apply the previewed digest with `consent`.
 fn migrate(fixture: &Fixture, consent: Option<&str>) -> (Value, Value) {
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert_eq!(plan["unaccounted"], serde_json::json!([]), "{plan:#}");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     let mut args = vec!["migrate", "--apply", digest.as_str()];
@@ -607,7 +607,7 @@ fn a_weakened_archive_restores_every_removed_file_and_refuses() {
         &fixture.root().join("bin/specsync"),
         VALIDITY_STUB.as_bytes(),
     );
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     let digest = plan["plan_digest"].as_str().unwrap();
     let refused = fixture.fails(&["migrate", "--apply", digest, "--consent", CONSENT]);
     assert!(refused.contains("refused:archive-weakened"), "{refused}");
@@ -677,7 +677,7 @@ fn an_interrupted_apply_completes_to_the_uninterrupted_result() {
     );
 
     let stopped = migrate_project("adopted", &extra);
-    let first = stopped.ok(&["migrate"]);
+    let first = stopped.ok(&["migrate", "--json"]);
     assert_eq!(first["plan_digest"], plan["plan_digest"]);
     // The stop: every planned file but the last written, with its planned bytes. A
     // file that differs only in case from a planned removal (knowledge/index.md for
@@ -703,7 +703,7 @@ fn an_interrupted_apply_completes_to_the_uninterrupted_result() {
         }
         stopped.write(path, &whole.read(path));
     }
-    let again = stopped.ok(&["migrate"]);
+    let again = stopped.ok(&["migrate", "--json"]);
     assert_eq!(
         again["plan_digest"], plan["plan_digest"],
         "the files an interrupted apply wrote changed the plan"
@@ -754,7 +754,7 @@ fn an_interrupted_apply_completes_to_the_uninterrupted_result() {
 #[test]
 fn an_existing_target_with_other_bytes_refuses_and_writes_nothing_more() {
     let fixture = migrate_project("adopted", &[]);
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     let target = planned(&plan, "-adopter.md");
     fixture.write(&target, "SYNTHETIC other bytes\n");
     let before = files(fixture.root());
@@ -844,7 +844,7 @@ fn every_legacy_file_and_artifact_is_accounted_for() {
             (run, "{\"schema_version\": 1}\n"),
         ],
     );
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     for path in [
         ".chough/session.v1.json",
         ".chough/pruned.jsonl",
@@ -1011,7 +1011,7 @@ fn an_unmigrated_tree_is_refused_with_the_migrate_command() {
     }
 
     // migrate, doctor and skill run on the same tree; clap answers --help and --version.
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert!(
         plan["apply"]
             .as_str()
@@ -1259,7 +1259,7 @@ fn a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove() {
     fixture.commit("migrated");
     // No 0.5.x record is left, so the preview carries and removes nothing: it says
     // there is nothing to migrate and gives no plan digest.
-    let again = fixture.ok(&["migrate"]);
+    let again = fixture.ok(&["migrate", "--json"]);
     assert!(again["nothing_to_do"].is_string(), "{again:#}");
     assert!(again["plan_digest"].is_null(), "{again:#}");
     assert!(fixture.exists(fixture_path));
@@ -1375,7 +1375,7 @@ fn the_preview_names_open_native_changes_that_make_apply_refuse() {
     )];
     let fixture = migrate_project("adopted", &extra);
     let before = files(fixture.root());
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert_eq!(
         plan["apply_refused"]["refusal"], "refused:change-open",
         "{plan:#}"
@@ -1390,7 +1390,7 @@ fn the_preview_names_open_native_changes_that_make_apply_refuse() {
     let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
     assert!(refused.contains("refused:change-open"), "{refused}");
     std::fs::remove_dir_all(fixture.root().join(".specsync/changes/open-work")).unwrap();
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert!(plan["apply_refused"].is_null(), "{plan:#}");
 }
 
@@ -1499,7 +1499,7 @@ fn a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest() 
     never.commit("a 0.6.0 project");
     for (label, project) in [("migrated", &migrated), ("never 0.5.x", &never)] {
         let before = files(project.root());
-        let preview = project.ok(&["migrate"]);
+        let preview = project.ok(&["migrate", "--json"]);
         assert!(
             files(project.root()) == before,
             "{label}: the preview wrote"

@@ -302,6 +302,9 @@ pub(super) struct MigrateArgs {
     /// as a relayed claim; or a standing `migration` preference gives it.
     #[arg(long, requires = "apply")]
     consent: Option<String>,
+    /// Print the preview's plan as JSON instead of text; the apply prints JSON either way.
+    #[arg(long)]
+    json: bool,
 }
 
 /// One redaction the plan makes: the file, the field and the kind, never the text.
@@ -415,10 +418,17 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
         // REQ-records-009: on a tree with no 0.5.x record the preview says there is
         // nothing to migrate and gives no plan digest, as the apply there reports
         // nothing to do.
-        None if plan.sources.is_empty() => print_json(&json!({
-            "schema_version": 1,
-            "nothing_to_do": NOTHING_TO_MIGRATE,
-        })),
+        None if plan.sources.is_empty() => {
+            if args.json {
+                print_json(&json!({
+                    "schema_version": 1,
+                    "nothing_to_do": NOTHING_TO_MIGRATE,
+                }))
+            } else {
+                println!("Nothing to migrate: {NOTHING_TO_MIGRATE}.");
+                Ok(())
+            }
+        }
         None => {
             let mut view = plan.view();
             view["plan_digest"] = json!(digest);
@@ -439,10 +449,160 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
                     ),
                 });
             }
-            print_json(&view)
+            // REQ-records-009 (F12b): a person consents to the plan, so it is text by
+            // default, and the same plan and digest as JSON under --json.
+            if args.json {
+                print_json(&view)
+            } else {
+                print!("{}", preview_text(&view));
+                Ok(())
+            }
         }
         Some(wanted) => apply(root, &plan, &digest, &wanted, args.consent.as_deref()),
     }
+}
+
+/// The preview as text, for the person who consents to it (REQ-records-009, F12b): the
+/// plan the JSON gives, section by section with `none` under an empty one, then any
+/// refusal the apply would give now, the plan's digest and the apply command.
+fn preview_text(view: &Value) -> String {
+    fn section(out: &mut String, heading: &str, items: Vec<String>) {
+        out.push_str(&format!("\n{heading} ({}):\n", items.len()));
+        if items.is_empty() {
+            out.push_str("none\n");
+        }
+        for item in items {
+            out.push_str(&format!("- {item}\n"));
+        }
+    }
+    let text = |value: &Value| value.as_str().unwrap_or_default().to_string();
+    let map = |key: &str| view[key].as_object().cloned().unwrap_or_default();
+    let list = |key: &str| view[key].as_array().cloned().unwrap_or_default();
+    let mut out =
+        String::from("Migration plan from Chough 0.5.x to 0.6.0. This preview writes nothing.\n");
+    let becomes = map("becomes");
+    let removed = map("removed");
+    section(
+        &mut out,
+        "Reads",
+        map("sources")
+            .iter()
+            .map(|(path, sha)| {
+                let targets: Vec<String> = becomes
+                    .get(path)
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .map(|target| format!("`{}`", text(target)))
+                    .collect();
+                let fate = if !targets.is_empty() {
+                    format!("becomes {}", targets.join(", "))
+                } else if removed.contains_key(path) {
+                    "is removed without carrying (below)".to_string()
+                } else {
+                    "becomes no file".to_string()
+                };
+                format!("`{path}` {} {fate}", text(sha))
+            })
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Writes",
+        list("writes")
+            .iter()
+            .map(|write| {
+                format!(
+                    "`{}` {} bytes {}",
+                    text(&write["path"]),
+                    write["bytes"],
+                    text(&write["sha256"])
+                )
+            })
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Redactions",
+        list("redactions")
+            .iter()
+            .map(|redaction| {
+                format!(
+                    "`{}` {}: {}",
+                    text(&redaction["file"]),
+                    text(&redaction["field"]),
+                    text(&redaction["kind"])
+                )
+            })
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Removes without carrying",
+        removed
+            .iter()
+            .map(|(path, why)| format!("`{path}`: {}", text(why)))
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Keeps byte for byte",
+        map("kept")
+            .iter()
+            .map(|(path, why)| format!("`{path}`: {}", text(why)))
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Kept with leaks, to fix by hand",
+        map("kept_with_leaks")
+            .iter()
+            .map(|(path, kinds)| {
+                let kinds: Vec<String> = kinds.as_array().into_iter().flatten().map(text).collect();
+                format!("`{path}`: {}", kinds.join(", "))
+            })
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Not carried",
+        list("gaps").iter().map(text).collect(),
+    );
+    section(
+        &mut out,
+        "Unaccounted, which the apply refuses",
+        list("unaccounted")
+            .iter()
+            .map(|path| format!("`{}`", text(path)))
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Aliases",
+        map("aliases")
+            .iter()
+            .map(|(old, new)| format!("`{old}` -> `{}`", text(new)))
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Follow-ups",
+        list("follow_ups").iter().map(text).collect(),
+    );
+    out.push_str(&format!("\n{}\n", text(&view["git_history"])));
+    if view["apply_refused"].is_object() {
+        out.push_str(&format!(
+            "\nThe apply refuses now ({}): {}\n",
+            text(&view["apply_refused"]["refusal"]),
+            text(&view["apply_refused"]["why"])
+        ));
+    }
+    out.push_str(&format!(
+        "\nPlan digest: {}\nApply this plan with the human's consent:\n  {}\n",
+        text(&view["plan_digest"]),
+        text(&view["apply"])
+    ));
+    out
 }
 
 /// At most this many archive validity reads run at once (REQ-records-009).
