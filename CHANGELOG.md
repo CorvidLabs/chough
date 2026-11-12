@@ -181,6 +181,26 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   verifying a bug with no Fix names the passing run (REQ-cli-012); a migration receipt
   says `none` under an empty section (REQ-records-009); and every `session.md` ends
   with exactly one newline, so `git diff --check` passes on a migration commit.
+- From a second fresh-eyes round: closing a gate sets the next action to the step its
+  decision allows, `chough stage advance`, `chough change ship <id>`, `chough stage back
+  --to build` or, after `--no-native`, `chough checkpoint --next-action`, so `chough
+  next` never names itself; at accept while the change is approved, `next` names the
+  review preparation in order; and `next` and `status` keep every command whole,
+  cutting only the text around it (REQ-cli-021). `chough gate list` names `chough
+  change ship <id> --list <list> --gate <n>` for a gate whose change is verifying, and
+  `gate record`'s refusal there says why (REQ-cli-061). `chough evidence add` needs only
+  `--criterion`, takes `--requirement` and `--contract` as optional, and accepts a
+  requirement the session's change adds in its delta (REQ-cli-005). `chough doctor`
+  reports `merge_driver_outdated` when the `chough` the merge drivers run through
+  `PATH` is missing or older than the running one (REQ-history-012). `chough migrate`
+  on a migrated tree says there is nothing to migrate and gives no digest, and a
+  receipt has one Follow-up heading (REQ-records-009). A close that runs no native step
+  says why in its `native_step` and names its decision once; `session list` shows an
+  archived story as finished; an executed case run's provenance no longer denies that
+  the test ran; and without a native change `next` says only that none is recorded,
+  with no trace IDs in its reasons. `docs/cli.md` shows a minimal HI file, a baseline
+  `requirements.md` and SpecSync's Requirement evidence table for a new project, and
+  says that `chough stage skip` skips the current stage.
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.
 - Stopping a command on macOS no longer leaves behind a child the command forked as the
