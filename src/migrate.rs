@@ -404,10 +404,21 @@ fn sha256(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 
+/// What a preview says on a tree with no 0.5.x record (REQ-records-009).
+const NOTHING_TO_MIGRATE: &str =
+    "no 0.5.x record is left, so there is nothing to migrate and no plan digest to apply";
+
 pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
     let plan = plan(root)?;
     let digest = plan.digest();
     match args.apply {
+        // REQ-records-009: on a tree with no 0.5.x record the preview says there is
+        // nothing to migrate and gives no plan digest, as the apply there reports
+        // nothing to do.
+        None if plan.sources.is_empty() => print_json(&json!({
+            "schema_version": 1,
+            "nothing_to_do": NOTHING_TO_MIGRATE,
+        })),
         None => {
             let mut view = plan.view();
             view["plan_digest"] = json!(digest);
