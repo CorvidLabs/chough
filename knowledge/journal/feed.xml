@@ -2,7 +2,14 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>1970-01-01T00:00:00Z</updated>
+<updated>2026-11-12T14:35:02Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>Ship human-first Chough records as one change, Chough 0.6.0: readable one-file Markdown records, date+slug session folders with agent/ working files, one-file archived stories, journal and feed, one source of truth, no leaks, gate approvals as the approving human; dogfooded on the chough repo only</title>
+<id>urn:chough:journal:2026-11-12-ship-human-first-chough-records-as-one-change-chough-0-6-0</id>
+<updated>2026-11-12T14:35:02Z</updated>
+<link href="2026-11-12-ship-human-first-chough-records-as-one-change-chough-0-6-0.md"/>
+<category term="shipped"/>
+</entry>
 </feed>

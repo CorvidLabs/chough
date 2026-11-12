@@ -24,7 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
-- none yet
+- [Ship human-first Chough records as one change, Chough 0.6.0: readable one-file Markdown records, date+slug session folders with agent/ working files, one-file archived stories, journal and feed, one source of truth, no leaks, gate approvals as the approving human; dogfooded on the chough repo only](journal/2026-11-12-ship-human-first-chough-records-as-one-change-chough-0-6-0.md) (2026-11-12, shipped)
 
 ## Where things live
 

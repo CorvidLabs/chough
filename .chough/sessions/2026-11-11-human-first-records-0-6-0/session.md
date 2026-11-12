@@ -5,7 +5,7 @@ aliases: [human-first-records-0-6-0]
 objective: "Ship human-first Chough records as one change, Chough 0.6.0: readable one-file Markdown records, date+slug session folders with agent/ working files, one-file archived stories, journal and feed, one source of truth, no leaks, gate approvals as the approving human; dogfooded on the chough repo only"
 intent_scope: DRIVE
 modules: [cli, reporting, history]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -138,4 +138,14 @@ Ship human-first Chough records as one change, Chough 0.6.0: readable one-file M
   - native_change: chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an
   - gate: native:verifying
   - revision: 7bb490f38e6ac06edca054a0a168008796edfa7a
+- 2026-11-12T14:35:01Z · direct-native-write · accept → accept ·  ^t-3afaaf
+  - native_change: chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an
+  - revision: 5921ea60f6bc6f543acef94bdfaee707cb3b4608
+  - direct_write: {"change":"chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an","files":[{"path":"state.json","change":"removed"},{"path":"approvals.json","change":"removed"},{"path":"verification.json","change":"removed"},{"path":"verification-attempts.json","change":"removed"}],"before_state":"verifying","after_state":null}
+  - by: claude-code (hc t382)
+- 2026-11-12T14:35:01Z · advance · accept → done · Leif accepted (scoped review pass at 8421201d); shipped and archived on SpecSync 6.3.0 at 8473337b; repository migrated to 0.6.0 records at 5921ea60 ^t-a7cfa0
+  - native_change: chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an
+  - gate: native:archived
+  - revision: 5921ea60f6bc6f543acef94bdfaee707cb3b4608
+  - by: claude-code (hc t382)
 
