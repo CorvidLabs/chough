@@ -695,7 +695,6 @@ fn chough_writes_after_check_commit_leave_verification_current() {
 /// Chough write like the others once its entry lives under `.chough/sessions/`.
 #[cfg(unix)]
 #[test]
-#[ignore = "plan step 4: evidence add still writes .chough/evidence/, outside the three prefixes"]
 fn chough_evidence_add_after_check_commit_leaves_verification_current() {
     if !real_specsync() {
         return;
