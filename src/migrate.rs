@@ -414,6 +414,20 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
             view["apply"] = json!(format!(
                 "chough migrate --apply {digest} --consent \"<who consented, their words and where>\""
             ));
+            // REQ-records-009: say up front that the apply will refuse while a native
+            // change is open, naming each. It stays outside the digest, which names only
+            // the conversion.
+            let open = open_native_changes(root)?;
+            if !open.is_empty() {
+                view["apply_refused"] = json!({
+                    "refusal": "refused:change-open",
+                    "changes": open,
+                    "why": format!(
+                        "native change {} is not archived, and `--apply` refuses while a change is open; archive it (or finish it) first, then run `chough migrate` again",
+                        open.join(", ")
+                    ),
+                });
+            }
             print_json(&view)
         }
         Some(wanted) => apply(root, &plan, &digest, &wanted, args.consent.as_deref()),
