@@ -170,6 +170,12 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   with exactly one newline, so `git diff --check` passes on a migration commit.
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.
+- Stopping a command on macOS no longer leaves behind a child the command forked as the
+  stop arrived: Chough signals the command's process group until no live member is
+  left, for at most 500 ms, where one kill could miss a member the group gained while
+  it was signalled (FLOW-14). The test stand-ins are also warmed at setup, since macOS
+  checks each newly written executable on its first run, which takes seconds under
+  load; three flaky tests are fixed by these two changes and #172.
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
   of `recorded` (#60, REQ-cli-011, REQ-cli-017).

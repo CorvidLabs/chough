@@ -18,7 +18,7 @@ artifact: tasks
 - [x] A few cross-project lessons in knowledge/lessons/, each from recorded evidence.
 - [x] The fresh-eyes bugs (t38j): each fixed red then green and verified, the docs gap closed, the CHANGELOG and docs corrected.
 - [x] A migrated session.md ends with exactly one newline (jackdaw): red test, fix, bug red then green.
-- [ ] A stopped command leaves no child it forked as the stop arrived (t38b): the stop stress red then green, bug verified.
+- [x] A stopped command leaves no child it forked as the stop arrived (t38b): the stop stress red then green, bug verified.
 - [x] Cargo 0.6.0 and the dated CHANGELOG [0.6.0] section with the dogfood results.
 
 Plain steps, not boxes: Leif's scope approval at the Chough gate; this session's post

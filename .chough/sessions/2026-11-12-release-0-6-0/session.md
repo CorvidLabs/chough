@@ -103,6 +103,8 @@ observations:
   - 2026-11-12-tc-cli-bug-trigger-and-fix-807baa
   - 2026-11-12-tc-records-receipt-says-none-95c8f5
   - 2026-11-12-tc-records-migrated-session-md-ends-with-one-newline-fd0505
+  - 2026-11-12-red-rerun-of-the-stop-survivor-at-048a7c84-without-the-fix-7
+  - 2026-11-12-green-rerun-of-the-stop-survivor-at-36ae763d-t38b-s-fix
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -219,6 +221,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test bugs -- a_new_bugs_steps_start_with_the_labelled_trigger bug_update_fix_sets_the_fix_paragraph_and_logs_each_set verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision for TC-cli-bug-trigger-and-fix: passed (exit 0).](evidence/2026-11-12-tc-cli-bug-trigger-and-fix-807baa.md)
 - [Ran cargo test --locked --test migrate -- --exact a_receipt_section_with_nothing_to_list_says_none for TC-records-receipt-says-none: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-receipt-says-none-95c8f5.md)
 - [Ran cargo test --locked --test migrate -- --exact every_migrated_session_md_ends_with_exactly_one_newline for TC-records-migrated-session-md-ends-with-one-newline: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrated-session-md-ends-with-one-newline-fd0505.md)
+- [Red rerun of the stop survivor at 048a7c84 (without the fix): 7 of 48 loaded runs failed (peak 1-minute loads 41.0 to 64.7), each with '<signal>: the command chough started survived' (HUP 3, INT 3, TERM 1) in stopping_a_gate_list_stops_git_and_records_nothing, stopping_a_native_read_stops_specsync_and_records_nothing and stopping_a_case_run_stops_its_command_and_records_nothing; t38b's flaky_stop.sh and lane_stress.py copied unchanged, under the heavy-tests lock: the stop test binary built with Rust 1.96.0 and run 8 times at once per round beside 30 CPU busy loops and 4 F_FULLFSYNC writers, 6 rounds (48 runs)](evidence/2026-11-12-red-rerun-of-the-stop-survivor-at-048a7c84-without-the-fix-7.md)
+- [Green rerun of the stop survivor at 36ae763d (t38b's fix 16afb63a, signalling the process group until no live member is left): 0 of 48 loaded runs failed (peak 1-minute loads 54.8 to 64.0); t38b's flaky_stop.sh and lane_stress.py copied unchanged, under the heavy-tests lock: the stop test binary built with Rust 1.96.0 and run 8 times at once per round beside 30 CPU busy loops and 4 F_FULLFSYNC writers, 6 rounds (48 runs)](evidence/2026-11-12-green-rerun-of-the-stop-survivor-at-36ae763d-t38b-s-fix.md)
 
 ## Open threads
 
