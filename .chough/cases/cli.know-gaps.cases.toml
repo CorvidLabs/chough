@@ -1,0 +1,41 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# The KNOW gap list (#216): tests that already prove KNOW-3, KNOW-6 and KNOW-15, bound
+# to cases so their passing runs are recorded through Chough.
+
+[[case]]
+id = "TC-cli-vault-links-and-copies-no-text"
+title = "The index links lessons, lesson bundles and the journal and copies no text from what it links"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-3", "KNOW-15"]
+requirements = ["REQ-cli-043", "REQ-cli-044"]
+paths = ["src/vault.rs", "tests/vault.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::the_index_links_lessons_bundles_and_the_journal_and_copies_no_text passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "the_index_links_lessons_bundles_and_the_journal_and_copies_no_text"
+
+[[case]]
+id = "TC-cli-vault-snapshots-and-briefs-stay"
+title = "Existing library snapshots and briefs stay byte-identical and are linked as they are, with no snapshot or archive step left"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-6"]
+requirements = ["REQ-cli-044"]
+paths = ["src/vault.rs", "tests/vault.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::snapshots_and_briefs_stay_as_they_are_and_snapshot_and_archive_are_gone passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "snapshots_and_briefs_stay_as_they_are_and_snapshot_and_archive_are_gone"
