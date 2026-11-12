@@ -16,16 +16,26 @@
   "revision": "81d2bf8c3bc2a1705e67113cb95c14ce0a3b4c59",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-history-a-story-lists-each-entry-once-5de8b596051a6dd542630865"
+  ],
   "impact": "Every story doubles its verified list",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t38b, test stage, area records",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448883,
+      "text": "status: open -> investigating. Red at 5f167167 (leif/0.6.0-test1-red: d854ce1a plus the regression tests 558386f3): TC-history-a-story-lists-each-entry-once failed for this bug's reason; fix in bc8ac154.",
+      "observations": [
+        "OBS-tc-history-a-story-lists-each-entry-once-5de8b596051a6dd542630865"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794448165,
-  "updated_at_unix_seconds": 1794448165
+  "updated_at_unix_seconds": 1794448883
 }

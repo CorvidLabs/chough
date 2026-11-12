@@ -15,16 +15,26 @@
   "revision": "d854ce1ac06a195e0c81d2aaf22d61bd64e2c556",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-records-migrate-case-only-rename-reaches-git-c70fdbb98739586330d855ca"
+  ],
   "impact": "Every macOS upgrade from 0.5.x commits a tree whose index 0.6.0 cannot find on Linux, and the receipt names a file the commit lacks",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t384, test stage, area upgrade",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448896,
+      "text": "status: open -> investigating. Red at 5f167167 (leif/0.6.0-test1-red: d854ce1a plus the regression tests 558386f3): TC-records-migrate-case-only-rename-reaches-git failed for this bug's reason; fix in bc8ac154.",
+      "observations": [
+        "OBS-tc-records-migrate-case-only-rename-reaches-git-c70fdbb98739586330d855ca"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447508,
-  "updated_at_unix_seconds": 1794447508
+  "updated_at_unix_seconds": 1794448896
 }

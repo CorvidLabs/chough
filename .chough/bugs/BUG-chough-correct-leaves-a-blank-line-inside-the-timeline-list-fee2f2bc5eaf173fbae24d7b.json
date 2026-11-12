@@ -15,16 +15,26 @@
   "revision": "18025ad47c730af7589317f76608634b2487896f",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-history-a-correction-keeps-the-timeline-one-list-93956c5a288289b622070479"
+  ],
   "impact": "The Timeline renders as a loose list; every byte is kept",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37j, test stage, areas sessions and bugs",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448883,
+      "text": "status: open -> investigating. Red at 5f167167 (leif/0.6.0-test1-red: d854ce1a plus the regression tests 558386f3): TC-history-a-correction-keeps-the-timeline-one-list failed for this bug's reason; fix in bc8ac154.",
+      "observations": [
+        "OBS-tc-history-a-correction-keeps-the-timeline-one-list-93956c5a288289b622070479"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447672,
-  "updated_at_unix_seconds": 1794447672
+  "updated_at_unix_seconds": 1794448883
 }

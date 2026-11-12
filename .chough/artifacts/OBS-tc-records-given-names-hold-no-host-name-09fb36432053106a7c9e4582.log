@@ -1,0 +1,30 @@
+--- stdout ---
+
+running 1 test
+test a_given_name_holding_the_host_name_is_refused ... FAILED
+
+failures:
+
+---- a_given_name_holding_the_host_name_is_refused stdout ----
+
+thread 'a_given_name_holding_the_host_name_is_refused' (904971838) panicked at tests/leaks.rs:108:5:
+["session", "new", "synthetic-mac-key", "--objective", "SYNTHETIC ok"] was written: {
+  "active": "2026-11-12-synthetic-mac-key",
+  "created": ".chough/sessions/2026-11-12-synthetic-mac-key/session.md",
+  "id": "2026-11-12-synthetic-mac-key",
+  "schema_version": 1
+}
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_given_name_holding_the_host_name_is_refused
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.68s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/leaks.rs (target/debug/deps/leaks-14373788d9a6418b)
+error: test failed, to rerun pass `--test leaks`

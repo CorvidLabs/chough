@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-migrate-case-only-rename-reaches-git-c70fdbb98739586330d855ca",
+  "criteria": [
+    "DRIVE-27",
+    "LIFE-20",
+    "LIFE-8",
+    "KNOW-30",
+    "LIFE-26"
+  ],
+  "requirements": [
+    "REQ-records-009"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test migrate_knowledge -- --exact a_case_only_rename_reaches_git_under_the_new_name for TC-records-migrate-case-only-rename-reaches-git: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-migrate-case-only-rename-reaches-git-c70fdbb98739586330d855ca.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-migrate-case-only-rename-reaches-git-c70fdbb98739586330d855ca.log": "3e6f9e4a608078ae18301bde76f7ab327849bb99094e517dfcbd8736bc0336bc"
+  },
+  "observed_at_unix_seconds": 1794448745,
+  "snapshot": {
+    "revision": "5f167167fd07873c887741586ccf3f6e54f5c98a",
+    "dirty": false,
+    "fingerprint": "179824ae30cd87fa98f8a9929958d8234d71b01f016718ffce161f6cd8dd03e0",
+    "content": "13091614c5d3c3e95b98e6e3e65d735513f1eab60e96102761dd290cf20b94fe"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-migrate-case-only-rename-reaches-git",
+      "digest": "076b02dc2283f39bd7bab8d096eb4e82b852f6a2dad3506b0407dafc57e112f1"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "migrate_knowledge",
+    "--",
+    "--exact",
+    "a_case_only_rename_reaches_git_under_the_new_name"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

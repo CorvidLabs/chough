@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test the_knowledge_table_names_the_repository_root_library ... FAILED
+
+failures:
+
+---- the_knowledge_table_names_the_repository_root_library stdout ----
+
+thread 'the_knowledge_table_names_the_repository_root_library' (904973744) panicked at tests/docs.rs:1587:5:
+the table puts library/ inside the knowledge directory: | `snapshots/`, `briefs/`, `library/` | Content from earlier releases, kept as it is and linked from the index |
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_knowledge_table_names_the_repository_root_library
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/docs.rs (target/debug/deps/docs-ec930587150538c8)
+error: test failed, to rerun pass `--test docs`

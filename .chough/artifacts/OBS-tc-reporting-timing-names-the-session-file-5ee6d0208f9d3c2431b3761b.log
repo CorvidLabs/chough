@@ -1,0 +1,361 @@
+--- stdout ---
+
+running 1 test
+test an_unknown_timeline_kind_is_named_by_its_session_file ... FAILED
+
+failures:
+
+---- an_unknown_timeline_kind_is_named_by_its_session_file stdout ----
+
+thread 'an_unknown_timeline_kind_is_named_by_its_session_file' (904973343) panicked at tests/timing.rs:2375:5:
+{
+  "backfilled": [],
+  "before_first_record": {
+    "active": {
+      "label": "unknown",
+      "reason": "no transition before the first record",
+      "seconds": null
+    },
+    "backfilled": false,
+    "elapsed": {
+      "label": "unknown",
+      "reason": "no transition before the first record",
+      "seconds": null
+    },
+    "end": {
+      "unix_seconds": 1700000000,
+      "unknown": null,
+      "utc": "2023-11-14T22:13:20Z"
+    },
+    "entered_by": null,
+    "iteration": 1,
+    "ongoing": false,
+    "side": false,
+    "stage": "intent",
+    "start": {
+      "unix_seconds": null,
+      "unknown": "no transition before the first record",
+      "utc": null
+    },
+    "state": "active",
+    "visit": 1,
+    "waiting": {
+      "label": "unknown",
+      "reason": "no transition before the first record",
+      "seconds": null
+    }
+  },
+  "bugs": [],
+  "cycles": [
+    {
+      "completed": false,
+      "end": null,
+      "idle": {
+        "label": "elapsed wall-clock",
+        "reason": null,
+        "seconds": 0
+      },
+      "iterations": 0,
+      "number": 1,
+      "segments": [
+        {
+          "active": {
+            "label": "ongoing",
+            "reason": null,
+            "seconds": 94448770
+          },
+          "backfilled": false,
+          "elapsed": {
+            "label": "ongoing",
+            "reason": null,
+            "seconds": 94448770
+          },
+          "end": {
+            "unix_seconds": 1794448770,
+            "unknown": null,
+            "utc": "2026-11-12T01:59:30Z"
+          },
+          "entered_by": "advance",
+          "iteration": 1,
+          "ongoing": true,
+          "side": false,
+          "stage": "design",
+          "start": {
+            "unix_seconds": 1700000000,
+            "unknown": null,
+            "utc": "2023-11-14T22:13:20Z"
+          },
+          "state": "active",
+          "visit": 1,
+          "waiting": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 0
+          }
+        }
+      ],
+      "side_visits": 0,
+      "stages": [
+        {
+          "active": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 94448770
+          },
+          "backfilled": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 0
+          },
+          "iterations": 0,
+          "paused": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 0
+          },
+          "side": false,
+          "stage": "design",
+          "stage_time": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 94448770
+          },
+          "visits": 1,
+          "waiting": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 0
+          }
+        }
+      ],
+      "start": {
+        "unix_seconds": 1700000000,
+        "unknown": null,
+        "utc": "2023-11-14T22:13:20Z"
+      }
+    }
+  ],
+  "estimates": {
+    "bug_fixes": {
+      "label": "too few to estimate (0 recorded bug fix times; at least 3 needed)",
+      "max": null,
+      "median": null,
+      "min": null,
+      "samples": 0
+    },
+    "gates": {
+      "label": "too few to estimate (0 recorded human gate waiting times; at least 3 needed)",
+      "max": null,
+      "median": null,
+      "min": null,
+      "samples": 0
+    },
+    "stages": []
+  },
+  "filters": {
+    "bug": null,
+    "case": null,
+    "cycle": "all",
+    "stage": null
+  },
+  "gates": [],
+  "generated_at": {
+    "unix_seconds": 1794448770,
+    "unknown": null,
+    "utc": "2026-11-12T01:59:30Z"
+  },
+  "labels": {
+    "backfilled": "A backfilled move was recorded after it happened, at the original time it gives, with the commit and quote it rests on as evidence only; it records no human approval or review. Segments it bounds are marked and are not estimate samples.",
+    "durations": "Every duration is elapsed wall-clock time, not effort.",
+    "estimates": "Estimates come from recorded history and are not targets; fewer than 3 samples are too few to estimate.",
+    "idle": "Time in done until the next reset is idle between cycles: not stage time and not an estimate sample.",
+    "recorded_together": "Start and end share a second, usually records written together; not instant work.",
+    "unknown": "A time no record holds is unknown (null in JSON), never zero.",
+    "validation": "Validation run time is the total run wall-clock, including intervals and resumes, not per-test time.",
+    "waiting": "Waiting on a human is the time a recorded awaiting-human gate was open; it never says who decided or what."
+  },
+  "native": {
+    "current": null,
+    "detail": "No native SpecSync configuration; native lifecycle times are unknown.",
+    "history": [],
+    "history_selection": {
+      "filters": [],
+      "state": "not-configured"
+    },
+    "skipped_archived": 0,
+    "state": "not-configured"
+  },
+  "partial": [
+    {
+      "reason": "1 records of unrecognised kinds skipped",
+      "source": ".chough/transitions.jsonl"
+    }
+  ],
+  "schema_version": 1,
+  "sessions": [
+    {
+      "before_first_record": {
+        "active": {
+          "label": "unknown",
+          "reason": "no transition before the first record",
+          "seconds": null
+        },
+        "backfilled": false,
+        "elapsed": {
+          "label": "unknown",
+          "reason": "no transition before the first record",
+          "seconds": null
+        },
+        "end": {
+          "unix_seconds": 1700000000,
+          "unknown": null,
+          "utc": "2023-11-14T22:13:20Z"
+        },
+        "entered_by": null,
+        "iteration": 1,
+        "ongoing": false,
+        "side": false,
+        "stage": "intent",
+        "start": {
+          "unix_seconds": null,
+          "unknown": "no transition before the first record",
+          "utc": null
+        },
+        "state": "active",
+        "visit": 1,
+        "waiting": {
+          "label": "unknown",
+          "reason": "no transition before the first record",
+          "seconds": null
+        }
+      },
+      "cycles": [
+        {
+          "completed": false,
+          "end": null,
+          "idle": {
+            "label": "elapsed wall-clock",
+            "reason": null,
+            "seconds": 0
+          },
+          "iterations": 0,
+          "number": 1,
+          "segments": [
+            {
+              "active": {
+                "label": "ongoing",
+                "reason": null,
+                "seconds": 94448770
+              },
+              "backfilled": false,
+              "elapsed": {
+                "label": "ongoing",
+                "reason": null,
+                "seconds": 94448770
+              },
+              "end": {
+                "unix_seconds": 1794448770,
+                "unknown": null,
+                "utc": "2026-11-12T01:59:30Z"
+              },
+              "entered_by": "advance",
+              "iteration": 1,
+              "ongoing": true,
+              "side": false,
+              "stage": "design",
+              "start": {
+                "unix_seconds": 1700000000,
+                "unknown": null,
+                "utc": "2023-11-14T22:13:20Z"
+              },
+              "state": "active",
+              "visit": 1,
+              "waiting": {
+                "label": "elapsed wall-clock",
+                "reason": null,
+                "seconds": 0
+              }
+            }
+          ],
+          "side_visits": 0,
+          "stages": [
+            {
+              "active": {
+                "label": "elapsed wall-clock",
+                "reason": null,
+                "seconds": 94448770
+              },
+              "backfilled": {
+                "label": "elapsed wall-clock",
+                "reason": null,
+                "seconds": 0
+              },
+              "iterations": 0,
+              "paused": {
+                "label": "elapsed wall-clock",
+                "reason": null,
+                "seconds": 0
+              },
+              "side": false,
+              "stage": "design",
+              "stage_time": {
+                "label": "elapsed wall-clock",
+                "reason": null,
+                "seconds": 94448770
+              },
+              "visits": 1,
+              "waiting": {
+                "label": "elapsed wall-clock",
+                "reason": null,
+                "seconds": 0
+              }
+            }
+          ],
+          "start": {
+            "unix_seconds": 1700000000,
+            "unknown": null,
+            "utc": "2023-11-14T22:13:20Z"
+          }
+        }
+      ],
+      "gates": [],
+      "id": "2026-11-12-ship-a-focused-change",
+      "selected": true,
+      "stage": "intent",
+      "state": "open",
+      "timeline_entries": 1,
+      "unrecognised_kinds": 1
+    }
+  ],
+  "tests": [],
+  "transition_lineages": [
+    {
+      "durations": "derived from this session's timeline",
+      "selection": "session timeline",
+      "session": "2026-11-12-ship-a-focused-change"
+    }
+  ],
+  "transitions": {
+    "bound_bytes": 16777216,
+    "lineage_selection": "Only the checkpoint-selected parent chain is derived; unselected branch timelines remain separate and their durations are unknown. Inspect chough history show for other tips.",
+    "records": 1,
+    "selected_session": "2026-11-12-ship-a-focused-change",
+    "skipped_bytes": 0,
+    "unreadable_lines": 0,
+    "unrecognised_kinds": 1
+  },
+  "validation_runs": []
+}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    an_unknown_timeline_kind_is_named_by_its_session_file
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 19 filtered out; finished in 0.52s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/timing.rs (target/debug/deps/timing-9147796a7e9c240a)
+error: test failed, to rerun pass `--test timing`

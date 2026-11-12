@@ -1,0 +1,26 @@
+--- stdout ---
+
+running 1 test
+test a_block_list_item_starting_with_a_hyphen_reads_back ... FAILED
+
+failures:
+
+---- a_block_list_item_starting_with_a_hyphen_reads_back stdout ----
+
+thread 'a_block_list_item_starting_with_a_hyphen_reads_back' (904972193) panicked at tests/front_matter_writes.rs:70:5:
+no block-list command with a quoted -c: [
+    "---\nkind: evidence\nid: 2026-11-12-tc-cli-0001\naliases: []\nclaim: \"Ran sh -c echo SYNTHETIC-out-line; echo \\\"SYNTHETIC error line for the record\\\" >&2; echo plain-err >&2; exit 3 for TC-cli-0001: failed (exit 3).\"\nresult: failed\nevidence_kind: product-test\nmethod: automated\ntrack: functional\ncase: [TC-cli-0001]\ncase_digest: [7c76d31a9c3bdeaff03315d61dbfcfa1d7372595e2eb570382bc3bcec0c020dd]\ncommand:\n  - sh\n  - -c\n  - \"echo SYNTHETIC-out-line; echo \\\"SYNTHETIC error line for the record\\\" >&2; echo plain-err >&2; exit 3\"\nexit_code: 3\nduration_seconds: 0\nrevision: be8f0a5bd6fcf578a6509506a8521199ed80ad8c\ncontent: 15e2e4a0cc401e8096970b079f68c9a608b22779732f0e6bd10c40732d163e3f\nenvironment: local\nfingerprint: sha256:3bf0135d2d12c473250413c16d830aee70ea014c4a1acefab4f0ecc82ecb3564\ncriteria: [LIFE-1]\nrequirements: [REQ-cli-001]\ncontracts: [specs/cli/cli.spec.md]\nlimitations:\n  - \"expected output missing: \\\"never-appears\\\"\"\n  - outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected\n  - inherited environment variables were not recorded\nobserved: 2026-11-12T01:59:24Z\n---\n**Ran sh -c echo SYNTHETIC-out-line; echo \"SYNTHETIC error line for the record\" >&2; echo plain-err >&2; exit 3 for TC-cli-0001: failed (exit 3).**\n\nRecorded as failed in local at revision be8f0a5bd6fc, observed 2026-11-12T01:59:24Z. The raw log stays in the machine-local store.\n\n## Key failing lines\n\n- SYNTHETIC error line for the record\n- plain-err\n",
+]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_block_list_item_starting_with_a_hyphen_reads_back
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 1.07s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running tests/front_matter_writes.rs (target/debug/deps/front_matter_writes-b072fb57d7112a20)
+error: test failed, to rerun pass `--test front_matter_writes`

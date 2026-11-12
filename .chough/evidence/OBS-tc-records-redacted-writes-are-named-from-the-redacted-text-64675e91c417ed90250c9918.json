@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-64675e91c417ed90250c9918",
+  "criteria": [
+    "LIFE-26",
+    "LIFE-17",
+    "FLOW-22"
+  ],
+  "requirements": [
+    "REQ-records-006",
+    "REQ-records-003"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test leaks -- --exact redacted_writes_are_named_from_the_redacted_text for TC-records-redacted-writes-are-named-from-the-redacted-text: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-64675e91c417ed90250c9918.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-64675e91c417ed90250c9918.log": "ac1dd458a6f478a36ee2d6086546e76d3e2a6440bc5e630e939793b630af3e05"
+  },
+  "observed_at_unix_seconds": 1794448762,
+  "snapshot": {
+    "revision": "5f167167fd07873c887741586ccf3f6e54f5c98a",
+    "dirty": false,
+    "fingerprint": "179824ae30cd87fa98f8a9929958d8234d71b01f016718ffce161f6cd8dd03e0",
+    "content": "13091614c5d3c3e95b98e6e3e65d735513f1eab60e96102761dd290cf20b94fe"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-redacted-writes-are-named-from-the-redacted-text",
+      "digest": "81e36475bb4794b3bce34d47453af7af12c8f4c65f2e00c2bb8a8fd734f12a70"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "leaks",
+    "--",
+    "--exact",
+    "redacted_writes_are_named_from_the_redacted_text"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 7
+}

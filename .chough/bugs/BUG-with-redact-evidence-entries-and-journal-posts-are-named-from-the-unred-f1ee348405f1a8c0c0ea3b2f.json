@@ -16,16 +16,26 @@
   "revision": "d854ce1ac06a195e0c81d2aaf22d61bd64e2c556",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-64675e91c417ed90250c9918"
+  ],
   "impact": "A committed file name and id carry the local user name, host name, tokens or emails; lowercasing does not make them safe",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t38b, test stage, area records",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448896,
+      "text": "status: open -> investigating. Red at 5f167167 (leif/0.6.0-test1-red: d854ce1a plus the regression tests 558386f3): TC-records-redacted-writes-are-named-from-the-redacted-text failed for this bug's reason; fix in bc8ac154.",
+      "observations": [
+        "OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-64675e91c417ed90250c9918"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447508,
-  "updated_at_unix_seconds": 1794447508
+  "updated_at_unix_seconds": 1794448896
 }

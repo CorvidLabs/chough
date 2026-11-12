@@ -1,0 +1,28 @@
+--- stdout ---
+
+running 1 test
+test a_tab_in_a_value_is_stored_as_a_space_and_reads_back ... FAILED
+
+failures:
+
+---- a_tab_in_a_value_is_stored_as_a_space_and_reads_back stdout ----
+
+thread 'a_tab_in_a_value_is_stored_as_a_space_and_reads_back' (904972605) panicked at tests/front_matter_writes.rs:36:9:
+after an objective with a tab, ["status"] failed: Error: .chough/sessions/2026-11-12-ship-a-focused-change/session.md cannot be read: fix the line named below by hand, or set the session aside with `chough session shelve 2026-11-12-ship-a-focused-change` and run `chough session new <key>` (a session record is at most 1048576 bytes)
+
+Caused by:
+    .chough/sessions/2026-11-12-ship-a-focused-change/session.md:5: a tab is outside the front matter subset; indent with spaces
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_tab_in_a_value_is_stored_as_a_space_and_reads_back
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.69s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/front_matter_writes.rs (target/debug/deps/front_matter_writes-b072fb57d7112a20)
+error: test failed, to rerun pass `--test front_matter_writes`

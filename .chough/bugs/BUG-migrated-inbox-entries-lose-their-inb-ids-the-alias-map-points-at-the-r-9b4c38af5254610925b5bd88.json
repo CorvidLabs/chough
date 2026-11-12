@@ -16,16 +16,26 @@
   "revision": "fd503b01e3cda963cb368fe514a39b08d2b761aa",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-records-migrated-inbox-entries-keep-their-ids-4c5788ccafd695344dc82467"
+  ],
   "impact": "A wrong receipt map and a lost alias; no 0.6.0 command takes an inbox ID yet",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t384, test stage, area upgrade",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448882,
+      "text": "status: open -> investigating. Red at 5f167167 (leif/0.6.0-test1-red: d854ce1a plus the regression tests 558386f3): TC-records-migrated-inbox-entries-keep-their-ids failed for this bug's reason; fix in bc8ac154.",
+      "observations": [
+        "OBS-tc-records-migrated-inbox-entries-keep-their-ids-4c5788ccafd695344dc82467"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794448178,
-  "updated_at_unix_seconds": 1794448178
+  "updated_at_unix_seconds": 1794448882
 }

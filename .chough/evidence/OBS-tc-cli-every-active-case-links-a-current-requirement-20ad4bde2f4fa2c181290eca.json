@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-every-active-case-links-a-current-requirement-20ad4bde2f4fa2c181290eca",
+  "criteria": [
+    "FLOW-7"
+  ],
+  "requirements": [
+    "REQ-cli-009"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test spec_split -- --exact every_active_case_links_a_requirement_the_specs_hold for TC-cli-every-active-case-links-a-current-requirement: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-every-active-case-links-a-current-requirement-20ad4bde2f4fa2c181290eca.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-every-active-case-links-a-current-requirement-20ad4bde2f4fa2c181290eca.log": "503f9dbc3e93e046b5a0e51794217ec60cba53e2591ee292f88172a4d2a16e24"
+  },
+  "observed_at_unix_seconds": 1794448769,
+  "snapshot": {
+    "revision": "5f167167fd07873c887741586ccf3f6e54f5c98a",
+    "dirty": false,
+    "fingerprint": "179824ae30cd87fa98f8a9929958d8234d71b01f016718ffce161f6cd8dd03e0",
+    "content": "13091614c5d3c3e95b98e6e3e65d735513f1eab60e96102761dd290cf20b94fe"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-every-active-case-links-a-current-requirement",
+      "digest": "1fffb3463da2a8b0e8291fa03f51d0c2144ae174857f86f3344ac5ddb4a33c29"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "spec_split",
+    "--",
+    "--exact",
+    "every_active_case_links_a_requirement_the_specs_hold"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

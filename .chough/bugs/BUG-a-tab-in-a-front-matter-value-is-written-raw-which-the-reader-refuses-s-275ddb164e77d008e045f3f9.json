@@ -15,16 +15,26 @@
   "revision": "94023bc8edc863230805a2f60799e34a7a231948",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-records-tabs-in-values-read-back-6368563e517ea218f885b516"
+  ],
   "impact": "One write leaves the session unreadable until a hand edit",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t38b, test stage, area records",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448882,
+      "text": "status: open -> investigating. Red at 5f167167 (leif/0.6.0-test1-red: d854ce1a plus the regression tests 558386f3): TC-records-tabs-in-values-read-back failed for this bug's reason; fix in bc8ac154.",
+      "observations": [
+        "OBS-tc-records-tabs-in-values-read-back-6368563e517ea218f885b516"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447713,
-  "updated_at_unix_seconds": 1794447713
+  "updated_at_unix_seconds": 1794448882
 }
