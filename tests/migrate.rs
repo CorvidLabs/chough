@@ -1422,3 +1422,33 @@ fn the_migration_docs_name_every_key_the_preview_and_apply_print() {
         }
     }
 }
+
+/// REQ-records-009: the receipt lists everything as before, with `none` under any of its
+/// sections that has nothing to list. A migration with no redaction, no kept leak and
+/// nothing left uncarried writes `none` under Redactions, Kept with leaks and Not
+/// carried, and a section that lists something lists it as before.
+#[test]
+fn a_receipt_section_with_nothing_to_list_says_none() {
+    let fixture = sessions_project("v0.5.0");
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    for key in ["redactions", "kept_with_leaks", "gaps"] {
+        let empty = plan[key].as_array().is_some_and(Vec::is_empty)
+            || plan[key].as_object().is_some_and(|map| map.is_empty());
+        assert!(empty, "{key} is not empty: {plan:#}");
+    }
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    let first_line = |heading: &str| {
+        receipt
+            .split_once(&format!("\n## {heading}\n\n"))
+            .unwrap_or_else(|| panic!("no ## {heading} in\n{receipt}"))
+            .1
+            .lines()
+            .next()
+            .unwrap_or_default()
+            .to_string()
+    };
+    for heading in ["Redactions", "Kept with leaks", "Not carried"] {
+        assert_eq!(first_line(heading), "none", "## {heading} in\n{receipt}");
+    }
+    assert!(first_line("After").starts_with("- `"), "{receipt}");
+}
