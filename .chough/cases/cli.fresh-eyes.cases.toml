@@ -369,3 +369,23 @@ expected = ["tests/bugs.rs::a_bug_linked_to_an_active_sessions_entry_is_in_its_c
 adapter = "cargo-test"
 test_target = "bugs"
 test = "a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story"
+
+# The second fresh-eyes round (2026-11-12), fixed on leif/0.6.0-r3-t37f.
+
+[[case]]
+id = "TC-cli-a-close-that-runs-no-native-step-says-closed-once"
+title = "A gate close that drives no native step, or runs none with --no-native, leaves a next action that says closed once, never closed (closed)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-23"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_close_that_runs_no_native_step_says_closed_once passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_close_that_runs_no_native_step_says_closed_once"
