@@ -62,6 +62,10 @@ observations:
   - 2026-11-12-tc-history-relay-fields-are-labelled-lines
   - 2026-11-12-tc-history-direct-write-fields-are-labelled-lines
   - 2026-11-12-tc-history-story-receipts-in-time-order
+  - 2026-11-12-red-rerun-of-the-timing-trace-flake-tests-timing-rs-timing
+  - 2026-11-12-green-rerun-of-the-timing-trace-flake-tests-timing-rs-timing
+  - 2026-11-12-red-rerun-of-the-timing-native-budget-flake-tests-timing-rs-a
+  - 2026-11-12-green-rerun-of-the-timing-native-budget-flake-tests-timing-rs
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -135,6 +139,10 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test relay -- --exact a_relayed_decision_is_written_as_labelled_lines_and_reads_back for TC-history-relay-fields-are-labelled-lines: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-relay-fields-are-labelled-lines.md)
 - [Ran cargo test --locked --test direct_writes -- --exact a_direct_write_is_written_as_labelled_lines for TC-history-direct-write-fields-are-labelled-lines: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-direct-write-fields-are-labelled-lines.md)
 - [Ran cargo test --locked --test journal -- --exact a_storys_receipts_are_in_observation_time_order for TC-history-story-receipts-in-time-order: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-story-receipts-in-time-order.md)
+- [Red rerun of the timing trace flake: tests/timing.rs::timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit built with Rust 1.96.0 at 046e737c (before #172) in a throwaway worktree passed 0 of 20 under load (20 busy loops and 8 loops that each write a new executable and run it once, the macOS first-exec assessment load), 2 lanes x 10 runs, inside the heavy-tests lock, with t37f's rerun.sh and stress.sh copied unchanged](evidence/2026-11-12-red-rerun-of-the-timing-trace-flake-tests-timing-rs-timing.md)
+- [Green rerun of the timing trace flake: tests/timing.rs::timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit built with Rust 1.96.0 at b6fcd0e9 (with #172 and both warm-ups) passed 20 of 20 under load (20 busy loops and 8 loops that each write a new executable and run it once, the macOS first-exec assessment load), 2 lanes x 10 runs, inside the heavy-tests lock, with t37f's rerun.sh and stress.sh copied unchanged](evidence/2026-11-12-green-rerun-of-the-timing-trace-flake-tests-timing-rs-timing.md)
+- [Red rerun of the timing native-budget flake: tests/timing.rs::a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown built with Rust 1.88.0 at 9c41e959 (the bug's revision) in a throwaway worktree passed 3 of 20 and failed 17 under load (20 busy loops and 8 loops that each write a new executable and run it once, the macOS first-exec assessment load), 2 lanes x 10 runs, inside the heavy-tests lock, with t37f's rerun.sh and stress.sh copied unchanged](evidence/2026-11-12-red-rerun-of-the-timing-native-budget-flake-tests-timing-rs-a.md)
+- [Green rerun of the timing native-budget flake: tests/timing.rs::a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown built with Rust 1.88.0 at b6fcd0e9 (this branch with t37f's warm-up 7210d0e7 and t38b's stand-in warm-up) passed 20 of 20 under load (20 busy loops and 8 loops that each write a new executable and run it once, the macOS first-exec assessment load), 2 lanes x 10 runs, inside the heavy-tests lock, with t37f's rerun.sh and stress.sh copied unchanged](evidence/2026-11-12-green-rerun-of-the-timing-native-budget-flake-tests-timing-rs.md)
 
 ## Open threads
 
