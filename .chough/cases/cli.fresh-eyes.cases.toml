@@ -570,3 +570,21 @@ expected = ["tests/docs.rs::the_accept_steps_first_check_runs_through_chough pas
 adapter = "cargo-test"
 test_target = "docs"
 test = "the_accept_steps_first_check_runs_through_chough"
+
+[[case]]
+id = "TC-cli-next-at-accept-never-passes-on-the-review-command"
+title = "At accept with the change verifying and the review gate open, no field of next or status, text or JSON, names SpecSync's specsync change review command"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "FLOW-23"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_at_accept_never_passes_on_specsyncs_review_command passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_at_accept_never_passes_on_specsyncs_review_command"

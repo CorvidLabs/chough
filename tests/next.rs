@@ -2189,6 +2189,45 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
     assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
 }
 
+/// F1 of the third fresh-eyes round (REQ-cli-021): at accept, with the change verifying
+/// and the review gate open, SpecSync's own next action names its review for a
+/// reviewer; no field of `next` or `status`, text or JSON, passes that command on, so
+/// no agent is routed to review its own work.
+#[cfg(unix)]
+#[test]
+fn next_at_accept_never_passes_on_specsyncs_review_command() {
+    let fixture = approved_at_plan("review-change");
+    while fixture.checkpoint()["stage"]["current"] != "accept" {
+        fixture.ok(&["stage", "advance"]);
+    }
+    fixture.write(".stub-state", "verifying\n");
+    fixture.write(
+        ".stub-next",
+        "run `specsync change review review-change --reviewer <human>` after the PR's scoped review passes\n",
+    );
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Implementation review of review-change",
+    ]);
+    let mut found = vec![];
+    strings(&fixture.ok(&["next", "--json"]), &mut found);
+    strings(&fixture.ok(&["status", "--json"]), &mut found);
+    for view in ["next", "status"] {
+        let output = fixture.run(&[view, "--environment", "local"]);
+        assert!(output.status.success(), "{view} failed");
+        found.push(String::from_utf8_lossy(&output.stdout).into_owned());
+    }
+    let passed_on: Vec<&String> = found
+        .iter()
+        .filter(|text| text.contains("specsync change review"))
+        .collect();
+    assert!(
+        passed_on.is_empty(),
+        "SpecSync's review command is passed on at accept: {passed_on:?}"
+    );
+}
+
 /// #76 (REQ-cli-021): `chough next` guides a fresh agent through the stages: right after
 /// init it names `hi check` and then `chough context`; at test, `chough cases select`,
 /// `chough cases run` and `chough bug add`; at accept while the change is verifying, the
