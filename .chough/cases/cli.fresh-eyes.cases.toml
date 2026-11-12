@@ -277,3 +277,21 @@ expected = ["tests/migrate.rs::a_receipt_has_one_follow_up_heading_for_every_fol
 adapter = "cargo-test"
 test_target = "migrate"
 test = "a_receipt_has_one_follow_up_heading_for_every_follow_up"
+
+[[case]]
+id = "TC-cli-executed-case-run-provenance"
+title = "A case run Chough executed says it is not proof of human approval or deployment, in its output and its status row, and a manual entry keeps the full sentence"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-011", "REQ-cli-005"]
+paths = ["src/evidence.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::an_executed_case_runs_provenance_does_not_deny_the_execution passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "an_executed_case_runs_provenance_does_not_deny_the_execution"
