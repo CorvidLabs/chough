@@ -134,6 +134,7 @@ observations:
   - 2026-11-12-tc-cli-executed-case-run-provenance-0e0ebc
   - 2026-11-12-tc-cli-docs-show-the-requirement-evidence-table-d97158
   - 2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-b3ee78
+  - 2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -282,6 +283,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test cases -- --exact an_executed_case_runs_provenance_does_not_deny_the_execution for TC-cli-executed-case-run-provenance: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-executed-case-run-provenance-0e0ebc.md)
 - [Ran cargo test --locked --test docs -- --exact the_requirement_evidence_table_in_a_changes_testing_md_is_documented for TC-cli-docs-show-the-requirement-evidence-table: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-the-requirement-evidence-table-d97158.md)
 - [Ran cargo test --locked --test docs -- --exact the_new_project_section_shows_a_minimal_hi_file_and_requirements_md for TC-cli-docs-show-a-minimal-hi-file-and-requirements-md: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-b3ee78.md)
+- [Ran cargo test --locked --test cases -- --exact evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements for TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta.md)
 
 ## Open threads
 
