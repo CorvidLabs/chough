@@ -83,8 +83,8 @@ for example by an older Chough, is refused the same way. See [Migration](#migrat
 | `cases check\|list\|select\|run\|record` | Validate curated slug and exact legacy numeric definitions; list digests; select focused cases (`--criterion`, `--requirement`, `--path`, `--track copy-localization\|design-qa`); run an automated binding with `--environment`; record a manual or agent-assisted run with `--environment`, `--method manual\|agent-assisted`, `--summary`, optional `--artifact` and `--limitation`, and `--verdict N=pass\|fail` for every expected outcome. `run` and `record` name the evidence when `--observation-id` is omitted (see [Record names](#record-names)), return it as `observation` with the case ID as `case` beside `recorded`, and exit 3 when the recorded outcome is not passed. |
 | `evidence add [ID]` | `add`: criterion, requirement, contract, kind, outcome, environment, summary; optional `--artifact` (a project file spelled canonically: relative, `/`-separated; or one absolute path outside the project, fingerprinted in place), `--case`, `--method`, `--track`, `--limitation`, `--failing-lines` (a manual failure's key failing lines), `--screenshot` (one key screenshot committed beside the entry) and `--raw-log` (the CI run that holds the raw log); see [Evidence entries](#evidence-entries). Omitting ID names the evidence for you; an explicit ID must be a new-form name for a new write. Returns the stored ID as `observation` beside `recorded`. Never replaces an ID. There is no evidence retention in 0.6.0; see [Retention](#retention). |
 | `bug add\|update\|list\|search\|show\|report\|merge` | Local backlog, one Markdown file per bug; see [Bugs](#bugs). `add` takes `--title`, `--symptom`, `--trigger`, `--expected`, `--actual` and `--environment` (required), and optionally `--impact`, `--criterion`, `--requirement`, `--case`, `--step` (in order), `--fixture`, `--observation`, `--classification`, `--scope`, `--regression-baseline` and `--source`; it refuses likely duplicates unless `--distinct REASON`, and regression needs `--regression-baseline`. `update ID` (the bug's name or any alias) appends one Log entry and takes `--status` (`open`, `investigating`, `fix-pending-verification`, `verified`, `deferred`, `duplicate`, `wont-fix` or `fixed-upstream`, which needs `--note`), `--note`, `--observation`, `--duplicate-of`, `--related`, `--scope`, `--classification` and `--regression-baseline`; an update never renames the bug. `verified` needs a linked failed observation and a present linked passed observation observed after it (see [freshness](#observation-outcomes-and-freshness)); without them the refusal names `chough bug update ID --observation OBS`. `--duplicate-of` and `--related` must name another existing bug: a link to the bug itself or to an unknown bug, and an update or report of an unknown bug, are refused with nothing written and name `chough bug list --all`. Changing a duplicate's status clears its `duplicate_of` and notes it, so `--status open` reopens a bug marked duplicate by mistake (REQ-cli-054). `list` shows open bugs, `--all` every bug; `search TEXT` scores words in title, symptom and trigger plus shared `--criterion`, `--requirement` and `--case` IDs; `report` prints Markdown and posts nothing. `merge BASE OURS THEIRS` is the Git merge driver for `.chough/bugs/*.md` that `.gitattributes` declares as `merge=chough-bug` (see [Merging branches](#merging-branches)). |
-| `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `migration` on-request, standing (a standing `migration` preference gives the human's consent to `chough migrate --apply`); `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty); `retention` off, auto, manual (still accepted, but nothing reads it since 0.6.0 retired retention). Only `always` and `standing` authorize without a run consent. |
-| `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring, release, and retention, which nothing reads since 0.6.0 retired retention. |
+| `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `migration` on-request, standing (a standing `migration` preference gives the human's consent to `chough migrate --apply`); `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty). Only `always` and `standing` authorize without a run consent. |
+| `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring and release. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. `resume ID` continues a stored run under its original ID or alias; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
 | `library init\|index [--check]\|merge BASE OURS THEIRS` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`); see [Knowledge vault](#knowledge-vault). `init` builds `index.md`, `journal/` and `lessons/`. `index` regenerates `index.md` and the feed, and removes a `README.md` an earlier release generated once its bytes are committed; `index --check` writes nothing and fails naming each generated file that is missing or differs (see [Merging branches](#merging-branches)). `merge` is the Git merge driver for those two files: it keeps ours, and the next `library index` rebuilds them. No gate reads the knowledge directory. |
 | `journal add --kind K --title T --body B [--link L]...` | Write one post, `knowledge/journal/<date>-<slug>.md`, by create-new, then regenerate the index and feed (REQ-records-011). `--kind` is `shipped`, `closed`, `intent`, `spec`, `broke` or `learned`; the body is at most 1,200 bytes; each `--link` is a repository path that exists or an http(s) URL. The move into done writes a `shipped` post from the archived story and `session close` a `closed` one. Chough never rewrites a post. |
@@ -1168,7 +1168,7 @@ stage on that response, and shows:
 | `gate` | `to`, `allowed`, `label`, `detail` for the next main stage, or `null` |
 | `awaiting_human`, `blockers`, `open_questions`, `blocking_bugs` | Each `{"total": N, "items": [...]}`; `other_open_bugs` counts the rest. `open_questions` are the session's Open threads, from `checkpoint --question` or a folded inbox question; `status` reports all of them in its `checkpoint` section |
 | `gates` | Each open gate as `{"gate", "holds", "drives"}`, at most 10 |
-| `observations` | `needs_attention_total` and `items` (referenced and `historical` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
+| `observations` | `needs_attention_total` and `items` (referenced and `historical`, `removed` or `unavailable`, each with `id`, `label`, at most 3 `referenced_by` and `referenced_by_total`), `referenced_current` and `unreferenced` counts |
 | `decisions` | `{"total": N, "items": [{"kind", "text", "reason"}]}`: the 5 newest items of the session's Decisions and why, newest first, a corrected one as its newest statement; see [Decision prefixes](#decision-prefixes) |
 | `corrections` | The 10 newest corrections, newest first, each cut to 512 bytes, with their total; see [Corrections](#corrections) |
 | `last_actor` | The `by` of the newest Timeline entry that has one, or `null` |
@@ -1252,15 +1252,25 @@ The next valid action follows these rules in order:
    `chough checkpoint --awaiting-human "Implementation review of <id>" --holds accept
    --drives review`. It never suggests an agent review.
 7. In stage done, an archived change whose terminal evidence authenticates, or no
-   recorded native change, closes the cycle and the action is `Start a new cycle: chough
-   stage reset --to intent --reason "<why>" (or --to plan when the approved intent
-   already covers the new work), then specsync change new "<outcome>" --spec <module>
-   --path <path>, then chough checkpoint --native-change <id> --next-action "<next
-   step>".`, with the native next action named as the thing to check first (without the
-   `specsync change new` step when native SDD is not configured or is disabled), while
-   an archive that does not authenticate keeps its gate refusal. This applies to a
-   session that stayed open at done; one the move into done archived has no `next` until
-   `chough session new <key>`.
+   recorded native change, closes the cycle. The move into done archives the session,
+   so `next` then refuses with "no open session" and names `chough session new <key>`
+   (see [Moving into done](#moving-into-done)). For a session the move kept open, the
+   action names what closes it:
+   - while an authorized release is still ahead, even with inbox entries unfolded,
+     `Release is authorized for this cycle: enter it.`, with the command
+     `chough stage enter release --reason "<request>"`;
+   - otherwise, with unfolded inbox entries, folding them with `chough inbox fold` and
+     then archiving the session with `chough doctor --fix`, with the command
+     `chough inbox fold`. Entries still unfolded after the move from release into done
+     keep the session open the same way;
+   - with neither, `Start the next piece of work in a new session: chough session new
+     <key> --objective "<outcome>", then specsync change new "<outcome>" --spec <module>
+     --path <path>, then chough checkpoint --native-change <id> --next-action "<next
+     step>".`, without the `specsync change new` step when native SDD is not configured
+     or is disabled.
+
+   The native next action is named as the thing to check first. No stage reset is
+   named at done. An archive that does not authenticate keeps its gate refusal.
 8. At intent, design, plan, build, test or accept, when the recorded native change is
    archived with terminal evidence that the done gate accepts, the stage is not
    continued: the action is `The recorded native change is archived while the checkpoint
@@ -1268,9 +1278,10 @@ The next valid action follows these rules in order:
    (fixed text, so `next` never cuts it), the reason opens with `Native change <id> is
    archived while the checkpoint is at <stage>`, its command is the reset, and the
    native next action is named as the thing to check first. At accept it first says
-   `Record done first: chough stage advance (accept to done is allowed). Then:` and its
-   command is `chough stage advance`, the documented close after finalize (release and
-   side stages are not affected).
+   `Record done first: chough stage advance (accept to done is allowed), which archives
+   this session. Then:`, followed by rule 7's new-session steps instead of the reset,
+   and its command is `chough stage advance`, the documented close after finalize
+   (release and side stages are not affected).
 9. After the suggested reset the checkpoint still names the archived change until a new
    one is recorded, so rule 8 does not apply while the archived change belongs to the
    previous cycle (the latest stage entry is a reset, or the change was finalized no
@@ -1412,9 +1423,9 @@ case, in place of `case`), `authority`, `times`, `interval_seconds`, `state`,
 `started`, `completed`, `failures`, `not_run`, `elapsed_seconds`, `bugs` and
 `attempts`, one flat map per attempt with `started`, `observed`, `result`,
 `duration_seconds` and `observation`, the case-run entry that attempt recorded. Its
-`result` is `not-run` and its `evidence_kind` is `structural`: the run is a summary, and
-its attempts are the observations. Chough rewrites it in place as each attempt
-finishes.
+`result` is `not-run` and its `evidence_kind` is `structural`: the run is a summary, its
+attempts are the observations, and it never counts as a run of its case. Chough rewrites
+it in place as each attempt finishes.
 
 A raw log is never committed (REQ-records-005). The raw output of an executed case is
 written to `.chough/local/logs/<evidence id>.log`, and the entry gives the exact
@@ -1462,9 +1473,10 @@ finish.
 Retention is retired in 0.6.0 (REQ-history-001, REQ-history-004): evidence lives in its
 session and folds into the archived story at finish, raw logs are never committed, and
 files leave the tree only when their bytes are committed. There is no prune command and
-no `.chough/pruned.jsonl`. This build still accepts the `retention` preference and the
-`retention` run consent, but nothing reads them; do not start relying on them. Never
-delete evidence by hand, and never report an `unavailable` observation as passed.
+no `.chough/pruned.jsonl`. `chough pref set retention` and
+`chough consent grant retention` are refused, naming why, with nothing written; a value
+an earlier release recorded still reads, and nothing acts on it. Never delete evidence
+by hand, and never report a `removed` or `unavailable` observation as passed.
 
 ## Knowledge vault
 
