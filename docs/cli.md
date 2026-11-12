@@ -1072,6 +1072,21 @@ it owns a file the change touches. SpecSync 6.3.0 can call a draft ready for app
 before it has any delta, so check `deltas/` before asking the human to approve the
 scope.
 
+The change's own `.specsync/changes/<id>/testing.md` must name every requirement its
+deltas add or modify before `specsync change check` (and so `chough change check`)
+verifies it; until then it refuses with "no requirement evidence for <ID>; add a row
+for it to the `## Requirement evidence` table". SpecSync 6.3.0 looks only for the ID in
+that file or in a test file, so give each requirement a row naming the test or check
+that shows it:
+
+```markdown
+## Requirement evidence
+
+| Requirement | Evidence |
+|---|---|
+| REQ-shipping-004 | `tests/shipping.rs`: an order of exactly fifty dollars ships free |
+```
+
 ### Ship
 
 `chough change ship <id> [--close-gate <gate> --decided-by <who> --words <words>
