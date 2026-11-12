@@ -86,6 +86,9 @@ pub(crate) struct Carried {
     /// Files kept byte for byte that hold a leak: listed as `leak` findings, never
     /// changed (REQ-records-009), each with the kinds found.
     pub(crate) kept_with_leaks: BTreeMap<String, Vec<String>>,
+    /// Each consumed 0.5.x file with the 0.6.0 files it becomes, where the mapper
+    /// knows it beyond the alias of the file's own ID (REQ-records-009).
+    pub(crate) becomes: BTreeMap<String, BTreeSet<String>>,
     /// What could not be carried and is not a file, such as history a 0.5.x retention
     /// pruned: each said in the plan and the receipt.
     pub(crate) gaps: Vec<String>,
@@ -129,6 +132,9 @@ impl Carried {
         self.removed.extend(other.removed);
         self.kept_with_leaks.extend(other.kept_with_leaks);
         self.gaps.extend(other.gaps);
+        for (source, targets) in other.becomes {
+            self.becomes.entry(source).or_default().extend(targets);
+        }
         Ok(())
     }
 }
@@ -322,6 +328,32 @@ struct Plan {
 }
 
 impl Plan {
+    /// What each carried 0.5.x file becomes: the files its mapper names, else the home of
+    /// the 0.5.x ID its file is named by (REQ-records-009). A removed file says why in
+    /// `removed` instead.
+    fn becomes(&self) -> BTreeMap<String, Vec<String>> {
+        let mut out = BTreeMap::new();
+        for source in &self.carried.sources {
+            let mut targets: BTreeSet<String> = self
+                .carried
+                .becomes
+                .get(source)
+                .cloned()
+                .unwrap_or_default();
+            if targets.is_empty() {
+                let name = source.rsplit('/').next().unwrap_or(source);
+                let stem = name.rsplit_once('.').map_or(name, |(stem, _)| stem);
+                if let Some(home) = self.carried.aliases.get(stem)
+                    && home != "removed"
+                {
+                    targets.insert(home.clone());
+                }
+            }
+            out.insert(source.clone(), targets.into_iter().collect());
+        }
+        out
+    }
+
     /// The plan as printed, without its digest.
     fn view(&self) -> Value {
         let written: Vec<Value> = self
@@ -334,6 +366,7 @@ impl Plan {
         json!({
             "schema_version": 1,
             "sources": self.sources,
+            "becomes": self.becomes(),
             "writes": written,
             "redactions": self.redactions,
             "removed": self.carried.removed,
@@ -846,13 +879,22 @@ fn receipt_record(
         ));
     }
     body.push_str("\n## Removed\n\n");
+    let becomes = plan.becomes();
     for path in removals {
-        let why = plan
-            .carried
-            .removed
-            .get(path)
-            .map(String::as_str)
-            .unwrap_or("carried into the 0.6.0 records above");
+        let why = match plan.carried.removed.get(path) {
+            Some(why) => why.clone(),
+            None => match becomes.get(path).filter(|targets| !targets.is_empty()) {
+                Some(targets) => format!(
+                    "carried into {}",
+                    targets
+                        .iter()
+                        .map(|target| format!("`{target}`"))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                ),
+                None => "carried into the 0.6.0 records above".to_string(),
+            },
+        };
         body.push_str(&format!("- `{path}`: {why}; held by commit {head}\n"));
     }
     body.push_str("\n## Kept with leaks\n\n");
@@ -1235,6 +1277,15 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             path: target.clone(),
             bytes: text,
         });
+        // The session file and its lineage's history files all become this session's
+        // folder or story.
+        for source in std::iter::once(&path).chain(files.iter()) {
+            carried
+                .becomes
+                .entry(source.clone())
+                .or_default()
+                .insert(target.clone());
+        }
         carried.sources.insert(path.clone());
         carried.sources.extend(files);
         if key != "legacy" {
@@ -1295,6 +1346,11 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
                 path: new_path.clone(),
                 bytes: rendered,
             });
+            carried
+                .becomes
+                .entry(entry_path.clone())
+                .or_default()
+                .insert(new_path.clone());
             carried.sources.insert(entry_path.clone());
             carried.aliases.insert(text("id"), new_path);
         }
