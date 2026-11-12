@@ -349,3 +349,57 @@ expected = ["tests/cases.rs::evidence_add_needs_a_criterion_and_resolves_the_ses
 adapter = "cargo-test"
 test_target = "cases"
 test = "evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements"
+
+[[case]]
+id = "TC-cli-change-check-no-commit"
+title = "chough change check <id> --no-commit runs specsync change check <id> without --commit and passes its output through, the next stage move records no direct write for it, and chough change check <id> still commits"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "DRIVE-21"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/direct_writes.rs::change_check_no_commit_runs_the_plain_check_and_is_never_flagged passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "change_check_no_commit_runs_the_plain_check_and_is_never_flagged"
+
+[[case]]
+id = "TC-cli-gate-close-records-direct-writes-first"
+title = "A lifecycle record changed outside Chough before a gate closes is recorded before that gate's gate-closed entry, through checkpoint --close-gate and gate record, and the next stage move records nothing more"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-cli-060"]
+paths = ["src/stage.rs", "src/checkpoint.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/direct_writes.rs::a_direct_write_before_a_gate_close_is_recorded_before_its_entry passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "a_direct_write_before_a_gate_close_is_recorded_before_its_entry"
+
+[[case]]
+id = "TC-cli-accept-step-checks-through-chough"
+title = "The accept reference's first check, in the skill and its .agents copy, runs chough change check <id> --no-commit, never the plain SpecSync check, and docs/cli.md names the flag"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18", "DRIVE-20"]
+requirements = ["REQ-cli-057"]
+paths = ["skills/chough-workflow/references/accept.md", ".agents/skills/chough-workflow/references/accept.md", "docs/cli.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_accept_steps_first_check_runs_through_chough passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_accept_steps_first_check_runs_through_chough"
