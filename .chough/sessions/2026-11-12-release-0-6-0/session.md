@@ -169,6 +169,13 @@ observations:
   - 2026-11-12-tc-cli-next-and-status-show-every-command-whole-1869e9
   - 2026-11-12-tc-cli-gate-list-names-the-ship-for-a-verifying-gate-21e743
   - 2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action-eba666
+  - 2026-11-12-tc-cli-change-check-no-commit
+  - 2026-11-12-tc-cli-gate-close-records-direct-writes-first
+  - 2026-11-12-tc-cli-accept-step-checks-through-chough
+  - 2026-11-12-tc-history-doctor-names-an-outdated-merge-driver-chough
+  - 2026-11-12-tc-history-story-lists-each-cases-latest-run
+  - 2026-11-12-tc-history-archived-story-says-archived
+  - 2026-11-12-tc-history-start-entry-starts-the-first-segment
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -184,6 +191,9 @@ bugs:
   - 2026-11-12-next-and-status-cut-the-ship-command-for-a-long-change-id
   - 2026-11-12-the-gate-list-footer-offers-gate-record-for-a-verifying-gate
   - 2026-11-12-at-accept-with-the-change-approved-next-shows-a-refused-gate
+  - 2026-11-12-an-archived-story-keeps-stage-status-active-and-the-session-s
+  - 2026-11-12-the-accept-steps-plain-specsync-change-check-is-recorded-as-a
+  - 2026-11-12-an-archived-story-s-what-was-verified-lists-superseded-runs
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -351,6 +361,13 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test next -- next_and_status_show_every_command_whole_for_a_long_change_id status_gives_the_next_valid_action_whole both_forms_stay_within_the_cap_with_totals_for_large_records for TC-cli-next-and-status-show-every-command-whole: passed (exit 0).](evidence/2026-11-12-tc-cli-next-and-status-show-every-command-whole-1869e9.md)
 - [Ran cargo test --locked --test gates -- --exact the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why for TC-cli-gate-list-names-the-ship-for-a-verifying-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-gate-list-names-the-ship-for-a-verifying-gate-21e743.md)
 - [Ran cargo test --locked --test humans -- approving_the_scope_gate_replaces_the_next_action_it_left_stale a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage for TC-cli-gate-close-replaces-a-stale-next-action: passed (exit 0).](evidence/2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action-eba666.md)
+- [Ran cargo test --locked --test direct_writes -- --exact change_check_no_commit_runs_the_plain_check_and_is_never_flagged for TC-cli-change-check-no-commit: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-change-check-no-commit.md)
+- [Ran cargo test --locked --test direct_writes -- --exact a_direct_write_before_a_gate_close_is_recorded_before_its_entry for TC-cli-gate-close-records-direct-writes-first: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-gate-close-records-direct-writes-first.md)
+- [Ran cargo test --locked --test docs -- --exact the_accept_steps_first_check_runs_through_chough for TC-cli-accept-step-checks-through-chough: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-accept-step-checks-through-chough.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_reports_merge_drivers_that_would_run_an_older_chough for TC-history-doctor-names-an-outdated-merge-driver-chough: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-doctor-names-an-outdated-merge-driver-chough.md)
+- [Ran cargo test --locked --test sessions -- --exact a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones for TC-history-story-lists-each-cases-latest-run: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-story-lists-each-cases-latest-run.md)
+- [Ran cargo test --locked --test sessions -- --exact an_archived_story_says_archived_and_keeps_no_next for TC-history-archived-story-says-archived: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-archived-story-says-archived.md)
+- [Ran cargo test --locked --test timing -- --exact init_and_session_new_write_a_start_entry_that_timing_reads for TC-history-start-entry-starts-the-first-segment: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-start-entry-starts-the-first-segment.md)
 
 ## Open threads
 
