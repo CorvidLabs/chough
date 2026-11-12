@@ -679,3 +679,109 @@ fn doctor_reports_oversized_committed_records_and_the_leaks_step_fails() {
     );
     assert_eq!(fixture.read(&shot).len(), 600_000);
 }
+
+/// The value of a Git config key in the fixture's repository, or "" when it is unset.
+fn git_config(fixture: &Fixture, key: &str) -> String {
+    let output = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["config", "--local", "--get", key])
+        .output()
+        .unwrap();
+    String::from_utf8_lossy(&output.stdout).trim().to_string()
+}
+
+/// REQ-cli-047, REQ-history-012 (BUG-a-project-as-chough-init-leaves-it-conflicts-on-knowledge-index-md-and-4390e553d9921f2d81c48108):
+/// a clone without Chough's merge drivers, as a fresh clone is, gets one `merge_drivers`
+/// finding naming `chough doctor --fix`, which sets them in the local Git config. A
+/// missing attribute line is named too, and `--fix` never writes `.gitattributes`.
+#[test]
+fn doctor_reports_missing_merge_drivers_and_fix_sets_them() {
+    let fixture = Fixture::new();
+    fixture.git(&["init"]);
+    fixture.init();
+    fixture.commit("init");
+    // Unset both drivers, as a fresh clone has them; the exit code is not the point.
+    for name in ["chough-bug", "chough-generated"] {
+        std::process::Command::new("git")
+            .current_dir(fixture.root())
+            .args([
+                "config",
+                "--local",
+                "--unset",
+                &format!("merge.{name}.driver"),
+            ])
+            .output()
+            .unwrap();
+    }
+    let merge = |report: &Value| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "merge_drivers")
+            .cloned()
+            .collect()
+    };
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let found = merge(&report);
+    assert_eq!(found.len(), 1, "{report:#}");
+    assert_eq!(found[0]["status"], "found", "{report:#}");
+    assert_eq!(
+        found[0]["missing_drivers"],
+        serde_json::json!(["chough-bug", "chough-generated"]),
+        "{report:#}"
+    );
+    assert_eq!(
+        found[0]["missing_lines"],
+        serde_json::json!([]),
+        "{report:#}"
+    );
+    assert!(
+        found[0]["fix"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("chough doctor --fix"),
+        "{report:#}"
+    );
+    assert_eq!(git_config(&fixture, "merge.chough-bug.driver"), "");
+
+    let (code, report) = doctor(&fixture, &["--fix"]);
+    assert_eq!(code, 0, "{report:#}");
+    assert_eq!(merge(&report)[0]["status"], "fixed", "{report:#}");
+    assert_eq!(
+        git_config(&fixture, "merge.chough-bug.driver"),
+        "chough bug merge %O %A %B"
+    );
+    assert_eq!(
+        git_config(&fixture, "merge.chough-generated.driver"),
+        "chough library merge %O %A %B"
+    );
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 0, "{report:#}");
+    assert!(merge(&report).is_empty(), "{report:#}");
+
+    // A missing attribute line is named, and --fix leaves .gitattributes as it is.
+    let attributes = fixture
+        .read(".gitattributes")
+        .replace("knowledge/journal/feed.xml merge=chough-generated\n", "");
+    fixture.write(".gitattributes", &attributes);
+    let (code, report) = doctor(&fixture, &["--fix"]);
+    assert_eq!(code, 1, "{report:#}");
+    let found = merge(&report);
+    assert_eq!(found.len(), 1, "{report:#}");
+    assert_eq!(found[0]["status"], "skipped", "{report:#}");
+    assert_eq!(
+        found[0]["missing_lines"],
+        serde_json::json!(["knowledge/journal/feed.xml merge=chough-generated"]),
+        "{report:#}"
+    );
+    assert!(
+        found[0]["fix"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("chough init"),
+        "{report:#}"
+    );
+    assert_eq!(fixture.read(".gitattributes"), attributes);
+}

@@ -721,3 +721,161 @@ fn journal_links_name_only_project_paths_git_tracks() {
         );
     }
 }
+
+/// The value of a Git config key in the fixture's repository, or "" when it is unset.
+fn git_config(fixture: &Fixture, key: &str) -> String {
+    let output = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["config", "--local", "--get", key])
+        .output()
+        .unwrap();
+    String::from_utf8_lossy(&output.stdout).trim().to_string()
+}
+
+/// Run Git with this build's `chough` first on PATH, as a person's shell would find it,
+/// and report whether it succeeded.
+fn git_with_chough(fixture: &Fixture, args: &[&str]) -> bool {
+    let bin = Path::new(env!("CARGO_BIN_EXE_chough")).parent().unwrap();
+    let path = format!(
+        "{}:{}",
+        bin.display(),
+        std::env::var("PATH").unwrap_or_default()
+    );
+    std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .env("PATH", path)
+        .args([
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+        ])
+        .args(["-c", "commit.gpgsign=false"])
+        .args(args)
+        .output()
+        .unwrap()
+        .status
+        .success()
+}
+
+/// REQ-cli-047, DRIVE-12 (BUG-a-project-as-chough-init-leaves-it-conflicts-on-knowledge-index-md-and-4390e553d9921f2d81c48108):
+/// in a Git repository, `chough init` declares Chough's merge attributes and sets both
+/// drivers in the clone's local Git config, so two branches that each add a post merge
+/// clean with no hand setup; one `library index` then makes `--check` pass and lists both.
+#[test]
+fn init_sets_up_the_merge_drivers_so_two_branches_merge_clean() {
+    let fixture = Fixture::new();
+    fixture.git(&["init"]);
+    let out = fixture.ok(&[
+        "init",
+        "--objective",
+        "Ship a focused change",
+        "--module",
+        "cli",
+    ]);
+    let attributes = fixture.read(".gitattributes");
+    for line in [
+        ".chough/bugs/*.md merge=chough-bug",
+        "knowledge/index.md merge=chough-generated",
+        "knowledge/journal/feed.xml merge=chough-generated",
+    ] {
+        assert!(
+            attributes.lines().any(|declared| declared == line),
+            "{line} missing: {attributes:?} {out:#}"
+        );
+    }
+    assert_eq!(
+        git_config(&fixture, "merge.chough-bug.driver"),
+        "chough bug merge %O %A %B"
+    );
+    assert_eq!(
+        git_config(&fixture, "merge.chough-generated.driver"),
+        "chough library merge %O %A %B"
+    );
+    fixture.commit("base");
+    let add = |title: &str| {
+        fixture.ok(&[
+            "journal",
+            "add",
+            "--kind",
+            "learned",
+            "--title",
+            title,
+            "--body",
+            "One line.",
+        ])["post"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string()
+    };
+    fixture.git(&["checkout", "-b", "theirs"]);
+    let theirs = add("Their SYNTHETIC post");
+    fixture.commit("their post");
+    fixture.git(&["checkout", "main"]);
+    let ours = add("Our SYNTHETIC post");
+    fixture.commit("our post");
+    assert!(
+        git_with_chough(&fixture, &["merge", "--no-edit", "theirs"]),
+        "the merge conflicted"
+    );
+    let feed = "knowledge/journal/feed.xml";
+    well_formed(&fixture.read(feed)).unwrap_or_else(|error| panic!("{error}"));
+    fixture.ok(&["library", "index"]);
+    fixture.ok(&["library", "index", "--check"]);
+    let rebuilt = fixture.read(feed);
+    for post in [&ours, &theirs] {
+        let name = post
+            .trim_start_matches("knowledge/journal/")
+            .trim_end_matches(".md");
+        assert!(
+            rebuilt.contains(&format!("urn:chough:journal:{name}<")),
+            "{rebuilt}"
+        );
+    }
+}
+
+/// REQ-cli-047: `chough init` appends only the merge lines a `.gitattributes` lacks, after
+/// its last line, changing no line; it honours `library-dir`, and a driver the clone already
+/// sets is kept.
+#[test]
+fn init_appends_only_the_missing_merge_lines_and_keeps_a_set_driver() {
+    let fixture = Fixture::new();
+    fixture.git(&["init"]);
+    let existing = "* text=auto\n.chough/bugs/*.md   merge=chough-bug";
+    fixture.write(".gitattributes", existing);
+    fixture.git(&[
+        "config",
+        "--local",
+        "merge.chough-bug.driver",
+        "SYNTHETIC-own-driver %O %A %B",
+    ]);
+    fixture.ok(&[
+        "pref",
+        "set",
+        "library-dir",
+        "notes",
+        "--source",
+        "SYNTHETIC: call it notes",
+    ]);
+    fixture.ok(&[
+        "init",
+        "--objective",
+        "Ship a focused change",
+        "--module",
+        "cli",
+    ]);
+    assert_eq!(
+        fixture.read(".gitattributes"),
+        format!(
+            "{existing}\nnotes/index.md merge=chough-generated\nnotes/journal/feed.xml merge=chough-generated\n"
+        )
+    );
+    assert_eq!(
+        git_config(&fixture, "merge.chough-bug.driver"),
+        "SYNTHETIC-own-driver %O %A %B"
+    );
+    assert_eq!(
+        git_config(&fixture, "merge.chough-generated.driver"),
+        "chough library merge %O %A %B"
+    );
+}
