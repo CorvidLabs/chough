@@ -2,7 +2,9 @@ profile = "chough-testing/1"
 module = "cli"
 
 # The knowledge-area test bugs t37f found in the 0.6.0 test stage (area 5) and fixed red
-# then green: K3 (lesson count), K4 (journal links) and K5 (index link text).
+# then green: K3 (lesson count), K4 (journal links) and K5 (index link text); and the
+# residuals t38b's retest found, K8 (a post's heading), K9 (./ and #fragment links) and
+# K10 (+, numbered and indented lesson items).
 
 [[case]]
 id = "TC-cli-knowledge-lesson-count-dated"
@@ -58,5 +60,62 @@ expected = ["tests/vault.rs::index_titles_are_inert_markdown passes"]
 [case.bind]
 adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "vault", "--", "--exact", "index_titles_are_inert_markdown"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-journal-post-heading-inert"
+title = "A post's own # heading holds its title as inert Markdown, in journal add and the closed post (the shipped post shares the writer), so a title adds no link or HTML"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-14", "KNOW-33"]
+requirements = ["REQ-cli-044"]
+paths = ["src/journal.rs", "src/vault.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::a_posts_heading_holds_its_title_as_inert_markdown passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "journal", "--", "--exact", "a_posts_heading_holds_its_title_as_inert_markdown"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-journal-link-dot-slash-and-fragment"
+title = "journal add --link drops a leading ./ and checks the path before a #fragment, keeping the fragment on the stored link; a tracked folder stays accepted, and an untracked path with a fragment, a bare fragment and a bare ./ are refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-14", "KNOW-33"]
+requirements = ["REQ-cli-044"]
+paths = ["src/journal.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::journal_links_take_a_dot_slash_path_and_keep_a_fragment passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "journal", "--", "--exact", "journal_links_take_a_dot_slash_path_and_keep_a_fragment"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-knowledge-lesson-count-list-forms"
+title = "The lesson count reads every list item that starts with a date: + bullets, numbered items (1. or 1)) and indented items; a bold date and a marker with no space after it are not counted"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-12"]
+requirements = ["REQ-cli-043"]
+paths = ["src/vault.rs", "tests/vault.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::the_lesson_count_reads_plus_numbered_and_indented_items passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "vault", "--", "--exact", "the_lesson_count_reads_plus_numbered_and_indented_items"]
 expect_output = ["test result: ok. 1 passed"]
 timeout_seconds = 600
