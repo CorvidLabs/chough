@@ -478,3 +478,21 @@ adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "next", "--", "next_and_status_show_every_command_whole_for_a_long_change_id", "status_gives_the_next_valid_action_whole", "both_forms_stay_within_the_cap_with_totals_for_large_records"]
 expect_output = ["test result: ok. 3 passed"]
 timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-gate-list-names-the-ship-for-a-verifying-gate"
+title = "The gate list ends with gate record for the gates whose change is not verifying and change ship with the list and gate for each verifying one, and gate record's refusal says such a gate closes through the ship"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why"
