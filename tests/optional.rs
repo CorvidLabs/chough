@@ -1082,3 +1082,43 @@ fn the_retired_retention_preference_and_consent_refuse() {
     let shown = fixture.ok(&["pref", "show"]);
     assert!(shown.to_string().contains("retention"), "{shown:#}");
 }
+
+/// REQ-cli-016, F12a of the third fresh-eyes round: Claude Code 2.1.316 does not discover
+/// `.agents/skills` alone, so `init --host claude` prints the line to add to CLAUDE.md,
+/// the one docs/integrations.md gives, and writes nothing to CLAUDE.md, whether or not
+/// the project has one; `init` without the claude host prints no such line.
+#[test]
+fn init_with_the_claude_host_prints_the_claude_md_line_and_writes_none() {
+    const LINE: &str =
+        "Read and follow `.agents/skills/chough-workflow/SKILL.md` for the Chough workflow.";
+    let integrations =
+        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/integrations.md"))
+            .unwrap();
+    assert!(integrations.contains(LINE), "docs/integrations.md changed");
+    let fresh = Fixture::new();
+    let output = fresh.ok(&[
+        "init",
+        "--objective",
+        "A Claude project",
+        "--host",
+        "claude",
+    ]);
+    assert_eq!(output["claude_md"]["line"], LINE, "{output:#}");
+    assert!(!fresh.exists("CLAUDE.md"), "init wrote CLAUDE.md");
+
+    let existing = Fixture::new();
+    existing.write("CLAUDE.md", "SYNTHETIC project notes\n");
+    let output = existing.ok(&[
+        "init",
+        "--objective",
+        "A Claude project",
+        "--host",
+        "claude",
+    ]);
+    assert_eq!(output["claude_md"]["line"], LINE, "{output:#}");
+    assert_eq!(existing.read("CLAUDE.md"), "SYNTHETIC project notes\n");
+
+    let openai = Fixture::new();
+    let output = openai.ok(&["init", "--objective", "An openai project"]);
+    assert!(output["claude_md"].is_null(), "{output:#}");
+}
