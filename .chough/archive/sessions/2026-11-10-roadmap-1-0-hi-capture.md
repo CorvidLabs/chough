@@ -47,6 +47,9 @@ blockers: []
 waiting_on_human: []
 run_consents: []
 next: Lane green at 27c2cd14 -> push -> t37j re-review -> merge
+closed: 2026-11-12
+outcome: done
+receipts: []
 ---
 # Turn the 2026-11-10 MVP interview into hi capture, a 1.0 roadmap, a test plan and a draft issue list
 
@@ -118,3 +121,5 @@ Turn the 2026-11-10 MVP interview into hi capture, a 1.0 roadmap, a test plan an
   - revision: e208a1103c22c7e1abb914a0fded5a6a88d6a956
   - relayed_by: {"decided_by":"Leif (0xLeif)","words":"\"Approve it\"; \"Yes, merge when green\" (Windows read as best-effort through WSL in the approved summary; KNOW-29/KNOW-30 closed earlier by the #235 rewrite)","where":"Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10","recorded_by":"kimi-code agent, chough session roadmap-1-0-hi-capture"}
 
+
+Closed 2026-11-12: done.
