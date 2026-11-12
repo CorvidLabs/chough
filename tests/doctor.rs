@@ -139,12 +139,19 @@ fn doctor_reports_debt_and_changes_nothing() {
 }
 
 /// DRIVE-17: `--fix` archives finished sessions byte for byte and removes the stale
-/// pointer; open work stays; a second run is clean and exits 0.
+/// pointer; open work stays; a second run is clean and exits 0. Like a fresh clone, the
+/// fixture has the merge lines but no drivers, so `--fix` also sets them (REQ-cli-047).
 #[cfg(unix)]
 #[test]
 fn doctor_fix_archives_finished_sessions_and_removes_a_stale_pointer() {
     let fixture = Fixture::new();
     indebted(&fixture);
+    // The merge lines `chough init` declares; the drivers are unset, as in a fresh clone.
+    fixture.write(
+        ".gitattributes",
+        ".chough/bugs/*.md merge=chough-bug\nknowledge/index.md merge=chough-generated\n\
+         knowledge/journal/feed.xml merge=chough-generated\n",
+    );
     // Committed, so archiving removes the finished sessions' folders (REQ-records-012).
     fixture.commit("finished sessions");
     no_native_reads(&fixture);
@@ -157,6 +164,7 @@ fn doctor_fix_archives_finished_sessions_and_removes_a_stale_pointer() {
         vec![
             triple("finished_session", &fixture.id_of("alpha"), "fixed"),
             triple("finished_session", &fixture.id_of("beta"), "fixed"),
+            triple("merge_drivers", "merge.chough-bug.driver", "fixed"),
             triple("stale_pointer", "ghost", "fixed"),
         ],
         "{report:#}"

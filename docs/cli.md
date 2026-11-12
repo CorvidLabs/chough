@@ -73,7 +73,7 @@ for example by an older Chough, is refused the same way. See [Migration](#migrat
 
 | Command | Behavior |
 |---|---|
-| `init` | `--objective` (creates the first session, keyed by `--session KEY` or the objective's slug; without it no session is created), `--intent-scope`, repeated `--module`, repeated `--host openai\|claude\|codex\|cursor\|gemini\|grok` (default openai; claude shares the openai `.agents/skills` copy, installed once). Installs the skill bundle; preserves existing files and never touches a legacy `.claude/skills` copy. With the librarian on (the default) it also creates the knowledge directory. Prints the `records_in_verification` advice when `.specsync/sdd.json` leaves Chough's record folders in verification (see [Doctor](#doctor)). Refuses a 0.5.x project as unmigrated, and refuses `--objective` while a session is open. |
+| `init` | `--objective` (creates the first session, keyed by `--session KEY` or the objective's slug; without it no session is created), `--intent-scope`, repeated `--module`, repeated `--host openai\|claude\|codex\|cursor\|gemini\|grok` (default openai; claude shares the openai `.agents/skills` copy, installed once). Installs the skill bundle; preserves existing files and never touches a legacy `.claude/skills` copy. With the librarian on (the default) it also creates the knowledge directory. It sets up Chough's merge drivers and reports them as `merge`: it appends the `chough-bug` and `chough-generated` lines `.gitattributes` lacks, creating it when absent and changing no line, and in a Git work tree sets each driver Git has no command for in the clone's local config (see [Merging branches](#merging-branches)). Prints the `records_in_verification` advice when `.specsync/sdd.json` leaves Chough's record folders in verification (see [Doctor](#doctor)). Refuses a 0.5.x project as unmigrated, and refuses `--objective` while a session is open. |
 | `context [--json]` | Focused packet: instructions, intent, scoped HI export, module sources, recent Timeline entries, valid transitions, preferences, open bugs. Markdown by default. |
 | `status [--environment NAME]` | The full view, always JSON (`--json` is accepted and changes nothing). It starts with a `summary` object (see [The status view](#the-status-view)), then the checkpoint, the native gate for the next main stage in `checkpoint.gate` (`null` when that stage has no prerequisite), valid transitions, `next_valid_action`, `corrections`, native status, the snapshot, observations with freshness, and open and blocking bugs. |
 | `next [--environment NAME] [--json]` | The focused action view, text by default and compact JSON with `--json`; see [The next view](#the-next-view). |
@@ -612,6 +612,9 @@ knowledge/index.md merge=chough-generated
 knowledge/journal/feed.xml merge=chough-generated
 ```
 
+`chough init` declares Chough's three lines for you. It appends each one that no line
+declares after the last line, creates the file when it is absent, and changes no line
+already there; the knowledge lines name `library-dir` when it is set.
 In the knowledge directory, only the two generated files, which `library index --check`
 compares, use the driver. Posts, lessons, snapshots and briefs are not generated, so
 a conflicting edit to one still stops for a human.
@@ -619,7 +622,10 @@ a conflicting edit to one still stops for a human.
 Sessions need no merge driver: each is its own folder, and there is no checkpoint
 merge.
 
-Set up Chough's drivers once per clone:
+Git does not clone config, so each clone needs the drivers too. `chough init` sets each
+one in the clone's local config while Git has no command for it, so a command you set is
+kept. In a fresh clone, `chough doctor` reports them missing as `merge_drivers`, and
+`chough doctor --fix` sets them. By hand:
 
 ```sh
 git config --local merge.chough-bug.driver "chough bug merge %O %A %B"
@@ -727,6 +733,7 @@ native read, and never records a human decision, approval, review or consent.
 | `alias_conflict` | An ID that is the `id` or an alias of two records of one kind (REQ-records-003); `records` names both | None: decide which record keeps it |
 | `oversize` | A committed record, evidence entry or screenshot over its bound, or a session's screenshots over 2,097,152 bytes in all (REQ-records-001, -005, -013), with its `bytes` and `bound` | None |
 | `records_in_verification` | `.specsync/sdd.json` exists and its `verification_ignored_paths` lacks `.chough/sessions/`, `.chough/archive/` or `.chough/bugs/` (REQ-records-014) | Never fixed: Chough never writes the policy. The finding adds `missing` (the entries to add), `specsync` (`6.1.2 and later`, the releases that honour the list) and `advice`: adding them is an ordinary reviewed change to `.specsync/sdd.json`. A broader entry such as `.chough/` gets the advice to list the three folders instead. `chough init` prints the same advice as `records_in_verification` |
+| `merge_drivers` | In a Git work tree, a clone whose Git config has no command for `merge.chough-bug.driver` or `merge.chough-generated.driver`, as a fresh clone has none, or a `.gitattributes` that lacks one of Chough's merge lines (REQ-cli-047); one finding, with `missing_drivers` and `missing_lines` | `chough doctor --fix` sets the missing drivers in the clone's local config. It never writes `.gitattributes`, so a missing line keeps the finding `skipped`, naming the lines: `chough init` appends exactly those, then commit the file |
 
 - **No flag or `--dry-run`:** reports every finding as `found` and changes nothing.
 - **`--fix`:** applies the fixes in the order of the table. It applies a decision fix
@@ -737,7 +744,8 @@ native read, and never records a human decision, approval, review or consent.
   oversized record.
 - **Exit code:** 0 when nothing is left `found` or `skipped`, 1 otherwise, so CI can
   run `chough doctor` as a check. `records_in_verification` is never fixed, so it keeps
-  the exit at 1 until the project lists the three folders.
+  the exit at 1 until the project lists the three folders. A missing merge line keeps
+  `merge_drivers` at 1 the same way until `.gitattributes` declares it.
 
 Run it when a fresh worktree refuses to enter Chough (for example "several open
 sessions"), after merging main, and after the move into done to finish removing the

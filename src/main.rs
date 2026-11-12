@@ -337,12 +337,15 @@ fn init(
     }
     // REQ-cli-043: with the librarian on, the knowledge directory exists from the start.
     let library = library::create_at_init(root);
+    // REQ-cli-047: the merge attributes and drivers, so two branches merge clean.
+    let merge = library::merge_at_init(root);
     print_json(&json!({
         "schema_version": 1,
         "created": created,
         "preserved": preserved,
         "hosts": hosts,
         "library": library,
+        "merge": merge,
         // REQ-records-014: the same advice `chough doctor` gives, or null.
         "records_in_verification": doctor::exclusions(root).advice(),
     }))
