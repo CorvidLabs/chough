@@ -6,7 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
-### 0.6.0: human-first records (breaking)
+## [0.6.0] - 2026-11-12
+
+### Human-first records (breaking)
 
 Chough 0.6.0 changes the record format. Chough 0.5.x cannot read 0.6.0 records, and
 0.5.0 already cannot read main's evidence inventory field, so upgrade Chough for every
@@ -15,8 +17,22 @@ change open, run `chough migrate` to preview the conversion and, with the human'
 consent, `chough migrate --apply <digest> --consent "<who, their words, where>"` to
 apply it once. Run both on the same machine and account: the plan's redactions depend
 on the host and user name, so a plan previewed in CI or by another user has another
-digest and does not apply. The release date and the dogfood results are added when
-0.6.0 ships.
+digest and does not apply.
+
+Dogfood: this repository migrated itself with the 0.6.0 build on 2026-11-12, with no
+native change open and the human's consent (3,238 files carried or removed with why,
+215 written, 10 values redacted). Every digest in the receipt matched the commits
+before and after, and CI's archive authentication passed over the migrated tree. The
+release preparation then ran as one native change on the 0.6.0 build only: its scope
+approval and its review ran through Chough's gates as the human, the move into done
+wrote the story, the journal post and the index while every earlier story stayed
+byte-identical, and `chough doctor` was clean after the two-step closeout. It found
+and fixed one bug: an in-place migration kept the machine-local active-session
+pointer holding a 0.5.x session key, which now resolves through the session's alias.
+A 0.5.x build on a migrated tree sees no open session and refuses `bug list` at the
+first Markdown bug; a 0.5.x write, such as `session new`, adds a 0.5.x file, after
+which 0.6.0 refuses the tree as `refused:unmigrated` naming that file. So upgrade every
+agent before a project migrates.
 
 - **Every record is one Markdown file** with YAML front matter, and the file is the
   record: no JSON twin, cache or index is read in its place (REQ-records-001). Chough
@@ -107,7 +123,7 @@ New: `chough migrate` (preview, `--apply`, `--consent`), `chough correct`,
 the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
 `chough evidence add`, and the human identity file.
 
-### Also unreleased
+### Also in 0.6.0
 
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
@@ -904,6 +920,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.6.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.0
 [0.5.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.5.0
 [0.4.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.4.0
 [0.3.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.3.0

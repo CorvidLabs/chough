@@ -1002,7 +1002,9 @@ Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
   the default branch (`origin/HEAD`, else `main`), or from the change's `base_commit`
   (from its `state.json`) when there is no merge base, leaving out `.chough/`, the
   knowledge directory and SpecSync's lifecycle bookkeeping, and naming the five files
-  with the most changed lines among the rest (#190);
+  with the most changed lines among the rest (#190). For a second native change on one
+  branch, the merge base comes first, so the count includes the earlier change's work;
+  counting from the change's own base is planned after 0.6.0;
 - the tests: how many cases passed, failed and were not run, by the latest observation
   of each case that links a requirement the change's deltas add or modify (or that the
   session's observations name), with the failing case IDs;
