@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "BUG-the-lesson-count-misses-dated-lessons-written-as-or-numbered-list-items-5800d2e425f4b4354ac06315",
+  "title": "The lesson count misses dated lessons written as + or numbered list items, or indented",
+  "symptom": "'+ 2026-11-02 x', '1. 2026-11-03 x' and an indented '  - 2026-11-04 x' count 0",
+  "trigger": "Lessons written with a + bullet, a numbered list or indentation",
+  "expected": "The count of recorded lessons counts every list item that starts with a date (REQ-cli-043)",
+  "actual": "Only '- ' and '* ' bullets at the start of a line are read",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-043"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester build at 0ee26ac0, debug, SpecSync 6.2.0",
+  "revision": "3864e43194583a70c97cae212194cf39a4d5a17d",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "Undercounted lessons for some writing styles",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t38b, test stage, independent retest of K3 to K5",
+  "notes": [
+    {
+      "at_unix_seconds": 1794450189,
+      "text": "Added despite similar reports: K3 fixed the separator after the date for '- ' and '* ' items; this is the + and numbered list forms and indented items, which the K3 fix still does not read",
+      "observations": []
+    }
+  ],
+  "created_at_unix_seconds": 1794450189,
+  "updated_at_unix_seconds": 1794450189
+}
