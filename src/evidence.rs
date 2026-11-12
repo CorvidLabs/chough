@@ -881,7 +881,8 @@ fn strip_png(bytes: &[u8]) -> Result<Vec<u8>> {
     let mut out = PNG_SIGNATURE.to_vec();
     let mut at = PNG_SIGNATURE.len();
     while at + 8 <= bytes.len() {
-        let length = u32::from_be_bytes(bytes[at..at + 4].try_into().unwrap()) as usize;
+        let length =
+            u32::from_be_bytes([bytes[at], bytes[at + 1], bytes[at + 2], bytes[at + 3]]) as usize;
         let kind = &bytes[at + 4..at + 8];
         let end = at + 8 + length + 4;
         ensure!(end <= bytes.len(), "a PNG chunk overruns the file");
@@ -911,7 +912,7 @@ fn strip_jpeg(bytes: &[u8]) -> Result<Vec<u8>> {
             at += 2;
             continue;
         }
-        let length = u16::from_be_bytes(bytes[at + 2..at + 4].try_into().unwrap()) as usize;
+        let length = u16::from_be_bytes([bytes[at + 2], bytes[at + 3]]) as usize;
         let end = at + 2 + length;
         ensure!(end <= bytes.len(), "a JPEG segment overruns the file");
         let metadata = (0xe1..=0xef).contains(&marker) || marker == 0xfe;
@@ -2701,19 +2702,14 @@ pub(super) fn resolve_entry(root: &Path, id: &str) -> Result<Option<(String, Evi
             found.push((session_id, Evidence::from_record(&record)?));
         }
     }
-    match found.len() {
-        0 => Ok(None),
-        _ => {
-            let first = found.pop().expect("one entry");
-            if found.is_empty() {
-                Ok(Some((format!("{}/{}", first.0, first.1.id), first.1)))
-            } else {
-                bail!(
-                    "refused: {id} names an evidence entry in more than one session; qualify it as <session-id>/<evidence-id>"
-                )
-            }
-        }
-    }
+    let Some(first) = found.pop() else {
+        return Ok(None);
+    };
+    ensure!(
+        found.is_empty(),
+        "refused: {id} names an evidence entry in more than one session; qualify it as <session-id>/<evidence-id>"
+    );
+    Ok(Some((format!("{}/{}", first.0, first.1.id), first.1)))
 }
 
 /// The files written beside an entry: an optional screenshot (extension, bytes) and
