@@ -1249,7 +1249,9 @@ pub(super) fn assess(
     {
         Action {
             action: format!("Leaving test is refused (refused:unlinked-failure): {refusal}"),
-            reason: "A failing case stays failed until it passes or a bug records the failure (FLOW-7, LIFE-5).".into(),
+            // FLOW-7, LIFE-5.
+            reason: "A failing case stays failed until it passes or a bug records the failure."
+                .into(),
             command: Some("chough bug add ... --observation <id>".into()),
         }
     } else if current == "done" {
@@ -1301,7 +1303,8 @@ pub(super) fn assess(
                 },
                 ship_command(id)
             ),
-            reason: "Native change is verifying: only the human's review and the ship remain, and an agent's review never stands in for theirs (FLOW-10).".into(),
+            // FLOW-10.
+            reason: "Native change is verifying: only the human's review and the ship remain, and an agent's review never stands in for theirs.".into(),
             command: Some(match open_review {
                 Some(_) => "chough gate list".into(),
                 None => format!(
@@ -1321,7 +1324,8 @@ pub(super) fn assess(
             action: format!(
                 "The human approves the scope next. Open the scope gate: `{open}`, and show them `chough gate list`. When they decide, record their words with `{CLOSE_GATE_COMMAND}`, which runs the approval as them. Do not approve it yourself."
             ),
-            reason: "Native change is a complete draft waiting for its definition approval, which only the human gives (FLOW-23).".into(),
+            // FLOW-23.
+            reason: "Native change is a complete draft waiting for its definition approval, which only the human gives.".into(),
             command: Some(open),
         }
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
@@ -1786,7 +1790,8 @@ fn kept_open_action(root: &Path, session: &Checkpoint) -> Option<Action> {
     {
         return Some(Action {
             action: "Release is authorized for this cycle: enter it. The session stays open for the release and archives itself at the move from release into done.".into(),
-            reason: "The move into done kept this session open because release is authorized (REQ-history-006).".into(),
+            // REQ-history-006.
+            reason: "The move into done kept this session open because release is authorized.".into(),
             command: Some("chough stage enter release --reason \"<request>\"".into()),
         });
     }
@@ -1798,7 +1803,9 @@ fn kept_open_action(root: &Path, session: &Checkpoint) -> Option<Action> {
             "This session stays open: {count} unfolded inbox {}. Fold them with `chough inbox fold`, then run `chough doctor --fix` to archive the session, and start the next piece of work in a new session after that.",
             if count == 1 { "entry" } else { "entries" }
         ),
-        reason: "The move into done keeps a session open while its inbox holds unfolded entries (REQ-history-006).".into(),
+        // REQ-history-006.
+        reason: "The move into done keeps a session open while its inbox holds unfolded entries."
+            .into(),
         command: Some("chough inbox fold".into()),
     })
 }
