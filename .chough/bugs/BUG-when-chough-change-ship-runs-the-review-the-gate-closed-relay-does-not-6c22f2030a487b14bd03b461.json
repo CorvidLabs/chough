@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "BUG-when-chough-change-ship-runs-the-review-the-gate-closed-relay-does-not-6c22f2030a487b14bd03b461",
+  "title": "When chough change ship runs the review, the gate-closed relay does not name the review or its actor",
+  "symptom": "After a ship that ran specsync change review as the human, the gate-closed entry's relayed_by has decided_by, words, where and recorded_by but no native or actor",
+  "trigger": "chough change ship <id> --close-gate <review gate> with the relay, with no current scoped review",
+  "expected": "relayed_by names native and actor when the gate drove a native step (REQ-history-010)",
+  "actual": "The close is passed only a summary, so native and actor stay unset",
+  "criteria": [],
+  "requirements": [
+    "REQ-history-010",
+    "REQ-cli-059"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester build at ad44a0d9, debug, real SpecSync 6.3.0",
+  "revision": "7986e008c32eaaa48c6d1ec029905556edf25ca9",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-a-ship-records-the-review-it-ran-e37f004b73d0aa76f0102272",
+    "OBS-tc-cli-a-ship-records-the-review-it-ran-7ada09c2961ca49fed81d585"
+  ],
+  "impact": "A reader of the Timeline cannot tell a review ran for the gate, or as whom",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t38b, 6.3.0 re-run, area approvals and gates",
+  "notes": [
+    {
+      "at_unix_seconds": 1794468605,
+      "text": "status: open -> investigating. Red at 5ab111b7 (before its fix, SpecSync 6.3.0 on PATH): TC-cli-a-ship-records-the-review-it-ran failed for this bug's reason; fix in b5453b53.",
+      "observations": [
+        "OBS-tc-cli-a-ship-records-the-review-it-ran-e37f004b73d0aa76f0102272"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794468605,
+      "text": "status: investigating -> verified. Green at 7986e008: TC-cli-a-ship-records-the-review-it-ran passed; change, relay, humans, direct_writes and native tests pass.",
+      "observations": [
+        "OBS-tc-cli-a-ship-records-the-review-it-ran-7ada09c2961ca49fed81d585"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794468565,
+  "updated_at_unix_seconds": 1794468605
+}

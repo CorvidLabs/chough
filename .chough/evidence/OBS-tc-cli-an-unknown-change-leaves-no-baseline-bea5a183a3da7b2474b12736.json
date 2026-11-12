@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-an-unknown-change-leaves-no-baseline-bea5a183a3da7b2474b12736",
+  "criteria": [
+    "DRIVE-20",
+    "FLOW-16"
+  ],
+  "requirements": [
+    "REQ-cli-057"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test change -- --exact a_refused_step_for_an_unknown_change_leaves_no_baseline for TC-cli-an-unknown-change-leaves-no-baseline: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-an-unknown-change-leaves-no-baseline-bea5a183a3da7b2474b12736.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-an-unknown-change-leaves-no-baseline-bea5a183a3da7b2474b12736.log": "c47714ff698920d71e10072e31f8ce9138ddac18b7e4bafcabaf17f673b253ff"
+  },
+  "observed_at_unix_seconds": 1794468594,
+  "snapshot": {
+    "revision": "7986e008c32eaaa48c6d1ec029905556edf25ca9",
+    "dirty": false,
+    "fingerprint": "b9da80ac480284c4e92694ab7de1cce745373fba9c7700b78150a842ea7363e6",
+    "content": "14f9035932ae8940e4737cbe2a5f6eeedeedac2f05e722fe0f2140e142f7f7dc"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-an-unknown-change-leaves-no-baseline",
+      "digest": "ac6fe27c04a6c599f16773c53640fbf9b7d0de9065178e5e680a37d85e740889"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "change",
+    "--",
+    "--exact",
+    "a_refused_step_for_an_unknown_change_leaves_no_baseline"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

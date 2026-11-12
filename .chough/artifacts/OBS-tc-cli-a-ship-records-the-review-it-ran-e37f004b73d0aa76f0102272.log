@@ -1,0 +1,93 @@
+--- stdout ---
+
+running 1 test
+test a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay ... FAILED
+
+failures:
+
+---- a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay stdout ----
+
+thread 'a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay' (915333153) panicked at tests/change.rs:1000:5:
+assertion `left == right` failed: ---
+kind: session
+id: 2026-11-12-ship-a5
+aliases: [ship-a5]
+objective: Ship a5
+intent_scope: ""
+modules: []
+stage: done
+stage_status: active
+iteration: 1
+callers: []
+native_change: a5
+pr: ""
+criteria: []
+requirements: []
+cases: []
+design: []
+files: []
+observations: []
+bugs: []
+blockers: []
+waiting_on_human: []
+run_consents: []
+next: "New cycle from intent after reset: Ready to ship. Create or record the native change (specsync change new, then chough checkpoint --native-change <id>) and set the next action."
+closed: 2026-11-12
+outcome: done
+receipts: []
+---
+# Ship a5
+
+## Goal
+
+Ship a5
+
+## Where it stands
+
+## Decisions and why
+
+- SYNTHETIC-human decided "Implementation review of a5": "pass" (a test); recorded by SYNTHETIC-agent; a relayed claim, not authenticated; ran specsync change review a5 as SYNTHETIC-reviewer with verdict pass
+
+## What was verified
+
+## Open threads
+
+## Timeline
+
+- 2026-11-12T07:29:29Z · reset · intent → accept · Ready to ship ^t-2bb991
+  - native_change: a5
+  - gate: native:archived
+  - refresh: accept: native verification and the human implementation review
+- 2026-11-12T07:29:29Z · gate-opened · accept → accept · Implementation review of a5 ^t-eb5e11
+  - native_change: a5
+  - holds: accept
+  - drives: review
+- 2026-11-12T07:29:29Z · gate-closed · accept → accept · Implementation review of a5 ^t-0561dc
+  - native_change: a5
+  - revision: 99a0539f9451168bb4c529e3922b0d93ee73ba7e
+  - relayed_by: {"decided_by":"SYNTHETIC-human","words":"pass","where":"a test","recorded_by":"SYNTHETIC-agent"}
+  - by: claude-code (hc t382)
+- 2026-11-12T07:29:29Z · advance · accept → done · native:archived ^t-d18654
+  - native_change: a5
+  - gate: native:archived
+  - revision: 99a0539f9451168bb4c529e3922b0d93ee73ba7e
+  - by: claude-code (hc t382)
+
+
+Closed 2026-11-12: done.
+
+  left: Null
+ right: "specsync change review a5"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 15 filtered out; finished in 1.11s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/change.rs (target/debug/deps/change-c5f0a8258a2c0971)
+error: test failed, to rerun pass `--test change`
