@@ -167,3 +167,21 @@ expected = ["tests/timing.rs::init_and_session_new_write_a_start_entry_that_timi
 adapter = "cargo-test"
 test_target = "timing"
 test = "init_and_session_new_write_a_start_entry_that_timing_reads"
+
+[[case]]
+id = "TC-history-session-close-records-withdrawn-gates"
+title = "chough session close on a session with an open human gate withdraws it with one gate-closed entry and no decision, names it under withdrawn_gates, and the story lists no gate as awaiting"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16", "FLOW-13"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "src/checkpoint.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_close_records_the_gates_it_withdraws passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_close_records_the_gates_it_withdraws"

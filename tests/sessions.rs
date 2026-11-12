@@ -714,6 +714,45 @@ fn session_close_archives_abandoned_work_with_its_reason() {
     );
 }
 
+/// F2 of the third fresh-eyes round (REQ-history-006): `chough session close` on a
+/// session with an open human gate withdraws it as `--clear-awaiting-human` does, one
+/// `gate-closed` entry with no relayed decision, names it under `withdrawn_gates`, and
+/// the story lists no gate as awaiting, so no gate is dropped silently.
+#[test]
+fn session_close_records_the_gates_it_withdraws() {
+    const GATE: &str = "Approve the alpha intent";
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    fixture.ok(&["session", "use", "alpha"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", GATE]);
+    fixture.ok(&["session", "use", "beta"]);
+    fixture.commit("two sessions, alpha with an open gate");
+    let closed = fixture.ok(&[
+        "session",
+        "close",
+        "alpha",
+        "--reason",
+        "Abandoned for beta",
+    ]);
+    assert_eq!(closed["withdrawn_gates"], json!([GATE]), "{closed}");
+    let text = fixture.read(&fixture.story_of("alpha"));
+    let story = parse_session(&text);
+    assert_eq!(story["awaiting_human"], json!([]), "{text}");
+    let closed_entries: Vec<&str> = text
+        .lines()
+        .filter(|line| line.contains(" · gate-closed · ") && line.contains(GATE))
+        .collect();
+    assert_eq!(closed_entries.len(), 1, "{text}");
+    assert!(
+        !text.contains("relayed_by"),
+        "a decision was recorded: {text}"
+    );
+    assert_eq!(
+        story["decisions"],
+        json!(["Closed without done: Abandoned for beta"])
+    );
+}
+
 #[test]
 fn inbox_entries_fold_once_without_touching_the_session() {
     let fixture = Fixture::new();
