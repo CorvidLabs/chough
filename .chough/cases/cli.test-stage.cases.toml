@@ -93,3 +93,21 @@ expected = ["tests/next.rs::at_accept_the_decision_ships_through_change_ship_and
 adapter = "cargo-test"
 test_target = "next"
 test = "at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate"
+
+[[case]]
+id = "TC-cli-a-ship-records-the-review-it-ran"
+title = "When chough change ship runs the review as the human, the gate-closed relay names the SpecSync review command and the actor"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "FLOW-16"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "src/checkpoint.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay"

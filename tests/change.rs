@@ -967,3 +967,40 @@ fn change_new_passes_no_spec_change_with_its_rationale() {
     );
     assert!(retried.status.success());
 }
+
+/// REQ-history-010, REQ-cli-059, TC-cli-a-ship-records-the-review-it-ran (A3-1): when
+/// `chough change ship` runs the review as the decided human, the gate's `gate-closed`
+/// entry names that SpecSync command as `native` and the actor it ran as as `actor`,
+/// as a close that drives the review itself does.
+#[test]
+fn a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay() {
+    let fixture = shipping_session_at("accept");
+    fixture.write(".stub-ship-out", "SHIPPED a5\n");
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let file = if fixture.is_archived(SHIP_KEY) {
+        fixture.story_of(SHIP_KEY)
+    } else {
+        fixture.session_file_of(SHIP_KEY)
+    };
+    let story = fixture.read(&file);
+    let mut gate_closed = false;
+    let mut relay = serde_json::Value::Null;
+    for line in story.lines() {
+        if line.starts_with("- ") {
+            gate_closed = line.contains("· gate-closed ·");
+        } else if gate_closed && let Some(payload) = line.strip_prefix("  - relayed_by: ") {
+            relay = serde_json::from_str(payload).unwrap();
+        }
+    }
+    assert_eq!(
+        relay["native"],
+        format!("specsync change review {SHIP_ID}"),
+        "{story}"
+    );
+    assert_eq!(relay["actor"], "SYNTHETIC-reviewer", "{story}");
+}
