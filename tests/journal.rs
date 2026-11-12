@@ -721,3 +721,99 @@ fn journal_links_name_only_project_paths_git_tracks() {
         );
     }
 }
+
+/// REQ-cli-044 (BUG-a-journal-post-s-own-heading-writes-its-title-raw-so-a-title-can-add-a-463f7e7f0cc3606e22de1fa0):
+/// a post's own `# ` heading holds its title as inert Markdown, as the index line does,
+/// so a title can add neither a link nor HTML to the post. `journal add` and the closed
+/// post are checked; the shipped post at done is written by the same writer.
+#[test]
+fn a_posts_heading_holds_its_title_as_inert_markdown() {
+    let title = "SYNTHETIC <b> [x](y) `code` \\ end";
+    let heading = "# SYNTHETIC \\<b\\> \\[x\\](y) \\`code\\` \\\\ end";
+    let fixture = Fixture::new();
+    fixture.ok(&["init", "--objective", title, "--module", "cli"]);
+    let added = fixture.ok(&[
+        "journal",
+        "add",
+        "--kind",
+        "learned",
+        "--title",
+        title,
+        "--body",
+        "One line.",
+    ]);
+    let key = fixture.active_id();
+    let closed = fixture.ok(&["session", "close", &key, "--reason", "SYNTHETIC reason"]);
+    for post in [&added["post"], &closed["journal_post"]["post"]] {
+        let text = fixture.read(post.as_str().unwrap_or_default());
+        let (_, body) = split(&text);
+        assert_eq!(
+            body.lines().find(|line| line.starts_with("# ")),
+            Some(heading),
+            "{text}"
+        );
+    }
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// REQ-cli-044, KNOW-14 (BUG-journal-add-link-refuses-a-tracked-path-written-with-or-a-fragment-sayi-c42412d03e5dfd12e4d28a9a):
+/// a tracked path is accepted however a person writes it relatively: a leading `./` is
+/// dropped, and a `#fragment` is kept on the stored link while the path before it is
+/// checked. A tracked folder stays accepted; an untracked path with a fragment, a bare
+/// fragment and a bare `./` are refused with nothing written.
+#[test]
+fn journal_links_take_a_dot_slash_path_and_keep_a_fragment() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("init");
+    fixture.write("SYNTHETIC-untracked.md", "never committed\n");
+    let add = |link: &str| {
+        let args = [
+            "journal", "add", "--kind", "learned", "--title", link, "--body", "x", "--link", link,
+        ];
+        fixture.run(&args)
+    };
+    for (link, stored) in [
+        ("./specs/cli/requirements.md", "specs/cli/requirements.md"),
+        (
+            "specs/cli/requirements.md#req-cli-044",
+            "specs/cli/requirements.md#req-cli-044",
+        ),
+        (
+            "./specs/cli/requirements.md#req-cli-044",
+            "specs/cli/requirements.md#req-cli-044",
+        ),
+        ("./specs/", "specs/"),
+    ] {
+        let output = add(link);
+        assert!(
+            output.status.success(),
+            "{link}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let added: Value = serde_json::from_slice(&output.stdout).unwrap();
+        let text = fixture.read(added["post"].as_str().unwrap_or_default());
+        let (front, body) = split(&text);
+        assert_eq!(items(front, "links"), vec![stored.to_string()], "{text}");
+        assert!(
+            body.contains(&format!("Read more: [{stored}](../../{stored})\n")),
+            "{text}"
+        );
+    }
+    fixture.ok(&["library", "index", "--check"]);
+    let before = tree(&fixture, "knowledge");
+    for link in ["./SYNTHETIC-untracked.md#x", "#only-a-fragment", "./"] {
+        let output = add(link);
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success(), "{link} was accepted");
+        assert!(
+            error.contains("neither an http(s) URL nor a project path Git tracks"),
+            "{link}: {error}"
+        );
+        assert_eq!(
+            tree(&fixture, "knowledge"),
+            before,
+            "{link} wrote something"
+        );
+    }
+}
