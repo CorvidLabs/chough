@@ -239,3 +239,23 @@ expected = ["tests/humans.rs::a_close_that_runs_no_native_step_says_why passes"]
 adapter = "cargo-test"
 test_target = "humans"
 test = "a_close_that_runs_no_native_step_says_why"
+
+# The second fresh-eyes round on 0.6.0 (2026-11-12), Leif's yes at 19:43Z.
+
+[[case]]
+id = "TC-cli-migrate-preview-with-nothing-to-migrate"
+title = "On a tree with no 0.5.x record, chough migrate says there is nothing to migrate, gives no plan digest and writes nothing, and the apply still reports nothing to do"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest"
