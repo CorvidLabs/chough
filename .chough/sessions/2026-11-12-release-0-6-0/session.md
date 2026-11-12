@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -107,7 +107,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Backfill the 69 journal posts from t38c's drafts with journal add --record; build j, k, l, d and the blank line red then green; integrate t37f's c, e, i and t38b's f, g, h; record the flake reruns
+next: "Gate \"Approve the 0.6.0 release prep with the stop-survivor fix folded in\" closed (approved); run `chough next` for the next action."
 ---
 # Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
@@ -129,6 +129,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Leif decided "Approve the 0.6.0 release prep re-scoped for the journal, lessons and temporary paths in case definitions": "yes put the journal fixes in 0.6.0 / yes add lessons in 0.6.0 / Yes, add both (Recommended) / Yes (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12: 'yes put the journal fixes in 0.6.0' at 15:35Z (short titles, real summaries, the backfill); 'yes add lessons in 0.6.0' at 15:37Z; at 15:41Z 'Yes, add both (Recommended)' for chough checkpoint --title/--summary and chough journal add --record with a derived fallback, and 'Yes (Recommended)' for /tmp paths in test-case definitions not counting as leaks; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 - Leif decided "Approve the 0.6.0 release prep re-scoped for the fresh-eyes findings and the migrated blank line": "Yes, fix all (Recommended) / Yes, fix it (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12: at 16:26Z 'Yes, fix all (Recommended)' for every fresh-eyes finding (bugs and gaps c, d, e; messages f, g, h, i; requirement changes j, k, l), and at 16:38Z 'Yes, fix it (Recommended)' for the migrated session file's stray blank line; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 - Leif decided the macOS writer-lock timeout bug (2026-11-07): "Close: can't reproduce (Recommended)", closed as not reproducible with t38b's diagnostics (63 loaded runs, 0 failures, longest lock wait 410 ms); it reopens if seen again and the 1.0 rule of two clean weeks still applies (coordinator chat, Claude Code hc t370, 2026-11-12T17:11Z, relayed by claude-code-t370; recorded by claude-code-t382)
+- Leif decided "Approve the 0.6.0 release prep with the stop-survivor fix folded in": "Yes, fix it (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12T17:42Z, answering: 'One more flaky test turned out to be a real Chough bug. Stopping a command could leave behind a child process the command started at that exact moment, on macOS. The fix keeps signalling until none is left: before, 2 failures in 24 runs; after, 0 in 32. Fix it in 0.6.0 too?'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 
 ## What was verified
 
@@ -348,5 +349,27 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - revision: 4a8cd931b5efb4724118c0c7f88a69a41b2a8b66
   - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, checkpoint references: 0 case(s) and 86 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t382)
+- 2026-11-12T17:48:53Z · gate-opened · plan → plan · Approve the 0.6.0 release prep with the stop-survivor fix folded in ^t-8a107d
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: d41602783f6445c612f180b0fa9bd62b4530a082
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-12T17:48:54Z · gate-closed · plan → plan · Approve the 0.6.0 release prep with the stop-survivor fix folded in ^t-5b84e5
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: d41602783f6445c612f180b0fa9bd62b4530a082
+  - relayed_by:
+    - decided_by: Leif
+    - words: Yes, fix it (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-12T17:42Z, answering: 'One more flaky test turned out to be a real Chough bug. Stopping a command could leave behind a child process the command started at that exact moment, on macOS. The fix keeps signalling until none is left: before, 2 failures in 24 runs; after, 0 in 32. Fix it in 0.6.0 too?'; relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-12T17:48:57Z · advance · plan → build · Leif approved folding in the stop-survivor fix (17:42Z, relayed by t370) ^t-995c5e
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - gate: native:approved
+  - revision: d41602783f6445c612f180b0fa9bd62b4530a082
   - by: claude-code (hc t382)
 
