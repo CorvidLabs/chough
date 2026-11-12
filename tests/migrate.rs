@@ -1345,3 +1345,22 @@ fn the_migration_follow_ups_name_the_merge_lines_and_drivers() {
         "{receipt}"
     );
 }
+
+/// REQ-records-009, REQ-records-003, TC-records-a-0-5-pointer-still-names-its-session
+/// (D1): migrating in place keeps the machine-local active-session pointer, which a
+/// 0.5.x project wrote as the session's key; that key is now the session's alias, so
+/// `status` reads the session it names and doctor reports no stale pointer.
+#[test]
+fn a_pointer_naming_a_migrated_key_still_names_its_session() {
+    let fixture = migrate_project("adopted", &[]);
+    fixture.write(".chough/local/active-session", "open-one\n");
+    migrate(&fixture, Some(CONSENT));
+    let status = fixture.ok(&["status", "--json"]);
+    assert!(
+        status.to_string().contains("-open-one"),
+        "status does not read open-one: {status:#}"
+    );
+    let output = fixture.run(&["doctor"]);
+    let report = String::from_utf8_lossy(&output.stdout);
+    assert!(!report.contains("stale_pointer"), "{report}");
+}

@@ -237,3 +237,21 @@ expected = ["tests/migrate.rs::the_migration_follow_ups_name_the_merge_lines_and
 adapter = "cargo-test"
 test_target = "migrate"
 test = "the_migration_follow_ups_name_the_merge_lines_and_drivers"
+
+[[case]]
+id = "TC-records-a-0-5-pointer-still-names-its-session"
+title = "After an in-place migration the local pointer naming a 0.5.x key resolves to that session through its alias"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-8", "KNOW-30", "LIFE-26"]
+requirements = ["REQ-records-009", "REQ-records-003"]
+paths = ["src/sessions.rs", "src/doctor.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_pointer_naming_a_migrated_key_still_names_its_session passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_pointer_naming_a_migrated_key_still_names_its_session"
