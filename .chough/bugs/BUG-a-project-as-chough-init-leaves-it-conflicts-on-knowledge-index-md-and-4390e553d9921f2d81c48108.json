@@ -18,7 +18,8 @@
   "observations": [
     "OBS-tc-cli-init-sets-up-merge-drivers-c80aae4f9ae0fc0fd1582321",
     "OBS-tc-cli-init-appends-only-missing-merge-lines-d913104da5e7419d149c5f81",
-    "OBS-tc-cli-doctor-merge-drivers-94c47290140fd3dc5794d767"
+    "OBS-tc-cli-doctor-merge-drivers-94c47290140fd3dc5794d767",
+    "OBS-tc-cli-init-sets-up-merge-drivers-5e4791b139c2cb1c5763f531"
   ],
   "impact": "Every project that finishes sessions on two branches hits the conflict",
   "classification": "requirement-gap",
@@ -49,8 +50,15 @@
       "observations": [
         "OBS-tc-cli-doctor-merge-drivers-94c47290140fd3dc5794d767"
       ]
+    },
+    {
+      "at_unix_seconds": 1794466713,
+      "text": "Red again at 6ee5ec37 with its test target prebuilt: TC-cli-init-sets-up-merge-drivers failed for this bug's reason. It replaces OBS-tc-cli-init-sets-up-merge-drivers-c80aae4f9ae0fc0fd1582321, whose committed log held a local scratch path from a cargo Compiling line; that path is now redacted in place (REQ-records-006), so the old log no longer matches its recorded digest.",
+      "observations": [
+        "OBS-tc-cli-init-sets-up-merge-drivers-5e4791b139c2cb1c5763f531"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794466654
+  "updated_at_unix_seconds": 1794466713
 }

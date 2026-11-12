@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-init-sets-up-merge-drivers-5e4791b139c2cb1c5763f531",
+  "criteria": [
+    "DRIVE-12",
+    "KNOW-33"
+  ],
+  "requirements": [
+    "REQ-cli-047"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test journal -- --exact init_sets_up_the_merge_drivers_so_two_branches_merge_clean for TC-cli-init-sets-up-merge-drivers: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-init-sets-up-merge-drivers-5e4791b139c2cb1c5763f531.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-init-sets-up-merge-drivers-5e4791b139c2cb1c5763f531.log": "e1258d99d71f80d4b554153a931cc6313d44598c04ea74c73bbbe88678c0c951"
+  },
+  "observed_at_unix_seconds": 1794466703,
+  "snapshot": {
+    "revision": "6ee5ec3769b5f5c3bdddb86e1071fee01e89585f",
+    "dirty": false,
+    "fingerprint": "70891a98aad1cd6ed555476173b69d31ad113f5b0a40f6f8d31c42530999edc8",
+    "content": "33380448c306a25c8982205bf364cead8a95f3b442fbebf544628e83bab69663"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-init-sets-up-merge-drivers",
+      "digest": "35bb076ad219ff2b67e13f42b7c1c91d52dc10d755b6cd304bdf53d0d3d8db81"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "journal",
+    "--",
+    "--exact",
+    "init_sets_up_the_merge_drivers_so_two_branches_merge_clean"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test result: ok. 1 passed\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
