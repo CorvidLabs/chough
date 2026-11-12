@@ -764,7 +764,7 @@ fn small_key_screenshots_are_committed_beside_the_story() {
     assert_eq!(front(&text)["screenshot"], format!("{first}.png"), "{text}");
     assert_eq!(
         front(&text).get("fingerprint").cloned().unwrap_or_default(),
-        sha256(&committed),
+        format!("sha256:{}", sha256(&committed)),
         "{text}"
     );
     // Three more of 500 KiB: four kept, 2,000 KiB in all.
