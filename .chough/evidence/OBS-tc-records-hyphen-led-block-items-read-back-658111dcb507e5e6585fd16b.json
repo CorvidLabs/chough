@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-hyphen-led-block-items-read-back-658111dcb507e5e6585fd16b",
+  "criteria": [
+    "DRIVE-25",
+    "DRIVE-26",
+    "KNOW-32",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-records-001"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test front_matter_writes -- --exact a_block_list_item_starting_with_a_hyphen_reads_back for TC-records-hyphen-led-block-items-read-back: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-hyphen-led-block-items-read-back-658111dcb507e5e6585fd16b.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-hyphen-led-block-items-read-back-658111dcb507e5e6585fd16b.log": "19f8e1f0f341acdac1642512fd1fa3f900ab14137275a7b97b02ca95aa08111f"
+  },
+  "observed_at_unix_seconds": 1794449832,
+  "snapshot": {
+    "revision": "0ee26ac0d72f466129525f27afaa5526cd55322e",
+    "dirty": false,
+    "fingerprint": "0d0bd764cd80ae2774fc489289b9f5b0f7b756321e06c01b782077510c7f15b5",
+    "content": "cc056522bd209ed839bdb5d0a0b03f05210757d46be1edf71d7246a66228c3a2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-hyphen-led-block-items-read-back",
+      "digest": "275a75966b6899b4c2b6dc20a0d9b75e6a433e20e24c4a736299cd0e6df4c8d9"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "front_matter_writes",
+    "--",
+    "--exact",
+    "a_block_list_item_starting_with_a_hyphen_reads_back"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

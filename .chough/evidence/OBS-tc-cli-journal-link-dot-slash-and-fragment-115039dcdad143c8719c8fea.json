@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-journal-link-dot-slash-and-fragment-115039dcdad143c8719c8fea",
+  "criteria": [
+    "KNOW-14",
+    "KNOW-33"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test journal -- --exact journal_links_take_a_dot_slash_path_and_keep_a_fragment for TC-cli-journal-link-dot-slash-and-fragment: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-journal-link-dot-slash-and-fragment-115039dcdad143c8719c8fea.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-journal-link-dot-slash-and-fragment-115039dcdad143c8719c8fea.log": "e428cde2716ae75d0d32e487de0f591d558db5ceff2105d22c64829e0ec9da8c"
+  },
+  "observed_at_unix_seconds": 1794450693,
+  "snapshot": {
+    "revision": "e13c3bcb7ec275a4fd7b2dde9fcaa5dbe4809664",
+    "dirty": false,
+    "fingerprint": "ae9cf529017a8db75e4a7d915b4733b97ad1f044357b2c27fc1d95fb1338c96b",
+    "content": "7eb09bff741b568ef5d5eda07592ed4166cbf601b500288cba346986165b8540"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-journal-link-dot-slash-and-fragment",
+      "digest": "50d20bea4934a4af84542e19fa1d86163837921f60d088fb2a058045c5b5437d"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "journal",
+    "--",
+    "--exact",
+    "journal_links_take_a_dot_slash_path_and_keep_a_fragment"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test result: ok. 1 passed\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

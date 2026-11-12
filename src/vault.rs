@@ -108,8 +108,9 @@ fn lesson_source(root: &Path, module: &str) -> (String, usize) {
 }
 
 /// Lessons recorded in a `## Lessons` section: entries that start with a `YYYY-MM-DD`
-/// date followed by a space, comma or colon, as a list item or a paragraph, and
-/// `### YYYY-MM-DD` headings, whose date may stand alone.
+/// date followed by a space, comma or colon, as a paragraph or as a list item of any
+/// kind at any indentation, and `### YYYY-MM-DD` headings, whose date may stand alone.
+/// A bold date is not a dated entry.
 fn dated_lessons(text: &str) -> usize {
     text.lines()
         .skip_while(|line| line.trim_end() != "## Lessons")
@@ -117,15 +118,27 @@ fn dated_lessons(text: &str) -> usize {
         .take_while(|line| !line.starts_with("## "))
         .filter(|line| match line.strip_prefix("### ") {
             Some(heading) => starts_with_date(heading.trim_end(), true),
-            None => {
-                let entry = line
-                    .strip_prefix("- ")
-                    .or_else(|| line.strip_prefix("* "))
-                    .unwrap_or(line);
-                starts_with_date(entry, false)
-            }
+            None => starts_with_date(list_item_text(line).unwrap_or(line), false),
         })
         .count()
+}
+
+/// The text of a list item after its marker (`-`, `*` or `+`, or a number of at most
+/// nine digits with `.` or `)`) and the space or tab after it, at any indentation; None
+/// when `line` is not a list item.
+fn list_item_text(line: &str) -> Option<&str> {
+    let line = line.trim_start_matches([' ', '\t']);
+    let rest = match line.strip_prefix(['-', '*', '+']) {
+        Some(rest) => rest,
+        None => {
+            let digits = line.bytes().take_while(u8::is_ascii_digit).count();
+            if !(1..=9).contains(&digits) {
+                return None;
+            }
+            line[digits..].strip_prefix(['.', ')'])?
+        }
+    };
+    rest.strip_prefix([' ', '\t'])
 }
 
 /// Whether `text` starts with a `YYYY-MM-DD` date followed by a space, comma or colon;
@@ -231,7 +244,7 @@ fn one_line(text: &str) -> String {
 /// backslash, bracket, angle bracket and backtick escaped. So it can neither end a link
 /// early nor start another, open a code span past its own text, or become HTML, and a
 /// reader sees it unchanged.
-fn inert(text: &str) -> String {
+pub(super) fn inert(text: &str) -> String {
     let mut out = String::new();
     for c in one_line(text).chars() {
         if matches!(c, '\\' | '[' | ']' | '<' | '>' | '`') {

@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-reporting-timing-names-the-session-file-5ee6d0208f9d3c2431b3761b"
+    "OBS-tc-reporting-timing-names-the-session-file-5ee6d0208f9d3c2431b3761b",
+    "OBS-tc-reporting-timing-names-the-session-file-d24444ae49320b9a5200846b"
   ],
   "impact": "A reader is sent to a file that does not exist",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-reporting-timing-names-the-session-file-5ee6d0208f9d3c2431b3761b"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449887,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-reporting-timing-names-the-session-file passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-reporting-timing-names-the-session-file-d24444ae49320b9a5200846b"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447672,
-  "updated_at_unix_seconds": 1794448883
+  "updated_at_unix_seconds": 1794449887
 }

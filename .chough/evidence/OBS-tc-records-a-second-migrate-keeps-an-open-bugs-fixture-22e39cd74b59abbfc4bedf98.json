@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-22e39cd74b59abbfc4bedf98",
+  "criteria": [
+    "DRIVE-27",
+    "LIFE-20",
+    "LIFE-8",
+    "KNOW-30",
+    "LIFE-26"
+  ],
+  "requirements": [
+    "REQ-records-009"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test migrate -- --exact a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove for TC-records-a-second-migrate-keeps-an-open-bugs-fixture: failed (exit 101, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-22e39cd74b59abbfc4bedf98.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-22e39cd74b59abbfc4bedf98.log": "98db177de3b461f30a4d4503dc9db7830631b863c6f82fcefa37220e1d3edd77"
+  },
+  "observed_at_unix_seconds": 1794450090,
+  "snapshot": {
+    "revision": "748bca6dce62e009fb8f0e021349f9add9e9a9cb",
+    "dirty": false,
+    "fingerprint": "46313972666809c58e16622e324890a80e8e51ad761180aff9eee846dd19103c",
+    "content": "b1beeb0347fd8b54768ac13fc8e5cfc8729c9d23d48d745771ae44e7de7c919a"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-a-second-migrate-keeps-an-open-bugs-fixture",
+      "digest": "d0252276cdf160e850e119abb3d97f4d2c2831800cecf1333d8324a92bae2921"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "migrate",
+    "--",
+    "--exact",
+    "a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove"
+  ],
+  "exit_code": 101,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 4
+}

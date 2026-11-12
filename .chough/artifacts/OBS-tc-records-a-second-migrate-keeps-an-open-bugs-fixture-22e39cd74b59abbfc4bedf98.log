@@ -1,0 +1,61 @@
+--- stdout ---
+
+running 1 test
+test a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove ... FAILED
+
+failures:
+
+---- a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove stdout ----
+
+thread 'a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove' (907450950) panicked at tests/migrate.rs:1259:5:
+assertion `left == right` failed: {
+  "aliases": {},
+  "apply": "chough migrate --apply 66e17897e6ca88a7b96b74289ed50b63609fcda19667c6f8c3b8e3cbf43af56c --consent \"<who consented, their words and where>\"",
+  "follow_ups": [],
+  "gaps": [],
+  "git_history": "Git history still holds what earlier commits recorded; this migration does not rewrite it.",
+  "kept": {},
+  "kept_with_leaks": {},
+  "plan_digest": "66e17897e6ca88a7b96b74289ed50b63609fcda19667c6f8c3b8e3cbf43af56c",
+  "redactions": [],
+  "removed": {
+    ".chough/artifacts/repro/case.txt": "a 0.5.x artifact no carried observation keeps (REQ-records-009); Git keeps its bytes"
+  },
+  "schema_version": 1,
+  "sources": {
+    ".chough/artifacts/repro/case.txt": "3ffec7c2b34b805a0504a8c8639f3d9165f9923b33ab8662d95d9529de94b5cb"
+  },
+  "unaccounted": [],
+  "writes": [
+    {
+      "bytes": 1335,
+      "path": ".chough/README.md",
+      "sha256": "c9c7d63e0d158fcf77ab8d6214c5d6d942251b17823d97d9dacb134c04bf21db"
+    },
+    {
+      "bytes": 1362,
+      "path": "knowledge/index.md",
+      "sha256": "384293c828ec22c78a288e5e9676b73087703c15d6d61b18ce377b0ad5a85370"
+    },
+    {
+      "bytes": 261,
+      "path": "knowledge/journal/feed.xml",
+      "sha256": "9b35e960a135cdee3ef05378f5c1556d26453243a2c3bfe8a5d77fa5be12f26f"
+    }
+  ]
+}
+  left: Object {".chough/artifacts/repro/case.txt": String("3ffec7c2b34b805a0504a8c8639f3d9165f9923b33ab8662d95d9529de94b5cb")}
+ right: Object {}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 14 filtered out; finished in 3.73s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running tests/migrate.rs (target/debug/deps/migrate-8dcd447271613cc0)
+error: test failed, to rerun pass `--test migrate`

@@ -514,3 +514,25 @@ fn gate_summary_counts_only_the_changes_own_files() {
     assert!(summary.contains("  src/product.txt +1 −0"), "{summary}");
     assert!(!summary.contains("lib/merged-"), "{summary}");
 }
+
+/// REQ-cli-061, TC-cli-gate-summary-says-when-there-is-no-base (G2): with no merge base
+/// and no recorded base commit, the summary's Diff line says the base is unknown instead
+/// of giving a `git diff unknown..<sha>` command that fails.
+#[test]
+fn a_summary_with_no_base_says_so_instead_of_a_broken_diff_command() {
+    let fixture = project(&[SCOPE]);
+    fixture.write(
+        &format!("{DIR}/state.json"),
+        &json!({"id": ID, "title": "Free shipping at the threshold", "state": "approved"})
+            .to_string(),
+    );
+    fixture.commit("no recorded base");
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    let diff = summary
+        .lines()
+        .find(|line| line.starts_with("Diff:"))
+        .unwrap_or_else(|| panic!("no Diff line:\n{summary}"));
+    assert!(!diff.contains("unknown.."), "{diff}");
+    assert!(diff.contains("unknown"), "{diff}");
+}

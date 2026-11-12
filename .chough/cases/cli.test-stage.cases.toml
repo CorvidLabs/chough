@@ -57,3 +57,21 @@ expected = ["tests/docs.rs::the_knowledge_table_names_the_repository_root_librar
 adapter = "cargo-test"
 test_target = "docs"
 test = "the_knowledge_table_names_the_repository_root_library"
+
+[[case]]
+id = "TC-cli-gate-summary-says-when-there-is-no-base"
+title = "With no merge base or recorded base commit, a gate summary's Diff line says so instead of giving a broken diff command"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_summary_with_no_base_says_so_instead_of_a_broken_diff_command passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_summary_with_no_base_says_so_instead_of_a_broken_diff_command"

@@ -17,12 +17,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-close-lists-each-kept-file-once-e7187a0624d4f8d776813d9e"
+    "OBS-tc-records-close-lists-each-kept-file-once-e7187a0624d4f8d776813d9e",
+    "OBS-tc-records-close-lists-each-kept-file-once-3e6ed3a0ac082ef1d70c6499"
   ],
   "impact": "Confusing report; uncommitted bytes reach the archive folder",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -34,8 +35,15 @@
       "observations": [
         "OBS-tc-records-close-lists-each-kept-file-once-e7187a0624d4f8d776813d9e"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449887,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-records-close-lists-each-kept-file-once passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-records-close-lists-each-kept-file-once-3e6ed3a0ac082ef1d70c6499"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794448165,
-  "updated_at_unix_seconds": 1794449059
+  "updated_at_unix_seconds": 1794449887
 }

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "BUG-req-cli-059-s-ship-refusal-says-every-open-human-gate-without-saying-of-3b948491eff4dfabe7934f87",
+  "title": "REQ-cli-059's ship refusal says every open human gate without saying of which session",
+  "symptom": "change ship for the active session closes its review gate and ships while another session's gate is open; the requirement reads 'unless every open human gate is the one --close-gate names', unqualified",
+  "trigger": "Two open sessions, one with an open gate, then chough change ship in the other",
+  "expected": "The contract says which gates a ship refuses for",
+  "actual": "The code checks the active session's gates; the sentence does not say so",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-059"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester build at 367dc86b, debug, specsync stub (6.2.0 CLI)",
+  "revision": "30ac761f13feef4cc3ac765ad077d30630e4650a",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "Two readings of one requirement",
+  "classification": "requirement-gap",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37b, test stage, area approvals and gates",
+  "notes": [],
+  "created_at_unix_seconds": 1794450243,
+  "updated_at_unix_seconds": 1794450243
+}

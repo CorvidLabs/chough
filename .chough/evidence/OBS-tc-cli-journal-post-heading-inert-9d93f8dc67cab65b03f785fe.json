@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-journal-post-heading-inert-9d93f8dc67cab65b03f785fe",
+  "criteria": [
+    "KNOW-14",
+    "KNOW-33"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test journal -- --exact a_posts_heading_holds_its_title_as_inert_markdown for TC-cli-journal-post-heading-inert: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-journal-post-heading-inert-9d93f8dc67cab65b03f785fe.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-journal-post-heading-inert-9d93f8dc67cab65b03f785fe.log": "2b02d74bf9a0e653ff7228942dc197ae7e070b4431d95d5d6d23571f4432e6e8"
+  },
+  "observed_at_unix_seconds": 1794450692,
+  "snapshot": {
+    "revision": "e13c3bcb7ec275a4fd7b2dde9fcaa5dbe4809664",
+    "dirty": false,
+    "fingerprint": "ae9cf529017a8db75e4a7d915b4733b97ad1f044357b2c27fc1d95fb1338c96b",
+    "content": "7eb09bff741b568ef5d5eda07592ed4166cbf601b500288cba346986165b8540"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-journal-post-heading-inert",
+      "digest": "402ac711881013320d232737f372fbf2a8da501c2b4a080d2c0a28b0ad45606a"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "journal",
+    "--",
+    "--exact",
+    "a_posts_heading_holds_its_title_as_inert_markdown"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test result: ok. 1 passed\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

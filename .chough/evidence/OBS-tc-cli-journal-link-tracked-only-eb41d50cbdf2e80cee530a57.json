@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-journal-link-tracked-only-eb41d50cbdf2e80cee530a57",
+  "criteria": [
+    "KNOW-14",
+    "KNOW-33"
+  ],
+  "requirements": [
+    "REQ-cli-044"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test journal -- --exact journal_links_name_only_project_paths_git_tracks for TC-cli-journal-link-tracked-only: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-journal-link-tracked-only-eb41d50cbdf2e80cee530a57.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-journal-link-tracked-only-eb41d50cbdf2e80cee530a57.log": "f166e19b0f5221702f5cda8d78d5fba951b467745e59715bd65d435c3b258890"
+  },
+  "observed_at_unix_seconds": 1794449862,
+  "snapshot": {
+    "revision": "0ee26ac0d72f466129525f27afaa5526cd55322e",
+    "dirty": false,
+    "fingerprint": "0d0bd764cd80ae2774fc489289b9f5b0f7b756321e06c01b782077510c7f15b5",
+    "content": "cc056522bd209ed839bdb5d0a0b03f05210757d46be1edf71d7246a66228c3a2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-journal-link-tracked-only",
+      "digest": "451a7f35dab817c6849491a01bcd18a19565ee2f7d3e887522a10447ab810519"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "journal",
+    "--",
+    "--exact",
+    "journal_links_name_only_project_paths_git_tracks"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

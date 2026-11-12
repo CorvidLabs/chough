@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-history-a-story-lists-each-entry-once-5de8b596051a6dd542630865"
+    "OBS-tc-history-a-story-lists-each-entry-once-5de8b596051a6dd542630865",
+    "OBS-tc-history-a-story-lists-each-entry-once-2071c95dbccd036ea394e9ed"
   ],
   "impact": "Hard to read",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-history-a-story-lists-each-entry-once-5de8b596051a6dd542630865"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449887,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-history-a-story-lists-each-entry-once passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-history-a-story-lists-each-entry-once-2071c95dbccd036ea394e9ed"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447672,
-  "updated_at_unix_seconds": 1794448883
+  "updated_at_unix_seconds": 1794449887
 }

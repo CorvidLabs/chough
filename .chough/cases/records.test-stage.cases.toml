@@ -183,3 +183,21 @@ expected = ["tests/migrate.rs::the_plan_and_receipt_say_what_each_carried_file_b
 adapter = "cargo-test"
 test_target = "migrate"
 test = "the_plan_and_receipt_say_what_each_carried_file_becomes"
+
+[[case]]
+id = "TC-records-a-second-migrate-keeps-an-open-bugs-fixture"
+title = "A second migrate on a migrated tree carries and removes nothing, and an open bug's kept fixture stays"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-8", "KNOW-30", "LIFE-26"]
+requirements = ["REQ-records-009"]
+paths = ["src/bugs.rs", "src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove"

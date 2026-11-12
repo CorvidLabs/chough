@@ -64,7 +64,7 @@ pub(super) fn run(root: &Path, command: JournalCommand) -> Result<()> {
             kind,
             title,
             body,
-            links,
+            links: given_links,
         } => {
             let dir = crate::library::enabled_dir(root)?;
             ensure!(
@@ -76,10 +76,11 @@ pub(super) fn run(root: &Path, command: JournalCommand) -> Result<()> {
                 !body.trim().is_empty(),
                 "the body must not be blank; say what happened with --body <text>"
             );
-            for link in &links {
+            let links: Vec<String> = given_links.iter().map(|link| stored_link(link)).collect();
+            for (given, link) in given_links.iter().zip(&links) {
                 ensure!(
-                    is_url(link) || tracked(root, link),
-                    "--link {link:?} is neither an http(s) URL nor a project path Git tracks"
+                    is_url(link) || tracked(root, link_path(link)),
+                    "--link {given:?} is neither an http(s) URL nor a project path Git tracks"
                 );
             }
             let labelled: Vec<Link> = links
@@ -242,8 +243,10 @@ fn cut_at_sentence(text: &str, limit: usize) -> String {
     format!("{}…", head[..word].trim_end())
 }
 
+/// A post's own heading: its title as inert Markdown, as the index line holds it
+/// (REQ-cli-044), so a title can add neither a link nor HTML to the post.
 fn heading(title: &str) -> String {
-    format!("# {title}\n\n")
+    format!("# {}\n\n", crate::vault::inert(title))
 }
 
 /// The relative prefix from a post in `<dir>/journal/` back to the repository root.
@@ -253,6 +256,25 @@ fn up(dir: &str) -> String {
 
 fn is_url(link: &str) -> bool {
     link.starts_with("https://") || link.starts_with("http://")
+}
+
+/// A `--link` as the post stores it: an http(s) URL as given, or a project path with any
+/// leading `./` dropped and its `#fragment` kept, so a tracked file is accepted however a
+/// person writes the relative path (REQ-cli-044).
+fn stored_link(link: &str) -> String {
+    if is_url(link) {
+        return link.to_string();
+    }
+    let mut path = link;
+    while let Some(rest) = path.strip_prefix("./") {
+        path = rest;
+    }
+    path.to_string()
+}
+
+/// The path of a stored project link, before any `#fragment`: what must be tracked.
+fn link_path(link: &str) -> &str {
+    link.split_once('#').map_or(link, |(path, _)| path)
 }
 
 /// Whether `link` is a project path Git tracks: a file in its index, or a folder that

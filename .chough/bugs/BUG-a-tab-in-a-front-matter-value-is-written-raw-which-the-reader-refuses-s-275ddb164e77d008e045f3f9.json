@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-tabs-in-values-read-back-6368563e517ea218f885b516"
+    "OBS-tc-records-tabs-in-values-read-back-6368563e517ea218f885b516",
+    "OBS-tc-records-tabs-in-values-read-back-b53b5ef436ac3de271bc1994"
   ],
   "impact": "One write leaves the session unreadable until a hand edit",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-records-tabs-in-values-read-back-6368563e517ea218f885b516"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449887,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-records-tabs-in-values-read-back passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-records-tabs-in-values-read-back-b53b5ef436ac3de271bc1994"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447713,
-  "updated_at_unix_seconds": 1794448882
+  "updated_at_unix_seconds": 1794449887
 }

@@ -17,12 +17,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-history-session-list-reads-stories-alone-3d4883a720c40b8a7c61e5e2"
+    "OBS-tc-history-session-list-reads-stories-alone-3d4883a720c40b8a7c61e5e2",
+    "OBS-tc-history-session-list-reads-stories-alone-895d86007e4f198ef9af9e46"
   ],
   "impact": "A migrated project cannot list its history until a new session is made",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -34,8 +35,15 @@
       "observations": [
         "OBS-tc-history-session-list-reads-stories-alone-3d4883a720c40b8a7c61e5e2"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449886,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-history-session-list-reads-stories-alone passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-history-session-list-reads-stories-alone-895d86007e4f198ef9af9e46"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794448930,
-  "updated_at_unix_seconds": 1794449059
+  "updated_at_unix_seconds": 1794449886
 }

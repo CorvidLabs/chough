@@ -17,12 +17,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-migrated-inbox-entries-keep-their-ids-4c5788ccafd695344dc82467"
+    "OBS-tc-records-migrated-inbox-entries-keep-their-ids-4c5788ccafd695344dc82467",
+    "OBS-tc-records-migrated-inbox-entries-keep-their-ids-34fce22b12fe1a1315cdf071"
   ],
   "impact": "A wrong receipt map and a lost alias; no 0.6.0 command takes an inbox ID yet",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -34,8 +35,15 @@
       "observations": [
         "OBS-tc-records-migrated-inbox-entries-keep-their-ids-4c5788ccafd695344dc82467"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449886,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-records-migrated-inbox-entries-keep-their-ids passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-records-migrated-inbox-entries-keep-their-ids-34fce22b12fe1a1315cdf071"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794448178,
-  "updated_at_unix_seconds": 1794448882
+  "updated_at_unix_seconds": 1794449886
 }

@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-gate-summary-says-when-there-is-no-base-247dc555ccebbb89715bfec1",
+  "criteria": [
+    "FLOW-16",
+    "FLOW-23"
+  ],
+  "requirements": [
+    "REQ-cli-061"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test gates -- --exact a_summary_with_no_base_says_so_instead_of_a_broken_diff_command for TC-cli-gate-summary-says-when-there-is-no-base: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-gate-summary-says-when-there-is-no-base-247dc555ccebbb89715bfec1.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-gate-summary-says-when-there-is-no-base-247dc555ccebbb89715bfec1.log": "dd82cb6ad8ad79f257f2cfb25ea0869afbb49008bad65430a473462977308062"
+  },
+  "observed_at_unix_seconds": 1794450633,
+  "snapshot": {
+    "revision": "46a4cb691c1e339abc16d65e24d884ea0e10f54f",
+    "dirty": false,
+    "fingerprint": "20540a888bf5edaae841b1347bad4c1938d2b66329c22017122320e97972cf9d",
+    "content": "e01775b3355fc98a482ee0ce7077c21f65e48e6fe1aa51f00b2d25ed4efb7496"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-gate-summary-says-when-there-is-no-base",
+      "digest": "e789971eda848287157badb8ea5dbb03c250941cd4a27deca441c954baf1abf3"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "gates",
+    "--",
+    "--exact",
+    "a_summary_with_no_base_says_so_instead_of_a_broken_diff_command"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

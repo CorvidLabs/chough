@@ -1232,3 +1232,37 @@ fn the_plan_and_receipt_say_what_each_carried_file_becomes() {
         "{receipt}"
     );
 }
+
+/// REQ-records-009, TC-records-a-second-migrate-keeps-an-open-bugs-fixture (U6): after
+/// the migration, an open bug's kept `.chough/artifacts/` fixture belongs to its 0.6.0
+/// Markdown bug, so a second preview on the migrated tree carries and removes nothing,
+/// and the fixture stays.
+#[test]
+fn a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove() {
+    let fixture_path = ".chough/artifacts/repro/case.txt";
+    let bug = LEGACY_BUG.replace(
+        r#""fixture":null"#,
+        &format!(r#""fixture":"{fixture_path}""#),
+    );
+    let extra = [
+        (".chough/bugs/BUG-0001.json", bug.as_str()),
+        (fixture_path, "SYNTHETIC reproduction input\n"),
+    ];
+    let fixture = migrate_project("adopted", &extra);
+    let (plan, _) = migrate(&fixture, Some(CONSENT));
+    assert!(
+        plan["kept"].as_object().unwrap().contains_key(fixture_path),
+        "{plan:#}"
+    );
+    fixture.commit("migrated");
+    let again = fixture.ok(&["migrate"]);
+    assert_eq!(again["sources"], serde_json::json!({}), "{again:#}");
+    assert!(
+        !again["removed"]
+            .as_object()
+            .unwrap()
+            .contains_key(fixture_path),
+        "{again:#}"
+    );
+    assert!(fixture.exists(fixture_path));
+}

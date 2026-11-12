@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "id": "BUG-gate-list-prints-an-unusable-git-diff-unknown-sha-line-when-there-is-no-bcb37c77b5e1ebc9ccd78e90",
+  "title": "gate list prints an unusable 'git diff unknown..<sha>' line when there is no merge base or base commit",
+  "symptom": "In a single-commit project the gate summary's Diff line is 'git diff unknown..<sha>'",
+  "trigger": "chough gate list in a project with no merge base and no recorded base commit",
+  "expected": "A compare URL or 'git diff <base>..<HEAD>' (REQ-cli-061), and an honest line when there is no base",
+  "actual": "The placeholder 'unknown' is pasted into a command",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-061"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester build at 367dc86b, debug, specsync stub (6.2.0 CLI)",
+  "revision": "30ac761f13feef4cc3ac765ad077d30630e4650a",
+  "steps": [],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-cli-gate-summary-says-when-there-is-no-base-c6dd518c1d39631bc2c740da",
+    "OBS-tc-cli-gate-summary-says-when-there-is-no-base-247dc555ccebbb89715bfec1"
+  ],
+  "impact": "A reviewer is given a command that fails",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37b, test stage, area approvals and gates",
+  "notes": [
+    {
+      "at_unix_seconds": 1794450606,
+      "text": "status: open -> investigating. Red at f2625e5b (leif/0.6.0-test1-red: d854ce1a plus the regression tests): the Diff line was git diff unknown..<sha>; fix in 08ccf14d.",
+      "observations": [
+        "OBS-tc-cli-gate-summary-says-when-there-is-no-base-c6dd518c1d39631bc2c740da"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794450633,
+      "text": "status: investigating -> verified. Green at 46a4cb69: TC-cli-gate-summary-says-when-there-is-no-base passed; tests/gates.rs 8 of 8.",
+      "observations": [
+        "OBS-tc-cli-gate-summary-says-when-there-is-no-base-247dc555ccebbb89715bfec1"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794450243,
+  "updated_at_unix_seconds": 1794450633
+}

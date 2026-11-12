@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-migrate-plan-says-what-each-file-becomes-f7b471a433f8e08a07239738"
+    "OBS-tc-records-migrate-plan-says-what-each-file-becomes-f7b471a433f8e08a07239738",
+    "OBS-tc-records-migrate-plan-says-what-each-file-becomes-86f0b37e83ff32491a3a6d51"
   ],
   "impact": "A reviewer cannot see where session.json or the EVT files went before consenting",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-records-migrate-plan-says-what-each-file-becomes-f7b471a433f8e08a07239738"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449886,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-records-migrate-plan-says-what-each-file-becomes passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-records-migrate-plan-says-what-each-file-becomes-86f0b37e83ff32491a3a6d51"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794449018,
-  "updated_at_unix_seconds": 1794449520
+  "updated_at_unix_seconds": 1794449886
 }

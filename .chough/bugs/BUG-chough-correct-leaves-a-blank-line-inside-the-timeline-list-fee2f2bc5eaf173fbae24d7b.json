@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-history-a-correction-keeps-the-timeline-one-list-93956c5a288289b622070479"
+    "OBS-tc-history-a-correction-keeps-the-timeline-one-list-93956c5a288289b622070479",
+    "OBS-tc-history-a-correction-keeps-the-timeline-one-list-41ba160dcb5dd77c5fb2e1ab"
   ],
   "impact": "The Timeline renders as a loose list; every byte is kept",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-history-a-correction-keeps-the-timeline-one-list-93956c5a288289b622070479"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449887,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-history-a-correction-keeps-the-timeline-one-list passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-history-a-correction-keeps-the-timeline-one-list-41ba160dcb5dd77c5fb2e1ab"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447672,
-  "updated_at_unix_seconds": 1794448883
+  "updated_at_unix_seconds": 1794449887
 }

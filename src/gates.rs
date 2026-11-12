@@ -420,10 +420,12 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
         }
         None => lines.push("Risks: none recorded".into()),
     }
-    lines.push(format!(
-        "Diff: {}",
-        diff_link(root, base.as_deref().unwrap_or("unknown"), &head)
-    ));
+    // With no merge base and no recorded base commit there is no range to show, so the
+    // line says so rather than give a diff command that fails (REQ-cli-061).
+    lines.push(match base.as_deref() {
+        Some(base) => format!("Diff: {}", diff_link(root, base, &head)),
+        None => "Diff: unknown, with no merge base and no recorded base commit".into(),
+    });
     if lines.len() > SUMMARY_LINES {
         lines.truncate(SUMMARY_LINES - 1);
         lines.push("… (cut)".into());

@@ -657,3 +657,34 @@ fn the_index_lists_at_most_twenty_open_bugs_blocking_first_then_newest() {
     assert!(section.contains("`chough bug list`"), "{section}");
     assert!(!section.contains(&id(1_500)), "{section}");
 }
+
+/// REQ-cli-043, KNOW-12 (BUG-the-lesson-count-misses-dated-lessons-written-as-or-numbered-list-items-5800d2e425f4b4354ac06315):
+/// the lesson count reads every list item that starts with a date: `+` bullets,
+/// numbered items (`1.` or `1)`), and items indented under another. A bold date, and a
+/// marker with no space after it, are not a dated entry.
+#[test]
+fn the_lesson_count_reads_plus_numbered_and_indented_items() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write("specs/csv/csv.spec.md", "# CSV\n");
+    fixture.write(
+        "specs/csv/context.md",
+        "# Context\n\n## Lessons\n\n\
+         + 2026-11-01 a plus item.\n\
+         1. 2026-11-02 a numbered item.\n\
+         12) 2026-11-03: a numbered item with a parenthesis.\n\
+         \x20 - 2026-11-04 an indented item.\n\
+         \x20   * 2026-11-05, a nested starred item.\n\
+         \t+ 2026-11-06 a tab-indented item.\n\
+         - **2026-11-07** a bold date.\n\
+         **2026-11-08** a bold paragraph date.\n\
+         1.2026-11-09 no space after the marker.\n\
+         -2026-11-10 no space after the bullet.\n",
+    );
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/index.md");
+    assert!(
+        index.contains("csv: [specs/csv/context.md](../specs/csv/context.md), 6 lessons\n"),
+        "{index}"
+    );
+}

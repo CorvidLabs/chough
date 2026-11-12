@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-migrate-case-only-rename-reaches-git-c70fdbb98739586330d855ca"
+    "OBS-tc-records-migrate-case-only-rename-reaches-git-c70fdbb98739586330d855ca",
+    "OBS-tc-records-migrate-case-only-rename-reaches-git-be9c06750fb6ea792086720d"
   ],
   "impact": "Every macOS upgrade from 0.5.x commits a tree whose index 0.6.0 cannot find on Linux, and the receipt names a file the commit lacks",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-records-migrate-case-only-rename-reaches-git-c70fdbb98739586330d855ca"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449886,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-records-migrate-case-only-rename-reaches-git passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-records-migrate-case-only-rename-reaches-git-be9c06750fb6ea792086720d"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447508,
-  "updated_at_unix_seconds": 1794448896
+  "updated_at_unix_seconds": 1794449886
 }
