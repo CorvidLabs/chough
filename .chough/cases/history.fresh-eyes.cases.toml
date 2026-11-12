@@ -185,3 +185,21 @@ expected = ["tests/sessions.rs::session_close_records_the_gates_it_withdraws pas
 adapter = "cargo-test"
 test_target = "sessions"
 test = "session_close_records_the_gates_it_withdraws"
+
+[[case]]
+id = "TC-history-story-receipts-last-and-bugs-named"
+title = "An archived story's front matter carries no receipts so its body starts within 20 lines, it names each bug of its checkpoint under Bugs with title, status and link, it ends with the Timeline and closing line, then Receipts as one fenced YAML block, and bug verification and timing read those receipts"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-3"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "src/markdown.rs", "src/bugs.rs", "src/evidence.rs", "src/timing.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_story_puts_its_receipts_last_and_names_its_bugs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_puts_its_receipts_last_and_names_its_bugs"
