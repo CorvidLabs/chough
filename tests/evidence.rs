@@ -197,6 +197,18 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
     assert_eq!(listed["never-recorded"], "unavailable", "{next}");
     assert_eq!(listed["n1"], "historical", "{next}");
     assert!(listed.values().all(|label| label != "current"), "{next}");
+    // A removed reference names the receipt that records its removal (REQ-records-009).
+    let item = |id: &str| {
+        next["observations"]["items"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["id"] == id)
+            .unwrap_or_else(|| panic!("{id} missing from {next}"))
+            .clone()
+    };
+    assert_eq!(item("old-pass")["receipt"], receipt.as_str(), "{next}");
+    assert!(item("never-recorded").get("receipt").is_none(), "{next}");
     let report = fixture.ok(&["status", "--environment", "local"]);
     let references = report["observation_references"].as_array().unwrap();
     let label = |id: &str| {
@@ -209,6 +221,15 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
     assert_eq!(label("old-pass"), "removed");
     assert_eq!(label("never-recorded"), "unavailable");
     assert_eq!(label("n1"), "historical");
+    let row = |id: &str| {
+        references
+            .iter()
+            .find(|entry| entry["id"] == id)
+            .unwrap_or_else(|| panic!("{id} missing from {references:?}"))
+            .clone()
+    };
+    assert_eq!(row("old-pass")["receipt"], receipt.as_str(), "{report:#}");
+    assert!(row("never-recorded").get("receipt").is_none(), "{report:#}");
     for observation in report["observations"].as_array().unwrap() {
         assert!(
             !observation["record"]["aliases"]
