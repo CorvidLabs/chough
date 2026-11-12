@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bba430d2b716c0f8fa00897f",
-    "head": "EVT-0df48b2acd0fad71ad72c6f8",
+    "head": "EVT-0e864340122cea8d49ccb22c",
     "legacy": null
   },
   "schema_version": 2,
@@ -13,7 +13,7 @@
     "history"
   ],
   "stage": {
-    "current": "plan",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -63,5 +63,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Test stage: six areas tested independently on fresh clones (records t38b; sessions and bugs and timing t37j; approvals and gates t37b; knowledge t37f; the upgrade t384); every bug fixed red then green; t37j's rehearsal on the final head; then Leif's acceptance review"
+  "next_action": "Test on SpecSync 6.3.0 is green once hosted CI passes at the final check commit; send t370 the acceptance review summary for Leif. Acceptance is Leif's review at accept; record nothing for him and tag nothing."
 }
