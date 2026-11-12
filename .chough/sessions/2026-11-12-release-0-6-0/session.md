@@ -77,6 +77,9 @@ observations:
   - 2026-11-12-tc-cli-docs-name-what-cases-run-returns-b24aad
   - 2026-11-12-tc-records-migration-docs-name-every-key-7c6439
   - 2026-11-12-tc-cli-readme-helper-table-covers-help
+  - 2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta
+  - 2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta-a22092
+  - 2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta-342bc4
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -166,6 +169,9 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test cases -- --exact the_cli_reference_names_what_cases_run_returns for TC-cli-docs-name-what-cases-run-returns: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-name-what-cases-run-returns-b24aad.md)
 - [Ran cargo test --locked --test migrate -- --exact the_migration_docs_name_every_key_the_preview_and_apply_print for TC-records-migration-docs-name-every-key: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migration-docs-name-every-key-7c6439.md)
 - [Ran cargo test --locked --test docs -- --exact readme_helper_table_names_every_command_the_helper_lists for TC-cli-readme-helper-table-covers-help: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-readme-helper-table-covers-help.md)
+- [Red: cargo test --locked --test docs -- --exact a_new_project_path_and_the_delta_format_are_documented, run in a throwaway worktree at 56c3f4d3 (before the new-project docs) with only tests/docs.rs from a87b54ec added, failed (exit 101): README.md does not name specsync change adopt](evidence/2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta.md)
+- [Ran cargo test --locked --test docs -- --exact a_new_project_path_and_the_delta_format_are_documented for TC-cli-docs-show-a-new-project-and-a-delta: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta-a22092.md)
+- [Ran cargo test --locked --test docs -- --exact a_new_project_path_and_the_delta_format_are_documented for TC-cli-docs-show-a-new-project-and-a-delta: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-new-project-and-a-delta-342bc4.md)
 
 ## Open threads
 
