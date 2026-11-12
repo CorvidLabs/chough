@@ -101,7 +101,8 @@ For a new project without them, the order is: write the intent as an HI file and
 leaves them off, and until then stage moves pass ungated); then run `chough init` as
 below. [New project](docs/walkthrough.md#new-project) walks through each step, and
 [A new project and its first change](docs/cli.md#a-new-project-and-its-first-change)
-shows what a change's delta looks like. In a Git project with HI criteria and SpecSync
+shows a minimal HI file, a baseline `specs/<module>/requirements.md` and what a
+change's delta looks like. In a Git project with HI criteria and SpecSync
 module contracts:
 
 ```sh

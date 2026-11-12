@@ -1030,10 +1030,47 @@ directly.
 
 ### A new project and its first change
 
-1. Write the intent as an HI file and check it with `hi check` (see
-   [New project](walkthrough.md#new-project) for a minimal one).
+1. Write the intent as an HI file and check it with `hi check`. A minimal one, such as
+   `hi/checkout.md`, names its family, says what people want, and lists each criterion
+   with an ID that never moves:
+
+   ```markdown
+   ---
+   hi: 1
+   families: [CHECKOUT]
+   ---
+
+   # Checkout
+
+   ## Intent
+
+   Shoppers should not pay shipping on larger orders.
+
+   ## Criteria
+
+   - **CHECKOUT-1**  An order of fifty dollars or more ships free.
+   ```
+
 2. Create each module's contract: `specsync init`, then `specsync scaffold <module>`,
-   and fill in its requirements and testing.
+   and fill in its requirements and testing. A baseline
+   `specs/<module>/requirements.md` gives each requirement a `### REQ-<module>-<n>`
+   heading, the sentence that says what SHALL hold, and its acceptance criteria. That
+   is the ID a case's `requirements` names and the block a delta's `## MODIFIED`
+   replaces:
+
+   ```markdown
+   ---
+   spec: shipping.spec.md
+   ---
+
+   ### REQ-shipping-001
+
+   Shipping cost. An order under fifty dollars SHALL cost five dollars to ship.
+
+   Acceptance Criteria
+   - An order of 49.99 costs five dollars to ship.
+   ```
+
 3. Turn SpecSync's change gates on with `specsync change adopt`. `specsync init` leaves
    them off, and until you adopt, stage moves pass as `ungated:sdd-disabled` and no
    native lifecycle gates them.
