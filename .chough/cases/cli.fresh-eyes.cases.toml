@@ -626,3 +626,21 @@ expected = ["tests/optional.rs::init_with_the_claude_host_prints_the_claude_md_l
 adapter = "cargo-test"
 test_target = "optional"
 test = "init_with_the_claude_host_prints_the_claude_md_line_and_writes_none"
+
+[[case]]
+id = "TC-cli-stage-move-prints-a-short-summary"
+title = "A stage move prints by default at most 10 lines of text naming the move, the stage reached and the next action, and its full JSON report, with every field it gave before, under --json"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "src/main.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_stage_move_prints_a_short_summary_and_its_full_report_under_json passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_stage_move_prints_a_short_summary_and_its_full_report_under_json"
