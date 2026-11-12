@@ -93,13 +93,19 @@ pub(super) fn run(root: &Path, command: GateCommand) -> Result<()> {
 }
 
 fn git(root: &Path, args: &[&str]) -> Option<String> {
+    git_untrimmed(root, args).map(|text| text.trim().to_string())
+}
+
+/// [`git`]'s output as Git printed it, for a NUL-separated list whose first path may
+/// start with a space.
+fn git_untrimmed(root: &Path, args: &[&str]) -> Option<String> {
     let mut command = Command::new("git");
     command.args(args).current_dir(root);
     let output = records::run_owned(&mut command, None).ok()?;
     output
         .status
         .success()
-        .then(|| String::from_utf8_lossy(&output.stdout).trim().to_string())
+        .then(|| String::from_utf8_lossy(&output.stdout).into_owned())
 }
 
 fn sha256(text: &str) -> String {
@@ -334,6 +340,64 @@ fn left_out_of_summary(root: &Path) -> Vec<String> {
     ]
 }
 
+/// Each untracked file Git does not ignore, in the whole work tree, with its lines as
+/// insertions and no deletions, its path from the work tree's top as `git diff` gives
+/// it (F2).
+fn untracked(root: &Path) -> Vec<(u64, u64, String)> {
+    let Some(top) = git(root, &["rev-parse", "--show-toplevel"]) else {
+        return vec![];
+    };
+    let top = Path::new(&top);
+    let listed = git_untrimmed(
+        top,
+        &[
+            "ls-files",
+            "--others",
+            "--exclude-standard",
+            "--full-name",
+            "-z",
+        ],
+    )
+    .unwrap_or_default();
+    let mut found: Vec<(u64, u64, String)> = listed
+        .split('\0')
+        .filter(|path| !path.is_empty())
+        .map(|path| (added_lines(&top.join(path)), 0, path.to_string()))
+        .collect();
+    found.sort_by(|left, right| left.2.cmp(&right.2));
+    found
+}
+
+/// The lines an added file inserts, as Git counts them: every newline, plus a last line
+/// without one; none for a binary file (a NUL byte in its first 8,000 bytes, Git's test),
+/// a file that cannot be read or anything that is not a regular file.
+fn added_lines(path: &Path) -> u64 {
+    use std::io::Read;
+    if !fs::symlink_metadata(path).is_ok_and(|meta| meta.is_file()) {
+        return 0;
+    }
+    let Ok(mut file) = fs::File::open(path) else {
+        return 0;
+    };
+    let mut buffer = vec![0; 65_536];
+    let (mut lines, mut read, mut last) = (0u64, 0usize, None);
+    loop {
+        let count = match file.read(&mut buffer) {
+            Ok(0) => break,
+            Ok(count) => count,
+            Err(_) => return 0,
+        };
+        let chunk = &buffer[..count];
+        if read < 8_000 && chunk[..count.min(8_000 - read)].contains(&0) {
+            return 0;
+        }
+        read += count;
+        lines += chunk.iter().filter(|byte| **byte == b'\n').count() as u64;
+        last = chunk.last().copied();
+    }
+    lines + u64::from(last.is_some_and(|byte| byte != b'\n'))
+}
+
 /// The requirement IDs the delta at `path` adds or modifies, as " (adds or modifies
 /// <IDs>)", or nothing when it adds or modifies none or cannot be read (F5).
 fn delta_adds(root: &Path, path: &str) -> String {
@@ -516,8 +580,10 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
     match &base {
         _ if at_intent => {}
         Some(base) => {
-            let numstat =
-                git(root, &["diff", "--numstat", &format!("{base}..HEAD")]).unwrap_or_default();
+            // F2 (REQ-cli-061): counted in the working tree, so a change's own files count
+            // before they are committed: tracked files against the base, and each untracked
+            // file, not ignored, as all insertions.
+            let numstat = git(root, &["diff", "--numstat", base]).unwrap_or_default();
             let mut files: Vec<(u64, u64, String)> = numstat
                 .lines()
                 .filter_map(|line| {
@@ -526,6 +592,7 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                     let deleted = parts.next()?.parse().unwrap_or(0);
                     Some((added, deleted, parts.next()?.to_string()))
                 })
+                .chain(untracked(root))
                 .filter(|(_, _, path)| {
                     is_definition(path)
                         || !left_out
