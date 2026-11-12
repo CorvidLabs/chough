@@ -68,6 +68,15 @@ observations:
   - 2026-11-12-green-rerun-of-the-timing-native-budget-flake-tests-timing-rs
   - 2026-11-12-red-rerun-of-the-verify-lane-flake-at-85dd828c-6-of-12-loaded
   - 2026-11-12-green-rerun-of-the-verify-lane-flake-at-b6fcd0e9-t38b-s
+  - 2026-11-12-tc-cli-next-at-plan-names-the-scope-gate-a75cc8
+  - 2026-11-12-tc-cli-gate-summary-shows-the-scope-ad7787
+  - 2026-11-12-tc-history-relay-fields-are-labelled-lines-8fe7da
+  - 2026-11-12-tc-history-direct-write-fields-are-labelled-lines-7f8b92
+  - 2026-11-12-tc-history-story-receipts-in-time-order-4f9404
+  - 2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships-1434be
+  - 2026-11-12-tc-cli-docs-name-what-cases-run-returns-b24aad
+  - 2026-11-12-tc-records-migration-docs-name-every-key-7c6439
+  - 2026-11-12-tc-cli-readme-helper-table-covers-help
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -148,6 +157,15 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Green rerun of the timing native-budget flake: tests/timing.rs::a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown built with Rust 1.88.0 at b6fcd0e9 (this branch with t37f's warm-up 7210d0e7 and t38b's stand-in warm-up) passed 20 of 20 under load (20 busy loops and 8 loops that each write a new executable and run it once, the macOS first-exec assessment load), 2 lanes x 10 runs, inside the heavy-tests lock, with t37f's rerun.sh and stress.sh copied unchanged](evidence/2026-11-12-green-rerun-of-the-timing-native-budget-flake-tests-timing-rs.md)
 - [Red rerun of the verify-lane flake at 85dd828c: 6 of 12 loaded runs failed (peak 1-minute load 80.0): cases 3 of 3 (a_descendant_holding_the_pipes_cannot_outlast_the_case_deadline and a_descendant_holding_the_pipes_after_exit_is_stopped_by_the_deadline) and stop 3 of 3 (stopping_a_case_run_while_it_saves_stops_git_and_records_nothing); t38b's flaky_lane.sh and lane_stress.py copied unchanged, under the heavy-tests lock: the cli, change, stop and cases test binaries built with Rust 1.96.0, each run 3 times at once (12 runs) beside 30 CPU busy loops and 4 writers of 32 MiB with F_FULLFSYNC](evidence/2026-11-12-red-rerun-of-the-verify-lane-flake-at-85dd828c-6-of-12-loaded.md)
 - [Green rerun of the verify-lane flake at b6fcd0e9 (t38b's install-time stand-in warm-up 1888f4f5 and stub PIDs published by rename 2ee84412): 0 of 12 loaded runs failed (peak 1-minute load 93.9); t38b's flaky_lane.sh and lane_stress.py copied unchanged, under the heavy-tests lock: the cli, change, stop and cases test binaries built with Rust 1.96.0, each run 3 times at once (12 runs) beside 30 CPU busy loops and 4 writers of 32 MiB with F_FULLFSYNC](evidence/2026-11-12-green-rerun-of-the-verify-lane-flake-at-b6fcd0e9-t38b-s.md)
+- [Ran cargo test --locked --test next -- --exact at_plan_next_names_the_scope_gate_and_never_specsyncs_approve for TC-cli-next-at-plan-names-the-scope-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-plan-names-the-scope-gate-a75cc8.md)
+- [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_names_the_changes_delta_and_plan_first for TC-cli-gate-summary-shows-the-scope: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-gate-summary-shows-the-scope-ad7787.md)
+- [Ran cargo test --locked --test relay -- --exact a_relayed_decision_is_written_as_labelled_lines_and_reads_back for TC-history-relay-fields-are-labelled-lines: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-relay-fields-are-labelled-lines-8fe7da.md)
+- [Ran cargo test --locked --test direct_writes -- --exact a_direct_write_is_written_as_labelled_lines for TC-history-direct-write-fields-are-labelled-lines: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-direct-write-fields-are-labelled-lines-7f8b92.md)
+- [Ran cargo test --locked --test journal -- --exact a_storys_receipts_are_in_observation_time_order for TC-history-story-receipts-in-time-order: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-story-receipts-in-time-order-4f9404.md)
+- [Ran cargo test --locked --test changelog -- --exact the_0_6_0_also_list_names_nothing_0_6_0_removed for TC-cli-changelog-0-6-0-names-only-what-ships: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships-1434be.md)
+- [Ran cargo test --locked --test cases -- --exact the_cli_reference_names_what_cases_run_returns for TC-cli-docs-name-what-cases-run-returns: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-name-what-cases-run-returns-b24aad.md)
+- [Ran cargo test --locked --test migrate -- --exact the_migration_docs_name_every_key_the_preview_and_apply_print for TC-records-migration-docs-name-every-key: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migration-docs-name-every-key-7c6439.md)
+- [Ran cargo test --locked --test docs -- --exact readme_helper_table_names_every_command_the_helper_lists for TC-cli-readme-helper-table-covers-help: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-readme-helper-table-covers-help.md)
 
 ## Open threads
 
