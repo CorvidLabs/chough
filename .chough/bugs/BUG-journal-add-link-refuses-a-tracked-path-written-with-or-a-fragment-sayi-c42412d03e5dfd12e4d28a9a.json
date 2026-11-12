@@ -15,16 +15,26 @@
   "revision": "3558685321381f73f7180c0bedd11a0755f112e0",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-journal-link-dot-slash-and-fragment-115039dcdad143c8719c8fea"
+  ],
   "impact": "A misleading refusal for a valid link",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t38b, test stage, independent retest of K3 to K5",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794450708,
+      "text": "status: open -> investigating. Red at e13c3bcb (t37f's red commit): failed for this bug's reason; fix in 8b39fd23.",
+      "observations": [
+        "OBS-tc-cli-journal-link-dot-slash-and-fragment-115039dcdad143c8719c8fea"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794450171,
-  "updated_at_unix_seconds": 1794450171
+  "updated_at_unix_seconds": 1794450708
 }

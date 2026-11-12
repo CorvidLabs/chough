@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test journal_links_take_a_dot_slash_path_and_keep_a_fragment ... FAILED
+
+failures:
+
+---- journal_links_take_a_dot_slash_path_and_keep_a_fragment stdout ----
+
+thread 'journal_links_take_a_dot_slash_path_and_keep_a_fragment' (908331034) panicked at tests/journal.rs:789:9:
+./specs/cli/requirements.md: Error: --link "./specs/cli/requirements.md" is neither an http(s) URL nor a project path Git tracks
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    journal_links_take_a_dot_slash_path_and_keep_a_fragment
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.68s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/journal.rs (target/debug/deps/journal-43c8f9c057e108c5)
+error: test failed, to rerun pass `--test journal`

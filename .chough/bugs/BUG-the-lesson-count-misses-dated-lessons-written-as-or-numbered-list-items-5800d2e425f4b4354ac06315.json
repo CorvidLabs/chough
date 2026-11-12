@@ -15,11 +15,13 @@
   "revision": "3864e43194583a70c97cae212194cf39a4d5a17d",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-knowledge-lesson-count-list-forms-6024a543bf0d2015655457d3"
+  ],
   "impact": "Undercounted lessons for some writing styles",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -29,8 +31,15 @@
       "at_unix_seconds": 1794450189,
       "text": "Added despite similar reports: K3 fixed the separator after the date for '- ' and '* ' items; this is the + and numbered list forms and indented items, which the K3 fix still does not read",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1794450708,
+      "text": "status: open -> investigating. Red at e13c3bcb (t37f's red commit): failed for this bug's reason; fix in 8b39fd23.",
+      "observations": [
+        "OBS-tc-cli-knowledge-lesson-count-list-forms-6024a543bf0d2015655457d3"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794450189,
-  "updated_at_unix_seconds": 1794450189
+  "updated_at_unix_seconds": 1794450708
 }
