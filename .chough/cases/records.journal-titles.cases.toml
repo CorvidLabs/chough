@@ -1,0 +1,79 @@
+profile = "chough-testing/1"
+module = "records"
+
+# The 0.6.0 re-scope (Leif, 2026-11-12): a journal post has a short human title and a
+# real summary, which the agent sets before the move into done; a derived title and body
+# are the fallback; journal add --record backfills an archived story's post. And the
+# jackdaw finding: a temporary path in a case definition is not a leak.
+
+[[case]]
+id = "TC-records-journal-post-uses-the-title-and-summary"
+title = "The post at the move into done uses the title and summary set with chough checkpoint --title and --summary, and the story keeps both; an oversized title or summary is refused with nothing written"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-33"]
+requirements = ["REQ-records-011"]
+paths = ["src/journal.rs", "src/checkpoint.rs", "src/session_md.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::the_post_uses_the_title_and_summary_the_agent_set passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "the_post_uses_the_title_and_summary_the_agent_set"
+
+[[case]]
+id = "TC-records-journal-post-derives-a-title-and-body"
+title = "Without a title or summary, the post's title is the objective's first clause and its body holds the Goal, the first decision, the newest verified entry and the first open thread, within 1,200 bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-33"]
+requirements = ["REQ-records-011"]
+paths = ["src/journal.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::without_a_title_or_summary_the_post_derives_both_from_the_story passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "without_a_title_or_summary_the_post_derives_both_from_the_story"
+
+[[case]]
+id = "TC-records-journal-add-record-backfills-a-story"
+title = "chough journal add --record writes an archived story's post dated by its close with the story's links and record, and refuses a second post for that story or a missing story"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-33"]
+requirements = ["REQ-records-011"]
+paths = ["src/journal.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::journal_add_record_backfills_an_archived_story passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "journal_add_record_backfills_an_archived_story"
+
+[[case]]
+id = "TC-records-doctor-case-temp-paths-are-not-leaks"
+title = "A temporary-root path in a case definition gives no doctor leak finding, while a home path there and a temporary-root path in a story still do"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/doctor.rs", "src/leaks.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_temporary_path_in_a_case_definition_is_not_a_leak passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_temporary_path_in_a_case_definition_is_not_a_leak"

@@ -552,6 +552,72 @@ fn doctor_reports_a_committed_leak_and_redacts_it_only_with_redact() {
     assert!(of_kind(&again, "leak").is_empty(), "{again:#}");
 }
 
+/// REQ-records-006, TC-records-doctor-case-temp-paths-are-not-leaks: a path under `/tmp/`
+/// or `/private/tmp/` in a case definition is a deliberate test setting, such as a case's
+/// own `XDG_DATA_HOME`, so doctor reports no leak for it and offers no `--redact`; a home
+/// path in the same file is still a finding, and so is a temporary path in a story.
+#[test]
+fn a_temporary_path_in_a_case_definition_is_not_a_leak() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let cases = ".chough/cases/cli.temp-data.cases.toml";
+    let text = r#"profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-temp-data"
+title = "A case with its own data folder"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1"]
+requirements = ["REQ-cli-001"]
+paths = ["src/"]
+environments = ["local"]
+artifacts = ["test-log"]
+expected = ["passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["env", "SCRATCH=/private/tmp/SYNTHETIC-scratch", "true"]
+env = { XDG_DATA_HOME = "/tmp/SYNTHETIC-case-data" }
+expect_output = []
+"#;
+    fixture.write(cases, text);
+    fixture.commit("a case with temporary folders");
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(of_kind(&report, "leak").is_empty(), "{report:#}");
+
+    fixture.write(
+        cases,
+        &text.replace(
+            "expect_output = []",
+            "expect_output = []\n# from /Users/SYNTHETIC-person/app",
+        ),
+    );
+    let story = ".chough/archive/sessions/2026-01-01-old.md";
+    fixture.write(
+        story,
+        "---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\nWrote /tmp/SYNTHETIC-out.\n",
+    );
+    fixture.commit("a home path in the case file and a temporary path in a story");
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let leaks = of_kind(&report, "leak");
+    assert_eq!(leaks.len(), 2, "{report:#}");
+    let case_leak = leaks
+        .iter()
+        .find(|leak| leak["target"] == cases)
+        .expect("the case file");
+    assert_eq!(case_leak["match"], "home-path", "{report:#}");
+    assert_eq!(case_leak["line"], 22, "{report:#}");
+    let story_leak = leaks
+        .iter()
+        .find(|leak| leak["target"] == story)
+        .expect("the story");
+    assert_eq!(story_leak["match"], "system-path", "{report:#}");
+}
+
 /// REQ-history-012 `timeline_rewritten`: a hand-edited earlier Timeline entry is a
 /// finding naming that entry; it has no fix, so `--fix` leaves the session unchanged.
 #[test]
