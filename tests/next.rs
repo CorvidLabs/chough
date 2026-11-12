@@ -2969,3 +2969,91 @@ fn at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_ru
         "{shown}"
     );
 }
+
+/// A command case that prints ok, for a rerun at accept.
+const F4_CASE: &str = r#"profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-f4-rerun"
+title = "The F4 case"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1"]
+requirements = ["REQ-cli-001"]
+paths = ["src/"]
+environments = ["local"]
+artifacts = ["test-log"]
+expected = ["it prints ok"]
+
+[case.bind]
+adapter = "command"
+argv = ["sh", "-c", "echo ok"]
+expect_output = ["ok"]
+"#;
+
+/// Fresh-eyes round 4, F4 (2026-11-12; REQ-cli-021): right after the accept step's first
+/// check materialized the requirement text, next routed straight to opening the review
+/// gate while it listed the referenced runs as not current. At accept, while the latest
+/// run of a case the checkpoint references is not current, next names rerunning that
+/// case with `chough cases run` before it names opening the review gate, with the change
+/// approved and once the check left it verifying; once the rerun passes, it names the
+/// review gate.
+#[cfg(unix)]
+#[test]
+fn at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate() {
+    let case = "TC-cli-f4-rerun";
+    let rerun = format!("chough cases run {case} --environment local");
+    for state in ["approved", "verifying"] {
+        let id = format!("f4-{state}");
+        let fixture = approved_at_plan(&id);
+        // The stub stops counting its calls, so no native read changes the working tree
+        // a run's content identity binds.
+        for counter in [".stub-count", ".stub-calls"] {
+            let _ = std::fs::remove_file(fixture.root().join(counter));
+        }
+        fixture.write(".chough/cases/cli.f4.cases.toml", F4_CASE);
+        fixture.commit("the F4 case");
+        while fixture.checkpoint()["stage"]["current"] != "accept" {
+            fixture.ok(&["stage", "advance", "--json"]);
+        }
+        fixture.write(".stub-state", &format!("{state}\n"));
+        // The case's latest run passed at a revision long gone, so it is not current.
+        let stale = format!("2026-11-12-f4-{state}-stale");
+        let mut entry = observation(&stale, "passed", 1_000);
+        entry["cases"] = json!([{"id": case, "digest": "0".repeat(64)}]);
+        write_entry(&fixture, &entry);
+        fixture.ok(&["checkpoint", "--case", case, "--observation", &stale]);
+        let gate = format!(
+            "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
+        );
+
+        let next = fixture.ok(&["next", "--json"]);
+        let action = next["next_valid_action"]["action"].as_str().unwrap();
+        assert_eq!(
+            next["next_valid_action"]["command"], rerun,
+            "{state}: {action}"
+        );
+        let named = action
+            .find(&format!("`{rerun}`"))
+            .unwrap_or_else(|| panic!("{state}: no rerun of {case} in {action}"));
+        if let Some(at) = action.find(&format!("`{gate}`")) {
+            assert!(
+                named < at,
+                "{state}: the review gate comes first in {action}"
+            );
+        }
+
+        // Once its rerun passes, next names the review gate.
+        let ran = fixture.ok(&["cases", "run", case, "--environment", "local"]);
+        assert_eq!(ran["outcome"], "passed", "{ran:#}");
+        let next = fixture.ok(&["next", "--json"]);
+        let action = next["next_valid_action"]["action"].as_str().unwrap();
+        assert_eq!(
+            next["next_valid_action"]["command"], gate,
+            "{state}: {action}"
+        );
+        assert!(!action.contains(&rerun), "{state}: {action}");
+    }
+}

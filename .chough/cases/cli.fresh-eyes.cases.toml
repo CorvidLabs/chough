@@ -846,3 +846,39 @@ expected = ["tests/gates.rs::a_scope_gate_summary_counts_uncommitted_and_untrack
 adapter = "cargo-test"
 test_target = "gates"
 test = "a_scope_gate_summary_counts_uncommitted_and_untracked_change_files"
+
+[[case]]
+id = "TC-cli-accept-next-reruns-cases-not-current"
+title = "At accept, approved or verifying, while a referenced case's latest run is not current, next names rerunning it with chough cases run before opening the review gate, and names the review gate once the rerun passes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-7"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/evidence.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate"
+
+[[case]]
+id = "TC-cli-accept-reference-lessons-before-case-runs"
+title = "The accept reference, in the skill and its .agents copy, has any lesson written before step 2's case runs, so one rerun covers it, and never says to write lessons during closeout"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18", "LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["skills/chough-workflow/references/accept.md", ".agents/skills/chough-workflow/references/accept.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_accept_reference_writes_lessons_before_the_case_runs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_accept_reference_writes_lessons_before_the_case_runs"
