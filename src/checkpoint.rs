@@ -1088,32 +1088,35 @@ pub(super) fn withdraw_gates(root: &Path) -> Result<Vec<String>> {
     Ok(cleared)
 }
 
-/// What a gate close decided, as the next action it leaves names it: `approved` for the
-/// native approval, `review pass` or `review block` for the native review (the review
-/// `chough change ship` ran is a pass), and `closed` for a gate that drives no native
-/// step, a close with `--no-native`, or a ship that ran no step for the gate.
+/// What a gate close decided beyond closing, as the next action it leaves names it:
+/// `approved` for the native approval, `review pass` or `review block` for the native
+/// review (the review `chough change ship` ran is a pass). None for a gate that drives
+/// no native step, a close with `--no-native`, or a ship that ran no step for the gate:
+/// such a close decided nothing more, so its next action says "closed" once (F12a).
 fn close_decision(
     drives: crate::humans::Drives,
     verdict: Option<&str>,
     no_native: bool,
     native_ran: bool,
-) -> String {
+) -> Option<String> {
     use crate::humans::Drives;
     match drives {
-        Drives::None => "closed".into(),
-        _ if no_native => "closed".into(),
-        Drives::Review if native_ran => "review pass".into(),
-        _ if native_ran => "closed".into(),
-        Drives::Approve => "approved".into(),
-        Drives::Review => format!("review {}", verdict.unwrap_or("pass")),
+        Drives::None => None,
+        _ if no_native => None,
+        Drives::Review if native_ran => Some("review pass".into()),
+        _ if native_ran => None,
+        Drives::Approve => Some("approved".into()),
+        Drives::Review => Some(format!("review {}", verdict.unwrap_or("pass"))),
     }
 }
 
 /// The next action a close of the last gate holding the current stage leaves: the gate,
-/// on one line and cut so the next action stays within 4096 bytes, and the decision.
-fn closed_gate_next_action(gate: &str, decision: &str) -> String {
+/// on one line and cut so the next action stays within 4096 bytes, and the decision, if
+/// the close made one beyond closing.
+fn closed_gate_next_action(gate: &str, decision: Option<&str>) -> String {
     let head = "Gate \"";
-    let tail = format!("\" closed ({decision}); run `chough next` for the next action.");
+    let decided = decision.map_or_else(String::new, |decision| format!(" ({decision})"));
+    let tail = format!("\" closed{decided}; run `chough next` for the next action.");
     let room = 4_096 - head.len() - tail.len();
     let mut name = String::new();
     for character in gate
@@ -1376,7 +1379,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .iter()
             .any(|open| crate::session_md::gate(&session, open).holds == session.stage.current)
     {
-        session.next_action = closed_gate_next_action(gate, decision);
+        session.next_action = closed_gate_next_action(gate, decision.as_deref());
         changed = true;
     }
     if changed {

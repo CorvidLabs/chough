@@ -536,8 +536,10 @@ A next action written while a gate held the stage describes waiting on it. So wh
 close (`--close-gate`, `gate record` or `change ship --close-gate`) leaves no open gate
 holding the current stage, and the same call gives no `--next-action`, the checkpoint's
 next action becomes ``Gate "<gate>" closed (<decision>); run `chough next` for the next
-action.``, the decision being `approved`, `review pass`, `review block`, or `closed` for
-a gate that drives no native step or a close that runs none. A `--next-action` given in
+action.``, the decision being `approved`, `review pass` or `review block`. A gate that
+drives no native step, or a close that runs none, decided nothing beyond closing, so it
+leaves ``Gate "<gate>" closed; run `chough next` for the next action.``, with "closed"
+said once. A `--next-action` given in
 the same call is kept, and a close that leaves another gate holding the stage changes
 nothing. The decision itself stays in the Timeline.
 
