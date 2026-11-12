@@ -234,15 +234,17 @@ fn main() -> Result<()> {
         Commands::Context { json: as_json } => {
             let session = read_session(&root)?;
             let sections = context::context(&root, &session)?;
-            let session_value = session.to_value()?;
             if as_json {
+                let session_value = session.to_value()?;
                 print_json(
                     &json!({"schema_version": 1, "session": session_value, "sections": sections}),
                 )?;
             } else {
-                println!(
+                // F10d: the Markdown packet gives the session as Markdown; `--json`
+                // keeps the session object.
+                print!(
                     "# Chough context\n\n## Session\n\n{}",
-                    serde_json::to_string_pretty(&session_value)?
+                    context::session_markdown(&session)
                 );
                 for section in sections {
                     println!(
