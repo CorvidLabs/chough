@@ -1872,3 +1872,37 @@ fn a_lessons_dated_form_is_documented_and_its_example_counts() {
         );
     }
 }
+
+/// Fresh-eyes round 4, F4 (REQ-cli-002): writing a lesson under `specs/` makes the case
+/// runs not current, so the accept reference, in the skill and its `.agents` copy, has
+/// any lesson written before step 2's case runs, so one rerun covers it, and no longer
+/// says to write lessons during closeout.
+#[test]
+fn the_accept_reference_writes_lessons_before_the_case_runs() {
+    for copy in [
+        "skills/chough-workflow/references/accept.md",
+        ".agents/skills/chough-workflow/references/accept.md",
+    ] {
+        let accept = read(copy);
+        let step = accept
+            .lines()
+            .skip_while(|line| !line.starts_with("2. "))
+            .take_while(|line| !line.starts_with("3. "))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let lesson = step
+            .find("lesson")
+            .unwrap_or_else(|| panic!("{copy} step 2 does not place the lesson: {step}"));
+        let runs = step
+            .find("chough cases run")
+            .unwrap_or_else(|| panic!("{copy} step 2 runs no case: {step}"));
+        assert!(
+            lesson < runs,
+            "{copy} step 2 runs the cases before the lesson: {step}"
+        );
+        assert!(
+            !accept.contains("during closeout"),
+            "{copy} still says to write lessons during closeout"
+        );
+    }
+}
