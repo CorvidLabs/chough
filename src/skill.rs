@@ -480,6 +480,27 @@ pub(super) const HOSTS: &[(&str, &str)] = &[
     ("grok", ".grok/skills"),
 ];
 
+/// The skill file Claude Code reaches through `CLAUDE.md`, and the line docs/integrations.md
+/// says to add there; `init --host claude` prints it and never writes `CLAUDE.md`.
+const CLAUDE_SKILL: &str = ".agents/skills/chough-workflow/SKILL.md";
+const CLAUDE_MD_LINE: &str =
+    "Read and follow `.agents/skills/chough-workflow/SKILL.md` for the Chough workflow.";
+
+/// What `init` prints for the claude host (REQ-cli-016, F12a): the line to add to
+/// `CLAUDE.md`, whether the file already names the skill, and why. It reads `CLAUDE.md`
+/// at most and writes nothing to it.
+pub(super) fn claude_md_hint(root: &Path) -> Value {
+    let present = local_path(root, "CLAUDE.md")
+        .ok()
+        .and_then(|path| fs::read_to_string(path).ok())
+        .is_some_and(|text| text.contains(CLAUDE_SKILL));
+    json!({
+        "line": CLAUDE_MD_LINE,
+        "present": present,
+        "note": "Claude Code 2.1.316 did not discover .agents/skills alone: add this line to CLAUDE.md, creating the file if the project has none. init writes nothing to CLAUDE.md.",
+    })
+}
+
 /// Host directories that earlier helpers wrote and this one no longer installs. A copy
 /// found there is reported as legacy and removed only by `skill remove-legacy` (LIFE-13).
 const LEGACY: &[(&str, &str)] = &[("claude", ".claude/skills")];

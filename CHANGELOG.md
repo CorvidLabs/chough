@@ -203,7 +203,8 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   says that `chough stage skip` skips the current stage.
 - From a third fresh-eyes round: the workflow skill and `docs/cli.md` say that a lesson
   in `context.md` starts with its `YYYY-MM-DD` date, the only form the knowledge index
-  counts, with an example (REQ-cli-015).
+  counts, with an example (REQ-cli-015); and `chough init --host claude` prints the line
+  to add to `CLAUDE.md` as `claude_md`, writing nothing to it (REQ-cli-016).
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.
 - Stopping a command on macOS no longer leaves behind a child the command forked as the

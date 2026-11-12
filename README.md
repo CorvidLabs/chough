@@ -117,8 +117,9 @@ checkpoint; it writes the reading guide `.chough/README.md`, creates the librari
 `knowledge/` directory (on by default) and copies the skill bundle into each requested host's project skill directory
 (`openai`, the default, → `.agents/skills`, a shared skills directory, which `claude`
 shares (Claude Code 2.1.316 did not discover `.agents/skills` alone, so add a
-`CLAUDE.md` line pointing at `.agents/skills/chough-workflow/SKILL.md`; `init` does not
-write it, see [integrations](docs/integrations.md)); `gemini` → `.gemini/skills`, which
+`CLAUDE.md` line pointing at `.agents/skills/chough-workflow/SKILL.md`; `init --host
+claude` prints that line as `claude_md` and does not write it, see
+[integrations](docs/integrations.md)); `gemini` → `.gemini/skills`, which
 no run has exercised; also `codex` → `.codex/skills`, `cursor` → `.cursor/skills` and
 `grok` → `.grok/skills`). Start each later change with
 `chough session new <change-id>`. Kimi Code CLI uses the existing `openai`

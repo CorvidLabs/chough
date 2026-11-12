@@ -350,7 +350,7 @@ fn init(
     let library = library::create_at_init(root);
     // REQ-cli-047: the merge attributes and drivers, so two branches merge clean.
     let merge = library::merge_at_init(root);
-    print_json(&json!({
+    let mut output = json!({
         "schema_version": 1,
         "created": created,
         "preserved": preserved,
@@ -359,7 +359,13 @@ fn init(
         "merge": merge,
         // REQ-records-014: the same advice `chough doctor` gives, or null.
         "records_in_verification": doctor::exclusions(root).advice(),
-    }))
+    });
+    // REQ-cli-016: Claude Code reaches the shared copy through CLAUDE.md, which init
+    // never writes, so it prints the line to add.
+    if hosts.iter().any(|host| host == "claude") {
+        output["claude_md"] = skill::claude_md_hint(root);
+    }
+    print_json(&output)
 }
 
 /// The one native status read of a report, made whenever SpecSync is configured.
