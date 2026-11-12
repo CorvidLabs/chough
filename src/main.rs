@@ -860,15 +860,9 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         .iter()
         .filter_map(|entry| entry["id"].as_str())
         .collect();
-    // The open sessions' entries that nothing references, by ID or alias.
-    let unreferenced = evidence::load_all(root)?
-        .iter()
-        .filter(|entry| {
-            !std::iter::once(&entry.id)
-                .chain(&entry.aliases)
-                .any(|id| referenced.contains(id.as_str()))
-        })
-        .count();
+    // The open sessions' entries that nothing references, by ID or alias, from the
+    // index the references were labelled with.
+    let unreferenced = reads.unreferenced_entries(&referenced)?;
     let attention: Vec<&Value> = references
         .iter()
         .filter(|entry| entry["label"] != "current")
