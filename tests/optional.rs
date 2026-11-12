@@ -1043,3 +1043,42 @@ fn librarian_default_contradictions(text: &str) -> Vec<String> {
         .map(str::to_string)
         .collect()
 }
+
+/// 0.6.0 removes no records, so the retention preference and consent are retired:
+/// setting either refuses with nothing written, and a value an earlier project recorded
+/// still reads (t38b's review).
+#[test]
+fn the_retired_retention_preference_and_consent_refuse() {
+    let fixture = Fixture::new();
+    fixture.init();
+    for args in [
+        vec![
+            "pref",
+            "set",
+            "retention",
+            "auto",
+            "--source",
+            "SYNTHETIC human",
+        ],
+        vec![
+            "consent",
+            "grant",
+            "retention",
+            "--source",
+            "SYNTHETIC human",
+        ],
+    ] {
+        let refused = fixture.fails(&args);
+        assert!(
+            refused.contains("retired in Chough 0.6.0"),
+            "{args:?}: {refused}"
+        );
+    }
+    assert!(!fixture.exists(".chough/preferences.json"));
+    fixture.write(
+        ".chough/preferences.json",
+        "{\"schema_version\":1,\"preferences\":[{\"key\":\"retention\",\"value\":\"auto\",\"source\":\"an earlier project\",\"scope\":\"project\",\"set_at_unix_seconds\":1700000000}]}\n",
+    );
+    let shown = fixture.ok(&["pref", "show"]);
+    assert!(shown.to_string().contains("retention"), "{shown:#}");
+}

@@ -25,11 +25,24 @@ const KEYS: &[(&str, &[&str], &str)] = &[
     ("librarian", &["off", "on"], "on"),
     ("library-dir", &[], "knowledge"),
     ("required-lane", &[], ""),
+    // Retired in 0.6.0, which removes no records (REQ-cli-041 and REQ-history-001 are
+    // removed): an earlier project's recorded value still reads, and setting it refuses.
     ("retention", &["off", "auto", "manual"], "off"),
     // A standing consent to `chough migrate --apply` (REQ-records-009).
     ("migration", &["on-request", "standing"], "on-request"),
 ];
-const CONSENT_KEYS: [&str; 4] = ["repeat-validation", "monitoring", "release", "retention"];
+const CONSENT_KEYS: [&str; 3] = ["repeat-validation", "monitoring", "release"];
+/// The preference 0.6.0 retired, which `pref set` and `consent grant` refuse.
+const RETIRED: &str = "retention";
+
+/// Refuse the retired retention key, naming why, before anything is written.
+fn ensure_not_retired(key: &str) -> Result<()> {
+    ensure!(
+        key != RETIRED,
+        "refused: the retention preference and consent are retired in Chough 0.6.0, which removes no records (a session's story and its receipts stay for good), so nothing was written"
+    );
+    Ok(())
+}
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -172,6 +185,7 @@ pub(super) fn pref(root: &Path, command: PrefCommand) -> Result<()> {
             mut value,
             mut source,
         } => {
+            ensure_not_retired(&key)?;
             ensure_text("source", &source)?;
             validate_value(&key, &value)?;
             // REQ-records-006: preferences.json is committed; its value and source pass
@@ -236,6 +250,7 @@ pub(super) fn consent(root: &Path, command: ConsentCommand) -> Result<()> {
     match command {
         ConsentCommand::Show => {}
         ConsentCommand::Grant { key, source } => {
+            ensure_not_retired(&key)?;
             ensure!(
                 CONSENT_KEYS.contains(&key.as_str()),
                 "run consent applies to {}",
