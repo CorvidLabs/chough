@@ -119,6 +119,11 @@ observations:
   - 2026-11-12-tc-history-session-list-archived-story-is-finished-77f110
   - 2026-11-12-tc-records-every-gate-close-names-a-configured-human-9b34bf
   - 2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-ef5323
+  - 2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate
+  - 2026-11-12-tc-cli-migration-receipt-has-one-follow-up-heading
+  - 2026-11-12-tc-cli-executed-case-run-provenance
+  - 2026-11-12-tc-cli-docs-show-the-requirement-evidence-table
+  - 2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -253,6 +258,11 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test sessions -- --exact session_list_reports_an_archived_story_as_finished for TC-history-session-list-archived-story-is-finished: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-session-list-archived-story-is-finished-77f110.md)
 - [Ran cargo test --locked --test humans -- --exact every_gate_close_names_a_configured_human for TC-records-every-gate-close-names-a-configured-human: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-every-gate-close-names-a-configured-human-9b34bf.md)
 - [Ran cargo test --locked --test change -- --exact ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing for TC-records-ship-names-a-configured-human-at-any-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-ef5323.md)
+- [Ran cargo test --locked --test migrate -- --exact a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest for TC-cli-migrate-preview-with-nothing-to-migrate: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate.md)
+- [Ran cargo test --locked --test migrate -- --exact a_receipt_has_one_follow_up_heading_for_every_follow_up for TC-cli-migration-receipt-has-one-follow-up-heading: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-migration-receipt-has-one-follow-up-heading.md)
+- [Ran cargo test --locked --test cases -- --exact an_executed_case_runs_provenance_does_not_deny_the_execution for TC-cli-executed-case-run-provenance: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-executed-case-run-provenance.md)
+- [Ran cargo test --locked --test docs -- --exact the_requirement_evidence_table_in_a_changes_testing_md_is_documented for TC-cli-docs-show-the-requirement-evidence-table: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-the-requirement-evidence-table.md)
+- [Ran cargo test --locked --test docs -- --exact the_new_project_section_shows_a_minimal_hi_file_and_requirements_md for TC-cli-docs-show-a-minimal-hi-file-and-requirements-md: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md.md)
 
 ## Open threads
 
