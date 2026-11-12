@@ -47,6 +47,7 @@ enum Kind {
     TimelineRewritten,
     AliasConflict,
     Oversize,
+    Unreadable,
     RecordsInVerification,
     MergeDrivers,
 }
@@ -64,6 +65,7 @@ impl Kind {
             Self::TimelineRewritten => "timeline_rewritten",
             Self::AliasConflict => "alias_conflict",
             Self::Oversize => "oversize",
+            Self::Unreadable => "unreadable",
             Self::RecordsInVerification => "records_in_verification",
             Self::MergeDrivers => "merge_drivers",
         }
@@ -491,6 +493,52 @@ fn oversize_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
     Ok(found)
 }
 
+/// Each committed Chough record under `.chough/` that its reader refuses, such as front
+/// matter outside the subset, with the file and the reader's reason (REQ-history-012).
+/// It has no fix: a person fixes the line in a reviewed change, or sets a session aside
+/// with `chough session shelve`. A record over its bound is `oversize` instead.
+fn unreadable_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
+    let knowledge = crate::prefs::effective(root, "library-dir")?.0;
+    let mut found = vec![];
+    for path in files.iter().filter(|path| path.starts_with(".chough/")) {
+        let Some((bound, false)) = bound_of(path, &knowledge) else {
+            continue;
+        };
+        let Some(text) = tracked_text(root, path) else {
+            continue;
+        };
+        if text.len() as u64 > bound {
+            continue;
+        }
+        let parts: Vec<&str> = path.split('/').collect();
+        let mut refused = crate::markdown::parse(path, &text).err();
+        if refused.is_none()
+            && matches!(
+                parts.as_slice(),
+                [".chough", "sessions", _, "session.md"] | [".chough", "archive", "sessions", _]
+            )
+        {
+            refused = sessions::read_at(root, path).err();
+        }
+        let Some(error) = refused else {
+            continue;
+        };
+        let fix = match parts.as_slice() {
+            [".chough", "sessions", id, "session.md"] => format!(
+                "none: fix the line by hand in a reviewed change, or set the session aside with `chough session shelve {id}`"
+            ),
+            _ => "none: fix the line by hand in a reviewed change".into(),
+        };
+        let mut finding = Finding::new(Kind::Unreadable, path, fix, false);
+        finding.blocked = Some(format!(
+            "{path} cannot be read; doctor never rewrites a record"
+        ));
+        finding.detail = Some(json!({"error": format!("{error:#}")}));
+        found.push(finding);
+    }
+    Ok(found)
+}
+
 /// The SDD policy whose `verification_ignored_paths` keeps Chough's records out of
 /// SpecSync's verification (REQ-records-014).
 pub(super) const SDD_POLICY: &str = ".specsync/sdd.json";
@@ -727,6 +775,9 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
         found.extend(alias_findings(root));
     }
     found.extend(oversize_findings(root, &files)?);
+    if migrated {
+        found.extend(unreadable_findings(root, &files)?);
+    }
     found.extend(records_in_verification(root));
     found.extend(merge_drivers(root)?);
     Ok(found)
@@ -854,7 +905,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
                 lines.join(", ")
             );
         }
-        Kind::TimelineRewritten | Kind::AliasConflict | Kind::Oversize => {
+        Kind::TimelineRewritten | Kind::AliasConflict | Kind::Oversize | Kind::Unreadable => {
             bail!("{} has no fix", finding.kind.name())
         }
         Kind::Leak => {
