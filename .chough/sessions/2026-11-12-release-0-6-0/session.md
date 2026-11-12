@@ -54,6 +54,9 @@ observations:
   - 2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships
   - 2026-11-12-tc-cli-docs-name-what-cases-run-returns
   - 2026-11-12-tc-records-migration-docs-name-every-key
+  - 2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships-81b73a
+  - 2026-11-12-tc-cli-docs-name-what-cases-run-returns-f3b95c
+  - 2026-11-12-tc-records-migration-docs-name-every-key-8f1252
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -118,6 +121,9 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test changelog -- --exact the_0_6_0_also_list_names_nothing_0_6_0_removed for TC-cli-changelog-0-6-0-names-only-what-ships: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships.md)
 - [Ran cargo test --locked --test cases -- --exact the_cli_reference_names_what_cases_run_returns for TC-cli-docs-name-what-cases-run-returns: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-docs-name-what-cases-run-returns.md)
 - [Ran cargo test --locked --test migrate -- --exact the_migration_docs_name_every_key_the_preview_and_apply_print for TC-records-migration-docs-name-every-key: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migration-docs-name-every-key.md)
+- [Ran cargo test --locked --test changelog -- --exact the_0_6_0_also_list_names_nothing_0_6_0_removed for TC-cli-changelog-0-6-0-names-only-what-ships: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships-81b73a.md)
+- [Ran cargo test --locked --test cases -- --exact the_cli_reference_names_what_cases_run_returns for TC-cli-docs-name-what-cases-run-returns: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-name-what-cases-run-returns-f3b95c.md)
+- [Ran cargo test --locked --test migrate -- --exact the_migration_docs_name_every_key_the_preview_and_apply_print for TC-records-migration-docs-name-every-key: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migration-docs-name-every-key-8f1252.md)
 
 ## Open threads
 
