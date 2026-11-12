@@ -45,25 +45,39 @@ const SAMPLES: [(&str, &str, &str); 10] = [
     ),
     (
         "token",
-        "token ghp_abcdefghijklmnopqrstuvwxyz0123456789",
-        "ghp_abcdefghijklmnop",
+        concat!("token ", "ghp_", "abcdefghijklmnopqrstuvwxyz0123456789"),
+        concat!("ghp_", "abcdefghijklmnop"),
     ),
     (
         "private-key",
-        "-----BEGIN OPENSSH PRIVATE KEY-----",
-        "BEGIN OPENSSH PRIVATE KEY",
+        concat!("-----BEGIN OPENSSH ", "PRIVATE KEY-----"),
+        concat!("BEGIN OPENSSH ", "PRIVATE KEY"),
     ),
     (
         "authorization",
-        "curl -H 'Authorization: Bearer abcdefghijklmnop1234'",
+        concat!(
+            "curl -H 'Authorization: Bearer ",
+            "abcdefgh",
+            "ijklmnop1234'"
+        ),
         "abcdefghijklmnop1234",
     ),
     (
         "jwt",
-        "jwt eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.abcdefghijkl",
-        "eyJhbGciOiJIUzI1NiJ9",
+        concat!(
+            "jwt ",
+            "eyJ",
+            "hbGciOiJIUzI1NiJ9.",
+            "eyJ",
+            "zdWIiOiIxMjM0In0.abcdefghijkl"
+        ),
+        concat!("eyJ", "hbGciOiJIUzI1NiJ9"),
     ),
-    ("credential", "password: hunter2hunter2", "hunter2hunter2"),
+    (
+        "credential",
+        concat!("password: ", "hunter2", "hunter2"),
+        concat!("hunter2", "hunter2"),
+    ),
 ];
 
 /// Every file under the fixture outside `.git` and the Git-ignored `.chough/local/`.
@@ -417,7 +431,7 @@ fn a_short_assignment_ending_a_claim_is_written_and_leaves_no_leak_finding() {
         "doctor reported a leak on Chough's own lines: {said}{}",
         String::from_utf8_lossy(&doctor.stderr)
     );
-    let arguments = evidence_add("SYNTHETIC password=hunter2hunter2.");
+    let arguments = evidence_add(concat!("SYNTHETIC password=", "hunter2", "hunter2."));
     let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
     let output = run(&fixture, &arguments);
     let stderr = String::from_utf8_lossy(&output.stderr);
@@ -425,7 +439,7 @@ fn a_short_assignment_ending_a_claim_is_written_and_leaves_no_leak_finding() {
         !output.status.success() && stderr.contains("holds credential"),
         "an 8-character value was written: {stderr}"
     );
-    assert!(!stderr.contains("hunter2hunter2"), "{stderr}");
+    assert!(!stderr.contains(concat!("hunter2", "hunter2")), "{stderr}");
 }
 
 /// REQ-records-006, REQ-records-003, TC-records-redacted-writes-are-named-from-the-redacted-text
@@ -457,7 +471,11 @@ fn redacted_writes_are_named_from_the_redacted_text() {
             "--kind",
             "learned",
             "--title",
-            "SYNTHETIC post ghp_abcdefghijklmnopqrstuvwxyz0123456789",
+            concat!(
+                "SYNTHETIC post ",
+                "ghp_",
+                "abcdefghijklmnopqrstuvwxyz0123456789"
+            ),
             "--body",
             "SYNTHETIC body",
         ],
@@ -478,7 +496,7 @@ fn redacted_writes_are_named_from_the_redacted_text() {
     for needle in [
         "synthetic-person",
         "SYNTHETIC-person",
-        "ghp_abcdefghij",
+        concat!("ghp_", "abcdefghij"),
         "ghp-abcdefghij",
         "abcdefghijklmnopqrstuvwxyz0123456789",
     ] {

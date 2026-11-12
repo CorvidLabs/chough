@@ -633,27 +633,50 @@ mod tests {
             ("ssh alice@build-box", "user-name"),
             ("mount /opt/alice/data", "user-name"),
             ("mail bob.smith+x@example.com now", "email"),
-            ("token ghp_abcdefghijklmnopqrstuvwxyz0123456789", "token"),
-            ("key glpat-abcdefghijklmnopqrstuvwx", "token"),
-            ("slack xoxb-123456789012-abcdef", "token"),
-            ("aws AKIAABCDEFGHIJKLMNOP id", "token"),
-            ("model sk-ant-api03-abcdefghijklmnopqrstuv", "token"),
             (
-                "-----BEGIN OPENSSH PRIVATE KEY-----\nabc\n-----END OPENSSH PRIVATE KEY-----",
+                concat!("token ", "ghp_", "abcdefghijklmnopqrstuvwxyz0123456789"),
+                "token",
+            ),
+            (concat!("key glp", "at-abcdefghijklmnopqrstuvwx"), "token"),
+            (concat!("slack xo", "xb-123456789012-abcdef"), "token"),
+            (concat!("aws AKIA", "ABCDEFGHIJKLMNOP id"), "token"),
+            (
+                concat!("model sk-", "ant-api03-abcdefghijklmnopqrstuv"),
+                "token",
+            ),
+            (
+                concat!(
+                    "-----BEGIN OPENSSH ",
+                    "PRIVATE KEY-----\nabc\n-----END OPENSSH ",
+                    "PRIVATE KEY-----"
+                ),
                 "private-key",
             ),
             (
-                "curl -H 'Authorization: Bearer abcdefghijklmnop1234'",
+                concat!(
+                    "curl -H 'Authorization: Bearer ",
+                    "abcdefgh",
+                    "ijklmnop1234'"
+                ),
                 "authorization",
             ),
-            ("Authorization: Basic dXNlcjpwYXNzd29yZA==", "authorization"),
             (
-                "jwt eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.abcdefghijkl",
+                concat!("Authorization: Basic ", "dXNlcjpw", "YXNzd29y", "ZA=="),
+                "authorization",
+            ),
+            (
+                concat!(
+                    "jwt ",
+                    "eyJ",
+                    "hbGciOiJIUzI1NiJ9.",
+                    "eyJ",
+                    "zdWIiOiIxMjM0In0.abcdefghijkl"
+                ),
                 "jwt",
             ),
-            ("GITHUB_TOKEN=abcdef123456", "credential"),
-            ("password: hunter2hunter2", "credential"),
-            ("api_key = \"0123456789abcdef\"", "credential"),
+            (concat!("GITHUB_TOKEN=", "abcdef123456"), "credential"),
+            (concat!("password: ", "hunter2", "hunter2"), "credential"),
+            (concat!("api_key = \"", "0123456789abcdef\""), "credential"),
         ];
         for (value, kind) in cases {
             assert_eq!(kinds(value), vec![kind], "{value:?}");
@@ -692,7 +715,11 @@ mod tests {
     fn redaction_replaces_each_match_and_counts_them() {
         let (text, count) = redact(
             &local(),
-            "at /Users/alice/x by alice@alices-mbp with ghp_abcdefghijklmnopqrstuvwxyz0123456789 done",
+            concat!(
+                "at /Users/alice/x by alice@alices-mbp with ",
+                "ghp_",
+                "abcdefghijklmnopqrstuvwxyz0123456789 done"
+            ),
         );
         assert_eq!(
             text,

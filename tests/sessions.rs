@@ -1177,7 +1177,7 @@ fn a_leak_in_a_session_value_is_refused_or_redacted() {
         "--to",
         "intent",
         "--reason",
-        "token ghp_abcdefghijklmnopqrstuvwxyz0123456789",
+        concat!("token ", "ghp_", "abcdefghijklmnopqrstuvwxyz0123456789"),
     ]);
     assert!(refused.contains("refused:leak"), "{refused}");
     assert_eq!(fixture.read(&file), before);
