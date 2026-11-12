@@ -22,17 +22,26 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-proof-split-and-external-71d4096f0611298620fd0ce6"
+    "OBS-tc-records-proof-split-and-external-71d4096f0611298620fd0ce6",
+    "OBS-tc-records-proof-split-and-external-c809538dffc28708c420244f"
   ],
   "impact": "Committed raw logs carry local paths and noise, and a reviewer cannot see why a run failed without the log",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "GitHub issue #215, red on 0.5.0 by t38b at 69b56154 (leif/0.6.0-records-red)",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794442684,
+      "text": "status: open -> verified. Green on integration after t37j's 45cc9853 and ad496d21: TC-records-proof-split-and-external passes (local logs with the command and the output's SHA-256, key failing lines, and an outside artifact fingerprinted in place under ext-<hex>).",
+      "observations": [
+        "OBS-tc-records-proof-split-and-external-c809538dffc28708c420244f"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794440721,
-  "updated_at_unix_seconds": 1794440721
+  "updated_at_unix_seconds": 1794442684
 }

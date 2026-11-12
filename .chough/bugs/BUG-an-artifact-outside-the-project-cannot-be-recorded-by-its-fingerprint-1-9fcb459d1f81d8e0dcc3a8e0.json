@@ -22,12 +22,13 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-proof-split-and-external-71d4096f0611298620fd0ce6"
+    "OBS-tc-records-proof-split-and-external-71d4096f0611298620fd0ce6",
+    "OBS-tc-records-proof-split-and-external-c809538dffc28708c420244f"
   ],
   "impact": "Proof that lives outside the repository, such as a large capture, cannot be recorded at all",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -37,8 +38,15 @@
       "at_unix_seconds": 1794440743,
       "text": "Added despite similar reports: A separate issue (#14 item 3): recording an outside artifact by fingerprint, not where a case run's log goes; one test covers both",
       "observations": []
+    },
+    {
+      "at_unix_seconds": 1794442684,
+      "text": "status: open -> verified. Green on integration after t37j's 45cc9853 and ad496d21: TC-records-proof-split-and-external passes (local logs with the command and the output's SHA-256, key failing lines, and an outside artifact fingerprinted in place under ext-<hex>).",
+      "observations": [
+        "OBS-tc-records-proof-split-and-external-c809538dffc28708c420244f"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794440743,
-  "updated_at_unix_seconds": 1794440743
+  "updated_at_unix_seconds": 1794442684
 }
