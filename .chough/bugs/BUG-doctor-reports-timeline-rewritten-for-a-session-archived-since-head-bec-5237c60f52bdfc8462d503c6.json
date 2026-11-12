@@ -15,16 +15,34 @@
   "revision": "6e8a7b9d8ad0421009c60717bb8f532d3e0ddea5",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-history-an-archived-story-is-no-rewritten-timeline-bfc342bfa43aef017807aa33",
+    "OBS-tc-history-an-archived-story-is-no-rewritten-timeline-e2d8ce2bdd5041fccfae4d21"
+  ],
   "impact": "A false finding with a 'restore by hand' remedy after every archive",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37f, 6.3.0 re-run, area knowledge",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794467215,
+      "text": "status: open -> investigating. Red at 9a8f2d23 (before its fix): doctor reported timeline_rewritten for a story archived since HEAD; fix in f32abb76.",
+      "observations": [
+        "OBS-tc-history-an-archived-story-is-no-rewritten-timeline-bfc342bfa43aef017807aa33"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794467215,
+      "text": "status: investigating -> verified. Green at f32abb76: TC-history-an-archived-story-is-no-rewritten-timeline passed; doctor, correct and history tests pass.",
+      "observations": [
+        "OBS-tc-history-an-archived-story-is-no-rewritten-timeline-e2d8ce2bdd5041fccfae4d21"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794467100,
-  "updated_at_unix_seconds": 1794467100
+  "updated_at_unix_seconds": 1794467215
 }

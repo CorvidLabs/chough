@@ -1,0 +1,52 @@
+--- stdout ---
+
+running 1 test
+test a_session_archived_since_head_is_not_a_rewritten_timeline ... FAILED
+
+failures:
+
+---- a_session_archived_since_head_is_not_a_rewritten_timeline stdout ----
+
+thread 'a_session_archived_since_head_is_not_a_rewritten_timeline' (914771605) panicked at tests/doctor.rs:880:5:
+{
+  "findings": [
+    {
+      "decision": false,
+      "entries": [
+        "t-b3a0a4"
+      ],
+      "fix": "none: restore the Timeline entries from `git show HEAD:.chough/sessions/2026-11-12-alpha/session.md` by hand",
+      "kind": "timeline_rewritten",
+      "status": "found",
+      "target": ".chough/archive/sessions/2026-11-12-alpha.md"
+    },
+    {
+      "decision": false,
+      "fix": "add the missing lines to .gitattributes (`chough init` appends exactly those, changing no line) and commit it",
+      "kind": "merge_drivers",
+      "missing_drivers": [],
+      "missing_lines": [
+        ".chough/bugs/*.md merge=chough-bug",
+        "knowledge/index.md merge=chough-generated",
+        "knowledge/journal/feed.xml merge=chough-generated"
+      ],
+      "status": "found",
+      "target": ".gitattributes"
+    }
+  ],
+  "mode": "report",
+  "schema_version": 1
+}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_session_archived_since_head_is_not_a_rewritten_timeline
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 13 filtered out; finished in 1.11s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/doctor.rs (target/debug/deps/doctor-ce3474a4de923134)
+error: test failed, to rerun pass `--test doctor`

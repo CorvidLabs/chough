@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-an-archived-story-is-no-rewritten-timeline-e2d8ce2bdd5041fccfae4d21",
+  "criteria": [
+    "DRIVE-17",
+    "DRIVE-16",
+    "DRIVE-13"
+  ],
+  "requirements": [
+    "REQ-history-012",
+    "REQ-history-002"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test doctor -- --exact a_session_archived_since_head_is_not_a_rewritten_timeline for TC-history-an-archived-story-is-no-rewritten-timeline: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-an-archived-story-is-no-rewritten-timeline-e2d8ce2bdd5041fccfae4d21.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-an-archived-story-is-no-rewritten-timeline-e2d8ce2bdd5041fccfae4d21.log": "ce3c17fa32ddace98fd531d223b09f6579942ffaee9af41d12c4b4fdc510110f"
+  },
+  "observed_at_unix_seconds": 1794467215,
+  "snapshot": {
+    "revision": "f32abb7663c87268536e9a6970ece97b0e6e2655",
+    "dirty": false,
+    "fingerprint": "34544ca4ed8927521f9e5c8d7d7fa9969fb6ba4f6cc67255d03e3a0b4860557c",
+    "content": "eff4dd5b2cb71f3fd7a00a69476766c719a4a3e2feb8bd907b74d68db7890b65"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-an-archived-story-is-no-rewritten-timeline",
+      "digest": "98da34fb4ef49d626dcc187ba75799597ceb3c2515e00a16e070fbfaea7d50cb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "doctor",
+    "--",
+    "--exact",
+    "a_session_archived_since_head_is_not_a_rewritten_timeline"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}
