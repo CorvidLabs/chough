@@ -1456,7 +1456,16 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         }
         save_checkpoint(root, &mut session)?;
     }
+    // REQ-cli-060 (F9): a gate close recorded the direct writes before its entry, so
+    // the baseline is the records now, the close's own native step included. A failed
+    // baseline write is reported and never undoes the close.
+    let settled = (changed && relayed.is_some())
+        .then(|| crate::direct_writes::settle(root, session.native_change.as_deref()).err())
+        .flatten();
     let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
+    if let Some(error) = settled {
+        output["direct_writes"] = json!({"unknown": error.to_string()});
+    }
     if let Some((gate, relay, _)) = &relayed {
         // A close that ran nothing says why: the step `--no-native` skipped, or that
         // the gate drives none (F12b).

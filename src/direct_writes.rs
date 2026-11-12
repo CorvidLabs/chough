@@ -287,7 +287,7 @@ pub(super) fn next_line(view: &Value) -> Option<String> {
         })
         .collect();
     Some(format!(
-        "Direct lifecycle writes: {} not yet recorded ({}); the next stage move records them",
+        "Direct lifecycle writes: {} not yet recorded ({}); the next stage move or gate close records them",
         pending.len(),
         files.join(", ")
     ))

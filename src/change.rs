@@ -46,8 +46,15 @@ pub(super) enum ChangeCommand {
         question: String,
         answer: String,
     },
-    /// Run `specsync change check <id> --commit`.
-    Check { id: String },
+    /// Run `specsync change check <id> --commit`, or without `--commit` under
+    /// `--no-commit`.
+    Check {
+        id: String,
+        /// Run the check without `--commit`, as the accept step does first to
+        /// materialize requirement text (REQ-cli-057).
+        #[arg(long)]
+        no_commit: bool,
+    },
     /// Run `specsync change status [<id>] --json` within the native read bound.
     Status { id: Option<String> },
     /// Check first, run `specsync change ship <id>`, then close the review gate with its
@@ -130,11 +137,13 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
             ],
             false,
         ),
-        ChangeCommand::Check { id } => (
-            "check",
-            vec!["change".into(), "check".into(), id, "--commit".into()],
-            false,
-        ),
+        ChangeCommand::Check { id, no_commit } => {
+            let mut arguments = vec!["change".to_string(), "check".into(), id];
+            if !no_commit {
+                arguments.push("--commit".into());
+            }
+            ("check", arguments, false)
+        }
         ChangeCommand::Ship(args) => return ship(root, *args),
         ChangeCommand::Status { id } => {
             let mut arguments = vec!["change".to_string(), "status".into()];
