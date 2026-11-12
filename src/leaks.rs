@@ -161,7 +161,7 @@ pub(crate) fn check(local: &Local, field: &str, value: &str) -> Result<()> {
 /// holds this machine's host name as hyphen-separated words: a name becomes a committed
 /// folder or file name, its `id` and its alias, and `--redact` cannot rename it
 /// (REQ-records-006). Every other kind is checked as in any value.
-pub(crate) fn check_name(local: &Local, field: &str, name: &str) -> Result<()> {
+pub(super) fn check_name(local: &Local, field: &str, name: &str) -> Result<()> {
     check(local, field, name)?;
     let words = |text: &str| -> String {
         let mut out = String::from("-");
