@@ -696,15 +696,22 @@ fn check_evidence(evidence: &Evidence<'_>, bug: &Stored, ids: &[String]) -> Resu
                 "unknown evidence {id}: no open session's entry, archived story's receipt or receipt of this bug has that id or alias"
             )
         })?;
-        let session = (linked.label == "entry" && !id.contains('/'))
-            .then(|| linked.place.split_once('/').map(|(session, _)| session))
-            .flatten();
-        stored.push(match session {
-            Some(session) => format!("{session}/{id}"),
-            None => id.clone(),
-        });
+        stored.push(stored_form(id, &linked));
     }
     Ok(stored)
+}
+
+/// How a bug stores a link that resolved to `linked`: an open session's entry named by
+/// a bare ID as `<session>/<id>`, so a later merge that brings a same-named entry in
+/// another session cannot make it ambiguous (REQ-cli-023); anything else as given.
+fn stored_form(id: &str, linked: &Linked) -> String {
+    let session = (linked.label == "entry" && !id.contains('/'))
+        .then(|| linked.place.split_once('/').map(|(session, _)| session))
+        .flatten();
+    match session {
+        Some(session) => format!("{session}/{id}"),
+        None => id.to_string(),
+    }
 }
 
 fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Result<()> {
@@ -1127,21 +1134,32 @@ pub(super) struct Finding<'a> {
 pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<String> {
     crate::sessions::lock_project(root)?;
     let bugs = read_all(root)?;
+    // The failure is linked as bug add links it (REQ-cli-023); one that does not
+    // resolve here is linked as given, so a capture never fails on it.
+    let index = Evidence::new(root);
+    let link_for = |bug: &Stored| match index.find(bug, finding.observation) {
+        Ok(Some(linked)) => stored_form(finding.observation, &linked),
+        _ => finding.observation.to_string(),
+    };
     if let Some(existing) = bugs
         .iter()
         .find(|bug| bug.is_open() && bug.list("cases").iter().any(|case| case == finding.case))
     {
         let mut stored = existing.clone();
         let at = now()?;
+        let link = link_for(&stored);
         let mut evidence = stored.list("evidence");
-        if !evidence.iter().any(|id| id == finding.observation) {
-            evidence.push(finding.observation.to_string());
+        if !evidence
+            .iter()
+            .any(|id| *id == link || id == finding.observation)
+        {
+            evidence.push(link.clone());
         }
         stored.record.set("evidence", Front::List(evidence))?;
         stored.record.set_scalar("updated", &iso_time(at))?;
         let text = format!(
-            "Additional failure from {}; evidence: {}",
-            finding.source, finding.observation
+            "Additional failure from {}; evidence: {link}",
+            finding.source
         );
         stored.record.append_to_section(
             LOG,
@@ -1167,7 +1185,10 @@ pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<Strin
         criteria: finding.criteria,
         requirements: finding.requirements,
         cases: vec![finding.case.into()],
-        evidence: vec![finding.observation.into()],
+        evidence: vec![link_for(&Stored {
+            path: String::new(),
+            record: Record::new(""),
+        })],
         regression_baseline: None,
         fixture: None,
         environment: finding.environment.into(),
