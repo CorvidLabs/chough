@@ -42,6 +42,7 @@ cases:
   - TC-history-story-lists-each-cases-latest-run
   - TC-history-archived-story-says-archived
   - TC-history-start-entry-starts-the-first-segment
+  - TC-cli-next-at-accept-never-passes-on-the-review-command
 design: []
 files: []
 observations:
@@ -217,6 +218,8 @@ observations:
   - 2026-11-12-tc-history-story-lists-each-cases-latest-run-85030a
   - 2026-11-12-tc-history-archived-story-says-archived-cf0feb
   - 2026-11-12-tc-history-start-entry-starts-the-first-segment-f8de74
+  - 2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command
+  - 2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-11d611
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -235,6 +238,7 @@ bugs:
   - 2026-11-12-an-archived-story-keeps-stage-status-active-and-the-session-s
   - 2026-11-12-the-accept-steps-plain-specsync-change-check-is-recorded-as-a
   - 2026-11-12-an-archived-story-s-what-was-verified-lists-superseded-runs
+  - 2026-11-12-at-accept-next-and-status-pass-on-specsync-s-own-review
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -262,6 +266,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - F8's bug link (t38c, REQ-cli-012): red at 9b9bc010, green at 68c7a32a, bug verified; the migrate cases moved to the records module
 - t37f's batch (t38k round 2): F12a, F12e, F12f, Kimi 1, F3, F4, F5, F6; red at 5195bd67, green at cca98758, seven bugs verified
 - t38c's F13 and t38b's F8, Kimi 6, F9 and F11 (t38k round 2, t38h 6): red at 804bdb50, green at 91c3824f, three bugs verified; every item of the second fresh-eyes round integrated
+- Round-3 F1: at accept, next and status never pass on SpecSync's review command (REQ-cli-021); red at 24f9ca8d, green at 5b6a7732, bug verified
 
 ## Decisions and why
 
@@ -450,6 +455,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test sessions -- --exact a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones for TC-history-story-lists-each-cases-latest-run: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-story-lists-each-cases-latest-run-85030a.md)
 - [Ran cargo test --locked --test sessions -- --exact an_archived_story_says_archived_and_keeps_no_next for TC-history-archived-story-says-archived: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-archived-story-says-archived-cf0feb.md)
 - [Ran cargo test --locked --test timing -- --exact init_and_session_new_write_a_start_entry_that_timing_reads for TC-history-start-entry-starts-the-first-segment: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-start-entry-starts-the-first-segment-f8de74.md)
+- [Ran cargo test --locked --test next -- --exact next_at_accept_never_passes_on_specsyncs_review_command for TC-cli-next-at-accept-never-passes-on-the-review-command: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command.md)
+- [Ran cargo test --locked --test next -- --exact next_at_accept_never_passes_on_specsyncs_review_command for TC-cli-next-at-accept-never-passes-on-the-review-command: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-11d611.md)
 
 ## Open threads
 
