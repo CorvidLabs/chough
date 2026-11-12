@@ -718,3 +718,39 @@ expected = ["tests/next.rs::at_test_after_every_case_passed_next_names_stage_adv
 adapter = "cargo-test"
 test_target = "next"
 test = "at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run"
+
+[[case]]
+id = "TC-cli-scope-gate-summary-names-each-delta-first"
+title = "At a scope gate the summary names the change's deltas first, before its other files, each with the requirement IDs it adds or modifies, within 24 lines and 4,096 bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_scope_gate_summary_names_each_delta_first_with_its_requirements passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_scope_gate_summary_names_each_delta_first_with_its_requirements"
+
+[[case]]
+id = "TC-cli-intent-gate-summary-names-the-criteria-and-hi-files"
+title = "At a gate held at intent with no native change, the summary names the criterion IDs the session references and the HI files that hold them in place of what changed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::an_intent_gate_summary_names_the_criteria_and_their_hi_files passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "an_intent_gate_summary_names_the_criteria_and_their_hi_files"
