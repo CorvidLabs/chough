@@ -330,6 +330,8 @@ observations:
   - 2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files
   - 2026-11-12-tc-records-migration-names-skill-update-for-an-outdated-copy-5ce0c9
   - 2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files-e361cf
+  - 2026-11-12-tc-cli-accept-next-reruns-cases-not-current
+  - 2026-11-12-tc-cli-accept-reference-lessons-before-case-runs
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -363,6 +365,7 @@ bugs:
   - 2026-11-12-a-gate-close-s-next-action-outlives-the-stage-move-it-named
   - 2026-11-12-the-scope-gate-summary-ignores-uncommitted-change-files
   - 2026-11-12-after-a-migration-nothing-says-the-project-s-skill-copy-is
+  - 2026-11-12-at-accept-next-routes-to-the-review-gate-past-stale-cases-and
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -679,6 +682,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_counts_uncommitted_and_untracked_change_files for TC-cli-scope-gate-summary-counts-uncommitted-change-files: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files.md)
 - [Ran cargo test --locked --test migrate -- --exact the_migration_follow_ups_name_skill_update_while_the_skill_copy_is_not_current for TC-records-migration-names-skill-update-for-an-outdated-copy: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migration-names-skill-update-for-an-outdated-copy-5ce0c9.md)
 - [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_counts_uncommitted_and_untracked_change_files for TC-cli-scope-gate-summary-counts-uncommitted-change-files: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files-e361cf.md)
+- [Ran cargo test --locked --test next -- --exact at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate for TC-cli-accept-next-reruns-cases-not-current: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-accept-next-reruns-cases-not-current.md)
+- [Ran cargo test --locked --test docs -- --exact the_accept_reference_writes_lessons_before_the_case_runs for TC-cli-accept-reference-lessons-before-case-runs: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs.md)
 
 ## Open threads
 
