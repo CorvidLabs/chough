@@ -46,6 +46,7 @@ cases:
   - TC-history-session-close-records-withdrawn-gates
   - TC-cli-docs-show-a-lessons-dated-form
   - TC-cli-init-claude-host-prints-the-claude-md-line
+  - TC-cli-stage-move-prints-a-short-summary
 design: []
 files: []
 observations:
@@ -230,6 +231,8 @@ observations:
   - 2026-11-12-tc-cli-docs-show-a-lessons-dated-form-3af8bf
   - 2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line-e06091
   - 2026-11-12-tc-cli-stage-move-prints-a-short-summary
+  - 2026-11-12-tc-cli-stage-move-prints-a-short-summary-6637e4
+  - 2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-a94f38
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -281,6 +284,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Round-3 F1: at accept, next and status never pass on SpecSync's review command (REQ-cli-021); red at 24f9ca8d, green at 5b6a7732, bug verified
 - Round-3 F2: session close records the gates it withdraws (REQ-history-006); red at 95ba89c6, green at d2bfc0cb, bug verified
 - Round-3 F3 and F12a (t38c): the dated lesson form documented; init --host claude prints the CLAUDE.md line; red at de7893f8, green at 70468c0a, the F12a bug verified
+- Round-3 F9 (t38c, REQ-cli-008): a stage move prints a short summary and its full JSON under --json; red at fc6ec27a, green at 0ad3ad56; the full suite passed 708 of 708 there
 
 ## Decisions and why
 
@@ -478,6 +482,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test docs -- --exact a_lessons_dated_form_is_documented_and_its_example_counts for TC-cli-docs-show-a-lessons-dated-form: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-lessons-dated-form-3af8bf.md)
 - [Ran cargo test --locked --test optional -- --exact init_with_the_claude_host_prints_the_claude_md_line_and_writes_none for TC-cli-init-claude-host-prints-the-claude-md-line: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-init-claude-host-prints-the-claude-md-line-e06091.md)
 - [Ran cargo test --locked --test stages -- --exact a_stage_move_prints_a_short_summary_and_its_full_report_under_json for TC-cli-stage-move-prints-a-short-summary: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-stage-move-prints-a-short-summary.md)
+- [Ran cargo test --locked --test stages -- --exact a_stage_move_prints_a_short_summary_and_its_full_report_under_json for TC-cli-stage-move-prints-a-short-summary: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-stage-move-prints-a-short-summary-6637e4.md)
+- [Ran cargo test --locked --test next -- --exact next_at_accept_never_passes_on_specsyncs_review_command for TC-cli-next-at-accept-never-passes-on-the-review-command: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-a94f38.md)
 
 ## Open threads
 
