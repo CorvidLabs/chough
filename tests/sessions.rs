@@ -478,6 +478,185 @@ fn session_list_reports_an_archived_story_as_finished() {
     assert_eq!(open["fix"], Value::Null, "{open}");
 }
 
+/// One command case, `TC-cli-0001`, that prints ok.
+const ONE_CASE: &str = "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"It prints ok\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\npaths = [\"src/input.txt\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"it prints ok\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"sh\", \"-c\", \"echo ok\"]\nexpect_output = [\"ok\"]\n";
+
+/// The item lines of a record's What was verified section.
+fn verified_lines(text: &str) -> Vec<String> {
+    let start = text
+        .find("\n## What was verified\n")
+        .unwrap_or_else(|| panic!("no What was verified: {text}"));
+    let section = &text[start + 1..];
+    let section = &section[..section[3..]
+        .find("\n## ")
+        .map_or(section.len(), |at| at + 3)];
+    section
+        .lines()
+        .filter(|line| line.starts_with("- "))
+        .map(String::from)
+        .collect()
+}
+
+/// The front matter lines of a record.
+fn front_lines(text: &str) -> Vec<String> {
+    text.strip_prefix("---\n")
+        .and_then(|rest| rest.split_once("\n---\n"))
+        .unwrap_or_else(|| panic!("no front matter: {text}"))
+        .0
+        .lines()
+        .map(String::from)
+        .collect()
+}
+
+/// Fresh-eyes finding F8 (REQ-history-006): a story's What was verified gives the
+/// latest run of each case and every entry bound to no case, one line each, a command
+/// once, and one line counting the case's earlier runs, which stay in `receipts`.
+#[test]
+fn a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(".chough/cases/cli.cases.toml", ONE_CASE);
+    fixture.init();
+    fixture.commit("start");
+    let mut runs = vec![];
+    for _ in 0..3 {
+        if !runs.is_empty() {
+            // Each run is observed in a later second than the one before it.
+            std::thread::sleep(std::time::Duration::from_millis(1_100));
+        }
+        let ran = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
+        runs.push(
+            ran["observation"]
+                .as_str()
+                .unwrap_or_else(|| panic!("{ran:#}"))
+                .to_string(),
+        );
+    }
+    let added = fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC manual check",
+    ]);
+    let manual = added["observation"]
+        .as_str()
+        .unwrap_or_else(|| panic!("{added:#}"))
+        .to_string();
+    let id = fixture.active_id();
+    fixture.commit("the runs");
+    fixture.ok(&["session", "close", &id, "--reason", "SYNTHETIC finished"]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{id}.md"));
+    let lines = verified_lines(&story);
+    // By the `^<id>` a line ends with: one run's ID can be the start of another's.
+    let naming = |entry: &str| -> Vec<String> {
+        lines
+            .iter()
+            .filter(|line| line.ends_with(&format!("^{entry}")))
+            .cloned()
+            .collect()
+    };
+    let latest = naming(&runs[2]);
+    assert_eq!(latest.len(), 1, "{lines:#?}");
+    assert_eq!(
+        latest[0].matches("sh -c echo ok").count(),
+        1,
+        "the command is repeated: {}",
+        latest[0]
+    );
+    for earlier in &runs[..2] {
+        assert!(naming(earlier).is_empty(), "{earlier} listed: {lines:#?}");
+    }
+    assert_eq!(naming(&manual).len(), 1, "{lines:#?}");
+    assert_eq!(
+        lines
+            .iter()
+            .filter(|line| line.contains("2 earlier runs"))
+            .count(),
+        1,
+        "{lines:#?}"
+    );
+    assert_eq!(lines.len(), 3, "{lines:#?}");
+    for entry in runs.iter().chain([&manual]) {
+        assert!(
+            story.contains(&format!("\n  - id: {entry}\n")),
+            "no receipt for {entry}: {story}"
+        );
+    }
+}
+
+/// Fresh-eyes finding Kimi 6 (REQ-history-006): an archived story's front matter gives
+/// `stage_status: archived` and no `next`, whether it closed at done or without done,
+/// and every reader still reads it.
+#[test]
+fn an_archived_story_says_archived_and_keeps_no_next() {
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    fixture.ok(&[
+        "session",
+        "close",
+        "alpha",
+        "--reason",
+        "superseded by beta",
+    ]);
+    fixture.ok(&["session", "use", "beta"]);
+    advance_to(&fixture, "accept");
+    fixture.ok(&[
+        "checkpoint",
+        "--next-action",
+        "SYNTHETIC: a next action that goes stale at done",
+    ]);
+    let moved = fixture.ok(&["stage", "advance"]);
+    assert_eq!(
+        moved["applied"]["session_archive"]["status"], "archived",
+        "{moved:#}"
+    );
+    for key in ["alpha", "beta"] {
+        let story = fixture.read(&fixture.story_of(key));
+        let front = front_lines(&story);
+        assert!(
+            front.iter().any(|line| line == "stage_status: archived"),
+            "{key}: {front:#?}"
+        );
+        assert!(
+            !front.iter().any(|line| line.starts_with("next:")),
+            "{key}: {front:#?}"
+        );
+    }
+    // Every reader still reads both stories.
+    let list = fixture.ok(&["session", "list"]);
+    let listed = list["sessions"].as_array().unwrap();
+    assert_eq!(listed.len(), 2, "{list:#}");
+    for entry in listed {
+        assert_eq!(entry["status"], "archived", "{entry}");
+        assert!(entry.get("readable").is_none(), "{entry}");
+    }
+    let beta = fixture.id_of("beta");
+    let shown = fixture.ok(&["history", "show"]);
+    assert_eq!(shown["session"], beta.as_str(), "{shown:#}");
+    assert_eq!(shown["archived"], true, "{shown:#}");
+    fixture.ok(&["timing", "--json"]);
+    // The kept, uncommitted session files are findings here; no story is unreadable.
+    let doctor = fixture.run(&["doctor"]);
+    let report = String::from_utf8_lossy(&doctor.stdout);
+    assert!(
+        report.contains("\"findings\"") && !report.contains("unreadable"),
+        "{report}{}",
+        String::from_utf8_lossy(&doctor.stderr)
+    );
+}
+
 /// DRIVE-16: `chough session close <key> --reason` archives abandoned work with the
 /// reason in its decisions and outcome `closed-without-done`; a blank reason, an
 /// archived or missing session and one with unfolded inbox entries refuse unchanged.

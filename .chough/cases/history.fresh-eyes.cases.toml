@@ -93,3 +93,39 @@ expected = ["tests/sessions.rs::session_list_reports_an_archived_story_as_finish
 adapter = "cargo-test"
 test_target = "sessions"
 test = "session_list_reports_an_archived_story_as_finished"
+
+[[case]]
+id = "TC-history-story-lists-each-cases-latest-run"
+title = "A story's What was verified gives each case's latest run and every entry bound to no case, one line each with a command once, and one line counting the earlier runs, which stay in receipts"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones"
+
+[[case]]
+id = "TC-history-archived-story-says-archived"
+title = "An archived story's front matter gives stage_status archived and no next, at done and closed without done, and session list, history show, timing and doctor still read it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-13", "LIFE-3"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "src/checkpoint.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_archived_story_says_archived_and_keeps_no_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_archived_story_says_archived_and_keeps_no_next"
