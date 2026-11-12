@@ -1452,3 +1452,36 @@ fn a_receipt_section_with_nothing_to_list_says_none() {
     }
     assert!(first_line("After").starts_with("- `"), "{receipt}");
 }
+
+/// jackdaw's migration (no contract text): every `session.md` that `chough migrate
+/// --apply` writes ends with exactly one newline, so `git diff --check` passes on the
+/// migration commit. Each open session's Timeline is its last section, and it closed
+/// with a blank line: "new blank line at EOF".
+#[test]
+fn every_migrated_session_md_ends_with_exactly_one_newline() {
+    let fixture = migrate_project("adopted", &[]);
+    let (plan, _) = migrate(&fixture, Some(CONSENT));
+    let sessions: Vec<String> = written(&plan)
+        .into_iter()
+        .filter(|path| path.ends_with("/session.md"))
+        .collect();
+    assert!(!sessions.is_empty(), "{plan:#}");
+    for path in &sessions {
+        let text = fixture.read(path);
+        assert!(
+            text.ends_with('\n') && !text.ends_with("\n\n"),
+            "{path} does not end with exactly one newline:\n{text}"
+        );
+    }
+    fixture.git(&["add", "-A"]);
+    let check = std::process::Command::new("git")
+        .args(["diff", "--cached", "--check"])
+        .current_dir(fixture.root())
+        .output()
+        .unwrap();
+    assert!(
+        check.status.success(),
+        "git diff --check:\n{}",
+        String::from_utf8_lossy(&check.stdout)
+    );
+}
