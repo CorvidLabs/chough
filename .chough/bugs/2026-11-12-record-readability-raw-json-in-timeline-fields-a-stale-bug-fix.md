@@ -17,6 +17,8 @@ evidence:
   - 2026-11-12-release-0-6-0/2026-11-12-tc-history-relay-fields-are-labelled-lines-8fe7da
   - 2026-11-12-release-0-6-0/2026-11-12-tc-history-direct-write-fields-are-labelled-lines-7f8b92
   - 2026-11-12-release-0-6-0/2026-11-12-tc-history-story-receipts-in-time-order-4f9404
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-bug-trigger-and-fix
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-records-receipt-says-none
 receipts: []
 environment: local-macos-arm64
 revision: ee9cae4eeee05e65d7c25f66e3af4b6489636bdc
@@ -26,7 +28,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T16:21:40Z
-updated: 2026-11-12T17:20:19Z
+updated: 2026-11-12T17:46:01Z
 ---
 # Record readability: raw JSON in Timeline fields, a stale bug Fix line, an unlabelled trigger, unordered receipts, and empty receipt sections
 
@@ -46,3 +48,4 @@ Actual: As above
 - 2026-11-12T16:21:40Z · Reported (t38j's fresh-eyes report on 0.6.0 at c208c8a8 (claude-code, hc t38j, a cold full cycle on a scratch Python CLI and a 0.5.0 migration, 2026-11-12), relayed by t370; recorded by t382, not yet reproduced) · by claude-code (hc t382)
 - 2026-11-12T16:48:39Z · status: open -> investigating; scope: in-scope -> blocking; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-history-relay-fields-are-labelled-lines, 2026-11-12-release-0-6-0/2026-11-12-tc-history-direct-write-fields-are-labelled-lines, 2026-11-12-release-0-6-0/2026-11-12-tc-history-story-receipts-in-time-order. Reproduced (Timeline fields and receipt order): red at da98f439, TC-history-relay-fields-are-labelled-lines and TC-history-direct-write-fields-are-labelled-lines failed (relayed_by and direct_write written as JSON), TC-history-story-receipts-in-time-order failed (receipts in name order). The bug's Trigger and Fix and the receipt's none are with t38c. In scope (Leif, 16:26Z, relayed by t370) · by claude-code (hc t382)
 - 2026-11-12T17:20:19Z · status: investigating -> fix-pending-verification; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-history-relay-fields-are-labelled-lines-8fe7da, 2026-11-12-release-0-6-0/2026-11-12-tc-history-direct-write-fields-are-labelled-lines-7f8b92, 2026-11-12-release-0-6-0/2026-11-12-tc-history-story-receipts-in-time-order-4f9404. Green at 56c3f4d3 for the Timeline fields and receipt order. Still to come from t38c: the bug's Trigger and Fix, and none in empty migration-receipt sections · by claude-code (hc t382)
+- 2026-11-12T17:46:01Z · evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-bug-trigger-and-fix, 2026-11-12-release-0-6-0/2026-11-12-tc-records-receipt-says-none. Red at caa29f5e for t38c's two parts: TC-cli-bug-trigger-and-fix (no Trigger label, no --fix, Fix still Not fixed yet after verifying) and TC-records-receipt-says-none (an empty Redactions section had no none) · by claude-code (hc t382)

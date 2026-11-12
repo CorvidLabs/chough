@@ -97,6 +97,9 @@ observations:
   - 2026-11-12-tc-cli-context-reads-agents-md-from-the-git-root-bad891
   - 2026-11-12-tc-cli-status-gives-the-next-action-whole-6c7235
   - 2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action-188881
+  - 2026-11-12-tc-cli-bug-trigger-and-fix
+  - 2026-11-12-tc-records-receipt-says-none
+  - 2026-11-12-tc-records-migrated-session-md-ends-with-one-newline
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -206,6 +209,9 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test subdirectory -- --exact context_reads_agents_md_from_the_git_root_down_only for TC-cli-context-reads-agents-md-from-the-git-root: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-context-reads-agents-md-from-the-git-root-bad891.md)
 - [Ran cargo test --locked --test next -- --exact status_gives_the_next_valid_action_whole for TC-cli-status-gives-the-next-action-whole: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-status-gives-the-next-action-whole-6c7235.md)
 - [Ran cargo test --locked --test humans -- approving_the_scope_gate_replaces_the_next_action_it_left_stale a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage for TC-cli-gate-close-replaces-a-stale-next-action: passed (exit 0).](evidence/2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action-188881.md)
+- [Ran cargo test --locked --test bugs -- a_new_bugs_steps_start_with_the_labelled_trigger bug_update_fix_sets_the_fix_paragraph_and_logs_each_set verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision for TC-cli-bug-trigger-and-fix: failed (exit 101).](evidence/2026-11-12-tc-cli-bug-trigger-and-fix.md)
+- [Ran cargo test --locked --test migrate -- --exact a_receipt_section_with_nothing_to_list_says_none for TC-records-receipt-says-none: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-receipt-says-none.md)
+- [Ran cargo test --locked --test migrate -- --exact every_migrated_session_md_ends_with_exactly_one_newline for TC-records-migrated-session-md-ends-with-one-newline: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migrated-session-md-ends-with-one-newline.md)
 
 ## Open threads
 
