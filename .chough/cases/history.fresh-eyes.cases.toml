@@ -129,3 +129,21 @@ expected = ["tests/sessions.rs::an_archived_story_says_archived_and_keeps_no_nex
 adapter = "cargo-test"
 test_target = "sessions"
 test = "an_archived_story_says_archived_and_keeps_no_next"
+
+[[case]]
+id = "TC-history-start-entry-starts-the-first-segment"
+title = "chough init and chough session new each write one start entry with the starting stage and the objective or key, timing reads it as the start of the first segment, and a timeline without one still reads"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "DRIVE-3"]
+requirements = ["REQ-history-002"]
+paths = ["src/stage.rs", "src/sessions.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::init_and_session_new_write_a_start_entry_that_timing_reads passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "init_and_session_new_write_a_start_entry_that_timing_reads"
