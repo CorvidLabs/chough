@@ -103,26 +103,42 @@ fn lesson_source(root: &Path, module: &str) -> (String, usize) {
     (context, count)
 }
 
-/// Lessons recorded in a `## Lessons` section: entries that start with a date, as a
-/// paragraph or as a list item.
+/// Lessons recorded in a `## Lessons` section: entries that start with a `YYYY-MM-DD`
+/// date followed by a space, comma or colon, as a list item or a paragraph, and
+/// `### YYYY-MM-DD` headings, whose date may stand alone.
 fn dated_lessons(text: &str) -> usize {
     text.lines()
         .skip_while(|line| line.trim_end() != "## Lessons")
         .skip(1)
         .take_while(|line| !line.starts_with("## "))
-        .filter(|line| {
-            let entry = line
-                .strip_prefix("- ")
-                .or_else(|| line.strip_prefix("* "))
-                .unwrap_or(line);
-            let bytes = entry.as_bytes();
-            bytes.len() > 11
-                && bytes[..4].iter().all(u8::is_ascii_digit)
-                && bytes[4] == b'-'
-                && bytes[7] == b'-'
-                && bytes[10] == b','
+        .filter(|line| match line.strip_prefix("### ") {
+            Some(heading) => starts_with_date(heading.trim_end(), true),
+            None => {
+                let entry = line
+                    .strip_prefix("- ")
+                    .or_else(|| line.strip_prefix("* "))
+                    .unwrap_or(line);
+                starts_with_date(entry, false)
+            }
         })
         .count()
+}
+
+/// Whether `text` starts with a `YYYY-MM-DD` date followed by a space, comma or colon;
+/// a heading's date may also end the line.
+fn starts_with_date(text: &str, heading: bool) -> bool {
+    let bytes = text.as_bytes();
+    let dated = bytes.len() >= 10
+        && bytes[..10].iter().enumerate().all(|(at, byte)| match at {
+            4 | 7 => *byte == b'-',
+            _ => byte.is_ascii_digit(),
+        });
+    dated
+        && match bytes.get(10) {
+            None => heading,
+            Some(b' ' | b',' | b':') => true,
+            Some(_) => false,
+        }
 }
 
 /// The title of the archived change in `dir`: the first `# ` heading of its `change.md`
