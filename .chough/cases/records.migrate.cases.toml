@@ -108,3 +108,24 @@ expected = ["tests/migrate.rs::a_receipt_past_the_ordinary_record_bound_applies 
 adapter = "cargo-test"
 test_target = "migrate"
 test = "a_receipt_past_the_ordinary_record_bound_applies"
+
+# The jackdaw dogfood (0.6.0): the preview printed a digest while native changes were
+# open, and only the apply refused.
+
+[[case]]
+id = "TC-records-the-migrate-preview-warns-of-open-changes"
+title = "While a native change is open, chough migrate's preview says that --apply will refuse, naming each open change, and writes nothing; with none open it says nothing of the kind"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::the_preview_names_open_native_changes_that_make_apply_refuse passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "the_preview_names_open_native_changes_that_make_apply_refuse"

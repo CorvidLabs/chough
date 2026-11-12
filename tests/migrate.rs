@@ -1364,3 +1364,34 @@ fn a_pointer_naming_a_migrated_key_still_names_its_session() {
     let report = String::from_utf8_lossy(&output.stdout);
     assert!(!report.contains("stale_pointer"), "{report}");
 }
+
+/// REQ-records-009, TC-records-the-migrate-preview-warns-of-open-changes: while a native
+/// change is open, the preview says up front that `--apply` will refuse, naming it, and
+/// writes nothing; the apply then refuses with `refused:change-open`. With no open change
+/// the preview carries no such warning.
+#[test]
+fn the_preview_names_open_native_changes_that_make_apply_refuse() {
+    let extra = [(
+        ".specsync/changes/open-work/state.json",
+        "{\"id\": \"open-work\", \"state\": \"draft\"}\n",
+    )];
+    let fixture = migrate_project("adopted", &extra);
+    let before = files(fixture.root());
+    let plan = fixture.ok(&["migrate"]);
+    assert_eq!(
+        plan["apply_refused"]["refusal"], "refused:change-open",
+        "{plan:#}"
+    );
+    assert_eq!(
+        plan["apply_refused"]["changes"],
+        serde_json::json!(["open-work"]),
+        "{plan:#}"
+    );
+    assert_eq!(files(fixture.root()), before, "the preview wrote");
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert!(refused.contains("refused:change-open"), "{refused}");
+    std::fs::remove_dir_all(fixture.root().join(".specsync/changes/open-work")).unwrap();
+    let plan = fixture.ok(&["migrate"]);
+    assert!(plan["apply_refused"].is_null(), "{plan:#}");
+}
