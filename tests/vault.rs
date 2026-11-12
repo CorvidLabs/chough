@@ -466,3 +466,124 @@ fn the_lesson_count_reads_every_dated_entry() {
         "{index}"
     );
 }
+
+/// The link targets of `line`, read as a Markdown renderer reads them: a `](` whose `]`
+/// a backslash escapes is text, not a link.
+fn unescaped_targets(line: &str) -> Vec<String> {
+    let bytes = line.as_bytes();
+    let mut targets = vec![];
+    let mut at = 0;
+    while let Some(found) = line[at..].find("](") {
+        let close = at + found;
+        let slashes = bytes[..close]
+            .iter()
+            .rev()
+            .take_while(|byte| **byte == b'\\')
+            .count();
+        if slashes % 2 == 0 {
+            let start = close + 2;
+            let end = line[start..]
+                .find(')')
+                .map_or(line.len(), |end| start + end);
+            targets.push(line[start..end].to_string());
+        }
+        at = close + 2;
+    }
+    targets
+}
+
+/// `text` as a Markdown renderer shows it: a backslash before ASCII punctuation is
+/// dropped and the punctuation kept.
+fn rendered(text: &str) -> String {
+    let mut out = String::new();
+    let mut chars = text.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c == '\\' && chars.peek().is_some_and(char::is_ascii_punctuation) {
+            out.push(chars.next().unwrap_or_default());
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
+
+/// REQ-cli-044, KNOW-14 (BUG-the-knowledge-index-puts-post-bug-and-archive-titles-into-link-text-une-f7c4bba9d926154fd504513d):
+/// a post, bug or archived change title is inert in the index. On its line, the only link
+/// is the record's own, no `<` is left unescaped, so no HTML, and the text a reader sees is
+/// the title itself.
+#[test]
+fn index_titles_are_inert_markdown() {
+    let title = r#"Tags <b> & "quotes" [x](y) ]] `code` back\slash"#;
+    let fixture = Fixture::new();
+    fixture.init();
+    archive(&fixture, 0, "inert");
+    fixture.write(
+        ".specsync/archive/changes/2026-01-01-inert/change.md",
+        "---\nid: inert\nstate: archived\n---\n\n# Archive <script>alert(1)</script> [v](w) title\n",
+    );
+    fixture.write(
+        ".specsync/archive/changes/2026-01-01-inert/lesson-bundle.md",
+        "bundle\n",
+    );
+    fixture.commit("sources");
+    fixture.ok(&[
+        "journal", "add", "--kind", "learned", "--title", title, "--body", "x",
+    ]);
+    fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "Bug <i>title</i> with [z](q) inside",
+        "--symptom",
+        "SYNTHETIC symptom",
+        "--trigger",
+        "SYNTHETIC trigger",
+        "--expected",
+        "SYNTHETIC expected",
+        "--actual",
+        "SYNTHETIC actual",
+        "--environment",
+        "local",
+    ]);
+    fixture.ok(&["library", "index"]);
+    let index = fixture.read("knowledge/index.md");
+    let line_with = |needle: &str| {
+        index
+            .lines()
+            .find(|line| line.contains(needle))
+            .unwrap_or_else(|| panic!("no line with {needle:?} in\n{index}"))
+            .to_string()
+    };
+    let post = line_with("journal/2026-");
+    let bug = line_with(".chough/bugs/");
+    let bundle = line_with("lesson-bundle.md");
+    for (line, own) in [
+        (&post, "journal/"),
+        (&bug, ".chough/bugs/"),
+        (&bundle, "lesson-bundle.md"),
+    ] {
+        let targets = unescaped_targets(line);
+        assert_eq!(targets.len(), 1, "one link on {line:?}: {targets:?}");
+        assert!(targets[0].contains(own), "{line:?}: {targets:?}");
+        let bytes = line.as_bytes();
+        for (at, byte) in bytes.iter().enumerate() {
+            if *byte == b'<' {
+                assert!(at > 0 && bytes[at - 1] == b'\\', "raw HTML on {line:?}");
+            }
+        }
+    }
+    let shown = post
+        .strip_prefix("- [")
+        .and_then(|rest| rest.rsplit_once("](journal/"))
+        .map(|(text, _)| text)
+        .unwrap_or_else(|| panic!("{post:?}"));
+    assert_eq!(rendered(shown), title, "{post:?}");
+    assert!(
+        rendered(&bug).contains("Bug <i>title</i> with [z](q) inside"),
+        "{bug:?}"
+    );
+    assert!(
+        rendered(&bundle).contains("Archive <script>alert(1)</script> [v](w) title"),
+        "{bundle:?}"
+    );
+}
