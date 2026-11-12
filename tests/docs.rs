@@ -1772,3 +1772,35 @@ fn stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design() {
         }
     }
 }
+
+/// Fresh-eyes finding F9 (REQ-cli-057): the accept step's first check, which
+/// materializes requirement text, runs through Chough as `chough change check <id>
+/// --no-commit`, in the skill and in its `.agents` copy, so the steps run as written
+/// record no direct lifecycle write; docs/cli.md names the flag.
+#[test]
+fn the_accept_steps_first_check_runs_through_chough() {
+    for copy in [
+        "skills/chough-workflow/references/accept.md",
+        ".agents/skills/chough-workflow/references/accept.md",
+    ] {
+        let accept = read(copy);
+        let step = accept
+            .lines()
+            .skip_while(|line| !line.starts_with("1. "))
+            .take_while(|line| !line.starts_with("2. "))
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert!(
+            step.contains("`chough change check <id> --no-commit`"),
+            "{copy} step 1 does not run the check through Chough: {step}"
+        );
+        assert!(
+            !step.contains("`specsync change check <id>`"),
+            "{copy} step 1 names the plain SpecSync check: {step}"
+        );
+    }
+    assert!(
+        read("docs/cli.md").contains("chough change check <id> --no-commit"),
+        "docs/cli.md does not name chough change check <id> --no-commit"
+    );
+}
