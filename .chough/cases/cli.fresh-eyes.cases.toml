@@ -259,3 +259,21 @@ expected = ["tests/migrate.rs::a_preview_with_no_0_5_x_record_says_nothing_to_mi
 adapter = "cargo-test"
 test_target = "migrate"
 test = "a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest"
+
+[[case]]
+id = "TC-cli-migration-receipt-has-one-follow-up-heading"
+title = "A migration receipt with two follow-ups has one Follow-up heading holding both"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_receipt_has_one_follow_up_heading_for_every_follow_up passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_receipt_has_one_follow_up_heading_for_every_follow_up"
