@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-gate-summary-says-when-there-is-no-base-c6dd518c1d39631bc2c740da"
+    "OBS-tc-cli-gate-summary-says-when-there-is-no-base-c6dd518c1d39631bc2c740da",
+    "OBS-tc-cli-gate-summary-says-when-there-is-no-base-247dc555ccebbb89715bfec1"
   ],
   "impact": "A reviewer is given a command that fails",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-gate-summary-says-when-there-is-no-base-c6dd518c1d39631bc2c740da"
       ]
+    },
+    {
+      "at_unix_seconds": 1794450633,
+      "text": "status: investigating -> verified. Green at 46a4cb69: TC-cli-gate-summary-says-when-there-is-no-base passed; tests/gates.rs 8 of 8.",
+      "observations": [
+        "OBS-tc-cli-gate-summary-says-when-there-is-no-base-247dc555ccebbb89715bfec1"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794450243,
-  "updated_at_unix_seconds": 1794450606
+  "updated_at_unix_seconds": 1794450633
 }
