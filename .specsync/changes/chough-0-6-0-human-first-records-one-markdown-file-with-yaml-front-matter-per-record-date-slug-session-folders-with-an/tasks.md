@@ -88,6 +88,12 @@ Record both failures with `chough cases run` and link each to a local bug (plain
 - [x] `hi retire` every KNOW criterion #212 marks superseded (KNOW-2, 7, 8, 9, 13, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28 and 29; KNOW-10 and KNOW-11 stay, carried forward by #212 and traced to REQ-records-009), each in the commit that removes its requirements and cases; reword KNOW-24 to the approved wording (every kind of file has a stated rule, finished stories stay for good, working files go when the work finishes, machine-only files are never committed); then `hi index` and `hi check`.
 - [x] Apply plan.md's case map: remove 102 cases with their behaviour, re-link 3, rewrite 71 and port 128, naming the requirement or criterion in each commit; `fledge run cases` passes.
 
+## 10d. The 6.3.0 send-back
+
+- [x] Send the change back to draft on SpecSync 6.3.0 and add `.specsync/config.toml` to its affected paths.
+- [x] Move every SpecSync pin to v6.3.0: CI, the archive scripts, the install remedy, tests, README, AGENTS.md, docs, the config comment and the skill.
+- [x] K1, K2, K6 and Q1 (t37f), and U2, R9, S6 and G1, each a delta and, where code changes, a red test and then the fix.
+
 ## 11. Docs and release preparation
 
 - [x] docs/cli.md, docs/architecture.md, docs/FRD.md, docs/lifecycle.md, docs/walkthrough.md, docs/ci.md (the leak scan and the receipt size bound), docs/integrations.md and docs/FRD.md platform rows (Windows best-effort through WSL), docs/diagrams (regenerate), docs/exercises/handoff-cold-start/seed.sh, README.md, AGENTS.md, CLAUDE.md.

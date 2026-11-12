@@ -84,7 +84,7 @@ digest and does not apply. The release date and the dogfood results are added wh
 - **SpecSync 6.3.0.** Chough 0.6.0 is built and checked with SpecSync 6.3.0. Every
   SpecSync Action step in CI uses the v6.3.0 release commit with `version: '6.3.0'`,
   and the install command, `chough change`'s install remedy, AGENTS.md, the archive
-  scripts and the CI, CLI and integration docs name 6.3.0 (D-023).
+  scripts and the CI, CLI and integration docs name 6.3.0, on Leif's decision.
 - **Evidence lives in its session** (REQ-cli-017, REQ-records-005, REQ-records-013). Each
   observation is one entry in `.chough/sessions/<id>/evidence/` with the exact command,
   a SHA-256 fingerprint and, for a failure, at most 20 key failing lines. A repeated

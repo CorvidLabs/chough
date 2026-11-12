@@ -121,6 +121,18 @@ its own for them.
   that retires its behaviour (REQ-cli-033, 041, 045, 046, 048, 049, 051 and
   REQ-history-001, 004, 008, 011), and tasks.md names each one.
 
+## Test-stage regressions and the 6.3.0 send-back
+
+Each test-stage bug has its own case, red before its fix and green after, in
+`.chough/cases/*.test-stage*.cases.toml`, `cli.knowledge-test-fixes.cases.toml` and
+`*.knowledge-send-back.cases.toml`. The send-back's code items are covered by
+TC-cli-init-sets-up-merge-drivers, TC-cli-init-appends-only-missing-merge-lines,
+TC-cli-doctor-merge-drivers and TC-history-doctor-merge-drivers (K1),
+TC-cli-knowledge-index-bounded-open-bugs (K2), TC-records-journal-posts-record-time
+(Q1), TC-records-the-standing-migration-preference-is-set-before-migrating (U2) and
+TC-history-doctor-reports-an-unreadable-record (R9). On SpecSync 6.3.0 the full suite
+runs again, with each tester's SpecSync-dependent checks.
+
 ## Suites and platforms
 
 - `fledge run fmt`, `fledge run lint`, `fledge run test` (the full suite) on every

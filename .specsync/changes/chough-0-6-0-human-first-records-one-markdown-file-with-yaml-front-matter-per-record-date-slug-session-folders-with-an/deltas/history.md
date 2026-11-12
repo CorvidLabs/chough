@@ -99,7 +99,9 @@ Doctor findings and fixes. `chough doctor` (REQ-cli-055) SHALL find this debt wi
 - `timeline_rewritten`: a session or story whose Timeline at HEAD is not an exact prefix of its working Timeline (REQ-history-002). It has no fix; the finding names the entries that differ.
 - `alias_conflict`: an ID that is the `id` or alias of two records (REQ-records-003). It has no fix; the finding names both records.
 - `oversize`: a committed record, evidence entry or screenshot over its bound (REQ-records-001, REQ-records-005, REQ-records-013). It has no fix; the finding names the file, its size and the bound, and the verify lane's `leaks` step fails on it as it does on `leak`, so CI refuses an oversized receipt.
+- `unreadable`: a committed Chough record under `.chough/` that its reader refuses, such as front matter outside the subset of REQ-records-001, which makes `chough status` and `chough next` refuse the project. It has no fix; the finding names the file and the reader's reason with its line, and names `chough session shelve <id>` for an open session's `session.md`. A record over its bound is `oversize` instead.
 - `records_in_verification`: `.specsync/sdd.json` exists and its `verification_ignored_paths` lacks one of Chough's record folders (REQ-records-014). It has no fix, because Chough never writes SpecSync's policy; the finding names the entries to add.
+- `merge_drivers`: in a Git work tree, a clone whose Git config has no command for `merge.chough-bug.driver` or `merge.chough-generated.driver` (a fresh clone has neither), or whose `.gitattributes` lacks one of the merge lines of REQ-cli-047. It is one finding, naming the missing drivers and lines. The fix SHALL set the missing drivers in the clone's local Git config and SHALL NOT write `.gitattributes`, a committed file a person reviews. A missing line SHALL leave the finding `skipped`, naming the lines to add and `chough init`, which appends exactly those.
 
 The fixes SHALL run in that order. They SHALL never replace a file, and SHALL leave the bytes of every session and story they do not fix unchanged. Trace: DRIVE-17, DRIVE-16, DRIVE-13, DRIVE-3, DRIVE-4, LIFE-26, LIFE-20.
 
@@ -110,6 +112,8 @@ Acceptance Criteria
 - A finished session folder holding an uncommitted file is `unfinished_archive`; `--fix` keeps that file, and after a commit removes the folder.
 - A hand-edited earlier timeline entry reports `timeline_rewritten`, and an alias held by two bugs reports `alias_conflict`, each with no fix applied.
 - Without `--reason`, a stale gate and a session named by `--close` are skipped with their files unchanged; with `--reason` the gate is withdrawn with no human decision recorded and the session is archived, and the named session is closed with the reason.
+- A committed evidence entry whose front matter holds a bare `- -c` block item reports `unreadable` naming the file and the line, and `--fix` leaves it byte-identical and the finding `skipped`.
+- A clone with neither merge driver set reports one `merge_drivers` finding naming `chough doctor --fix`, and `--fix` sets both. A `.gitattributes` missing a merge line is reported naming that line, and `--fix` leaves `.gitattributes` byte-identical and the finding `skipped`.
 
 ### REQUIREMENT REQ-history-013
 

@@ -289,6 +289,29 @@ approval). Until then the approved deltas stay as they are.
    records with one name reads ambiguous, naming its places, and never refuses the
    view (REQ-cli-023's merge criterion).
 
+## The 6.3.0 send-back (2026-11-12)
+
+Leif decided that 0.6.0 ships with SpecSync 6.3.0 ("yes chough 0.6.0 ships with
+spec-sync 6.3.0", relayed by t370), with every pin moved inside this change. On its
+release the change went back to draft, `.specsync/config.toml` joined the affected
+paths, and the test stage's contract fixes joined the deltas:
+
+- The pins: every SpecSync Action step at the v6.3.0 release commit `b87bbd88` with
+  `version: '6.3.0'`, the archive scripts, `chough change`'s install remedy, README,
+  AGENTS.md, docs, `.specsync/config.toml`'s comment and the skill's lifecycle
+  reference.
+- K1 (REQ-cli-047, REQ-history-012): `chough init` declares the merge attributes and
+  sets both merge drivers; `chough doctor` reports a clone without them.
+- K2 (REQ-cli-043): the index lists at most 20 open bugs, blocking first, with the total.
+- K6 (REQ-cli-044): a vault link resolves to a file or a folder.
+- S6 (REQ-cli-012): four bug keys are written only when set.
+- U2 (REQ-records-010): `pref set|unset migration` runs on an unmigrated tree.
+- R9 (REQ-history-012): doctor reports a record its reader refuses as `unreadable`.
+- G1 (REQ-cli-059): a ship refuses only for the active session's open gates; t370's
+  ruling, matching Leif's kept default Q5 and REQ-cli-030.
+- Q1 (REQ-records-011): posts record a UTC `time`, and newest means by time; Leif's
+  decision ("posts should record time... they are time based posts").
+
 ## Risks
 
 - **Scale.** Nearly every source and test file changes. Mitigation: the record layer
