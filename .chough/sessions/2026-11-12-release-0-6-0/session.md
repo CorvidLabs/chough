@@ -57,6 +57,11 @@ observations:
   - 2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships-81b73a
   - 2026-11-12-tc-cli-docs-name-what-cases-run-returns-f3b95c
   - 2026-11-12-tc-records-migration-docs-name-every-key-8f1252
+  - 2026-11-12-tc-cli-next-at-plan-names-the-scope-gate
+  - 2026-11-12-tc-cli-gate-summary-shows-the-scope
+  - 2026-11-12-tc-history-relay-fields-are-labelled-lines
+  - 2026-11-12-tc-history-direct-write-fields-are-labelled-lines
+  - 2026-11-12-tc-history-story-receipts-in-time-order
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -125,6 +130,11 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test changelog -- --exact the_0_6_0_also_list_names_nothing_0_6_0_removed for TC-cli-changelog-0-6-0-names-only-what-ships: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships-81b73a.md)
 - [Ran cargo test --locked --test cases -- --exact the_cli_reference_names_what_cases_run_returns for TC-cli-docs-name-what-cases-run-returns: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-name-what-cases-run-returns-f3b95c.md)
 - [Ran cargo test --locked --test migrate -- --exact the_migration_docs_name_every_key_the_preview_and_apply_print for TC-records-migration-docs-name-every-key: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migration-docs-name-every-key-8f1252.md)
+- [Ran cargo test --locked --test next -- --exact at_plan_next_names_the_scope_gate_and_never_specsyncs_approve for TC-cli-next-at-plan-names-the-scope-gate: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-next-at-plan-names-the-scope-gate.md)
+- [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_names_the_changes_delta_and_plan_first for TC-cli-gate-summary-shows-the-scope: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-gate-summary-shows-the-scope.md)
+- [Ran cargo test --locked --test relay -- --exact a_relayed_decision_is_written_as_labelled_lines_and_reads_back for TC-history-relay-fields-are-labelled-lines: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-relay-fields-are-labelled-lines.md)
+- [Ran cargo test --locked --test direct_writes -- --exact a_direct_write_is_written_as_labelled_lines for TC-history-direct-write-fields-are-labelled-lines: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-direct-write-fields-are-labelled-lines.md)
+- [Ran cargo test --locked --test journal -- --exact a_storys_receipts_are_in_observation_time_order for TC-history-story-receipts-in-time-order: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-story-receipts-in-time-order.md)
 
 ## Open threads
 
