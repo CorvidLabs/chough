@@ -40,6 +40,11 @@ observations:
   - 2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes-1c9708
   - 2026-11-12-tc-records-migrate-from-0-5
   - 2026-11-12-reproduced-the-jackdaw-finding-t38f-on-a-rehearsal-migrated
+  - 2026-11-12-tc-records-journal-post-uses-the-title-and-summary
+  - 2026-11-12-tc-records-journal-post-derives-a-title-and-body
+  - 2026-11-12-tc-records-journal-add-record-backfills-a-story
+  - 2026-11-12-tc-records-doctor-case-temp-paths-are-not-leaks
+  - 2026-11-12-tc-records-journal-and-feed
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -87,6 +92,11 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test migrate -- --exact the_preview_names_open_native_changes_that_make_apply_refuse for TC-records-the-migrate-preview-warns-of-open-changes: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes-1c9708.md)
 - [Ran cargo test --locked --test migrate for TC-records-migrate-from-0-5: passed (exit 0).](evidence/2026-11-12-tc-records-migrate-from-0-5.md)
 - [Reproduced the jackdaw finding (t38f, on a rehearsal-migrated jackdaw tree whose case files set XDG_DATA_HOME under the temporary root, 4 findings) with the 0.6.0 build at 8d310373 in a throwaway project: a committed case file whose command binding sets XDG_DATA_HOME to a path under the temporary root (argv env XDG_DATA_HOME=<tmp>/probe-data true) made chough doctor report a leak finding (match system-path, the case file, line 19) with the fix chough doctor --fix --redact, which would rewrite the case's deliberate test setting and break the case](evidence/2026-11-12-reproduced-the-jackdaw-finding-t38f-on-a-rehearsal-migrated.md)
+- [Ran cargo test --locked --test journal -- --exact the_post_uses_the_title_and_summary_the_agent_set for TC-records-journal-post-uses-the-title-and-summary: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-journal-post-uses-the-title-and-summary.md)
+- [Ran cargo test --locked --test journal -- --exact without_a_title_or_summary_the_post_derives_both_from_the_story for TC-records-journal-post-derives-a-title-and-body: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-journal-post-derives-a-title-and-body.md)
+- [Ran cargo test --locked --test journal -- --exact journal_add_record_backfills_an_archived_story for TC-records-journal-add-record-backfills-a-story: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-journal-add-record-backfills-a-story.md)
+- [Ran cargo test --locked --test doctor -- --exact a_temporary_path_in_a_case_definition_is_not_a_leak for TC-records-doctor-case-temp-paths-are-not-leaks: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-doctor-case-temp-paths-are-not-leaks.md)
+- [Ran cargo test --locked --test journal -- --exact done_writes_a_short_post_and_the_feed_lists_it for TC-records-journal-and-feed: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-journal-and-feed.md)
 
 ## Open threads
 
