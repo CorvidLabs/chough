@@ -1533,7 +1533,7 @@ fn log_transition_at(
                 kind: DIRECT_WRITE.into(),
                 from: from.into(),
                 to: from.into(),
-                reason: None,
+                reason: Some(crate::direct_writes::text(&write)),
                 gate: None,
                 revision: transition.revision.clone(),
                 refresh: vec![],
