@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "BUG-bug-update-observation-by-an-entry-s-alias-stores-the-alias-session-qua-967b8638577e657a1250058a",
+  "title": "bug update --observation by an entry's alias stores the alias session-qualified instead of the entry's canonical ID",
+  "symptom": "evidence holds <session>/<alias>, while --related stores the canonical bug ID",
+  "trigger": "chough bug update --observation <alias of an open session's entry>",
+  "expected": "The link stores <session>/<id>, so it survives an alias being dropped",
+  "actual": "The alias is stored",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-012"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "81d2bf8c3bc2a1705e67113cb95c14ce0a3b4c59",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "Fixing an alias conflict doctor reported breaks the bug's evidence link",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t38b, test stage, area records",
+  "notes": [],
+  "created_at_unix_seconds": 1794448165,
+  "updated_at_unix_seconds": 1794448165
+}

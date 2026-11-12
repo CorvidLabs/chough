@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "BUG-the-standing-migration-preference-cannot-be-set-by-any-chough-command-b-a114304b2d48780c3b644360",
+  "title": "The standing migration preference cannot be set by any Chough command before the first migration",
+  "symptom": "On a committed 0.5.0 project, chough pref set migration standing is refused as refused:unmigrated by 0.6.0 and unknown to 0.5.0; only a hand edit of .chough/preferences.json works",
+  "trigger": "Follow docs/cli.md's standing-preference route to migrate a 0.5.x tree",
+  "expected": "The documented route works before the first migration (REQ-records-009 offers it as an alternative to --consent)",
+  "actual": "REQ-records-010 refuses every command but migrate, doctor, skill, --help and --version on an unmigrated tree",
+  "criteria": [],
+  "requirements": [
+    "REQ-records-009",
+    "REQ-records-010"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "81d2bf8c3bc2a1705e67113cb95c14ce0a3b4c59",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "The standing route is documented but unreachable without a hand edit",
+  "classification": "requirement-gap",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t384, test stage, area upgrade",
+  "notes": [],
+  "created_at_unix_seconds": 1794447937,
+  "updated_at_unix_seconds": 1794447937
+}
