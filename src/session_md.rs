@@ -92,10 +92,12 @@ pub(super) struct Entry {
 }
 
 /// The body of a new session: the story's parts in order, the Goal from the objective.
+/// It ends at the Timeline heading's own newline: entries join it with one blank line
+/// between, and the file ends with exactly one newline, so `git diff --check` passes.
 pub(super) fn new_body(objective: &str) -> String {
     let title = one_line(objective);
     format!(
-        "# {title}\n\n## {GOAL}\n\n{title}\n\n## {STANDS}\n\n## {DECISIONS}\n\n## {VERIFIED}\n\n## {THREADS}\n\n## {TIMELINE}\n\n"
+        "# {title}\n\n## {GOAL}\n\n{title}\n\n## {STANDS}\n\n## {DECISIONS}\n\n## {VERIFIED}\n\n## {THREADS}\n\n## {TIMELINE}\n"
     )
 }
 
