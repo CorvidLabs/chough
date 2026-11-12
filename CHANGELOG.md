@@ -26,9 +26,17 @@ before and after, and CI's archive authentication passed over the migrated tree.
 release preparation then ran as one native change on the 0.6.0 build only: its scope
 approval and its review ran through Chough's gates as the human, the move into done
 wrote the story, the journal post and the index while every earlier story stayed
-byte-identical, and `chough doctor` was clean after the two-step closeout. It found
-and fixed one bug: an in-place migration kept the machine-local active-session
-pointer holding a 0.5.x session key, which now resolves through the session's alias.
+byte-identical, and `chough doctor` was clean after the two-step closeout. The
+dogfood found three bugs, each fixed before the tag with a red then green case: an
+in-place migration kept the machine-local active-session pointer holding a 0.5.x
+session key, which now resolves through the session's alias (REQ-history-006); a gate
+summary's "What changed" counted a second change on one branch from the merge base
+with main, including the first change's work, and now counts from the change's own
+`base_commit`, using the merge base only when default-branch work came in after that
+base or no base is recorded (REQ-cli-061); and `chough migrate`'s preview, tried on a
+project with open native changes, printed a digest without saying the apply would
+refuse, and now names each open change under `apply_refused`, outside the digest
+(REQ-records-009).
 A 0.5.x build on a migrated tree sees no open session and refuses `bug list` at the
 first Markdown bug; a 0.5.x write, such as `session new`, adds a 0.5.x file, after
 which 0.6.0 refuses the tree as `refused:unmigrated` naming that file. So upgrade every

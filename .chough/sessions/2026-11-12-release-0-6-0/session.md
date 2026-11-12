@@ -37,6 +37,8 @@ observations:
   - 2026-11-12-tc-cli-190-gate-summary-counts-the-change
   - 2026-11-12-tc-cli-gate-summary-says-when-there-is-no-base
   - 2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes
+  - 2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes-1c9708
+  - 2026-11-12-tc-records-migrate-from-0-5
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -80,6 +82,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test gates -- --exact gate_summary_counts_only_the_changes_own_files for TC-cli-190-gate-summary-counts-the-change: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-190-gate-summary-counts-the-change.md)
 - [Ran cargo test --locked --test gates -- --exact a_summary_with_no_base_says_so_instead_of_a_broken_diff_command for TC-cli-gate-summary-says-when-there-is-no-base: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-gate-summary-says-when-there-is-no-base.md)
 - [Ran cargo test --locked --test migrate -- --exact the_preview_names_open_native_changes_that_make_apply_refuse for TC-records-the-migrate-preview-warns-of-open-changes: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes.md)
+- [Ran cargo test --locked --test migrate -- --exact the_preview_names_open_native_changes_that_make_apply_refuse for TC-records-the-migrate-preview-warns-of-open-changes: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes-1c9708.md)
+- [Ran cargo test --locked --test migrate for TC-records-migrate-from-0-5: passed (exit 0).](evidence/2026-11-12-tc-records-migrate-from-0-5.md)
 
 ## Open threads
 

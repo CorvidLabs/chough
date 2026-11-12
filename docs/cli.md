@@ -856,7 +856,10 @@ resolve to its story's receipts.
 - `gaps`: what carried records held that their entries or receipts do not, one counted
   line per field, which the receipt lists under Not carried;
 - `unaccounted`, `aliases` (old ID to new), `follow_ups` and `git_history`;
-- `plan_digest`, the plan's SHA-256, and the exact apply command.
+- `plan_digest`, the plan's SHA-256, and the exact apply command;
+- `apply_refused`, only while a native change in the project is not archived: the
+  refusal `refused:change-open` that `--apply` would give, each open change by name
+  and why. It is not part of the digest.
 
 `chough migrate --apply <digest> --consent "<who consented, their words and where>"`
 applies exactly that plan. Run the preview and the apply on the same machine and
