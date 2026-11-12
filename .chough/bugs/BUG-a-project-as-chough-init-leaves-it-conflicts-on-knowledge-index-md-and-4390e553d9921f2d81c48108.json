@@ -15,16 +15,42 @@
   "revision": "d854ce1ac06a195e0c81d2aaf22d61bd64e2c556",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-init-sets-up-merge-drivers-c80aae4f9ae0fc0fd1582321",
+    "OBS-tc-cli-init-appends-only-missing-merge-lines-d913104da5e7419d149c5f81",
+    "OBS-tc-cli-doctor-merge-drivers-94c47290140fd3dc5794d767"
+  ],
   "impact": "Every project that finishes sessions on two branches hits the conflict",
   "classification": "requirement-gap",
   "scope": "blocking",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37f, test stage, area knowledge",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794466653,
+      "text": "status: open -> investigating. Red at 6ee5ec37 (TC-cli-init-sets-up-merge-drivers, before its fix, SpecSync 6.3.0 on PATH): failed for this bug's reason; fix in 78f9a77b.",
+      "observations": [
+        "OBS-tc-cli-init-sets-up-merge-drivers-c80aae4f9ae0fc0fd1582321"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794466653,
+      "text": "Red at 6ee5ec37 (TC-cli-init-appends-only-missing-merge-lines, before its fix, SpecSync 6.3.0 on PATH): failed for this bug's reason; fix in 78f9a77b.",
+      "observations": [
+        "OBS-tc-cli-init-appends-only-missing-merge-lines-d913104da5e7419d149c5f81"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794466654,
+      "text": "Red at 6ee5ec37 (TC-cli-doctor-merge-drivers, before its fix, SpecSync 6.3.0 on PATH): failed for this bug's reason; fix in 78f9a77b.",
+      "observations": [
+        "OBS-tc-cli-doctor-merge-drivers-94c47290140fd3dc5794d767"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794447528
+  "updated_at_unix_seconds": 1794466654
 }

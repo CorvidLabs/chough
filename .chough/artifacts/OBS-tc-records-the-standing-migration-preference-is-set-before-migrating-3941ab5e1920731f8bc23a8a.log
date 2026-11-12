@@ -1,0 +1,25 @@
+--- stdout ---
+
+running 1 test
+test the_standing_migration_preference_is_set_before_the_first_migration ... FAILED
+
+failures:
+
+---- the_standing_migration_preference_is_set_before_the_first_migration stdout ----
+
+thread 'the_standing_migration_preference_is_set_before_the_first_migration' (914146469) panicked at tests/common/mod.rs:154:9:
+["pref", "set", "migration", "standing", "--source", "SYNTHETIC-human said migrate whenever it is ready (fixture)"] failed: Error: refused:unmigrated: this project uses the Chough 0.5.x layout (.chough/history/cycles/CYC-35b47ded993bd490850611ba/EVT-4edf61033f58689200e93314.json, .chough/history/cycles/CYC-42680cc9b00fa16e09f7b1a5/EVT-0cdfd4d090ee4a3389ad309f.json, .chough/history/cycles/CYC-42680cc9b00fa16e09f7b1a5/EVT-da5fff4240599edcb3d6502e.json, .chough/history/cycles/CYC-5a72dc37cbbdb146702c0e2a/EVT-ce87b276f18c71b7feab3cfb.json, .chough/history/cycles/CYC-621399035e1dfe1261b5ce4a/EVT-188a807240ab4176f0ec460e.json and 20 more), so nothing was written. Run `chough migrate` to preview the conversion, then `chough migrate --apply <digest>` to convert.
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    the_standing_migration_preference_is_set_before_the_first_migration
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 15 filtered out; finished in 0.69s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/migrate.rs (target/debug/deps/migrate-8dcd447271613cc0)
+error: test failed, to rerun pass `--test migrate`

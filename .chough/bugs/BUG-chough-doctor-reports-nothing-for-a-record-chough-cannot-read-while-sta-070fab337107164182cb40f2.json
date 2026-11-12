@@ -15,16 +15,26 @@
   "revision": "e71b11b32167cad7ff8e298f9eff04a13069c3eb",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-history-doctor-reports-an-unreadable-record-9ec8b51fd182a0bc22682785"
+  ],
   "impact": "An agent told to run doctor sees a clean project that cannot be read",
   "classification": "requirement-gap",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t38b, test stage, area records (R4 retest)",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794466653,
+      "text": "status: open -> investigating. Red at 2a93de1e (TC-history-doctor-reports-an-unreadable-record, before its fix, SpecSync 6.3.0 on PATH): failed for this bug's reason; fix in 64db6bf8.",
+      "observations": [
+        "OBS-tc-history-doctor-reports-an-unreadable-record-9ec8b51fd182a0bc22682785"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794449975,
-  "updated_at_unix_seconds": 1794449975
+  "updated_at_unix_seconds": 1794466653
 }

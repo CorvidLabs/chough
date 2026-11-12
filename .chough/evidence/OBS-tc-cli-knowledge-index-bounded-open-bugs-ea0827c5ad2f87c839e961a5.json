@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-knowledge-index-bounded-open-bugs-ea0827c5ad2f87c839e961a5",
+  "criteria": [
+    "KNOW-12"
+  ],
+  "requirements": [
+    "REQ-cli-043"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test vault -- --exact the_index_lists_at_most_twenty_open_bugs_blocking_first_then_newest for TC-cli-knowledge-index-bounded-open-bugs: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-knowledge-index-bounded-open-bugs-ea0827c5ad2f87c839e961a5.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-knowledge-index-bounded-open-bugs-ea0827c5ad2f87c839e961a5.log": "d88a28be0df1175fda5107fd39b71c903d85868ed31beb11b49963029d386821"
+  },
+  "observed_at_unix_seconds": 1794466632,
+  "snapshot": {
+    "revision": "3d45f137d8ca45912b33f2492362b4539bd21b56",
+    "dirty": false,
+    "fingerprint": "90b7770f10a07e831adb79d70884e7ab4c4497b6c07856e73373b4b583eb2e13",
+    "content": "5d380164742d95eb5e2bdb7923ef31940a39119a904ebd6bb55233c92911d63d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-knowledge-index-bounded-open-bugs",
+      "digest": "3cfa031e4847dba90e508ba9a9f6e6b87c24c88e6eb45d6e222ce0ac0b8a23bb"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "vault",
+    "--",
+    "--exact",
+    "the_index_lists_at_most_twenty_open_bugs_blocking_first_then_newest"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test result: ok. 1 passed\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

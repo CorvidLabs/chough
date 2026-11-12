@@ -15,16 +15,26 @@
   "revision": "d854ce1ac06a195e0c81d2aaf22d61bd64e2c556",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-knowledge-index-bounded-open-bugs-ea0827c5ad2f87c839e961a5"
+  ],
   "impact": "Large backlogs, such as spec-sync's, lose the index and fail the verify lane",
   "classification": "requirement-gap",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37f, test stage, area knowledge",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794466654,
+      "text": "status: open -> investigating. Red at 3d45f137 (TC-cli-knowledge-index-bounded-open-bugs, before its fix, SpecSync 6.3.0 on PATH): failed for this bug's reason; fix in 9c6f7552.",
+      "observations": [
+        "OBS-tc-cli-knowledge-index-bounded-open-bugs-ea0827c5ad2f87c839e961a5"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794447528
+  "updated_at_unix_seconds": 1794466654
 }

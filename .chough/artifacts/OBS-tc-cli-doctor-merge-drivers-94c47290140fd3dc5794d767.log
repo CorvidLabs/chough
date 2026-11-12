@@ -1,0 +1,30 @@
+--- stdout ---
+
+running 1 test
+test doctor_reports_missing_merge_drivers_and_fix_sets_them ... FAILED
+
+failures:
+
+---- doctor_reports_missing_merge_drivers_and_fix_sets_them stdout ----
+
+thread 'doctor_reports_missing_merge_drivers_and_fix_sets_them' (914164810) panicked at tests/doctor.rs:726:5:
+assertion `left == right` failed: {
+  "findings": [],
+  "mode": "report",
+  "schema_version": 1
+}
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    doctor_reports_missing_merge_drivers_and_fix_sets_them
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.70s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running tests/doctor.rs (target/debug/deps/doctor-ce3474a4de923134)
+error: test failed, to rerun pass `--test doctor`

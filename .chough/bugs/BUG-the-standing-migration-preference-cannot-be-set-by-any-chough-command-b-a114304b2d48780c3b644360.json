@@ -16,16 +16,26 @@
   "revision": "81d2bf8c3bc2a1705e67113cb95c14ce0a3b4c59",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-records-the-standing-migration-preference-is-set-before-migrating-3941ab5e1920731f8bc23a8a"
+  ],
   "impact": "The standing route is documented but unreachable without a hand edit",
   "classification": "requirement-gap",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t384, test stage, area upgrade",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794466653,
+      "text": "status: open -> investigating. Red at 591f61b5 (TC-records-the-standing-migration-preference-is-set-before-migrating, before its fix, SpecSync 6.3.0 on PATH): failed for this bug's reason; fix in d6d7eeba.",
+      "observations": [
+        "OBS-tc-records-the-standing-migration-preference-is-set-before-migrating-3941ab5e1920731f8bc23a8a"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447937,
-  "updated_at_unix_seconds": 1794447937
+  "updated_at_unix_seconds": 1794466653
 }
