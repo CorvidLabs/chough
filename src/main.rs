@@ -233,7 +233,7 @@ fn main() -> Result<()> {
         } => init(&root, objective, session, intent_scope, modules, hosts)?,
         Commands::Context { json: as_json } => {
             let session = read_session(&root)?;
-            let sections = context::context(&root, &session)?;
+            let sections = context::context(&root, &session, as_json)?;
             if as_json {
                 let session_value = session.to_value()?;
                 print_json(

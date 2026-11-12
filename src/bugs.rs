@@ -1796,8 +1796,34 @@ pub(super) fn open_blocking(root: &Path) -> Result<Vec<String>> {
         .collect())
 }
 
-pub(super) fn open_backlog_section(root: &Path) -> Result<Section> {
+pub(super) fn open_backlog_section(root: &Path, as_json: bool) -> Result<Section> {
     let open = open_backlog(root)?;
+    // REQ-cli-002 (F10d): as JSON for `--json`, otherwise one Markdown item per bug.
+    let content = if as_json {
+        serde_json::to_string_pretty(&open)?
+    } else if open.is_empty() {
+        "none".to_string()
+    } else {
+        let text = |value: &Value| {
+            value
+                .as_str()
+                .map_or_else(|| value.to_string(), str::to_string)
+        };
+        open.iter()
+            .map(|bug| {
+                format!(
+                    "- {}: {} ({}; {}; {}; verification {})",
+                    text(&bug["id"]),
+                    text(&bug["title"]),
+                    text(&bug["status"]),
+                    text(&bug["scope"]),
+                    text(&bug["classification"]),
+                    text(&bug["verification"])
+                )
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
     Ok(Section {
         source: format!("{BUGS_DIR} (open backlog)"),
         state: if open.is_empty() {
@@ -1805,7 +1831,7 @@ pub(super) fn open_backlog_section(root: &Path) -> Result<Section> {
         } else {
             "present".into()
         },
-        content: serde_json::to_string_pretty(&open)?,
+        content,
     })
 }
 
