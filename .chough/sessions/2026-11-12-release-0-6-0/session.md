@@ -29,6 +29,8 @@ observations:
   - 2026-11-12-tc-cli-vault-snapshots-and-briefs-stay
   - 2026-11-12-tc-records-tree-and-readme
   - 2026-11-12-the-know-gap-list-216-is-empty-computed-from-hi-knowledge-md
+  - 2026-11-12-tc-cli-empty-change-dir-not-open
+  - 2026-11-12-tc-cli-empty-change-dir-not-open-483046
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -62,6 +64,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test vault -- --exact snapshots_and_briefs_stay_as_they_are_and_snapshot_and_archive_are_gone for TC-cli-vault-snapshots-and-briefs-stay: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-vault-snapshots-and-briefs-stay.md)
 - [Ran cargo test --locked --test records -- --exact the_tree_holds_only_the_listed_paths for TC-records-tree-and-readme: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-tree-and-readme.md)
 - [The KNOW gap list (#216) is empty: computed from hi/knowledge.md and the recorded evidence (stories, bugs and this session's entries), all 17 live KNOW criteria have an active case whose latest receipt passed, and all 18 retired ones show as retired](evidence/2026-11-12-the-know-gap-list-216-is-empty-computed-from-hi-knowledge-md.md)
+- [Red for #148: #157's regression test, applied to the code just before #157 (8f620c39, the first parent of its merge b0fa5b3d), fails: an empty change directory left by a branch switch counts as an open native change](evidence/2026-11-12-tc-cli-empty-change-dir-not-open.md)
+- [Ran cargo test --locked --test evidence -- --exact an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change for TC-cli-empty-change-dir-not-open: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-empty-change-dir-not-open-483046.md)
 
 ## Open threads
 
