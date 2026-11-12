@@ -158,6 +158,34 @@ fn chough_change_steps_are_not_flagged_but_an_earlier_direct_write_is() {
     assert_eq!(found[0]["direct_write"]["before_state"], "verifying");
 }
 
+/// The fresh-eyes finding on plain `specsync change check`: the docs name it for
+/// materializing an approved delta without committing, and the direct write it leaves
+/// is recorded with text that says what changed, never as an empty Timeline entry.
+#[test]
+fn a_direct_write_entry_says_what_changed_outside_chough() {
+    let fixture = project();
+    iterate(&fixture, "first sight");
+    // The plain check, run with `specsync` as the docs say, not through Chough.
+    let checked = std::process::Command::new(fixture.root().join("bin/specsync"))
+        .args(["change", "check", ID])
+        .current_dir(fixture.root())
+        .output()
+        .unwrap();
+    assert!(checked.status.success());
+    iterate(&fixture, "after a plain check");
+    let found = direct_writes(&fixture);
+    assert_eq!(found.len(), 1, "{found:#?}");
+    let text = "d1's lifecycle records changed outside Chough: state.json changed, verification.json added; state approved → verifying";
+    assert_eq!(found[0]["reason"], text, "{found:#?}");
+    let session = fixture.read(&fixture.session_file());
+    assert!(
+        session.contains(&format!(
+            " · direct-native-write · intent → intent · {text} ^"
+        )),
+        "{session}"
+    );
+}
+
 #[test]
 fn first_sight_sets_a_baseline_and_flags_nothing() {
     let fixture = project();
