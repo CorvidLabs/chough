@@ -57,6 +57,8 @@ const WHY: &str = "Why it matters";
 const FIX: &str = "Fix";
 /// The second line of What happened, when the actual behaviour differs from the symptom.
 const ACTUAL: &str = "Actual: ";
+/// The label of Steps' first line, the trigger, before the numbered steps (REQ-cli-012).
+const TRIGGER: &str = "Trigger: ";
 /// The append-only section: one dated entry per report, note, evidence link and status
 /// change.
 const LOG: &str = "Log";
@@ -133,11 +135,13 @@ impl Stored {
             .map_or_else(|| self.symptom(), str::to_string)
     }
 
-    /// The trigger: Steps without its numbered lines.
+    /// The trigger: Steps without its numbered lines and its `Trigger:` label, which a
+    /// bug written before the label has not got.
     fn trigger(&self) -> String {
         self.paragraph(STEPS)
             .lines()
             .filter(|line| numbered(line).is_none())
+            .map(|line| line.strip_prefix(TRIGGER).unwrap_or(line))
             .collect::<Vec<_>>()
             .join(" ")
     }
@@ -213,6 +217,46 @@ fn paragraph(body: &str, label: &str) -> Option<String> {
 /// matter value each keep one value on its lines.
 fn one_line(text: &str) -> String {
     text.replace("\r\n", " ").replace(['\n', '\r'], " ")
+}
+
+/// `record` with the write-up paragraph that starts `**<label>:**` replaced by `text` on
+/// one line, every other byte kept; a record without that paragraph above `## Log` is
+/// refused, naming `file`.
+fn with_paragraph(file: &str, record: &Record, label: &str, text: &str) -> Result<Record> {
+    let rendered = record.render();
+    let body = record.body();
+    let front = &rendered[..rendered.len() - body.len()];
+    let marker = format!("**{label}:**");
+    let mut span = None;
+    let mut offset = 0;
+    for line in body.split_inclusive('\n') {
+        let content = line.trim_end_matches('\n');
+        match span {
+            None if content.trim_end() == format!("## {LOG}") => break,
+            None if content.starts_with(&marker) => span = Some((offset, body.len())),
+            Some((start, _)) if content.trim().is_empty() || content.starts_with('#') => {
+                span = Some((start, offset));
+                break;
+            }
+            _ => {}
+        }
+        offset += line.len();
+    }
+    let Some((start, end)) = span else {
+        bail!("{file}: no **{label}:** paragraph above ## {LOG} to replace");
+    };
+    let newline = if body[start..end].ends_with('\n') {
+        "\n"
+    } else {
+        ""
+    };
+    let replaced = format!(
+        "{front}{}{marker} {}{newline}{}",
+        &body[..start],
+        one_line(text),
+        &body[end..]
+    );
+    markdown::parse(file, &replaced)
 }
 
 /// A hint for a value that belongs to the other of `--scope` and `--classification`.
@@ -566,6 +610,28 @@ impl<'a> Evidence<'a> {
         Ok(Some((id.clone(), Some(latest), passed_after)))
     }
 
+    /// The pass that verifies the bug: the latest present linked pass observed strictly
+    /// after the latest linked failure, as the bug links it, with its revision.
+    fn verifying_pass(&self, bug: &Stored) -> Result<Option<(String, Option<String>)>> {
+        let present = self.present(bug)?;
+        let Some(latest) = present
+            .iter()
+            .filter(|(_, linked)| linked.is("failed"))
+            .filter_map(|(_, linked)| linked.observed)
+            .max()
+        else {
+            return Ok(None);
+        };
+        Ok(present
+            .iter()
+            .filter_map(|(id, linked)| {
+                let observed = linked.observed?;
+                (linked.is("passed") && observed > latest).then_some((observed, id, linked))
+            })
+            .max_by(|left, right| left.0.cmp(&right.0).then(left.1.cmp(right.1)))
+            .map(|(_, id, linked)| (id.clone(), linked.revision.clone())))
+    }
+
     /// Unverified until a failure is linked; reproduced and later passed only when a
     /// pass was observed strictly after the latest failure (REQ-cli-012).
     fn verification(&self, bug: &Stored) -> Result<&'static str> {
@@ -858,7 +924,7 @@ fn write_up(draft: &Draft, fix: &str) -> String {
     if draft.actual.trim() != draft.symptom.trim() {
         what.push_str(&format!("\n{ACTUAL}{}", one_line(&draft.actual)));
     }
-    let mut steps = format!("**{STEPS}:** {}", one_line(&draft.trigger));
+    let mut steps = format!("**{STEPS}:** {TRIGGER}{}", one_line(&draft.trigger));
     for (index, step) in draft.steps.iter().enumerate() {
         steps.push_str(&format!("\n{}. {}", index + 1, one_line(step)));
     }
@@ -1098,6 +1164,10 @@ pub(super) struct UpdateArgs {
     /// A related bug (repeatable).
     #[arg(long = "related")]
     related: Vec<String>,
+    /// The fix, replacing the bug's Fix paragraph (`Not fixed yet.` until set); each
+    /// set is logged.
+    #[arg(long, allow_hyphen_values = true)]
+    fix: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -1335,6 +1405,10 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     if let Some(note) = &args.note {
         ensure_text("note", note)?;
     }
+    if let Some(fix) = &args.fix {
+        ensure_text("fix", fix)?;
+    }
+    let was_verified = stored.status() == "verified";
     let evidence = Evidence::new(root);
     let links = check_evidence(&evidence, &stored, &args.observations)?;
     for (field, value) in [
@@ -1403,6 +1477,10 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     if !added.is_empty() {
         changes.push(format!("evidence: {}", added.join(", ")));
     }
+    if let Some(fix) = &args.fix {
+        stored.record = with_paragraph(&stored.path, &stored.record, FIX, fix)?;
+        changes.push(format!("fix: {}", one_line(fix)));
+    }
     if stored.status() == "verified" {
         match evidence.order(&stored)? {
             None => bail!(
@@ -1415,7 +1493,19 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
                 "verified needs a linked passed observation after the fix, observed after the latest linked failure {failure} (observed {}): link a later pass with `chough bug update {id} --observation <id>`",
                 iso_time(observed)
             ),
-            Some((_, _, true)) => {}
+            Some((_, _, true)) => {
+                // A bug marked verified with no Fix set names what verified it.
+                if !was_verified
+                    && stored.paragraph(FIX) == NOT_FIXED
+                    && let Some((pass, revision)) = evidence.verifying_pass(&stored)?
+                {
+                    let line = match revision {
+                        Some(revision) => format!("Verified: {pass} passed at {revision}."),
+                        None => format!("Verified: {pass} passed; it records no revision."),
+                    };
+                    stored.record = with_paragraph(&stored.path, &stored.record, FIX, &line)?;
+                }
+            }
         }
     }
     check_regression(&evidence, root, &stored)?;
