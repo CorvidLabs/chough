@@ -31,6 +31,7 @@ observations:
   - 2026-11-12-the-know-gap-list-216-is-empty-computed-from-hi-knowledge-md
   - 2026-11-12-tc-cli-empty-change-dir-not-open
   - 2026-11-12-tc-cli-empty-change-dir-not-open-483046
+  - 2026-11-12-dogfood-check-the-0-5-0-build-on-a-clone-of-the-migrated-tree
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -66,6 +67,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [The KNOW gap list (#216) is empty: computed from hi/knowledge.md and the recorded evidence (stories, bugs and this session's entries), all 17 live KNOW criteria have an active case whose latest receipt passed, and all 18 retired ones show as retired](evidence/2026-11-12-the-know-gap-list-216-is-empty-computed-from-hi-knowledge-md.md)
 - [Red for #148: #157's regression test, applied to the code just before #157 (8f620c39, the first parent of its merge b0fa5b3d), fails: an empty change directory left by a branch switch counts as an open native change](evidence/2026-11-12-tc-cli-empty-change-dir-not-open.md)
 - [Ran cargo test --locked --test evidence -- --exact an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change for TC-cli-empty-change-dir-not-open: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-empty-change-dir-not-open-483046.md)
+- [Dogfood check: the 0.5.0 build on a clone of the migrated tree reports no open session, refuses bug list at the first Markdown bug and writes nothing for those reads; its session new writes a 0.5.x session file, after which the 0.6.0 build refuses the tree as refused:unmigrated naming that file](evidence/2026-11-12-dogfood-check-the-0-5-0-build-on-a-clone-of-the-migrated-tree.md)
 
 ## Open threads
 
