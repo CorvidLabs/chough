@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "reporting"
+
+# The third fresh-eyes round (t38m, 2026-11-12), fixed on leif/0.6.0-r4-t37f.
+
+[[case]]
+id = "TC-reporting-timing-starts-cycle-1-at-the-start-entry"
+title = "With the session's start entry, timing starts Cycle 1 at it and holds intent there, not before the first record, and the text says elapsed wall-clock once while the JSON keeps each label"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["both timing tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "timing", "--", "timing_starts_cycle_1_at_the_start_entry_and_says_elapsed_wall_clock_once", "init_and_session_new_write_a_start_entry_that_timing_reads"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600

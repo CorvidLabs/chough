@@ -2445,8 +2445,9 @@ fn an_unknown_timeline_kind_is_named_by_its_session_file() {
 /// Fresh-eyes finding F11 (REQ-history-002): `chough init` and `chough session new`
 /// each write one `start` entry, from and to the stage the session starts in, whose text
 /// is its objective, or its key when none was given, and `chough timing` right after
-/// reports the intent segment as started at that entry's time, not unknown. A timeline
-/// without one, as an older or migrated one is, still reads with that start unknown.
+/// reports the intent segment as started at that entry's time, not unknown, in the
+/// first cycle, which starts there (round 3's F11). A timeline without one, as an older
+/// or migrated one is, still reads with that start unknown, before the first record.
 #[test]
 fn init_and_session_new_write_a_start_entry_that_timing_reads() {
     let fixture = Fixture::new();
@@ -2460,7 +2461,12 @@ fn init_and_session_new_write_a_start_entry_that_timing_reads() {
         assert_eq!(start["to"], "intent", "{start:#}");
         assert_eq!(start["reason"], objective, "{start:#}");
         let report = timing(&fixture, &[]);
-        let first = &report["before_first_record"];
+        assert_eq!(report["before_first_record"], Value::Null, "{report:#}");
+        assert_eq!(
+            report["cycles"][0]["start"]["unix_seconds"], start["at_unix_seconds"],
+            "{report:#}"
+        );
+        let first = &segments(&report, 0)[0];
         assert_eq!(first["stage"], "intent", "{report:#}");
         assert_eq!(
             first["start"]["unix_seconds"], start["at_unix_seconds"],
@@ -2497,5 +2503,67 @@ fn init_and_session_new_write_a_start_entry_that_timing_reads() {
     assert_eq!(
         report["before_first_record"]["start"]["unknown"], "no transition before the first record",
         "{report:#}"
+    );
+}
+
+/// Fresh-eyes round 3, F11 (2026-11-12; REQ-reporting-001): with the session's `start`
+/// entry, the report put intent under "Before the first record", outside Cycle 1, though
+/// that entry is a record, and "(elapsed wall-clock)" followed every number. With a start
+/// entry the first cycle starts at it and holds intent; the text says elapsed wall-clock
+/// once, in its header, while the JSON keeps each duration's label.
+#[test]
+fn timing_starts_cycle_1_at_the_start_entry_and_says_elapsed_wall_clock_once() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let start = timeline_entries(&fixture)[0]["at_unix_seconds"]
+        .as_u64()
+        .unwrap();
+    fixture.ok(&["stage", "advance", "--json"]);
+    let report = timing(&fixture, &[]);
+    assert_eq!(report["before_first_record"], Value::Null, "{report:#}");
+    assert_eq!(report["cycles"][0]["number"], 1, "{report:#}");
+    assert_eq!(at(&report["cycles"][0]["start"]), Some(start), "{report:#}");
+    let stages: Vec<Value> = segments(&report, 0)
+        .iter()
+        .map(|segment| segment["stage"].clone())
+        .collect();
+    assert_eq!(stages, ["intent", "design"], "{report:#}");
+    assert_eq!(at(&segments(&report, 0)[0]["start"]), Some(start));
+    let rendered = text(&fixture, &[]);
+    assert!(!rendered.contains("Before the first record"), "{rendered}");
+    let cycle = rendered.find("### Cycle 1 (started ").expect(&rendered);
+    let intent = rendered.find("- intent").expect(&rendered);
+    assert!(cycle < intent, "intent is outside Cycle 1:\n{rendered}");
+
+    // Said once, with durations, totals and history estimates in the report.
+    let mut lines = vec![];
+    let mut at = T;
+    for plan in [100, 400, 200] {
+        lines.push(transition(Some(at), "advance", "intent", "plan", "go"));
+        at += plan;
+        lines.push(transition(Some(at), "advance", "plan", "build", "go"));
+        at += 50;
+        lines.push(transition(Some(at), "advance", "build", "done", "go"));
+        at += 10_000;
+        lines.push(transition(Some(at), "reset", "done", "intent", "next"));
+        at += 5;
+    }
+    let history = fixture_with(&lines);
+    let rendered = text(&history, &[]);
+    assert_eq!(
+        rendered.matches("elapsed wall-clock").count(),
+        1,
+        "{rendered}"
+    );
+    assert!(
+        rendered.contains(
+            "estimate from 3 recorded plan stage times; not a target: min 1m 40s, median 3m 20s, max 6m 40s\n"
+        ),
+        "{rendered}"
+    );
+    let report = timing(&history, &[]);
+    assert_eq!(
+        segments(&report, 0)[0]["elapsed"]["label"],
+        "elapsed wall-clock"
     );
 }
