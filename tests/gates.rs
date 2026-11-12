@@ -685,3 +685,121 @@ fn the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why() {
     );
     assert_eq!(records(fixture.root()), before, "something was written");
 }
+
+/// Fresh-eyes round 3, F5 (2026-11-12; REQ-cli-061): at the scope gate the summary named
+/// the five own files with the most changed lines, and deltas/<module>.md, the contract
+/// change, fell outside them. The change's deltas come first, before its other files,
+/// each with the requirement IDs it adds or modifies.
+#[test]
+fn a_scope_gate_summary_names_each_delta_first_with_its_requirements() {
+    let fixture = project(&[]);
+    fixture.write(&format!("{DIR}/approvals.json"), "{}\n");
+    fixture.write(
+        &format!("{DIR}/deltas/history.md"),
+        "## MODIFIED\n\n### REQUIREMENT REQ-history-002\n\nThe Timeline SHALL read.\n\n## REMOVED\n\n### REQUIREMENT REQ-history-099\n",
+    );
+    // Larger own files than either delta, so a cap by changed lines leaves the deltas out.
+    let long: String = (1..=40).map(|line| format!("- line {line}\n")).collect();
+    for file in [
+        "change.md",
+        "plan.md",
+        "testing.md",
+        "tasks.md",
+        "context.md",
+    ] {
+        fixture.write(&format!("{DIR}/{file}"), &format!("# {file}\n\n{long}"));
+    }
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--drives",
+        "approve",
+    ]);
+    fixture.commit("the scope to approve");
+    let summary = list(&fixture)["gates"][0]["summary"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let lines: Vec<&str> = summary.lines().collect();
+    let at = lines
+        .iter()
+        .position(|line| line.starts_with("What changed:"))
+        .expect(&summary);
+    let named: Vec<&str> = lines[at + 1..]
+        .iter()
+        .take_while(|line| line.starts_with("  "))
+        .map(|line| line.trim())
+        .collect();
+    let mut deltas: Vec<&str> = named[..2].to_vec();
+    deltas.sort_unstable();
+    assert!(
+        deltas[0].starts_with(&format!("{DIR}/deltas/cli.md +"))
+            && deltas[0].ends_with("(adds or modifies REQ-cli-001)"),
+        "{summary}"
+    );
+    assert!(
+        deltas[1].starts_with(&format!("{DIR}/deltas/history.md +"))
+            && deltas[1].ends_with("(adds or modifies REQ-history-002)"),
+        "{summary}"
+    );
+    assert!(
+        named[2].starts_with(&format!("{DIR}/")) && !named[2].contains("/deltas/"),
+        "the change's other files follow its deltas: {summary}"
+    );
+    assert!(lines.len() <= 24 && summary.len() <= 4_096, "{summary}");
+}
+
+/// Fresh-eyes round 3, F4 (2026-11-12; REQ-cli-061): the intent gate's summary said
+/// "Change: none recorded / What changed: unknown ...", nothing about the intent. At a gate
+/// held at intent with no native change recorded, the summary gives the intent being
+/// approved in place of what changed: the criterion IDs the session references and the
+/// HI files that hold them.
+#[test]
+fn an_intent_gate_summary_names_the_criteria_and_their_hi_files() {
+    let fixture = Fixture::new();
+    fixture.write(
+        "hi/life.md",
+        "# Life\n\n- LIFE-1 I can resume where I left off.\n- LIFE-10 Something else.\n",
+    );
+    fixture.write(
+        "hi/flow.md",
+        "# Flow\n\n- FLOW-2 I can see the next step.\n",
+    );
+    fixture.init();
+    fixture.ok(&[
+        "checkpoint",
+        "--criterion",
+        "LIFE-1",
+        "--criterion",
+        "FLOW-2",
+        "--criterion",
+        "LIFE-99",
+        "--awaiting-human",
+        "Approve the intent",
+    ]);
+    fixture.commit("the intent to approve");
+    let summary = list(&fixture)["gates"][0]["summary"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert!(!summary.contains("Change: none recorded"), "{summary}");
+    assert!(!summary.contains("What changed"), "{summary}");
+    let lines: Vec<&str> = summary.lines().collect();
+    let intent = lines
+        .iter()
+        .position(|line| line.starts_with("Intent: "))
+        .expect(&summary);
+    for id in ["LIFE-1", "FLOW-2", "LIFE-99"] {
+        assert!(lines[intent].contains(id), "{summary}");
+    }
+    let held: Vec<&str> = lines[intent + 1..]
+        .iter()
+        .take_while(|line| line.starts_with("  "))
+        .map(|line| line.trim())
+        .collect();
+    assert!(held.contains(&"hi/life.md: LIFE-1"), "{summary}");
+    assert!(held.contains(&"hi/flow.md: FLOW-2"), "{summary}");
+    assert!(held.contains(&"in no hi/ file: LIFE-99"), "{summary}");
+    assert!(lines.len() <= 24 && summary.len() <= 4_096, "{summary}");
+}
