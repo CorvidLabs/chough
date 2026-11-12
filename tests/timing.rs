@@ -1478,6 +1478,22 @@ fn transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identica
     assert!(!fixture.exists(".chough/artifacts"));
 }
 
+/// Run the stand-in at `name` once, outside any timed read, and clear the call it logged
+/// (see `native_fixture`).
+#[cfg(unix)]
+fn warm_stand_in(fixture: &Fixture, name: &str) {
+    let status = std::process::Command::new(fixture.root().join(name))
+        .args(["change", "status", "warm-up", "--json"])
+        .current_dir(fixture.root())
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .unwrap();
+    assert!(status.success(), "warming {name}");
+    stub_calls(fixture);
+}
+
 /// A SpecSync stand-in: status per change from `.stub-status-<id>`, a default otherwise.
 /// Every call appends its change ID to `.stub-calls`. `.stub-malformed-<id>` prints
 /// output that is not JSON; `.stub-hang-<id>` waits on a background child that holds
@@ -1501,6 +1517,15 @@ printf '{"change":{"id":"%s","created_at":100,"updated_at":200},"summary":{"stat
 "#,
     );
     fixture.executable("bin/specsync");
+    // macOS assesses a newly written executable on its first exec, and under load
+    // (concurrent builds and test suites writing and running new executables) that can
+    // take seconds after the spawn returns: a budgeted read that is the stand-in's first
+    // exec can time out before its first line logs the call, which is the empty call list
+    // of BUG 2026-11-02-timing-native-budget-regression-sometimes-records-no-initial.
+    // An installed SpecSync is never a file written a moment before, so run the stand-in
+    // once here, outside every budget and deadline a test sets. `checkpoint
+    // --native-change` below also runs it (issue 63), but this must not depend on that.
+    warm_stand_in(&fixture, "bin/specsync");
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "cur-change"]);
     fixture.write(
