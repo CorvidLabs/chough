@@ -662,3 +662,21 @@ expected = ["tests/cli.rs::context_gives_the_session_as_markdown passes"]
 adapter = "cargo-test"
 test_target = "cli"
 test = "context_gives_the_session_as_markdown"
+
+[[case]]
+id = "TC-cli-failed-run-body-says-why"
+title = "A failed case run's evidence body says why when Chough knows it, such as an expected output that was missing with the expected text quoted, before its key failing lines"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-017"]
+paths = ["src/evidence.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines"

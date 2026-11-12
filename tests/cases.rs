@@ -2899,3 +2899,42 @@ fn evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements()
         );
     }
 }
+
+/// Fresh-eyes finding F10c (REQ-cli-017): a failed case run's evidence body says why
+/// when Chough knows it, here that an expected output was missing, quoting the expected
+/// text, before its key failing lines.
+#[cfg(unix)]
+#[test]
+fn a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines() {
+    let fixture = bounded_fixture(&command_case(
+        "TC-cli-0001",
+        r#"["sh", "-c", "echo 2"]"#,
+        "3",
+        30,
+    ));
+    let run = fixture.run(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
+    let report: Value = serde_json::from_slice(&run.stdout)
+        .unwrap_or_else(|_| panic!("{}", String::from_utf8_lossy(&run.stderr)));
+    assert_eq!(report["outcome"], "failed", "{report:#}");
+    let id = report["observation"].as_str().unwrap();
+    let text = fixture.read(&format!(
+        ".chough/sessions/{}/evidence/{id}.md",
+        fixture.active_id()
+    ));
+    let (_, body) = text
+        .strip_prefix("---\n")
+        .and_then(|rest| rest.split_once("\n---\n"))
+        .unwrap_or_else(|| panic!("no front matter: {text}"));
+    let why = body
+        .find("expected output was missing")
+        .unwrap_or_else(|| panic!("the body does not say why it failed:\n{body}"));
+    let key = body
+        .find("\n## Key failing lines\n")
+        .unwrap_or_else(|| panic!("no key failing lines:\n{body}"));
+    assert!(why < key, "why comes after the key lines:\n{body}");
+    let line = body[why..].lines().next().unwrap();
+    assert!(
+        line.contains("\"3\""),
+        "the expected text is not quoted: {line}"
+    );
+}
