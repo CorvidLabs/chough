@@ -536,11 +536,15 @@ pub(super) fn recorded_id(path: &str) -> String {
 pub(super) struct EvidenceArgs {
     /// The entry's name; a date and slug not in use. Omit for automatic naming.
     id: Option<String>,
+    /// The HI criteria the observation shows; at least one.
     #[arg(long = "criterion", required = true)]
     criteria: Vec<String>,
-    #[arg(long = "requirement", required = true)]
+    /// A requirement the observation shows, validated when given: held by a companion,
+    /// or added or modified by the active session's native change in its approved delta.
+    #[arg(long = "requirement")]
     requirements: Vec<String>,
-    #[arg(long = "contract", required = true)]
+    /// A native contract, `specs/<module>/<module>.spec.md`, validated when given.
+    #[arg(long = "contract")]
     contracts: Vec<String>,
     #[arg(long)]
     kind: Kind,
@@ -736,8 +740,7 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         "environment and summary must not be blank"
     );
     validate_criteria(root, &args.criteria)?;
-    validate_requirements(root, &args.contracts, &args.requirements)?
-        .map_err(|miss| miss.for_evidence())?;
+    validate_evidence_links(root, &args.contracts, &args.requirements)?;
     let mut case_refs = vec![];
     for id in &args.cases {
         let digest = cases::current_digest(root, id)?
@@ -1840,9 +1843,37 @@ impl RequirementMiss {
         })
     }
 
-    /// The refusal for `evidence add`, which names its contracts.
-    fn for_evidence(&self) -> anyhow::Error {
-        self.render(|module| format!("add --contract specs/{module}/{module}.spec.md"))
+    /// The refusal for `evidence add`, which names its contracts and, when the active
+    /// session's native change was consulted, that change, its deltas searched and why
+    /// none resolved the link (REQ-cli-005).
+    fn for_evidence(&self, consulted: Option<(&str, &[(String, String)])>) -> anyhow::Error {
+        let fix = |module: &str| format!("add --contract specs/{module}/{module}.spec.md");
+        let Some((change, deltas)) = consulted else {
+            return self.render(fix);
+        };
+        let found = format!(
+            "requirement {} not found in {} or in {}",
+            self.id,
+            self.searched.join(", "),
+            deltas
+                .iter()
+                .map(|(path, _)| path.as_str())
+                .collect::<Vec<_>>()
+                .join(", ")
+        );
+        if let Some(module) = &self.owner {
+            return anyhow::anyhow!(
+                "{found}; {} belongs to module {module} (specs/{module}/requirements.md): {}",
+                self.id,
+                fix(module)
+            );
+        }
+        let mut why: Vec<&str> = deltas.iter().map(|(_, reason)| reason.as_str()).collect();
+        why.dedup();
+        anyhow::anyhow!(
+            "{found}; the active session's native change {change} was consulted and did not resolve it: {}; it may be a typo",
+            why.join("; ")
+        )
     }
 }
 
@@ -1854,8 +1885,14 @@ pub(super) fn validate_requirements(
     contracts: &[String],
     requirements: &[String],
 ) -> Result<std::result::Result<(), RequirementMiss>> {
-    let mut text = String::new();
-    let mut searched = vec![];
+    let companions = contract_companions(root, contracts)?;
+    find_requirements(root, &companions, requirements)
+}
+
+/// Each contract's `requirements.md` companion, named with `/` on every platform, as
+/// contracts and messages spell paths; each contract must be a native spec that exists.
+fn contract_companions(root: &Path, contracts: &[String]) -> Result<Vec<String>> {
+    let mut companions = vec![];
     for contract in contracts {
         ensure!(
             contract.starts_with("specs/") && contract.ends_with(".spec.md"),
@@ -1868,6 +1905,22 @@ pub(super) fn validate_requirements(
             .context("contract parent missing")?
             .join("requirements.md");
         let companion = companion.to_str().context("non-UTF-8 contract companion")?;
+        #[cfg(windows)]
+        companions.push(companion.replace('\\', "/"));
+        #[cfg(not(windows))]
+        companions.push(companion.to_string());
+    }
+    Ok(companions)
+}
+
+/// The first of `requirements` that none of `companions` holds, as a miss naming them.
+fn find_requirements(
+    root: &Path,
+    companions: &[String],
+    requirements: &[String],
+) -> Result<std::result::Result<(), RequirementMiss>> {
+    let mut text = String::new();
+    for companion in companions {
         // On a module's first change, `specsync new` has scaffolded no requirements.md
         // and the approved delta adds the requirement: a companion that does not exist
         // yet holds no requirement, as an empty one would, so the link is a miss the
@@ -1881,22 +1934,78 @@ pub(super) fn validate_requirements(
             );
             text.push('\n');
         }
-        // Named with `/` on every platform, as contracts and messages spell paths.
-        #[cfg(windows)]
-        searched.push(companion.replace('\\', "/"));
-        #[cfg(not(windows))]
-        searched.push(companion.to_string());
     }
     for requirement in requirements {
         if !(requirement.starts_with("REQ-") && holds_token(&text, requirement)) {
             return Ok(Err(RequirementMiss {
                 id: requirement.clone(),
-                owner: owning_module(root, requirement, &searched),
-                searched,
+                owner: owning_module(root, requirement, companions),
+                searched: companions.to_vec(),
             }));
         }
     }
     Ok(Ok(()))
+}
+
+/// `evidence add`'s requirement and contract links (REQ-cli-005): each contract given
+/// must be a native spec that exists, and each requirement must be held by a searched
+/// companion, the given contracts' or, with none given, its own module's, or be added or
+/// modified by the active session's native change in that module's approved delta, as a
+/// case link is (REQ-cli-009), so evidence can be recorded before `specsync change
+/// check` materializes it.
+fn validate_evidence_links(
+    root: &Path,
+    contracts: &[String],
+    requirements: &[String],
+) -> Result<()> {
+    let given = contract_companions(root, contracts)?;
+    let deltas = cases::DeltaLinks::new(root);
+    'requirements: for requirement in requirements {
+        let companions = if contracts.is_empty() {
+            let module = requirement
+                .strip_prefix("REQ-")
+                .and_then(|rest| rest.rsplit_once('-'))
+                .map(|(module, _)| module)
+                .filter(|module| crate::records::valid_module_name(module))
+                .with_context(|| {
+                    format!(
+                        "requirement {requirement} is not a REQ-<module>-<number> ID, so no module's requirements.md can hold it"
+                    )
+                })?;
+            vec![format!("specs/{module}/requirements.md")]
+        } else {
+            given.clone()
+        };
+        let Err(miss) = find_requirements(root, &companions, std::slice::from_ref(requirement))?
+        else {
+            continue;
+        };
+        let mut change = None;
+        let mut searched = vec![];
+        for companion in &companions {
+            let module = companion
+                .strip_prefix("specs/")
+                .and_then(|rest| rest.strip_suffix("/requirements.md"))
+                .unwrap_or(companion);
+            match deltas.in_delta(module, requirement)? {
+                cases::InDelta::NoChange => return Err(miss.for_evidence(None)),
+                cases::InDelta::Held(_) => continue 'requirements,
+                cases::InDelta::Not(consulted, reason) => {
+                    searched.push((
+                        format!(".specsync/changes/{consulted}/deltas/{module}.md"),
+                        reason,
+                    ));
+                    change = Some(consulted);
+                }
+            }
+        }
+        return Err(miss.for_evidence(
+            change
+                .as_deref()
+                .map(|change| (change, searched.as_slice())),
+        ));
+    }
+    Ok(())
 }
 
 fn git(root: &Path, arguments: &[&str]) -> Result<Output> {
