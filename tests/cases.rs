@@ -1238,7 +1238,21 @@ fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations(
         "",
     );
     let roots = [bounded_fixture(&definition), bounded_fixture(&definition)];
+    // REQ-cli-023: each root runs in its own session, so the same day's entries of the
+    // two roots, named alike by date and slug (REQ-records-003), live at their own
+    // paths. Within a session a same-day repeat takes one clash suffix.
+    roots[1].ok(&[
+        "session",
+        "new",
+        "second-root",
+        "--objective",
+        "SYNTHETIC second root",
+    ]);
+    let second = roots[1].id_of("second-root");
+    roots[1].ok(&["session", "use", &second]);
+    assert_ne!(roots[0].active_id(), roots[1].active_id());
     let mut observations = vec![];
+    let mut entries = vec![];
     for fixture in &roots {
         common::stand_in(
             &fixture.root().join("bin"),
@@ -1253,7 +1267,12 @@ fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations(
                 String::from_utf8_lossy(&output.stderr)
             );
             let report: Value = serde_json::from_slice(&output.stdout).unwrap();
-            observations.push(report["observation"].as_str().unwrap().to_string());
+            let id = report["observation"].as_str().unwrap().to_string();
+            entries.push(format!(
+                ".chough/sessions/{}/evidence/{id}.md",
+                fixture.active_id()
+            ));
+            observations.push(id);
         }
     }
     for id in &observations {
@@ -1289,10 +1308,11 @@ fn independent_roots_and_identical_repeated_runs_allocate_distinct_observations(
         assert!(record["observed_at_unix_seconds"].is_u64(), "{record}");
         assert!(record["duration_seconds"].is_u64(), "{record}");
     }
-    let unique = observations
-        .iter()
-        .collect::<std::collections::BTreeSet<_>>();
-    assert_eq!(unique.len(), 4, "observations: {observations:?}");
+    // The two repeats in one root are distinct, and so are all four entries' paths.
+    assert_ne!(observations[0], observations[1], "{observations:?}");
+    assert_ne!(observations[2], observations[3], "{observations:?}");
+    let unique = entries.iter().collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(unique.len(), 4, "entries: {entries:?}");
 }
 
 #[test]
@@ -1718,14 +1738,32 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
     b.git(&["clone", "-q", a.root().to_str().unwrap(), "."]);
     a.git(&["checkout", "-q", "-b", "a"]);
     b.git(&["checkout", "-q", "-b", "b"]);
+    // REQ-cli-023: each root records in its own session on its own branch, so their
+    // same-day entries, named alike by date and slug, live at their own paths.
+    b.ok(&[
+        "session",
+        "new",
+        "branch-b",
+        "--objective",
+        "SYNTHETIC records from branch b",
+    ]);
+    let session_b = b.id_of("branch-b");
+    b.ok(&["session", "use", &session_b]);
+    assert_ne!(a.active_id(), b.active_id());
 
+    // Entries by their qualified `<session>/<id>` form; bugs by their names.
     let mut ids = vec![];
+    let mut bug_ids = vec![];
     for (fixture, side, bug) in [
         (&a, "a", "Version check flakes"),
         (&b, "b", "Version check is slow"),
     ] {
         let run = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
-        ids.push(run["observation"].as_str().unwrap().to_string());
+        let session = fixture.active_id();
+        ids.push(format!(
+            "{session}/{}",
+            run["observation"].as_str().unwrap()
+        ));
 
         let mut args = vec![
             "evidence",
@@ -1748,7 +1786,7 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         ];
         let summary = format!("Reviewed on branch {side}");
         args.extend([summary.as_str()]);
-        ids.push(recorded_id(&fixture.run(&args)));
+        ids.push(format!("{session}/{}", recorded_id(&fixture.run(&args))));
         let added = fixture.ok(&[
             "bug",
             "add",
@@ -1767,11 +1805,15 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
             "--requirement",
             "REQ-cli-001",
         ]);
-        ids.push(added["id"].as_str().unwrap().to_string());
+        bug_ids.push(added["id"].as_str().unwrap().to_string());
         fixture.commit(&format!("records from {side}"));
     }
-    let unique: std::collections::BTreeSet<_> = ids.iter().collect();
-    assert_eq!(unique.len(), ids.len(), "{ids:?}");
+    let unique: std::collections::BTreeSet<_> = ids.iter().chain(&bug_ids).collect();
+    assert_eq!(
+        unique.len(),
+        ids.len() + bug_ids.len(),
+        "{ids:?} {bug_ids:?}"
+    );
     let (from_a, from_b) = (generated(&a), generated(&b));
     assert!(
         from_a.keys().all(|name| !from_b.contains_key(name)),
@@ -1814,9 +1856,8 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         .collect();
     assert_eq!(bugs.len(), 2);
     assert!(
-        ids.iter()
-            .filter(|id| id.starts_with("BUG-"))
-            .all(|id| bugs.contains(&id.as_str()))
+        bug_ids.iter().all(|id| bugs.contains(&id.as_str())),
+        "{bug_ids:?} {bugs:?}"
     );
 }
 

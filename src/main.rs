@@ -537,7 +537,6 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "environment": environment,
         "open_bugs": assessment.open_bugs,
         "blocking_bugs": assessment.blocking,
-        "removal_holds": match evidence::stale_holds(root) { Ok(holds) => json!(holds), Err(error) => json!({"unknown": error.to_string()}) },
         "human_approval": "unknown; Chough does not authenticate human identity or approval",
         "delivery": "unknown; a recorded observation does not establish deployment or release",
     }))

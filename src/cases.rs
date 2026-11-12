@@ -1445,7 +1445,6 @@ pub(super) fn run(root: &Path, command: CasesCommand) -> Result<Option<i32>> {
                 "outcome": result.outcome,
                 "summary": result.summary,
                 "provenance": PROVENANCE,
-                "retention": evidence::auto_prune(root),
             }))?;
             Ok((result.outcome != Outcome::Passed).then_some(NOT_PASSED_EXIT))
         }
