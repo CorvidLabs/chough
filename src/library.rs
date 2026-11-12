@@ -351,14 +351,9 @@ pub(super) fn migrate_0_5(
                 continue;
             }
             let record = crate::markdown::parse(&file.path, &file.bytes)?;
-            let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
-            if !crate::bugs::is_closed_status(&field("status")) {
-                pending.bugs.push((
-                    file.path.clone(),
-                    field("id"),
-                    field("title"),
-                    field("status"),
-                ));
+            let bug = crate::vault::OpenBug::of(Some(file.path.clone()), &record);
+            if !crate::bugs::is_closed_status(&bug.status) {
+                pending.bugs.push(bug);
             }
         }
         for (path, bytes) in build_pending(root, &dir, &pending)? {
@@ -425,6 +420,159 @@ pub(super) fn create_at_init(root: &Path) -> serde_json::Value {
         Ok(()) => json!({"status": "created", "dir": dir, "index": index}),
         Err(error) => refused(error),
     }
+}
+
+/// Chough's Git merge drivers (REQ-cli-047): each one's name and the command Git runs.
+pub(super) const MERGE_DRIVERS: [(&str, &str); 2] = [
+    ("chough-bug", "chough bug merge %O %A %B"),
+    ("chough-generated", "chough library merge %O %A %B"),
+];
+
+/// The largest `.gitattributes` Chough reads or appends to.
+const ATTRIBUTES_LIMIT: u64 = 1_048_576;
+
+const ATTRIBUTES: &str = ".gitattributes";
+
+/// The `.gitattributes` lines that send Chough's files to its drivers: bug records to
+/// `chough-bug`, and the generated index and feed of the knowledge directory
+/// (`library-dir`) to `chough-generated`, as (pattern, driver) pairs.
+fn merge_patterns(root: &Path) -> Result<Vec<(String, &'static str)>> {
+    let dir = prefs::effective(root, "library-dir")?.0;
+    Ok(vec![
+        (".chough/bugs/*.md".to_string(), "chough-bug"),
+        (format!("{dir}/index.md"), "chough-generated"),
+        (
+            format!("{}/{}", crate::journal::dir_of(&dir), crate::journal::FEED),
+            "chough-generated",
+        ),
+    ])
+}
+
+/// The project's `.gitattributes`, or "" when it is absent.
+fn attributes_text(root: &Path) -> Result<String> {
+    let path = local_path(root, ATTRIBUTES)?;
+    if !path.exists() {
+        return Ok(String::new());
+    }
+    crate::records::read_bounded_record(&path, ATTRIBUTES_LIMIT)
+}
+
+/// The merge lines `.gitattributes` does not declare: a line counts as declared when its
+/// first field is the same pattern and another field names the same `merge=` driver.
+pub(super) fn missing_merge_lines(root: &Path) -> Result<Vec<String>> {
+    let text = attributes_text(root)?;
+    Ok(merge_patterns(root)?
+        .into_iter()
+        .filter(|(pattern, driver)| {
+            let attribute = format!("merge={driver}");
+            !text.lines().any(|line| {
+                let mut fields = line.split_whitespace();
+                fields.next() == Some(pattern.as_str()) && fields.any(|field| field == attribute)
+            })
+        })
+        .map(|(pattern, driver)| format!("{pattern} merge={driver}"))
+        .collect())
+}
+
+fn git(root: &Path, arguments: &[&str]) -> Option<std::process::Output> {
+    crate::records::run_owned(
+        std::process::Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(arguments),
+        None,
+    )
+    .ok()
+}
+
+/// Whether `root` is inside a Git work tree, where merge drivers apply.
+pub(super) fn in_git_work_tree(root: &Path) -> bool {
+    git(root, &["rev-parse", "--is-inside-work-tree"])
+        .is_some_and(|output| output.status.success() && output.stdout.trim_ascii() == b"true")
+}
+
+/// The drivers Git has no command for in this clone. A driver another config scope sets
+/// counts as set, and so does one a person set to their own command.
+pub(super) fn missing_merge_drivers(root: &Path) -> Vec<&'static str> {
+    MERGE_DRIVERS
+        .iter()
+        .filter(|(name, _)| {
+            !git(root, &["config", "--get", &format!("merge.{name}.driver")]).is_some_and(
+                |output| output.status.success() && !output.stdout.trim_ascii().is_empty(),
+            )
+        })
+        .map(|(name, _)| *name)
+        .collect()
+}
+
+/// Set each of `names` in the clone's local Git config to Chough's command.
+pub(super) fn set_merge_drivers(root: &Path, names: &[&str]) -> Result<()> {
+    for (name, command) in MERGE_DRIVERS
+        .iter()
+        .filter(|(name, _)| names.contains(name))
+    {
+        let key = format!("merge.{name}.driver");
+        let set = git(root, &["config", "--local", &key, command]);
+        ensure!(
+            set.as_ref().is_some_and(|output| output.status.success()),
+            "git config --local {key} failed: {}",
+            set.map(|output| String::from_utf8_lossy(&output.stderr).trim().to_string())
+                .unwrap_or_else(|| "git did not run".into())
+        );
+    }
+    Ok(())
+}
+
+/// Append `lines` after the last line of `.gitattributes`, creating it when absent and
+/// changing no line already there.
+fn declare_merge_lines(root: &Path, lines: &[String]) -> Result<()> {
+    let mut text = attributes_text(root)?;
+    if !text.is_empty() && !text.ends_with('\n') {
+        text.push('\n');
+    }
+    for line in lines {
+        text.push_str(line);
+        text.push('\n');
+    }
+    crate::records::write_replace_bounded(root, ATTRIBUTES, &text, ATTRIBUTES_LIMIT)
+}
+
+/// `chough init` sets up Chough's merge drivers (REQ-cli-047, DRIVE-12), so two branches
+/// that each record work merge with no hand setup: it appends the missing merge lines to
+/// `.gitattributes`, creating it when absent, and, in a Git work tree, sets each driver
+/// Git has no command for in the clone's local config. Never fails init: each part
+/// reports what it did, or `refused` with the reason.
+pub(super) fn merge_at_init(root: &Path) -> serde_json::Value {
+    let refused =
+        |error: anyhow::Error| json!({"status": "refused", "reason": format!("{error:#}")});
+    let attributes = match missing_merge_lines(root) {
+        Ok(lines) if lines.is_empty() => json!({"status": "current", "path": ATTRIBUTES}),
+        Ok(lines) => {
+            let status = match local_path(root, ATTRIBUTES) {
+                Ok(path) if path.exists() => "appended",
+                _ => "created",
+            };
+            match declare_merge_lines(root, &lines) {
+                Ok(()) => json!({"status": status, "path": ATTRIBUTES, "added": lines}),
+                Err(error) => refused(error),
+            }
+        }
+        Err(error) => refused(error),
+    };
+    let drivers = if in_git_work_tree(root) {
+        let missing = missing_merge_drivers(root);
+        if missing.is_empty() {
+            json!({"status": "current"})
+        } else {
+            match set_merge_drivers(root, &missing) {
+                Ok(()) => json!({"status": "set", "set": missing}),
+                Err(error) => refused(error),
+            }
+        }
+    } else {
+        json!({"status": "skipped", "reason": "not a Git work tree; `chough doctor --fix` sets the drivers once it is"})
+    };
+    json!({"attributes": attributes, "drivers": drivers})
 }
 
 /// The move into done (REQ-cli-043), after the session's archive step and its journal

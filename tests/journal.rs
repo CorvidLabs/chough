@@ -722,6 +722,295 @@ fn journal_links_name_only_project_paths_git_tracks() {
     }
 }
 
+/// The value of a Git config key in the fixture's repository, or "" when it is unset.
+fn git_config(fixture: &Fixture, key: &str) -> String {
+    let output = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["config", "--local", "--get", key])
+        .output()
+        .unwrap();
+    String::from_utf8_lossy(&output.stdout).trim().to_string()
+}
+
+/// Run Git with this build's `chough` first on PATH, as a person's shell would find it,
+/// and report whether it succeeded.
+fn git_with_chough(fixture: &Fixture, args: &[&str]) -> bool {
+    let bin = Path::new(env!("CARGO_BIN_EXE_chough")).parent().unwrap();
+    let path = format!(
+        "{}:{}",
+        bin.display(),
+        std::env::var("PATH").unwrap_or_default()
+    );
+    std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .env("PATH", path)
+        .args([
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+        ])
+        .args(["-c", "commit.gpgsign=false"])
+        .args(args)
+        .output()
+        .unwrap()
+        .status
+        .success()
+}
+
+/// REQ-cli-047, DRIVE-12 (BUG-a-project-as-chough-init-leaves-it-conflicts-on-knowledge-index-md-and-4390e553d9921f2d81c48108):
+/// in a Git repository, `chough init` declares Chough's merge attributes and sets both
+/// drivers in the clone's local Git config, so two branches that each add a post merge
+/// clean with no hand setup; one `library index` then makes `--check` pass and lists both.
+#[test]
+fn init_sets_up_the_merge_drivers_so_two_branches_merge_clean() {
+    let fixture = Fixture::new();
+    fixture.git(&["init"]);
+    let out = fixture.ok(&[
+        "init",
+        "--objective",
+        "Ship a focused change",
+        "--module",
+        "cli",
+    ]);
+    let attributes = fixture.read(".gitattributes");
+    for line in [
+        ".chough/bugs/*.md merge=chough-bug",
+        "knowledge/index.md merge=chough-generated",
+        "knowledge/journal/feed.xml merge=chough-generated",
+    ] {
+        assert!(
+            attributes.lines().any(|declared| declared == line),
+            "{line} missing: {attributes:?} {out:#}"
+        );
+    }
+    assert_eq!(
+        git_config(&fixture, "merge.chough-bug.driver"),
+        "chough bug merge %O %A %B"
+    );
+    assert_eq!(
+        git_config(&fixture, "merge.chough-generated.driver"),
+        "chough library merge %O %A %B"
+    );
+    fixture.commit("base");
+    let add = |title: &str| {
+        fixture.ok(&[
+            "journal",
+            "add",
+            "--kind",
+            "learned",
+            "--title",
+            title,
+            "--body",
+            "One line.",
+        ])["post"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string()
+    };
+    fixture.git(&["checkout", "-b", "theirs"]);
+    let theirs = add("Their SYNTHETIC post");
+    fixture.commit("their post");
+    fixture.git(&["checkout", "main"]);
+    let ours = add("Our SYNTHETIC post");
+    fixture.commit("our post");
+    assert!(
+        git_with_chough(&fixture, &["merge", "--no-edit", "theirs"]),
+        "the merge conflicted"
+    );
+    let feed = "knowledge/journal/feed.xml";
+    well_formed(&fixture.read(feed)).unwrap_or_else(|error| panic!("{error}"));
+    fixture.ok(&["library", "index"]);
+    fixture.ok(&["library", "index", "--check"]);
+    let rebuilt = fixture.read(feed);
+    for post in [&ours, &theirs] {
+        let name = post
+            .trim_start_matches("knowledge/journal/")
+            .trim_end_matches(".md");
+        assert!(
+            rebuilt.contains(&format!("urn:chough:journal:{name}<")),
+            "{rebuilt}"
+        );
+    }
+}
+
+/// REQ-cli-047: `chough init` appends only the merge lines a `.gitattributes` lacks, after
+/// its last line, changing no line; it honours `library-dir`, and a driver the clone already
+/// sets is kept.
+#[test]
+fn init_appends_only_the_missing_merge_lines_and_keeps_a_set_driver() {
+    let fixture = Fixture::new();
+    fixture.git(&["init"]);
+    let existing = "* text=auto\n.chough/bugs/*.md   merge=chough-bug";
+    fixture.write(".gitattributes", existing);
+    fixture.git(&[
+        "config",
+        "--local",
+        "merge.chough-bug.driver",
+        "SYNTHETIC-own-driver %O %A %B",
+    ]);
+    fixture.ok(&[
+        "pref",
+        "set",
+        "library-dir",
+        "notes",
+        "--source",
+        "SYNTHETIC: call it notes",
+    ]);
+    fixture.ok(&[
+        "init",
+        "--objective",
+        "Ship a focused change",
+        "--module",
+        "cli",
+    ]);
+    assert_eq!(
+        fixture.read(".gitattributes"),
+        format!(
+            "{existing}\nnotes/index.md merge=chough-generated\nnotes/journal/feed.xml merge=chough-generated\n"
+        )
+    );
+    assert_eq!(
+        git_config(&fixture, "merge.chough-bug.driver"),
+        "SYNTHETIC-own-driver %O %A %B"
+    );
+    assert_eq!(
+        git_config(&fixture, "merge.chough-generated.driver"),
+        "chough library merge %O %A %B"
+    );
+}
+
+/// REQ-records-011, KNOW-33 (Q1, Leif's decision: posts are time-based): each new post
+/// records `time`, the UTC time it was written to the second, and keeps its
+/// `<date>-<slug>` name. The index's newest posts and the feed sort newest first by
+/// time; a post without one sorts by date and then name after the timed posts of its
+/// date, and the index marks it "(no time)". An entry's `<updated>` is its time, and
+/// the same posts give identical bytes.
+#[test]
+fn posts_record_a_time_and_sort_newest_first_by_it() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let added = fixture.ok(&[
+        "journal",
+        "add",
+        "--kind",
+        "learned",
+        "--title",
+        "Written now",
+        "--body",
+        "One line.",
+    ]);
+    let name = added["post"].as_str().unwrap_or_default().to_string();
+    let text = fixture.read(&name);
+    let (front, _) = split(&text);
+    let (date, time) = (field(front, "date"), field(front, "time"));
+    let stem = name
+        .trim_start_matches("knowledge/journal/")
+        .trim_end_matches(".md")
+        .to_string();
+    assert!(stem.starts_with(&format!("{date}-")), "{text}");
+    let shape = time.len() == 20
+        && time.starts_with(&format!("{date}T"))
+        && time.ends_with('Z')
+        && [13, 16].iter().all(|at| time.as_bytes()[*at] == b':');
+    assert!(
+        shape,
+        "time {time:?} is not UTC ISO 8601 to the second: {text}"
+    );
+    let post = |name: &str, date: &str, time: Option<&str>| {
+        let time = time.map_or(String::new(), |time| format!("time: {time}\n"));
+        fixture.write(
+            &format!("knowledge/journal/{name}.md"),
+            &format!(
+                "---\nid: {name}\ntitle: SYNTHETIC {name}\ntype: journal\ndate: {date}\n{time}kind: learned\n---\n\n# SYNTHETIC {name}\n\nBody.\n"
+            ),
+        );
+    };
+    post(
+        "2026-05-01-older",
+        "2026-05-01",
+        Some("2026-05-01T23:00:00Z"),
+    );
+    post(
+        "2026-05-02-a-early",
+        "2026-05-02",
+        Some("2026-05-02T08:00:00Z"),
+    );
+    post("2026-05-02-m-untimed", "2026-05-02", None);
+    post("2026-05-02-b-untimed", "2026-05-02", None);
+    post(
+        "2026-05-02-z-late",
+        "2026-05-02",
+        Some("2026-05-02T20:00:00Z"),
+    );
+    post("2026-05-03-next-day", "2026-05-03", None);
+    fixture.ok(&["library", "index"]);
+    let order = [
+        stem.as_str(),
+        "2026-05-03-next-day",
+        "2026-05-02-z-late",
+        "2026-05-02-a-early",
+        "2026-05-02-b-untimed",
+        "2026-05-02-m-untimed",
+        "2026-05-01-older",
+    ];
+    let index = fixture.read("knowledge/index.md");
+    let listed: Vec<&str> = index
+        .lines()
+        .filter(|line| line.starts_with("- ["))
+        .filter_map(|line| line.split("](journal/").nth(1)?.split(".md)").next())
+        .collect();
+    assert_eq!(listed, order, "{index}");
+    for (name, untimed) in [
+        ("2026-05-03-next-day", true),
+        ("2026-05-02-b-untimed", true),
+        ("2026-05-02-z-late", false),
+        (stem.as_str(), false),
+    ] {
+        let line = index
+            .lines()
+            .find(|line| line.contains(&format!("](journal/{name}.md)")))
+            .unwrap_or_default();
+        assert_eq!(line.ends_with(" (no time)"), untimed, "{line}");
+    }
+    let feed = fixture.read("knowledge/journal/feed.xml");
+    let entries: Vec<&str> = feed
+        .split("<id>urn:chough:journal:")
+        .skip(1)
+        .filter_map(|rest| rest.split('<').next())
+        .collect();
+    assert_eq!(entries, order, "{feed}");
+    for (name, updated) in [
+        ("2026-05-02-z-late", "2026-05-02T20:00:00Z"),
+        ("2026-05-02-b-untimed", "2026-05-02T00:00:00Z"),
+        (stem.as_str(), time.as_str()),
+    ] {
+        let entry = feed
+            .split(&format!("<id>urn:chough:journal:{name}</id>"))
+            .nth(1)
+            .and_then(|rest| rest.split("<updated>").nth(1))
+            .and_then(|rest| rest.split('<').next());
+        assert_eq!(entry, Some(updated), "{name}: {feed}");
+    }
+    assert_eq!(
+        feed.split("<updated>")
+            .nth(1)
+            .and_then(|rest| rest.split('<').next()),
+        Some(time.as_str()),
+        "the feed's updated is the newest entry's time: {feed}"
+    );
+    fixture.ok(&["library", "index", "--check"]);
+    let first = (fixture.read("knowledge/index.md"), feed.clone());
+    fixture.ok(&["library", "index"]);
+    assert_eq!(
+        (
+            fixture.read("knowledge/index.md"),
+            fixture.read("knowledge/journal/feed.xml")
+        ),
+        first
+    );
+}
+
 /// REQ-cli-044 (BUG-a-journal-post-s-own-heading-writes-its-title-raw-so-a-title-can-add-a-463f7e7f0cc3606e22de1fa0):
 /// a post's own `# ` heading holds its title as inert Markdown, as the index line does,
 /// so a title can add neither a link nor HTML to the post. `journal add` and the closed

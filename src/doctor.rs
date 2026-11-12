@@ -48,6 +48,7 @@ enum Kind {
     AliasConflict,
     Oversize,
     RecordsInVerification,
+    MergeDrivers,
 }
 
 impl Kind {
@@ -64,6 +65,7 @@ impl Kind {
             Self::AliasConflict => "alias_conflict",
             Self::Oversize => "oversize",
             Self::RecordsInVerification => "records_in_verification",
+            Self::MergeDrivers => "merge_drivers",
         }
     }
 }
@@ -668,6 +670,40 @@ fn records_in_verification(root: &Path) -> Option<Finding> {
     Some(finding)
 }
 
+/// The merge-setup finding (REQ-cli-047, DRIVE-12): in a Git work tree, the merge
+/// drivers Git has no command for in this clone, as a fresh clone has none, and the
+/// `.gitattributes` lines no line declares. `--fix` sets the drivers in the clone's local
+/// config; it never writes `.gitattributes`, a committed file a person reviews, so the
+/// missing lines leave the finding open, naming them.
+fn merge_drivers(root: &Path) -> Result<Option<Finding>> {
+    if !crate::library::in_git_work_tree(root) {
+        return Ok(None);
+    }
+    let drivers = crate::library::missing_merge_drivers(root);
+    let lines = crate::library::missing_merge_lines(root)?;
+    if drivers.is_empty() && lines.is_empty() {
+        return Ok(None);
+    }
+    let declare = "add the missing lines to .gitattributes (`chough init` appends exactly those, changing no line) and commit it";
+    let (target, fix) = match (drivers.first(), lines.is_empty()) {
+        (Some(driver), true) => (
+            format!("merge.{driver}.driver"),
+            "chough doctor --fix".to_string(),
+        ),
+        (Some(_), false) => (
+            ".gitattributes".to_string(),
+            format!("chough doctor --fix, then {declare}"),
+        ),
+        (None, _) => (".gitattributes".to_string(), declare.to_string()),
+    };
+    let mut finding = Finding::new(Kind::MergeDrivers, &target, fix, false);
+    if drivers.is_empty() {
+        finding.blocked = Some(format!("doctor never writes .gitattributes; {declare}"));
+    }
+    finding.detail = Some(json!({"missing_drivers": drivers, "missing_lines": lines}));
+    Ok(Some(finding))
+}
+
 /// The findings the verify lane's `leaks` step fails on: `leak` and `oversize`.
 fn leak_and_oversize(root: &Path) -> Result<Vec<Finding>> {
     let files = tracked(root)?;
@@ -692,6 +728,7 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     }
     found.extend(oversize_findings(root, &files)?);
     found.extend(records_in_verification(root));
+    found.extend(merge_drivers(root)?);
     Ok(found)
 }
 
@@ -800,6 +837,23 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
     match finding.kind {
         Kind::Unmigrated => bail!("run `chough migrate`; doctor never migrates"),
         Kind::RecordsInVerification => bail!("Chough never writes {SDD_POLICY}"),
+        Kind::MergeDrivers => {
+            let drivers = finding.detail.as_ref().map_or_else(Vec::new, |detail| {
+                detail["missing_drivers"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .filter_map(Value::as_str)
+                    .collect::<Vec<_>>()
+            });
+            crate::library::set_merge_drivers(root, &drivers)?;
+            let lines = crate::library::missing_merge_lines(root)?;
+            ensure!(
+                lines.is_empty(),
+                "the drivers are set; doctor never writes .gitattributes, so add {} to it (`chough init` appends exactly those, changing no line) and commit it",
+                lines.join(", ")
+            );
+        }
         Kind::TimelineRewritten | Kind::AliasConflict | Kind::Oversize => {
             bail!("{} has no fix", finding.kind.name())
         }

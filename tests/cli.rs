@@ -1,7 +1,6 @@
 mod common;
 
 use serde_json::{Value, json};
-use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -342,22 +341,46 @@ fn init_leaves_the_checkpoint_merge_driver_unconfigured() {
             .unwrap()
     };
     assert!(git(&["init"]).status.success());
-    let config = fixture.root().join(".git/config");
-    let before = fs::read(&config).unwrap();
-    let digest = format!("{:x}", Sha256::digest(&before));
+    let config =
+        || String::from_utf8(git(&["config", "--local", "--list"]).stdout).unwrap_or_default();
+    let before = config();
     assert!(
         !git(&["config", "--local", "--get", "merge.chough-session.driver"])
             .status
             .success()
     );
     fixture.init();
-    let after = fs::read(&config).unwrap();
-    assert_eq!(format!("{:x}", Sha256::digest(&after)), digest);
-    assert_eq!(after, before);
+    // REQ-cli-047: init sets only Chough's two merge drivers, keeps every other entry,
+    // and leaves the retired checkpoint driver unconfigured.
+    let after = config();
+    assert!(
+        before
+            .lines()
+            .all(|line| after.lines().any(|kept| kept == line)),
+        "{before} -> {after}"
+    );
+    let added: Vec<&str> = after
+        .lines()
+        .filter(|line| !before.lines().any(|old| old == *line))
+        .collect();
+    assert_eq!(
+        added,
+        [
+            "merge.chough-bug.driver=chough bug merge %O %A %B",
+            "merge.chough-generated.driver=chough library merge %O %A %B",
+        ],
+        "{after}"
+    );
     assert!(
         !git(&["config", "--local", "--get", "merge.chough-session.driver"])
             .status
             .success()
+    );
+    assert!(
+        fixture
+            .read(".gitattributes")
+            .starts_with(".chough/session.json merge=chough-session\n"),
+        "the existing line is kept"
     );
 }
 

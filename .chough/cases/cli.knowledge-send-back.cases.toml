@@ -1,0 +1,82 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# The knowledge items the 6.3.0 send-back carries as contract changes (t37f, red then
+# green): K1 (init sets up the merge drivers), K2 (the index's open-bug list is bounded)
+# and Q1 (posts record a time, and newest means by time).
+
+[[case]]
+id = "TC-cli-init-sets-up-merge-drivers"
+title = "In a Git repository, chough init declares the chough-bug and chough-generated attribute lines and sets both drivers in the clone's local config, so two branches that each add a post merge clean with no hand setup"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-12", "KNOW-33"]
+requirements = ["REQ-cli-047"]
+paths = ["src/library.rs", "src/main.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::init_sets_up_the_merge_drivers_so_two_branches_merge_clean passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "journal", "--", "--exact", "init_sets_up_the_merge_drivers_so_two_branches_merge_clean"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-init-appends-only-missing-merge-lines"
+title = "chough init appends only the merge lines .gitattributes lacks, changing no line, honours library-dir, and keeps a driver the clone already sets"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-12"]
+requirements = ["REQ-cli-047"]
+paths = ["src/library.rs", "src/main.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::init_appends_only_the_missing_merge_lines_and_keeps_a_set_driver passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "journal", "--", "--exact", "init_appends_only_the_missing_merge_lines_and_keeps_a_set_driver"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-doctor-merge-drivers"
+title = "chough doctor reports a clone missing a merge driver or attribute line as one merge_drivers finding naming the fix; doctor --fix sets the drivers and never writes .gitattributes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-12", "DRIVE-17"]
+requirements = ["REQ-cli-047"]
+paths = ["src/doctor.rs", "src/library.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_reports_missing_merge_drivers_and_fix_sets_them passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "doctor", "--", "--exact", "doctor_reports_missing_merge_drivers_and_fix_sets_them"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-knowledge-index-bounded-open-bugs"
+title = "The index lists at most 20 open bugs, blocking first and then the newest, with their total, linking .chough/bugs/ and naming chough bug list for the rest; with 1,500 open bugs it builds within its bound and --check passes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-12"]
+requirements = ["REQ-cli-043"]
+paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::the_index_lists_at_most_twenty_open_bugs_blocking_first_then_newest passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "vault", "--", "--exact", "the_index_lists_at_most_twenty_open_bugs_blocking_first_then_newest"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600
