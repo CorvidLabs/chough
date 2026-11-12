@@ -3225,3 +3225,20 @@ fn the_delta_guard_compares_with_the_effective_approval() {
     );
     assert_eq!(stage(&fixture), "plan");
 }
+
+/// The fresh-eyes finding on the authority line: since #236 a human's decision at a
+/// gate that drives approval or review runs that native step as the configured human,
+/// so no stage move may say Chough never writes native approval or review.
+#[test]
+fn every_stage_move_says_when_chough_runs_native_approval_or_review() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let expected = "Native SpecSync status decides lifecycle gates. Chough runs a native approval or review only when a human's decision closes a gate that drives one, as that configured human; the relayed decision it keeps is a claim, not authenticated.";
+    for args in [
+        &["stage", "iterate", "--note", "SYNTHETIC another pass"][..],
+        &["stage", "advance"][..],
+    ] {
+        let moved = fixture.ok(args);
+        assert_eq!(moved["authority"], expected, "{args:?}: {moved:#}");
+    }
+}
