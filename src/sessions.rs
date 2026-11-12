@@ -167,6 +167,18 @@ pub(super) fn archive_file(id: &str) -> String {
     format!("{ARCHIVE}/{id}.md")
 }
 
+/// The stage status an archived story's front matter gives (REQ-history-006).
+pub(super) const ARCHIVED_STATUS: &str = "archived";
+
+/// Whether `relative` is an archived story, `.chough/archive/sessions/<id>.md`, whose
+/// stage status may be [`ARCHIVED_STATUS`].
+pub(super) fn is_story(relative: &str) -> bool {
+    relative
+        .strip_prefix(&format!("{ARCHIVE}/"))
+        .and_then(|rest| rest.strip_suffix(".md"))
+        .is_some_and(|id| !id.is_empty() && !id.contains('/'))
+}
+
 fn inbox_dir(id: &str) -> String {
     format!("{DIR}/{id}/agent/inbox")
 }
@@ -840,6 +852,10 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     let mut linked = session.clone();
     linked.evidence_links = checkpoint::evidence_links(root, &linked);
     let mut record = checkpoint::render_checkpoint(&linked)?;
+    // REQ-history-006 (Kimi 6): the story is archived, and the session's next action no
+    // longer applies.
+    record.set_scalar("stage_status", ARCHIVED_STATUS)?;
+    record.remove("next");
     let date = crate::identity::utc_date(now()?);
     record.set_scalar("closed", &date)?;
     record.set_scalar("outcome", outcome)?;
@@ -875,11 +891,14 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
 }
 
 /// The story's What was verified lines (REQ-history-006, REQ-records-013): one per
-/// receipt, its claim, its command and the first 12 digits of its fingerprint, a link
-/// to its key screenshot beside the story when it has one, ending `^<evidence id>`. A
-/// line Chough wrote while the session was open links `evidence/<id>.md`, a folder that
-/// leaves with the session, so it becomes that receipt line; a line a person wrote is
-/// kept, and an entry it already names gets no second line.
+/// receipt of the latest run of each case and per receipt bound to no case, its claim,
+/// its command unless the claim already holds it, and the first 12 digits of its
+/// fingerprint, a link to its key screenshot beside the story when it has one, ending
+/// `^<evidence id>`; then, first in the section, one line counting the cases' earlier
+/// runs, which stay in `receipts` (F8). A line Chough wrote while the session was open
+/// links `evidence/<id>.md`, a folder that leaves with the session, so it becomes that
+/// receipt line, or goes for an earlier run; a line a person wrote is kept, and an entry
+/// it already names gets no second line.
 fn story_verified_lines(
     root: &Path,
     record: &mut crate::markdown::Record,
@@ -899,39 +918,26 @@ fn story_verified_lines(
             }
         }
     }
+    let get = |receipt: &[(String, String)], key: &str| {
+        receipt
+            .iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.clone())
+            .filter(|value| !value.is_empty())
+    };
+    // Each case's latest run: the last of its receipts, which are in observation-time
+    // order, oldest first.
+    let mut latest = std::collections::BTreeMap::new();
     for receipt in receipts {
-        let get = |key: &str| {
-            receipt
-                .iter()
-                .find(|(name, _)| name == key)
-                .map(|(_, value)| value.clone())
-                .filter(|value| !value.is_empty())
-        };
-        let Some(entry) = get("id") else {
+        if let (Some(case), Some(entry)) = (get(receipt, "case"), get(receipt, "id")) {
+            latest.insert(case, entry);
+        }
+    }
+    let mut earlier = 0_usize;
+    for receipt in receipts {
+        let Some(entry) = get(receipt, "id") else {
             continue;
         };
-        let mut line = get("claim").unwrap_or_else(|| entry.clone());
-        // The receipt follows one ` — `, with or without a command.
-        let mut receipt = vec![];
-        if let Some(command) = get("command") {
-            receipt.push(format!("`{command}`"));
-        }
-        if let Some(fingerprint) = get("fingerprint") {
-            receipt.push(
-                fingerprint
-                    .trim_start_matches("sha256:")
-                    .chars()
-                    .take(12)
-                    .collect(),
-            );
-        }
-        if !receipt.is_empty() {
-            line.push_str(&format!(" — {}", receipt.join(" ")));
-        }
-        if let Some(name) = screenshots.get(&entry) {
-            line.push_str(&format!(" [screenshot]({id}/{name})"));
-        }
-        line.push_str(&format!(" ^{entry}"));
         let present: Vec<String> = record
             .section(VERIFIED)
             .unwrap_or_default()
@@ -940,13 +946,45 @@ fn story_verified_lines(
             .map(str::to_string)
             .collect();
         // The open session's line for this entry, a link to `evidence/<id>.md` or, when
-        // the checkpoint was rendered without its links, the bare ID, becomes the
-        // receipt line, so each entry is listed once.
+        // the checkpoint was rendered without its links, the bare ID.
         let linked = format!("(evidence/{entry}.md)");
-        if let Some(open) = present
+        let open = present
             .iter()
-            .find(|line| line.ends_with(&linked) || **line == entry)
-        {
+            .find(|line| line.ends_with(&linked) || **line == entry);
+        if get(receipt, "case").is_some_and(|case| latest.get(&case) != Some(&entry)) {
+            // An earlier run of a case: counted, and its open line goes with the file
+            // it links.
+            earlier += 1;
+            if let Some(open) = open {
+                record.remove_item(VERIFIED, open)?;
+            }
+            continue;
+        }
+        let claim = get(receipt, "claim").unwrap_or_else(|| entry.clone());
+        // The receipt follows one ` — `, with or without a command.
+        let mut parts = vec![];
+        if let Some(command) = get(receipt, "command").filter(|command| !claim.contains(command)) {
+            parts.push(format!("`{command}`"));
+        }
+        if let Some(fingerprint) = get(receipt, "fingerprint") {
+            parts.push(
+                fingerprint
+                    .trim_start_matches("sha256:")
+                    .chars()
+                    .take(12)
+                    .collect(),
+            );
+        }
+        let mut line = claim;
+        if !parts.is_empty() {
+            line.push_str(&format!(" — {}", parts.join(" ")));
+        }
+        if let Some(name) = screenshots.get(&entry) {
+            line.push_str(&format!(" [screenshot]({id}/{name})"));
+        }
+        line.push_str(&format!(" ^{entry}"));
+        // The open line becomes the receipt line, so each entry is listed once.
+        if let Some(open) = open {
             record.replace_item(VERIFIED, open, &line)?;
         } else if !present
             .iter()
@@ -955,7 +993,23 @@ fn story_verified_lines(
             record.append_to_section(VERIFIED, &format!("- {line}\n"))?;
         }
     }
+    if earlier > 0 {
+        record.insert_first_item(VERIFIED, &earlier_runs(earlier))?;
+    }
     Ok(())
+}
+
+/// The story line counting the earlier runs of its cases, which only its `receipts`
+/// keep (REQ-history-006).
+fn earlier_runs(count: usize) -> String {
+    if count == 1 {
+        "1 earlier run of the cases below is kept in this story's receipts, not listed here."
+            .to_string()
+    } else {
+        format!(
+            "{count} earlier runs of the cases below are kept in this story's receipts, not listed here."
+        )
+    }
 }
 
 /// The newest archived story's checkpoint, by its `closed` date and then its ID.

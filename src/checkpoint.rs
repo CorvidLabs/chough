@@ -246,6 +246,12 @@ fn ensure_paths(label: &str, values: &[String]) -> Result<()> {
 }
 
 pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
+    validate_as(session, false)
+}
+
+/// As [`validate_v2`]; `story` also accepts the stage status `archived` that an archived
+/// story's front matter gives (REQ-history-006). A session is never saved with it.
+fn validate_as(session: &Checkpoint, story: bool) -> Result<()> {
     ensure!(
         session.schema_version == 2,
         "unsupported session schema_version"
@@ -257,7 +263,8 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
         session.stage.current
     );
     ensure!(
-        matches!(session.stage.status.as_str(), "active" | "paused"),
+        matches!(session.stage.status.as_str(), "active" | "paused")
+            || (story && session.stage.status == crate::sessions::ARCHIVED_STATUS),
         "stage status must be active or paused"
     );
     ensure!(session.stage.iteration >= 1, "stage iteration starts at 1");
@@ -315,7 +322,7 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
 /// Read the session record at `relative` from `content`.
 pub(super) fn parse(relative: &str, content: &str) -> Result<Session> {
     let session = crate::session_md::read(relative, content)?;
-    validate_v2(&session)?;
+    validate_as(&session, crate::sessions::is_story(relative))?;
     Ok(Session::V2(Box::new(session)))
 }
 

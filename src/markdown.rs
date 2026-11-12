@@ -275,6 +275,41 @@ impl Record {
         bail!("no item `{item}` under `## {heading}`")
     }
 
+    /// Remove the line of one item of a `## ` section, matched by its exact text: for a
+    /// line Chough wrote whose entry a finished record no longer lists, such as a
+    /// superseded case run's link once its session has finished.
+    pub(crate) fn remove_item(&mut self, heading: &str, item: &str) -> Result<()> {
+        let (start, end) = section_span(&self.body, heading)
+            .ok_or_else(|| anyhow::anyhow!("no `## {heading}` section"))?;
+        let mut offset = start;
+        for line in self.body[start..end].split_inclusive('\n') {
+            if line.trim_end_matches('\n').strip_prefix("- ") == Some(item) {
+                self.body.replace_range(offset..offset + line.len(), "");
+                return Ok(());
+            }
+            offset += line.len();
+        }
+        bail!("no item `{item}` under `## {heading}`")
+    }
+
+    /// Insert the item `- <item>` (one line) before the first item of the `## <heading>`
+    /// section, or append it as [`Record::append_to_section`] does when the section has
+    /// no item. Every other body byte is kept.
+    pub(crate) fn insert_first_item(&mut self, heading: &str, item: &str) -> Result<()> {
+        ensure!(!item.contains('\n'), "an item is one line");
+        if let Some((start, end)) = section_span(&self.body, heading) {
+            let mut offset = start;
+            for line in self.body[start..end].split_inclusive('\n') {
+                if line.starts_with("- ") {
+                    self.body.insert_str(offset, &format!("- {item}\n"));
+                    return Ok(());
+                }
+                offset += line.len();
+            }
+        }
+        self.append_to_section(heading, &format!("- {item}\n"))
+    }
+
     pub(crate) fn mark_item(&mut self, heading: &str, item: &str, mark: &str) -> Result<()> {
         let (start, end) = section_span(&self.body, heading)
             .ok_or_else(|| anyhow::anyhow!("no `## {heading}` section"))?;
@@ -1163,6 +1198,34 @@ mod tests {
         assert_eq!(
             std::fs::read_to_string(root.path().join("r/a.md")).unwrap(),
             second.render()
+        );
+    }
+
+    /// REQ-history-006 (F8): a story drops an earlier run's line and puts its count
+    /// line first in the section, keeping every other byte.
+    #[test]
+    fn an_item_is_removed_or_inserted_first_in_its_section() {
+        let mut record = Record::new(
+            "# T\n\n## What was verified\n\n- a person's line\n- [run](evidence/x.md)\n- last\n\n## Open threads\n\n- q\n",
+        );
+        record
+            .remove_item("What was verified", "[run](evidence/x.md)")
+            .unwrap();
+        record
+            .insert_first_item("What was verified", "1 earlier run")
+            .unwrap();
+        assert_eq!(
+            record.body(),
+            "# T\n\n## What was verified\n\n- 1 earlier run\n- a person's line\n- last\n\n## Open threads\n\n- q\n"
+        );
+        assert!(record.remove_item("What was verified", "absent").is_err());
+        let mut empty = Record::new("# T\n\n## What was verified\n\n## Open threads\n");
+        empty
+            .insert_first_item("What was verified", "only")
+            .unwrap();
+        assert_eq!(
+            empty.body(),
+            "# T\n\n## What was verified\n\n- only\n\n## Open threads\n"
         );
     }
 }

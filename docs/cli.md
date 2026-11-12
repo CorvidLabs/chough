@@ -858,16 +858,17 @@ done and its save succeeds, the same command goes on, with no further native rea
 (REQ-history-006, REQ-records-011, REQ-cli-043, REQ-cli-052):
 
 1. It archives the session. It writes `.chough/archive/sessions/<id>.md` by create-new:
-   the session's front matter with `stage: done`, `closed` (the UTC date), `outcome`
-   (`done`) and `receipts`, then the story as written, the Timeline and a closing line
-   `Closed <date>: <outcome>.` It reads the story back, then removes each file of the
-   session folder whose exact bytes are committed at HEAD (REQ-records-012); any other
-   file stays, and the folder counts as archived because its story exists. It clears
-   the active pointer. The report is `applied.session_archive`: `archived` with the
-   `id`, the `story` and the files `kept`. A session with unfolded inbox entries stays
-   open as `kept_open` with `inbox_unfolded`, and one for which release is authorized
-   stays open as `kept_open` with that `reason`, to archive itself at the move from
-   release into done.
+   the session's front matter with `stage: done`, `stage_status: archived` and no
+   `next`, since the session's next action no longer applies, `closed` (the UTC date),
+   `outcome` (`done`) and `receipts`, then the story as written, the Timeline and a
+   closing line `Closed <date>: <outcome>.` It reads the story back, then removes each
+   file of the session folder whose exact bytes are committed at HEAD
+   (REQ-records-012); any other file stays, and the folder counts as archived because
+   its story exists. It clears the active pointer. The report is
+   `applied.session_archive`: `archived` with the `id`, the `story` and the files
+   `kept`. A session with unfolded inbox entries stays open as `kept_open` with
+   `inbox_unfolded`, and one for which release is authorized stays open as `kept_open`
+   with that `reason`, to archive itself at the move from release into done.
 2. When the session was archived, it writes the journal's `shipped` post by create-new,
    reported as `applied.journal_post`, with links to the PR, the archived story and the
    change's archive folder. Its title is the session's `title` and its body the
@@ -892,20 +893,25 @@ regenerated index and feed. The session's own `session.md` changed in the move, 
 bytes were not yet committed and it stayed. Then run `chough doctor --fix`, which
 removes the session folder now that its bytes are committed, and commit that.
 
-Each evidence entry the session holds becomes one map in the story's `receipts`, with
-its `id`, `aliases` (one value, comma and space separated), `claim`, `result`,
-`observed`, `command`, `revision`, `environment`, `content`, `fingerprint`, `raw_log`,
-`case`, `case_digest`, `duration_seconds`, `screenshot` and `actor` when present, and
-one What was verified line per receipt:
+Each evidence entry the session holds becomes one map in the story's `receipts`, in
+observation-time order, oldest first, with its `id`, `aliases` (one value, comma and
+space separated), `claim`, `result`, `observed`, `command`, `revision`, `environment`,
+`content`, `fingerprint`, `raw_log`, `case`, `case_digest`, `duration_seconds`,
+`screenshot` and `actor` when present. What was verified gives the latest receipt of
+each case and every receipt bound to no case, one line each:
 
 ```text
 - <claim> — `<command>` <first 12 fingerprint digits> [screenshot](<session>/<file>) ^<evidence id>
 ```
 
-The command, the digits and the screenshot link appear only when the receipt has them,
-and a receipt without a claim shows its ID. The line replaces the item that linked the
-entry while the session was open, since that folder leaves with the session; an item a
-person wrote that names the entry is kept, and that entry gets no second line.
+The command appears only when the claim does not already hold it, as a case run's
+claim does, and the digits and the screenshot link only when the receipt has them; a
+receipt without a claim shows its ID. The line replaces the item that linked the entry
+while the session was open, since that folder leaves with the session; an item a
+person wrote that names the entry is kept, and that entry gets no second line. A
+case's earlier runs get no line, and the item that linked one goes; instead one line,
+first in the section, counts them, as in `2 earlier runs of the cases below are kept
+in this story's receipts, not listed here.`, and `receipts` keeps every run.
 Screenshots move beside the story. Evidence and bug links into an archived session
 resolve to its story's receipts.
 
