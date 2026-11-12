@@ -2338,6 +2338,39 @@ fn status_leads_with_the_same_summary_as_next() {
     );
 }
 
+/// Fresh-eyes finding 12 (t38j, 2026-11-12): `chough status` is the full report, so its
+/// summary gives the next valid action whole, never cut mid-command as
+/// "`chough stage  [cut]"; `chough next`, the bounded view, keeps its per-string bound and
+/// marks the cut.
+#[test]
+fn status_gives_the_next_valid_action_whole() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let next_action = format!(
+        "{}Then run `chough stage advance` to move on.",
+        "Check each SYNTHETIC part of the plan against the scope before moving on. ".repeat(9)
+    );
+    assert!(next_action.len() > 600);
+    fixture.ok(&["checkpoint", "--next-action", &next_action]);
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "SYNTHETIC: no visuals"]);
+    fixture.ok(&["stage", "advance"]);
+    let whole = format!("Continue build: {next_action}");
+
+    let status: Value = serde_json::from_str(&text(&fixture, &["status"])).unwrap();
+    assert_eq!(status["summary"]["stage"]["current"], "build", "{status:#}");
+    assert_eq!(
+        status["summary"]["next_valid_action"]["action"], whole,
+        "{:#}",
+        status["summary"]
+    );
+    assert_eq!(status["next_valid_action"], whole);
+
+    let next = fixture.ok(&["next", "--json"]);
+    let shown = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(shown.ends_with(" [cut]") && shown.len() <= 512, "{shown}");
+}
+
 /// t37f's seed capture: after a migration, or once a session has finished, the latest
 /// failure may be a receipt that a bug or an archived story holds; next still names
 /// it, with the bug that links it (REQ-cli-021).

@@ -468,3 +468,130 @@ fn no_source_names_a_person_as_the_default_human() {
         "a person or account named as an identity: {problems:#?}"
     );
 }
+
+/// The checkpoint's next action.
+#[cfg(unix)]
+fn next_action(fixture: &Fixture) -> String {
+    fixture.checkpoint()["next_action"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string()
+}
+
+/// The next action a close leaves (fresh-eyes finding 12, t382's rule).
+fn closed_next(gate: &str, decision: &str) -> String {
+    format!("Gate \"{gate}\" closed ({decision}); run `chough next` for the next action.")
+}
+
+/// A project at plan, as the fresh-eyes tester was when the scope gate opened.
+#[cfg(unix)]
+fn at_plan() -> Fixture {
+    let fixture = project();
+    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "skip", "--reason", "SYNTHETIC: no visuals"]);
+    assert_eq!(fixture.checkpoint()["stage"]["current"], "plan");
+    fixture
+}
+
+/// Fresh-eyes finding 12 (t38j, 2026-11-12): a next action set while the scope gate was
+/// open ("Present the scope to tester...") went stale once the human approved, and build
+/// still showed it. Closing the last open gate holding the current stage, with no
+/// --next-action in the same call, replaces it, naming the gate and the decision.
+#[cfg(unix)]
+#[test]
+fn approving_the_scope_gate_replaces_the_next_action_it_left_stale() {
+    let fixture = at_plan();
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--holds",
+        "plan",
+        "--next-action",
+        "Present the scope to SYNTHETIC-human and wait for the decision.",
+    ]);
+    fixture.ok(&args(&relay(SCOPE, "SYNTHETIC-human")));
+    assert_eq!(next_action(&fixture), closed_next(SCOPE, "approved"));
+    // The Timeline keeps the decision itself.
+    assert!(decisions(&fixture).pop().unwrap().ends_with(&format!(
+        "; ran specsync change approve {ID} as SYNTHETIC-actor"
+    )));
+}
+
+/// The rest of t382's rule: a review gate names its verdict, a gate that drives no native
+/// step or is closed with --no-native says "closed"; a next action given in the same call
+/// is kept; and a close that leaves another gate holding the stage, or of a gate that
+/// holds another stage, leaves the next action as it is.
+#[cfg(unix)]
+#[test]
+fn a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage() {
+    let fixture = at_plan();
+    let stale = "SYNTHETIC: wait for the human.";
+    let close = |gate: &str, extra: &[&str]| {
+        let mut list = relay(gate, "SYNTHETIC-human");
+        list.extend(extra.iter().map(|value| value.to_string()));
+        fixture.ok(&args(&list));
+    };
+    let open = |gate: &str, holds: &str, drives: &str| {
+        fixture.ok(&[
+            "checkpoint",
+            "--awaiting-human",
+            gate,
+            "--holds",
+            holds,
+            "--drives",
+            drives,
+            "--next-action",
+            stale,
+        ]);
+    };
+    for (gate, drives, extra, decision) in [
+        (
+            "SYNTHETIC review to pass",
+            "review",
+            &["--verdict", "pass"][..],
+            "review pass",
+        ),
+        (
+            "SYNTHETIC review to block",
+            "review",
+            &["--verdict", "block"][..],
+            "review block",
+        ),
+        ("SYNTHETIC go-ahead", "none", &[][..], "closed"),
+        (
+            "SYNTHETIC changes requested",
+            "approve",
+            &["--no-native"][..],
+            "closed",
+        ),
+    ] {
+        open(gate, "plan", drives);
+        close(gate, extra);
+        assert_eq!(next_action(&fixture), closed_next(gate, decision), "{gate}");
+    }
+
+    // A next action given with the close is the one kept.
+    open("SYNTHETIC own next", "plan", "none");
+    close(
+        "SYNTHETIC own next",
+        &["--next-action", "SYNTHETIC: the agent's own next"],
+    );
+    assert_eq!(next_action(&fixture), "SYNTHETIC: the agent's own next");
+
+    // Another gate still holds plan: nothing changes until the last one closes.
+    open("SYNTHETIC first", "plan", "none");
+    open("SYNTHETIC second", "plan", "none");
+    close("SYNTHETIC first", &[]);
+    assert_eq!(next_action(&fixture), stale);
+    close("SYNTHETIC second", &[]);
+    assert_eq!(
+        next_action(&fixture),
+        closed_next("SYNTHETIC second", "closed")
+    );
+
+    // A gate that holds another stage does not describe the current one.
+    open("SYNTHETIC later", "accept", "none");
+    close("SYNTHETIC later", &[]);
+    assert_eq!(next_action(&fixture), stale);
+}
