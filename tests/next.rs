@@ -2576,3 +2576,63 @@ fn next_and_status_reasons_name_no_trace_id() {
     }
     assert!(named.is_empty(), "{named:#?}");
 }
+
+/// Fresh-eyes F4 (second round, 2026-11-12; REQ-cli-021): at accept with the native
+/// change approved, next's action was "Gate not open (refused:native-approved)" with a
+/// bare `specsync change status`. While the change is approved or implementing, it names
+/// the review preparation of the accept step in order: `chough change check <id>
+/// --no-commit` first when the deltas add or modify requirements, then the affected
+/// cases, the review gate, the commit and `chough change check <id>`; status agrees.
+#[cfg(unix)]
+#[test]
+fn at_accept_while_approved_next_names_the_review_preparation_in_order() {
+    for (state, adds) in [("approved", false), ("implementing", true)] {
+        let id = format!("prep-{state}");
+        let fixture = approved_at_plan(&id);
+        while fixture.checkpoint()["stage"]["current"] != "accept" {
+            fixture.ok(&["stage", "advance"]);
+        }
+        fixture.write(".stub-state", &format!("{state}\n"));
+        if adds {
+            fixture.write(
+                &format!(".specsync/changes/{id}/deltas/cli.md"),
+                "## ADDED\n\n### REQUIREMENT REQ-cli-900\n\nThe helper SHALL do it.\n",
+            );
+        }
+        let next = fixture.ok(&["next", "--json"]);
+        let action = next["next_valid_action"]["action"].as_str().unwrap();
+        for refused in ["Gate not open", "refused:", "specsync change status"] {
+            assert!(!action.contains(refused), "{state}: {action}");
+        }
+        let command = next["next_valid_action"]["command"].as_str().unwrap();
+        assert!(!command.starts_with("specsync"), "{state}: {command}");
+        let materialize = format!("`chough change check {id} --no-commit`");
+        let mut steps = vec![
+            "`chough cases run <case-id> --environment <env>`".to_string(),
+            format!(
+                "`chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review`"
+            ),
+            "commit the source".to_string(),
+            format!("`chough change check {id}`"),
+        ];
+        if adds {
+            steps.insert(0, materialize);
+            assert_eq!(command, format!("chough change check {id} --no-commit"));
+        } else {
+            assert!(!action.contains("--no-commit"), "{action}");
+            assert_eq!(command, "chough cases run <case-id> --environment <env>");
+        }
+        let mut from = 0;
+        for step in &steps {
+            let at = action[from..]
+                .find(step.as_str())
+                .unwrap_or_else(|| panic!("{state}: {step} missing or out of order in {action}"));
+            from += at + step.len();
+        }
+        let status = fixture.ok(&["status", "--json"]);
+        assert_eq!(
+            status["summary"]["next_valid_action"]["action"], action,
+            "{state}"
+        );
+    }
+}

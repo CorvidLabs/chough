@@ -461,3 +461,21 @@ expected = ["tests/humans.rs::a_gate_close_names_the_step_its_decision_allows_ne
 adapter = "cargo-test"
 test_target = "humans"
 test = "a_gate_close_names_the_step_its_decision_allows_never_chough_next"
+
+[[case]]
+id = "TC-cli-next-at-accept-while-approved-names-the-review-preparation"
+title = "At accept while the native change is approved or implementing, next names the accept step's review preparation in order, never a refused gate or a bare native status read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_accept_while_approved_next_names_the_review_preparation_in_order passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_accept_while_approved_next_names_the_review_preparation_in_order"
