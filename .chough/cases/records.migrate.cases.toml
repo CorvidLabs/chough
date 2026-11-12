@@ -150,3 +150,41 @@ expected = ["tests/migrate.rs::the_migration_docs_name_every_key_the_preview_and
 adapter = "cargo-test"
 test_target = "migrate"
 test = "the_migration_docs_name_every_key_the_preview_and_apply_print"
+
+# t38j's fresh-eyes report and jackdaw's real migration (0.6.0).
+
+[[case]]
+id = "TC-records-receipt-says-none"
+title = "A migration receipt section with nothing to list says none"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_receipt_section_with_nothing_to_list_says_none passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_receipt_section_with_nothing_to_list_says_none"
+
+[[case]]
+id = "TC-records-migrated-session-md-ends-with-one-newline"
+title = "Every session.md chough migrate --apply writes ends with exactly one newline, so git diff --check passes on the migration commit"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/session_md.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::every_migrated_session_md_ends_with_exactly_one_newline passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "every_migrated_session_md_ends_with_exactly_one_newline"

@@ -202,3 +202,22 @@ adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "humans", "--", "approving_the_scope_gate_replaces_the_next_action_it_left_stale", "a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage"]
 expect_output = ["test result: ok. 2 passed"]
 timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-bug-trigger-and-fix"
+title = "A new bug's Steps start with the labelled Trigger, bug update --fix sets and logs the Fix, and verifying a bug with no Fix names the passing observation and its revision"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the three bug tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "bugs", "--", "a_new_bugs_steps_start_with_the_labelled_trigger", "bug_update_fix_sets_the_fix_paragraph_and_logs_each_set", "verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision"]
+expect_output = ["test result: ok. 3 passed"]
+timeout_seconds = 600
