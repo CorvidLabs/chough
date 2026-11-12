@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-22e39cd74b59abbfc4bedf98"
+    "OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-22e39cd74b59abbfc4bedf98",
+    "OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-d83be6277bef94b5137ee0dc"
   ],
   "impact": "A routine second migrate deletes an open bug's reproduction fixture",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-22e39cd74b59abbfc4bedf98"
       ]
+    },
+    {
+      "at_unix_seconds": 1794450507,
+      "text": "status: investigating -> verified. Green at 96fab11a: TC-records-a-second-migrate-keeps-an-open-bugs-fixture passed; full suite 627 passed, clippy and fmt clean at 35586853; t384's black-box retest on odd50 passed, the later-day apply included.",
+      "observations": [
+        "OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-d83be6277bef94b5137ee0dc"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794449975,
-  "updated_at_unix_seconds": 1794450101
+  "updated_at_unix_seconds": 1794450507
 }
