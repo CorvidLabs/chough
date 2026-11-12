@@ -1107,3 +1107,99 @@ fn a_schema_1_observation_is_carried_without_content_and_stays_stale() {
         "{status:#}"
     );
 }
+
+/// 0.5.x accepted a SHA-256 digest in either case, and 0.6.0 reads only lowercase ones
+/// (REQ-cli-017). A 0.5.x observation whose content, artifact, log and case digests are
+/// uppercase migrates with each of them lowercased, the same digest, so `status` and
+/// `next` read the entry and the story's receipt afterwards.
+#[test]
+fn uppercase_digests_migrate_lowercased_and_read() {
+    let fixture = project("releases/v0.5.0");
+    let upper = |value: &Value| json!(value.as_str().unwrap().to_ascii_uppercase());
+    let mut product = legacy(&fixture, PRODUCT);
+    product["snapshot"]["content"] = upper(&product["snapshot"]["content"]);
+    product["artifact_fingerprints"]["artifact.txt"] =
+        upper(&product["artifact_fingerprints"]["artifact.txt"]);
+    let mut case_run = legacy(&fixture, CASE_RUN);
+    case_run["snapshot"]["content"] = upper(&case_run["snapshot"]["content"]);
+    case_run["artifact_fingerprints"][LOG] = upper(&case_run["artifact_fingerprints"][LOG]);
+    case_run["cases"][0]["digest"] = upper(&case_run["cases"][0]["digest"]);
+    for record in [&product, &case_run] {
+        fixture.write(
+            &format!(".chough/evidence/{}.json", record["id"].as_str().unwrap()),
+            &(serde_json::to_string_pretty(record).unwrap() + "\n"),
+        );
+    }
+    let archived_id = "OBS-product-test-00000000000000000000j001";
+    let mut archived = product.clone();
+    archived["id"] = json!(archived_id);
+    archived["summary"] = json!("SYNTHETIC archived uppercase proof");
+    fixture.write(
+        &format!(".chough/evidence/{archived_id}.json"),
+        &(serde_json::to_string_pretty(&archived).unwrap() + "\n"),
+    );
+    reference(
+        &fixture,
+        ".chough/sessions/fixture-first.json",
+        &[PRODUCT, CASE_RUN],
+    );
+    reference(
+        &fixture,
+        ".chough/sessions/archive/fixture-second.json",
+        &[archived_id],
+    );
+    fixture.commit("0.5.x observations with uppercase digests");
+
+    let (plan, _) = migrate(&fixture);
+    // Both read afterwards.
+    fixture.ok(&["status", "--environment", "fixture"]);
+    fixture.ok(&["next", "--json"]);
+    let lower = |value: &Value| value.as_str().unwrap().to_ascii_lowercase();
+    let text = fixture.read(&alias(&plan, PRODUCT));
+    let entry = front(&text);
+    assert_eq!(
+        entry["content"],
+        lower(&product["snapshot"]["content"]),
+        "{text}"
+    );
+    assert_eq!(
+        maps(&text, "artifact_fingerprints")[0]["digest"],
+        lower(&product["artifact_fingerprints"]["artifact.txt"]),
+        "{text}"
+    );
+    let text = fixture.read(&alias(&plan, CASE_RUN));
+    let entry = front(&text);
+    assert_eq!(
+        entry["content"],
+        lower(&case_run["snapshot"]["content"]),
+        "{text}"
+    );
+    assert_eq!(
+        entry["fingerprint"],
+        format!("sha256:{}", lower(&case_run["artifact_fingerprints"][LOG])),
+        "{text}"
+    );
+    assert_eq!(
+        items(&entry["case_digest"]),
+        [lower(&case_run["cases"][0]["digest"])],
+        "{text}"
+    );
+    let story = fixture.read(&alias(&plan, archived_id));
+    let receipt = maps(&story, "receipts")
+        .into_iter()
+        .find(|receipt| receipt["aliases"] == archived_id)
+        .unwrap_or_else(|| panic!("{story}"));
+    assert_eq!(
+        receipt["content"],
+        lower(&product["snapshot"]["content"]),
+        "{story}"
+    );
+    assert_eq!(
+        receipt["fingerprint"],
+        format!(
+            "sha256:{}",
+            lower(&product["artifact_fingerprints"]["artifact.txt"])
+        ),
+        "{story}"
+    );
+}
