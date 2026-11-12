@@ -25,8 +25,8 @@
     ".chough/cases/",
     "docs/"
   ],
-  "no_spec_change": true,
-  "no_spec_change_rationale": "Release preparation and dogfood fixes within the 0.6.0 contract: D1 makes the pointer resolve as REQ-records-009 already requires ('every record, alias and timeline entry is readable by next, status...'), and the rest is the version, the CHANGELOG, test-only renames, case links and evidence",
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
   "acceptance_criteria": [
     "Cargo.toml and Cargo.lock name version 0.6.0, and chough --version prints chough 0.6.0",
     "CHANGELOG.md has a dated [0.6.0] section whose upgrade notes give the dogfood results, and tests/changelog.rs passes",

@@ -5,7 +5,7 @@ artifact: requirements
 
 # Requirements
 
-One requirement changes, through this change's delta (`deltas/cli.md`):
+Three requirements change, through this change's deltas:
 
 - REQ-cli-061 (gate lists): the gate summary's "what changed" counts since the
   change's own base. The base is the change's `base_commit`, so an earlier change on
@@ -16,7 +16,11 @@ One requirement changes, through this change's delta (`deltas/cli.md`):
   base the summary says the base is unknown. One acceptance criterion is added: a
   second native change on one branch counts only its own files.
 
-Every other fix here works within the current contract: D1 (REQ-records-009, every
-record and alias readable after a migration), the migrate preview's warning
-(REQ-records-009 already refuses the apply while a native change is open; the preview
-now says so first), the KNOW case links (KNOW-3, -4, -6, -15, -24) and #148.
+- REQ-records-009 (migration): while any native change is not archived, the preview
+  also says that `--apply` will refuse until it is, naming each such change; one
+  acceptance criterion is added.
+- REQ-history-006 (sessions): an active pointer that holds a session's alias or bare
+  slug, as a 0.5.x pointer that an in-place migration keeps, names that session, and
+  doctor does not call it stale (D1); one acceptance criterion is added.
+
+The KNOW case links (KNOW-3, -4, -6, -15, -24) and #148 work within the contract.
