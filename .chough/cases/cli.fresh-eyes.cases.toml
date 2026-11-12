@@ -423,3 +423,21 @@ expected = ["tests/docs.rs::stage_skip_docs_say_it_skips_the_current_stage_and_h
 adapter = "cargo-test"
 test_target = "docs"
 test = "stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design"
+
+[[case]]
+id = "TC-cli-a-gate-close-names-the-step-its-decision-allows"
+title = "A gate close that leaves no gate holding the stage sets the next action to the step its decision allows (advance, ship, back to build or record the next action), and next never names itself"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "FLOW-23"]
+requirements = ["REQ-cli-021"]
+paths = ["src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_gate_close_names_the_step_its_decision_allows_never_chough_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_gate_close_names_the_step_its_decision_allows_never_chough_next"
