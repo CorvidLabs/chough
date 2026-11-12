@@ -50,11 +50,6 @@ impl<'a> Obs<'a> {
             artifacts: vec![],
         }
     }
-
-    fn with_log(mut self, path: &'a str, content: &'a str) -> Self {
-        self.artifacts.push((path, content));
-        self
-    }
 }
 
 fn write_obs(fixture: &Fixture, obs: &Obs<'_>) {
@@ -89,26 +84,6 @@ fn write_obs(fixture: &Fixture, obs: &Obs<'_>) {
         &format!(".chough/evidence/{}.json", obs.id),
         &serde_json::to_string_pretty(&record).unwrap(),
     );
-}
-
-fn write_bug(
-    fixture: &Fixture,
-    id: &str,
-    status: &str,
-    observations: &[&str],
-    baseline: Option<&str>,
-) {
-    fixture.bug_md(id, "in-scope", status, observations);
-    if let Some(baseline) = baseline {
-        let name = format!(".chough/bugs/{id}.md");
-        fixture.write(
-            &name,
-            &fixture.read(&name).replace(
-                "receipts: []\n",
-                &format!("receipts: []\nregression_baseline: {baseline}\n"),
-            ),
-        );
-    }
 }
 
 /// REQ-records-009, REQ-cli-012, LIFE-8: an observation the 0.6.0 migration did not
@@ -678,14 +653,10 @@ printf '{"summary":{"id":"%s","state":"archived","terminal_evidence":{"validity"
         "specs/cli/context.md",
         "# Context\n\nIntro.\n\n## Lessons\n\n- 2026-01-01: a lesson.\n",
     );
-    let listing: [(&str, &[&str]); 5] = [
-        ("a1", &["cold-a", "shared", "bugref", "n1"]),
-        ("a2", &["cold-b", "manual", "cold-c"]),
-        ("a3", &[]),
-        ("a4", &["shared"]),
-        ("a5", &["hot-x"]),
-    ];
-    for (index, (id, listed)) in listing.iter().enumerate() {
+    // Five archived changes. The 0.5.x observations their manifests listed for the
+    // retired trim are gone (REQ-records-010): a 0.5.x file would make every command
+    // refuse as unmigrated.
+    for (index, id) in ["a1", "a2", "a3", "a4", "a5"].iter().enumerate() {
         let dir = format!(".specsync/archive/changes/2026-0{}-01-{id}", index + 1);
         fixture.write(
             &format!("{dir}/finalization.json"),
@@ -697,12 +668,6 @@ printf '{"summary":{"id":"%s","state":"archived","terminal_evidence":{"validity"
         );
         let mut entries: Vec<Value> =
             vec![json!({"path": "specs/cli/cli.spec.md", "kind": "file", "payload_digest": ZERO})];
-        for obs in *listed {
-            entries.push(json!({"path": format!(".chough/evidence/{obs}.json"), "kind": "file", "payload_digest": ZERO}));
-        }
-        if *id == "a1" {
-            entries.push(json!({"path": ".chough/artifacts/cold-a.log", "kind": "file", "payload_digest": digest("cold log\n")}));
-        }
         if *id == "a5" {
             // Real cumulative manifests exceed the 64 KiB structured-record bound.
             for index in 0..800 {
@@ -732,35 +697,7 @@ printf '{"summary":{"id":"%s","state":"archived","terminal_evidence":{"validity"
         );
     }
     fixture.init();
-    for (id, outcome, age) in [
-        ("n1", "failed", 1),
-        ("n2", "passed", 2),
-        ("n3", "passed", 3),
-    ] {
-        write_obs(&fixture, &Obs::run(id, "TC-a", outcome, age));
-    }
-    write_obs(
-        &fixture,
-        &Obs::run("cold-a", "TC-a", "passed", 5)
-            .with_log(".chough/artifacts/cold-a.log", "cold log\n"),
-    );
-    for (id, age) in [
-        ("cold-b", 6),
-        ("hot-x", 7),
-        ("shared", 8),
-        ("bugref", 9),
-        ("plain", 10),
-    ] {
-        write_obs(&fixture, &Obs::run(id, "TC-a", "passed", age));
-    }
-    let mut manual = Obs::run("manual", "TC-a", "passed", 11);
-    manual.method = Some("manual");
-    write_obs(&fixture, &manual);
-    // An open bug: since KNOW-22 a closed one no longer holds proof in the trim.
-    write_bug(&fixture, "BUG-0001", "open", &["bugref"], None);
     fixture.commit("fixture");
-    // Written after the commit, so its bytes are not at HEAD.
-    write_obs(&fixture, &Obs::run("cold-c", "TC-a", "passed", 12));
     fixture
 }
 
