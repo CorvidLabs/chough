@@ -505,6 +505,53 @@ pub(super) fn missing_merge_drivers(root: &Path) -> Vec<&'static str> {
         .collect()
 }
 
+/// Each set merge driver whose command runs `chough`, by name, with the program its
+/// command names first (REQ-history-012). A driver a person set to another program is
+/// theirs, and a program name holding anything but letters, digits and `._/~+-` is
+/// never run, so doctor runs no command a shell would read as more than one word.
+pub(super) fn chough_driver_programs(root: &Path) -> Vec<(&'static str, String)> {
+    MERGE_DRIVERS
+        .iter()
+        .filter_map(|(name, _)| {
+            let output = git(root, &["config", "--get", &format!("merge.{name}.driver")])?;
+            if !output.status.success() {
+                return None;
+            }
+            let command = String::from_utf8_lossy(&output.stdout).to_string();
+            let program = command.split_whitespace().next()?.to_string();
+            let plain = program
+                .chars()
+                .all(|c| c.is_ascii_alphanumeric() || "._/~+-".contains(c));
+            let file = program.rsplit('/').next().unwrap_or(&program);
+            (plain && matches!(file, "chough" | "chough.exe")).then_some((*name, program))
+        })
+        .collect()
+}
+
+/// The version `<program> --version` reports when Git runs it, through Git's shell as it
+/// runs a merge driver, so `program` is found through `PATH` as Git finds it; None when
+/// it does not run or prints no version.
+pub(super) fn version_as_git_runs(root: &Path, program: &str) -> Option<String> {
+    let alias = format!("alias.chough-driver-version=!{program} --version");
+    let output = git(root, &["-c", &alias, "chough-driver-version"])?;
+    if !output.status.success() {
+        return None;
+    }
+    let version = String::from_utf8_lossy(&output.stdout)
+        .split_whitespace()
+        .last()?
+        .to_string();
+    version_triple(&version).map(|_| version)
+}
+
+/// `major.minor.patch` of a version, ignoring a pre-release or build suffix.
+pub(super) fn version_triple(version: &str) -> Option<(u64, u64, u64)> {
+    let core = version.split(['-', '+']).next()?;
+    let mut parts = core.split('.').map(|part| part.parse::<u64>().ok());
+    let triple = (parts.next()??, parts.next()??, parts.next()??);
+    parts.next().is_none().then_some(triple)
+}
+
 /// Set each of `names` in the clone's local Git config to Chough's command.
 pub(super) fn set_merge_drivers(root: &Path, names: &[&str]) -> Result<()> {
     for (name, command) in MERGE_DRIVERS

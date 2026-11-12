@@ -142,6 +142,11 @@ impl Fixture {
         let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
         command.arg("--root").arg(self.root()).args(args);
         let mut paths = vec![self.root().join("bin")];
+        // The `chough` a merge driver runs, which doctor finds through PATH
+        // (REQ-history-012), is this build unless a test puts another in `bin/`.
+        if let Some(build) = Path::new(env!("CARGO_BIN_EXE_chough")).parent() {
+            paths.push(build.to_path_buf());
+        }
         paths.extend(std::env::split_paths(
             &std::env::var_os("PATH").unwrap_or_default(),
         ));
