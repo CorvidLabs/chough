@@ -493,6 +493,15 @@ for a human decision that is neither an approval nor a review, such as a request
 changes. Chough never decides which case applies from the words. A gate that drives no
 native step records no human and runs nothing.
 
+A next action written while a gate held the stage describes waiting on it. So when a
+close (`--close-gate`, `gate record` or `change ship --close-gate`) leaves no open gate
+holding the current stage, and the same call gives no `--next-action`, the checkpoint's
+next action becomes ``Gate "<gate>" closed (<decision>); run `chough next` for the next
+action.``, the decision being `approved`, `review pass`, `review block`, or `closed` for
+a gate that drives no native step or a close that runs none. A `--next-action` given in
+the same call is kept, and a close that leaves another gate holding the stage changes
+nothing. The decision itself stays in the Timeline.
+
 Only a decision made at that gate is in the human's name. When an agent approves or
 reviews on authority the human gave in advance, without the human answering a gate, it
 records the native step as the acting agent account, `<agent>-<terminal>`, quoting the
@@ -1226,8 +1235,9 @@ order, so the same records give byte-identical output in both forms.
 `chough status` starts with the same focused summary `chough next` gives, so the next
 action is never buried (BUG-0023). Its JSON starts with a `summary` object: `stage`
 (`current`, `status` and `iteration`), `native_change`, `next_valid_action` (`action`,
-`reason` and `command`, the same action `next --json` gives), `gates` (each with
-`holds` and `drives`) and `blockers`. Its full report follows, including `corrections`
+`reason` and `command`, the same action `next --json` gives, but whole: status is the
+full report, so it never cuts the action as `next`'s bounded view cuts a long one),
+`gates` (each with `holds` and `drives`) and `blockers`. Its full report follows, including `corrections`
 and the session's decisions. In text, the first 40 lines give the stage, the next action
 and its command, the open gates and the blockers.
 
