@@ -948,3 +948,62 @@ fn a_session_archived_since_head_is_not_a_rewritten_timeline() {
         "{report:#}"
     );
 }
+
+/// REQ-history-012, F13 of the second fresh-eyes round: with both merge drivers set and a
+/// `chough` first on `PATH` that reports an older version, doctor reports one
+/// `merge_driver_outdated` finding naming both versions and the install command, has no
+/// fix for it, and exits 1; with the same version, or with no driver set, it reports none.
+#[cfg(unix)]
+#[test]
+fn doctor_reports_merge_drivers_that_would_run_an_older_chough() {
+    let fixture = Fixture::new();
+    fixture.git(&["init"]);
+    fixture.init();
+    fixture.commit("init");
+    let running = env!("CARGO_PKG_VERSION");
+    let on_path = |version: &str| {
+        fixture.write(
+            "bin/chough",
+            &format!("#!/bin/sh\necho 'chough {version}'\n"),
+        );
+        fixture.executable("bin/chough");
+    };
+    let outdated = |report: &Value| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "merge_driver_outdated")
+            .cloned()
+            .collect()
+    };
+    on_path("0.5.0");
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let found = outdated(&report);
+    assert_eq!(found.len(), 1, "{report:#}");
+    let named = found[0].to_string();
+    for part in ["0.5.0", running, "cargo install chough --locked"] {
+        assert!(named.contains(part), "{part:?} is not named: {report:#}");
+    }
+    let (code, report) = doctor(&fixture, &["--fix"]);
+    assert_eq!(code, 1, "{report:#}");
+    assert_eq!(outdated(&report)[0]["status"], "skipped", "{report:#}");
+
+    on_path(running);
+    let (code, report) = doctor(&fixture, &[]);
+    assert!(outdated(&report).is_empty(), "{report:#}");
+    assert_eq!(code, 0, "{report:#}");
+
+    on_path("0.5.0");
+    for name in ["chough-bug", "chough-generated"] {
+        fixture.git(&[
+            "config",
+            "--local",
+            "--unset",
+            &format!("merge.{name}.driver"),
+        ]);
+    }
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(outdated(&report).is_empty(), "{report:#}");
+}

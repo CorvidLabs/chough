@@ -93,3 +93,23 @@ expected = ["tests/sessions.rs::session_list_reports_an_archived_story_as_finish
 adapter = "cargo-test"
 test_target = "sessions"
 test = "session_list_reports_an_archived_story_as_finished"
+
+# The second fresh-eyes round on 0.6.0 (2026-11-12), Leif's yes at 19:43Z.
+
+[[case]]
+id = "TC-history-doctor-names-an-outdated-merge-driver-chough"
+title = "With the merge drivers set and an older chough first on PATH, doctor reports merge_driver_outdated naming both versions and the install command and exits 1; the same version or no driver set reports none"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/library.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_reports_merge_drivers_that_would_run_an_older_chough passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_reports_merge_drivers_that_would_run_an_older_chough"
