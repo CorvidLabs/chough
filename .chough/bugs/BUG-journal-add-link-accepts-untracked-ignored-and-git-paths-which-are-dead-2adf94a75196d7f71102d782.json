@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-journal-link-tracked-only-e616203f178de12d5d50482e"
+    "OBS-tc-cli-journal-link-tracked-only-e616203f178de12d5d50482e",
+    "OBS-tc-cli-journal-link-tracked-only-eb41d50cbdf2e80cee530a57"
   ],
   "impact": "Posts carry links that resolve nowhere in a clone or on GitHub",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-journal-link-tracked-only-e616203f178de12d5d50482e"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449888,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-cli-journal-link-tracked-only passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-cli-journal-link-tracked-only-eb41d50cbdf2e80cee530a57"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794448972
+  "updated_at_unix_seconds": 1794449888
 }

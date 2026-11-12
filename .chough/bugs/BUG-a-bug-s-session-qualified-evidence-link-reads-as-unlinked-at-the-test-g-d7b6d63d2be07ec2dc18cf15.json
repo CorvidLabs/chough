@@ -17,12 +17,14 @@
   "fixture": null,
   "observations": [
     "OBS-tc-cli-qualified-link-leaves-test-db9b137477577e9d19416c85",
-    "OBS-tc-cli-qualified-link-last-failure-d95a707ab518bb9d07487756"
+    "OBS-tc-cli-qualified-link-last-failure-d95a707ab518bb9d07487756",
+    "OBS-tc-cli-qualified-link-leaves-test-b249031e5d6b0cb6cc02e5ce",
+    "OBS-tc-cli-qualified-link-last-failure-3739991ae6ee2368edab745d"
   ],
   "impact": "Any session with a linked failure cannot leave test",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -41,8 +43,22 @@
       "observations": [
         "OBS-tc-cli-qualified-link-last-failure-d95a707ab518bb9d07487756"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449886,
+      "text": "Green at 0ee26ac0: TC-cli-qualified-link-leaves-test passed (fix e942c1eb).",
+      "observations": [
+        "OBS-tc-cli-qualified-link-leaves-test-b249031e5d6b0cb6cc02e5ce"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794449887,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-cli-qualified-link-last-failure passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-cli-qualified-link-last-failure-3739991ae6ee2368edab745d"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447596,
-  "updated_at_unix_seconds": 1794448972
+  "updated_at_unix_seconds": 1794449887
 }

@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-docs-name-the-root-library-folder-67078d9cb15d7549a39cb8f7"
+    "OBS-tc-cli-docs-name-the-root-library-folder-67078d9cb15d7549a39cb8f7",
+    "OBS-tc-cli-docs-name-the-root-library-folder-01404d01af0a09b9b5e8c1d7"
   ],
   "impact": "A person puts snapshots where Chough never reads them",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-docs-name-the-root-library-folder-67078d9cb15d7549a39cb8f7"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449887,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-cli-docs-name-the-root-library-folder passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-cli-docs-name-the-root-library-folder-01404d01af0a09b9b5e8c1d7"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794448883
+  "updated_at_unix_seconds": 1794449887
 }

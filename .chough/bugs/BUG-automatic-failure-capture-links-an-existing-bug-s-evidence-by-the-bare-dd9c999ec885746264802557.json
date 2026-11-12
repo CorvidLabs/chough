@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-capture-links-qualified-085f9f276092be8eaa478f5b"
+    "OBS-tc-cli-capture-links-qualified-085f9f276092be8eaa478f5b",
+    "OBS-tc-cli-capture-links-qualified-2b67f45c67183fd2379d85a6"
   ],
   "impact": "Captured links can read as ambiguous after a merge",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-capture-links-qualified-085f9f276092be8eaa478f5b"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449887,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-cli-capture-links-qualified passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-cli-capture-links-qualified-2b67f45c67183fd2379d85a6"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447672,
-  "updated_at_unix_seconds": 1794448972
+  "updated_at_unix_seconds": 1794449887
 }

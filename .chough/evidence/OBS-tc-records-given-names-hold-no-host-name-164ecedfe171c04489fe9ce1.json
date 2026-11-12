@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-given-names-hold-no-host-name-164ecedfe171c04489fe9ce1",
+  "criteria": [
+    "LIFE-26",
+    "LIFE-17",
+    "FLOW-22"
+  ],
+  "requirements": [
+    "REQ-records-006"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test leaks -- --exact a_given_name_holding_the_host_name_is_refused for TC-records-given-names-hold-no-host-name: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-given-names-hold-no-host-name-164ecedfe171c04489fe9ce1.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-given-names-hold-no-host-name-164ecedfe171c04489fe9ce1.log": "1b4d26be4a3526890fc790389f891a94a7d4885d57e4a274a08dfb429a1322b9"
+  },
+  "observed_at_unix_seconds": 1794449830,
+  "snapshot": {
+    "revision": "0ee26ac0d72f466129525f27afaa5526cd55322e",
+    "dirty": false,
+    "fingerprint": "0d0bd764cd80ae2774fc489289b9f5b0f7b756321e06c01b782077510c7f15b5",
+    "content": "cc056522bd209ed839bdb5d0a0b03f05210757d46be1edf71d7246a66228c3a2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-given-names-hold-no-host-name",
+      "digest": "c44dfe5dfd4d50c216c1e2a7d533145f2475673534fb77c153a942fe8602acec"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "leaks",
+    "--",
+    "--exact",
+    "a_given_name_holding_the_host_name_is_refused"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

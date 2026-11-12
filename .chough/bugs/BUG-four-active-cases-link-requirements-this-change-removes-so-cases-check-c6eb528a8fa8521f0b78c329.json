@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-every-active-case-links-a-current-requirement-20ad4bde2f4fa2c181290eca"
+    "OBS-tc-cli-every-active-case-links-a-current-requirement-20ad4bde2f4fa2c181290eca",
+    "OBS-tc-cli-every-active-case-links-a-current-requirement-dbe8f8892c381de321e7bc70"
   ],
   "impact": "The verify and ci lanes fail after the archive",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-every-active-case-links-a-current-requirement-20ad4bde2f4fa2c181290eca"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449887,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-cli-every-active-case-links-a-current-requirement passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-cli-every-active-case-links-a-current-requirement-dbe8f8892c381de321e7bc70"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447671,
-  "updated_at_unix_seconds": 1794448883
+  "updated_at_unix_seconds": 1794449887
 }

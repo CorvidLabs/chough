@@ -17,12 +17,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-64675e91c417ed90250c9918"
+    "OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-64675e91c417ed90250c9918",
+    "OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-c50b925a6f29b24593c25c98"
   ],
   "impact": "A committed file name and id carry the local user name, host name, tokens or emails; lowercasing does not make them safe",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -34,8 +35,15 @@
       "observations": [
         "OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-64675e91c417ed90250c9918"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449886,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-records-redacted-writes-are-named-from-the-redacted-text passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-records-redacted-writes-are-named-from-the-redacted-text-c50b925a6f29b24593c25c98"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447508,
-  "updated_at_unix_seconds": 1794448896
+  "updated_at_unix_seconds": 1794449886
 }

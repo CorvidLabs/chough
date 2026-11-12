@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-hyphen-led-block-items-read-back-4a8a2adfb9d913d0dca8b673"
+    "OBS-tc-records-hyphen-led-block-items-read-back-4a8a2adfb9d913d0dca8b673",
+    "OBS-tc-records-hyphen-led-block-items-read-back-658111dcb507e5e6585fd16b"
   ],
   "impact": "sh -c, bash -lc, python -m or node -e bindings leave status and next failing until a hand edit",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-records-hyphen-led-block-items-read-back-4a8a2adfb9d913d0dca8b673"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449886,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-records-hyphen-led-block-items-read-back passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-records-hyphen-led-block-items-read-back-658111dcb507e5e6585fd16b"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447637,
-  "updated_at_unix_seconds": 1794448882
+  "updated_at_unix_seconds": 1794449886
 }

@@ -1,0 +1,58 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-tabs-in-values-read-back-b53b5ef436ac3de271bc1994",
+  "criteria": [
+    "DRIVE-25",
+    "DRIVE-26",
+    "KNOW-32",
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-records-001"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test front_matter_writes -- --exact a_tab_in_a_value_is_stored_as_a_space_and_reads_back for TC-records-tabs-in-values-read-back: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-tabs-in-values-read-back-b53b5ef436ac3de271bc1994.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-tabs-in-values-read-back-b53b5ef436ac3de271bc1994.log": "64d658ee5d30818ee830a3284ef90fc6fe454df7637d0f19c4ac2e1684bba25a"
+  },
+  "observed_at_unix_seconds": 1794449834,
+  "snapshot": {
+    "revision": "0ee26ac0d72f466129525f27afaa5526cd55322e",
+    "dirty": false,
+    "fingerprint": "0d0bd764cd80ae2774fc489289b9f5b0f7b756321e06c01b782077510c7f15b5",
+    "content": "cc056522bd209ed839bdb5d0a0b03f05210757d46be1edf71d7246a66228c3a2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-tabs-in-values-read-back",
+      "digest": "6a9724e12b8d79f4a10cdcba8e04d4d746d8a65c19637e87e6dc88f6e13ecf03"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "front_matter_writes",
+    "--",
+    "--exact",
+    "a_tab_in_a_value_is_stored_as_a_space_and_reads_back"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

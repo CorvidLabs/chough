@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-qualified-link-last-failure-3739991ae6ee2368edab745d",
+  "criteria": [
+    "LIFE-3"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived for TC-cli-qualified-link-last-failure: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-qualified-link-last-failure-3739991ae6ee2368edab745d.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-qualified-link-last-failure-3739991ae6ee2368edab745d.log": "08a83dd38be306e5ddb8b01a9494dd4dda3745a83d755c1f4b07ae7493b179a2"
+  },
+  "observed_at_unix_seconds": 1794449852,
+  "snapshot": {
+    "revision": "0ee26ac0d72f466129525f27afaa5526cd55322e",
+    "dirty": false,
+    "fingerprint": "0d0bd764cd80ae2774fc489289b9f5b0f7b756321e06c01b782077510c7f15b5",
+    "content": "cc056522bd209ed839bdb5d0a0b03f05210757d46be1edf71d7246a66228c3a2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-qualified-link-last-failure",
+      "digest": "15390c1fa51fd37fdc10b6f072eab661a7f6fef32edb172d31f0f39ef69d275b"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}

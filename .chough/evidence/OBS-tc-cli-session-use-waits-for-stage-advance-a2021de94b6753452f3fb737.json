@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-session-use-waits-for-stage-advance-a2021de94b6753452f3fb737",
+  "criteria": [
+    "DRIVE-11"
+  ],
+  "requirements": [
+    "REQ-cli-040"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test sessions -- --exact session_use_waits_for_a_running_stage_advance for TC-cli-session-use-waits-for-stage-advance: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-session-use-waits-for-stage-advance-a2021de94b6753452f3fb737.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-session-use-waits-for-stage-advance-a2021de94b6753452f3fb737.log": "1e99cd6cda6a205145f158df36fb796a712811c8b34a99a389c61012e2190ef2"
+  },
+  "observed_at_unix_seconds": 1794449870,
+  "snapshot": {
+    "revision": "0ee26ac0d72f466129525f27afaa5526cd55322e",
+    "dirty": false,
+    "fingerprint": "0d0bd764cd80ae2774fc489289b9f5b0f7b756321e06c01b782077510c7f15b5",
+    "content": "cc056522bd209ed839bdb5d0a0b03f05210757d46be1edf71d7246a66228c3a2"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-session-use-waits-for-stage-advance",
+      "digest": "7768da45fd1e0e172ae8257fe90f72d950153ced532ad3aad85da8c8e8af3f20"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "sessions",
+    "--",
+    "--exact",
+    "session_use_waits_for_a_running_stage_advance"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 3
+}

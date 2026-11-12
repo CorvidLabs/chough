@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-knowledge-lesson-count-dated-e00c49000809f742fb04e98e"
+    "OBS-tc-cli-knowledge-lesson-count-dated-e00c49000809f742fb04e98e",
+    "OBS-tc-cli-knowledge-lesson-count-dated-6e1911d886b1eb8d8d976a6d"
   ],
   "impact": "A resuming agent is told a module has no lessons",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-knowledge-lesson-count-dated-e00c49000809f742fb04e98e"
       ]
+    },
+    {
+      "at_unix_seconds": 1794449888,
+      "text": "status: investigating -> verified. Green at 0ee26ac0: TC-cli-knowledge-lesson-count-dated passed after the fix; full suite 626 passed, clippy and fmt clean at 7b645d60.",
+      "observations": [
+        "OBS-tc-cli-knowledge-lesson-count-dated-6e1911d886b1eb8d8d976a6d"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794448972
+  "updated_at_unix_seconds": 1794449888
 }
