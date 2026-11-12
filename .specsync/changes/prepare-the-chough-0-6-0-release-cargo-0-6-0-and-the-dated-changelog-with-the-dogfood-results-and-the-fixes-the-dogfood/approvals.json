@@ -122,6 +122,18 @@
       "cancelled_approvals": 1,
       "cancelled_review_attempts": 0,
       "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood",
+      "actor": "0xLeif",
+      "reason": "Leif re-scoped the 0.6.0 release prep in the coordinator chat (Claude Code, hc t370): 'yes put the journal fixes in 0.6.0' (15:35Z: short post titles, real summaries, a backfill of the earlier stories, and 0.6.0's own post regenerated), 'yes add lessons in 0.6.0' (15:37Z), and at 15:41Z 'Yes, add both (Recommended)' for chough checkpoint --title/--summary and chough journal add --record, and 'Yes (Recommended)' for temporary-root paths in test-case definitions not counting as leaks. Relayed by claude-code-t370; run by claude-code-t382.",
+      "timestamp": 1794498149,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 2,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
     }
   ]
 }

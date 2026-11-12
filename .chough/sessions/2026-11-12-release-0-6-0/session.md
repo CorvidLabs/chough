@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: build
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -44,7 +44,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: D2 red then green (TC-cli-gate-summary-counts-from-the-changes-own-base), then the migrate preview warning red then green, then the flake fixes; change check --commit last
+next: "Draft the re-scope: REQ-records-011 (titles, summaries, --record, backfill), REQ-records-006 (case-definition temporary roots), the checkpoint options' requirement, skills/ in paths; then the gate and Leif's quoted words"
 ---
 # Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
@@ -148,5 +148,15 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - gate: native:approved
   - revision: 7b1794d936f4e292f6431478e68611f0ed092ccf
+  - by: claude-code (hc t382)
+- 2026-11-12T15:42:40Z · direct-native-write · build → build ·  ^t-6f1951
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: f4855ab4801f4e0684bdd3a35b82b3041c3a6be1
+  - direct_write: {"change":"prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood","files":[{"path":"state.json","change":"changed"},{"path":"approvals.json","change":"changed"}],"before_state":"approved","after_state":"draft"}
+  - by: claude-code (hc t382)
+- 2026-11-12T15:42:40Z · back · build → plan · Leif re-scoped the release prep (15:35Z to 15:41Z, relayed by t370): the journal fixes with checkpoint --title/--summary and journal add --record plus the backfill, lessons, and temporary-root paths in case definitions not counting as leaks; native change sent back to draft ^t-f4a04a
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: f4855ab4801f4e0684bdd3a35b82b3041c3a6be1
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, checkpoint references: 0 case(s) and 23 observation(s) to re-check with `chough status`
   - by: claude-code (hc t382)
 
