@@ -102,6 +102,33 @@ fn difference(change: &str, baseline: &Fingerprint, current: &Fingerprint) -> Op
     })
 }
 
+/// The Timeline text of a direct write: which lifecycle records changed outside Chough
+/// and how, and the change's state before and after (REQ-history-013), so the entry is
+/// never empty, such as after a plain `specsync change check <id>` that materializes a
+/// delta without committing.
+pub(super) fn text(write: &DirectWrite) -> String {
+    let files = write
+        .files
+        .iter()
+        .map(|file| format!("{} {}", file.path, file.change))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let state = |value: &Option<String>| value.as_deref().unwrap_or("unknown").to_string();
+    let states = if write.before_state == write.after_state {
+        format!("state stays {}", state(&write.after_state))
+    } else {
+        format!(
+            "state {} → {}",
+            state(&write.before_state),
+            state(&write.after_state)
+        )
+    };
+    format!(
+        "{}'s lifecycle records changed outside Chough: {files}; {states}",
+        write.change
+    )
+}
+
 fn read_local(root: &Path, change: &str) -> Result<Option<Local>> {
     let path = local_path(root, &local_relative(change))?;
     if !path.exists() {
