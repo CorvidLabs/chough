@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8"
+    "OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8",
+    "OBS-tc-cli-send-back-wording-in-the-specs-c38beba2a983bdab7eedeb68"
   ],
   "impact": "Two readings of one requirement",
   "classification": "requirement-gap",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-send-back-wording-in-the-specs-673576ff2d3dc6e1e67499a8"
       ]
+    },
+    {
+      "at_unix_seconds": 1794493263,
+      "text": "status: investigating -> verified. Green at 7adc3532, after change check --commit materialized the approved deltas on SpecSync 6.3.0: TC-cli-send-back-wording-in-the-specs passed.",
+      "observations": [
+        "OBS-tc-cli-send-back-wording-in-the-specs-c38beba2a983bdab7eedeb68"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794450243,
-  "updated_at_unix_seconds": 1794493185
+  "updated_at_unix_seconds": 1794493263
 }
