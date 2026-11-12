@@ -82,7 +82,7 @@ chough skill status
 
 `--host claude` shares the `.agents/skills/chough-workflow/` copy; Claude Code 2.1.316
 did not discover that directory alone, so add a line to the project's `CLAUDE.md` that
-points at `.agents/skills/chough-workflow/SKILL.md` (`init` does not write it; see
+points at `.agents/skills/chough-workflow/SKILL.md` (`init` does not write it, and with `--host claude` prints it as `claude_md`; see
 [integrations](integrations.md)). Kimi Code CLI users should
 initialize with `--host openai`, which installs `.agents/skills/chough-workflow/`,
 the directory Kimi discovered in the observed run. For other hosts, add their
