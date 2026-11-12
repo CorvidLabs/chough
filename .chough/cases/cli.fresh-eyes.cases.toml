@@ -570,3 +570,21 @@ expected = ["tests/docs.rs::the_accept_steps_first_check_runs_through_chough pas
 adapter = "cargo-test"
 test_target = "docs"
 test = "the_accept_steps_first_check_runs_through_chough"
+
+[[case]]
+id = "TC-cli-context-gives-the-session-as-markdown"
+title = "chough context, Markdown by default, gives the session as Markdown (objective, stage, next action, modules, gates with what they hold and drive, decisions, where it stands, open threads), never a JSON block, and --json keeps the session object"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["src/context.rs", "src/main.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::context_gives_the_session_as_markdown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "context_gives_the_session_as_markdown"

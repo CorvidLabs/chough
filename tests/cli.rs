@@ -3119,3 +3119,65 @@ fn the_walkthrough_begins_with_the_new_project_setup_path() {
         }
     }
 }
+
+/// Fresh-eyes finding F10d (REQ-cli-002): `chough context`, Markdown by default, gives
+/// the session as Markdown, never a JSON block: its objective, stage, next action,
+/// modules, the gates waiting on a human with what each holds and drives, decisions,
+/// where it stands and open threads. `--json` keeps the session object.
+#[test]
+fn context_gives_the_session_as_markdown() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&[
+        "checkpoint",
+        "--decision",
+        "SYNTHETIC: use TOML",
+        "--question",
+        "SYNTHETIC: which viewport?",
+        "--completed",
+        "SYNTHETIC: wrote the parser",
+        "--awaiting-human",
+        "SYNTHETIC intent gate",
+        "--next-action",
+        "SYNTHETIC: read the intent",
+    ]);
+    let packet = fixture.ok(&["context", "--json"]);
+    assert_eq!(packet["session"]["decisions"][0], "SYNTHETIC: use TOML");
+    let objective = format!(
+        "- Objective: {}",
+        packet["session"]["objective"].as_str().unwrap()
+    );
+    let output = fixture.run(&["context"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = String::from_utf8_lossy(&output.stdout).to_string();
+    let heading = "\n## Session\n";
+    let start = text
+        .find(heading)
+        .unwrap_or_else(|| panic!("no Session section: {text}"))
+        + heading.len();
+    let rest = &text[start..];
+    let session = &rest[..rest.find("\n## ").unwrap_or(rest.len())];
+    assert!(
+        !session.contains('{') && !session.contains("\"objective\""),
+        "the Session section is JSON:\n{session}"
+    );
+    for line in [
+        objective.as_str(),
+        "- Stage: intent (active, iteration 1)",
+        "- Next action: SYNTHETIC: read the intent",
+        "- Modules: cli",
+        "- SYNTHETIC intent gate (holds intent; drives none)",
+        "- SYNTHETIC: use TOML",
+        "- SYNTHETIC: wrote the parser",
+        "- SYNTHETIC: which viewport?",
+    ] {
+        assert!(
+            session.lines().any(|shown| shown == line),
+            "no {line:?} in the Session section:\n{session}"
+        );
+    }
+}
