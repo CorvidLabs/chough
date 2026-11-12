@@ -1175,6 +1175,7 @@ fn plan(root: &Path) -> Result<Plan> {
     let (evidence, observations) = evidence_0_5(root, &homes, &links)?;
     carried.absorb(evidence)?;
     story_receipts(&mut carried, &homes, &observations)?;
+    session_verified_links(&mut carried, &homes, &observations)?;
     carried.absorb(bugs_0_5(root, &observations)?)?;
     // Knowledge runs last: its index.md is the one the tree has once every other
     // mapper's plan applies.
@@ -1711,6 +1712,71 @@ fn story_receipts(
         written.bytes = record
             .render_within(crate::markdown::Kind::Story)
             .with_context(|| format!("{path} with its receipts"))?;
+    }
+    Ok(())
+}
+
+/// Each open session's What was verified (REQ-records-009, F10e): the sessions mapper
+/// writes an observation's line as its bare 0.5.x ID, since evidence runs after it, so
+/// the line of each observation carried as an evidence entry becomes the line a 0.6.0
+/// save writes, its claim linking the entry's file; the old ID stays the entry's alias.
+/// A line a person wrote, or one for an observation carried as no entry, is kept.
+fn session_verified_links(
+    carried: &mut Carried,
+    sessions: &BTreeMap<String, SessionHome>,
+    homes: &ObservationHomes,
+) -> Result<()> {
+    use crate::session_md::VERIFIED;
+    // Each carried entry's claim, by its path.
+    let mut claims = BTreeMap::new();
+    for written in &carried.written {
+        if homes.entries.values().any(|entry| *entry == written.path) {
+            let record = crate::markdown::parse(&written.path, &written.bytes)?;
+            claims.insert(
+                written.path.clone(),
+                record.scalar("claim").unwrap_or_default().to_string(),
+            );
+        }
+    }
+    for home in sessions.values().filter(|home| !home.archived) {
+        let path = format!(".chough/sessions/{}/session.md", home.id);
+        let Some(written) = carried
+            .written
+            .iter_mut()
+            .find(|written| written.path == path)
+        else {
+            continue;
+        };
+        let mut record = crate::markdown::parse(&path, &written.bytes)?;
+        let listed = crate::session_md::items(&record, VERIFIED);
+        let mut changed = false;
+        for id in &home.observations {
+            let (Some(entry), true) = (homes.entries.get(id), listed.contains(id)) else {
+                continue;
+            };
+            // `.chough/sessions/<owner>/evidence/<name>`, linked from this session.
+            let Some((owner, name)) = entry
+                .strip_prefix(".chough/sessions/")
+                .and_then(|rest| rest.split_once("/evidence/"))
+            else {
+                continue;
+            };
+            let link = if owner == home.id {
+                format!("evidence/{name}")
+            } else {
+                format!("../{owner}/evidence/{name}")
+            };
+            let claim = claims.get(entry).map_or(id.as_str(), String::as_str);
+            record.replace_item(
+                VERIFIED,
+                id,
+                &crate::session_md::verified_link(claim, &link),
+            )?;
+            changed = true;
+        }
+        if changed {
+            written.bytes = record.render();
+        }
     }
     Ok(())
 }
