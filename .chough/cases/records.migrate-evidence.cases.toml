@@ -185,3 +185,21 @@ expected = ["tests/migrate_evidence.rs::a_migrated_sessions_verified_lines_link_
 adapter = "cargo-test"
 test_target = "migrate_evidence"
 test = "a_migrated_sessions_verified_lines_link_the_carried_entries"
+
+[[case]]
+id = "TC-records-migrate-evidence-story-lines-are-receipt-lines"
+title = "A migrated archived story's What was verified gives an observation carried as its receipt as a 0.6.0 story writes it, claim, first 12 fingerprint digits and receipt anchor, never the bare 0.5.x ID"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "src/sessions.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::a_migrated_storys_verified_lines_are_receipt_lines passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "a_migrated_storys_verified_lines_are_receipt_lines"
