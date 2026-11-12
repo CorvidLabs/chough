@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-12-a-journal-post-s-title-is-the-raw-objective-and-its-body-a
 aliases: []
 title: A journal post's title is the raw objective and its body a stale first bullet, and the stories archived before the journal have no post
-status: open
+status: fix-pending-verification
 classification: requirement-gap
 scope: blocking
 impact: The journal, the timeline of archived changes, reads badly and covers one change of 69
@@ -15,6 +15,10 @@ evidence:
   - 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-derives-a-title-and-body
   - 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-add-record-backfills-a-story
   - 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-and-feed
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-uses-the-title-and-summary-8c54e8
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-derives-a-title-and-body-4b516b
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-add-record-backfills-a-story-92c347
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-and-feed-d0e01b
 receipts: []
 environment: local-macos-arm64
 revision: 423169dee4924d188777c611349ce0e0318820a8
@@ -24,7 +28,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T16:04:18Z
-updated: 2026-11-12T16:04:18Z
+updated: 2026-11-12T16:20:05Z
 ---
 # A journal post's title is the raw objective and its body a stale first bullet, and the stories archived before the journal have no post
 
@@ -42,3 +46,4 @@ Actual: REQ-records-011 makes the title the objective and the body the first Out
 ## Log
 
 - 2026-11-12T16:04:18Z · Reported (Leif, reviewing knowledge/journal in the coordinator chat (hc t370), 2026-11-12T15:35Z, relayed by t370; red at 423169de by t382); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-uses-the-title-and-summary, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-derives-a-title-and-body, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-add-record-backfills-a-story, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-and-feed · by claude-code (hc t382)
+- 2026-11-12T16:20:05Z · status: open -> fix-pending-verification; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-uses-the-title-and-summary-8c54e8, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-post-derives-a-title-and-body-4b516b, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-add-record-backfills-a-story-92c347, 2026-11-12-release-0-6-0/2026-11-12-tc-records-journal-and-feed-d0e01b. Green at 69b60a68: the three journal cases and TC-records-journal-and-feed passed (journal target 18/18, doctor 15/15 before the commit). Verified once the backfill and 0.6.0's own post are written with it · by claude-code (hc t382)

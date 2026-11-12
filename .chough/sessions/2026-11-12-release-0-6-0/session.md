@@ -45,6 +45,12 @@ observations:
   - 2026-11-12-tc-records-journal-add-record-backfills-a-story
   - 2026-11-12-tc-records-doctor-case-temp-paths-are-not-leaks
   - 2026-11-12-tc-records-journal-and-feed
+  - 2026-11-12-tc-records-journal-post-uses-the-title-and-summary-8c54e8
+  - 2026-11-12-tc-records-journal-post-derives-a-title-and-body-4b516b
+  - 2026-11-12-tc-records-journal-add-record-backfills-a-story-92c347
+  - 2026-11-12-tc-records-doctor-case-temp-paths-are-not-leaks-f46304
+  - 2026-11-12-tc-records-journal-and-feed-d0e01b
+  - 2026-11-12-tc-records-journal-posts-record-time
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -97,6 +103,12 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test journal -- --exact journal_add_record_backfills_an_archived_story for TC-records-journal-add-record-backfills-a-story: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-journal-add-record-backfills-a-story.md)
 - [Ran cargo test --locked --test doctor -- --exact a_temporary_path_in_a_case_definition_is_not_a_leak for TC-records-doctor-case-temp-paths-are-not-leaks: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-doctor-case-temp-paths-are-not-leaks.md)
 - [Ran cargo test --locked --test journal -- --exact done_writes_a_short_post_and_the_feed_lists_it for TC-records-journal-and-feed: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-journal-and-feed.md)
+- [Ran cargo test --locked --test journal -- --exact the_post_uses_the_title_and_summary_the_agent_set for TC-records-journal-post-uses-the-title-and-summary: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-journal-post-uses-the-title-and-summary-8c54e8.md)
+- [Ran cargo test --locked --test journal -- --exact without_a_title_or_summary_the_post_derives_both_from_the_story for TC-records-journal-post-derives-a-title-and-body: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-journal-post-derives-a-title-and-body-4b516b.md)
+- [Ran cargo test --locked --test journal -- --exact journal_add_record_backfills_an_archived_story for TC-records-journal-add-record-backfills-a-story: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-journal-add-record-backfills-a-story-92c347.md)
+- [Ran cargo test --locked --test doctor -- --exact a_temporary_path_in_a_case_definition_is_not_a_leak for TC-records-doctor-case-temp-paths-are-not-leaks: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-doctor-case-temp-paths-are-not-leaks-f46304.md)
+- [Ran cargo test --locked --test journal -- --exact done_writes_a_short_post_and_the_feed_lists_it for TC-records-journal-and-feed: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-journal-and-feed-d0e01b.md)
+- [Ran cargo test --locked --test journal -- --exact posts_record_a_time_and_sort_newest_first_by_it for TC-records-journal-posts-record-time: passed (exit 0).](evidence/2026-11-12-tc-records-journal-posts-record-time.md)
 
 ## Open threads
 
