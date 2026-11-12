@@ -111,6 +111,8 @@ observations:
   - 2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate
   - 2026-11-12-tc-records-every-gate-close-names-a-configured-human-f93c42
   - 2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-79d253
+  - 2026-11-12-tc-cli-close-running-no-native-step-says-why
+  - 2026-11-12-tc-history-session-list-archived-story-is-finished
 bugs: [2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records]
 blockers: []
 waiting_on_human: []
@@ -235,6 +237,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test change -- --exact ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing for TC-records-ship-names-a-configured-human-at-any-gate: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate.md)
 - [Ran cargo test --locked --test humans -- --exact every_gate_close_names_a_configured_human for TC-records-every-gate-close-names-a-configured-human: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-every-gate-close-names-a-configured-human-f93c42.md)
 - [Ran cargo test --locked --test change -- --exact ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing for TC-records-ship-names-a-configured-human-at-any-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-79d253.md)
+- [Ran cargo test --locked --test humans -- --exact a_close_that_runs_no_native_step_says_why for TC-cli-close-running-no-native-step-says-why: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-close-running-no-native-step-says-why.md)
+- [Ran cargo test --locked --test sessions -- --exact session_list_reports_an_archived_story_as_finished for TC-history-session-list-archived-story-is-finished: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-session-list-archived-story-is-finished.md)
 
 ## Open threads
 
