@@ -5,9 +5,46 @@ use crate::records::{NativeJson, Section, file_section, local_path, native, nati
 use crate::{bugs, prefs, stage};
 use anyhow::{Result, ensure};
 use std::collections::BTreeSet;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 const CONTEXT_LIMIT: usize = 131_072;
+
+/// The folders whose AGENTS.md the packet reads, outermost first, each with the name the
+/// packet gives it: from the project's Git root down to the project root, named relative
+/// to the project (`../AGENTS.md`, then `AGENTS.md`). Nothing above the repository is
+/// read, so a home folder's AGENTS.md never enters the packet, and no absolute path is
+/// printed. Outside a Git work tree, only the project root.
+fn instruction_folders(root: &Path) -> Vec<(PathBuf, String)> {
+    let project = root.canonicalize().unwrap_or_else(|_| root.to_path_buf());
+    let top = crate::records::run_owned(
+        std::process::Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(["rev-parse", "--show-toplevel"]),
+        None,
+    )
+    .ok()
+    .filter(|output| output.status.success())
+    .and_then(|output| String::from_utf8(output.stdout).ok())
+    .and_then(|top| {
+        PathBuf::from(top.trim_end_matches(['\r', '\n']))
+            .canonicalize()
+            .ok()
+    })
+    .filter(|top| project.starts_with(top));
+    let mut folders = vec![];
+    for (depth, folder) in project.ancestors().enumerate() {
+        folders.push((
+            folder.to_path_buf(),
+            format!("{}AGENTS.md", "../".repeat(depth)),
+        ));
+        if top.as_deref().is_none_or(|top| folder == top) {
+            break;
+        }
+    }
+    folders.reverse();
+    folders
+}
 
 /// The HI export shown in `chough context`: a display section within 16 KiB.
 pub(super) fn hi_export(root: &Path, scope: &str) -> Section {
@@ -31,12 +68,10 @@ pub(super) fn hi_export_json(root: &Path, scope: &str) -> NativeJson {
 
 pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
     let mut sections = vec![];
-    let mut ancestors: Vec<_> = root.ancestors().collect();
-    ancestors.reverse();
-    for ancestor in ancestors {
-        if ancestor.join("AGENTS.md").exists() {
-            let mut section = file_section(ancestor, "AGENTS.md")?;
-            section.source = ancestor.join("AGENTS.md").display().to_string();
+    for (folder, name) in instruction_folders(root) {
+        if folder.join("AGENTS.md").exists() {
+            let mut section = file_section(&folder, "AGENTS.md")?;
+            section.source = name;
             sections.push(section);
         }
     }
