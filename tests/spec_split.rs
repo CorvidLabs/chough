@@ -236,3 +236,22 @@ fn every_active_case_links_a_requirement_the_specs_hold() {
     }
     assert!(missing.is_empty(), "{missing:#?}");
 }
+
+/// REQ-cli-044, REQ-cli-012, REQ-cli-059, TC-cli-send-back-wording-in-the-specs (K6, S6,
+/// G1): once the approved deltas are materialized, the cli requirements say a vault link
+/// may resolve to a folder, which bug keys are written only when set, and that a ship
+/// refuses only for the active session's open gates.
+#[test]
+fn the_send_back_wording_is_in_the_cli_requirements() {
+    let held = blocks(&companion("cli"));
+    for (id, phrase) in [
+        ("REQ-cli-044", "resolves to an existing file or folder"),
+        ("REQ-cli-012", "are written only when set"),
+        ("REQ-cli-059", "every open human gate of the active session"),
+    ] {
+        let body = held
+            .get(id)
+            .unwrap_or_else(|| panic!("{id} is not in the cli requirements"));
+        assert!(body.contains(phrase), "{id} lacks {phrase:?}");
+    }
+}

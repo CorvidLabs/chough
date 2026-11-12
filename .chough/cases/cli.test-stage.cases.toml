@@ -147,3 +147,21 @@ expected = ["tests/change.rs::a_ship_that_runs_the_review_reports_it_in_native_s
 adapter = "cargo-test"
 test_target = "change"
 test = "a_ship_that_runs_the_review_reports_it_in_native_step"
+
+[[case]]
+id = "TC-cli-send-back-wording-in-the-specs"
+title = "After materialization the cli requirements hold the send-back's wording: folder links, bug keys written when set, and the active session's gates at ship"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-5"]
+requirements = ["REQ-cli-044", "REQ-cli-012", "REQ-cli-059"]
+paths = ["specs/cli/requirements.md", "tests/spec_split.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/spec_split.rs::the_send_back_wording_is_in_the_cli_requirements passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "spec_split"
+test = "the_send_back_wording_is_in_the_cli_requirements"
