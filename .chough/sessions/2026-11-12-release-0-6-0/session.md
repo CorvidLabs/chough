@@ -51,6 +51,9 @@ observations:
   - 2026-11-12-tc-records-doctor-case-temp-paths-are-not-leaks-f46304
   - 2026-11-12-tc-records-journal-and-feed-d0e01b
   - 2026-11-12-tc-records-journal-posts-record-time
+  - 2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships
+  - 2026-11-12-tc-cli-docs-name-what-cases-run-returns
+  - 2026-11-12-tc-records-migration-docs-name-every-key
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -64,6 +67,9 @@ next: Journal red then green (title/summary, derived fallback, journal add --rec
 Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
 ## Where it stands
+
+- After #239 squash-merged as a2e30b8c, git diff 977bd246 origin/main printed 0 lines (checked by t370 and by t382), so origin/main was merged into leif/human-first-records with -s ours as 2852997c, whose tree equals its first parent's (git diff HEAD^1 HEAD printed 0 lines); #238 then showed 54 files, only the release-prep work; no force-push
+- D2 red then green (acd2b0b0, d5381eef), the migrate preview warning red then green (0fa8cb7f, 8daaad23), the journal and case-definition temporary paths red then green (423169de, 69b60a68)
 
 ## Decisions and why
 
@@ -109,6 +115,9 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test doctor -- --exact a_temporary_path_in_a_case_definition_is_not_a_leak for TC-records-doctor-case-temp-paths-are-not-leaks: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-doctor-case-temp-paths-are-not-leaks-f46304.md)
 - [Ran cargo test --locked --test journal -- --exact done_writes_a_short_post_and_the_feed_lists_it for TC-records-journal-and-feed: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-journal-and-feed-d0e01b.md)
 - [Ran cargo test --locked --test journal -- --exact posts_record_a_time_and_sort_newest_first_by_it for TC-records-journal-posts-record-time: passed (exit 0).](evidence/2026-11-12-tc-records-journal-posts-record-time.md)
+- [Ran cargo test --locked --test changelog -- --exact the_0_6_0_also_list_names_nothing_0_6_0_removed for TC-cli-changelog-0-6-0-names-only-what-ships: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships.md)
+- [Ran cargo test --locked --test cases -- --exact the_cli_reference_names_what_cases_run_returns for TC-cli-docs-name-what-cases-run-returns: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-docs-name-what-cases-run-returns.md)
+- [Ran cargo test --locked --test migrate -- --exact the_migration_docs_name_every_key_the_preview_and_apply_print for TC-records-migration-docs-name-every-key: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migration-docs-name-every-key.md)
 
 ## Open threads
 
