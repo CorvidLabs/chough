@@ -793,3 +793,67 @@ fn doctor_reports_missing_merge_drivers_and_fix_sets_them() {
     );
     assert_eq!(fixture.read(".gitattributes"), attributes);
 }
+
+/// REQ-history-012, TC-history-doctor-reports-an-unreadable-record (R9): a committed
+/// Chough record its reader refuses, here an evidence entry whose front matter holds a
+/// bare `- -c` block item, makes `status` refuse the project; doctor reports it as
+/// `unreadable` with the file and the reader's reason, has no fix for it, and exits 1.
+#[test]
+fn doctor_reports_a_committed_record_its_reader_refuses() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC entry",
+    ]);
+    let session = fixture.active_id();
+    let dir = format!(".chough/sessions/{session}/evidence");
+    let name = std::fs::read_dir(fixture.root().join(&dir))
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .find(|name| name.ends_with(".md"))
+        .unwrap();
+    let entry = format!("{dir}/{name}");
+    let text = fixture.read(&entry);
+    let broken = text.replacen("\n---\n", "\ncommand:\n  - sh\n  - -c\n---\n", 1);
+    assert_ne!(broken, text);
+    fixture.write(&entry, &broken);
+    fixture.commit("an entry its reader refuses");
+    assert!(!fixture.run(&["status"]).status.success());
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let found = of_kind(&report, "unreadable");
+    assert_eq!(found.len(), 1, "{report:#}");
+    assert_eq!(found[0]["target"], entry.as_str(), "{report:#}");
+    assert!(
+        found[0]["error"]
+            .as_str()
+            .is_some_and(|error| error.contains(&entry) && error.contains("nested list")),
+        "{report:#}"
+    );
+    let (_, fixed) = doctor(&fixture, &["--fix"]);
+    assert!(
+        of_kind(&fixed, "unreadable")
+            .iter()
+            .all(|finding| finding["status"] == "skipped"),
+        "{fixed:#}"
+    );
+    assert_eq!(fixture.read(&entry), broken);
+}

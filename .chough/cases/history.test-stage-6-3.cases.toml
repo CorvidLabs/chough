@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "history"
+
+# Regressions for the 0.6.0 send-back's history contract fixes (R9).
+
+[[case]]
+id = "TC-history-doctor-reports-an-unreadable-record"
+title = "doctor reports a committed Chough record its reader refuses as unreadable, with the file and the reason, and no fix"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17", "DRIVE-16", "DRIVE-13"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_reports_a_committed_record_its_reader_refuses passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_reports_a_committed_record_its_reader_refuses"
