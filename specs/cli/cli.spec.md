@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 84
+version: 85
 status: active
 files:
   - src/main.rs
@@ -363,3 +363,4 @@ provider, runtime or hosted service.
 | 82 | 2026-11-10 | read-bounded-diagnostic-input-inventories-without-changing-freshness-authority: Read bounded diagnostic input inventories without changing freshness authority |
 | 83 | 2026-11-10 | keep-observations-current-when-the-generated-knowledge-index-is-rebuilt-136: Keep observations current when the generated knowledge index is rebuilt (#136) |
 | 84 | 2026-11-10 | return-the-observation-id-from-cases-record-and-evidence-add-issue-60: Return the observation ID from cases record and evidence add (issue 60) |
+| 85 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
