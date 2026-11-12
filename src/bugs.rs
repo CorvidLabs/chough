@@ -696,15 +696,22 @@ fn check_evidence(evidence: &Evidence<'_>, bug: &Stored, ids: &[String]) -> Resu
                 "unknown evidence {id}: no open session's entry, archived story's receipt or receipt of this bug has that id or alias"
             )
         })?;
-        let session = (linked.label == "entry" && !id.contains('/'))
-            .then(|| linked.place.split_once('/').map(|(session, _)| session))
-            .flatten();
-        stored.push(match session {
-            Some(session) => format!("{session}/{id}"),
-            None => id.clone(),
-        });
+        stored.push(stored_form(id, &linked));
     }
     Ok(stored)
+}
+
+/// How a bug stores a link that resolved to `linked`: an open session's entry, named
+/// bare, qualified or by an alias, as its canonical `<session>/<id>`, the place it
+/// resolved to; so a later merge that brings a same-named entry in another session
+/// cannot make it ambiguous, and a dropped alias cannot break it (REQ-cli-023). Any
+/// other link is stored as given.
+fn stored_form(id: &str, linked: &Linked) -> String {
+    if linked.label == "entry" {
+        linked.place.clone()
+    } else {
+        id.to_string()
+    }
 }
 
 fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Result<()> {
@@ -802,6 +809,23 @@ fn search(
         .collect();
     matches.sort_by(|left, right| right.0.total_cmp(&left.0));
     matches.into_iter().map(|(_, value)| value).collect()
+}
+
+/// The bugs whose ID or an alias is a word of `text`, such as a migrated bug's
+/// `BUG-NNNN`, each with score 1.0 and `matched: id or alias`.
+fn named_in(bugs: &[Stored], text: &str) -> Vec<Value> {
+    let words: Vec<&str> = text
+        .split(|character: char| {
+            !(character.is_ascii_alphanumeric() || character == '-' || character == '_')
+        })
+        .filter(|word| !word.is_empty())
+        .collect();
+    bugs.iter()
+        .filter(|bug| words.iter().any(|word| bug.holds(word)))
+        .map(|bug| {
+            json!({"id": bug.id(), "title": bug.text("title"), "status": bug.status(), "score": 1.0, "matched": "id or alias"})
+        })
+        .collect()
 }
 
 /// What a new bug says, before it has a name.
@@ -1127,21 +1151,32 @@ pub(super) struct Finding<'a> {
 pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<String> {
     crate::sessions::lock_project(root)?;
     let bugs = read_all(root)?;
+    // The failure is linked as bug add links it (REQ-cli-023); one that does not
+    // resolve here is linked as given, so a capture never fails on it.
+    let index = Evidence::new(root);
+    let link_for = |bug: &Stored| match index.find(bug, finding.observation) {
+        Ok(Some(linked)) => stored_form(finding.observation, &linked),
+        _ => finding.observation.to_string(),
+    };
     if let Some(existing) = bugs
         .iter()
         .find(|bug| bug.is_open() && bug.list("cases").iter().any(|case| case == finding.case))
     {
         let mut stored = existing.clone();
         let at = now()?;
+        let link = link_for(&stored);
         let mut evidence = stored.list("evidence");
-        if !evidence.iter().any(|id| id == finding.observation) {
-            evidence.push(finding.observation.to_string());
+        if !evidence
+            .iter()
+            .any(|id| *id == link || id == finding.observation)
+        {
+            evidence.push(link.clone());
         }
         stored.record.set("evidence", Front::List(evidence))?;
         stored.record.set_scalar("updated", &iso_time(at))?;
         let text = format!(
-            "Additional failure from {}; evidence: {}",
-            finding.source, finding.observation
+            "Additional failure from {}; evidence: {link}",
+            finding.source
         );
         stored.record.append_to_section(
             LOG,
@@ -1167,7 +1202,10 @@ pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<Strin
         criteria: finding.criteria,
         requirements: finding.requirements,
         cases: vec![finding.case.into()],
-        evidence: vec![finding.observation.into()],
+        evidence: vec![link_for(&Stored {
+            path: String::new(),
+            record: Record::new(""),
+        })],
         regression_baseline: None,
         fixture: None,
         environment: finding.environment.into(),
@@ -1551,12 +1589,38 @@ pub(super) fn open_backlog(root: &Path) -> Result<Vec<Value>> {
 }
 
 /// Every evidence ID each bug links, whatever its status, labeled `<bug-id> <status>`:
-/// its evidence and its regression baseline.
+/// its evidence and its regression baseline, a session-qualified link also by its bare
+/// ID (see [`with_bare_ids`]).
 pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<String>)>> {
     Ok(read_all(root)?
         .iter()
-        .map(|bug| (format!("{} {}", bug.id(), bug.status()), bug.linked()))
+        .map(|bug| {
+            (
+                format!("{} {}", bug.id(), bug.status()),
+                with_bare_ids(bug.linked()),
+            )
+        })
         .collect())
+}
+
+/// Each linked ID as stored and, for a session-qualified link (`<session>/<id>`, as
+/// `bug add` and `bug update` store a link to a session entry, REQ-cli-023), its bare
+/// evidence ID too, the part after the last `/`. The test gate and next's last failure
+/// match bug links against bare observation IDs, so both forms count as a link.
+fn with_bare_ids(links: Vec<String>) -> Vec<String> {
+    let mut ids = vec![];
+    for link in links {
+        if let Some((_, bare)) = link.rsplit_once('/')
+            && !bare.is_empty()
+            && !ids.iter().any(|id| id == bare)
+        {
+            ids.push(bare.to_string());
+        }
+        if !ids.contains(&link) {
+            ids.push(link);
+        }
+    }
+    ids
 }
 
 /// Whether a bug status is closed: verified, duplicate, wont-fix or fixed-upstream.
@@ -2087,6 +2151,8 @@ pub(super) fn run(root: &Path, command: BugCommand) -> Result<()> {
                 if !bug.is_open() {
                     value["closed_as"] = json!(bug.status().replace('-', " "));
                 }
+                // A migrated bug answers to its 0.5.x ID (REQ-cli-012).
+                value["aliases"] = json!(bug.list("aliases"));
                 listed.push(value);
             }
             print_json(&json!({"schema_version": 1, "open_only": !all, "bugs": listed}))
@@ -2096,11 +2162,22 @@ pub(super) fn run(root: &Path, command: BugCommand) -> Result<()> {
             criteria,
             requirements,
             cases,
-        } => print_json(&json!({
-            "schema_version": 1,
-            "matches": search(&read_all(root)?, &text, &criteria, &requirements, &cases),
-            "note": "Scores compare words in title, symptom and trigger plus shared IDs; decide duplicates from the evidence.",
-        })),
+        } => {
+            let bugs = read_all(root)?;
+            // A bug the text names by its ID or an alias comes first (REQ-cli-012), then
+            // the word matches; `bug add`'s duplicate check compares words only.
+            let mut matches = named_in(&bugs, &text);
+            for found in search(&bugs, &text, &criteria, &requirements, &cases) {
+                if !matches.iter().any(|named| named["id"] == found["id"]) {
+                    matches.push(found);
+                }
+            }
+            print_json(&json!({
+                "schema_version": 1,
+                "matches": matches,
+                "note": "A bug the text names by its ID or an alias is listed first; other scores compare words in title, symptom and trigger plus shared IDs; decide duplicates from the evidence.",
+            }))
+        }
         BugCommand::Show { id } => {
             let bug = load(root, &id)?;
             let evidence = Evidence::new(root);

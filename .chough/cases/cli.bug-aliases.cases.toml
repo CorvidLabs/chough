@@ -1,0 +1,23 @@
+# S2: a migrated bug answers to its 0.5.x alias in bug list and bug search
+# (REQ-cli-012).
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-bug-alias-list-and-search"
+title = "bug list names each bug's aliases and bug search finds a bug by its alias or name"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_migrated_bug_answers_to_its_alias_in_bug_list_and_bug_search passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "bugs", "--", "--exact", "a_migrated_bug_answers_to_its_alias_in_bug_list_and_bug_search"]
+expect_output = ["test a_migrated_bug_answers_to_its_alias_in_bug_list_and_bug_search ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600
