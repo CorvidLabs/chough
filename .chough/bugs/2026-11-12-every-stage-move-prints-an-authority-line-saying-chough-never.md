@@ -1,0 +1,40 @@
+---
+kind: bug
+id: 2026-11-12-every-stage-move-prints-an-authority-line-saying-chough-never
+aliases: []
+title: Every stage move prints an authority line saying Chough never writes native approval or review, which 0.6.0 gates do
+status: open
+classification: product-defect
+scope: in-scope
+impact: Misleads agents and humans about who approves
+criteria: []
+requirements: []
+cases: []
+evidence: []
+receipts: []
+environment: local-macos-arm64
+revision: ee9cae4eeee05e65d7c25f66e3af4b6489636bdc
+found_by: claude-code (hc t382) (t38j's fresh-eyes report on 0.6.0 at c208c8a8 (claude-code, hc t38j, a cold full cycle on a scratch Python CLI and a 0.5.0 migration, 2026-11-12), relayed by t370; recorded by t382, not yet reproduced)
+actor:
+  - agent: claude-code
+    terminal: t382
+related: []
+created: 2026-11-12T16:21:40Z
+updated: 2026-11-12T16:21:40Z
+---
+# Every stage move prints an authority line saying Chough never writes native approval or review, which 0.6.0 gates do
+
+**What happened:** stage advance output carries authority: Native SpecSync status decides lifecycle gates; Chough never writes native approval or review
+Actual: An untrue statement since #236
+
+**Steps:** Any chough stage move
+
+**Expected:** The line says that a gate decision runs native approve or review as the configured human, a relayed claim
+
+**Why it matters:** Misleads agents and humans about who approves
+
+**Fix:** Not fixed yet.
+
+## Log
+
+- 2026-11-12T16:21:40Z · Reported (t38j's fresh-eyes report on 0.6.0 at c208c8a8 (claude-code, hc t38j, a cold full cycle on a scratch Python CLI and a 0.5.0 migration, 2026-11-12), relayed by t370; recorded by t382, not yet reproduced) · by claude-code (hc t382)
