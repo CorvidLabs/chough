@@ -38,3 +38,21 @@ expected = ["tests/sessions.rs::a_story_lists_each_entry_once_with_its_receipt p
 adapter = "cargo-test"
 test_target = "sessions"
 test = "a_story_lists_each_entry_once_with_its_receipt"
+
+[[case]]
+id = "TC-history-session-list-reads-stories-alone"
+title = "session list lists archived stories when no session folder is left, as after migrating a project whose sessions were all finished"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-34", "KNOW-30"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_list_lists_archived_stories_when_no_session_folder_is_left passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_list_lists_archived_stories_when_no_session_folder_is_left"

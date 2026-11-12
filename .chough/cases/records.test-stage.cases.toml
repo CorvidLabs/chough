@@ -147,3 +147,21 @@ expected = ["tests/migrate.rs::migrated_inbox_entries_keep_their_ids_and_the_map
 adapter = "cargo-test"
 test_target = "migrate"
 test = "migrated_inbox_entries_keep_their_ids_and_the_map_names_the_new_files"
+
+[[case]]
+id = "TC-records-close-lists-each-kept-file-once"
+title = "Closing a session whose key screenshot is not committed keeps it in place and lists each kept file once"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25", "DRIVE-26", "KNOW-32", "LIFE-3"]
+requirements = ["REQ-records-012"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::closing_a_session_lists_each_kept_file_once passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "closing_a_session_lists_each_kept_file_once"

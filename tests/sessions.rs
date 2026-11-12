@@ -1517,3 +1517,93 @@ fn a_story_lists_each_entry_once_with_its_receipt() {
         "{line}"
     );
 }
+
+/// REQ-records-009, REQ-history-006, TC-history-session-list-reads-stories-alone (U4):
+/// with every session finished and no `.chough/sessions/` left, as a migrated 0.5.x
+/// project whose sessions were all archived is, `session list` lists the stories.
+#[test]
+fn session_list_lists_archived_stories_when_no_session_folder_is_left() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = fixture.active_id();
+    fixture.ok(&["session", "close", &id, "--reason", "SYNTHETIC finished"]);
+    fixture.commit("closed");
+    let folder = fixture.root().join(".chough/sessions");
+    if folder.exists() {
+        std::fs::remove_dir_all(&folder).unwrap();
+    }
+    let listed = fixture.ok(&["session", "list"]);
+    assert!(listed.to_string().contains(&id), "{listed:#}");
+}
+
+/// A minimal valid PNG.
+fn tiny_png() -> Vec<u8> {
+    fn chunk(kind: &[u8], data: &[u8]) -> Vec<u8> {
+        let mut out = (data.len() as u32).to_be_bytes().to_vec();
+        out.extend_from_slice(kind);
+        out.extend_from_slice(data);
+        out.extend_from_slice(&[0, 0, 0, 0]);
+        out
+    }
+    let mut bytes = b"\x89PNG\r\n\x1a\n".to_vec();
+    bytes.extend(chunk(b"IHDR", &[0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0, 0, 0]));
+    bytes.extend(chunk(b"IDAT", &[7u8; 16]));
+    bytes.extend(chunk(b"IEND", &[]));
+    bytes
+}
+
+/// REQ-records-012, TC-history-close-lists-each-kept-file-once (R7): closing a session
+/// whose key screenshot is not committed yet keeps it in place and lists each kept file
+/// once.
+#[test]
+fn closing_a_session_lists_each_kept_file_once() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let outside = tempfile::tempdir().unwrap();
+    let shot = outside.path().join("SYNTHETIC-screen.png");
+    std::fs::write(&shot, tiny_png()).unwrap();
+    fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC page looks right",
+        "--screenshot",
+        shot.to_str().unwrap(),
+    ]);
+    let id = fixture.active_id();
+    let closed = fixture.ok(&[
+        "session",
+        "close",
+        &id,
+        "--reason",
+        "SYNTHETIC done testing",
+    ]);
+    let kept: Vec<&str> = closed["kept"]
+        .as_array()
+        .unwrap_or_else(|| panic!("{closed:#}"))
+        .iter()
+        .filter_map(serde_json::Value::as_str)
+        .collect();
+    assert!(
+        kept.iter().any(|file| file.ends_with(".png")),
+        "the uncommitted screenshot was not kept: {closed:#}"
+    );
+    let mut once = kept.clone();
+    once.sort_unstable();
+    once.dedup();
+    assert_eq!(once.len(), kept.len(), "{kept:#?}");
+}
