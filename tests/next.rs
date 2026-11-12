@@ -2467,3 +2467,32 @@ fn at_plan_next_names_the_scope_gate_and_never_specsyncs_approve() {
         "SpecSync's approve is passed on while the gate waits"
     );
 }
+
+/// Fresh-eyes F12e (second round, 2026-11-12): with no native change recorded, next's
+/// native line said "Native change: none recorded (read observed)", a read state of no
+/// change. It says only that none is recorded, configured or not; SpecSync's own next
+/// step, when it gives one, keeps its line.
+#[cfg(unix)]
+#[test]
+fn next_with_no_native_change_says_only_that_none_is_recorded() {
+    let unconfigured = Fixture::new();
+    unconfigured.init();
+    let configured = Fixture::new();
+    configured.stubs();
+    configured.native("draft");
+    configured.init();
+    for (fixture, native_next) in [(&unconfigured, false), (&configured, true)] {
+        let shown = text(fixture, &["next"]);
+        let native: Vec<&str> = shown
+            .lines()
+            .filter(|line| line.starts_with("Native change"))
+            .collect();
+        assert_eq!(native, ["Native change: none recorded"], "{shown}");
+        assert!(!shown.contains("(read "), "{shown}");
+        assert_eq!(
+            shown.contains("  Native next action: stub next action for draft"),
+            native_next,
+            "{shown}"
+        );
+    }
+}
