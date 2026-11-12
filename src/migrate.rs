@@ -979,8 +979,13 @@ fn receipt_record(
             .map(|(old, new)| format!("- `{old}` → `{new}`\n"))
             .collect(),
     );
-    for follow_up in &plan.follow_ups {
-        body.push_str(&format!("\n## Follow-up\n\n{follow_up}\n"));
+    // One Follow-up section holds every follow-up, one paragraph each, so a receipt
+    // never repeats the heading; with none, it has no such section.
+    if !plan.follow_ups.is_empty() {
+        body.push_str(&format!(
+            "\n## Follow-up\n\n{}\n",
+            plan.follow_ups.join("\n\n")
+        ));
     }
     let mut record = crate::markdown::parse("receipt", &format!("{}{body}", record.render()))?;
     record.redact_leaks(Local::current());
