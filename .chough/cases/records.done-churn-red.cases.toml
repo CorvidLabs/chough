@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# BUG-the-move-into-done-regenerates-the-whole-knowledge-library in the 0.5.x layout, red
+# on 0.5.0. The 0.6.0 test of the same name in tests/journal.rs replaces it.
+
+[[case]]
+id = "TC-records-done-touches-only-its-own-post"
+title = "The move into done creates only its own post and changes only feed.xml and the newest-posts list of index.md; every other knowledge file stays byte-identical"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-30", "KNOW-31", "KNOW-33"]
+requirements = ["REQ-records-011"]
+paths = ["src/library.rs", "src/stage.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::done_changes_no_knowledge_file_but_its_own_post_and_the_feed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "done_changes_no_knowledge_file_but_its_own_post_and_the_feed"

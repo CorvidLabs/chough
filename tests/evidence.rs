@@ -2014,6 +2014,13 @@ fn an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change() {
     assert!(!index.contains("left-behind"), "{index}");
     let applied = fixture.ok(&["library", "archive", "--apply"]);
     assert!(!applied.to_string().contains("left-behind"), "{applied:#}");
+    // #148 for next (the plan's TC-cli-empty-change-dir-not-open): the empty directory is
+    // no open native change there either.
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        !next.to_string().contains("left-behind"),
+        "next counts the empty change directory left-behind: {next:#}"
+    );
     fixture.write(".specsync/changes/really-open/change.md", "open\n");
     let refused = fixture.fails(&["library", "archive", "--apply"]);
     assert!(refused.contains("really-open"), "{refused}");

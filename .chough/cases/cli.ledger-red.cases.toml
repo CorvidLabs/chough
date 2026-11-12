@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# BUG-0022 in the 0.5.x layout, red on 0.5.0. The 0.6.0 tests of the same names replace it.
+# #148 for next runs through the existing TC-cli-empty-change-dir-not-open
+# (cli.empty-change-dirs.cases.toml), whose test this branch extends to next.
+
+[[case]]
+id = "TC-cli-bug-0022-toolchain-matches-ci"
+title = "The toolchain task, first in the verify lane, fails naming each tool whose version differs from the CI pin, and every copy of it on PATH with its version"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-6", "FLOW-13"]
+requirements = ["REQ-cli-019"]
+paths = ["tools/toolchain.sh", "fledge.toml", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the two toolchain tests in tests/package.rs pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "package", "--", "toolchain_task_names_a_version_that_differs", "toolchain_failure_names_each_copy_on_path_with_its_version"]
+expect_output = ["test result: ok. 2 passed"]

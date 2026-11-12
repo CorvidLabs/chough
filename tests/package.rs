@@ -1,5 +1,7 @@
 //! Installable package and fresh installs (REQ-cli-019, LIFE-9, LIFE-4).
 
+mod common;
+
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeSet;
@@ -3864,3 +3866,228 @@ a { color: var(--proto-accent); }
   .surface { margin: 0; border-radius: 0; border-left: 0; border-right: 0; }
 }
 "##;
+
+// BUG-0022 in the 0.5.x tree, red on 0.5.0: the two 0.6.0 toolchain tests as they are.
+/// TC-cli-bug-0022-toolchain-matches-ci (REQ-cli-019, BUG-0022): the `toolchain` task,
+/// first in the verify lane, prints each installed tool beside the CI pin and fails
+/// naming each one that differs, and records its verdict for evidence to read. Stand-ins
+/// play every tool; nothing is installed.
+#[cfg(unix)]
+#[test]
+fn toolchain_task_names_a_version_that_differs() {
+    // 0.5.0 has no toolchain step at all; say so without a machine path.
+    assert!(
+        manifest_dir().join("tools/toolchain.sh").is_file(),
+        "BUG-0022 on 0.5.0: tools/toolchain.sh does not exist and fledge.toml has no toolchain task, so no step compares local tools with the CI pins or names a binary path and the other copies on PATH"
+    );
+    let fledge = fs::read_to_string(manifest_dir().join("fledge.toml")).unwrap();
+    assert!(
+        fledge
+            .lines()
+            .any(|line| line.trim() == "toolchain = \"sh tools/toolchain.sh\""),
+        "fledge.toml defines no toolchain task:\n{fledge}"
+    );
+    let verify = fledge
+        .split("[lanes.verify]")
+        .nth(1)
+        .and_then(|lane| lane.lines().find(|line| line.starts_with("steps = ")))
+        .unwrap_or_default();
+    assert!(
+        verify.starts_with("steps = [\"toolchain\", "),
+        "the verify lane does not run toolchain first: {verify}"
+    );
+
+    let pins = Command::new("sh")
+        .arg(manifest_dir().join("tools/linux/pins.sh"))
+        .output()
+        .unwrap();
+    assert!(pins.status.success());
+    let pins = String::from_utf8(pins.stdout).unwrap();
+    let pin = |tool: &str| {
+        pins.lines()
+            .find_map(|line| line.strip_prefix(&format!("{tool}=")))
+            .unwrap()
+            .to_string()
+    };
+    let (hi, specsync, fledge_pin) = (pin("human-intent"), pin("specsync"), pin("fledge"));
+
+    let directory = tempfile::tempdir().unwrap();
+    let bin = directory.path().join("bin");
+    let log = directory.path().join("logs/toolchain.log");
+    let stand_ins = |tools: &[(&str, &str)]| {
+        let _ = fs::remove_dir_all(&bin);
+        for (name, line) in tools {
+            common::stand_in(&bin, name, line);
+        }
+    };
+    let run = || {
+        Command::new("sh")
+            .arg(manifest_dir().join("tools/toolchain.sh"))
+            .env("PATH", format!("{}:/usr/bin:/bin", bin.display()))
+            .env("CHOUGH_TOOLCHAIN_LOG", &log)
+            .output()
+            .unwrap()
+    };
+    let rust = [
+        ("rustc", "rustc 1.96.0 (SYNTHETIC 2026-01-01)"),
+        ("cargo", "cargo 1.96.0 (SYNTHETIC 2026-01-01)"),
+    ];
+
+    // Fledge differs: the task fails naming Fledge, its version and the pin.
+    let mut tools = vec![
+        ("hi", format!("hi {hi}")),
+        ("specsync", format!("specsync {specsync}")),
+        ("fledge", "fledge 0.0.1".to_string()),
+    ];
+    let install = |tools: &[(&str, String)]| {
+        let mut all: Vec<(&str, &str)> = tools
+            .iter()
+            .map(|(name, line)| (*name, line.as_str()))
+            .collect();
+        all.extend(rust);
+        stand_ins(&all);
+    };
+    install(&tools);
+    let output = run();
+    let (stdout, stderr) = (
+        String::from_utf8_lossy(&output.stdout).into_owned(),
+        String::from_utf8_lossy(&output.stderr).into_owned(),
+    );
+    assert!(!output.status.success(), "{stdout}{stderr}");
+    assert!(
+        stderr.contains(&format!("Fledge 0.0.1 (CI {fledge_pin})")),
+        "{stderr}"
+    );
+    assert!(
+        !stderr.contains("HI ") && !stderr.contains("SpecSync "),
+        "{stderr}"
+    );
+    for line in [
+        format!("HI: installed {hi}, CI pins {hi}"),
+        format!("SpecSync: installed {specsync}, CI pins {specsync}"),
+        format!("Fledge: installed 0.0.1, CI pins {fledge_pin}"),
+        "Rust (rustc): installed 1.96.0, CI stable and minimum 1.88".to_string(),
+    ] {
+        assert!(stdout.contains(&line), "missing {line:?} in {stdout}");
+    }
+    let verdict = fs::read_to_string(&log).unwrap();
+    assert!(
+        verdict.starts_with(&format!("differs: Fledge 0.0.1 (CI {fledge_pin})\n")),
+        "{verdict}"
+    );
+
+    // Every tool at its pin, and a newer Rust than the minimum: the task passes.
+    tools[2].1 = format!("fledge {fledge_pin}");
+    install(&tools);
+    let output = run();
+    assert!(
+        output.status.success(),
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(String::from_utf8_lossy(&output.stdout).contains("toolchain: matches CI"));
+    assert!(fs::read_to_string(&log).unwrap().starts_with("matches\n"));
+
+    // HI missing and a Rust older than the minimum: both are named.
+    stand_ins(&[
+        ("specsync", tools[1].1.as_str()),
+        ("fledge", tools[2].1.as_str()),
+        ("rustc", "rustc 1.80.0 (SYNTHETIC 2024-01-01)"),
+        ("cargo", "cargo 1.96.0 (SYNTHETIC 2026-01-01)"),
+    ]);
+    let output = run();
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success());
+    assert!(
+        stderr.contains(&format!("HI not installed (CI {hi})"))
+            && stderr.contains("Rust (rustc) 1.80.0 (minimum 1.88)")
+            && !stderr.contains("Rust (cargo)"),
+        "{stderr}"
+    );
+}
+
+/// TC-cli-bug-0022-toolchain-matches-ci, a second copy on PATH (BUG-0022): when a tool
+/// differs, the failure names the copy PATH finds first, the one in use, and every
+/// other copy on PATH, each with its version, so the human knows which binary to fix.
+/// Two stand-in Fledge copies play the Homebrew 1.7.2 and the Cargo 1.8.0 found on the
+/// coordinator's Mac. The verdict's first line, which evidence quotes, holds no path.
+#[cfg(unix)]
+#[test]
+fn toolchain_failure_names_each_copy_on_path_with_its_version() {
+    // 0.5.0 has no toolchain step at all; say so without a machine path.
+    assert!(
+        manifest_dir().join("tools/toolchain.sh").is_file(),
+        "BUG-0022 on 0.5.0: tools/toolchain.sh does not exist and fledge.toml has no toolchain task, so no step compares local tools with the CI pins or names a binary path and the other copies on PATH"
+    );
+    let pins = Command::new("sh")
+        .arg(manifest_dir().join("tools/linux/pins.sh"))
+        .output()
+        .unwrap();
+    let pins = String::from_utf8(pins.stdout).unwrap();
+    let pin = |tool: &str| {
+        pins.lines()
+            .find_map(|line| line.strip_prefix(&format!("{tool}=")))
+            .unwrap()
+            .to_string()
+    };
+    let (hi, specsync, fledge) = (pin("human-intent"), pin("specsync"), pin("fledge"));
+    let directory = tempfile::tempdir().unwrap();
+    let first = directory.path().join("homebrew-bin");
+    let second = directory.path().join("cargo-bin");
+    for (name, line) in [
+        ("hi", format!("hi {hi}")),
+        ("specsync", format!("specsync {specsync}")),
+        ("rustc", "rustc 1.96.0 (SYNTHETIC 2026-01-01)".to_string()),
+        ("cargo", "cargo 1.96.0 (SYNTHETIC 2026-01-01)".to_string()),
+    ] {
+        common::stand_in(&second, name, &line);
+    }
+    common::stand_in(&first, "fledge", "fledge 0.0.1");
+    common::stand_in(&second, "fledge", &format!("fledge {fledge}"));
+    let log = directory.path().join("toolchain.log");
+    let run = |path: String| {
+        Command::new("sh")
+            .arg(manifest_dir().join("tools/toolchain.sh"))
+            .env("PATH", path)
+            .env("CHOUGH_TOOLCHAIN_LOG", &log)
+            .output()
+            .unwrap()
+    };
+    let output = run(format!(
+        "{}:{}:/usr/bin:/bin",
+        first.display(),
+        second.display()
+    ));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "{stderr}");
+    let used = format!("{}/fledge (0.0.1, used)", first.display());
+    let other = format!("{}/fledge ({fledge})", second.display());
+    assert!(
+        stderr.contains(&format!(
+            "Fledge on PATH, first found first: {used}, {other}"
+        )),
+        "{stderr}"
+    );
+    assert!(
+        stderr.contains(&format!(
+            "a copy at {fledge} is on PATH after the one used: put it first, or upgrade or remove {}/fledge",
+            first.display()
+        )),
+        "{stderr}"
+    );
+    // The verdict evidence quotes names no path.
+    let verdict = fs::read_to_string(&log).unwrap();
+    let first_line = verdict.lines().next().unwrap();
+    assert_eq!(first_line, format!("differs: Fledge 0.0.1 (CI {fledge})"));
+
+    // Only the old copy on PATH: the fix is to upgrade it.
+    let output = run(format!("{}:/usr/bin:/bin", first.display()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(
+        stderr.contains(&format!(
+            "Fledge on PATH, first found first: {used}; upgrade it to {fledge}"
+        )),
+        "{stderr}"
+    );
+}
