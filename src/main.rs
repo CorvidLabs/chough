@@ -860,15 +860,9 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         .iter()
         .filter_map(|entry| entry["id"].as_str())
         .collect();
-    // The open sessions' entries that nothing references, by ID or alias.
-    let unreferenced = evidence::load_all(root)?
-        .iter()
-        .filter(|entry| {
-            !std::iter::once(&entry.id)
-                .chain(&entry.aliases)
-                .any(|id| referenced.contains(id.as_str()))
-        })
-        .count();
+    // The open sessions' entries that nothing references, by ID or alias, from the
+    // index the references were labelled with.
+    let unreferenced = reads.unreferenced_entries(&referenced)?;
     let attention: Vec<&Value> = references
         .iter()
         .filter(|entry| entry["label"] != "current")
@@ -878,12 +872,17 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         .take(LIST_LIMIT)
         .map(|entry| {
             let by = entry["referenced_by"].as_array().cloned().unwrap_or_default();
-            json!({
+            let mut item = json!({
                 "id": entry["id"],
                 "label": entry["label"],
                 "referenced_by": by.iter().take(3).map(|source| cut(source.as_str().unwrap_or_default())).collect::<Vec<_>>(),
                 "referenced_by_total": by.len(),
-            })
+            });
+            // A removed ID names the migration receipt that records it (REQ-records-009).
+            if let Some(receipt) = entry["receipt"].as_str() {
+                item["receipt"] = json!(cut(receipt));
+            }
+            item
         })
         .collect();
 

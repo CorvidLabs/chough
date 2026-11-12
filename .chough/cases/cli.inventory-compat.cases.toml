@@ -9,13 +9,13 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-4"]
 requirements = ["REQ-cli-004", "REQ-cli-006"]
-paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+paths = ["src/evidence.rs", "src/evidence_migrate.rs", "src/migrate.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory", "tests/fixtures/releases/v0.5.0"]
 environments = ["local-macos-arm64"]
 artifacts = ["test-log"]
-setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
-steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
-expected = ["inventory_exact_nine_originals_stay_historical_partial_and_byte_identical passes with unchanged aggregate freshness authority and original OBS bytes"]
-notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+setup = ["Hash all 9 immutable original OBS fixtures before any CLI invocation; build a 0.5.x project from the v0.5.0 release fixture whose open session references the observations under test, with a baseline whose content identity comes from evidence add on the migrated tree."]
+steps = ["Migrate the 0.5.x observations into the open session with chough migrate and --apply, then read their freshness through live chough status; an invalid inventory is read by the migration preview, which refuses it."]
+expected = ["inventory_exact_nine_originals_stay_historical_partial_and_byte_identical passes: live status reports the freshness 0.5.x reported, the inventory is kept on the entry as diagnostic data, and the original OBS bytes are unchanged"]
+notes = "Ported to 0.6.0 by t38b: migrate-then-read on a 0.5.x project, replacing the 0.5.x reader the original assertions ran against. Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
 
 [case.bind]
 adapter = "cargo-test"
@@ -30,13 +30,13 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-4"]
 requirements = ["REQ-cli-004", "REQ-cli-006"]
-paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+paths = ["src/evidence.rs", "src/evidence_migrate.rs", "src/migrate.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory", "tests/fixtures/releases/v0.5.0"]
 environments = ["local-macos-arm64"]
 artifacts = ["test-log"]
-setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
-steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
-expected = ["inventory_absent_null_and_advisory_data_never_change_authoritative_freshness passes with unchanged aggregate freshness authority and original OBS bytes"]
-notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+setup = ["Hash all 9 immutable original OBS fixtures before any CLI invocation; build a 0.5.x project from the v0.5.0 release fixture whose open session references the observations under test, with a baseline whose content identity comes from evidence add on the migrated tree."]
+steps = ["Migrate the 0.5.x observations into the open session with chough migrate and --apply, then read their freshness through live chough status; an invalid inventory is read by the migration preview, which refuses it."]
+expected = ["inventory_absent_null_and_advisory_data_never_change_authoritative_freshness passes: live status reports the freshness 0.5.x reported, the inventory is kept on the entry as diagnostic data, and the original OBS bytes are unchanged"]
+notes = "Ported to 0.6.0 by t38b: migrate-then-read on a 0.5.x project, replacing the 0.5.x reader the original assertions ran against. Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
 
 [case.bind]
 adapter = "cargo-test"
@@ -51,13 +51,13 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-4"]
 requirements = ["REQ-cli-004", "REQ-cli-006"]
-paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+paths = ["src/evidence.rs", "src/evidence_migrate.rs", "src/migrate.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory", "tests/fixtures/releases/v0.5.0"]
 environments = ["local-macos-arm64"]
 artifacts = ["test-log"]
-setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
-steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
-expected = ["inventory_strict_schema_versions_and_unsafe_semantics_refuse passes with unchanged aggregate freshness authority and original OBS bytes"]
-notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+setup = ["Hash all 9 immutable original OBS fixtures before any CLI invocation; build a 0.5.x project from the v0.5.0 release fixture whose open session references the observations under test, with a baseline whose content identity comes from evidence add on the migrated tree."]
+steps = ["Migrate the 0.5.x observations into the open session with chough migrate and --apply, then read their freshness through live chough status; an invalid inventory is read by the migration preview, which refuses it."]
+expected = ["inventory_strict_schema_versions_and_unsafe_semantics_refuse passes: each valid inventory migrates and live status reports the freshness 0.5.x reported, and each invalid one refuses the migration preview naming the record, with nothing written"]
+notes = "Ported to 0.6.0 by t38b: migrate-then-read on a 0.5.x project, replacing the 0.5.x reader the original assertions ran against. Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
 
 [case.bind]
 adapter = "cargo-test"
@@ -72,13 +72,13 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-4"]
 requirements = ["REQ-cli-004", "REQ-cli-006"]
-paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+paths = ["src/evidence.rs", "src/evidence_migrate.rs", "src/migrate.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory", "tests/fixtures/releases/v0.5.0"]
 environments = ["local-macos-arm64"]
 artifacts = ["test-log"]
-setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
-steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
-expected = ["inventory_entry_and_serialized_byte_caps_are_exact passes with unchanged aggregate freshness authority and original OBS bytes"]
-notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+setup = ["Hash all 9 immutable original OBS fixtures before any CLI invocation; build a 0.5.x project from the v0.5.0 release fixture whose open session references the observations under test, with a baseline whose content identity comes from evidence add on the migrated tree."]
+steps = ["Migrate the 0.5.x observations into the open session with chough migrate and --apply, then read their freshness through live chough status; an invalid inventory is read by the migration preview, which refuses it."]
+expected = ["inventory_entry_and_serialized_byte_caps_are_exact passes: each valid inventory migrates and live status reports the freshness 0.5.x reported, and each invalid one refuses the migration preview naming the record, with nothing written"]
+notes = "Ported to 0.6.0 by t38b: migrate-then-read on a 0.5.x project, replacing the 0.5.x reader the original assertions ran against. Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
 
 [case.bind]
 adapter = "cargo-test"
@@ -93,13 +93,13 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-4"]
 requirements = ["REQ-cli-004", "REQ-cli-006"]
-paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+paths = ["src/evidence.rs", "src/evidence_migrate.rs", "src/migrate.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory", "tests/fixtures/releases/v0.5.0"]
 environments = ["local-macos-arm64"]
 artifacts = ["test-log"]
-setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
-steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
-expected = ["inventory_change_key_classification_and_writer_omission_are_preserved passes with unchanged aggregate freshness authority and original OBS bytes"]
-notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+setup = ["Hash all 9 immutable original OBS fixtures before any CLI invocation; build a 0.5.x project from the v0.5.0 release fixture whose open session references the observations under test, with a baseline whose content identity comes from evidence add on the migrated tree."]
+steps = ["Migrate the 0.5.x observations into the open session with chough migrate and --apply, then read their freshness through live chough status; an invalid inventory is read by the migration preview, which refuses it."]
+expected = ["inventory_change_key_classification_and_writer_omission_are_preserved passes: each valid inventory migrates and live status reports the freshness 0.5.x reported, and each invalid one refuses the migration preview naming the record, with nothing written"]
+notes = "Ported to 0.6.0 by t38b: migrate-then-read on a 0.5.x project, replacing the 0.5.x reader the original assertions ran against. Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
 
 [case.bind]
 adapter = "cargo-test"
@@ -114,13 +114,13 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-4"]
 requirements = ["REQ-cli-004", "REQ-cli-006"]
-paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+paths = ["src/evidence.rs", "src/evidence_migrate.rs", "src/migrate.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory", "tests/fixtures/releases/v0.5.0"]
 environments = ["local-macos-arm64"]
 artifacts = ["test-log"]
-setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
-steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
-expected = ["inventory_legacy_schema_one_and_environment_rules_remain_authoritative passes with unchanged aggregate freshness authority and original OBS bytes"]
-notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+setup = ["Hash all 9 immutable original OBS fixtures before any CLI invocation; build a 0.5.x project from the v0.5.0 release fixture whose open session references the observations under test, with a baseline whose content identity comes from evidence add on the migrated tree."]
+steps = ["Migrate the 0.5.x observations into the open session with chough migrate and --apply, then read their freshness through live chough status; an invalid inventory is read by the migration preview, which refuses it."]
+expected = ["inventory_legacy_schema_one_and_environment_rules_remain_authoritative passes: live status reports the freshness 0.5.x reported, the inventory is kept on the entry as diagnostic data, and the original OBS bytes are unchanged"]
+notes = "Ported to 0.6.0 by t38b: migrate-then-read on a 0.5.x project, replacing the 0.5.x reader the original assertions ran against. Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
 
 [case.bind]
 adapter = "cargo-test"
@@ -135,13 +135,13 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-4"]
 requirements = ["REQ-cli-004", "REQ-cli-006"]
-paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+paths = ["src/evidence.rs", "src/evidence_migrate.rs", "src/migrate.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory", "tests/fixtures/releases/v0.5.0"]
 environments = ["local-macos-arm64"]
 artifacts = ["test-log"]
-setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
-steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
-expected = ["inventory_noncanonical_aliases_cannot_claim_distinct_normal_inputs passes with unchanged aggregate freshness authority and original OBS bytes"]
-notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+setup = ["Hash all 9 immutable original OBS fixtures before any CLI invocation; build a 0.5.x project from the v0.5.0 release fixture whose open session references the observations under test, with a baseline whose content identity comes from evidence add on the migrated tree."]
+steps = ["Migrate the 0.5.x observations into the open session with chough migrate and --apply, then read their freshness through live chough status; an invalid inventory is read by the migration preview, which refuses it."]
+expected = ["inventory_noncanonical_aliases_cannot_claim_distinct_normal_inputs passes: each valid inventory migrates and live status reports the freshness 0.5.x reported, and each invalid one refuses the migration preview naming the record, with nothing written"]
+notes = "Ported to 0.6.0 by t38b: migrate-then-read on a 0.5.x project, replacing the 0.5.x reader the original assertions ran against. Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
 
 [case.bind]
 adapter = "cargo-test"
@@ -156,13 +156,13 @@ track = "functional"
 method = "automated"
 criteria = ["LIFE-2", "LIFE-4"]
 requirements = ["REQ-cli-004", "REQ-cli-006"]
-paths = ["src/evidence.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory"]
+paths = ["src/evidence.rs", "src/evidence_migrate.rs", "src/migrate.rs", "tests/evidence_inventory_compatibility.rs", "tests/fixtures/evidence-inventory", "tests/fixtures/releases/v0.5.0"]
 environments = ["local-macos-arm64"]
 artifacts = ["test-log"]
-setup = ["Hash all9 immutable original OBS fixtures before CLI invocation; isolate private test roots and validate legacy positive baseline."]
-steps = ["Run the named standalone assertion through the declared Fledge test task under a separately allocated runtime lease."]
-expected = ["inventory_noncanonical_alias_cannot_bypass_change_bookkeeping_classification passes with unchanged aggregate freshness authority and original OBS bytes"]
-notes = "Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
+setup = ["Hash all 9 immutable original OBS fixtures before any CLI invocation; build a 0.5.x project from the v0.5.0 release fixture whose open session references the observations under test, with a baseline whose content identity comes from evidence add on the migrated tree."]
+steps = ["Migrate the 0.5.x observations into the open session with chough migrate and --apply, then read their freshness through live chough status; an invalid inventory is read by the migration preview, which refuses it."]
+expected = ["inventory_noncanonical_alias_cannot_bypass_change_bookkeeping_classification passes: each valid inventory migrates and live status reports the freshness 0.5.x reported, and each invalid one refuses the migration preview naming the record, with nothing written"]
+notes = "Ported to 0.6.0 by t38b: migrate-then-read on a 0.5.x project, replacing the 0.5.x reader the original assertions ran against. Retained execution receipts at their actual source SHA are not fresh case execution. Original6 has one documented uppercase-hex oracle correction; two aliases are separate regressions."
 
 [case.bind]
 adapter = "cargo-test"

@@ -1,0 +1,80 @@
+profile = "chough-testing/1"
+module = "records"
+
+# The REQ-records coverage tests (t38b, for t382): names, the session record, removal
+# only of committed bytes and key screenshots. Each binds its records test and the
+# existing tests that prove its other criteria.
+
+[[case]]
+id = "TC-records-key-screenshots"
+title = "evidence add --screenshot commits one small key screenshot beside its entry without its metadata, fingerprinting the committed bytes; a 513 KiB file, a GIF, a symlink, a sixth screenshot and one past 2 MiB are refused with nothing written, naming the remedies; at finish it moves beside the story, which links it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-35", "KNOW-34", "LIFE-26", "DRIVE-24"]
+requirements = ["REQ-records-013"]
+paths = ["src/evidence.rs", "src/sessions.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::small_key_screenshots_are_committed_beside_the_story passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "small_key_screenshots_are_committed_beside_the_story"
+
+[[case]]
+id = "TC-records-date-slug-names-and-aliases"
+title = "Every new record is named by its UTC date and the slug of its source, never by a count, with one 6-hex suffix on a same-day clash and a refused second clash without another draw; old IDs are aliases by which records are shown, updated and linked, and an alias two records hold is refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "DRIVE-12", "DRIVE-25"]
+requirements = ["REQ-records-003"]
+paths = ["src/identity.rs", "src/bugs.rs", "src/evidence.rs", "src/sessions.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["identity::tests::dated_names_are_bounded_slugs_without_counters, identity::tests::a_clash_gets_one_suffix_and_a_second_clash_is_refused_without_another_draw and tests/records.rs::names_are_date_and_slug_with_aliases pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--test", "records", "--", "--exact", "identity::tests::dated_names_are_bounded_slugs_without_counters", "identity::tests::a_clash_gets_one_suffix_and_a_second_clash_is_refused_without_another_draw", "names_are_date_and_slug_with_aliases"]
+expect_output = ["test identity::tests::dated_names_are_bounded_slugs_without_counters ... ok", "test identity::tests::a_clash_gets_one_suffix_and_a_second_clash_is_refused_without_another_draw ... ok", "test names_are_date_and_slug_with_aliases ... ok"]
+timeout_seconds = 900
+
+[[case]]
+id = "TC-records-session-story-sections"
+title = "session new writes a session.md whose front matter is the checkpoint with every listed key and whose body is the story in seven parts in order; a decision, a completed item, an open question and an evidence reference each appear once in their section, a resolved question keeps its line with its answer, and a person's Goal survives"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24", "DRIVE-25", "DRIVE-26", "FLOW-13"]
+requirements = ["REQ-records-004"]
+paths = ["src/session_md.rs", "src/checkpoint.rs", "src/sessions.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::the_session_record_is_checkpoint_and_story passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "the_session_record_is_checkpoint_and_story"
+
+[[case]]
+id = "TC-records-only-committed-bytes-leave"
+title = "No command removes a file whose bytes HEAD does not hold: a finished session keeps an uncommitted file and reports it, migrate refuses a changed 0.5.x file and removes it once committed, and 40 archived stories of every age stay byte-identical through done, session new, doctor --fix and library index"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20", "KNOW-34", "LIFE-8", "DRIVE-24", "DRIVE-25", "KNOW-30"]
+requirements = ["REQ-records-012"]
+paths = ["src/sessions.rs", "src/doctor.rs", "src/migrate.rs", "tests/records.rs", "tests/sessions.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::nothing_leaves_the_tree_unless_head_holds_it, tests/sessions.rs::an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix and tests/migrate.rs::migrate_previews_applies_and_keeps_every_byte_in_git pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "records", "--test", "sessions", "--test", "migrate", "--", "--exact", "nothing_leaves_the_tree_unless_head_holds_it", "an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix", "migrate_previews_applies_and_keeps_every_byte_in_git"]
+expect_output = ["test nothing_leaves_the_tree_unless_head_holds_it ... ok", "test an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix ... ok", "test migrate_previews_applies_and_keeps_every_byte_in_git ... ok"]
+timeout_seconds = 900

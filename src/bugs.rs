@@ -331,6 +331,13 @@ fn read_all(root: &Path) -> Result<Vec<Stored>> {
     Ok(bugs)
 }
 
+/// The ID of the bug whose name or alias is `id`, refusing an unknown ID or an alias
+/// two bugs hold (REQ-records-003), for a command that links a bug.
+pub(super) fn resolve_id(root: &Path, id: &str) -> Result<String> {
+    let bugs = read_all(root)?;
+    Ok(find(&bugs, id)?.id().to_string())
+}
+
 /// The bug whose name or alias is `id`; an alias two bugs hold is refused.
 fn find<'a>(bugs: &'a [Stored], id: &str) -> Result<&'a Stored> {
     let found: Vec<&Stored> = bugs.iter().filter(|bug| bug.holds(id)).collect();

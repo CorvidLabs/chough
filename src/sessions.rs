@@ -818,6 +818,7 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     record.set_scalar("closed", &date)?;
     record.set_scalar("outcome", outcome)?;
     let receipts = crate::evidence::receipts_of(root, id)?;
+    story_verified_lines(root, &mut record, id, &receipts)?;
     record.set("receipts", Value::Maps(receipts))?;
     let mut text = record.render_within(RecordKind::Story)?;
     if !text.ends_with('\n') {
@@ -840,6 +841,78 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     }
     unpin(root);
     Ok(Archived { story, kept })
+}
+
+/// The story's What was verified lines (REQ-history-006, REQ-records-013): one per
+/// receipt, its claim, its command and the first 12 digits of its fingerprint, a link
+/// to its key screenshot beside the story when it has one, ending `^<evidence id>`. A
+/// line Chough wrote while the session was open links `evidence/<id>.md`, a folder that
+/// leaves with the session, so it becomes that receipt line; a line a person wrote is
+/// kept, and an entry it already names gets no second line.
+fn story_verified_lines(
+    root: &Path,
+    record: &mut crate::markdown::Record,
+    id: &str,
+    receipts: &[Vec<(String, String)>],
+) -> Result<()> {
+    use crate::session_md::VERIFIED;
+    // The key screenshots, by their entry's ID, as they will sit beside the story.
+    let mut screenshots = std::collections::BTreeMap::new();
+    if let Ok(entries) = fs::read_dir(local_path(root, &format!("{DIR}/{id}/evidence"))?) {
+        for entry in entries.flatten() {
+            let name = entry.file_name().to_string_lossy().to_string();
+            if let Some((stem, extension)) = name.rsplit_once('.')
+                && matches!(extension, "png" | "jpg" | "jpeg")
+            {
+                screenshots.insert(stem.to_string(), name.clone());
+            }
+        }
+    }
+    for receipt in receipts {
+        let get = |key: &str| {
+            receipt
+                .iter()
+                .find(|(name, _)| name == key)
+                .map(|(_, value)| value.clone())
+                .filter(|value| !value.is_empty())
+        };
+        let Some(entry) = get("id") else {
+            continue;
+        };
+        let mut line = get("claim").unwrap_or_else(|| entry.clone());
+        if let Some(command) = get("command") {
+            line.push_str(&format!(" — `{command}`"));
+        }
+        if let Some(fingerprint) = get("fingerprint") {
+            let digits: String = fingerprint
+                .trim_start_matches("sha256:")
+                .chars()
+                .take(12)
+                .collect();
+            line.push_str(&format!(" {digits}"));
+        }
+        if let Some(name) = screenshots.get(&entry) {
+            line.push_str(&format!(" [screenshot]({id}/{name})"));
+        }
+        line.push_str(&format!(" ^{entry}"));
+        let present: Vec<String> = record
+            .section(VERIFIED)
+            .unwrap_or_default()
+            .lines()
+            .filter_map(|line| line.strip_prefix("- "))
+            .map(str::to_string)
+            .collect();
+        let linked = format!("(evidence/{entry}.md)");
+        if let Some(open) = present.iter().find(|line| line.ends_with(&linked)) {
+            record.replace_item(VERIFIED, open, &line)?;
+        } else if !present
+            .iter()
+            .any(|line| *line == entry || line.ends_with(&format!("^{entry}")))
+        {
+            record.append_to_section(VERIFIED, &format!("- {line}\n"))?;
+        }
+    }
+    Ok(())
 }
 
 /// The newest archived story's checkpoint, by its `closed` date and then its ID.

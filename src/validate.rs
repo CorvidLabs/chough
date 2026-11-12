@@ -670,7 +670,13 @@ pub(super) fn run(root: &Path, command: ValidateCommand) -> Result<()> {
                 !environment.trim().is_empty(),
                 "environment must not be blank"
             );
-            let authority = authority(root)?;
+            let mut authority = authority(root)?;
+            // REQ-records-006: the run's free text is refused naming its flag, or
+            // redacted under --redact, before anything runs or is written.
+            let mut environment = environment;
+            let local = crate::leaks::Local::current();
+            crate::leaks::guard(local, "--environment", &mut environment)?;
+            crate::leaks::guard(local, "authority", &mut authority)?;
             let located = cases::find(root, &case)?;
             ensure!(
                 located.case.bind.is_some(),

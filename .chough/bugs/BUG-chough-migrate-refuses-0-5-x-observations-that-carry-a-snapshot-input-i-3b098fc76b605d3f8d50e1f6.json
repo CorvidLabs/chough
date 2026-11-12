@@ -24,17 +24,26 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-inventory-historical-5eee57a4d6b333d2e3c163e5"
+    "OBS-tc-cli-inventory-historical-5eee57a4d6b333d2e3c163e5",
+    "OBS-tc-cli-inventory-historical-140254ee4702585e7583c1fa"
   ],
   "impact": "This repository, and any project that ran 0.5.x release checks, cannot migrate",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37j's second migration rehearsal (plan Migration step 2) at d57d3aea",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794441124,
+      "text": "status: open -> verified. Green after t37j's 15d88ca1: TC-cli-inventory-historical passes; all 8 inventory cases pass, and the migration preview of this repository makes a plan (t37j's rehearsal at 247da9d6: unaccounted [], the apply succeeds in a throwaway clone).",
+      "observations": [
+        "OBS-tc-cli-inventory-historical-140254ee4702585e7583c1fa"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794439492,
-  "updated_at_unix_seconds": 1794439492
+  "updated_at_unix_seconds": 1794441124
 }

@@ -78,6 +78,7 @@ or redacting every value before it is written.
 | `body` | The Markdown body. |
 | `section` | The text of a `## ` section. |
 | `append_to_section` | Appends lines to the end of a `## ` section, or creates it at the end of the body. |
+| `replace_item` | Replaces one item of a `## ` section by its exact text, for a line Chough wrote whose target no longer exists, such as a session entry's link once the session has finished. |
 | `mark_item` | Marks one item of a `## ` section on its own line, the one in-place edit Chough makes to a section it owns. |
 | `render` | The whole record file. |
 | `render_within` | The record file, refused when over its kind's bound. |

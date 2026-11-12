@@ -277,11 +277,30 @@ pub(super) fn render_with(
     record.set_scalar("next", &session.next_action)?;
     sync_items(&mut record, DECISIONS, &session.decisions, "")?;
     sync_items(&mut record, STANDS, &session.completed, WITHDRAWN)?;
-    sync_items(&mut record, THREADS, &session.open_questions, RESOLVED)?;
+    sync_questions(&mut record, &session.open_questions, &session.answers)?;
+    // One line per referenced observation, linking its entry's file when it has one
+    // (REQ-records-004); a person's edit to the claim keeps the line.
     let verified = items(&record, VERIFIED);
     for observation in &session.observations {
-        if !verified.iter().any(|line| line == observation) {
-            record.append_to_section(VERIFIED, &format!("- {observation}\n"))?;
+        let (line, target) = match session.evidence_links.get(observation) {
+            Some((link, claim)) => (
+                format!(
+                    "[{}]({link})",
+                    one_line(claim).replace('[', "\\[").replace(']', "\\]")
+                ),
+                Some(format!("({link})")),
+            ),
+            None => (observation.clone(), None),
+        };
+        let listed = verified.iter().any(|existing| {
+            *existing == line
+                || existing == observation
+                || target
+                    .as_ref()
+                    .is_some_and(|target| existing.ends_with(target.as_str()))
+        });
+        if !listed {
+            record.append_to_section(VERIFIED, &format!("- {line}\n"))?;
         }
     }
     let existing = timeline(&record)?;
@@ -589,7 +608,41 @@ fn open_items(record: &Record, heading: &str, marks: &[&str]) -> Vec<String> {
     items(record, heading)
         .into_iter()
         .filter(|item| !marks.iter().any(|mark| item.ends_with(mark)))
+        // A question resolved with its answer: `<question> (resolved: <answer>)`.
+        .filter(|item| {
+            !(heading == THREADS && item.contains(" (resolved: ") && item.ends_with(')'))
+        })
         .collect()
+}
+
+/// Open threads: as [`sync_items`], a question no longer open marked resolved, with its
+/// answer when one was given: `<question> (resolved: <answer>)` (REQ-records-004).
+fn sync_questions(
+    record: &mut Record,
+    open: &[String],
+    answers: &std::collections::BTreeMap<String, String>,
+) -> Result<()> {
+    let present = open_items(record, THREADS, &[RESOLVED]);
+    for item in &present {
+        if open.iter().any(|want| one_line(want) == *item) {
+            continue;
+        }
+        let mark = answers
+            .iter()
+            .find(|(question, _)| one_line(question) == *item)
+            .map_or_else(
+                || RESOLVED.to_string(),
+                |(_, answer)| format!(" (resolved: {})", one_line(answer)),
+            );
+        record.mark_item(THREADS, item, &mark)?;
+    }
+    for want in open {
+        let line = one_line(want);
+        if !present.contains(&line) {
+            record.append_to_section(THREADS, &format!("- {line}\n"))?;
+        }
+    }
+    Ok(())
 }
 
 /// Append the wanted items a section lacks, and mark the open items no longer wanted.
