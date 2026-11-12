@@ -29,6 +29,10 @@ Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the d
 - The closeout leaves chough doctor clean and every earlier archived story byte-identical
 - For a second native change on one branch, the gate summary counts only that change's own work since its base_commit (D2, REQ-cli-061, red then green), and #190's merged-main case still counts from the merge base
 - chough migrate's preview says up front that --apply will refuse while native changes are open, naming them, and still writes nothing (red then green)
+- A journal post has a short human title and a real summary: chough checkpoint --title and --summary set them before the move into done, a title and body derived from the objective and the story are the fallback, and chough journal add --record writes an archived story's post (REQ-records-011, red then green)
+- Every archived story has a journal post: the 68 earlier stories through journal add --record, each title and summary written from its story, and 0.6.0's own post written again under the new rules; library index --check passes
+- knowledge/lessons/ holds a few real cross-project lessons from this release, each sourced to recorded evidence or a story
+- A path under /tmp/ or /private/tmp/ in a case definition gives no doctor leak finding, while a home path there still does (REQ-records-006, red then green)
 
 ## No-spec Rationale
 

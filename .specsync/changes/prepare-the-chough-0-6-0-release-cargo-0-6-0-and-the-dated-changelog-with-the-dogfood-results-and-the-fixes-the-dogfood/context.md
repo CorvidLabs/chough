@@ -41,3 +41,18 @@ Four flaky-test bugs stay open from 0.6.0 (the macOS writer lock timeout, the ti
 native-budget regression on MSRV, the timing trace flake, the verify lane's test
 step under load). The release gate allows no tag while any Chough bug is open, and a
 flake that will not reproduce goes to Leif, never closed to clear the gate.
+
+Re-scoped again (2026-11-12, 15:35Z to 15:41Z, relayed by t370). Leif saw this
+repository's first journal post: its title is the raw three-line objective, cut
+mid-word in the index, and its body is a stale first bullet ("Plan step 3 … 561
+passed"). He chose "yes put the journal fixes in 0.6.0": short human titles, real
+summaries, a backfill so each of the 68 earlier archived stories has a post, and 0.6.0's
+own post written again under the new rules. Since Chough cannot write a good title or
+summary by itself, he chose "Yes, add both (Recommended)": `chough checkpoint
+--title/--summary`, which the agent sets before the move into done, and `chough
+journal add --record <story>` for the backfill, with a derived title and body as the
+fallback. He chose "yes add lessons in 0.6.0": a few real cross-project lessons from
+this release in `knowledge/lessons/`. For the jackdaw finding (t38f: `chough doctor`
+reports the deliberate `/tmp` `XDG_DATA_HOME` settings in case definitions as leaks and
+offers `--redact`, which would break the cases) he chose "Yes (Recommended)": a
+temporary-root path in a case definition is not a leak.

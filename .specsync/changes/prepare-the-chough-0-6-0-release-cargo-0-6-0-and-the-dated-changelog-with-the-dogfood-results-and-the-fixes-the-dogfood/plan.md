@@ -15,7 +15,10 @@ path), and the move into done keeps every earlier story byte-identical (#165).
 ## Out of scope
 
 Tagging, releasing or publishing 0.6.0, and merging #238: each waits for Leif's go.
-One contract change, D2's REQ-cli-061 delta, which Leif chose to fix inside 0.6.0; any other the dogfood finds goes back to Leif as a send-back.
+Five contract changes, each chosen by Leif: D2 (REQ-cli-061), the preview warning
+(REQ-records-009), D1's pointer (REQ-history-006), the journal (REQ-records-011) and
+temporary paths in case definitions (REQ-records-006). Any other the dogfood finds goes
+back to Leif as a send-back.
 
 ## Steps
 
@@ -35,9 +38,21 @@ One contract change, D2's REQ-cli-061 delta, which Leif chose to fix inside 0.6.
    stays green. docs/cli.md says the same, and its "planned after 0.6.0" note goes.
 7. The migrate preview warning: a red test (a preview with an open native change gives
    no warning), then the warning in `src/migrate.rs`; the bug record red then green.
-8. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
-   section with the dogfood results in its upgrade notes.
-9. `change check --commit`, Leif's review as him through `chough change ship
+8. The journal (REQ-records-011): red tests, then `checkpoint --title/--summary`, the
+   derived fallback and `journal add --record` (`src/checkpoint.rs`,
+   `src/session_md.rs`, `src/journal.rs`); the workflow skill tells the agent to set
+   the title and summary before the move into done; docs/cli.md says the same.
+9. Temporary paths in case definitions (REQ-records-006): a red test, then doctor's
+   scan in `src/doctor.rs`; the bug record red then green.
+10. The backfill: each of the 68 earlier archived stories gets its post through
+    `journal add --record`, with a title and summary written from that story; 0.6.0's
+    post is removed with Git and written again the same way; `library index`
+    regenerates the index and the feed, and `--check` passes.
+11. Lessons: a few cross-project lessons from this release in `knowledge/lessons/`,
+    each sourced to recorded evidence or a story.
+12. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
+    section with the dogfood results in its upgrade notes.
+13. This session's post title and summary, then `change check --commit`, Leif's review as him through `chough change ship
    --close-gate`, and the move into done with its two-step closeout.
 
 ## Risks
@@ -46,6 +61,9 @@ One contract change, D2's REQ-cli-061 delta, which Leif chose to fix inside 0.6.
   not this change.
 - #148's red needs the test applied to the code before #157; if that code cannot run
   the test, the record says so and the bug goes to Leif.
+
+- The backfill's summaries are written by agents from the stories: each says only what
+  its story records, and the story stays the full record.
 
 ## Constraints consulted
 

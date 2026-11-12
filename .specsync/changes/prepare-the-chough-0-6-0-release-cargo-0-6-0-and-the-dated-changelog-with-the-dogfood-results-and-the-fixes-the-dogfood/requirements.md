@@ -5,7 +5,7 @@ artifact: requirements
 
 # Requirements
 
-Three requirements change, through this change's deltas:
+Five requirements change, through this change's deltas:
 
 - REQ-cli-061 (gate lists): the gate summary's "what changed" counts since the
   change's own base. The base is the change's `base_commit`, so an earlier change on
@@ -23,4 +23,14 @@ Three requirements change, through this change's deltas:
   slug, as a 0.5.x pointer that an in-place migration keeps, names that session, and
   doctor does not call it stale (D1); one acceptance criterion is added.
 
-The KNOW case links (KNOW-3, -4, -6, -15, -24) and #148 work within the contract.
+- REQ-records-011 (journal): `chough checkpoint --title` and `--summary` record the
+  post's short title and summary on the session, the post at the move into done uses
+  them, with a title and body derived from the objective and the story as the
+  fallback, and `chough journal add --record <story>` writes an archived story's post
+  for a backfill; three acceptance criteria are added.
+- REQ-records-006 (no leaks): a path under `/tmp/` or `/private/tmp/` in a case
+  definition is a deliberate test setting, not a doctor leak finding, while a home
+  path, user or host name, email or credential there still is; one acceptance
+  criterion is added.
+
+The lessons in `knowledge/lessons/` follow REQ-cli-044 as it stands. The KNOW case links (KNOW-3, -4, -6, -15, -24) and #148 work within the contract.
