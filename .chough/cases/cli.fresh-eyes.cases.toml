@@ -245,7 +245,8 @@ test = "a_close_that_runs_no_native_step_says_why"
 [[case]]
 id = "TC-cli-migrate-preview-with-nothing-to-migrate"
 title = "On a tree with no 0.5.x record, chough migrate says there is nothing to migrate, gives no plan digest and writes nothing, and the apply still reports nothing to do"
-status = "active"
+status = "retired"
+notes = "Retired: it links REQ-records-009, which the cli companion does not hold; TC-records-migrate-preview-with-nothing-to-migrate replaces it."
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-27", "LIFE-20"]
@@ -263,7 +264,8 @@ test = "a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_dige
 [[case]]
 id = "TC-cli-migration-receipt-has-one-follow-up-heading"
 title = "A migration receipt with two follow-ups has one Follow-up heading holding both"
-status = "active"
+status = "retired"
+notes = "Retired: it links REQ-records-009, which the cli companion does not hold; TC-records-migration-receipt-has-one-follow-up-heading replaces it."
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-27", "LIFE-20"]

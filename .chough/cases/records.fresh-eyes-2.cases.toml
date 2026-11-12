@@ -40,3 +40,39 @@ expected = ["tests/change.rs::ship_refuses_an_unknown_human_at_a_gate_that_drive
 adapter = "cargo-test"
 test_target = "change"
 test = "ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing"
+
+[[case]]
+id = "TC-records-migrate-preview-with-nothing-to-migrate"
+title = "On a tree with no 0.5.x record, chough migrate says there is nothing to migrate, gives no plan digest and writes nothing, and the apply still reports nothing to do"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest"
+
+[[case]]
+id = "TC-records-migration-receipt-has-one-follow-up-heading"
+title = "A migration receipt with two follow-ups has one Follow-up heading holding both"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_receipt_has_one_follow_up_heading_for_every_follow_up passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_receipt_has_one_follow_up_heading_for_every_follow_up"
