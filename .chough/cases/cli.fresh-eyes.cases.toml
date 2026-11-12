@@ -608,3 +608,21 @@ expected = ["tests/docs.rs::a_lessons_dated_form_is_documented_and_its_example_c
 adapter = "cargo-test"
 test_target = "docs"
 test = "a_lessons_dated_form_is_documented_and_its_example_counts"
+
+[[case]]
+id = "TC-cli-init-claude-host-prints-the-claude-md-line"
+title = "init --host claude prints the line to add to CLAUDE.md and writes nothing to CLAUDE.md, and init without the claude host prints no such line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-12", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/main.rs", "src/skill.rs", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::init_with_the_claude_host_prints_the_claude_md_line_and_writes_none passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "init_with_the_claude_host_prints_the_claude_md_line_and_writes_none"
