@@ -644,3 +644,21 @@ expected = ["tests/stages.rs::a_stage_move_prints_a_short_summary_and_its_full_r
 adapter = "cargo-test"
 test_target = "stages"
 test = "a_stage_move_prints_a_short_summary_and_its_full_report_under_json"
+
+[[case]]
+id = "TC-cli-context-gives-the-session-as-markdown"
+title = "chough context, Markdown by default, gives the session as Markdown (objective, stage, next action, modules, gates with what they hold and drive, decisions, where it stands, open threads), never a JSON block, and --json keeps the session object"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["src/context.rs", "src/main.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::context_gives_the_session_as_markdown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "context_gives_the_session_as_markdown"
