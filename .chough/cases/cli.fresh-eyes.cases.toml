@@ -295,3 +295,21 @@ expected = ["tests/cases.rs::an_executed_case_runs_provenance_does_not_deny_the_
 adapter = "cargo-test"
 test_target = "cases"
 test = "an_executed_case_runs_provenance_does_not_deny_the_execution"
+
+[[case]]
+id = "TC-cli-docs-show-the-requirement-evidence-table"
+title = "docs/cli.md's new-project section and the skill's testing reference show SpecSync's Requirement evidence table in a change's testing.md"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["docs/cli.md", "skills/chough-workflow/references/testing.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_requirement_evidence_table_in_a_changes_testing_md_is_documented passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_requirement_evidence_table_in_a_changes_testing_md_is_documented"

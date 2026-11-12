@@ -1646,3 +1646,50 @@ fn a_new_project_path_and_the_delta_format_are_documented() {
         );
     }
 }
+
+/// docs/cli.md's "A new project and its first change", to the next `## ` heading outside a
+/// fenced block, since its own examples hold `## ` lines.
+fn new_project_section() -> String {
+    let cli = read("docs/cli.md");
+    let start = cli
+        .find("### A new project and its first change")
+        .expect("docs/cli.md has no new-project section");
+    let mut in_fence = false;
+    let mut section = String::new();
+    for line in cli[start..].lines() {
+        if line.trim_start().starts_with("```") {
+            in_fence = !in_fence;
+        } else if !in_fence && line.starts_with("## ") {
+            break;
+        }
+        section.push_str(line);
+        section.push('\n');
+    }
+    section
+}
+
+/// REQ-cli-019, F2 of the second fresh-eyes round: SpecSync's required `## Requirement
+/// evidence` table in a change's testing.md is documented where the new-project path and
+/// the skill's testing reference describe testing.md, in SpecSync 6.3.0's format: a row
+/// naming each requirement the deltas add or modify.
+#[test]
+fn the_requirement_evidence_table_in_a_changes_testing_md_is_documented() {
+    let section = new_project_section();
+    let skill = read("skills/chough-workflow/references/testing.md");
+    for (page, text) in [
+        ("the new-project section of docs/cli.md", section.as_str()),
+        (
+            "skills/chough-workflow/references/testing.md",
+            skill.as_str(),
+        ),
+    ] {
+        for part in [
+            ".specsync/changes/<id>/testing.md",
+            "## Requirement evidence",
+            "| Requirement |",
+            "specsync change check",
+        ] {
+            assert!(text.contains(part), "{page} does not show {part:?}");
+        }
+    }
+}
