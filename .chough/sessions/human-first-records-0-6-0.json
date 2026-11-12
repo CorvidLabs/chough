@@ -1,7 +1,7 @@
 {
   "history_cursor": {
     "cycle": "CYC-bba430d2b716c0f8fa00897f",
-    "head": "EVT-9ec57920e82af41069ec1932",
+    "head": "EVT-ab90595e424905c88adc65d0",
     "legacy": null
   },
   "schema_version": 2,
@@ -13,7 +13,7 @@
     "history"
   ],
   "stage": {
-    "current": "build",
+    "current": "test",
     "status": "active",
     "callers": [],
     "iteration": 1
@@ -45,7 +45,8 @@
     "Leif (0xLeif) decided the 0.6.0 release condition: \"yes.. but we dog food and fix all bugs before tagging and releasing\", meaning no 0.6.0 tag or release until the chough-repo dogfood is complete and every bug found in dogfood or testing is fixed with its regression case, with zero open Chough bugs at tag time; the release itself still waits for his go (Coordinator chat with Leif (Claude Code, hc t370), 2026-11-10); relayed by t370, recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated",
     "Leif (0xLeif) set a standing rule, effective 2026-11-10: SpecSync approvals and reviews made on Leif's standing permission (the bug-fix rule, or an earlier 'merge when green') name the acting agent as <agent>-<terminal> (for example kimi-code-t37b), as --actor or --reviewer, with a note naming the rule, where it was given and the recording agent, model and hc terminal; only a decision Leif made at that gate is in Leif's name (--actor 0xLeif), quoting the exact words, where, and the recording agent; archived records are not edited; a refused non-0xLeif actor is reported to the coordinator and never retried as 0xLeif. Folded into REQ-cli-022, REQ-cli-029 and REQ-records-008 (Coordinator chat with Leif, relayed by t370 on 2026-11-10 as the coordinator's summary, not Leif's verbatim words); recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated",
     "Leif (0xLeif) said on 2026-11-11: \"we need to make sure we use chough to fix and close all the bugs and tickets for 0.6.0 before tagging 0.6.0.. we need to dogfood and make sure chough is perfect\". The coordinator set from it a ticket ledger (one disposition per open issue, pull request and local bug; only #221-#229, #231, #232 and items Leif defers himself may wait for after 0.6.0), a Chough 0.6.0 milestone, and the release gate: every item in that milestone closed through Chough (bug record -> fix -> regression case -> evidence -> closed), the chough-repo dogfood complete with every bug it finds fixed the same way, then Leif says go (Coordinator chat with Leif, relayed by t370 on 2026-11-11, Leif's words quoted as relayed); recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated",
-    "0xLeif decided \"Scope approval of the Chough 0.6.0 native change\": \"ok i approve\" (coordinator chat, 2026-11-11 (relayed by the coordinator agent t370)); recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated"
+    "0xLeif decided \"Scope approval of the Chough 0.6.0 native change\": \"ok i approve\" (coordinator chat, 2026-11-11 (relayed by the coordinator agent t370)); recorded by claude-code (claude-opus-5-5, hc t382); a relayed claim, not authenticated",
+    "decided: test by area with five independent testers on fresh clones, none writing Chough records, because Leif reviews area by area (t370 relaying Leif, 2026-11-12)"
   ],
   "open_questions": [],
   "completed": [
@@ -59,5 +60,5 @@
   "blockers": [],
   "awaiting_human": [],
   "run_consents": [],
-  "next_action": "Plan step 6 with #236 first (approval and review as the human, dogfood the Chough-driven approve), plus step 7; helpers take steps 4, 5, 8 and 9 under t370's file-ownership split"
+  "next_action": "Test stage: six areas tested independently on fresh clones (records t38b; sessions and bugs and timing t37j; approvals and gates t37b; knowledge t37f; the upgrade t384); every bug fixed red then green; t37j's rehearsal on the final head; then Leif's acceptance review"
 }
