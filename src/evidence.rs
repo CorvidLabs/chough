@@ -81,6 +81,16 @@ pub(super) enum Outcome {
     NotRun,
 }
 
+/// The limitation a case run records for each expected output fragment it did not
+/// print, followed by the fragments, quoted (REQ-cli-017).
+pub(super) const MISSING_OUTPUT: &str = "expected output missing: ";
+/// The limitations, by their start, that say why a case run failed (REQ-cli-017).
+const FAILURE_REASONS: [&str; 3] = [
+    MISSING_OUTPUT,
+    "timed out after ",
+    "output capture incomplete",
+];
+
 impl Outcome {
     pub(super) fn name(&self) -> &'static str {
         match self {
@@ -171,6 +181,31 @@ impl Evidence {
             body.push('\n');
         } else {
             body.push_str(" The raw log stays in the machine-local store.\n");
+        }
+        // REQ-cli-017 (F10c): a failed run says why when Chough knows it, before its key
+        // failing lines; the reason is read from the limitations it recorded.
+        let reasons: Vec<String> = self
+            .limitations
+            .iter()
+            .filter(|limitation| {
+                FAILURE_REASONS
+                    .iter()
+                    .any(|start| limitation.starts_with(start))
+            })
+            .map(|limitation| match limitation.strip_prefix(MISSING_OUTPUT) {
+                Some(fragments) => format!("The expected output was missing: {fragments}."),
+                None => {
+                    let mut chars = limitation.chars();
+                    let first = chars.next().map(|c| c.to_uppercase().to_string());
+                    format!("{}{}.", first.unwrap_or_default(), chars.as_str())
+                }
+            })
+            .collect();
+        if self.outcome == Outcome::Failed && !reasons.is_empty() {
+            body.push_str("\n## Why it failed\n\n");
+            for reason in &reasons {
+                body.push_str(&format!("- {reason}\n"));
+            }
         }
         if !self.key_lines.is_empty() {
             body.push_str("\n## Key failing lines\n\n");

@@ -113,7 +113,8 @@ agent before a project migrates.
   scripts and the CI, CLI and integration docs name 6.3.0, on Leif's decision.
 - **Evidence lives in its session** (REQ-cli-017, REQ-records-005, REQ-records-013). Each
   observation is one entry in `.chough/sessions/<id>/evidence/` with the exact command,
-  a SHA-256 fingerprint and, for a failure, at most 20 key failing lines. A repeated
+  a SHA-256 fingerprint and, for a failure, why when Chough knows it, such as an
+  expected output that was missing, then at most 20 key failing lines. A repeated
   validation run is one entry that holds every attempt. Raw logs stay in
   `.chough/local/logs/` and in CI and are never committed. External artifacts are
   fingerprinted in place, and up to 5 small key screenshots per session are committed

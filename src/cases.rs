@@ -1211,7 +1211,8 @@ pub(super) fn run_case(
     }
     if !missing.is_empty() {
         limitations.push(format!(
-            "expected output missing: {}",
+            "{}{}",
+            evidence::MISSING_OUTPUT,
             missing
                 .iter()
                 .map(|fragment| format!("{fragment:?}"))
