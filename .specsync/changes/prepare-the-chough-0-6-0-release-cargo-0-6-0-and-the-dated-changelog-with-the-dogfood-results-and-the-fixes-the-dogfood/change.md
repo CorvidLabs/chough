@@ -1,6 +1,6 @@
 ---
 id: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
-state: draft
+state: approved
 type: operations
 base_commit: 166d1ea1d37971e4c95ee8ba02249a1a46b2a0d2
 ---
