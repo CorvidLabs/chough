@@ -476,6 +476,47 @@ fn the_cli_reference_names_what_cases_run_returns() {
     assert!(!returns.contains("`recorded`"), "{row}");
 }
 
+/// REQ-cli-011, REQ-cli-005, F12g of the second fresh-eyes round: a case run Chough
+/// executed, passed or failed, says it is not proof of human approval or deployment, in
+/// what `cases run` prints and in its status row; a manual entry keeps the full sentence,
+/// which also says it is not proof of test execution.
+#[cfg(unix)]
+#[test]
+fn an_executed_case_runs_provenance_does_not_deny_the_execution() {
+    const EXECUTED: &str = "unauthenticated observation; not proof of human approval or deployment";
+    const MANUAL: &str =
+        "unauthenticated observation; not proof of human approval, test execution, or deployment";
+    let fixture = execution_fixture();
+    let mut expected = vec![];
+    for case in ["TC-cli-0001", "TC-cli-0002"] {
+        let (_, run) = run_case(&fixture, case);
+        assert_eq!(run["provenance"], EXECUTED, "{case}: {run:#}");
+        expected.push((run["observation"].as_str().unwrap().to_string(), EXECUTED));
+    }
+    let manual = add_evidence(&fixture, None, "product-test", None, "Looked by hand");
+    assert!(
+        manual.status.success(),
+        "{}",
+        String::from_utf8_lossy(&manual.stderr)
+    );
+    let manual: Value = serde_json::from_slice(&manual.stdout).unwrap();
+    assert_eq!(manual["provenance"], MANUAL, "{manual:#}");
+    expected.push((manual["observation"].as_str().unwrap().to_string(), MANUAL));
+    let status = fixture.ok(&["status", "--environment", "test-local", "--json"]);
+    for (observation, provenance) in expected {
+        let row = status["observations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["record"]["id"] == observation.as_str())
+            .unwrap_or_else(|| panic!("no status row for {observation}: {status:#}"));
+        assert_eq!(
+            row["record"]["provenance"], provenance,
+            "{observation}: {row:#}"
+        );
+    }
+}
+
 #[cfg(unix)]
 #[test]
 fn execution_records_failures_and_vacuous_runs_honestly() {
