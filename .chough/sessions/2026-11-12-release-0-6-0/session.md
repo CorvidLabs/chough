@@ -47,6 +47,7 @@ cases:
   - TC-cli-docs-show-a-lessons-dated-form
   - TC-cli-init-claude-host-prints-the-claude-md-line
   - TC-cli-stage-move-prints-a-short-summary
+  - TC-records-migrate-preview-is-text-with-json-behind-a-flag
 design: []
 files: []
 observations:
@@ -234,6 +235,7 @@ observations:
   - 2026-11-12-tc-cli-stage-move-prints-a-short-summary-6637e4
   - 2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-a94f38
   - 2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag
+  - 2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag-b09962
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -286,6 +288,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Round-3 F2: session close records the gates it withdraws (REQ-history-006); red at 95ba89c6, green at d2bfc0cb, bug verified
 - Round-3 F3 and F12a (t38c): the dated lesson form documented; init --host claude prints the CLAUDE.md line; red at de7893f8, green at 70468c0a, the F12a bug verified
 - Round-3 F9 (t38c, REQ-cli-008): a stage move prints a short summary and its full JSON under --json; red at fc6ec27a, green at 0ad3ad56; the full suite passed 708 of 708 there
+- Round-3 F12b (t38c, REQ-records-009): the migrate preview prints the plan as text, the same plan and digest under --json; red at dc25d77d, green at c6859854
 
 ## Decisions and why
 
@@ -486,6 +489,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test stages -- --exact a_stage_move_prints_a_short_summary_and_its_full_report_under_json for TC-cli-stage-move-prints-a-short-summary: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-stage-move-prints-a-short-summary-6637e4.md)
 - [Ran cargo test --locked --test next -- --exact next_at_accept_never_passes_on_specsyncs_review_command for TC-cli-next-at-accept-never-passes-on-the-review-command: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-never-passes-on-the-review-command-a94f38.md)
 - [Ran cargo test --locked --test migrate -- --exact the_preview_prints_the_plan_as_text_and_the_same_plan_as_json for TC-records-migrate-preview-is-text-with-json-behind-a-flag: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag.md)
+- [Ran cargo test --locked --test migrate -- --exact the_preview_prints_the_plan_as_text_and_the_same_plan_as_json for TC-records-migrate-preview-is-text-with-json-behind-a-flag: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-preview-is-text-with-json-behind-a-flag-b09962.md)
 
 ## Open threads
 
