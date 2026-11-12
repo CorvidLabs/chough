@@ -83,6 +83,8 @@ fn vault() -> Fixture {
         "knowledge/lessons/2026-01-03-shared-lesson.md",
         "---\nid: 2026-01-03-shared-lesson\ntitle: \"A shared lesson\"\ntype: lesson\ntags: [chough/lesson]\ndate: 2026-01-03\napplies_to: []\nsource: \"SYNTHETIC\"\n---\n\n# A shared lesson\n",
     );
+    // A journal link names a project path Git tracks (K4), so the sources are committed.
+    fixture.commit("sources");
     fixture.ok(&[
         "journal",
         "add",

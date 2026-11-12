@@ -9,7 +9,8 @@ use crate::records::{local_path, now, print_json, read_bounded_record};
 use anyhow::{Result, ensure};
 use clap::Subcommand;
 use serde_json::json;
-use std::path::Path;
+use std::path::{Component, Path};
+use std::process::Command;
 
 /// The byte bound of a post's body (REQ-records-011).
 pub(super) const BODY_LIMIT: usize = 1_200;
@@ -32,7 +33,7 @@ pub(super) enum JournalCommand {
         /// At most 1,200 bytes.
         #[arg(long)]
         body: String,
-        /// A repository path that exists or an http(s) URL; repeat for more.
+        /// A project path Git tracks or an http(s) URL; repeat for more.
         #[arg(long = "link")]
         links: Vec<String>,
     },
@@ -74,8 +75,8 @@ pub(super) fn run(root: &Path, command: JournalCommand) -> Result<()> {
             );
             for link in &links {
                 ensure!(
-                    is_url(link) || local_path(root, link).is_ok_and(|path| path.exists()),
-                    "--link {link:?} is neither an http(s) URL nor a repository path that exists"
+                    is_url(link) || tracked(root, link),
+                    "--link {link:?} is neither an http(s) URL nor a project path Git tracks"
                 );
             }
             let labelled: Vec<Link> = links
@@ -249,6 +250,32 @@ fn up(dir: &str) -> String {
 
 fn is_url(link: &str) -> bool {
     link.starts_with("https://") || link.starts_with("http://")
+}
+
+/// Whether `link` is a project path Git tracks: a file in its index, or a folder that
+/// holds one. A link must resolve in every clone and on the repository host
+/// (REQ-cli-044), so a path under `.git/`, one the ignore rules match (even when forced
+/// into the index, as machine-local files are), an untracked path and a missing one do
+/// not count, and neither does any path outside a Git repository.
+fn tracked(root: &Path, link: &str) -> bool {
+    if Path::new(link)
+        .components()
+        .any(|part| part == Component::Normal(".git".as_ref()))
+        || !local_path(root, link).is_ok_and(|path| path.exists())
+    {
+        return false;
+    }
+    let git = |arguments: &[&str]| {
+        crate::records::run_owned(Command::new("git").args(arguments).current_dir(root), None).ok()
+    };
+    // `check-ignore` exits 0 for an ignored path, and with --no-index it also reads a
+    // tracked one; it refuses pathspec magic, so only `ls-files` reads the link
+    // literally, never as a glob.
+    let ignored = git(&["check-ignore", "--quiet", "--no-index", "--", link])
+        .is_some_and(|output| output.status.success());
+    !ignored
+        && git(&["--literal-pathspecs", "ls-files", "-z", "--", link])
+            .is_some_and(|output| output.status.success() && !output.stdout.is_empty())
 }
 
 /// A post's link: its label and, unless it is plain text, a repository path or an
