@@ -857,3 +857,28 @@ fn doctor_reports_a_committed_record_its_reader_refuses() {
     );
     assert_eq!(fixture.read(&entry), broken);
 }
+
+/// REQ-history-012, REQ-history-002, TC-history-an-archived-story-is-no-rewritten-timeline
+/// (H1): a session archived since HEAD is compared with its story, whose Timeline ends
+/// with the `Closed <date>: <outcome>.` line; that line is not part of the last entry, so
+/// doctor reports no `timeline_rewritten`.
+#[test]
+fn a_session_archived_since_head_is_not_a_rewritten_timeline() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let id = fixture.id_of("alpha");
+    // The move into done writes the story and keeps the uncommitted folder; both are
+    // then committed, and `doctor --fix` removes the folder, leaving the story to compare
+    // with HEAD's session.md, whose Timeline holds the same entries.
+    while !fixture.is_archived("alpha") {
+        fixture.ok(&["stage", "advance"]);
+    }
+    fixture.commit("the story and the kept folder");
+    doctor(&fixture, &["--fix"]);
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}/session.md")));
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(
+        of_kind(&report, "timeline_rewritten").is_empty(),
+        "{report:#}"
+    );
+}

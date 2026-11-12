@@ -20,3 +20,21 @@ expected = ["tests/doctor.rs::doctor_reports_a_committed_record_its_reader_refus
 adapter = "cargo-test"
 test_target = "doctor"
 test = "doctor_reports_a_committed_record_its_reader_refuses"
+
+[[case]]
+id = "TC-history-an-archived-story-is-no-rewritten-timeline"
+title = "A session archived since HEAD is compared with its story and reports no timeline_rewritten"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17", "DRIVE-16", "DRIVE-13"]
+requirements = ["REQ-history-012", "REQ-history-002"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_session_archived_since_head_is_not_a_rewritten_timeline passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_session_archived_since_head_is_not_a_rewritten_timeline"
