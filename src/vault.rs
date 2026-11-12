@@ -258,7 +258,7 @@ fn list(items: Vec<String>, empty: &str) -> String {
 /// status, whether its scope is `blocking`, and its recorded `created` time ("" when it
 /// has none, which sorts oldest).
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) struct OpenBug {
+pub(super) struct OpenBug {
     pub(crate) file: Option<String>,
     pub(crate) id: String,
     pub(crate) title: String,
@@ -269,7 +269,7 @@ pub(crate) struct OpenBug {
 
 impl OpenBug {
     /// The bug a Markdown bug record in `file` holds.
-    pub(crate) fn of(file: Option<String>, record: &crate::markdown::Record) -> Self {
+    pub(super) fn of(file: Option<String>, record: &crate::markdown::Record) -> Self {
         let field = |key: &str| record.scalar(key).unwrap_or_default().to_string();
         Self {
             file,
