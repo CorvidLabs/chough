@@ -56,3 +56,18 @@ this release in `knowledge/lessons/`. For the jackdaw finding (t38f: `chough doc
 reports the deliberate `/tmp` `XDG_DATA_HOME` settings in case definitions as leaks and
 offers `--redact`, which would break the cases) he chose "Yes (Recommended)": a
 temporary-root path in a case definition is not a leak.
+
+Re-scoped a third time (2026-11-12T16:26Z, relayed by t370). A fresh-eyes tester
+(t38j, a cold full cycle on a scratch project plus a 0.5.0 migration) rated 0.6.0 at 7
+of 10 and found twelve issues. Leif wants 0.6.0 at 90% or better with no open bug at the
+tag, and chose "Yes, fix all (Recommended)" for every one: bugs and gaps (the cases
+check crash on a module's first change, no new-project path in the docs, `chough
+context` reading AGENTS.md files above the project), wrong or misleading messages
+(`gate record`'s output and approval note, the stage-move authority line, the empty
+entry a plain `specsync change check` leaves, `chough status` cutting its next action
+and the next action going stale after a gate closes), and small requirement changes
+(`next` at plan naming the scope gate instead of SpecSync's approve, the scope-gate
+summary showing the delta and plan, and record polish: labelled Timeline fields, a bug's
+Fix line, a labelled trigger, receipts in time order and `none` in empty receipt
+sections). The CHANGELOG and docs corrections the report also found were already in
+scope.

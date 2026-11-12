@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: build
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -212,5 +212,15 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - gate: native:approved
   - revision: 1b9548ffbc25bde92f3f611e80b5d63676033ece
+  - by: claude-code (hc t382)
+- 2026-11-12T16:37:15Z · direct-native-write · build → build ·  ^t-af7e4b
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: ad3214229cc6513156f661fbe960eaed929765cb
+  - direct_write: {"change":"prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood","files":[{"path":"state.json","change":"changed"},{"path":"approvals.json","change":"changed"}],"before_state":"approved","after_state":"draft"}
+  - by: claude-code (hc t382)
+- 2026-11-12T16:37:15Z · back · build → plan · Leif chose 'Yes, fix all (Recommended)' for the fresh-eyes findings (16:26Z, relayed by t370); native change sent back to draft for their contract text ^t-b19454
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: ad3214229cc6513156f661fbe960eaed929765cb
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, checkpoint references: 0 case(s) and 40 observation(s) to re-check with `chough status`
   - by: claude-code (hc t382)
 

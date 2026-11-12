@@ -16,6 +16,7 @@ artifact: tasks
 - [ ] Temporary paths in case definitions are not leaks: red test, fix, bug red then green.
 - [ ] The backfill: a post for each of the 68 earlier archived stories, and 0.6.0's post written again; library index --check passes.
 - [ ] A few cross-project lessons in knowledge/lessons/, each from recorded evidence.
+- [ ] The fresh-eyes bugs (t38j): each fixed red then green and verified, the docs gap closed, the CHANGELOG and docs corrected.
 - [x] Cargo 0.6.0 and the dated CHANGELOG [0.6.0] section with the dogfood results.
 
 Plain steps, not boxes: Leif's scope approval at the Chough gate; this session's post

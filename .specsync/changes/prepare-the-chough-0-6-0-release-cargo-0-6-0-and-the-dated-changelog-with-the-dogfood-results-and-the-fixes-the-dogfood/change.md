@@ -1,6 +1,6 @@
 ---
 id: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
-state: approved
+state: draft
 type: operations
 base_commit: 166d1ea1d37971e4c95ee8ba02249a1a46b2a0d2
 ---
@@ -33,6 +33,8 @@ Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the d
 - Every archived story has a journal post: the 68 earlier stories through journal add --record, each title and summary written from its story, and 0.6.0's own post written again under the new rules; library index --check passes
 - knowledge/lessons/ holds a few real cross-project lessons from this release, each sourced to recorded evidence or a story
 - A path under /tmp/ or /private/tmp/ in a case definition gives no doctor leak finding, while a home path there still does (REQ-records-006, red then green)
+- Every fresh-eyes bug from t38j's report is fixed with a case run red then green and verified: the cases check crash, the context walk, next at plan naming the scope gate (REQ-cli-021), the scope-gate summary showing the delta and plan (REQ-cli-061), labelled Timeline fields (REQ-history-002), a bug's trigger and Fix (REQ-cli-012), receipts in time order (REQ-history-006), none in empty migration-receipt sections (REQ-records-009), gate record's output and note, the authority line, the plain check's entry, and status and the stale next action
+- A new project's path is in README.md, docs/cli.md and the workflow skill, with specsync change adopt and the delta format, and the CHANGELOG and docs/cli.md describe 0.6.0 as it ships (drift checks red then green)
 
 ## No-spec Rationale
 

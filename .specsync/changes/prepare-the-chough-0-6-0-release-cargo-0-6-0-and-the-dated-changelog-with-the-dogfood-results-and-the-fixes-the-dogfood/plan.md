@@ -15,9 +15,11 @@ path), and the move into done keeps every earlier story byte-identical (#165).
 ## Out of scope
 
 Tagging, releasing or publishing 0.6.0, and merging #238: each waits for Leif's go.
-Five contract changes, each chosen by Leif: D2 (REQ-cli-061), the preview warning
-(REQ-records-009), D1's pointer (REQ-history-006), the journal (REQ-records-011) and
-temporary paths in case definitions (REQ-records-006). Any other the dogfood finds goes
+Contract changes, each chosen by Leif: D2 and the scope-gate summary (REQ-cli-061), the
+preview warning and the receipt's `none` (REQ-records-009), D1's pointer and receipts in
+time order (REQ-history-006), the journal (REQ-records-011), temporary paths in case
+definitions (REQ-records-006), `next` at plan (REQ-cli-021), a bug's trigger and Fix
+(REQ-cli-012) and labelled Timeline fields (REQ-history-002). Any other the dogfood finds goes
 back to Leif as a send-back.
 
 ## Steps
@@ -50,9 +52,16 @@ back to Leif as a send-back.
     regenerates the index and the feed, and `--check` passes.
 11. Lessons: a few cross-project lessons from this release in `knowledge/lessons/`,
     each sourced to recorded evidence or a story.
-12. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
+12. The fresh-eyes fixes, each red then green with its bug record: the cases check
+    crash, the context walk, `next` at plan, the scope-gate summary, the Timeline
+    fields, a bug's trigger and Fix, receipt order, the migration receipt's `none`,
+    `gate record`'s output and note, the authority line, the plain check's entry, and
+    `status` and the stale next action; the new-project docs (README, docs/cli.md and the
+    skill: `specsync change adopt` and the delta format); the CHANGELOG and docs
+    corrections (drift checks red then green).
+13. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
     section with the dogfood results in its upgrade notes.
-13. This session's post title and summary, then `change check --commit`, Leif's review as him through `chough change ship
+14. This session's post title and summary, then `change check --commit`, Leif's review as him through `chough change ship
    --close-gate`, and the move into done with its two-step closeout.
 
 ## Risks

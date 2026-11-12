@@ -202,6 +202,18 @@
       "cancelled_approvals": 2,
       "cancelled_review_attempts": 0,
       "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood",
+      "actor": "0xLeif",
+      "reason": "Leif chose 'Yes, fix all (Recommended)' (coordinator chat, Claude Code, hc t370, 2026-11-12T16:26Z; option text: 't382 records your yes and fixes each one with a test that fails first. 0.6.0 takes longer but aims for 90%+.') for every finding of t38j's fresh-eyes report: the cases check crash on a module's first change, new-project docs, the AGENTS.md walk above the project, the misleading messages, next at plan naming the scope gate (REQ-cli-021), the scope-gate summary showing the delta and plan (REQ-cli-061), and records polish (REQ-cli-012, REQ-history-002, REQ-history-006, REQ-records-009). Relayed by claude-code-t370; run by claude-code-t382.",
+      "timestamp": 1794501434,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 3,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
     }
   ]
 }

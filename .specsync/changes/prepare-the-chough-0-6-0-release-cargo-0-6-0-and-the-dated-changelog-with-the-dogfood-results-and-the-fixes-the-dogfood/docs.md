@@ -20,3 +20,8 @@ artifact: docs
   .agents/skills): set the post's title and summary before the move into done.
 - CHANGELOG.md: the journal options, the backfill, the lessons and the leak exception
   under [0.6.0].
+
+- README.md, docs/cli.md and the workflow skill: a new-project path, `specsync change
+  adopt` to turn SpecSync's change gates on, and the delta format with an example.
+- docs/cli.md: `next` at plan, the scope-gate summary, labelled Timeline fields, `bug
+  update --fix`, and the outputs the fresh-eyes report found undocumented.

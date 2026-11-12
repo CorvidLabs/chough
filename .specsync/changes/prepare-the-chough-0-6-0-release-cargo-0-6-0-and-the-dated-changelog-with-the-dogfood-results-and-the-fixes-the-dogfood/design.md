@@ -41,5 +41,19 @@ Leaks: doctor's scan skips a system-path match under `/tmp/` or `/private/tmp/` 
 `.chough/cases/*.cases.toml` file. Every other kind still counts there, and every other
 file is scanned as before.
 
+The fresh-eyes fixes. `cases check` reads a module's missing `requirements.md` as
+empty, so a requirement only the approved delta adds is accepted as REQ-cli already
+says. `chough context` stops its AGENTS.md walk at the Git root. `next` at plan routes
+to the scope gate as it routes to the review gate at accept, and shows no `specsync
+change approve`. The gate summary at a scope gate counts and names the change's own
+Markdown files first. Timeline fields with parts become labelled lines, read back
+alongside the JSON values older entries hold. A bug's Steps start with `Trigger:`, `bug
+update --fix` sets its Fix, and verifying a bug with no Fix names the passing run. A
+story's receipts sort by observation time; a migration receipt says `none` under an
+empty section. `gate record` reports the native step it ran and its note names `gate
+record`; the stage-move authority line says what gates do since #236; a plain `specsync
+change check` leaves an entry that says what ran; `status` gives its next action whole,
+and closing the last gate holding a stage clears a next action that described it.
+
 Everything else is configuration, evidence or text: the Cargo version, the CHANGELOG
 section, a test helper's name, and case links under `.chough/cases/`.
