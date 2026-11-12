@@ -1875,3 +1875,148 @@ fn closing_a_session_lists_each_kept_file_once() {
     once.dedup();
     assert_eq!(once.len(), kept.len(), "{kept:#?}");
 }
+
+/// Fresh-eyes findings F10a and F10b (REQ-history-006): an archived story's front
+/// matter carries no receipts, so its body starts within the first 20 lines; the story
+/// names each bug of its checkpoint under `## Bugs` with its title and status, linked to
+/// its record; it ends with the Timeline and its closing line, then `## Receipts`
+/// holding every receipt as one fenced YAML block; and the bug those receipts verify and
+/// the timing report still read them.
+#[test]
+fn a_story_puts_its_receipts_last_and_names_its_bugs() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(".chough/cases/cli.cases.toml", ONE_CASE);
+    fixture.init();
+    fixture.commit("start");
+    let observe = |summary: &str, outcome: &str| -> String {
+        let added = fixture.ok(&[
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            outcome,
+            "--environment",
+            "local",
+            "--summary",
+            summary,
+        ]);
+        added["observation"]
+            .as_str()
+            .unwrap_or_else(|| panic!("{added:#}"))
+            .to_string()
+    };
+    let failed = observe("SYNTHETIC the total is off by one", "failed");
+    // The pass is observed in a later second than the failure.
+    std::thread::sleep(std::time::Duration::from_millis(1_100));
+    let passed = observe("SYNTHETIC the total is right", "passed");
+    let ran = fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"])["observation"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let added = fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC total is off by one",
+        "--symptom",
+        "The total is one short",
+        "--trigger",
+        "Counting a list",
+        "--expected",
+        "The full count",
+        "--actual",
+        "One short",
+        "--environment",
+        "local",
+    ]);
+    let bug = added["id"].as_str().unwrap().to_string();
+    fixture.ok(&["bug", "update", &bug, "--observation", &failed]);
+    fixture.ok(&[
+        "bug",
+        "update",
+        &bug,
+        "--observation",
+        &passed,
+        "--status",
+        "verified",
+    ]);
+    let id = fixture.active_id();
+    fixture.commit("the work");
+    fixture.ok(&["session", "close", &id, "--reason", "SYNTHETIC finished"]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{id}.md"));
+
+    // F10a: the story first, the receipts last.
+    let front = front_lines(&story);
+    assert!(
+        !front.iter().any(|line| line.starts_with("receipts:")),
+        "the front matter holds receipts: {front:#?}"
+    );
+    let heading = story
+        .lines()
+        .position(|line| line.starts_with("# "))
+        .unwrap_or_else(|| panic!("no title: {story}"));
+    assert!(
+        heading < 20,
+        "the body starts at line {}: {story}",
+        heading + 1
+    );
+    let timeline = story.find("\n## Timeline\n").expect("a Timeline");
+    let closed = story.find("\nClosed ").expect("a closing line");
+    let receipts = story
+        .find("\n## Receipts\n")
+        .unwrap_or_else(|| panic!("no Receipts section: {story}"));
+    assert!(timeline < closed && closed < receipts, "{story}");
+    let tail = &story[receipts + "\n## Receipts\n".len()..];
+    assert!(
+        tail.starts_with("\n```yaml\n") && tail.trim_end().ends_with("```"),
+        "{tail}"
+    );
+    assert!(!tail.contains("\n## "), "Receipts is not last: {tail}");
+    for entry in [&failed, &passed, &ran] {
+        assert!(
+            tail.contains(&format!("\n  - id: {entry}\n")),
+            "no receipt for {entry}: {tail}"
+        );
+    }
+
+    // F10b: the bug the session found, linked, with its title and status.
+    let start = story
+        .find("\n## Bugs\n")
+        .unwrap_or_else(|| panic!("no Bugs section: {story}"))
+        + "\n## Bugs\n".len();
+    let rest = &story[start..];
+    let section = &rest[..rest.find("\n## ").unwrap_or(rest.len())];
+    let link = format!("[SYNTHETIC total is off by one](../../bugs/{bug}.md)");
+    assert!(
+        section.lines().any(|line| line.starts_with("- ")
+            && line.contains(&link)
+            && line.contains("verified")),
+        "{section}"
+    );
+    assert!(story.find("\n## Bugs\n").unwrap() < timeline, "{story}");
+
+    // The readers follow: the bug resolves its evidence to the story's receipts and
+    // stays verified, and timing reads the case run from the story.
+    let shown = fixture.ok(&["bug", "show", &bug]);
+    assert_eq!(
+        shown["verification"], "reproduced-and-later-passed",
+        "{shown:#}"
+    );
+    assert_eq!(
+        shown["observation_labels"][0]["label"], "story-receipt",
+        "{shown:#}"
+    );
+    let report = fixture.ok(&["timing", "--json"]);
+    assert!(
+        report.to_string().contains(&format!("receipt in {id}")),
+        "{report:#}"
+    );
+}
