@@ -199,16 +199,22 @@ impl Step {
     }
 }
 
-/// The note an approval records: the human's words, where and when, and the agent
-/// that relayed them (REQ-records-008).
+/// The note an approval records: the human's words, where and when, the agent that
+/// relayed them (REQ-records-008) and the command the decision came through:
+/// `chough gate record <list>` when the relay names its gate list (REQ-cli-061),
+/// otherwise `chough checkpoint --close-gate`.
 pub(crate) fn approval_note(
     human: &Human,
     gate: &str,
     relay: &crate::stage::RelayedBy,
     at: &str,
 ) -> String {
+    let through = match &relay.list {
+        Some(list) => format!("chough gate record {list}"),
+        None => "chough checkpoint --close-gate".to_string(),
+    };
     format!(
-        "Approved by {} at the Chough gate \"{gate}\": \"{}\" ({}). Relayed and recorded by {} at {at} through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+        "Approved by {} at the Chough gate \"{gate}\": \"{}\" ({}). Relayed and recorded by {} at {at} through {through}; a relayed claim, not authenticated.",
         human.name, relay.words, relay.place, relay.recorded_by
     )
 }

@@ -730,9 +730,18 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
                 remaining.join(",")
             );
         }
-        closed.push(
-            json!({"number": listed.number, "gate": listed.gate, "summary_digest": listed.digest}),
-        );
+        // The close's own report names the native step it ran, or why none did
+        // (REQ-records-008); the reply passes it on for each gate.
+        let native_step = serde_json::from_slice::<Value>(&output.stdout)
+            .ok()
+            .and_then(|report| report.pointer("/relayed_decision/native_step").cloned())
+            .unwrap_or(Value::Null);
+        closed.push(json!({
+            "number": listed.number,
+            "gate": listed.gate,
+            "summary_digest": listed.digest,
+            "native_step": native_step,
+        }));
     }
     print_json(&json!({"schema_version": 1, "list": args.list, "closed": closed}))
 }
