@@ -48,6 +48,13 @@ cases:
   - TC-cli-init-claude-host-prints-the-claude-md-line
   - TC-cli-stage-move-prints-a-short-summary
   - TC-records-migrate-preview-is-text-with-json-behind-a-flag
+  - TC-cli-next-shows-specsyncs-step-for-reference-only
+  - TC-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line
+  - TC-cli-near-miss-gate-close-names-the-closest-open-gate
+  - TC-cli-next-at-test-after-every-case-passed-names-stage-advance
+  - TC-cli-scope-gate-summary-names-each-delta-first
+  - TC-cli-intent-gate-summary-names-the-criteria-and-hi-files
+  - TC-reporting-timing-starts-cycle-1-at-the-start-entry
 design: []
 files: []
 observations:
@@ -243,6 +250,13 @@ observations:
   - 2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first
   - 2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files
   - 2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry
+  - 2026-11-12-tc-cli-next-shows-specsyncs-step-for-reference-only-0e76c0
+  - 2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line-0396f2
+  - 2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate-660b00
+  - 2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage-c70a4f
+  - 2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first-8533eb
+  - 2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files-5c688e
+  - 2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry-b3df6a
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -301,6 +315,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Round-3 F3 and F12a (t38c): the dated lesson form documented; init --host claude prints the CLAUDE.md line; red at de7893f8, green at 70468c0a, the F12a bug verified
 - Round-3 F9 (t38c, REQ-cli-008): a stage move prints a short summary and its full JSON under --json; red at fc6ec27a, green at 0ad3ad56; the full suite passed 708 of 708 there
 - Round-3 F12b (t38c, REQ-records-009): the migrate preview prints the plan as text, the same plan and digest under --json; red at dc25d77d, green at c6859854
+- t37f's round-3 batch: F8, F6, F11, F7, F4 and F5; red at 7fb91195, green at e0131c09, five bugs verified
 
 ## Decisions and why
 
@@ -509,6 +524,13 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_names_each_delta_first_with_its_requirements for TC-cli-scope-gate-summary-names-each-delta-first: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first.md)
 - [Ran cargo test --locked --test gates -- --exact an_intent_gate_summary_names_the_criteria_and_their_hi_files for TC-cli-intent-gate-summary-names-the-criteria-and-hi-files: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files.md)
 - [Ran cargo test --locked --test timing -- timing_starts_cycle_1_at_the_start_entry_and_says_elapsed_wall_clock_once init_and_session_new_write_a_start_entry_that_timing_reads for TC-reporting-timing-starts-cycle-1-at-the-start-entry: failed (exit 101).](evidence/2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry.md)
+- [Ran cargo test --locked --test next -- --exact at_plan_after_approval_next_shows_specsyncs_step_for_reference_only for TC-cli-next-shows-specsyncs-step-for-reference-only: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-shows-specsyncs-step-for-reference-only-0e76c0.md)
+- [Ran cargo test --locked --test bugs -- --exact a_duplicate_bug_add_lists_each_similar_bug_as_a_line for TC-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line-0396f2.md)
+- [Ran cargo test --locked --test relay -- --exact a_near_miss_gate_close_names_the_closest_open_gate for TC-cli-near-miss-gate-close-names-the-closest-open-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate-660b00.md)
+- [Ran cargo test --locked --test next -- --exact at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run for TC-cli-next-at-test-after-every-case-passed-names-stage-advance: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage-c70a4f.md)
+- [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_names_each_delta_first_with_its_requirements for TC-cli-scope-gate-summary-names-each-delta-first: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first-8533eb.md)
+- [Ran cargo test --locked --test gates -- --exact an_intent_gate_summary_names_the_criteria_and_their_hi_files for TC-cli-intent-gate-summary-names-the-criteria-and-hi-files: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files-5c688e.md)
+- [Ran cargo test --locked --test timing -- timing_starts_cycle_1_at_the_start_entry_and_says_elapsed_wall_clock_once init_and_session_new_write_a_start_entry_that_timing_reads for TC-reporting-timing-starts-cycle-1-at-the-start-entry: passed (exit 0).](evidence/2026-11-12-tc-reporting-timing-starts-cycle-1-at-the-start-entry-b3df6a.md)
 
 ## Open threads
 

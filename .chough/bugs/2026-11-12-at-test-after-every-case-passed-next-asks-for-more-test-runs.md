@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-12-at-test-after-every-case-passed-next-asks-for-more-test-runs
 aliases: []
 title: At test after every case passed, next asks for more test runs and lists superseded runs as needing attention
-status: open
+status: verified
 classification: product-defect
 scope: in-scope
 impact: next stalls a finished test stage (t38m F7)
@@ -12,6 +12,7 @@ requirements: [REQ-cli-021]
 cases: [TC-cli-next-at-test-after-every-case-passed-names-stage-advance]
 evidence:
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage-c70a4f
 receipts: []
 environment: local-macos-arm64
 revision: 7fb91195b8f27c97248de42544fd07a89ccc4dbd
@@ -21,7 +22,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T22:56:52Z
-updated: 2026-11-12T22:56:52Z
+updated: 2026-11-12T23:02:45Z
 ---
 # At test after every case passed, next asks for more test runs and lists superseded runs as needing attention
 
@@ -36,8 +37,9 @@ Actual: More test runs asked for; superseded runs listed, one twice
 
 **Why it matters:** next stalls a finished test stage (t38m F7)
 
-**Fix:** Not fixed yet.
+**Fix:** c7783c48 (t37f's 8cca8d2f): at test, once every referenced case's latest run passed, next names chough stage advance; superseded runs are counted apart and each observation is listed once (REQ-cli-021)
 
 ## Log
 
 - 2026-11-12T22:56:52Z · Reported (t38m's third fresh-eyes round report (relayed by t370); fixed by t37f); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage · by claude-code (hc t382)
+- 2026-11-12T23:02:45Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-next-at-test-after-every-case-passed-names-stage-c70a4f; fix: c7783c48 (t37f's 8cca8d2f): at test, once every referenced case's latest run passed, next names chough stage advance; superseded runs are counted apart and each observation is listed once (REQ-cli-021). Red at 7fb91195, green at e0131c09 · by claude-code (hc t382)

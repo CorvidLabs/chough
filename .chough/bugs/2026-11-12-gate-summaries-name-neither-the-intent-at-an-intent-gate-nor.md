@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-12-gate-summaries-name-neither-the-intent-at-an-intent-gate-nor
 aliases: []
 title: Gate summaries name neither the intent at an intent gate nor the delta past the five-file cap
-status: open
+status: verified
 classification: product-defect
 scope: in-scope
 impact: The human approves without seeing what they approve (t38m F4, F5)
@@ -15,6 +15,8 @@ cases:
 evidence:
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files-5c688e
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first-8533eb
 receipts: []
 environment: local-macos-arm64
 revision: 7fb91195b8f27c97248de42544fd07a89ccc4dbd
@@ -24,7 +26,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T22:56:46Z
-updated: 2026-11-12T22:56:46Z
+updated: 2026-11-12T23:02:45Z
 ---
 # Gate summaries name neither the intent at an intent gate nor the delta past the five-file cap
 
@@ -39,8 +41,9 @@ Actual: Unknowns at intent; the delta cut by the cap
 
 **Why it matters:** The human approves without seeing what they approve (t38m F4, F5)
 
-**Fix:** Not fixed yet.
+**Fix:** e0131c09 (t37f's b5ea4952): a scope gate's summary names each delta first with its requirement IDs, and an intent gate's names the session's criteria and their HI files (REQ-cli-061)
 
 ## Log
 
 - 2026-11-12T22:56:46Z · Reported (t38m's third fresh-eyes round report (relayed by t370); fixed by t37f); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files, 2026-11-12-release-0-6-0/2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first · by claude-code (hc t382)
+- 2026-11-12T23:02:45Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-intent-gate-summary-names-the-criteria-and-hi-files-5c688e, 2026-11-12-release-0-6-0/2026-11-12-tc-cli-scope-gate-summary-names-each-delta-first-8533eb; fix: e0131c09 (t37f's b5ea4952): a scope gate's summary names each delta first with its requirement IDs, and an intent gate's names the session's criteria and their HI files (REQ-cli-061). Red at 7fb91195, green at e0131c09 · by claude-code (hc t382)

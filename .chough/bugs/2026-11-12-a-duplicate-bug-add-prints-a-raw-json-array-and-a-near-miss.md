@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-12-a-duplicate-bug-add-prints-a-raw-json-array-and-a-near-miss
 aliases: []
 title: A duplicate bug add prints a raw JSON array, and a near-miss gate text gets no suggestion
-status: open
+status: verified
 classification: product-defect
 scope: in-scope
 impact: Refusals a person has to decode (t38m F6)
@@ -15,6 +15,8 @@ cases:
 evidence:
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line-0396f2
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate-660b00
 receipts: []
 environment: local-macos-arm64
 revision: 7fb91195b8f27c97248de42544fd07a89ccc4dbd
@@ -24,7 +26,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T22:56:49Z
-updated: 2026-11-12T22:56:49Z
+updated: 2026-11-12T23:02:45Z
 ---
 # A duplicate bug add prints a raw JSON array, and a near-miss gate text gets no suggestion
 
@@ -39,8 +41,9 @@ Actual: A JSON array; no suggestion
 
 **Why it matters:** Refusals a person has to decode (t38m F6)
 
-**Fix:** Not fixed yet.
+**Fix:** a6c0f346 (t37f's 5ef20a02): a duplicate bug add lists each similar bug as '<id>: <title> (<status>)', and a near-miss --close-gate names the closest open gate
 
 ## Log
 
 - 2026-11-12T22:56:49Z · Reported (t38m's third fresh-eyes round report (relayed by t370); fixed by t37f); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line, 2026-11-12-release-0-6-0/2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate · by claude-code (hc t382)
+- 2026-11-12T23:02:45Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line-0396f2, 2026-11-12-release-0-6-0/2026-11-12-tc-cli-near-miss-gate-close-names-the-closest-open-gate-660b00; fix: a6c0f346 (t37f's 5ef20a02): a duplicate bug add lists each similar bug as '<id>: <title> (<status>)', and a near-miss --close-gate names the closest open gate. Red at 7fb91195, green at e0131c09 · by claude-code (hc t382)
