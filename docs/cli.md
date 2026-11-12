@@ -1761,6 +1761,22 @@ are byte-identical for the same sources; they copy no criterion, requirement, le
 or record text. A module's own lessons stay in its spec's lesson source. No gate reads
 the vault.
 
+A module's lesson source is `specs/<module>/<module>.3md` when it exists, where each
+plane after the first is one lesson, and otherwise the `## Lessons` section of
+`specs/<module>/context.md`. There `index.md` counts a lesson only when it starts with
+its date, `YYYY-MM-DD` followed by a space, comma or colon, as a list item or a
+paragraph, or as a `### YYYY-MM-DD` heading; an undated lesson stays in the file but
+counts as none. A lesson also gives its certainty label, its source and its limits
+(see the skill's `references/accept.md`):
+
+```markdown
+## Lessons
+
+- 2026-11-12, verified: an order of exactly fifty dollars ships free, so the
+  threshold check is inclusive. Source: bug 2026-11-12-shipping-charged-at-fifty.
+  Limits: checkout totals only; refunds were not checked.
+```
+
 A journal post's front matter gives `id`, `title`, `type: journal`, `tags`, `date`,
 `time` (the UTC time it was written, to the second; the file name keeps only the date),
 `kind` (`shipped`, `closed`, `intent`, `spec`, `broke` or `learned`), `links` and, for

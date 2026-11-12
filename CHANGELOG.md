@@ -201,6 +201,9 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   with no trace IDs in its reasons. `docs/cli.md` shows a minimal HI file, a baseline
   `requirements.md` and SpecSync's Requirement evidence table for a new project, and
   says that `chough stage skip` skips the current stage.
+- From a third fresh-eyes round: the workflow skill and `docs/cli.md` say that a lesson
+  in `context.md` starts with its `YYYY-MM-DD` date, the only form the knowledge index
+  counts, with an example (REQ-cli-015).
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.
 - Stopping a command on macOS no longer leaves behind a child the command forked as the
