@@ -219,10 +219,19 @@ fn a_reproduced_bug_is_deduplicated_and_keeps_added_evidence() {
         "--note",
         "Reported again from the mobile checkout",
     ]);
-    assert_eq!(updated["bug"]["evidence"], json!([repro_1, repro_2]));
+    // A link to a session's entry is stored qualified, so a merge cannot make it
+    // ambiguous (REQ-cli-023).
+    let session = fixture.active_id();
+    assert_eq!(
+        updated["bug"]["evidence"],
+        json!([
+            format!("{session}/{repro_1}"),
+            format!("{session}/{repro_2}")
+        ])
+    );
     let last = log(&fixture, &id).pop().unwrap();
     assert!(
-        last.contains(&format!("evidence: {repro_2}"))
+        last.contains(&format!("evidence: {session}/{repro_2}"))
             && last.contains("Reported again from the mobile checkout"),
         "{last}"
     );
@@ -1400,7 +1409,7 @@ fn the_report_shows_every_stored_field_and_none_recorded_for_empty_ones() {
         "Observed: Shipping fee of 4.99 applied".into(),
         "Why it matters: Every order at the threshold".into(),
         "Fix: Not fixed yet.; fixed in: none recorded".into(),
-        format!("Evidence: {shipping_fails}"),
+        format!("Evidence: {}/{shipping_fails}", fixture.active_id()),
         format!("Related: {other}; duplicate of: none"),
         "Not published".into(),
     ] {
@@ -1827,7 +1836,11 @@ fn bug_merge_unions_logs_and_takes_one_sided_edits() {
     let merged = fixture.read(&bug_path(&id));
     let shown = fixture.ok(&["bug", "show", &id]);
     assert_eq!(shown["bug"]["status"], "investigating", "{merged}");
-    assert_eq!(shown["bug"]["evidence"], json!([seen]), "{merged}");
+    assert_eq!(
+        shown["bug"]["evidence"],
+        json!([format!("{}/{seen}", fixture.active_id())]),
+        "{merged}"
+    );
     assert_eq!(shown["bug"]["fix"], "Round once.", "{merged}");
     let entries = log(&fixture, &id);
     assert_eq!(entries.len(), 3, "{merged}");

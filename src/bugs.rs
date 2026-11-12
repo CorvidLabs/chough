@@ -526,7 +526,9 @@ impl<'a> Evidence<'a> {
     fn present(&self, bug: &Stored) -> Result<Vec<(String, Linked)>> {
         let mut present = vec![];
         for id in bug.list("evidence") {
-            if let Some(linked) = self.find(bug, &id)? {
+            // A link a merge made ambiguous never counts; `labels` shows it as
+            // ambiguous and the report still reads (REQ-cli-023). Writes refuse it.
+            if let Ok(Some(linked)) = self.find(bug, &id) {
                 present.push((id, linked));
             }
         }
@@ -681,15 +683,28 @@ pub(super) fn records_in(root: &Path, dir: &str, bound: u64) -> Vec<(String, Rec
 }
 
 /// Linked evidence for a new link must be present.
-fn check_evidence(evidence: &Evidence<'_>, bug: &Stored, ids: &[String]) -> Result<()> {
+/// Check each linked ID resolves, and return each as the bug stores it: a link that
+/// resolves to an open session's entry is stored qualified as `<session>/<id>`, so a
+/// later merge that brings a same-named entry in another session cannot make it
+/// ambiguous (REQ-cli-023); any other link is stored as given. An unknown or
+/// ambiguous link refuses with nothing written.
+fn check_evidence(evidence: &Evidence<'_>, bug: &Stored, ids: &[String]) -> Result<Vec<String>> {
+    let mut stored = vec![];
     for id in ids {
-        evidence.find(bug, id)?.with_context(|| {
+        let linked = evidence.find(bug, id)?.with_context(|| {
             format!(
                 "unknown evidence {id}: no open session's entry, archived story's receipt or receipt of this bug has that id or alias"
             )
         })?;
+        let session = (linked.label == "entry" && !id.contains('/'))
+            .then(|| linked.place.split_once('/').map(|(session, _)| session))
+            .flatten();
+        stored.push(match session {
+            Some(session) => format!("{session}/{id}"),
+            None => id.clone(),
+        });
     }
-    Ok(())
+    Ok(stored)
 }
 
 fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Result<()> {
@@ -1218,7 +1233,7 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         path: String::new(),
         record: probe,
     };
-    check_evidence(&evidence, &probe, &args.observations)?;
+    let links = check_evidence(&evidence, &probe, &args.observations)?;
     check_regression(&evidence, root, &probe)?;
     let draft = Draft {
         title: args.title,
@@ -1233,7 +1248,7 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         criteria: args.criteria,
         requirements: args.requirements,
         cases: args.cases,
-        evidence: args.observations,
+        evidence: links,
         regression_baseline: args.regression_baseline,
         fixture: args.fixture,
         environment: args.environment,
@@ -1283,7 +1298,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
         ensure_text("note", note)?;
     }
     let evidence = Evidence::new(root);
-    check_evidence(&evidence, &stored, &args.observations)?;
+    let links = check_evidence(&evidence, &stored, &args.observations)?;
     for (field, value) in [
         ("status", &args.status),
         ("classification", &args.classification),
@@ -1340,8 +1355,8 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     }
     let mut linked = stored.list("evidence");
     let mut added = vec![];
-    for observation in &args.observations {
-        if !linked.contains(observation) {
+    for (given, observation) in args.observations.iter().zip(&links) {
+        if !linked.contains(observation) && !linked.contains(given) {
             linked.push(observation.clone());
             added.push(observation.clone());
         }
