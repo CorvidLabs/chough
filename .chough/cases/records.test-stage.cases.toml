@@ -165,3 +165,21 @@ expected = ["tests/sessions.rs::closing_a_session_lists_each_kept_file_once pass
 adapter = "cargo-test"
 test_target = "sessions"
 test = "closing_a_session_lists_each_kept_file_once"
+
+[[case]]
+id = "TC-records-migrate-plan-says-what-each-file-becomes"
+title = "The migration plan names the 0.6.0 files each carried 0.5.x file becomes, and the receipt's Removed section names them"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-8", "KNOW-30", "LIFE-26"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::the_plan_and_receipt_say_what_each_carried_file_becomes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "the_plan_and_receipt_say_what_each_carried_file_becomes"

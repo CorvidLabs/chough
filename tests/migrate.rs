@@ -1181,3 +1181,54 @@ fn migrated_inbox_entries_keep_their_ids_and_the_map_names_the_new_files() {
         );
     }
 }
+
+/// REQ-records-009, TC-records-migrate-plan-says-what-each-file-becomes (U5): the plan
+/// names, for every 0.5.x file it carries, the 0.6.0 files it becomes, and the receipt's
+/// Removed section names them too, never only "the records above".
+#[test]
+fn the_plan_and_receipt_say_what_each_carried_file_becomes() {
+    let fixture = migrate_project("adopted", &[]);
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    let sources = plan["sources"].as_object().unwrap();
+    let becomes = plan["becomes"]
+        .as_object()
+        .unwrap_or_else(|| panic!("the plan has no becomes: {plan:#}"));
+    let removed = plan["removed"].as_object().unwrap();
+    let mut unnamed = vec![];
+    for source in sources.keys() {
+        if removed.contains_key(source) {
+            continue;
+        }
+        let targets = becomes
+            .get(source)
+            .and_then(Value::as_array)
+            .cloned()
+            .unwrap_or_default();
+        if targets.is_empty() {
+            unnamed.push(source.clone());
+        }
+        for target in &targets {
+            let target = target.as_str().unwrap();
+            assert!(
+                fixture.exists(target),
+                "{source} becomes {target}, which was not written"
+            );
+        }
+    }
+    assert!(unnamed.is_empty(), "carried with no target: {unnamed:#?}");
+    let session = ".chough/sessions/open-one.json";
+    assert!(
+        becomes[session]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|target| target.as_str().unwrap().ends_with("-open-one/session.md")),
+        "{:#}",
+        becomes[session]
+    );
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    assert!(
+        !receipt.contains("carried into the 0.6.0 records above"),
+        "{receipt}"
+    );
+}
