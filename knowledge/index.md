@@ -46,9 +46,7 @@ Newest posts:
 
 ## Open bugs
 
-1 open bug, blocking first, then newest.
-
-- [2026-11-12-stopping-a-command-can-leave-a-child-it-forked-at-that-moment](../.chough/bugs/2026-11-12-stopping-a-command-can-leave-a-child-it-forked-at-that-moment.md) Stopping a command can leave a child it forked at that moment running on macOS, because one SIGKILL to the process group misses a member the group gains while it is signalled (open)
+- none
 
 ## Rules, skills and decisions
 

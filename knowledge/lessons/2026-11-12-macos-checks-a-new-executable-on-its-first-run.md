@@ -10,7 +10,7 @@ source: .chough/bugs/2026-11-11-verify-lane-test-step-fails-intermittently-under
 # macOS checks a new executable on its first run, which can take seconds under load
 
 macOS assesses every newly written executable the first time it runs, one at a time
-across the machine, and remembers the result for that file. On a busy Mac, where
+across the machine, and remembers the result for that file. On a busy macOS machine, where
 builds and test suites keep writing and running new executables, that first run can
 start seconds after `spawn()` returns. The second run of the same file starts in
 milliseconds, and so does a hard link or a rename of a file that has already run; a
