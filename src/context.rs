@@ -168,7 +168,9 @@ pub(super) fn hi_export_json(root: &Path, scope: &str) -> NativeJson {
     }
 }
 
-pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
+/// The context packet's sections; `as_json` keeps the Timeline and the open backlog as
+/// JSON, and without it they are Markdown (REQ-cli-002, F10d).
+pub(super) fn context(root: &Path, session: &Session, as_json: bool) -> Result<Vec<Section>> {
     let mut sections = vec![];
     for (folder, name) in instruction_folders(root) {
         if folder.join("AGENTS.md").exists() {
@@ -218,6 +220,22 @@ pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
     {
         let Session::V2(checkpoint) = session;
         let (transitions, partial) = stage::recent_transitions(root, 20)?;
+        // Markdown: the same recent entries, as `session.md` writes them.
+        let content = if as_json {
+            serde_json::to_string_pretty(&transitions)?
+        } else {
+            let entries = match checkpoint.source.as_ref() {
+                Some(record) => crate::session_md::timeline(record)?,
+                None => vec![],
+            };
+            let start = entries.len().saturating_sub(transitions.len());
+            entries[start..]
+                .iter()
+                .map(crate::session_md::entry_markdown)
+                .collect::<String>()
+                .trim_end()
+                .to_string()
+        };
         sections.push(Section {
             source: format!(
                 "{} (Timeline)",
@@ -230,7 +248,7 @@ pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
             } else {
                 "present".into()
             },
-            content: serde_json::to_string_pretty(&transitions)?,
+            content,
         });
         sections.push(Section {
             source: "chough stage show".into(),
@@ -241,7 +259,7 @@ pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
     if local_path(root, prefs::PREFERENCES)?.is_file() {
         sections.push(file_section(root, prefs::PREFERENCES)?);
     }
-    sections.push(bugs::open_backlog_section(root)?);
+    sections.push(bugs::open_backlog_section(root, as_json)?);
     let mut remaining = CONTEXT_LIMIT;
     for section in &mut sections {
         if remaining == 0 {

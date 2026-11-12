@@ -630,6 +630,12 @@ fn apply_field(entry: &mut Entry, key: &str, value: String, parts: &[String]) ->
     Ok(())
 }
 
+/// A Timeline entry with its field lines, as `session.md` holds it, for a Markdown view
+/// such as `chough context` (REQ-cli-002).
+pub(super) fn entry_markdown(entry: &Entry) -> String {
+    render_entry(&entry.transition, entry.native_change.as_deref(), &entry.id)
+}
+
 fn render_entry(transition: &Transition, native_change: Option<&str>, id: &str) -> String {
     let text = transition
         .reason
