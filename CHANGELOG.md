@@ -146,8 +146,11 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
 - At plan, while the change waits for its approval, `chough next` names the human scope
   gate and never passes on SpecSync's own `specsync change approve <id> --actor
   <name>`, so no agent is routed to approve its own scope (REQ-cli-021). At a scope
-  gate, `chough gate list`'s summary counts and names the change's own delta, plan and
-  other Markdown files first, since they are what the human approves (REQ-cli-061).
+  gate, `chough gate list`'s summary counts and names the change's own deltas first,
+  each with the requirement IDs it adds or modifies, then its plan and other Markdown
+  files, since they are what the human approves; at a gate held at intent with no
+  native change, it names the criteria the session references and the HI files that
+  hold them (REQ-cli-061).
 - Timeline fields with parts, such as a relayed decision's `relayed_by` and a direct
   write's `direct_write`, are labelled lines instead of JSON; entries written with JSON
   still read (REQ-history-002). A story's receipts are in observation-time order, its

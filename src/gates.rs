@@ -334,6 +334,112 @@ fn left_out_of_summary(root: &Path) -> Vec<String> {
     ]
 }
 
+/// The requirement IDs the delta at `path` adds or modifies, as " (adds or modifies
+/// <IDs>)", or nothing when it adds or modifies none or cannot be read (F5).
+fn delta_adds(root: &Path, path: &str) -> String {
+    let ids = local_path(root, path)
+        .ok()
+        .and_then(|file| records::read_native_record(&file, records::NATIVE_RECORD_LIMIT).ok())
+        .flatten()
+        .and_then(|bytes| String::from_utf8(bytes).ok())
+        .map(|text| crate::stage::added_or_modified(&text))
+        .unwrap_or_default();
+    if ids.is_empty() {
+        String::new()
+    } else {
+        format!(
+            " (adds or modifies {})",
+            ids.into_iter().collect::<Vec<_>>().join(", ")
+        )
+    }
+}
+
+/// The intent a gate held at intent approves when the session records no native change
+/// (F4, REQ-cli-061): the criterion IDs the session references, and each `hi/` file that
+/// holds one as a whole token, read as files (the instruction files left out), with no
+/// native tool run.
+fn intent_lines(root: &Path, session: &Value) -> Vec<String> {
+    const SHOWN: usize = 12;
+    let criteria: Vec<String> = session["references"]["criteria"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|id| id.as_str().map(String::from))
+        .collect();
+    if criteria.is_empty() {
+        return vec![
+            "Intent: no criteria referenced yet; reference them with `chough checkpoint --criterion <id>`".into(),
+        ];
+    }
+    let more = criteria.len().saturating_sub(SHOWN);
+    let mut lines = vec![format!(
+        "Intent: {}{} (the criteria the session references)",
+        criteria
+            .iter()
+            .take(SHOWN)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join(", "),
+        if more > 0 {
+            format!(" and {more} more")
+        } else {
+            String::new()
+        }
+    )];
+    let mut names: Vec<String> = local_path(root, "hi")
+        .ok()
+        .and_then(|dir| fs::read_dir(dir).ok())
+        .into_iter()
+        .flatten()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .filter(|name| name.ends_with(".md") && name != "AGENTS.md" && name != "CLAUDE.md")
+        .collect();
+    names.sort();
+    let mut holding: Vec<(String, Vec<&String>)> = vec![];
+    for name in names {
+        let relative = format!("hi/{name}");
+        let Some(text) = local_path(root, &relative)
+            .ok()
+            .and_then(|file| records::read_native_record(&file, records::NATIVE_RECORD_LIMIT).ok())
+            .flatten()
+            .and_then(|bytes| String::from_utf8(bytes).ok())
+        else {
+            continue;
+        };
+        let held: Vec<&String> = criteria
+            .iter()
+            .filter(|id| crate::evidence::holds_token(&text, id))
+            .collect();
+        if !held.is_empty() {
+            holding.push((relative, held));
+        }
+    }
+    let ids = |ids: &[&String]| {
+        ids.iter()
+            .map(|id| id.as_str())
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+    for (file, held) in holding.iter().take(TOP_FILES) {
+        lines.push(format!("  {file}: {}", ids(held)));
+    }
+    if holding.len() > TOP_FILES {
+        lines.push(format!(
+            "  and {} more hi/ files",
+            holding.len() - TOP_FILES
+        ));
+    }
+    let missing: Vec<&String> = criteria
+        .iter()
+        .filter(|id| !holding.iter().any(|(_, held)| held.contains(id)))
+        .collect();
+    if !missing.is_empty() {
+        lines.push(format!("  in no hi/ file: {}", ids(&missing)));
+    }
+    lines
+}
+
 /// The one-screen summary of `gate` in `session`: what changed, the tests, the risks
 /// and a diff link, within 24 lines and 4,096 bytes.
 pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
@@ -341,19 +447,27 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
     let head = git(root, &["rev-parse", "HEAD"]).unwrap_or_else(|| "unknown".into());
     let mut lines = vec![format!("Gate: {gate}")];
     let state = change.and_then(|change| change_state(root, change));
-    match change {
-        Some(change) => {
-            let title = state
-                .as_ref()
-                .and_then(|state| state["title"].as_str())
-                .unwrap_or("untitled");
-            let current = state
-                .as_ref()
-                .and_then(|state| state["state"].as_str())
-                .unwrap_or("unknown");
-            lines.push(format!("Change: {change} — {title} ({current})"));
+    let meta = &session["gate_meta"][gate];
+    // F4 (REQ-cli-061): a gate held at intent with no native change approves the intent,
+    // which the summary gives in place of what changed.
+    let at_intent = change.is_none() && meta["holds"] == "intent";
+    if at_intent {
+        lines.extend(intent_lines(root, session));
+    } else {
+        match change {
+            Some(change) => {
+                let title = state
+                    .as_ref()
+                    .and_then(|state| state["title"].as_str())
+                    .unwrap_or("untitled");
+                let current = state
+                    .as_ref()
+                    .and_then(|state| state["state"].as_str())
+                    .unwrap_or("unknown");
+                lines.push(format!("Change: {change} — {title} ({current})"));
+            }
+            None => lines.push("Change: none recorded".into()),
         }
-        None => lines.push("Change: none recorded".into()),
     }
     // REQ-cli-061: count from the change's own base commit, so an earlier change on
     // the same branch is not counted again (D2). Count from the merge base with the
@@ -379,8 +493,8 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
     };
     let left_out = left_out_of_summary(root);
     // REQ-cli-061 (t38j): at a gate that drives approval, the change's own definition is
-    // what the human approves, so its Markdown files count and come first.
-    let meta = &session["gate_meta"][gate];
+    // what the human approves, so its Markdown files count and come first, its deltas
+    // before its other files, each with the requirements it adds or modifies (F5).
     let drives = crate::humans::Drives::parse(meta["drives"].as_str().unwrap_or_default())
         .unwrap_or_else(|| {
             crate::humans::Drives::default_for(meta["holds"].as_str().unwrap_or_default())
@@ -393,7 +507,14 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
             .as_ref()
             .is_some_and(|own| path.starts_with(own.as_str()) && path.ends_with(".md"))
     };
+    let is_delta = |path: &str| {
+        is_definition(path)
+            && definition
+                .as_ref()
+                .is_some_and(|own| path[own.len()..].starts_with("deltas/"))
+    };
     match &base {
+        _ if at_intent => {}
         Some(base) => {
             let numstat =
                 git(root, &["diff", "--numstat", &format!("{base}..HEAD")]).unwrap_or_default();
@@ -420,13 +541,21 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                 &base[..base.len().min(8)]
             ));
             files.sort_by(|left, right| {
-                is_definition(&right.2)
-                    .cmp(&is_definition(&left.2))
+                is_delta(&right.2)
+                    .cmp(&is_delta(&left.2))
+                    .then(is_definition(&right.2).cmp(&is_definition(&left.2)))
                     .then((right.0 + right.1).cmp(&(left.0 + left.1)))
                     .then(left.2.cmp(&right.2))
             });
-            for (added, deleted, path) in files.iter().take(TOP_FILES) {
-                lines.push(format!("  {path} +{added} −{deleted}"));
+            // Every delta is named, however many; other files fill the rest of the cap.
+            let deltas = files.iter().filter(|file| is_delta(&file.2)).count();
+            for (added, deleted, path) in files.iter().take(TOP_FILES.max(deltas)) {
+                let adds = if is_delta(path) {
+                    delta_adds(root, path)
+                } else {
+                    String::new()
+                };
+                lines.push(format!("  {path} +{added} −{deleted}{adds}"));
             }
         }
         None => lines.push("What changed: unknown (no base commit recorded)".into()),

@@ -1204,13 +1204,20 @@ Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
   lifecycle bookkeeping, and naming the five files with the most changed lines among the
   rest (#190). At a gate that drives approval, the change's own Markdown files under
   `.specsync/changes/<id>/` (its `change.md`, deltas, plan and other artifacts) are what
-  the human approves, so they count and are named first; its `state.json` and
-  `approvals.json` stay left out. It counts from the merge base of HEAD with the default branch
+  the human approves, so they count and are named first, its deltas before its other
+  files, each with the requirement IDs it adds or modifies as `(adds or modifies
+  <IDs>)`; every delta is named however many there are, and other files fill the rest of
+  the five; its `state.json` and `approvals.json` stay left out. It counts from the merge base of HEAD with the default branch
   (`origin/HEAD`, else `main`) instead when that merge base is not an ancestor of the
   `base_commit`, meaning default-branch work came in after the change began, and when
   the change records no `base_commit`. A merge base that is HEAD itself, as on the
   default branch, is not used; with no usable base, the summary says the base is
   unknown;
+- at a gate held at intent while the session records no native change, the intent being
+  approved in place of the change and what changed: an `Intent:` line with the criterion
+  IDs the session references, then each `hi/` file (its `AGENTS.md` and `CLAUDE.md` left
+  out) that holds one of them as a whole token, with those IDs, and any held by none;
+  Chough reads the files and runs no tool for it;
 - the tests: how many cases passed, failed and were not run, by the latest observation
   of each case that links a requirement the change's deltas add or modify (or that the
   session's observations name), with the failing case IDs;

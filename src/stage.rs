@@ -978,7 +978,7 @@ pub(super) fn delta_requirements(
 }
 
 /// The requirement IDs a delta's `ADDED` and `MODIFIED` sections hold.
-fn added_or_modified(text: &str) -> BTreeSet<String> {
+pub(super) fn added_or_modified(text: &str) -> BTreeSet<String> {
     let mut section = "";
     let mut ids = BTreeSet::new();
     for line in text.lines().map(str::trim_end) {

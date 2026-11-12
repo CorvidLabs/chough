@@ -2751,7 +2751,7 @@ fn find_id(value: &Value, id: &str) -> bool {
 
 /// Whether `text` holds `id` as a whole token of ID characters. A dot belongs to the token
 /// so a dotted module's `REQ-chat.service-1` is one token, except a sentence-ending dot.
-fn holds_token(text: &str, id: &str) -> bool {
+pub(super) fn holds_token(text: &str, id: &str) -> bool {
     text.split(|c: char| !(c.is_ascii_alphanumeric() || c == '-' || c == '.'))
         .any(|part| part == id || part.trim_end_matches('.') == id)
 }
