@@ -559,7 +559,7 @@ fn a_vaulted_adopter_migrates_and_writes_work() {
         "--no-native",
     ]);
     let before = fixture.checkpoint()["stage"]["current"].clone();
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_ne!(fixture.checkpoint()["stage"]["current"], before);
 }
 
@@ -951,7 +951,7 @@ fn an_unmigrated_tree_is_refused_with_the_migrate_command() {
     let refused: [&[&str]; 8] = [
         &["next"],
         &["status"],
-        &["stage", "advance"],
+        &["stage", "advance", "--json"],
         &["checkpoint", "--decision", "SYNTHETIC decision"],
         &[
             "evidence",

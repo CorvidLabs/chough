@@ -772,8 +772,8 @@ fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
         "The human approved the scope",
     ]);
     fixture.ok(&["inbox", "fold"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "no visuals change"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "no visuals change"]);
     let refusal = fixture.fails(&["stage", "advance"]);
     assert!(refusal.contains("draft"), "{refusal}");
     let session = fixture.checkpoint();

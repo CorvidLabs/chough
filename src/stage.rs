@@ -1784,7 +1784,13 @@ pub(super) fn valid_transitions(session: &Checkpoint) -> Vec<String> {
     commands
 }
 
-fn report(root: &Path, session: &Checkpoint, applied: Option<Value>) -> Result<()> {
+/// A stage command's report (REQ-cli-008): a move prints its short text summary by
+/// default and this full JSON under `--json`; `stage show` prints the JSON either way.
+fn report(root: &Path, session: &Checkpoint, applied: Option<Value>, as_json: bool) -> Result<()> {
+    if let Some(applied) = applied.as_ref().filter(|_| !as_json) {
+        println!("{}", move_summary(session, applied));
+        return Ok(());
+    }
     let (transitions, partial) = recent_transitions(root, 10)?;
     print_json(&json!({
         "schema_version": 1,
@@ -1798,6 +1804,81 @@ fn report(root: &Path, session: &Checkpoint, applied: Option<Value>) -> Result<(
         "transitions_partial": partial,
         "authority": "Native SpecSync status decides lifecycle gates. Chough runs a native approval or review only when a human's decision closes a gate that drives one, as that configured human; the relayed decision it keeps is a claim, not authenticated.",
     }))
+}
+
+/// A move's short text summary (REQ-cli-008, F9): what it applied, the move, the stage
+/// it reached and the checkpoint's next action, one line each, with a back or reset's
+/// refresh notes and the move into done's closeout, at most 8 lines; the full report is
+/// behind `--json`.
+fn move_summary(session: &Checkpoint, applied: &Value) -> String {
+    let one_line = |text: &str| text.split_whitespace().collect::<Vec<_>>().join(" ");
+    let kind = applied["kind"].as_str().unwrap_or("move");
+    let mut what = format!("Applied: {kind}");
+    if let Some(gate) = applied["gate"].as_str() {
+        what.push_str(&format!(", gate {gate}"));
+    }
+    if let Some(steps) = applied["steps"].as_array().filter(|steps| steps.len() > 1) {
+        what.push_str(&format!(", {} steps on one native read", steps.len()));
+    }
+    if let Some(commit) = applied["backfill"]["commit"].as_str() {
+        what.push_str(&format!(", backfilled on commit {commit}"));
+    }
+    if let Some(authority) = applied["authority"].as_str() {
+        what.push_str(&format!(", authority: {}", one_line(authority)));
+    }
+    let mut lines = vec![what];
+    lines.push(match (applied["from"].as_str(), applied["to"].as_str()) {
+        (Some(from), Some(to)) => format!("Move: {from} -> {to}"),
+        _ => match kind {
+            "iterate" => format!(
+                "Move: none; {} iteration {}",
+                session.stage.current, session.stage.iteration
+            ),
+            "pause" => format!("Move: none; {} paused", session.stage.current),
+            _ => format!("Move: none; {} resumed", session.stage.current),
+        },
+    });
+    lines.push(format!(
+        "Stage: {} (iteration {}, {})",
+        session.stage.current, session.stage.iteration, session.stage.status
+    ));
+    if let Some(refresh) = applied["refresh"]
+        .as_array()
+        .filter(|refresh| !refresh.is_empty())
+    {
+        let notes: Vec<&str> = refresh.iter().filter_map(Value::as_str).collect();
+        lines.push(format!("Refresh: {}", one_line(&notes.join(". "))));
+    }
+    if applied["session_archive"].is_object() {
+        let status = |key: &str| {
+            applied[key]["status"]
+                .as_str()
+                .unwrap_or("not run")
+                .to_string()
+        };
+        lines.push(format!(
+            "Closeout: session archive {}, journal post {}, knowledge index {}",
+            status("session_archive"),
+            status("journal_post"),
+            status("librarian_index")
+        ));
+    }
+    if let Some(unknown) = applied["direct_writes"]["unknown"].as_str() {
+        lines.push(format!("Direct writes: unknown, {}", one_line(unknown)));
+    }
+    let next = one_line(&session.next_action);
+    lines.push(format!(
+        "Next action: {}",
+        if next.is_empty() {
+            "none is set"
+        } else {
+            &next
+        }
+    ));
+    lines.push(
+        "Run `chough next` for the next valid action, or add --json for the full report.".into(),
+    );
+    lines.join("\n")
 }
 
 fn ensure_active(session: &Checkpoint) -> Result<()> {
@@ -2382,7 +2463,7 @@ fn move_back(
     Ok(json!({"kind": kind, "from": from, "to": target, "refresh": refresh}))
 }
 
-pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
+pub(super) fn run(root: &Path, command: StageCommand, as_json: bool) -> Result<()> {
     let mut session = read_checkpoint(root)?;
     let mut applied = match command {
         StageCommand::Show => None,
@@ -2606,7 +2687,7 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         }
         applied["librarian_index"] = crate::library::refresh_at_done(root);
     }
-    report(root, &session, applied)
+    report(root, &session, applied, as_json)
 }
 
 #[cfg(test)]

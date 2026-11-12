@@ -61,8 +61,8 @@ fn approved_session_at_plan() -> Fixture {
     fixture.ok(&["session", "new", KEY, "--objective", "Ship alpha"]);
     fixture.ok(&["checkpoint", "--native-change", ID]);
     fixture.no_spec_approval(ID);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(current(&fixture), "plan");
     fixture.write(".stub-count", "");
     fixture
@@ -95,7 +95,9 @@ fn blocking_bug(fixture: &Fixture) {
 fn a_batched_advance_reads_native_status_once_in_a_session() {
     let fixture = approved_session_at_plan();
     let before = events(&fixture).len();
-    let batch = fixture.ok(&["stage", "advance", "--to", "accept", "--note", "Batch"]);
+    let batch = fixture.ok(&[
+        "stage", "advance", "--json", "--to", "accept", "--note", "Batch",
+    ]);
     assert_eq!(fixture.native_calls(), 1, "{batch:#}");
     assert_eq!(current(&fixture), "accept");
     let applied = &batch["applied"];
@@ -157,7 +159,7 @@ fn a_batch_with_no_native_prerequisite_reads_nothing() {
     fixture.ok(&["checkpoint", "--native-change", ID]);
     fixture.write(".stub-count", "");
     let before = events(&fixture).len();
-    let batch = fixture.ok(&["stage", "advance", "--to", "plan"]);
+    let batch = fixture.ok(&["stage", "advance", "--json", "--to", "plan"]);
     assert_eq!(fixture.native_calls(), 0, "{batch:#}");
     assert_eq!(current(&fixture), "plan");
     assert_eq!(events(&fixture).len(), before + 2);
@@ -253,6 +255,7 @@ fn archived_session_at(stage: &str) -> Fixture {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         stage,
         "--reason",
@@ -266,13 +269,13 @@ fn archived_session_at(stage: &str) -> Fixture {
 #[test]
 fn advance_into_done_reads_native_status_once() {
     let fixture = archived_session_at("accept");
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     assert_eq!(moved["applied"]["gate"], "native:archived", "{moved:#}");
     assert_eq!(fixture.native_calls(), 1, "{moved:#}");
 
     let fixture = archived_session_at("test");
-    let moved = fixture.ok(&["stage", "advance", "--to", "done"]);
+    let moved = fixture.ok(&["stage", "advance", "--json", "--to", "done"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     assert_eq!(moved["applied"]["steps"].as_array().unwrap().len(), 2);
     assert_eq!(fixture.native_calls(), 1, "{moved:#}");
@@ -282,7 +285,7 @@ fn advance_into_done_reads_native_status_once() {
 fn a_plain_advance_is_unchanged() {
     let fixture = approved_session_at_plan();
     let before = events(&fixture).len();
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.native_calls(), 1);
     assert_eq!(moved["applied"]["from"], "plan");
     assert_eq!(moved["applied"]["to"], "build");

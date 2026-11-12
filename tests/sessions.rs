@@ -59,7 +59,7 @@ fn advance_to(fixture: &Fixture, stage: &str) {
         if fixture.checkpoint()["stage"]["current"] == stage {
             return;
         }
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     panic!("never reached {stage}");
 }
@@ -98,7 +98,7 @@ fn each_session_has_its_own_folder_and_timeline() {
     assert_eq!(fixture.read(".chough/local/.gitignore"), "*\n");
     let alpha_file = fixture.session_file_of("alpha");
     let before = fixture.read(&alpha_file);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         fixture.read(&alpha_file),
         before,
@@ -297,7 +297,7 @@ fn sessions_live_in_folders_and_finish_into_one_story() {
     );
     fixture.commit("alpha at accept");
     let session_text = fixture.read(&fixture.session_file_of("alpha"));
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     let archive = &moved["applied"]["session_archive"];
     assert_eq!(archive["status"], "archived", "{moved:#}");
     let story_path = format!(".chough/archive/sessions/{id}.md");
@@ -378,7 +378,7 @@ fn done_leaves_earlier_archived_stories_in_place() {
             (path, text)
         })
         .collect();
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         moved["applied"]["session_archive"]["status"], "archived",
         "{moved:#}"
@@ -453,7 +453,7 @@ fn session_list_reports_an_archived_story_as_finished() {
     ]);
     fixture.ok(&["session", "use", "beta"]);
     advance_to(&fixture, "accept");
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         moved["applied"]["session_archive"]["status"], "archived",
         "{moved:#}"
@@ -621,7 +621,7 @@ fn an_archived_story_says_archived_and_keeps_no_next() {
         "--next-action",
         "SYNTHETIC: a next action that goes stale at done",
     ]);
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         moved["applied"]["session_archive"]["status"], "archived",
         "{moved:#}"
@@ -860,7 +860,7 @@ fn a_done_session_with_unfolded_entries_stays_open() {
     fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
     advance_to(&fixture, "accept");
     add_entry(&fixture, "alpha", "decision", "late");
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     let archive = &moved["applied"]["session_archive"];
     assert_eq!(archive["status"], "kept_open", "{moved:#}");
     assert_eq!(archive["inbox_unfolded"], 1, "{moved:#}");
@@ -1178,7 +1178,7 @@ fn an_unreadable_session_is_listed_and_shelving_moves_its_folder_byte_for_byte()
 fn local_holds_only_the_pointer_and_the_lock() {
     let fixture = Fixture::new();
     sessions(&fixture);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     let mut names: Vec<String> = fs::read_dir(fixture.root().join(".chough/local"))
         .unwrap()
         .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
@@ -1207,11 +1207,11 @@ fn branches_with_different_sessions_merge_without_conflict() {
     fixture.commit("base");
     fixture.git(&["checkout", "-q", "-b", "work-alpha"]);
     fixture.ok(&["session", "use", "alpha"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.commit("alpha moves");
     fixture.git(&["checkout", "-q", "-"]);
     fixture.ok(&["session", "use", "beta"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.commit("beta moves");
     fixture.git(&["merge", "-q", "--no-edit", "work-alpha"]);
     // Each keeps its start entry and its own move.
@@ -1315,8 +1315,8 @@ fn session_use_waits_for_a_running_stage_advance() {
     fixture.ok(&["session", "use", "alpha"]);
     fixture.ok(&["checkpoint", "--native-change", "alpha-change"]);
     fixture.no_spec_approval("alpha-change");
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fs::rename(
         fixture.root().join("bin/specsync"),
         fixture.root().join("bin/specsync-stub"),
@@ -1346,7 +1346,7 @@ fn session_use_waits_for_a_running_stage_advance() {
             .spawn()
             .unwrap()
     };
-    let mut advance = spawn(&["stage", "advance"]);
+    let mut advance = spawn(&["stage", "advance", "--json"]);
     let started = Instant::now();
     while !fixture.exists("running") {
         assert!(
@@ -1397,7 +1397,7 @@ fn an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix() {
         &format!(".chough/sessions/{id}/agent/scratch.md"),
         "draft\n",
     );
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     let kept = moved["applied"]["session_archive"]["kept"].to_string();
     assert!(kept.contains("agent/scratch.md"), "{moved:#}");
     assert!(fixture.exists(&format!(".chough/sessions/{id}/agent/scratch.md")));
@@ -1429,7 +1429,7 @@ fn an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix() {
 fn a_leak_in_a_session_value_is_refused_or_redacted() {
     let fixture = Fixture::new();
     fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     let file = fixture.session_file();
     let before = fixture.read(&file);
     let refused = fixture.fails(&["checkpoint", "--decision", "Built in /Users/someone/app"]);

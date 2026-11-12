@@ -549,7 +549,7 @@ fn a_gate_holds_only_the_stage_it_names() {
     let fixture = Fixture::new();
     fixture.init();
     while fixture.checkpoint()["stage"]["current"] != "build" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     fixture.ok(&[
         "checkpoint",
@@ -558,8 +558,8 @@ fn a_gate_holds_only_the_stage_it_names() {
         "--holds",
         "release",
     ]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.checkpoint()["stage"]["current"], "accept");
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
@@ -573,7 +573,9 @@ fn a_gate_holds_only_the_stage_it_names() {
     );
     assert!(!text.contains("Waiting for a human decision"), "{text}");
     // A gate holding build stops `advance --to` from plan, which leaves build.
-    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Rework"]);
+    fixture.ok(&[
+        "stage", "reset", "--json", "--to", "plan", "--reason", "Rework",
+    ]);
     fixture.ok(&[
         "checkpoint",
         "--awaiting-human",
@@ -587,7 +589,7 @@ fn a_gate_holds_only_the_stage_it_names() {
     assert!(refused.contains("Build go"), "{refused}");
     assert!(!refused.contains("Publish the release"), "{refused}");
     assert_eq!(fixture.read(&fixture.session_file()), before);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.checkpoint()["stage"]["current"], "build");
     let waiting = fixture.ok(&["next", "--json"]);
     let action: &Value = &waiting["next_valid_action"]["action"];
@@ -705,8 +707,14 @@ fn closed_next(gate: &str, decision: &str) -> String {
 #[cfg(unix)]
 fn at_plan() -> Fixture {
     let fixture = project();
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "SYNTHETIC: no visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&[
+        "stage",
+        "skip",
+        "--json",
+        "--reason",
+        "SYNTHETIC: no visuals",
+    ]);
     assert_eq!(fixture.checkpoint()["stage"]["current"], "plan");
     fixture
 }

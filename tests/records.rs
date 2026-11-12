@@ -128,7 +128,7 @@ fn the_tree_holds_only_the_listed_paths() {
     ]);
     fixture.ok(&["inbox", "fold"]);
     while !fixture.is_archived("alpha") {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     let stray: Vec<String> = chough_files(fixture.root())
         .into_iter()
@@ -164,7 +164,7 @@ fn every_record_is_markdown_and_keeps_human_edits() {
         );
     assert_ne!(edited, text);
     fixture.write(&file, &edited);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.ok(&[
         "checkpoint",
         "--decision",
@@ -1208,7 +1208,7 @@ fn the_session_record_is_checkpoint_and_story() {
         "--decision",
         "Keep the grammar small, because it is read by people",
     ]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert!(
         fixture
             .read(&file)
@@ -1287,9 +1287,9 @@ fn nothing_leaves_the_tree_unless_head_holds_it() {
         if fixture.checkpoint()["stage"]["current"] == "accept" {
             break;
         }
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         moved["applied"]["session_archive"]["status"], "archived",
         "{moved:#}"

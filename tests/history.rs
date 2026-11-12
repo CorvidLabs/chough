@@ -34,7 +34,7 @@ fn a_timeline_holds_4096_entries_and_refuses_the_4097th() {
     let fixture = Fixture::new();
     fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
     fill_timeline(&fixture, 4_095);
-    fixture.ok(&["stage", "iterate", "--note", "the 4096th"]);
+    fixture.ok(&["stage", "iterate", "--json", "--note", "the 4096th"]);
     let full = fixture.read(&fixture.session_file());
     assert_eq!(timeline(&full).len(), 4_096);
     let refused = fixture.fails(&["stage", "iterate", "--note", "the 4097th"]);
@@ -91,7 +91,7 @@ fn a_session_record_of_exactly_1_mib_is_read_and_one_byte_more_is_refused() {
 fn entries_are_appended_in_order_and_never_rewritten() {
     let fixture = Fixture::new();
     fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.ok(&["checkpoint", "--awaiting-human", "Approve the design"]);
     let before = timeline(&fixture.read(&fixture.session_file()));
     // The session's start entry comes first (REQ-history-002).
@@ -101,6 +101,7 @@ fn entries_are_appended_in_order_and_never_rewritten() {
     fixture.ok(&[
         "stage",
         "back",
+        "--json",
         "--to",
         "intent",
         "--reason",
@@ -208,7 +209,7 @@ fn relay_fields_live_on_gate_closed_entries() {
     // The refusals, on hand-written entries.
     let fixture = Fixture::new();
     fixture.init();
-    fixture.ok(&["stage", "iterate", "--note", "A first entry"]);
+    fixture.ok(&["stage", "iterate", "--json", "--note", "A first entry"]);
     let good = json!({"decided_by": "SYNTHETIC-human", "words": "Approved", "where": "chat", "recorded_by": "SYNTHETIC-agent"});
     let mut invalid = vec![];
     for key in ["decided_by", "words", "where", "recorded_by"] {
@@ -300,8 +301,8 @@ fn relay_fields_live_on_gate_closed_entries() {
 
     // A gate held at plan drives the approval, which runs as the configured human's
     // SpecSync actor; its entry also names the command and the actor.
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture.ok(&[
         "checkpoint",
         "--awaiting-human",
@@ -346,7 +347,7 @@ fn relay_fields_live_on_gate_closed_entries() {
 fn direct_write_entries_are_known_to_timing() {
     let fixture = Fixture::new();
     fixture.init();
-    fixture.ok(&["stage", "iterate", "--note", "A first entry"]);
+    fixture.ok(&["stage", "iterate", "--json", "--note", "A first entry"]);
     let write = json!({
         "change": "some-change",
         "files": [

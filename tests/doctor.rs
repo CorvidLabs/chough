@@ -627,11 +627,12 @@ fn doctor_reports_a_rewritten_timeline_entry_and_fixes_nothing() {
     fixture.ok(&[
         "stage",
         "enter",
+        "--json",
         "librarian",
         "--reason",
         "SYNTHETIC side trip",
     ]);
-    fixture.ok(&["stage", "return"]);
+    fixture.ok(&["stage", "return", "--json"]);
     fixture.commit("the side trip's entries");
     let file = fixture.session_file();
     let text = fixture.read(&file);
@@ -662,7 +663,14 @@ fn doctor_reports_a_rewritten_timeline_entry_and_fixes_nothing() {
 
     // Appending is not rewriting.
     fixture.write(&file, &text);
-    fixture.ok(&["stage", "enter", "librarian", "--reason", "SYNTHETIC again"]);
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "librarian",
+        "--reason",
+        "SYNTHETIC again",
+    ]);
     let (_, report) = doctor(&fixture, &[]);
     assert!(
         of_kind(&report, "timeline_rewritten").is_empty(),
@@ -938,7 +946,7 @@ fn a_session_archived_since_head_is_not_a_rewritten_timeline() {
     // then committed, and `doctor --fix` removes the folder, leaving the story to compare
     // with HEAD's session.md, whose Timeline holds the same entries.
     while !fixture.is_archived("alpha") {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     fixture.commit("the story and the kept folder");
     doctor(&fixture, &["--fix"]);

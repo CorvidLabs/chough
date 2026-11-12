@@ -376,6 +376,7 @@ fn a_verifying_gate_is_refused_and_closes_through_ship_with_the_list() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "accept",
         "--reason",

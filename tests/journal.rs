@@ -89,7 +89,7 @@ fn add_to_section(fixture: &Fixture, heading: &str, lines: &str) {
 
 /// The move into done, returning the post's path and text and the story's text.
 fn advance_to_done(fixture: &Fixture) -> (String, String, String) {
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         moved["applied"]["journal_post"]["status"], "written",
         "{moved:#}"
@@ -238,7 +238,7 @@ fn well_formed(xml: &str) -> Result<(), String> {
 #[test]
 fn done_writes_a_short_post_and_the_feed_lists_it() {
     let fixture = at_accept();
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
     let id = moved["applied"]["session_archive"]["id"]
         .as_str()
@@ -338,7 +338,7 @@ fn done_changes_no_knowledge_file_but_its_own_post_and_the_feed() {
     fixture.ok(&["library", "index"]);
     fixture.commit("vault");
     let before = tree(&fixture, "knowledge");
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
     let post = moved["applied"]["journal_post"]["post"]
         .as_str()
@@ -573,7 +573,7 @@ fn the_librarian_off_writes_no_post() {
         "Human: SYNTHETIC no librarian here",
     ]);
     let _ = std::fs::remove_dir_all(fixture.root().join("knowledge"));
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         moved["applied"]["journal_post"]["status"], "skipped",
         "{moved:#}"

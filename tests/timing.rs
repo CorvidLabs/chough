@@ -2179,8 +2179,8 @@ fn next_status_and_stage_moves_keep_one_authoritative_native_read_outside_the_re
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "gate-change"]);
     fixture.no_spec_approval("gate-change");
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture.native_calls();
     // The report budget does not apply here: even a value timing refuses leaves next,
     // status and stage moves to their one native read.
@@ -2200,7 +2200,7 @@ fn next_status_and_stage_moves_keep_one_authoritative_native_read_outside_the_re
             assert_eq!(native_lines, 1, "{args:?}");
         }
         fixture.write(".stub-fail", "");
-        let refused = run_env(&fixture, &["stage", "advance"], &env);
+        let refused = run_env(&fixture, &["stage", "advance", "--json"], &env);
         assert!(
             !refused.status.success(),
             "a failed native read opened a gate"

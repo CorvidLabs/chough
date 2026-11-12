@@ -240,8 +240,8 @@ fn a_relayed_decision_never_touches_native_state_or_its_gate() {
     fixture.stubs();
     fixture.native("draft");
     fixture.init();
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.ok(&["checkpoint", "--native-change", "x"]);
     fixture.write(
         ".specsync/changes/x/state.json",
@@ -348,7 +348,7 @@ fn clearing_records_no_relay_and_a_relayed_close_lets_advance_apply() {
         last["relayed_by"],
         json!({"decided_by": "SYNTHETIC-human", "words": "Approved", "where": "chat", "recorded_by": "SYNTHETIC-agent"})
     );
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.session()["stage"]["current"], "design");
     // Records without a relay carry none: one relayed entry in all.
     let all = events(&fixture);

@@ -9,7 +9,10 @@ use serde_json::{Value, json};
 /// Record one Timeline entry with `environment` and return the newest entry's actor,
 /// the command's standard error and `chough next --json`.
 fn iterate_with(fixture: &Fixture, environment: &[(&str, &str)]) -> (Value, String, Value) {
-    let output = fixture.run_with_env(&["stage", "iterate", "--note", "round"], environment);
+    let output = fixture.run_with_env(
+        &["stage", "iterate", "--json", "--note", "round"],
+        environment,
+    );
     let stderr = String::from_utf8_lossy(&output.stderr).to_string();
     assert!(output.status.success(), "{stderr}");
     let shown = fixture.ok(&["history", "show"]);

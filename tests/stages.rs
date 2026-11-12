@@ -133,7 +133,7 @@ fn migration_is_explicit_and_preserves_schema_1_bytes() {
         &["context", "--json"][..],
         &["status", "--json"],
         &["next", "--json"],
-        &["stage", "advance"],
+        &["stage", "advance", "--json"],
         &["checkpoint", "--decision", "Decided C"],
     ] {
         let refusal = fixture.fails(args);
@@ -217,7 +217,13 @@ fn checkpoint_round_trips_across_processes_and_rejects_unknown_fields() {
 fn transitions_cover_every_kind_and_keep_history() {
     let fixture = Fixture::new();
     fixture.init();
-    fixture.ok(&["stage", "advance", "--note", "Intent approved by the human"]);
+    fixture.ok(&[
+        "stage",
+        "advance",
+        "--json",
+        "--note",
+        "Intent approved by the human",
+    ]);
     assert_eq!(stage(&fixture), "design");
     assert!(
         fixture
@@ -227,20 +233,22 @@ fn transitions_cover_every_kind_and_keep_history() {
     fixture.ok(&[
         "stage",
         "skip",
+        "--json",
         "--reason",
         "CLI-only change; nothing visual",
     ]);
     assert_eq!(stage(&fixture), "plan");
-    let iterated = fixture.ok(&["stage", "iterate", "--note", "Second estimate"]);
+    let iterated = fixture.ok(&["stage", "iterate", "--json", "--note", "Second estimate"]);
     assert_eq!(iterated["applied"]["iteration"], 2);
-    let built = fixture.ok(&["stage", "advance"]);
+    let built = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(built["applied"]["gate"], "ungated:not-configured");
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "test");
 
     let back = fixture.ok(&[
         "stage",
         "back",
+        "--json",
         "--to",
         "plan",
         "--reason",
@@ -256,17 +264,24 @@ fn transitions_cover_every_kind_and_keep_history() {
             .contains("earlier")
     );
 
-    fixture.ok(&["stage", "pause", "--reason", "Waiting on the human"]);
+    fixture.ok(&[
+        "stage",
+        "pause",
+        "--json",
+        "--reason",
+        "Waiting on the human",
+    ]);
     assert!(fixture.fails(&["stage", "advance"]).contains("paused"));
     assert_eq!(
         fixture.ok(&["stage", "show"])["valid_transitions"],
         json!(["chough stage resume"])
     );
-    fixture.ok(&["stage", "resume"]);
+    fixture.ok(&["stage", "resume", "--json"]);
 
     fixture.ok(&[
         "stage",
         "enter",
+        "--json",
         "librarian",
         "--reason",
         "Record a decision",
@@ -277,12 +292,25 @@ fn transitions_cover_every_kind_and_keep_history() {
         json!("plan")
     );
     assert!(fixture.fails(&["stage", "advance"]).contains("return"));
-    fixture.ok(&["stage", "enter", "bugs", "--reason", "Nested capture"]);
-    fixture.ok(&["stage", "return"]);
-    fixture.ok(&["stage", "return", "--note", "Decision recorded"]);
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "bugs",
+        "--reason",
+        "Nested capture",
+    ]);
+    fixture.ok(&["stage", "return", "--json"]);
+    fixture.ok(&["stage", "return", "--json", "--note", "Decision recorded"]);
     assert_eq!(stage(&fixture), "plan");
 
-    fixture.ok(&["stage", "reset", "--reason", "The human changed direction"]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--json",
+        "--reason",
+        "The human changed direction",
+    ]);
     assert_eq!(stage(&fixture), "intent");
 
     let kinds: Vec<String> = transitions(&fixture)
@@ -320,8 +348,15 @@ fn optional_side_stages_and_release_need_authorization() {
         "Human: yes, repeat it this time",
     ]);
     assert!(!fixture.exists(".chough/preferences.json"));
-    fixture.ok(&["stage", "enter", "validate", "--reason", "Repeat the check"]);
-    fixture.ok(&["stage", "return"]);
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "validate",
+        "--reason",
+        "Repeat the check",
+    ]);
+    fixture.ok(&["stage", "return", "--json"]);
 
     // In 0.6.0 the move into done archives the session unless release is authorized
     // first (REQ-history-006), so the consent comes before done and is withdrawn there
@@ -335,7 +370,7 @@ fn optional_side_stages_and_release_need_authorization() {
     ];
     fixture.ok(&release);
     for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     assert_eq!(stage(&fixture), "done");
     assert!(!fixture.is_archived("Ship a focused change"));
@@ -351,7 +386,14 @@ fn optional_side_stages_and_release_need_authorization() {
             .contains("not authorized")
     );
     fixture.ok(&release);
-    let entered = fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+    let entered = fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "release",
+        "--reason",
+        "Requested",
+    ]);
     assert!(
         entered["applied"]["authority"]
             .as_str()
@@ -365,7 +407,7 @@ fn optional_side_stages_and_release_need_authorization() {
     assert!(!fixture.exists(".chough/preferences.json"));
 
     // The move from release into done archives the session at done.
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert!(fixture.is_archived("Ship a focused change"));
     assert_eq!(
         fixture.session_json("Ship a focused change")["stage"]["current"],
@@ -381,8 +423,8 @@ fn native_state_gates_build_and_closing_without_inventing_it() {
     fixture.stubs();
     fixture.native("draft");
     fixture.init();
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     assert!(
         fixture
             .fails(&["stage", "advance"])
@@ -414,30 +456,38 @@ fn native_state_gates_build_and_closing_without_inventing_it() {
 
     fixture.write(".stub-state", "approved\n");
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "native:approved"
     );
     fixture.write(".stub-state", "verifying\n");
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "accept");
     assert!(
         fixture
             .fails(&["stage", "advance"])
             .contains("refused:native-verifying")
     );
-    let back = fixture.ok(&["stage", "back", "--to", "plan", "--reason", "Scope gap"]);
+    let back = fixture.ok(&[
+        "stage",
+        "back",
+        "--json",
+        "--to",
+        "plan",
+        "--reason",
+        "Scope gap",
+    ]);
     assert!(
         back["applied"]["refresh"]
             .to_string()
             .contains("needs native reapproval")
     );
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.write(".stub-state", "archived\n");
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "native:archived"
     );
     // The move into done archives the session (REQ-history-006).
@@ -465,6 +515,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "done",
         "--reason",
@@ -522,7 +573,13 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
         }
     }
 
-    fixture.ok(&["stage", "pause", "--reason", "Waiting for a person"]);
+    fixture.ok(&[
+        "stage",
+        "pause",
+        "--json",
+        "--reason",
+        "Waiting for a person",
+    ]);
     fixture.ok(&["checkpoint", "--awaiting-human", "Human scope decision"]);
     let session_bytes = fixture.read(&fixture.session_file());
     for command in ["next", "status"] {
@@ -533,7 +590,7 @@ fn done_archived_change_recommends_new_cycle_and_preserves_precedence() {
         );
     }
 
-    fixture.ok(&["stage", "resume"]);
+    fixture.ok(&["stage", "resume", "--json"]);
     let session_bytes = fixture.read(&fixture.session_file());
     for command in ["next", "status"] {
         assert_action(
@@ -676,19 +733,19 @@ fn large_native_status_still_gates_by_its_summary_state() {
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "large-change"]);
     fixture.no_spec_approval("large-change");
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture.write(".stub-huge", "");
     let refused = fixture.fails(&["stage", "advance"]);
     assert!(refused.contains("refused:native-unknown"), "{refused}");
     assert!(refused.contains("oversized"), "{refused}");
     fs::remove_file(fixture.root().join(".stub-huge")).unwrap();
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "native:approved"
     );
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "accept");
     fixture.write(".stub-state", "archived\n");
     let status = fixture.ok(&["status", "--json"]);
@@ -698,7 +755,7 @@ fn large_native_status_still_gates_by_its_summary_state() {
     assert!(shown.contains("display only"), "{shown}");
     assert!(shown.len() < 17_000);
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "native:archived"
     );
     // The move into done archives the session (REQ-history-006).
@@ -744,8 +801,8 @@ fn invalid_native_approval_refuses_every_route_into_build_and_later_stages() {
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "edited-scope"]);
     fixture.no_spec_approval("edited-scope");
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture.write(".stub-approval", "false\n");
     let refused = fixture.fails(&["stage", "advance"]);
     assert!(
@@ -758,10 +815,16 @@ fn invalid_native_approval_refuses_every_route_into_build_and_later_stages() {
         "{refused}"
     );
     let routes: [&[&str]; 4] = [
-        &["stage", "skip", "--reason", "Skip ahead"],
-        &["stage", "reset", "--to", "build", "--reason", "Restart"],
-        &["stage", "reset", "--to", "test", "--reason", "Retest"],
-        &["stage", "reset", "--to", "accept", "--reason", "Accept"],
+        &["stage", "skip", "--json", "--reason", "Skip ahead"],
+        &[
+            "stage", "reset", "--json", "--to", "build", "--reason", "Restart",
+        ],
+        &[
+            "stage", "reset", "--json", "--to", "test", "--reason", "Retest",
+        ],
+        &[
+            "stage", "reset", "--json", "--to", "accept", "--reason", "Accept",
+        ],
     ];
     for route in routes {
         let refused = fixture.fails(route);
@@ -786,7 +849,7 @@ fn invalid_native_approval_refuses_every_route_into_build_and_later_stages() {
     );
     fixture.write(".stub-correction", "true\n");
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "native:approved"
     );
     // An approval that becomes invalid during build stops the move to test.
@@ -818,11 +881,15 @@ fn reset_back_and_release_meet_their_destination_prerequisites() {
     }
     assert_eq!(stage(&fixture), "intent");
     for target in ["plan", "design", "intent"] {
-        fixture.ok(&["stage", "reset", "--to", target, "--reason", "Rework"]);
+        fixture.ok(&[
+            "stage", "reset", "--json", "--to", target, "--reason", "Rework",
+        ]);
     }
     fixture.write(".stub-state", "archived\n");
     for target in ["test", "accept", "done"] {
-        let moved = fixture.ok(&["stage", "reset", "--to", target, "--reason", "Closeout"]);
+        let moved = fixture.ok(&[
+            "stage", "reset", "--json", "--to", target, "--reason", "Closeout",
+        ]);
         assert_eq!(moved["applied"]["to"], target);
     }
     assert!(
@@ -836,7 +903,9 @@ fn reset_back_and_release_meet_their_destination_prerequisites() {
             .fails(&["stage", "back", "--to", "accept", "--reason", "Recheck"])
             .contains("refused:native-archive-corrupt-history")
     );
-    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Again"]);
+    fixture.ok(&[
+        "stage", "reset", "--json", "--to", "plan", "--reason", "Again",
+    ]);
     fixture.write(".stub-validity", "none\n");
     assert!(
         fixture
@@ -844,7 +913,9 @@ fn reset_back_and_release_meet_their_destination_prerequisites() {
             .contains("refused:native-archive-unreported")
     );
     fixture.write(".stub-validity", "authenticated-history\n");
-    fixture.ok(&["stage", "reset", "--to", "done", "--reason", "Close"]);
+    fixture.ok(&[
+        "stage", "reset", "--json", "--to", "done", "--reason", "Close",
+    ]);
     fixture.ok(&[
         "consent",
         "grant",
@@ -852,7 +923,14 @@ fn reset_back_and_release_meet_their_destination_prerequisites() {
         "--source",
         "SYNTHETIC test consent; authorizes nothing real",
     ]);
-    fixture.ok(&["stage", "enter", "release", "--reason", "Release routing"]);
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "release",
+        "--reason",
+        "Release routing",
+    ]);
     fixture.write(".stub-validity", "corrupt-history\n");
     assert!(
         fixture
@@ -861,7 +939,7 @@ fn reset_back_and_release_meet_their_destination_prerequisites() {
     );
     fixture.write(".stub-validity", "authenticated-history\n");
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "native:archived"
     );
 }
@@ -875,11 +953,18 @@ fn return_from_a_side_stage_meets_the_caller_prerequisite() {
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "side-trip"]);
     fixture.no_spec_approval("side-trip");
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "enter", "bugs", "--reason", "A failing case"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "bugs",
+        "--reason",
+        "A failing case",
+    ]);
     fixture.write(".stub-approval", "false\n");
     let refused = fixture.fails(&["stage", "return"]);
     assert!(
@@ -893,7 +978,10 @@ fn return_from_a_side_stage_meets_the_caller_prerequisite() {
     );
     assert_eq!(stage(&fixture), "bugs");
     fixture.write(".stub-approval", "true\n");
-    assert_eq!(fixture.ok(&["stage", "return"])["applied"]["to"], "test");
+    assert_eq!(
+        fixture.ok(&["stage", "return", "--json"])["applied"]["to"],
+        "test"
+    );
 }
 
 #[cfg(unix)]
@@ -905,8 +993,8 @@ fn sdd_policy_is_read_with_specsync_semantics() {
     fixture.native("draft");
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "policy-change"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     for (policy, why) in [
         ("{ \"enabled\": true, ", "truncated"),
         ("{\"enabled\": \"yes\"}", "enabled as a string"),
@@ -935,13 +1023,15 @@ fn sdd_policy_is_read_with_specsync_semantics() {
     );
     fixture.write(".specsync/sdd.json", "{\"enabled\": false}\n");
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "ungated:sdd-disabled"
     );
-    fixture.ok(&["stage", "back", "--to", "plan", "--reason", "Again"]);
+    fixture.ok(&[
+        "stage", "back", "--json", "--to", "plan", "--reason", "Again",
+    ]);
     fs::remove_file(fixture.root().join(".specsync/sdd.json")).unwrap();
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "ungated:sdd-disabled"
     );
 }
@@ -1035,7 +1125,7 @@ specsync change status $id --json
         "cp state.approved .specsync/changes/free-shipping-at-the-threshold/state.json",
     );
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "native:approved"
     );
 }
@@ -1105,7 +1195,9 @@ fn done_fixture(id: &str) -> Fixture {
     fixture.write(".stub-next", "merge the PR on GitHub if it is still open\n");
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", id]);
-    fixture.ok(&["stage", "reset", "--to", "done", "--reason", "Closeout"]);
+    fixture.ok(&[
+        "stage", "reset", "--json", "--to", "done", "--reason", "Closeout",
+    ]);
     fixture.ok(&[
         "checkpoint",
         "--next-action",
@@ -1190,14 +1282,17 @@ fn done_with_an_archived_change_recommends_a_new_cycle_with_a_reason() {
 fn reset_replaces_the_next_action_and_back_keeps_it() {
     let fixture = Fixture::new();
     fixture.init();
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.ok(&["checkpoint", "--next-action", "Finish the old plan"]);
-    fixture.ok(&["stage", "back", "--to", "design", "--reason", "Revisit"]);
+    fixture.ok(&[
+        "stage", "back", "--json", "--to", "design", "--reason", "Revisit",
+    ]);
     assert_eq!(fixture.session()["next_action"], "Finish the old plan");
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "plan",
         "--reason",
@@ -1215,7 +1310,9 @@ fn reset_replaces_the_next_action_and_back_keeps_it() {
     // while the transition keeps the reason whole.
     let reason = format!("Line one\nline two {}", "r".repeat(4_096 - 18));
     assert_eq!(reason.len(), 4_096);
-    fixture.ok(&["stage", "reset", "--to", "intent", "--reason", &reason]);
+    fixture.ok(&[
+        "stage", "reset", "--json", "--to", "intent", "--reason", &reason,
+    ]);
     let next_action = fixture.session()["next_action"]
         .as_str()
         .unwrap()
@@ -1334,8 +1431,8 @@ fn approved_delta(id: &str) -> Fixture {
         })
         .to_string(),
     );
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture
 }
 
@@ -1414,8 +1511,8 @@ fn the_guard_accepts_every_archived_approval_in_this_repository() {
     fixture.stubs();
     fixture.native("approved");
     fixture.init();
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     let mut checked = 0;
     for entry in fs::read_dir(&archive).unwrap() {
         let directory = entry.unwrap().path();
@@ -1490,11 +1587,17 @@ fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_change
         &format!("{DELTA}\n### REQUIREMENT REQ-cli-091\n\nMore.\n"),
     );
     let routes: [&[&str]; 5] = [
-        &["stage", "advance"],
-        &["stage", "skip", "--reason", "Skip ahead"],
-        &["stage", "reset", "--to", "build", "--reason", "Restart"],
-        &["stage", "reset", "--to", "test", "--reason", "Retest"],
-        &["stage", "reset", "--to", "accept", "--reason", "Accept"],
+        &["stage", "advance", "--json"],
+        &["stage", "skip", "--json", "--reason", "Skip ahead"],
+        &[
+            "stage", "reset", "--json", "--to", "build", "--reason", "Restart",
+        ],
+        &[
+            "stage", "reset", "--json", "--to", "test", "--reason", "Retest",
+        ],
+        &[
+            "stage", "reset", "--json", "--to", "accept", "--reason", "Accept",
+        ],
     ];
     for route in routes {
         refused_unchanged(&fixture, route, changed, "cli");
@@ -1525,20 +1628,22 @@ fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_change
     // A line-ending-only edit and the restored delta pass.
     fixture.write(&delta, &DELTA.replace('\n', "\r\n"));
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "native:approved"
     );
     fixture.write(&delta, DELTA);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "test");
 
     // A module added after the approval.
     fixture.write(".stub-affected", "\"cli\",\"docs\"\n");
     fixture.write(&format!(".specsync/changes/{id}/deltas/docs.md"), DELTA);
-    refused_unchanged(&fixture, &["stage", "advance"], changed, "docs");
+    refused_unchanged(&fixture, &["stage", "advance", "--json"], changed, "docs");
     refused_unchanged(
         &fixture,
-        &["stage", "back", "--to", "build", "--reason", "Fix"],
+        &[
+            "stage", "back", "--json", "--to", "build", "--reason", "Fix",
+        ],
         changed,
         "docs",
     );
@@ -1552,9 +1657,9 @@ fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_change
 
     // A deleted delta.
     fs::remove_file(fixture.root().join(&delta)).unwrap();
-    refused_unchanged(&fixture, &["stage", "advance"], changed, "cli");
+    refused_unchanged(&fixture, &["stage", "advance", "--json"], changed, "cli");
     fixture.write(&delta, DELTA);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "accept");
 
     // Module names SpecSync 6.1.1 accepts, such as `a.b` and `Módulo`, are compared
@@ -1583,12 +1688,16 @@ fn a_changed_added_or_deleted_delta_refuses_every_route_with_native_delta_change
     );
     refused_unchanged(
         &fixture,
-        &["stage", "reset", "--to", "build", "--reason", "Restart"],
+        &[
+            "stage", "reset", "--json", "--to", "build", "--reason", "Restart",
+        ],
         changed,
         "a.b (edited)",
     );
     fixture.write(&format!(".specsync/changes/{id}/deltas/a.b.md"), DELTA);
-    fixture.ok(&["stage", "reset", "--to", "build", "--reason", "Restart"]);
+    fixture.ok(&[
+        "stage", "reset", "--json", "--to", "build", "--reason", "Restart",
+    ]);
     assert_eq!(stage(&fixture), "build");
 }
 
@@ -1643,18 +1752,30 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
     ];
     for (why, content, remedy) in cases {
         fixture.write(&ledger, &content);
-        refused_unchanged(&fixture, &["stage", "advance"], unverifiable, why);
-        refused_unchanged(&fixture, &["stage", "advance"], unverifiable, remedy);
+        refused_unchanged(&fixture, &["stage", "advance", "--json"], unverifiable, why);
+        refused_unchanged(
+            &fixture,
+            &["stage", "advance", "--json"],
+            unverifiable,
+            remedy,
+        );
     }
     fs::remove_file(fixture.root().join(&ledger)).unwrap();
-    refused_unchanged(&fixture, &["stage", "advance"], unverifiable, "missing");
+    refused_unchanged(
+        &fixture,
+        &["stage", "advance", "--json"],
+        unverifiable,
+        "missing",
+    );
     fixture.write(&ledger, &approved);
     // A module name that is not one plain path segment is never read as a path.
     for module in ["../cli", "a/b", "nested\\cli", ".", "trailing."] {
         fixture.write(".stub-affected", &format!("{}\n", json!(module)));
         refused_unchanged(
             &fixture,
-            &["stage", "reset", "--to", "build", "--reason", "Restart"],
+            &[
+                "stage", "reset", "--json", "--to", "build", "--reason", "Restart",
+            ],
             unverifiable,
             "invalid module name",
         );
@@ -1662,7 +1783,9 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
     fixture.write(".stub-affected", "none\n");
     refused_unchanged(
         &fixture,
-        &["stage", "reset", "--to", "build", "--reason", "Restart"],
+        &[
+            "stage", "reset", "--json", "--to", "build", "--reason", "Restart",
+        ],
         unverifiable,
         "affected_specs",
     );
@@ -1676,7 +1799,7 @@ fn a_comparison_that_cannot_be_made_refuses_with_native_delta_unverifiable() {
     );
     fixture.write(".stub-affected", "\"cli\"\n");
     assert_eq!(
-        fixture.ok(&["stage", "advance"])["applied"]["gate"],
+        fixture.ok(&["stage", "advance", "--json"])["applied"]["gate"],
         "native:approved"
     );
 }
@@ -1694,8 +1817,8 @@ fn open_human_gates_refuse_advance_and_skip() {
         // The session record holds the checkpoint and the timeline (REQ-history-002).
         let before = fixture.read(&fixture.session_file());
         for route in [
-            vec!["stage", "advance"],
-            vec!["stage", "skip", "--reason", "not needed"],
+            vec!["stage", "advance", "--json"],
+            vec!["stage", "skip", "--json", "--reason", "not needed"],
         ] {
             let error = fixture.fails(&route);
             for expected in [
@@ -1720,7 +1843,7 @@ fn open_human_gates_refuse_advance_and_skip() {
         refused(&fixture, gate);
         assert_eq!(stage(&fixture), stage_name);
         fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
-        let applied = fixture.ok(&["stage", "advance"]);
+        let applied = fixture.ok(&["stage", "advance", "--json"]);
         if stage_name == "plan" {
             assert_eq!(applied["applied"]["gate"], "ungated:sdd-disabled");
         }
@@ -1752,10 +1875,17 @@ fn open_human_gates_refuse_advance_and_skip() {
         "Human: publish it",
     ]);
     for _ in 0..3 {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     assert_eq!(stage(&fixture), "done");
-    fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "release",
+        "--reason",
+        "Requested",
+    ]);
     fixture.ok(&["checkpoint", "--awaiting-human", "Release approval"]);
     assert!(
         fixture
@@ -1764,7 +1894,7 @@ fn open_human_gates_refuse_advance_and_skip() {
     );
     assert_eq!(stage(&fixture), "release");
     fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         fixture.session_json("Ship a focused change")["stage"]["current"],
         "done"
@@ -1778,7 +1908,7 @@ fn open_human_gates_refuse_advance_and_skip() {
 fn open_human_gates_leave_other_moves_and_agree_in_next() {
     let fixture = Fixture::new();
     fixture.init();
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.ok(&["checkpoint", "--awaiting-human", "Design approval"]);
     let next = fixture.ok(&["next", "--json"]);
     let status = fixture.ok(&["status", "--json"]);
@@ -1801,14 +1931,16 @@ fn open_human_gates_leave_other_moves_and_agree_in_next() {
         next["next_valid_action"]["action"],
         status["next_valid_action"]
     );
-    fixture.ok(&["stage", "iterate", "--note", "Second prototype"]);
-    fixture.ok(&["stage", "pause", "--reason", "Waiting"]);
-    fixture.ok(&["stage", "resume"]);
-    fixture.ok(&["stage", "enter", "bugs", "--reason", "Triage"]);
-    fixture.ok(&["stage", "return"]);
-    fixture.ok(&["stage", "back", "--to", "intent", "--reason", "Rethink"]);
+    fixture.ok(&["stage", "iterate", "--json", "--note", "Second prototype"]);
+    fixture.ok(&["stage", "pause", "--json", "--reason", "Waiting"]);
+    fixture.ok(&["stage", "resume", "--json"]);
+    fixture.ok(&["stage", "enter", "--json", "bugs", "--reason", "Triage"]);
+    fixture.ok(&["stage", "return", "--json"]);
+    fixture.ok(&[
+        "stage", "back", "--json", "--to", "intent", "--reason", "Rethink",
+    ]);
     assert_eq!(stage(&fixture), "intent");
-    fixture.ok(&["stage", "reset", "--reason", "Start over"]);
+    fixture.ok(&["stage", "reset", "--json", "--reason", "Start over"]);
     assert_eq!(
         fixture.session()["awaiting_human"],
         json!(["Design approval"])
@@ -1821,7 +1953,7 @@ fn at_test_with_case() -> Fixture {
     let fixture = Fixture::new();
     fixture.init();
     for _ in 0..4 {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     assert_eq!(stage(&fixture), "test");
     fixture.ok(&["checkpoint", "--case", "TC-cli-0001"]);
@@ -1860,8 +1992,8 @@ fn leaving_test_refuses_an_unlinked_failed_case_until_it_passes() {
     case_observation(&fixture, "2026-01-01-pass-1", "TC-cli-0001", "passed", 100);
     case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
     for route in [
-        vec!["stage", "advance"],
-        vec!["stage", "skip", "--reason", "nothing to accept"],
+        vec!["stage", "advance", "--json"],
+        vec!["stage", "skip", "--json", "--reason", "nothing to accept"],
     ] {
         let error = fixture.fails(&route);
         for expected in [
@@ -1897,7 +2029,7 @@ fn leaving_test_refuses_an_unlinked_failed_case_until_it_passes() {
             .unwrap()
             .contains("refused:unlinked-failure")
     );
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "accept");
 }
 
@@ -1916,8 +2048,8 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
         200,
     );
     for route in [
-        vec!["stage", "advance"],
-        vec!["stage", "skip", "--reason", "nothing to accept"],
+        vec!["stage", "advance", "--json"],
+        vec!["stage", "skip", "--json", "--reason", "nothing to accept"],
     ] {
         let error = fixture.fails(&route);
         assert!(
@@ -1944,7 +2076,7 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
         "not-run",
         400,
     );
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "accept");
 
     let fixture = at_test_with_case();
@@ -1962,7 +2094,7 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
             .unwrap()
             .contains("refused:unlinked-failure")
     );
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "accept");
 }
 
@@ -2007,7 +2139,7 @@ fn a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refus
             .contains("refused:unlinked-failure"),
         "{next:#}"
     );
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "accept");
 
     // The failure in another open session, linked qualified with that session.
@@ -2030,7 +2162,7 @@ fn a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refus
         "in-scope",
         &format!("{other}/{FAILED}"),
     );
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "accept");
 }
 
@@ -2051,7 +2183,7 @@ fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchange
         let fixture = at_test_with_case();
         case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
         linking_bug(&fixture, "BUG-0001", status, "in-scope", FAILED);
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
         assert_eq!(stage(&fixture), "accept", "bug status {status}");
     }
 
@@ -2071,14 +2203,14 @@ fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchange
     let fixture = at_test_with_case();
     case_observation(&fixture, FAILED, "TC-cli-0002", "failed", 200);
     case_observation(&fixture, "2026-01-01-pass-1", "TC-cli-0001", "passed", 100);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "accept");
 
     // Equal times: the greater ID is the latest.
     let fixture = at_test_with_case();
     case_observation(&fixture, "2026-01-01-a-1", "TC-cli-0001", "failed", 200);
     case_observation(&fixture, "2026-01-01-b-1", "TC-cli-0001", "passed", 200);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     let fixture = at_test_with_case();
     case_observation(&fixture, "2026-01-01-a-1", "TC-cli-0001", "passed", 200);
     case_observation(&fixture, "2026-01-01-b-1", "TC-cli-0001", "failed", 200);
@@ -2089,7 +2221,9 @@ fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchange
     );
 
     // Other moves out of test are not gated by it.
-    fixture.ok(&["stage", "back", "--to", "build", "--reason", "fix it"]);
+    fixture.ok(&[
+        "stage", "back", "--json", "--to", "build", "--reason", "fix it",
+    ]);
     assert_eq!(stage(&fixture), "build");
 }
 
@@ -2105,8 +2239,8 @@ fn a_configured_project_with_sdd_off_says_to_run_specsync_change_adopt() {
     let fixture = Fixture::new();
     fixture.stubs();
     fixture.init();
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
         next["native"]["approved_deltas"], "not checked: no native lifecycle",
@@ -2173,8 +2307,8 @@ fn native_next_action_is_shown_once_and_does_not_cut_the_next_line() {
     fixture.stubs();
     fixture.native("draft");
     fixture.init();
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
     fixture.no_spec_approval("add-thing");
     let native_next = format!(
@@ -2302,13 +2436,14 @@ fn plan_without_a_native_change_names_change_new() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "plan",
         "--reason",
         "Plan the change",
     ]);
     fixture.ok(&["checkpoint", "--next-action", "Write the plan"]);
-    fixture.ok(&["stage", "iterate", "--note", "Plan drafted"]);
+    fixture.ok(&["stage", "iterate", "--json", "--note", "Plan drafted"]);
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     assert_eq!(action["command"], NEW_CHANGE, "{next}");
@@ -2328,7 +2463,15 @@ fn reset_after_an_archived_change_guides_to_a_new_change() {
     // Reset to plan: the reset's next action shows, with the new-change command.
     let fixture = done_fixture("old-change");
     finalized(&fixture, "old-change", 1_700_000_000);
-    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--json",
+        "--to",
+        "plan",
+        "--reason",
+        "Next feature",
+    ]);
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     let text = action["action"].as_str().unwrap();
@@ -2347,6 +2490,7 @@ fn reset_after_an_archived_change_guides_to_a_new_change() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "intent",
         "--reason",
@@ -2354,7 +2498,7 @@ fn reset_after_an_archived_change_guides_to_a_new_change() {
     ]);
     let mut stages = vec![];
     while stage(&fixture) != "plan" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
         let next = fixture.ok(&["next", "--json"]);
         let action = &next["next_valid_action"];
         let text = action["action"].as_str().unwrap().to_string();
@@ -2383,12 +2527,13 @@ fn reset_after_an_archived_change_guides_to_a_new_change() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "intent",
         "--reason",
         "Next feature",
     ]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     finalized(&fixture, "new-change", 4_000_000_000);
     let next = fixture.ok(&["next", "--json"]);
     let text = next["next_valid_action"]["action"].as_str().unwrap();
@@ -2408,6 +2553,7 @@ fn reset_rule_uses_the_newest_reset_by_time_in_an_out_of_order_log() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "intent",
         "--reason",
@@ -2436,7 +2582,7 @@ fn reset_rule_uses_the_newest_reset_by_time_in_an_out_of_order_log() {
         timeline_entries(&record).len() + 1
     );
     while stage(&fixture) != "plan" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
@@ -2468,11 +2614,27 @@ fn reset_then_iterated(iterations: usize) -> Fixture {
         "cli",
     ]);
     fixture.ok(&["checkpoint", "--native-change", "old-change"]);
-    fixture.ok(&["stage", "reset", "--to", "done", "--reason", "Closeout"]);
+    fixture.ok(&[
+        "stage", "reset", "--json", "--to", "done", "--reason", "Closeout",
+    ]);
     finalized(&fixture, "old-change", 1_700_000_000);
-    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Next feature"]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--json",
+        "--to",
+        "plan",
+        "--reason",
+        "Next feature",
+    ]);
     for count in 0..iterations {
-        fixture.ok(&["stage", "iterate", "--note", &format!("iteration {count}")]);
+        fixture.ok(&[
+            "stage",
+            "iterate",
+            "--json",
+            "--note",
+            &format!("iteration {count}"),
+        ]);
     }
     fixture
 }
@@ -2753,8 +2915,8 @@ fn backfill_fixture(state: &str, shift: u64) -> Fixture {
     fixture.stubs();
     fixture.native(state);
     fixture.init();
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
     fixture.no_spec_approval("add-thing");
     // Move each timeline entry's time `shift` seconds back, 100 seconds apart.
@@ -2785,6 +2947,7 @@ fn a_backfilled_move_keeps_its_original_time_and_quoted_evidence() {
     let out = fixture.ok(&[
         "stage",
         "backfill",
+        "--json",
         "--at",
         &at.to_string(),
         "--commit",
@@ -2885,10 +3048,10 @@ fn a_backfilled_move_keeps_its_original_time_and_quoted_evidence() {
 
     // Stages a backfilled move bounds are not estimate samples once the cycle ends.
     fixture.write(".stub-state", "verifying\n");
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.write(".stub-state", "archived\n");
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     // The move into done archives the session (REQ-history-006); timing reads the
     // archived story's timeline (REQ-reporting-001).
     assert_eq!(
@@ -2917,7 +3080,7 @@ fn backfill_refuses_what_advance_or_its_evidence_does_not_support() {
     let refused = |args: &[&str], expected: &str| {
         // The session record holds the checkpoint and the timeline (REQ-history-002).
         let session = fixture.read(&fixture.session_file());
-        let mut route = vec!["stage", "backfill"];
+        let mut route = vec!["stage", "backfill", "--json"];
         route.extend_from_slice(args);
         let error = fixture.fails(&route);
         assert!(error.contains(expected), "{args:?}: {error}");
@@ -2972,9 +3135,9 @@ fn backfill_refuses_what_advance_or_its_evidence_does_not_support() {
     fixture.ok(&["checkpoint", "--awaiting-human", "Scope approval"]);
     call(with(&unix_now().to_string(), &ok), "refused:awaiting-human");
     fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
-    fixture.ok(&["stage", "enter", "bugs", "--reason", "Capture"]);
+    fixture.ok(&["stage", "enter", "--json", "bugs", "--reason", "Capture"]);
     call(with(&unix_now().to_string(), &ok), "return");
-    fixture.ok(&["stage", "return"]);
+    fixture.ok(&["stage", "return", "--json"]);
 
     // Still nothing human was recorded, and the gate refused as advance would.
     assert!(!fixture.exists(".chough/preferences.json"));
@@ -3007,6 +3170,7 @@ fn a_backfilled_move_is_carried_by_history_events() {
     fixture.ok(&[
         "stage",
         "backfill",
+        "--json",
         "--at",
         &at.to_string(),
         "--commit",
@@ -3051,9 +3215,16 @@ fn backfill_refuses_release_to_done() {
         "Human: please publish 0.2.0",
     ]);
     for _ in 0..6 {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
-    fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "release",
+        "--reason",
+        "Requested",
+    ]);
     assert_eq!(stage(&fixture), "release");
     fixture.commit("base");
     let session = fixture.read(&fixture.session_file());
@@ -3072,7 +3243,7 @@ fn backfill_refuses_release_to_done() {
         "{refused}"
     );
     assert_eq!(fixture.read(&fixture.session_file()), session);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         fixture.session_json("Ship a focused change")["stage"]["current"],
         "done"
@@ -3136,8 +3307,8 @@ fn one_checkpoint_store_and_no_aps_adapter_in_either_mode() {
         "--decision",
         "decided: one store because REQ-cli-007 says so",
     ]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "no visuals change"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "no visuals change"]);
     assert!(fixture.run(&["next"]).status.success());
     fixture.ok(&["status"]);
     let first_file = fixture.session_file();
@@ -3168,7 +3339,7 @@ fn one_checkpoint_store_and_no_aps_adapter_in_either_mode() {
             .contains("only the active session changes")
     );
     fixture.ok(&["session", "use", "ship-a-focused-change"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert!(fixture.run(&["next"]).status.success());
     let mut expected = vec![first_file.clone(), fixture.session_file_of("second")];
     expected.sort();
@@ -3214,10 +3385,12 @@ fn the_delta_guard_compares_with_the_effective_approval() {
     fixture.write(".stub-definition-digest", "d-current");
     // The effective (second) approval matches the delta and the latest does not.
     fixture.write(&approvals, &ledger(&good, &stale));
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(stage(&fixture), "build");
     // The other way round: the latest matches, the effective one does not.
-    fixture.ok(&["stage", "back", "--to", "plan", "--reason", "Again"]);
+    fixture.ok(&[
+        "stage", "back", "--json", "--to", "plan", "--reason", "Again",
+    ]);
     fixture.write(&approvals, &ledger(&stale, &good));
     let refused = fixture.fails(&["stage", "advance"]);
     assert!(
@@ -3236,8 +3409,14 @@ fn every_stage_move_says_when_chough_runs_native_approval_or_review() {
     fixture.init();
     let expected = "Native SpecSync status decides lifecycle gates. Chough runs a native approval or review only when a human's decision closes a gate that drives one, as that configured human; the relayed decision it keeps is a claim, not authenticated.";
     for args in [
-        &["stage", "iterate", "--note", "SYNTHETIC another pass"][..],
-        &["stage", "advance"][..],
+        &[
+            "stage",
+            "iterate",
+            "--json",
+            "--note",
+            "SYNTHETIC another pass",
+        ][..],
+        &["stage", "advance", "--json"][..],
     ] {
         let moved = fixture.ok(args);
         assert_eq!(moved["authority"], expected, "{args:?}: {moved:#}");

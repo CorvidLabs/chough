@@ -54,8 +54,8 @@ fn approved_at_plan(id: &str) -> Fixture {
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", id]);
     fixture.no_spec_approval(id);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture
 }
 
@@ -166,7 +166,7 @@ fn next_and_status_each_read_native_status_once_and_agree_on_the_action() {
     let mut seen = vec![];
     for stage in ["plan", "build", "test", "accept"] {
         if stage != "plan" {
-            fixture.ok(&["stage", "advance"]);
+            fixture.ok(&["stage", "advance", "--json"]);
         }
         fixture.native_calls();
         let next = fixture.ok(&["next", "--json"]);
@@ -525,7 +525,11 @@ fn run_suggested(fixture: &Fixture, command: &str) -> Value {
         .replace("<outcome>", "The next piece of work");
     let arguments = words(&command);
     assert_eq!(arguments[0], "chough", "{command}");
-    let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
+    let mut arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
+    // A suggested stage move prints its full report under --json (REQ-cli-008).
+    if arguments.first() == Some(&"stage") {
+        arguments.push("--json");
+    }
     fixture.ok(&arguments)
 }
 
@@ -551,6 +555,7 @@ fn archived_change_at(stage: &str, change: &str) -> Fixture {
         fixture.ok(&[
             "stage",
             "advance",
+            "--json",
             "--note",
             "Reached with the change approved",
         ]);
@@ -802,8 +807,15 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
                 "chough stage enter release --reason \"<request>\"",
                 "{done:#}"
             );
-            fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
-            let released = fixture.ok(&["stage", "advance"]);
+            fixture.ok(&[
+                "stage",
+                "enter",
+                "--json",
+                "release",
+                "--reason",
+                "Requested",
+            ]);
+            let released = fixture.ok(&["stage", "advance", "--json"]);
             assert_eq!(
                 released["applied"]["session_archive"]["status"], "archived",
                 "{released:#}"
@@ -868,11 +880,11 @@ fn keeps_todays_action_when_something_else_applies() {
     let archived = "is archived while the checkpoint";
     // Paused.
     let fixture = archived_at("plan");
-    fixture.ok(&["stage", "pause", "--reason", "Lunch"]);
+    fixture.ok(&["stage", "pause", "--json", "--reason", "Lunch"]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(action.as_str().unwrap().contains("is paused"), "{action}");
     // Awaiting a human.
-    fixture.ok(&["stage", "resume"]);
+    fixture.ok(&["stage", "resume", "--json"]);
     fixture.ok(&["checkpoint", "--awaiting-human", "Scope decision"]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(
@@ -905,7 +917,7 @@ fn keeps_todays_action_when_something_else_applies() {
     }
     // A side stage returns to its caller first.
     let fixture = archived_at("plan");
-    fixture.ok(&["stage", "enter", "bugs", "--reason", "Triage"]);
+    fixture.ok(&["stage", "enter", "--json", "bugs", "--reason", "Triage"]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(
         action.as_str().unwrap().starts_with("Continue bugs"),
@@ -2250,7 +2262,7 @@ fn next_guides_a_fresh_agent_from_init_to_accept() {
 
     // At test, with no native lifecycle gating the move.
     while fixture.checkpoint()["stage"]["current"] != "test" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     let action = &fixture.ok(&["next", "--json"])["next_valid_action"];
     let text = action["action"].as_str().unwrap();
@@ -2269,7 +2281,7 @@ fn next_guides_a_fresh_agent_from_init_to_accept() {
     // At accept while the native change is verifying.
     let fixture = approved_at_plan("verify-change");
     while fixture.checkpoint()["stage"]["current"] != "accept" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     fixture.write(".stub-state", "verifying\n");
     let next = fixture.ok(&["next", "--json"]);
@@ -2319,7 +2331,7 @@ fn next_guides_a_fresh_agent_from_init_to_accept() {
 fn at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate() {
     let fixture = approved_at_plan("ship-change");
     while fixture.checkpoint()["stage"]["current"] != "accept" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     fixture.write(".stub-state", "verifying\n");
     let action = |fixture: &Fixture| -> String {
@@ -2422,9 +2434,15 @@ fn status_gives_the_next_valid_action_whole() {
     );
     assert!(next_action.len() > 600);
     fixture.ok(&["checkpoint", "--next-action", &next_action]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "SYNTHETIC: no visuals"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&[
+        "stage",
+        "skip",
+        "--json",
+        "--reason",
+        "SYNTHETIC: no visuals",
+    ]);
+    fixture.ok(&["stage", "advance", "--json"]);
     let whole = format!("Continue build: {next_action}");
 
     let status: Value = serde_json::from_str(&text(&fixture, &["status"])).unwrap();
@@ -2602,7 +2620,7 @@ fn next_and_status_reasons_name_no_trace_id() {
     );
     let accept = approved_at_plan("trace-review");
     while accept.checkpoint()["stage"]["current"] != "accept" {
-        accept.ok(&["stage", "advance"]);
+        accept.ok(&["stage", "advance", "--json"]);
     }
     accept.write(".stub-state", "verifying\n");
     for fixture in [&plan, &accept] {
@@ -2664,7 +2682,7 @@ fn at_accept_while_approved_next_names_the_review_preparation_in_order() {
         let id = format!("prep-{state}");
         let fixture = approved_at_plan(&id);
         while fixture.checkpoint()["stage"]["current"] != "accept" {
-            fixture.ok(&["stage", "advance"]);
+            fixture.ok(&["stage", "advance", "--json"]);
         }
         fixture.write(".stub-state", &format!("{state}\n"));
         if adds {
@@ -2735,7 +2753,7 @@ fn next_and_status_show_every_command_whole_for_a_long_change_id() {
     );
     let accept = approved_at_plan(&id);
     while accept.checkpoint()["stage"]["current"] != "accept" {
-        accept.ok(&["stage", "advance"]);
+        accept.ok(&["stage", "advance", "--json"]);
     }
     accept.write(".stub-state", "verifying\n");
     let scope = format!(

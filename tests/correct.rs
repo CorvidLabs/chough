@@ -36,8 +36,10 @@ fn inserted(before: &str, after: &str) -> String {
 }
 
 fn reset(fixture: &Fixture, reason: &str) -> String {
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "reset", "--to", "intent", "--reason", reason]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&[
+        "stage", "reset", "--json", "--to", "intent", "--reason", reason,
+    ]);
     newest_id(&fixture.read(&fixture.session_file()))
 }
 
@@ -132,7 +134,7 @@ fn an_archived_story_gets_the_correction_appended_and_nothing_else() {
     fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
     // The move into done archives the session into its story.
     while !fixture.is_archived("alpha") {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     let id = fixture.id_of("alpha");
     let story = format!(".chough/archive/sessions/{id}.md");
@@ -201,7 +203,7 @@ fn a_correction_joins_the_timeline_list_with_no_blank_line() {
         "--reason",
         "Start the search work; paging was a slip",
     ]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     let text = fixture.read(&fixture.session_file());
     let start = text.find("\n## Timeline\n").unwrap() + "\n## Timeline\n".len();
     let section = &text[start..];
