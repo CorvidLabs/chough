@@ -1281,14 +1281,10 @@ pub(super) fn render_entry(
     text: &str,
     recorded: Option<bool>,
     added: &str,
-    aliases: &[String],
 ) -> Result<String> {
     let mut record = crate::markdown::Record::new(&format!("{text}\n"));
     record.set_scalar("kind", kind.name())?;
     record.set_scalar("id", name)?;
-    if !aliases.is_empty() {
-        record.set("aliases", crate::markdown::Value::List(aliases.to_vec()))?;
-    }
     record.set_scalar("session", session)?;
     record.set_scalar("from", from)?;
     record.set_scalar("value", text)?;
@@ -1359,7 +1355,7 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             if !publish_entry(
                 root,
                 &file,
-                &render_entry(&id, &session, &from, kind, &text, recorded, &added, &[])?,
+                &render_entry(&id, &session, &from, kind, &text, recorded, &added)?,
             )? {
                 id = crate::identity::suffixed(&base)?;
                 file = format!("{dir}/{id}.md");
@@ -1367,7 +1363,7 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
                     publish_entry(
                         root,
                         &file,
-                        &render_entry(&id, &session, &from, kind, &text, recorded, &added, &[])?
+                        &render_entry(&id, &session, &from, kind, &text, recorded, &added)?
                     )?,
                     "refused: {file} also exists; nothing was written and no other name was drawn"
                 );

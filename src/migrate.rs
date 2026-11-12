@@ -1280,14 +1280,17 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
                 &text("text"),
                 None,
                 &crate::session_md::iso_time(added),
-                // The 0.5.x INB- ID stays the entry's alias (REQ-records-003), and the
-                // receipt maps it to the new file (REQ-records-009).
-                &[text("id")]
-                    .into_iter()
-                    .filter(|old| !old.is_empty())
-                    .collect::<Vec<_>>(),
             )?;
+            // The 0.5.x INB- ID stays the entry's alias (REQ-records-003), and the
+            // receipt maps it to the new file (REQ-records-009).
             let new_path = format!(".chough/sessions/{id}/agent/inbox/{name}.md");
+            let rendered = if text("id").is_empty() {
+                rendered
+            } else {
+                let mut entry = crate::markdown::parse(&new_path, &rendered)?;
+                entry.set("aliases", crate::markdown::Value::List(vec![text("id")]))?;
+                entry.render_within(crate::markdown::Kind::Inbox)?
+            };
             carried.written.push(Written {
                 path: new_path.clone(),
                 bytes: rendered,
