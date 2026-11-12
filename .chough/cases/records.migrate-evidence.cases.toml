@@ -167,3 +167,21 @@ expected = ["tests/migrate_evidence.rs::uppercase_digests_migrate_lowercased_and
 adapter = "cargo-test"
 test_target = "migrate_evidence"
 test = "uppercase_digests_migrate_lowercased_and_read"
+
+[[case]]
+id = "TC-records-migrate-evidence-verified-lines-link-entries"
+title = "A migrated open session's What was verified links each carried entry as a 0.6.0 save writes it, never the bare 0.5.x ID, which stays the entry's alias, and a later save adds no bare line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate_evidence.rs", "tests/fixtures/releases"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::a_migrated_sessions_verified_lines_link_the_carried_entries passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "a_migrated_sessions_verified_lines_link_the_carried_entries"
