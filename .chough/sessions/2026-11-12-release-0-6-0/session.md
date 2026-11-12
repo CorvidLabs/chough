@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -352,13 +352,9 @@ bugs:
   - 2026-11-12-migrated-sessions-and-stories-keep-bare-0-5-x-observation-ids
   - 2026-11-12-an-archived-story-opens-with-its-receipts-and-never-names-the
 blockers: []
-waiting_on_human:
-  - gate: Approve the 0.6.0 release prep re-scoped for the fourth round's 4 real findings
-    holds: plan
-    drives: approve
-    opened: 2026-11-12T23:34:22Z
+waiting_on_human: []
 run_consents: []
-next: "Gate \"Approve the 0.6.0 release prep re-scoped for the 12 third-round fresh-eyes findings\" closed (approved); run `chough stage advance` to move on."
+next: "Gate \"Approve the 0.6.0 release prep re-scoped for the fourth round's 4 real findings\" closed (approved); run `chough stage advance` to move on."
 title: "Chough 0.6.0 release prep: the dogfood cycle and three fresh-eyes rounds"
 summary:
   - "Chough 0.6.0 was prepared as its own dogfood cycle, driven only with the 0.6.0 build: Cargo 0.6.0 and the dated CHANGELOG, the dogfood's fixes, journal posts with short titles and real summaries for every archived story, the first cross-project lessons, and the flaky-test bugs settled."
@@ -402,6 +398,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Leif decided "Approve the 0.6.0 release prep with the stop-survivor fix folded in": "Yes, fix it (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12T17:42Z, answering: 'One more flaky test turned out to be a real Chough bug. Stopping a command could leave behind a child process the command started at that exact moment, on macOS. The fix keeps signalling until none is left: before, 2 failures in 24 runs; after, 0 in 32. Fix it in 0.6.0 too?'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 - Leif decided "Approve the 0.6.0 release prep re-scoped for the 16 second-round fresh-eyes findings": "Yes, fix all + re-rate (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12T19:43Z, answering: 'Fix all 16 new findings in Chough 0.6.0 (13 from the strict tester, 3 from Kimi), then re-rate again with a third fresh tester? The most important is that intent and design approvals currently accept any name.' (option text: 'Each fix gets a failing test first, and helpers split the work. Then a new fresh tester rates it against your 90% bar.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 - Leif decided "Approve the 0.6.0 release prep re-scoped for the 12 third-round fresh-eyes findings": "Yes, fix all + re-rate (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12T21:47Z, answering: 'Round 3 rated Chough 0.6.0 at 8/10 (82%). Fix all 12 findings (2 gate bugs, the JSON noise, story readability, docs and polish), then re-rate once more?' (option text: 'Same process as before: helpers split it, each fix gets a failing test, then a fourth fresh tester rates it.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
+- Leif decided "Approve the 0.6.0 release prep re-scoped for the fourth round's 4 real findings": "Fix 4 real ones, then release (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12T23:32Z, answering: 'Chough 0.6.0 ratings are hovering at 7 to 8 because each new tester finds new nitpicks. How do you want to finish 0.6.0?'; the option's full text is quoted in the change's context.md (fix the 4 real problems with failing tests first, run the full suite, then the review and the tag; the polish and the host-name leak check go to 0.6.1); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 
 ## What was verified
 
@@ -952,5 +949,21 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - revision: 3e902b47a4ffa5c80ff1c7674c8e69917bd6482b
   - holds: plan
   - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-12T23:34:51Z · gate-closed · plan → plan · Approve the 0.6.0 release prep re-scoped for the fourth round's 4 real findings ^t-384f72
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 2d9d01707ef93244d8bfe5972848c3a2eaca4fa9
+  - relayed_by:
+    - decided_by: Leif
+    - words: Fix 4 real ones, then release (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-12T23:32Z, answering: 'Chough 0.6.0 ratings are hovering at 7 to 8 because each new tester finds new nitpicks. How do you want to finish 0.6.0?'; the option's full text is quoted in the change's context.md (fix the 4 real problems with failing tests first, run the full suite, then the review and the tag; the polish and the host-name leak check go to 0.6.1); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-12T23:34:59Z · advance · plan → build · Leif approved the round-5 re-scope ('Fix 4 real ones, then release (Recommended)', 23:32Z, relayed by t370); build the 4 fixes ^t-d0e849
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - gate: native:approved
+  - revision: 2d9d01707ef93244d8bfe5972848c3a2eaca4fa9
   - by: claude-code (hc t382)
 

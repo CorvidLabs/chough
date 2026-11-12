@@ -493,6 +493,92 @@
         "records: REQUIREMENT REQ-records-009": "d0548ff5ec6bd560a81e7e7fecede21ea761fc504fac350b62db67c792f87693",
         "records: REQUIREMENT REQ-records-011": "a4ee4e627ed729726b685ff65fbc47dfbd333e923345d584f51c25fe6b27337a"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794526493,
+      "digest": "06901093da36833f34ed9dbe1b5c0d77dcc88e8d814b3044083fb893e1fe2ea1",
+      "note": "Approved by Leif at the Chough gate \"Approve the 0.6.0 release prep re-scoped for the fourth round's 4 real findings\": \"Fix 4 real ones, then release (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-12T23:32Z, answering: 'Chough 0.6.0 ratings are hovering at 7 to 8 because each new tester finds new nitpicks. How do you want to finish 0.6.0?'; the option's full text is quoted in the change's context.md (fix the 4 real problems with failing tests first, run the full suite, then the review and the tag; the polish and the host-name leak check go to 0.6.1); relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-12T23:34:51Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood",
+        "title": "Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found",
+        "description": "Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found",
+        "kind": "operations",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".agents/skills/",
+          ".chough/cases/",
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "Cargo.toml",
+          "README.md",
+          "docs/",
+          "knowledge/",
+          "skills/",
+          "src/",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A journal post has a short human title and a real summary: chough checkpoint --title and --summary set them before the move into done, a title and body derived from the objective and the story are the fallback, and chough journal add --record writes an archived story's post (REQ-records-011, red then green)",
+          "A new project's path is in README.md, docs/cli.md and the workflow skill, with specsync change adopt and the delta format, and the CHANGELOG and docs/cli.md describe 0.6.0 as it ships (drift checks red then green)",
+          "A path under /tmp/ or /private/tmp/ in a case definition gives no doctor leak finding, while a home path there still does (REQ-records-006, red then green)",
+          "A stopped command leaves no child it forked as the stop arrived: the stop stress that failed 2 of 24 runs before the fix passes after it, rerun by t382 (red then green)",
+          "After an in-place migration, the local pointer that names a 0.5.x key resolves to its session through the alias, so next and status read it (D1, red then green)",
+          "CHANGELOG.md has a dated [0.6.0] section whose upgrade notes give the dogfood results, and tests/changelog.rs passes",
+          "Cargo.toml and Cargo.lock name version 0.6.0, and chough --version prints chough 0.6.0",
+          "Each of the four flaky-test bugs is settled through Chough: fixed and verified, or left open with its diagnostics and named to Leif",
+          "Every archived story has a journal post: the 68 earlier stories through journal add --record, each title and summary written from its story, and 0.6.0's own post written again under the new rules; library index --check passes",
+          "Every finding of the second fresh-eyes round is fixed with a failing test first, red then green, each bug verified: a gate that drives nothing, or a close with --no-native, refuses a --decided-by that names no configured human (F1, REQ-records-008); next never loops on itself, names the accept preparation and keeps commands whole (REQ-cli-021); the gate list names the ship for a verifying gate (REQ-cli-061); the story lists the latest run per case, its bugs and no stale next (REQ-history-006, REQ-cli-012); direct writes in order and change check --no-commit (REQ-cli-060, REQ-cli-057); a start entry (REQ-history-002); merge_driver_outdated (REQ-history-012); evidence add with delta requirements and optional links (REQ-cli-005); the migrate preview on a migrated tree (REQ-records-009); the output polish and the docs gaps (F2, F7, Kimi 1)",
+          "Every finding of the third fresh-eyes round is fixed with a failing test first, red then green, each bug verified: next at accept never passes on SpecSync review command and at test leaves superseded runs out (REQ-cli-021); session close records the gates it withdraws, and the story puts its receipts last and names its bugs (REQ-history-006); gate summaries name the intent and the delta (REQ-cli-061); a failed run body says why (REQ-cli-017); stage moves print a short summary with the full JSON behind --json (REQ-cli-008); the migrate preview is text with --json (REQ-records-009); the dated lesson form documented, the messages, next at plan, context, the migrated verified line, timing and the init hint fixed; and a full local run passes",
+          "Every fresh-eyes bug from t38j's report is fixed with a case run red then green and verified: the cases check crash, the context walk, next at plan naming the scope gate (REQ-cli-021), the scope-gate summary showing the delta and plan (REQ-cli-061), labelled Timeline fields (REQ-history-002), a bug's trigger and Fix (REQ-cli-012), receipts in time order (REQ-history-006), none in empty migration-receipt sections (REQ-records-009), gate record's output and note, the authority line, the plain check's entry, and status and the stale next action",
+          "Every live KNOW criterion has an active case linking it with a passing receipt recorded through Chough, so the KNOW gap list of #216 is empty",
+          "Every session.md chough migrate --apply writes ends with exactly one newline, so git diff --check passes on the migration commit (jackdaw's finding, red then green)",
+          "For a second native change on one branch, the gate summary counts only that change's own work since its base_commit (D2, REQ-cli-061, red then green), and #190's merged-main case still counts from the merge base",
+          "No test helper is named session_id, so CodeQL rust/cleartext-logging has nothing to flag in the tests",
+          "The #148 bug record is verified through Chough: a red run against the code before #157, then a later green run",
+          "The closeout leaves chough doctor clean and every earlier archived story byte-identical",
+          "The fourth round four real findings are fixed with a failing test first, red then green, each bug verified: a stage move replaces a gate close next action, and at accept next names the stale cases rerun before the review gate (REQ-cli-021); the scope summary counts uncommitted change files (REQ-cli-061); the migration follow-ups name chough skill update for an outdated skill copy (REQ-records-009); accept.md writes lessons before the case rerun; F5 to F11 and the host-name rule are recorded as deferred bugs quoting Leif; and a full local run passes",
+          "chough migrate's preview says up front that --apply will refuse while native changes are open, naming them, and still writes nothing (red then green)",
+          "knowledge/lessons/ holds a few real cross-project lessons from this release, each sourced to recorded evidence or a story"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "AGENTS.md: SpecSync owns the lifecycle, Chough only its records; the 0.6.0 build only (never the 0.5.0 driver) now that this repository is migrated; no tag, release or merge of #238 without Leif; evidence before change check --commit; a flaky test is never closed just to clear the gate; full suites run on hosted CI",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "328818a1df87461ba79c89922959b5d3f7947e4abd3b18e4b4f7ebd831bf4c69",
+        "history": "136d89dd677223d19325ad2a01557489fee2425a39bcc6db0c99779b4eb44853",
+        "records": "05a209421c79dcc4f67936ce98dd45574fa5f79c0bc83a30eb227cc99161b505"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-005": "c5d7bbbc20b39f958a27b967a1c52dd424c9bfa9a765f2cef077171488cf3805",
+        "cli: REQUIREMENT REQ-cli-008": "35a9ffb0f6d9da7d8d4649174ffefc425664acf21fce7bc99d185a798c11767b",
+        "cli: REQUIREMENT REQ-cli-012": "1d5b2618146c3d51740926e65f2ae0fdc98e92e569cdbff627a3eada35f753f4",
+        "cli: REQUIREMENT REQ-cli-017": "d7f2faf19be8740af7befc5583b043304aa5c48c86479101d64db87d74603042",
+        "cli: REQUIREMENT REQ-cli-021": "90ed521a81f1a16e05ae191a8c439a958a3fe9a63d0e4cbca0050d3df81ebf2f",
+        "cli: REQUIREMENT REQ-cli-057": "bf67bdc7e3dce8efce6b5c805fafe22fab4e460a4df35b7af87a3c3c9dcf79c5",
+        "cli: REQUIREMENT REQ-cli-060": "3e6b51c84a2cceded870b07bad02ac5377ec6216c7969952117b62d9822a031c",
+        "cli: REQUIREMENT REQ-cli-061": "9bc81f53b5c9aa4820d427e5b5acd62a3e1abe4ceea384eb13eda65f08f72422",
+        "history: REQUIREMENT REQ-history-002": "a8e9a8631d71744e4f20cedfa8b1a564f22b866d9d22e224f6c995e5495ada8e",
+        "history: REQUIREMENT REQ-history-006": "ad37c6c2dae243fd69ad9871ef2c7dd0d8d00c4838eed5cfc2d817a8a2cb24e8",
+        "history: REQUIREMENT REQ-history-012": "f11b1f06e5688534149cee8eb00fc07c734f376942f39dd6fc1790c568e14321",
+        "records: REQUIREMENT REQ-records-006": "47912f8babb1ca75fb1e0de0cb819ecb83a8cd756896cd11824c9981cdcdd08f",
+        "records: REQUIREMENT REQ-records-008": "77f28abfbade4088ee42d636b77e17e415b482ba3ec6fe7fcfadaa6e1223e5e8",
+        "records: REQUIREMENT REQ-records-009": "8d66bb67af57dc9ac251aa1a81a9906e74cc0a1e0ce1fcdf08e23892b001dac6",
+        "records: REQUIREMENT REQ-records-011": "a4ee4e627ed729726b685ff65fbc47dfbd333e923345d584f51c25fe6b27337a"
+      }
     }
   ],
   "reopenings": [],
