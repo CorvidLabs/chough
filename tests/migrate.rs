@@ -1257,15 +1257,11 @@ fn a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove() {
         "{plan:#}"
     );
     fixture.commit("migrated");
+    // No 0.5.x record is left, so the preview carries and removes nothing: it says
+    // there is nothing to migrate and gives no plan digest.
     let again = fixture.ok(&["migrate"]);
-    assert_eq!(again["sources"], serde_json::json!({}), "{again:#}");
-    assert!(
-        !again["removed"]
-            .as_object()
-            .unwrap()
-            .contains_key(fixture_path),
-        "{again:#}"
-    );
+    assert!(again["nothing_to_do"].is_string(), "{again:#}");
+    assert!(again["plan_digest"].is_null(), "{again:#}");
     assert!(fixture.exists(fixture_path));
 }
 

@@ -915,6 +915,10 @@ resolve to its story's receipts.
   refusal `refused:change-open` that `--apply` would give, each open change by name
   and why. It is not part of the digest.
 
+On a tree with no 0.5.x record, migrated already or never 0.5.x, the preview prints
+only `nothing_to_do`, saying there is nothing to migrate, with no `plan_digest` and no
+`apply`, and writes nothing.
+
 `chough migrate --apply <digest> --consent "<who consented, their words and where>"`
 applies exactly that plan. Run the preview and the apply on the same machine and
 account. The plan's redactions depend on the local host and user name, so its digest
