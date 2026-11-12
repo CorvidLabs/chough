@@ -1,0 +1,2859 @@
+---
+kind: session
+id: 2026-10-31-adopt-event-history-and-per-change-sessions-in-this-repository
+aliases:
+  - adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+objective: Adopt event history and per-change sessions in this repository and union-merge the ledger and changelog (DRIVE-12, DRIVE-3)
+intent_scope: LIFE
+modules: [cli, reporting]
+stage: done
+stage_status: active
+iteration: 1
+callers: []
+native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+pr: ""
+criteria:
+  - FLOW-1
+  - FLOW-2
+  - FLOW-7
+  - FLOW-13
+  - LIFE-2
+  - LIFE-7
+  - FLOW-10
+  - LIFE-3
+  - FLOW-5
+  - LIFE-4
+  - FLOW-8
+  - LIFE-5
+  - LIFE-6
+  - LIFE-9
+  - LIFE-1
+  - FLOW-12
+  - LIFE-10
+  - FLOW-3
+  - LIFE-8
+  - LIFE-11
+  - KNOW-1
+  - KNOW-2
+  - KNOW-3
+  - KNOW-4
+  - KNOW-5
+  - KNOW-6
+  - KNOW-7
+  - KNOW-8
+  - KNOW-9
+  - KNOW-10
+  - KNOW-11
+  - KNOW-12
+  - LIFE-12
+  - LIFE-13
+  - LIFE-14
+  - LIFE-15
+  - DRIVE-10
+  - KNOW-14
+  - KNOW-15
+  - KNOW-16
+  - KNOW-17
+  - KNOW-20
+  - KNOW-18
+  - KNOW-19
+  - DRIVE-12
+  - DRIVE-3
+requirements:
+  - REQ-cli-007
+  - REQ-cli-008
+  - REQ-cli-011
+  - REQ-cli-003
+  - REQ-cli-016
+  - REQ-cli-021
+  - REQ-cli-022
+  - REQ-cli-012
+  - REQ-cli-019
+  - REQ-cli-023
+  - REQ-cli-002
+  - REQ-reporting-001
+  - REQ-reporting-002
+  - REQ-cli-009
+  - REQ-cli-005
+  - REQ-cli-030
+  - REQ-history-002
+  - REQ-history-003
+  - REQ-history-004
+  - REQ-reporting-003
+  - REQ-cli-032
+  - REQ-cli-015
+  - REQ-cli-033
+  - REQ-history-001
+cases:
+  - TC-cli-0101
+  - TC-cli-0102
+  - TC-cli-0103
+  - TC-cli-0038
+  - TC-cli-0039
+  - TC-cli-0105
+  - TC-cli-0106
+  - TC-cli-0120
+  - TC-cli-0121
+  - TC-cli-0122
+  - TC-cli-0123
+  - TC-cli-0124
+  - TC-cli-0110
+  - TC-cli-0111
+  - TC-cli-0112
+  - TC-cli-0113
+  - TC-cli-0114
+  - TC-cli-0089
+  - TC-cli-0100
+  - TC-cli-0126
+  - TC-cli-0127
+  - TC-cli-0128
+  - TC-cli-0129
+  - TC-cli-0130
+  - TC-cli-0131
+  - TC-cli-0132
+  - TC-cli-0094
+  - TC-cli-skill-orders-the-change-check-before-new-requirement-cases
+  - TC-cli-leaving-test-refuses-an-unlinked-failed-case
+  - TC-cli-a-linking-bug-lifts-the-unlinked-failure-refusal
+  - TC-cli-0032
+  - TC-cli-a-later-not-run-keeps-an-unlinked-failure-refused
+  - TC-cli-open-human-gates-refuse-advance-and-skip
+  - TC-cli-open-human-gates-leave-other-moves-and-agree-in-next
+  - TC-cli-sdd-off-names-specsync-change-adopt
+  - TC-cli-agent-native-workflow-upgrade
+  - TC-cli-native-workflow-bundle-consistency
+  - TC-history-adoption
+  - TC-history-branches
+  - TC-history-bounds
+  - TC-history-retention
+  - TC-history-retention-revalidation
+  - TC-history-legacy-timing-bounds
+  - TC-history-frozen-reference-aliases
+  - TC-history-closing-reset-age
+  - TC-history-stale-receipt-age
+  - TC-history-post-prune-reference
+  - TC-cli-same-second-runs-in-two-git-roots-stay-distinct
+  - TC-cli-independently-added-records-merge-cleanly
+  - TC-cli-report-case-read-budget
+  - TC-cli-report-read-invalidation
+  - TC-cli-report-trace-parity
+  - TC-cli-checkpoint-byte-bound-is-131072
+  - TC-cli-observation-pointer-bound-is-400
+  - TC-cli-checkpoint-merge-enforces-the-raised-bounds
+  - TC-cli-bug-add-accepts-values-that-start-with-two-hyphens
+  - TC-cli-native-next-action-is-not-repeated-in-the-next-line
+  - TC-cli-delta-guard-refusals-name-the-agent-actor
+  - TC-cli-librarian-default-on-knowledge
+  - TC-cli-knowledge-archive-entries
+  - TC-cli-archive-summary-preview
+  - TC-cli-archive-summary-apply
+  - TC-cli-knowledge-entries-bounded
+  - TC-cli-archive-summary-fails-closed
+  - TC-history-split-keeps-requirement-wording
+  - TC-cli-next-searches-large-context-md
+design: []
+files:
+  - src/timing.rs
+  - src/records.rs
+  - tests/timing.rs
+  - docs/cli.md
+  - .chough/artifacts/learning-integration/single-lineage-repair.json
+  - skills/chough-workflow/references/plan.md
+  - skills/chough-workflow/references/testing.md
+  - skills/chough-workflow/references/accept.md
+  - src/skill.rs
+  - tests/package.rs
+  - .specsync/changes/make-native-workflow-stage-references-and-installed-copies-consistent/change.md
+  - .chough/evidence/tc-cli-0120-1793552331.json
+  - .chough/evidence/tc-cli-0121-1793552334.json
+  - .chough/evidence/tc-cli-0122-1793552336.json
+  - .chough/evidence/OBS-tc-cli-history-adoption-c4f32d29bd66502a82da2f41.json
+  - .chough/evidence/OBS-tc-cli-history-bounds-dd01913f7046f56559fbd7c0.json
+  - .chough/evidence/OBS-tc-cli-history-retention-5dec264cea1663509a5fbf11.json
+  - .chough/evidence/OBS-tc-cli-retention-revalidation-74543f11e9867427a7c29af2.json
+  - .chough/evidence/OBS-product-test-7336e2f0d0bfb795cb731d93.json
+  - .chough/evidence/OBS-tc-cli-history-adoption-bfa908357161a9b521969842.json
+  - .chough/evidence/OBS-tc-cli-history-branches-1d4d6f604b568061203b425a.json
+  - .chough/evidence/OBS-tc-cli-history-bounds-781c22fe65091afac3bd216f.json
+  - .chough/evidence/OBS-tc-cli-history-retention-a53d75159357634fc3653085.json
+  - .chough/evidence/OBS-tc-cli-retention-revalidation-d4cb9e37cf11becf209c48f0.json
+  - .chough/evidence/OBS-tc-cli-history-legacy-timing-bounds-611cd9c24b7c9c2b3b8bf922.json
+  - .chough/evidence/OBS-product-test-1c2f57107e6cf177a3b9e449.json
+  - .chough/evidence/OBS-product-test-38d4a4d154d37201dfa3db63.json
+  - .chough/evidence/OBS-tc-cli-history-adoption-40b0753b89cbc28fd20232fb.json
+  - .chough/evidence/OBS-tc-cli-history-branches-df08dbceeb00e4ad0a17e062.json
+  - .chough/evidence/OBS-tc-cli-history-bounds-40e498cd99373968597f550e.json
+  - .chough/evidence/OBS-tc-cli-history-retention-0884ced5b5b7c5bc4964c170.json
+  - .chough/evidence/OBS-tc-cli-retention-revalidation-2a910a07f6d3ffdc73fdf2fb.json
+  - .chough/evidence/OBS-tc-cli-history-legacy-timing-bounds-4fd40efecc92433cfdb1554c.json
+  - .chough/evidence/OBS-tc-cli-history-frozen-reference-aliases-32fcf963b83a87a1a67f7e56.json
+  - .chough/evidence/OBS-product-test-c15c11e67b8c42a50a4cf835.json
+  - .chough/artifacts/pr46-checkpoint-reference-index/policy.json
+  - .chough/artifacts/pr46-archive-executor-performance
+  - .chough/evidence/OBS-product-test-f070b3954a220492de975d64.json
+  - .chough/evidence/OBS-product-test-19fbf7ce1563d5f4dd78801d.json
+  - .chough/artifacts/pr50-checkpoint-coordination-index/policy.json
+  - .chough/evidence/OBS-tc-cli-report-case-read-budget-2af9122b4596a360fdf87116.json
+  - .chough/evidence/OBS-tc-cli-report-read-invalidation-6352cd6b7a933e27a28d1bce.json
+  - .chough/evidence/OBS-tc-cli-report-trace-parity-4330cee0bcfefa49971754aa.json
+  - .chough/evidence/OBS-product-test-9d0fec683204719b7d77acc4.json
+  - .chough/artifacts/pr50-root-qualification/final-freshness-peer.json
+  - .chough/evidence/OBS-tc-cli-report-case-read-budget-115b6dcd869d4b061b985d12.json
+  - .chough/evidence/OBS-tc-cli-report-read-invalidation-e13d4017cd8f17a34782547f.json
+  - .chough/evidence/OBS-tc-cli-report-trace-parity-f63fb27141834a3f4710be95.json
+  - .chough/evidence/OBS-product-test-e613f31740235919b76505d7.json
+  - .chough/artifacts/pr51-root-qualification/final-freshness-peer.json
+  - .chough/evidence/OBS-product-test-2a7d7facc915bcf96b293641.json
+  - .chough/artifacts/pr51-writer-atomicity/protected-parent-manifest.json
+  - .chough/evidence/OBS-product-test-d7d49ea83fedc7d95d30dba1.json
+  - .chough/evidence/OBS-tc-cli-report-case-read-budget-e8c977af84f2deb772e04cbd.json
+  - .chough/evidence/OBS-tc-cli-report-read-invalidation-0c71a50dc56bd2e9ffe0b895.json
+  - .chough/evidence/OBS-tc-cli-report-trace-parity-489c5fd41c03d870e978d759.json
+  - .chough/evidence/OBS-product-test-2f00d25a768981daf5bb6eb0.json
+  - .chough/artifacts/pr51-writer-atomicity/independent-final-evidence-review.json
+observations: [OBS-product-test-5d86bc7f549cf14c727d5614]
+bugs:
+  - BUG-0001
+  - BUG-0002
+  - BUG-0003
+  - BUG-0004
+  - BUG-0005
+  - BUG-0020
+  - BUG-0021
+  - BUG-0022
+  - BUG-0023
+  - BUG-0024
+  - BUG-0025
+  - BUG-0026
+  - BUG-checkpoint-parallel-merge-conflicts-in-real-git-f8779cb8507b621927a0d9ee
+  - BUG-compact-next-fixture-writes-an-obsolete-observation-id-d23860cbf663336b9f83ae75
+  - BUG-accepted-first-fixture-dependency-prevents-audit-qualification-ba464069b0ad48c7070a11ca
+  - BUG-identity-main-librarian-reference-is-mistaken-for-a-user-edit-5c40a0c138d1a902783af838
+  - BUG-0017
+  - BUG-native-workflow-guidance-exceeds-the-bounded-skill-entrypoint-0c432bf829e08bf33dfc41b9
+  - BUG-stage-references-and-installed-workflows-contradict-agent-authority-gui-17c8cf5e8275ded08fcacc38
+  - BUG-integrated-current-main-workflow-references-are-misclassified-as-edits-8cbff17ede6b1bad3926bce3
+  - BUG-shared-transition-appends-collide-across-independent-branches-8bcc3168f918377ac434cd77
+  - BUG-history-allocation-runs-before-initialization-preflight-cd2ea3e4eb06d54d1bb019ba
+  - BUG-interrupted-history-previews-count-already-removed-bytes-e3d3af55cc3d38bd82a3befc
+  - BUG-legacy-timing-bypasses-the-4096-event-request-bound-55a3830ea9566f55e4a6d84a
+  - BUG-frozen-artifact-directory-aliases-fail-to-protect-history-cycles-6dfc916446fda2d03ddb49a3
+  - BUG-report-case-cache-flattens-existing-loader-error-chains-ba1e469eeb3970b370b6456b
+  - BUG-observation-overflow-refusal-omits-its-numeric-capacity-bound-ed2d02c311446ef92cc449c5
+  - BUG-checkpoint-capacity-refusal-publishes-orphan-gate-history-b53b7f8277c4ff818e09bde1
+  - BUG-approved-delta-guard-refusals-ask-the-human-to-approve-under-their-own-2ebc91196f2ee5ff4d68f39f
+blockers: []
+waiting_on_human: []
+run_consents: []
+next: Take the adoption to accept, then ask Leif for both native implementation reviews (the session-after-adoption fix is at accept, verified); review and finalize the fix first, recheck the adoption, then review and finalize it
+closed: 2026-11-05
+outcome: done
+receipts:
+  - id: OBS-product-test-5d86bc7f549cf14c727d5614
+    removed: .chough/archive/migrations/2026-11-12-from-0-5.md
+---
+# Adopt event history and per-change sessions in this repository and union-merge the ledger and changelog (DRIVE-12, DRIVE-3)
+
+## Goal
+
+Adopt event history and per-change sessions in this repository and union-merge the ledger and changelog (DRIVE-12, DRIVE-3)
+
+## Where it stands
+
+- Increment 8: feature-and-bug exercise (passes in Fledge), visual design exercise with rendered review, intent worked example, and a genuine Codex cold start that honored scope, preferences and gates.
+- Native closeout: scoped review recorded at de9fe45, change archived on the same PR at f860c8a.
+- Bug-fix change archived on PR #4 at 1c05ab8; BUG-0004 and BUG-0005 verified.
+- PR #2 merged to main as 4008346 and PR #4 merged to main as 2d782c4 by the human (0xLeif); both observed as MERGED on GitHub 2026-10-31; main CI run 41235906499 succeeded at 2d782c4. A merge is not a release.
+- PR #7 change archived at ef9de16 after review; Chough reached done through gate native:archived
+- PR #9 change archived after 0xLeif's review; Chough reached done through native:archived
+- refused env names in the approved definition amended to match the code; re-approved by 0xLeif
+- PR #9 merged earlier; stale awaiting-human entry cleared
+- Focused next view, approved-delta guard and done-stage resume implemented with tests first (22 tests failed before, full suite passes after); bundle SKILL.md and references/checkpoint.md updated with ee6e3d2 digests in KNOWN_PREVIOUS; docs, README and examples updated
+- TC-cli-0120 to TC-cli-0124 passed on local-macos-arm64 after the scoped change check materialized REQ-cli-021 and REQ-cli-022; BUG-0002 noted as guarded, still open
+- PR #23 review at 2eb10bb: next strings bounded by escaped width, SpecSync module names accepted by the guard, the no-digest remedy names a new approval, reset next action bounded, cross-platform unit tests, SKILL.md host caveats; TC-cli-0120 to TC-cli-0124 rerun and passed on local-macos-arm64 at 72fe1e2
+- Kimi Code CLI 0.41.0 cold start on macOS arm64: discovery, build, native checks and baseline verify observed; four friction items classified as BUG-0024 and BUG-0021 to BUG-0023
+- Preserved the concise Kimi cold-start log and recorded failed observation kimi-cold-start-5af3f78 with discovery successes, cold-resume failure and tool and coaching limits
+- TC-cli-0105 and TC-cli-0106 failed at the unfixed tip for the approved archived-guidance and Kimi-guidance defects; failures linked before implementation
+- Implemented archived native next-action routing, Kimi skill guidance with safe updates, and the approved roadmap and host documentation refresh
+- Final TC-cli-0105, TC-cli-0037 and TC-cli-0106 observations passed on the completed content; BUG-0024 and BUG-0021 verified from later passes
+- Native change archived at 2189038 after 0xLeif authorized finalization; Chough advanced from accept to done
+- Integrated main's REQ-cli-021 new-cycle behavior, retained the BUG-0025 failure-first evidence, corrected the Kimi docs and recorded focused passes
+- Final-content TC-cli-0105, TC-cli-0106, TC-cli-0121 and TC-cli-0122 passed; BUG-0025 has a retained failure followed by later passes
+- Native integration change archived at a91e066 after 0xLeif authorized finalization; Chough advanced from accept to done
+- Native bug identity change archived at aee2af3 after 0xLeif authorized finalization; Chough advanced from accept to done
+- PR #26 was merged by 0xLeif as b35acaf0804f84a2c56fcee4b3ca1504cf74c95e, observed on GitHub
+- Native checkpoint merge change archived at 2d9b496 after 0xLeif authorized finalization; Chough advanced from accept to done
+- PR #29 merged as 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec, observed on GitHub
+- Resumed Kimi identity implementation on the existing PR branch; four slug regressions pass with automatic IDs and original failures retained. Rust 1.99.1 and 1.88.0 each passed 181 tests with the known compact-next fixture excluded.
+- Applied the approved fixture-only patch: automatic observation allocation and returned-ID reference; all existing assertions retained.
+- Applied the explicitly approved fixture-only update; all 182 tests pass on Rust 1.99.1 and 1.88.0 with no exclusions. Next suite, five focused cases, case definitions, real CLI exercise and build pass.
+- Identity parent archived through native review and ship after actual human approval; dependent fixture verification is now unblocked.
+- Full verify passes all 9 steps with 182 tests and zero exclusions after the approved identity parent archive unlocked the fixture. The native-ordering bug has a strictly later passed observation.
+- Both identity and fixture native changes are archived under 0xLeif implementation approval. Full verify passed all 9 steps and pre-push passed all 5; hosted CI and merge are still pending.
+- Drafted native change fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer (MODIFIED REQ-cli-021 and REQ-cli-002; cases TC-cli-0126 to TC-cli-0133 reserved in testing.md); specsync change status names change approve next and change audit passes
+- 2026-11-01: corrected the three decision entries of this cycle after review: removed agent rationale that had been attributed to 0xLeif and the decided: prefix on the agent assumption (removed by hand, since the CLI has no remove flag, then re-added with chough checkpoint --decision)
+- 0xLeif approved the scope as drafted (AskUserQuestion, 2026-11-01); recorded with specsync change approve --actor 0xLeif
+- 0xLeif stated he read the frozen rubric docs/exercises/handoff-cold-start/rubric.md (sha256 f9083521b93ceb299db6465083064f276b7ca3c0bfec334d3868aefc7141ef17) and chose the Kimi baseline (AskUserQuestion, 2026-11-01); recorded as his statement, not an approval
+- Baseline cold start on main graded by 0xLeif: Fail (P2, P3 not met); observation handoff-cold-start-baseline-kimi-1-grade
+- Closeout pass: four labelled lessons in specs/cli/context.md (cold-start baseline, driving Kimi, record bounds in criteria, closeout order); extended after the change runs
+- Scoped change check verified; TC-cli-0126 to 0131 passed and TC-cli-0132 reviewed at the implementation tip
+- Kimi change run of the handoff cold start recorded at the implementation tip 9009d9a (observation handoff-cold-start-change-kimi-1, outcome not-run until graded)
+- 0xLeif graded the change run: Fail (P1-P3 not met); P4 to P6 met (observation handoff-cold-start-change-kimi-1-grade)
+- Closeout extended: lessons for the change run result and the host quota in specs/cli/context.md
+- Merged main 66bef80 (#26, #29); TC-cli-0126 to 0131 passed and TC-cli-0132 re-reviewed at the merged tip 8b5b4cd; the graded change run predates main's src and skill changes, so by the rubric it is void at the new tip until rerun
+- Integrated the approved identity archive head while preserving the learning current-cycle group, every history occurrence and all case IDs; fixed and tested the identity-main librarian safe-upgrade predecessor.
+- Observed PR #26 merged to main as b35acaf on 2026-11-01; its stale merge gate was cleared during Claude's local checkpoint repair
+- Measured on b35acaf (fresh debug and release builds; load average about 60-70): one archived-change specsync status read completed in 49.954 s; timing makes 11 native reads with one duplicate; next, status and prune make 1; raw data in ../claude-perf-raw
+- Failure-first: TC-cli-0089 (OBS-tc-cli-0089-native-dedupe-pre-fix-9ba1d3ba4bcc01356c4b6266) and TC-cli-0100 (OBS-tc-cli-0100-native-budget-pre-fix-c3a2b2e7777b7fc72d2f1777) failed at the unfixed tip on the extended regressions (duplicate cur-change read; hung read ran past 30 s with no budget); the trace and gate regressions also failed on the missing trace
+- Release measurements on b35acaf inputs (load average 18-30): capped 1 s, filtered timing 11 -> 1 native reads (11.2 s -> 1.06 s), unfiltered 11 -> 10 (11.3 s -> 10.2 s), next/status/prune unchanged at 1; real native, filtered timing completed in 42.6 s versus over 300 s (outer bound, censored) before; unfiltered hit the 120 s budget with 7 changes not-read
+- Root independently reviewed the timing implementation and actual 186-test, 9-step verify, 5-step pre-push results; preserved measurement receipts and limits in project artifacts.
+- Timing implementation and measurements independently reviewed; 186 tests pass on stable and MSRV, all 9 verify and 5 pre-push steps pass, and the native change is archived under explicit human approval. Hosted CI remains the merge gate.
+- Final combined identity, timing and learning source passed 194 unfiltered tests on Rust 1.99.1 and MSRV 1.88.0, the full nine-step verify lane and five-step pre-push lane. Frozen cold-start records and every referenced artifact remain byte-identical.
+- Learning implementation natively reviewed and archived under 0xLeif approval with original cold-start Fail/void and real-repository not-run proof unchanged. Final combined local qualification passed 194 tests on Rust 1.99.1 and 1.88.0, nine verify steps and five pre-push steps.
+- Parallel native reviews at the first shared head could not authenticate. Both original closeouts are preserved in a backup ref; this branch keeps the already-finalized combined archive with one review lineage and retains the author acceptance note and transition events. A separate native reopen attempt was refused and is preserved as failed diagnostic evidence.
+- Pre-implementation check: seed.sh and rubric.md digests match observation handoff-cold-start-frozen-pair-1 (2cfa209a..., f9083521...); kimi-code 2.4.1 and rune 0.9.0 are installed, quota not yet checked
+- Implemented the resume handoff step test-first (becb898 tests failed, 8c94a5f passes): SKILL.md step 4, host copies refreshed, KNOWN_PREVIOUS gains the 118a895 SKILL.md digest; 17 package tests pass. Cold-start runs not run by 0xLeif's decision
+- Closeout pass: two labelled lessons in specs/cli/context.md (step shipped unproven; starting external hosts)
+- Issue #39: leaving test refuses refused:unlinked-failure; 2 failing-first tests in tests/stages.rs (OBS-product-test-cb90047d10b04254e607a3a5 failed before, OBS-product-test-11f42ac98b4076b73c7dbb9d passed after); docs/cli.md and CHANGELOG updated
+- Not-run observations are ignored when picking a case's latest result for the unlinked-failure refusal; regression test passes (199/199 locally)
+- Change archived (approve/review/finalize recorded as corvid-agent per 0xLeif's 9:14 AM MT instruction)
+- Issue #38: stage advance and skip refuse with refused:awaiting-human while a human gate is open (src/stage.rs move_forward + assess sentence); 2 tests in tests/stages.rs; docs/cli.md and CHANGELOG updated
+- Issue #38 change archived (native review pass and finalize recorded by corvid-agent per Leif's 2026-11-02 9:14 AM MT instruction); PR #45
+- Adopt hint in next and the sdd-disabled gate detail; New project walkthrough section, bug ID form, version note, README pointer, CHANGELOG
+- Issue42: native tools are assigned to the current agent and applicable actual prior or standing human authorization is reused with source and limits. The main skill remains6121bytes within the unchanged6144byte bound. The bound upgrade case, all197 tests on currentRust and Rust1.88, and all9requiredFledge steps pass. The size failure is retained and verified fixed. Fresh-agent compliance was not retested.
+- PR44 actor/source feedback resolved: project agent account is the native actor, with actual human authorization cited separately. The original approval event is preserved and a renewed event covers the refined wording. Main skill6137bytes, all197tests on currentRust/Rust1.88, boundupgradecase and all9Fledgesteps pass.
+- PR44 complete bundle consistency: plan/accept references apply existing authority and use acting agent accounts; both tracked hosts safely refreshed; four exact predecessors and every edited variant covered; structural writer/copy regression and both bound cases pass. All198tests on currentRust/Rust1.88 and all9Fledgesteps pass. Both native changes must close on thisPR.
+- PR44 user-doc guidance is consistent across CLI/walkthrough/next-change docs, canonical skill and installed bundles. All198tests on Rust1.95/Rust1.88, both bound cases and allnineFledge steps pass. Initial unrelated timing-budget MSRV failure is preserved with an open reliability bug; isolated/full unchanged reruns passed, cause unconfirmed. Three native scopes must close after actual implementation acceptance.
+- PR #44 completed all three native scoped reviews and archives in SpecSync required order under the human finish-all instruction. Original approval events and failed qualification proof remain intact; the checkpoint is done.
+- Integrated already-merged main d839 into PR44 at canonical version22, preserving main ordering, unlinked-failure and open-human-gate guards, setup guidance and native actor/source boundaries.
+- PR44 includes main d839fef. All206tests passed on Rust1.95/1.88, allnineFledge steps and three affected cases passed. The original three scopes and allthreeintegration scopes are archived; native owner corrections are append-only. Earlier failures, original approvals and protected proof remain intact.
+- Prepared issue #31 native requirements, design, research, plan, verification cases and sequential role findings; reconciled roadmap delivery and cold-start limits; native audit and HI intent validation passed
+- Published definition-only draft PR #37 at https://github.com/CorvidLabs/chough/pull/37; reconciled issues #30, #31 and #32 with dated status sections while preserving their original bodies and keeping unmet criteria open
+- Core implementation: new-project cursor, explicit byte-preserving adoption, event-backed stage/gate writes and coherent cursor merge selection. All three retained history regressions now pass, including the real Git branch event fixture; retention safety and full qualification remain in progress.
+- Implemented the approved PR #37 scope and qualified the final source: all five bound cases passed, the mandatory Fledge verify lane passed all nine steps with 219 tests, and all 219 tests passed on Rust 1.88.0. Three reproduced in-scope bugs have later passing evidence and are verified. No live adoption or cleanup ran.
+- Independent branch and bounds reviews completed; the reproduced legacy timing overflow has failure-first tests and is verified fixed. All six affected cases, the nine-step Fledge lane and all 221 tests on Rust 1.88 passed. Grok is assigned independent retention/proof review when the human starts it; human implementation acceptance remains pending.
+- PR37 protected-reference blocker is fixed: frozen plaintext aliases share normalization with structured paths, all7affectedcases and all222tests on currentRust/Rust1.88 passed, as did all9Fledgesteps. The independently reproduced deletion failure and strictly later passing evidence are preserved. No live cleanup occurred.
+- PR37 peer safety repairs qualified: actual closing reset age and explicit missing referenced history, all 225 tests on Rust1.95/Rust1.88, ten exact bound cases, nine Fledge steps and original reproductions. Initial filter-only binding recorded not-run and was corrected to exact names; no test assertion was relaxed.
+- PR37 final main d839fef repair passes233 tests on Rust 1.95/1.88, ten bound cases and all nine Fledge steps. Both original reproductions now report missing referenced proof and partial restoration cannot hide a separate cycle reference. All parent proof bytes are preserved; independent scoped rereview found no remaining issue.
+- The original near-cap fork counterexample now has actual product proof: two synthetic valid 4096-event branches merge through real Git to 8191 exact immutable files; append refuses without mutation, reset starts fresh preserving all old bytes, and timing reports omitted lineages.
+- PR37 source is qualified with all 233 tests on Rust 1.95/1.88, ten bound cases, all nine Fledge steps, both original reproducers and the real Git near-cap fixture. All three native scopes are archived. Earlier approvals, failures and every protected parent proof byte are preserved.
+- Integrated accepted bounded history and agent-operated native workflow at canonical23; all13affected history/authority/ordering cases passed with protected parent proof and both host bundles intact.
+- Added cfg(test) clock and native-output hooks, the same-second two-root unit test, the real Git integration fixture test, two cases and a CHANGELOG note
+- SpecSync change reviewed (pass) and finalized as corvid-agent; archived for PR #48
+- Same-second test passes git plain temporary paths (Windows verbatim path fix)
+- Windows path fix reviewed (pass) and finalized as corvid-agent
+- Implemented #32 request-local case reads with typed error preservation. All3boundcases, all201tests on current Rust and Rust1.88, and the9-step Fledge lane passed. Final paired debug diagnostics show reduced local next/statuswork with identical output and1160unchanged managedfiles; capped native attempts remain timedout. The reproduced cache error-chain defect is verified fixed.
+- Clarified definition actor/source provenance: corvid-agent records the project operation and cites0xLeif standing chat authorization as SOURCE. The same approved scope and original ledger record are preserved; implementation acceptance and native review/ship remain pending.
+- PR #46 native scoped review and ship completed under the human finish-all instruction; original approval history, failed proof and cold-start not-run boundary remain intact.
+- PR46 final main d839 integration passed 209 tests on Rust1.95/Rust1.88, all nine Fledge steps and three report cases; all native changes are archived under the actual finish-all instruction. Original proof and approval history remain intact.
+- Combined source:9Fledge steps and240tests on each Rust1.95/1.88, all16cases passed; actual44main imported with identical qualified inputs and0record replay.
+- Combined source passed 240 tests on each Rust version, nine Fledge steps and 16 cases; the integration is archived.
+- Main 134ee19 integrated: 3-way checkpoint (197 obs, 37 files), test call fixed, #48 cases rerun
+- Integration shipped as corvid-agent per #46 through-PR authority; Leif's PR approval still his
+- Checkpoint bound 131072 bytes and observation bound 400 implemented with boundary tests (REQ-cli-032); three focused cases passed
+- Implemented the six #49 cleanups with tests (bugs, stages, next) and two cases
+- SpecSync review (pass) and ship recorded as corvid-agent; change archived; PR #50 open for review
+- Exercise work path made absolute with setup markers; regression test tests/cli.rs::exercise_cleanup_handles_a_relative_tmpdir (fails without the fix); case TC-cli-exercise-cleanup-handles-a-relative-tmpdir; corrective agent-assisted OBS-product-test-035959f28aa76d052d48fe78 beside the untouched human-observation record; CHANGELOG
+- Native change shipped (archived at 41f6fb7)
+- Clean-tree verify at 380acffcc4240c346a789198eea003d7dc90da9a recorded as OBS-product-test-ba63e97a0304049db5437166 with .chough/artifacts/pr-50-clean-verify-380acff.log; old records unchanged
+- Native evidence-fix change shipped
+- Final combined PR50 source passes Fledge9, all Rust tests and3supported formal report cases; new records are exact file pins with genuine source/environment/artifact bindings. Existing records remain unchanged.
+- Final integrated capacity followup passes Fledge9, all Rust boundary/CLI/identity/report tests and3actualMac report cases; final proof genuinely binds to settled source, earlier failure/pass and archives preserved.
+- PR51 gate-history refusal repair independently reviewed, genuine exact-byte failure/pass proof and settled full252-test/18-fixture/Mac-case qualification captured.
+- PR51 writer repair native review and ship completed under the actual one-scope exception approved by 0xLeif on 2026-11-03. Earlier rejected commands created no review records; the approved command recorded the acting reviewer as corvid-agent and immediately shipped without an intervening commit.
+- Failure-first regression failed at 8300b58 (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-a56263c10f646c87c5ed5ea0); after the src/stage.rs remedy fix it passed (OBS-tc-cli-delta-guard-refusals-name-the-agent-actor-81c735f25cb340ccfb103c4a); tests/stages.rs 41 passed
+- fledge lanes run verify passed all 9 steps (253 tests, 0 failed) on local Linux x86_64 with hi 0.8.0, fledge 1.8.0, specsync 6.1.2 after the scoped check
+- chough#52 native closeout: scoped review recorded as corvid-agent at 31119be and change archived at 1303714. Authority: 0xLeif's standing maintainer instruction of 2026-11-03 07:49 MST (bounded fixes to existing Chough bug tickets through independent review, native closeout as corvid-agent and merge after all checks pass). Independent review: Chough teammate bot, https://github.com/CorvidLabs/chough/pull/52#pullrequestreview-5754743284. This is agent closeout under that authority, not a human acceptance grade; no release or deploy.
+- Failure-first: the default-on and archive-entry cases failed at 0363d4a (OBS-tc-cli-librarian-default-on-knowledge-515cf500fd0d665eb72ee834, OBS-tc-cli-knowledge-archive-entries-b374977f93774d5bd99fc5d8); the two REQ-cli-033 tests failed at 0363d4a in cargo test (unrecognized subcommand / not authorized) but could not be recorded as cases before the requirement materialized. All four cases now pass.
+- Delta wording for REQ-cli-015 and REQ-cli-033 tightened and re-approved as corvid-agent so specs/cli/requirements.md stays under 65,536 bytes (now 65,444).
+- Fixed a fail-open found by the repo dry run: verification.json manifests over 64 KiB read as empty, so hot-archive listings were missed. Archive records now use the native 4 MiB bound and an unreadable manifest refuses the summary (regression assertions in archive_summary_previews_cold_archive_proof_and_keeps_protections).
+- PR #54 reviewed, accepted by Leif 2026-11-03 9:32 AM MT, archived natively at 3d497fb
+- Materialized the split; 23 history cases passed on local-linux-x86_64; 32 of 32 requirement blocks identical before and after (OBS-structural-0ceefdd961ed75d53f1b3742)
+- Issue #100: native sources read at full size; LIFE-15, D-020, REQ-cli-042, REQ-reporting-004; 0.2.1 prep
+
+## Decisions and why
+
+- Current-agent-first v1 is a human decision; Rune coordination is deferred.
+- Bootstrap uses native structural gates and real product checks without claiming human scope/review/archive approval.
+- 2026-10-31: the human redirected work from docs/NEXT_CHANGE.md (unapproved and deferred, not rejected) to the resumable stage workflow brief.
+- 2026-10-31: SpecSync workflow-v2 adopted on feat/resumable-stage-workflow (c582a10); lifecycle writers and CI use SpecSync 6.1.1; Fledge pins unchanged.
+- 2026-10-31: agent recommendations inside the draft definition, pending human approval: TOML chough-testing/1 test profile instead of 3md; APS 1.1.0 qualified and deferred; session.json stays the only checkpoint.
+- 2026-10-31: the human (0xLeif) approved the definition, including the TOML test profile, APS deferral, explicit case execution, capture-only monitoring default and require_change policy; recorded with specsync change approve (actor label, not authenticated identity).
+- Crate-internal modules expose entry points with pub(super): the binary has no library target, and the contract describes commands, not Rust symbols.
+- Claude Code discovery verified for .claude/skills and not .agents/skills; Codex followed the AGENTS.md router. Other hosts are mapped but not exercised.
+- 2026-10-31: the human (0xLeif) accepted the implementation on PR #2; recorded with specsync change review (reviewer label) and finalized with specsync change ship (archive f860c8a).
+- 2026-10-31: the human (0xLeif) approved the scope of parse-native-status-beyond-the-display-bound-and-apply-checkpoint-clears-first on PR #4; recorded with specsync change approve (actor label).
+- 2026-10-31: the human (0xLeif) accepted the bug-fix implementation on PR #4; recorded with specsync change review and finalized with specsync change ship (archive 1c05ab8).
+- 2026-10-31: 0xLeif approved the scopes of PRs #3, #7 and #8 ("I approve"); recorded with specsync change approve --actor 0xLeif (digests 8ee404db, d2f17060, d358e8b1)
+- 2026-10-31: 0xLeif reviewed and accepted the implementations of PRs #3, #7 and #8; reviews recorded with specsync change review --reviewer 0xLeif (#3 and #7 now; #8 after its rebase)
+- 2026-10-31: 0xLeif approved PR #9's scope (LIFE-8 and LIFE-9 captured as worded; retention defaults 3 runs, 14 days, 50 MiB warning), then re-approved it twice: adding src/bugs.rs, and adding src/checkpoint.rs, src/records.rs and the BUG-0013 criterion
+- 0xLeif amended the #16 criterion to the broader refused set, because both reviewers showed linker and toolchain variables redirect cargo
+- 0xLeif accepted the #17 implementation on the condition that step 7 passes, because the reviewer wanted the archive order shown end to end
+- 0xLeif accepted #15 keeping duration_seconds, because no version has been released and older builds fail closed
+- No gate runs specsync change check: measured on 6.1.1 it mutates canonical specs and native records and refuses while tasks are unchecked; the guard recomputes SpecSync's approved-delta digests instead
+- 2026-11-01: 0xLeif approved the scope of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume with the drafter's recommended answers to the open questions; recorded with specsync change approve --actor 0xLeif
+- The human task supplies the intent and requested deliverables; no native scope approval is inferred
+- Limit this change to BUG-0024 and BUG-0021 plus honest exercise and roadmap records, because the output-size and global-tool issues do not need the same scoped fix
+- Use public_contract no under the archived project convention because the canonical contract and requirements stay unchanged, while the CLI behavior returns to existing REQ-cli-003 and REQ-cli-007
+- 0xLeif approved the native scope in conversation; SpecSync recorded that decision with actor 0xLeif
+- 2026-11-01: one Kimi Code CLI 0.41.0 run exercised .agents discovery and cold resume; the older statement that other hosts were unexercised is historical, while Cursor, Gemini and Grok remain unexercised
+- 0xLeif selected main's REQ-cli-021 new-cycle behavior for integrated archived done checkpoints
+- 0xLeif approved a separate native change for slug-based bug identity with legacy numeric compatibility and no bulk migration
+- 0xLeif approved the 0.1.0 release prep definition as drafted, with CI keeping the Fledge Action at v1.8.0, because Fledge v1.8.0 was then tagged; recorded natively in approvals.json
+- 0xLeif requires a separate native change for merge-safe session handling and slug IDs across all new .chough records before backlog cleanup
+- Codex resumed Kimi's approved identity scope in a preserved takeover checkout; tests/next.rs is covered by a separate prepared fixture change, not by amending the frozen identity scope.
+- 2026-11-01: 0xLeif replied "yes i approve" to the prepared one-file tests/next.rs fixture scope; native update-compact-next-fixture-for-slug-observations records that definition approval. Implementation acceptance is still pending.
+- failed: native co-review qualification because the accepted-first dependency chosen for the fixture prevents its approved path from counting until parent acceptance. Keep the approval and refusal evidence; do not fabricate acceptance or weaken audit.
+- 2026-11-01: 0xLeif explicitly approved the PR packages and instructed "i approve.. get these prs out of draft and merged when all green". Parent identity native review and archive are now recorded. The fixture native ordering can proceed; merge remains conditional on green checks.
+- decided: cold-start proof: freeze a seeded fixture repo and a written pass/fail rubric before implementation and hash them as an observation; run a fresh agent on a different host (Kimi Code CLI 0.41.0 or Codex CLI 0.153.4) on main as a mandatory baseline, then on the change; 0xLeif grades; plus one run on this real repo (0xLeif, 2026-11-01)
+- decided: lessons live in the existing specs/<module>/context.md Lessons section (SpecSync briefs it); Chough only points at them; no .3md, no library/ store (0xLeif, 2026-11-01)
+- assumption (agent, stated in design.md, not a human decision): checkpoint decisions stay Vec<String>; a decided:, rejected: or failed: prefix with a reason clause is read best-effort with a latest-N fallback; no checkpoint schema change
+- decided: report criterion 5's cap fixture as a deviation, not re-approve, because the approved 4 KiB fixture exceeds the 64 KiB checkpoint bound (0xLeif chose "Report as deviation")
+- 0xLeif said "just finish this up urself" after the change run failed criterion 9 and the real-repository run hit Kimi's quota. Agent's choice under that instruction, not a human decision on scope: report criterion 9 as failed and the real-repository run as not done in the PR, do not amend the approved definition, and leave acceptance, native review and merge to 0xLeif
+- 2026-11-01: 0xLeif instructed "i approve.. get these prs out of draft and merged when all green" after the PR packages and limitations were presented. This authorizes the implementation closeout and conditional merge; original cold-start Fail/void and not-run records remain unchanged, and no new Pass grade was provided.
+- 2026-11-01: Leif assigned Claude the #30/#31/#32 pickup starting with #32; Kimi keeps checkpoint merge (PR #29); this is backlog authorization, not native scope approval
+- Filtered timing reports would emit native.history null with a skipped-by-filter reason: an explicit output-semantics change; next, status and stage gates keep their single native read and get no faster from this slice
+- Leif: keep the proposal local, no push or PR; local checkpoint repair authorized; scope approval, implementation, publication and merge pending
+- Publication coordination: proposed performance requirement is REQ-cli-024 because PR #33 already proposes REQ-cli-023; approved/canonical IDs stay unchanged. Identity implementation remains owned by PR #33.
+- Scope approval of the timing change was recorded natively by root (specsync change approve --actor 0xLeif) after 0xLeif's explicit approval; Claude did not record it
+- 2026-11-01: 0xLeif instructed "i approve.. get these prs out of draft and merged when all green". The published timing scope and completed implementation have passed code review and local gates; native closeout is authorized and merge remains conditional on the final hosted checks.
+- human: 0xLeif accepted the implementation as is (2026-11-01, in chat: "accept"), with criterion 9 (cold-start proof) failed and recorded: baseline Fail P2-P3, change run Fail P1-P3 and void at the merged tip, real-repository run not done (Kimi quota). 0xLeif ran specsync change review --reviewer 0xLeif and change ship themselves; archive commit 2774950. The restate-before-first-edit skill step stays an untested hypothesis for a later change.
+- Agent's design choice, not a human decision: skill-only (SKILL.md resume step), no next-view change, so the proof tests one cause; a next-view hint is the fallback if the change run still fails
+- decided: 0xLeif approved the scope of agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal as drafted (AskUserQuestion, 2026-11-02, "Approve as drafted"); recorded with specsync change approve --actor 0xLeif
+- decided: 0xLeif said "Just go without Kimi" (2026-11-02), because the baseline script could not be started from the agent; the Kimi baseline, change and real-repository runs are not run, the cold-start criterion is reported as not run, and no agent-run substitute is graded, since the frozen rubric voids runs by the authoring agent
+- human: 0xLeif accepted the resume handoff step as is (2026-11-02, in chat: "I approve"); the cold-start criterion was not run by his decision ("Just go without Kimi"); review and ship recorded on his instruction
+- decided: 0xLeif in chat (2026-11-02 8:43 AM MT, relayed: "I approve all") gave the go-ahead on #11 with the options proposed there (because the smallest fix keeps REQ-cli-005 unchanged): ordering and skill text only, no delta-aware link resolution, no SpecSync change, trace to existing HI LIFE-6 and FLOW-7. Not a native scope approval of this definition
+- rejected: resolving case links against approved deltas (because REQ-cli-005 says the hint SHALL NOT read native deltas)
+- Scope approval recorded natively with actor 0xLeif from his explicit chat approval at 8:56 AM MT 2026-11-02, relayed by corvid-agent.
+- human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT "Use corvid-agent for all approvals for all things!! You are corvid-agent"; the native definition approval recorded earlier with actor 0xLeif was removed and re-recorded with actor corvid-agent (same scope digest b98afa26); review and finalize recorded as corvid-agent; merge stays with 0xLeif
+- Proposed (on #39, pending scope approval): refuse, not warn, with refused:unlinked-failure; a linking bug of any status satisfies it; stale observations do not trigger it; next and status name it via assess; REQ-cli-008 modified, no new ID
+- corvid-agent records no approval for a human; scope approval is 0xLeif's
+- human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT "Use corvid-agent for all approvals for all things!! You are corvid-agent"; scope approval of the #39 change recorded with actor corvid-agent on that instruction
+- human: 0xLeif's chat instruction 2026-11-02 9:14 AM MT; native scoped review (pass) and finalize of the #39 change recorded with reviewer corvid-agent; merge stays with 0xLeif
+- Proposed on #38 and approved in scope: refuse advance and skip with refused:awaiting-human, no reason override, other moves unaffected, next and status say so; new REQ-cli-030 since #43 modifies REQ-cli-008
+- human: 0xLeif instructed in chat 2026-11-02 9:14 AM MT "Use corvid-agent for all approvals for all things!! You are corvid-agent"; scope approval of the #38 change recorded with actor corvid-agent
+- human: 0xLeif clarified in chat on 2026-11-02 that the agent can do any changes and it just needs a PR; Chough must handle SpecSync and other tools internally. This standing scope/implementation authorization applies to this concrete workflow fix and is relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 . It is not implementation acceptance, merge, release or deployment authorization.
+- decided: native operations record project agent actor corvid-agent and cite actual human authorization separately, because the acting account and the authority source are different provenance roles; PR44 peer-review refinement is covered by the existing standing permission, and the original approval event is preserved
+- human: 0xLeif instructed "Can you finish up all these?" in chat on 2026-11-02 after the reviewed PR status and remaining native closeout gate were presented. This authorizes this session to finish all three native scopes on PR #44 under the existing through-PR authorization; native acting account is corvid-agent. Merge, release, deployment and live cleanup remain separate.
+- human source retained: 0xLeif said "Can you finish up all these?" in chat on 2026-11-02; agent interpretation: finish the reviewed PRs through native closeout and current-head qualification under his standing through-PR authorization; merge remains his.
+- Acting project agent: corvid-agent. Human source: 0xLeif explicitly said "Merge approved, green PRs and resynchronize" in chat on 2026-11-02, supplementing the standing through-PR permission relayed at https://github.com/CorvidLabs/chough/issues/11#issuecomment-6581702299 and "Can you finish up all these?". Scope: resynchronize PR44 with already squash-merged PR37 at main a788869b32b8442cbc8d7be2bf19c19a922954a8, preserve both accepted implementations and immutable proof, qualify and push normally. Root alone records native review/ship and done; this worker never merges. No new as-is human acceptance, release, deployment, live history adoption or cleanup is inferred.
+- human: 0xLeif said "Ok continue" after the proposed sequence of reconciling stale tracking and preparing issue #31 scope; this authorizes definition work, not native scope approval or implementation acceptance
+- agent proposal: explicit history adoption, immutable transition events and a cursor inside the sole checkpoint, because a shared append-only log cannot keep independent branch timelines separate; all storage policy and limits remain proposed until scope approval
+- human: 0xLeif approved the complete issue #31 scope in draft PR #37 by replying "Yes" in chat on 2026-11-02; recorded with specsync change approve --actor 0xLeif; implementation acceptance, live adoption, live cleanup and merge remain separate decisions
+- decided: project agent actor corvid-agent is recorded separately from actual human authorization, because the acting account and the authority source have different provenance roles; renewed native scope approval preserves the original event and all product proof
+- human: 0xLeif said "Can you finish up all these?" in chat on 2026-11-02 after the reviewed PR status was presented.
+- agent owner choice: retain the complete PR37 current-cycle group while importing all additive checkpoint/history records, because this branch continues its active bounded-history work. The finish-all instruction authorizes bounded integration and native closeout; merge and live adoption/cleanup remain separate.
+- human source retained: 0xLeif said "Can you finish up all these?" in chat on 2026-11-02; agent interpretation: complete the reviewed PRs, safety repairs, native closeout and current-head qualification under his standing through-PR authority. His later instruction permits resynchronization as merges continue; GitHub merge remains his.
+- human: 0xLeif explicitly authorized this session to "Merge approved, green PRs and resynchronize" in chat on 2026-11-02. This supersedes the earlier user-only merge boundary for PRs 37, 44 and 46; current-head approval, all checks and branch protection still apply. No release, deployment, live adoption or cleanup is authorized.
+- human: 0xLeif authorized the ticket changes through PRs in chat on 2026-11-02: "And I already gave it some approval and told it can do any changes. It just needs a PR." This completed #32 definition is covered by that standing scope/implementation authorization. Native implementation acceptance, review/ship and merge remain separate.
+- human: 0xLeif instructed "Can you finish up all these?" in chat on 2026-11-02 after the PR closeout status was presented. This authorizes this session to finish native closeout for PR #46 under the existing through-PR authorization; acting native account is corvid-agent. Merge, release, deployment and live cleanup remain separate.
+- human source: 0xLeif instructed 'Merge approved, green PRs and resynchronize'; this bounded integration preserves already accepted requirements and proof under standing through-PR authorization, with corvid-agent as the operating actor and root as sole native review/ship writer
+- agent owner choice: retain24superseded observation records as direct protected file references because202active pointers exceeded200; reviewed policy and raw parents are frozen in pr46-checkpoint-reference-index
+- Agent corvid-agent applies 0xLeif standing through-PR ticket permission and chat instruction "Merge approved, green PRs and resynchronize" to the PR46 archive executor performance fix. All native obligations, validation, 90-second commands and 10-minute job budget stay unchanged. No evidence rewrite, longer timeout, release or deployment is authorized.
+- Agent corvid-agent records delegated native closeout of the bounded PR46 executor fix under 0xLeif standing through-PR authority and explicit finish/merge instruction. Peer review and local verification are retained. Exact-head GitHub approval and every hosted check still gate merge.
+- decided: corvid-agent approves, reviews and ships the #48 main integration, (because 0xLeif's through-PR authorization in #46's archived context and issuecomment-6595229360; scope: integration only; limits: no limit raise, pruning or merge)
+- decided: raise only the checkpoint byte bound (131072) and the observation pointer bound (400), keeping every other bound, (because Human decision: Leif (0xLeif), chat 2026-11-02 9:40 PM MT: 'Do your agent's cleanup and raise the progress file and test-result limits.' Approvals recorded as corvid-agent under his 2026-11-02 9:14 AM MT instruction 'Use corvid-agent for all approvals for all things!! You are corvid-agent'; limits: no history pruning, no other bound changes)
+- Agent corvid-agent root selects the existing131072/400proposal as bounded implementation values under0xLeif standing through-PR permission and latest direct request to finish these PRs and merge. The numbers are agent-selected, not human-specified; ambiguous2is not an approval source. Preserve all other bounds and old proof. New native followup qualifies the diagnostic and current prose; root alone closes it.
+- decided: corvid-agent records native approval, review and ship for PR #50 review fixes, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched)
+- decided: implementation review of the PR #50 review-fix change recorded pass as corvid-agent and the change shipped at 41f6fb7, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and his relayed 2026-11-02 8:05 PM MT request to fix the PR #50 review items; covered scope: the two PR #50 review fixes (exercise relative TMPDIR cleanup plus regression test; corrective observation) and the main resync on branch corvid-agent/fix/cli-cleanups; limits: no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review of 5b11aae; Leif's own PR #50 approval is still his)
+- decided: corvid-agent records native approval, review and ship for the PR #50 evidence fix, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched)
+- decided: implementation review of the PR #50 evidence-fix change recorded pass as corvid-agent and the change shipped, (because Human authority: Leif (0xLeif), 2026-11-02 9:14 AM MT, 'Use corvid-agent for all approvals for all things!! You are corvid-agent', and the relayed 2026-11-02 8:21 PM MT request to fix the 8:20 PM MT PR #50 evidence review item; covered scope: a new clean-tree verify run, its artifact log and a new agent-assisted product-test observation on branch corvid-agent/fix/cli-cleanups; limits: no edits or deletions of existing records, no merge, close, release or publish, PR #48 untouched; acceptance source is that standing authorization, not a separate human review; Leif's own PR #50 approval is still his)
+- Agent corvid-agent root applies0xLeif standing through-PR authorization and explicit "Merge approved, green PRs and resynchronize" to final PR50 integration. Preserve all old proof and human/binding text, use the reviewed literal compaction and new-record file pins, retain65536/200limits;51is separate. Root alone writes this new native scope and guards against concurrent origin updates.
+- Agent corvid-agent root applies actual standing through-PR permission and explicit Merge approved, green PRs and resynchronize plus latest finish-these-PRs request to repair existing REQ-cli-032 atomic refusal. Preserve every old record and bound; no new human as-is grade or numeric choice. Root alone closes this scope.
+- Human source: 0xLeif replied "Yes I approve!" in chat on 2026-11-03 to the explicit one-scope exception request for PR51: record native review as corvid-agent for refuse-over-bound-checkpoint-candidates-before-publishing-gate-history, immediately ship, then merge after fresh checks pass. This explicitly overrides the automatic reviewer interpretation of the AGENTS.md agent-label rule for this scope only. The acting account stays corvid-agent; no cold-start Pass grade, numeric choice, release, deployment or cleanup approval is inferred.
+- Agent corvid-agent applies Human authority: Leif (0xLeif), standing instruction in chat 2026-11-03 7:49 AM MT authorizing bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge, and naming the contradictory recovery-guidance investigation; acting account corvid-agent. Covered scope: the two approved-delta guard refusal remedies in src/stage.rs, their tests, REQ-cli-022 wording, one case and one local bug. Limits: no new product scope, breaking change, release, deployment, live cleanup or human acceptance grade; refusal labels and gate behavior unchanged.
+- Human (Leif, chat 2026-11-03 8:09-8:27 AM MT): Q1 'Keep only a summary; raw files stay recoverable from git', Q2 'Keep the newest 3 archived changes hot', Q3 'Librarian on everywhere with an opt-out', Q4 'Use knowledge/ at the project root', and yes to the drafted intent; captured as KNOW-1..12 in hi/knowledge.md
+- Agent: deferred, not captured: duplicate or contradicting lesson flags, scoped lessons in next, retired-lesson history, status hot-folder counts and outside artifact storage (#14 item 3)
+- Agent authority: corvid-agent acts under Leif's standing through-PR authority (7:49 AM MT) and his 8:27 AM MT intent answers; no release, deploy, live cleanup of this repository's .chough history or fabricated human acceptance
+- Repo dry run of chough library archive (preview only, nothing written): 52 archives (3 hot, 49 cold), 579 listed observation sets, 0 eligible, 0 reclaimable bytes. SpecSync verification manifests are cumulative, so the newest archive lists all 579 present records and every set is protected as hot; 83 are protected only by hot listings (about 614 KB). Leif decides whether hot should mean the archive that first listed a set; no live cleanup was run.
+- src/skill.rs is outside this change's approved affected paths, so the KNOWN_PREVIOUS digest for main 0363d4a references/librarian.md is not added here; until a follow-up change adds it, skill status reports an installed 0363d4a librarian.md as edited and skill update keeps it rather than replacing it.
+- Review 5755705790 fixes: knowledge entries are bounded (first-listed paths, at most 100 rows, 64 KiB) and built in memory before writing; apply fails closed when SpecSync cannot report an affected archive's validity and restores on any error after the first ledger line. Both regression tests failed first on a53e604 src. src/skill.rs KNOWN_PREVIOUS for librarian.md stays a follow-up: SpecSync 6.1.2 cannot widen affected_paths after draft (change correct accepts only public_contract and architecture_risk), so widening would bypass the native guard. corvid-agent, under Leif's approved KNOW intent relayed by the parent agent.
+- decided: intent LIFE-12..14 approved because Leif (0xLeif) answered the interview 'Only the shared .agents copy' and on 2026-11-03 8:27 AM MT 'Remove .claude entirely', and the parent relayed his yes as intent approval; his next decision is final acceptance
+- Agent corvid-agent assumption: only the claude host is remapped to .agents/skills; codex, cursor, gemini and grok keep their directories because Leif's 8:27 AM answer named .claude only
+- Agent corvid-agent applies Human authority: Leif (0xLeif) chat 2026-11-03 8:09-8:27 AM MT interview answers 'Only the shared .agents copy' and 'Remove .claude entirely' (relayed intent approval; final acceptance is his next decision). Covered scope: claude->.agents mapping, legacy report, explicit remove-legacy, this repo's .claude removal, docs. Limits: other hosts unchanged, edited legacy files kept, no release
+- Agent: the per-host install test now uses codex instead of claude because LIFE-12 removes claude's separate directory; claude coverage moved to the two new cases
+- 2026-11-03 9:32 AM MT: Leif gave final acceptance of PR #54 in his words, "Accept #54 and merge it" (relayed by the parent agent). Independent review by the Chough teammate bot at d036d9234b5926d26d0a8dcd2caeb03171138fe1, https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894, found nothing blocking; its nits (session next_action wording, skill update hint for a .claude-only project, integrations wording 'If the skill is not listed') go to a follow-up. corvid-agent recorded the native review (specsync change review --reviewer corvid-agent) and shipped (archive 3d497fb) as the acting account; the human acceptance is Leif's.
+- Agent corvid-agent: chose the retention and transition-history group because it shares no case with a requirement that stays in cli and owns src/history.rs, tests/history.rs and tests/evidence.rs; SpecSync's REQ-<module>- rule and tombstones force new IDs, so the mapping is documented (authority: parent agent instruction 2026-11-03 9:46 AM MT)
+- Agent corvid-agent correction: the build->test transition at 2026-11-03 5:05 PM MST repeated the plan->build reason ('Plan approved natively: version 0.2.0 and dated change log only') because stage advance was run twice by mistake. The build edits (Cargo.toml, Cargo.lock, CHANGELOG.md) were made but not yet committed at that move; transitions are immutable, so this records the correction
+- Agent claude applies Human authority: Leif (0xLeif), product owner, issue #100 (filed by 0xLeif, 'Proposed fix' items 1 to 4) and his 2026-11-04 instruction relayed by the parent agent, verbatim: 'Chough should only reduce and do all that for its own files in .chough and not the specs, not the human intent.' Captured as LIFE-15 in his words. Covered scope: full-size native reads for HI family validation and SpecSync finalization, archived change.md, SDD policy and approval-ledger reads; display markers; skill guidance; tests; docs; decision D-020; changelog and 0.2.1 version bump. Limits: no merge, tag, publish, release or human acceptance grade; Chough's own record bounds unchanged
+- PR #92 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.
+- PR #91 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.
+- PR #93 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.
+- 2026-11-04 Leif (0xLeif) chose "Remove the size test" for the 65,536-byte cap on specs/<module>/requirements.md in tests/spec_split.rs, and said: "The size cap is only there for the amount of files that you have inside of the .chough folder. It is not for anything".
+- PR #95 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.
+- PR #97 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.
+- 2026-11-04 Leif (0xLeif) chose "Make the check faster" for the hosted SpecSync Archive job (10-minute limit, timed out on #93), over raising the limit to 30 minutes or merging past the timeout.
+- PR #103 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record that review as 0xLeif, archive, and merge #103 once its CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.
+- PR #90 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.
+- PR #94 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.
+- PR #96 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.
+- PR #99 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record it as 0xLeif and merge them one at a time (normal merge, no --admin/--auto)?' for PRs #90-#97 and #99, he answered 'Yes, record and merge' (option: 'You've reviewed them'). Claude recorded the native review as 0xLeif on that decision.
+- 2026-11-04 Leif (0xLeif) answered "yes" to: build and commit knowledge/ in Chough repo, make librarian on by default create it at init and refresh it when the trim runs at done, and fold the 2026-11-04 lessons into the cli and history lesson sources.
+- PR #106 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif for both, archive them, and merge #106 once CI is green?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.
+- 2026-11-04 Leif (0xLeif) chose "Front matter + MD links" for an Obsidian-style knowledge vault, asked that it compound everything ("we need to learn, grow, rules, skills, and compound knowledge of all this project and all things.. spec-sync lessons, hi.. changes.. etc all things!!"), chose to let old checkpoint refs, older newest-per-case runs and loose artifact folders be reduced, and chose "Key items move" to knowledge/attachments; captured as KNOW-14 to KNOW-19.
+- PR #107 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked 'Can I record your implementation review as 0xLeif, archive it and merge #107 once CI is green, then start the reduction change (KNOW-16 to 19)?', he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.
+- 2026-11-04 Leif (0xLeif) chose "Fix the wording" for KNOW-14 (only archived-change notes carry status, dates and commits) and confirmed KNOW-16 to KNOW-19 ("Yes, build it") after corvid-agent asked for an explicit confirmation.
+- PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107 and chose 'Fix the wording' for KNOW-14 after corvid-agent's review; this fix is part of #107. Claude recorded the native review as 0xLeif on that decision.
+- PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107; this fix for the reviews at 94ebefc is part of #107. Claude recorded the native review as 0xLeif on that decision.
+- PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #107; this fix for the review at 5326ec4 is part of #107. Claude recorded the native review as 0xLeif on that decision.
+- 2026-11-04 Leif (0xLeif) chose By cycle time for proof no archive lists (KNOW-20) and said: go ahead and build the reduction PR.
+- PR #107 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #107; this fix for hosted Windows CI is part of #107. Claude recorded the native review as 0xLeif on that decision.
+- PR #108 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked whether to record his review as 0xLeif, close the change (running the real trim on this repository) and merge #108 after #107 once CI is green, he answered 'Yes, record and merge'. Claude recorded the native review as 0xLeif on that decision.
+- PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered 'Yes, record and merge' for #108; this fix for the closeout trim is part of #108. Claude recorded the native review as 0xLeif on that decision.
+- 2026-11-04 Leif (0xLeif): make sure all artifacts and evidence are deleted and transitioned over to the knowledge vault, sessions are unique with no merge conflicts, and we learn from everything; I think we should do it.
+- PR #108 implementation accepted by Leif (0xLeif), 2026-11-04: he answered Yes, record and merge for #108; this fix for its review is part of #108. Claude recorded the native review as 0xLeif on that decision.
+- PR #109 implementation accepted by Leif (0xLeif), 2026-11-04, in the Claude Code session: asked whether to record his review as 0xLeif, close the change (running the real move into the vault on this repository) and merge #109 after #108 once CI is green, he answered Yes, record and merge. Claude recorded the native review as 0xLeif on that decision.
+- PR #109 closeout-trim fix accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: asked whether to record his review of this fix as 0xLeif, finalize it, rerun the trim on this repository and merge #109 once CI is green and corvid-agent approves, he answered Yes, record and merge. Claude recorded the native review as 0xLeif on that decision.
+- PR #109 Windows-path and file-mode fix accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: told of 3 new P1s from his review agent, he chose Record both, then merge: record his review of this fix as 0xLeif and finalize it without the done move (so no trim runs with the P1s), fix the P1s in a new change, record that review too once Linux verify passes, close out, and merge #109 on green CI including Windows and corvid-agent approval. Claude recorded the native review as 0xLeif on that decision.
+- PR #109 P1 fix (never overwrite an attachment, folder references protect their files, a mixed-age folder stays) accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: he chose Record both, then merge, which covers recording his review of this fix as 0xLeif once Linux verify passed (438 passed, 0 failed), closing out with the trim, and merging #109 on green CI including Windows and corvid-agent approval. Claude recorded the native review as 0xLeif on that decision.
+- 2026-11-05: the adoption change is paused at build. Its simulation found that chough session new, in a project that adopted a legacy transition log, writes a cursor with no legacy anchor, so its first transition refuses (legacy history anchor changed). Fix that first in its own bug-fix change, then resume the adoption.
+- PR #111 accepted by Leif (0xLeif), 2026-11-05, in the Claude Code session: for the session-after-adoption fix and the adoption, he answered Yes, record and merge (record his review of both as 0xLeif, finalize them one at a time, merge #111 on green CI and corvid-agent approval). Claude recorded both native reviews as 0xLeif on that decision.
+
+## What was verified
+
+- OBS-product-test-5d86bc7f549cf14c727d5614
+
+## Open threads
+
+## Timeline
+
+- 2026-10-31T19:03:32Z · advance · build → test · Implementation increments 1-8 complete; scoped native check verified at 5074711 ^t-cadd0c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5074711f3e0d6c4b4905fff6213a42355674e55e
+- 2026-10-31T19:03:32Z · advance · test → accept · Focused cases TC-cli-0001 to 0037, 0101 to 0103 passed; no blocking bugs ^t-ca43ad
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5074711f3e0d6c4b4905fff6213a42355674e55e
+- 2026-10-31T19:29:37Z · reset · accept → intent · New work: bug-fix change for BUG-0004 and BUG-0005. The previous change is archived natively (f860c8a); Chough could not record accept -> done because of BUG-0004 itself. ^t-881a63
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1a108d9844e5bc02e5439cb6b3688803d6435a53
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 3 case(s) and 4 observation(s) to re-check with `chough status`
+- 2026-10-31T19:29:37Z · advance · intent → design · Intent: the human asked for the fix of BUG-0004 and BUG-0005 ('yes'); existing criteria FLOW-10, FLOW-13 and LIFE-7 cover it, no new HI criteria ^t-13ba1e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1a108d9844e5bc02e5439cb6b3688803d6435a53
+- 2026-10-31T19:29:37Z · skip · design → plan · Nonvisual: helper parsing and checkpoint flag ordering only ^t-9ecba0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1a108d9844e5bc02e5439cb6b3688803d6435a53
+- 2026-10-31T19:34:45Z · advance · plan → build · Scope approved natively ^t-1b0c03
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 0adf38d0b358906a0a5698f3456f05631995332e
+- 2026-10-31T19:38:49Z · advance · build → test · Implementation complete ^t-0409b6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 61185115f5e0700eb9f7cc6787de951e6beea9a6
+- 2026-10-31T19:38:49Z · advance · test → accept · Focused cases passed; no blocking bugs ^t-bb639b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 61185115f5e0700eb9f7cc6787de951e6beea9a6
+- 2026-10-31T19:46:27Z · advance · accept → done · Native change archived; human review recorded ^t-781b74
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 1c05ab81b5d63719a29801b3798a3f2183b169d2
+- 2026-10-31T20:54:45Z · reset · done → plan · New bug-fix objective; HI criteria are unchanged, so intent and design need no rework ^t-cf0afa
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 042d500507be20182dd1e1019deec3fe2b059db9
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 5 case(s) and 7 observation(s) to re-check with `chough status`
+- 2026-10-31T21:24:19Z · advance · plan → build · native:approved ^t-aa2102
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 80757487bddf9172bd757f78fcfa798e1d7e40b3
+- 2026-10-31T21:25:24Z · advance · build → test · Focused cases TC-cli-0040 to 0044 passed at 8075748 ^t-c73b84
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 7ae47de0b37d096e524d06ddc4fe2cd27bfc4780
+- 2026-10-31T21:25:29Z · advance · test → accept · No open blocking bugs ^t-c25684
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 7ae47de0b37d096e524d06ddc4fe2cd27bfc4780
+- 2026-10-31T22:07:59Z · advance · accept → done · Native change archived after 0xLeif's implementation review ^t-703cc8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: ef9de163cc6673b104d3b599a48316796b14b555
+- 2026-10-31T23:10:23Z · reset · done → build · Implementation of the approved release candidate ^t-dc5b46
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 3b0b2f710131f6a444660953d44e378cb9a87713
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 5 case(s) and 7 observation(s) to re-check with `chough status`
+- 2026-10-31T23:10:24Z · advance · build → test · TC-cli-0050 to 0066 passed ^t-91ca02
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 3b0b2f710131f6a444660953d44e378cb9a87713
+- 2026-10-31T23:10:26Z · advance · test → accept · No open blocking bugs ^t-15e5e6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 3b0b2f710131f6a444660953d44e378cb9a87713
+- 2026-10-31T23:41:15Z · advance · accept → done · Archived after 0xLeif's implementation review ^t-0a32cd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 8b18498cb23fbc66f320e426227aa85cb74ca8b7
+- 2026-11-01T13:54:08Z · gate-closed · done → done · Merge of PR #9 (the human's action); nothing is released ^t-a130d9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: aae9d6bfa537f28d4f08566d8ac90da862fc3f9b
+- 2026-11-01T15:12:20Z · reset · done → intent · Start the human-requested Kimi host cold start and roadmap refresh ^t-0d101b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 5 case(s) and 7 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors`; Chough does not change native state.
+- 2026-11-01T15:16:41Z · enter · intent → bugs · Classify friction observed by the Kimi cold start before scope planning ^t-4344bb
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
+- 2026-11-01T15:16:42Z · return · bugs → intent ·  ^t-3575cd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
+- 2026-11-01T15:33:45Z · advance · intent → design ·  ^t-94c767
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
+- 2026-11-01T15:33:45Z · skip · design → plan · CLI guidance, records and resume behavior change no visuals or interactions ^t-5dc5fb
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
+- 2026-11-01T15:46:29Z · reset · done → intent · New cycle: 0.1.0 release prep (0xLeif direction 2026-11-01) ^t-8db10a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 5 case(s) and 7 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors`; Chough does not change native state.
+- 2026-11-01T15:46:29Z · gate-opened · intent → intent · Intent and scope approval of prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill ^t-f9b57a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
+- 2026-11-01T15:57:13Z · gate-closed · intent → intent · Intent and scope approval of prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill ^t-218520
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 71dab734a03cf3664e092c61bc713e65d947e5c0
+- 2026-11-01T15:57:13Z · advance · intent → design ·  ^t-8d5ca9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 71dab734a03cf3664e092c61bc713e65d947e5c0
+- 2026-11-01T15:57:18Z · skip · design → plan · No visual or interaction change: CI, docs, skill text and a package test ^t-83f687
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 71dab734a03cf3664e092c61bc713e65d947e5c0
+- 2026-11-01T15:57:21Z · advance · plan → build · native:verifying ^t-a17255
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 71dab734a03cf3664e092c61bc713e65d947e5c0
+- 2026-11-01T16:07:37Z · advance · build → test · native:verifying ^t-cbfb5a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: f6416a5938889833fedb68d7fb951c263e9982f1
+- 2026-11-01T16:30:28Z · reset · done → plan · New cycle: 0xLeif's three 0.1.0-blocking decisions (focused next, a guard for BUG-0002, done-stage resume and host wording from closed PR #20); the decisions add no HI criterion, so planning starts from the existing intent ^t-1b8692
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ee6e3d2fd69e1fb979873676b7b02d8d86a9074d
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 5 case(s) and 7 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status bundle-hygiene-case-binding-environment-and-colour-safe-matching-and-actionable-requirement-and-bug-errors`; Chough does not change native state.
+- 2026-11-01T16:30:28Z · gate-opened · plan → plan · Scope approval of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume, including the open questions in plan.md ^t-1fd2c7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ee6e3d2fd69e1fb979873676b7b02d8d86a9074d
+- 2026-11-01T16:30:46Z · gate-opened · plan → plan · Scope approval of correct-archived-resume-guidance-and-record-the-kimi-cold-start ^t-63fb68
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5af3f78d66b40a5af42607eafd5649c9b957d2ad
+- 2026-11-01T16:36:49Z · gate-closed · plan → plan · Scope approval of correct-archived-resume-guidance-and-record-the-kimi-cold-start ^t-72080f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1d9264f71168f9f9cf2a50d45ab118e517b5a3ee
+- 2026-11-01T16:36:49Z · advance · plan → build · native:approved ^t-a93539
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 1d9264f71168f9f9cf2a50d45ab118e517b5a3ee
+- 2026-11-01T16:38:03Z · gate-closed · plan → plan · Scope approval of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume, including the open questions in plan.md ^t-15befd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: bfda0274333ae350592c748c990e404b56dcb787
+- 2026-11-01T16:38:03Z · advance · plan → build · Scope approved by 0xLeif ^t-faac79
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: bfda0274333ae350592c748c990e404b56dcb787
+- 2026-11-01T16:59:15Z · advance · build → test · Build complete; TC-cli-0120 to TC-cli-0124 passed ^t-92cb22
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 95f7f1a79accfe846903cf1c9a74788267517fe2
+- 2026-11-01T16:59:17Z · advance · test → accept · Focused cases and full suite pass locally ^t-c23967
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 95f7f1a79accfe846903cf1c9a74788267517fe2
+- 2026-11-01T16:59:17Z · gate-opened · accept → accept · Implementation review of focused-chough-next-a-verification-guard-before-build-and-done-stage-resume on PR #23 by 0xLeif ^t-cd2ab1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 95f7f1a79accfe846903cf1c9a74788267517fe2
+- 2026-11-01T17:21:49Z · advance · build → test · native:approved ^t-3d63cc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 1d9264f71168f9f9cf2a50d45ab118e517b5a3ee
+- 2026-11-01T17:41:03Z · advance · test → accept · native:verifying ^t-c291f5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 1d9264f71168f9f9cf2a50d45ab118e517b5a3ee
+- 2026-11-01T17:41:03Z · gate-opened · accept → accept · Implementation review of correct-archived-resume-guidance-and-record-the-kimi-cold-start ^t-c18a6e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1d9264f71168f9f9cf2a50d45ab118e517b5a3ee
+- 2026-11-01T18:27:06Z · gate-closed · accept → accept · Implementation review of correct-archived-resume-guidance-and-record-the-kimi-cold-start ^t-e18bc8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 2189038caf6b45062417bcce0ce6c5498a8ad80e
+- 2026-11-01T18:27:21Z · advance · accept → done · native:archived ^t-bfd1af
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 2189038caf6b45062417bcce0ce6c5498a8ad80e
+- 2026-11-01T19:13:48Z · reset · done → intent · Main REQ-cli-021 requires new-cycle guidance; integrate the Kimi records with the newer contract ^t-a28983
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b2e2f19d904aec2a5acd73569c8439f5583c01f9
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 12 case(s) and 24 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status correct-archived-resume-guidance-and-record-the-kimi-cold-start`; Chough does not change native state.
+- 2026-11-01T19:13:48Z · advance · intent → design ·  ^t-6a8b8e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b2e2f19d904aec2a5acd73569c8439f5583c01f9
+- 2026-11-01T19:13:48Z · skip · design → plan · The integration changes CLI guidance and records only, with no visuals or interactions ^t-173bac
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b2e2f19d904aec2a5acd73569c8439f5583c01f9
+- 2026-11-01T19:21:26Z · gate-opened · plan → plan · Scope approval of align-kimi-integration-with-new-cycle-done-guidance ^t-3d3660
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b2e2f19d904aec2a5acd73569c8439f5583c01f9
+- 2026-11-01T19:28:26Z · gate-closed · plan → plan · Scope approval of align-kimi-integration-with-new-cycle-done-guidance ^t-d0e571
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: f38e70f58a6dbb65e3be21d066ffa243e2bde234
+- 2026-11-01T19:28:27Z · advance · plan → build · native:approved ^t-95616c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: f38e70f58a6dbb65e3be21d066ffa243e2bde234
+- 2026-11-01T20:07:53Z · advance · build → test · native:verifying ^t-dce15d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: f38e70f58a6dbb65e3be21d066ffa243e2bde234
+- 2026-11-01T20:11:48Z · advance · test → accept · native:verifying ^t-e003c3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: f38e70f58a6dbb65e3be21d066ffa243e2bde234
+- 2026-11-01T20:11:48Z · gate-opened · accept → accept · Implementation review of align-kimi-integration-with-new-cycle-done-guidance ^t-9f4f9a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: f38e70f58a6dbb65e3be21d066ffa243e2bde234
+- 2026-11-01T20:22:05Z · gate-closed · accept → accept · Implementation review of align-kimi-integration-with-new-cycle-done-guidance ^t-60550b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a91e06622a5575d80df5c08ea1db94b9a9207882
+- 2026-11-01T20:22:22Z · advance · accept → done · native:archived ^t-3d3df4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: a91e06622a5575d80df5c08ea1db94b9a9207882
+- 2026-11-01T21:11:22Z · reset · done → intent · Use collision-resistant identities for new bugs so parallel branches do not allocate the same numeric ID ^t-c2671e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 7357d41ab92e737fea1ad1e733c38f5447226fb9
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 12 case(s) and 33 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status align-kimi-integration-with-new-cycle-done-guidance`; Chough does not change native state.
+- 2026-11-01T21:11:22Z · advance · intent → design ·  ^t-e9ff3b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 7357d41ab92e737fea1ad1e733c38f5447226fb9
+- 2026-11-01T21:11:22Z · skip · design → plan · The bug identity change affects CLI records and validation, with no visuals or interactions ^t-ed6825
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 7357d41ab92e737fea1ad1e733c38f5447226fb9
+- 2026-11-01T21:28:59Z · gate-opened · plan → plan · Scope approval of use-collision-resistant-slug-identities-for-new-bugs ^t-1dd04a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 7357d41ab92e737fea1ad1e733c38f5447226fb9
+- 2026-11-01T21:31:21Z · gate-closed · plan → plan · Scope approval of use-collision-resistant-slug-identities-for-new-bugs ^t-107239
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 041531cdeecc3447523ddf459f46258070e29247
+- 2026-11-01T21:31:21Z · advance · plan → build · native:approved ^t-71d0e1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 041531cdeecc3447523ddf459f46258070e29247
+- 2026-11-01T22:25:59Z · advance · build → test · native:verifying ^t-5094c6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 041531cdeecc3447523ddf459f46258070e29247
+- 2026-11-01T22:26:22Z · advance · test → accept · native:verifying ^t-03fc6d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 041531cdeecc3447523ddf459f46258070e29247
+- 2026-11-01T22:26:22Z · gate-opened · accept → accept · Implementation review of use-collision-resistant-slug-identities-for-new-bugs ^t-c93510
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 041531cdeecc3447523ddf459f46258070e29247
+- 2026-11-01T22:35:33Z · gate-closed · accept → accept · Implementation review of use-collision-resistant-slug-identities-for-new-bugs ^t-1694e9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: aee2af3851e5470daeb6340b8d81fee956615ced
+- 2026-11-01T22:35:50Z · advance · accept → done · native:archived ^t-07a128
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: aee2af3851e5470daeb6340b8d81fee956615ced
+- 2026-11-01T22:35:50Z · gate-opened · done → done · Merge of PR #26 after hosted CI ^t-ad2ec5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: aee2af3851e5470daeb6340b8d81fee956615ced
+- 2026-11-01T23:07:00Z · gate-closed · done → done · Merge of PR #26 after hosted CI ^t-0f3b51
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b35acaf0804f84a2c56fcee4b3ca1504cf74c95e
+- 2026-11-01T23:07:20Z · reset · done → intent · Repeated session.json conflicts need a merge-safe checkpoint while preserving one canonical checkpoint ^t-9860b4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b35acaf0804f84a2c56fcee4b3ca1504cf74c95e
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 17 case(s) and 47 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status use-collision-resistant-slug-identities-for-new-bugs`; Chough does not change native state.
+- 2026-11-01T23:07:20Z · advance · intent → design ·  ^t-4358f0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b35acaf0804f84a2c56fcee4b3ca1504cf74c95e
+- 2026-11-01T23:07:20Z · skip · design → plan · Checkpoint merging changes CLI and Git behavior, with no visuals or interactions ^t-49ecc7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b35acaf0804f84a2c56fcee4b3ca1504cf74c95e
+- 2026-11-01T23:14:59Z · gate-opened · plan → plan · Scope approval of make-checkpoint-merges-safe-across-parallel-changes ^t-fe04c9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b35acaf0804f84a2c56fcee4b3ca1504cf74c95e
+- 2026-11-01T23:16:50Z · gate-closed · plan → plan · Scope approval of make-checkpoint-merges-safe-across-parallel-changes ^t-550848
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5bab395af745e328e918a5f358c5149d673e47ca
+- 2026-11-01T23:16:51Z · advance · plan → build · native:approved ^t-d82308
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 5bab395af745e328e918a5f358c5149d673e47ca
+- 2026-11-01T23:47:40Z · advance · build → test · native:verifying ^t-173aba
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 5bab395af745e328e918a5f358c5149d673e47ca
+- 2026-11-01T23:47:42Z · advance · test → accept · native:verifying ^t-5ccda8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 5bab395af745e328e918a5f358c5149d673e47ca
+- 2026-11-01T23:47:42Z · gate-opened · accept → accept · Implementation review of make-checkpoint-merges-safe-across-parallel-changes ^t-2c7d7c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5bab395af745e328e918a5f358c5149d673e47ca
+- 2026-11-02T00:01:05Z · gate-closed · accept → accept · Implementation review of make-checkpoint-merges-safe-across-parallel-changes ^t-7f9b1a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 2d9b49670a54ad5ac5fb423ae2d4e5d88c7da91c
+- 2026-11-02T00:02:52Z · advance · accept → done · native:archived ^t-8df253
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 2d9b49670a54ad5ac5fb423ae2d4e5d88c7da91c
+- 2026-11-02T00:02:52Z · gate-opened · done → done · Merge of PR #29 after hosted CI ^t-6ae62d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 2d9b49670a54ad5ac5fb423ae2d4e5d88c7da91c
+- 2026-11-02T00:11:52Z · gate-closed · done → done · Merge of PR #29 after hosted CI ^t-4d6954
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec
+- 2026-11-02T00:12:28Z · reset · done → intent · All new .chough records need readable collision-resistant slug IDs while legacy IDs remain valid ^t-a7c443
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 17 case(s) and 50 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status make-checkpoint-merges-safe-across-parallel-changes`; Chough does not change native state.
+- 2026-11-02T00:12:28Z · advance · intent → design ·  ^t-72b205
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec
+- 2026-11-02T00:12:28Z · skip · design → plan · Record identity changes affect CLI and storage behavior, with no visuals or interactions ^t-21d20e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec
+- 2026-11-02T00:26:33Z · gate-opened · plan → plan · Scope approval of use-slug-identities-for-all-new-chough-records ^t-7f25f4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 66bef80464cc8f6b7ba5e7e8023dfd6352f9d9ec
+- 2026-11-02T00:29:35Z · gate-closed · plan → plan · Scope approval of use-slug-identities-for-all-new-chough-records ^t-35d1c9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6800b2dadebec358ab1a6fdb18b5d78136eb6631
+- 2026-11-02T00:29:36Z · advance · plan → build · native:approved ^t-d84ecf
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 6800b2dadebec358ab1a6fdb18b5d78136eb6631
+- 2026-11-02T01:08:45Z · gate-opened · build → build · Scope approval of update-compact-next-fixture-for-slug-observations ^t-31c457
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6800b2dadebec358ab1a6fdb18b5d78136eb6631
+- 2026-11-02T01:30:25Z · gate-closed · build → build · Scope approval of update-compact-next-fixture-for-slug-observations ^t-26570e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 3931d29bfc5d48e2deba15b3c950d9ec510aa892
+- 2026-11-02T01:43:54Z · advance · build → test · native:verifying ^t-c0ca9b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: b118422c826b29a41df2eea38c58120f6dbc77ae
+- 2026-11-02T02:04:46Z · advance · test → accept · native:verifying ^t-563420
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 7dca7a700f18ba2091bd0a199610bf53fd19a1a2
+- 2026-11-02T02:13:02Z · advance · accept → done · native:archived ^t-754b37
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 34f7b11b608cadf2af33ef41215c2f6d6598bbfb
+- 2026-11-02T00:14:41Z · gate-closed · done → done · Merge of PR #26 after hosted CI ^t-50745c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 49e417719005c41f2717fb50bbbc38c3903f8aa1
+- 2026-11-02T00:18:55Z · reset · done → plan · New cycle for issue #32: timing native-read latency; prior bug-ID change archived and PR #26 merged ^t-5efb22
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 49e417719005c41f2717fb50bbbc38c3903f8aa1
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 17 case(s) and 47 observation(s) to re-check with `chough status`
+- 2026-11-02T00:19:14Z · gate-opened · plan → plan · Scope approval of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound ^t-999f30
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 49e417719005c41f2717fb50bbbc38c3903f8aa1
+- 2026-11-02T02:04:17Z · gate-closed · plan → plan · Scope approval of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound ^t-6eee0a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 3f3f9685da8a4fa79ab8b6439479da984c97f498
+- 2026-11-02T02:04:18Z · advance · plan → build · native:approved ^t-29fc6d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 3f3f9685da8a4fa79ab8b6439479da984c97f498
+- 2026-11-02T02:04:24Z · advance · build → test · native:approved ^t-99dfa3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 3f3f9685da8a4fa79ab8b6439479da984c97f498
+- 2026-11-02T02:04:32Z · back · test → build · Accidental second advance by Claude (command re-run to view output); implementation has not started, so return to build ^t-e7c9c5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 3f3f9685da8a4fa79ab8b6439479da984c97f498
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, checkpoint references: 19 case(s) and 52 observation(s) to re-check with `chough status`
+- 2026-11-02T02:42:19Z · advance · build → test · native:verifying ^t-4fe34f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: bb05d0eb678e54ae4e6db7e482d923fc2de92705
+- 2026-11-02T02:42:59Z · advance · test → accept · native:verifying ^t-e45744
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: bb05d0eb678e54ae4e6db7e482d923fc2de92705
+- 2026-11-02T02:42:59Z · gate-opened · accept → accept · Implementation review of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound ^t-0347ab
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: bb05d0eb678e54ae4e6db7e482d923fc2de92705
+- 2026-11-02T03:10:01Z · gate-closed · accept → accept · Implementation review of make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound ^t-9be3cf
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 3b3fafd2d48502c87a55bb6056becd8ea2a4eb8e
+- 2026-11-02T03:21:36Z · advance · accept → done · native:archived ^t-716c08
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: bda1907dfd52b7776fc431da878889ca6e881949
+- 2026-11-01T22:23:33Z · reset · test → plan · 2026-11-01: 0xLeif directed a new cycle for project-local learning and reliable handoffs (first slice: fresh-agent handoff blocks in chough next, archived-not-done guidance, lesson certainty wording, librarian closeout inside the open change). The 0.1.0 release change is archived and shipped; the approved criteria LIFE-1, LIFE-3, FLOW-12 and FLOW-13 already cover this work, so it restarts at plan. ^t-ab874c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: fb6e4871a802c55ba273cd9f5a6207f6e42be884
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, checkpoint references: 10 case(s) and 18 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill`; Chough does not change native state.
+- 2026-11-01T22:32:47Z · gate-opened · plan → plan · Scope approval of fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer ^t-5768ff
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: fcc5c78850474ee4c4b0812db07057696b087950
+- 2026-11-01T22:45:21Z · gate-closed · plan → plan · Scope approval of fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer ^t-2062e8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: f8667d39c4346ac3a777d783648d7ca20230784d
+- 2026-11-01T23:16:12Z · advance · plan → build · native:approved ^t-2d1ef3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: d4d0f0b0599dd8b95745d5c7c990a01fb4cb5e2c
+- 2026-11-02T00:46:48Z · advance · build → test · native:verifying ^t-19edeb
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 1607905a127bb00af99d697d01eeddc208561deb
+- 2026-11-02T00:46:49Z · gate-opened · test → test · 0xLeif grades the Kimi change run handoff-cold-start-change-kimi-1 against the frozen rubric (grading sheet in .chough/artifacts/handoff-cold-start/change-kimi-1/) ^t-dd8580
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1607905a127bb00af99d697d01eeddc208561deb
+- 2026-11-02T00:52:17Z · gate-closed · test → test · 0xLeif grades the Kimi change run handoff-cold-start-change-kimi-1 against the frozen rubric (grading sheet in .chough/artifacts/handoff-cold-start/change-kimi-1/) ^t-5725bf
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6c4a0d03a708eeefc01e42654154920aabccedd9
+- 2026-11-02T00:54:11Z · advance · test → accept · native:verifying ^t-f132af
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 0b9e9432876bb9d6d3735cd50e9db40d4dc36e85
+- 2026-11-02T00:54:20Z · gate-opened · accept → accept · 0xLeif's implementation review and acceptance decision for the learning-handoff change: criterion 9 failed (change run graded Fail, P1-P3 not met), criterion 5 fixture reported as a deviation, real-repository run not done (Kimi quota) ^t-5cfa12
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0b9e9432876bb9d6d3735cd50e9db40d4dc36e85
+- 2026-11-02T02:34:40Z · gate-closed · accept → accept · 0xLeif's implementation review and acceptance decision for the learning-handoff change: criterion 9 failed (change run graded Fail, P1-P3 not met), criterion 5 fixture reported as a deviation, real-repository run not done (Kimi quota) ^t-e66477
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a1920f7f0ade695b718273a0ebfa7138e1805821
+- 2026-11-02T03:47:33Z · gate-closed · accept → accept · 0xLeif's implementation review and acceptance decision for the learning-handoff change: criterion 9 failed (change run graded Fail, P1-P3 not met), criterion 5 fixture reported as a deviation, real-repository run not done (Kimi quota) ^t-18c651
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 27749502d837ae6d267b2a527e9e44343ae9e920
+- 2026-11-02T03:48:00Z · advance · accept → done · native:archived ^t-2c2339
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 27749502d837ae6d267b2a527e9e44343ae9e920
+- 2026-11-02T03:51:36Z · advance · accept → done · Explicit human acceptance and authenticated native archive complete this cycle; hosted green CI is required before merge. ^t-881609
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 326959ded966abe5e200e9297c1c53255eeb6b6a
+- 2026-11-02T04:48:13Z · reset · done → plan · New cycle for the criterion 9 follow-up from the learning handoff change: the approved learning and handoff intent (LIFE-1, LIFE-3, FLOW-12, FLOW-13) already covers it ^t-c0687d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 118a895e6db179b1fbf7abeee9a9e7130cd7e399
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 26 case(s) and 101 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer`; Chough does not change native state.
+- 2026-11-02T04:50:47Z · gate-opened · plan → plan · Scope approval of native change agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal ^t-1b8176
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 118a895e6db179b1fbf7abeee9a9e7130cd7e399
+- 2026-11-02T05:14:08Z · gate-closed · plan → plan · Scope approval of native change agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal ^t-fde680
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5d1ac1ea149c6cae47efeed0d155dcbfb3772b98
+- 2026-11-02T05:14:08Z · gate-opened · plan → plan · 0xLeif starts and grades the baseline cold-start run at main 118a895 ^t-32b83d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5d1ac1ea149c6cae47efeed0d155dcbfb3772b98
+- 2026-11-02T05:18:56Z · gate-closed · plan → plan · 0xLeif starts and grades the baseline cold-start run at main 118a895 ^t-50daa2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6b66993bb00f342762fbacda6918f4129c947a41
+- 2026-11-02T05:24:10Z · advance · plan → build · native:verifying ^t-70822a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9c4b87621326cc869fe24f8622f4ec92d40bb32b
+- 2026-11-02T05:24:11Z · advance · build → test · native:verifying ^t-104354
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9c4b87621326cc869fe24f8622f4ec92d40bb32b
+- 2026-11-02T05:24:13Z · advance · test → accept · native:verifying ^t-791119
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9c4b87621326cc869fe24f8622f4ec92d40bb32b
+- 2026-11-02T05:24:13Z · gate-opened · accept → accept · 0xLeif's implementation review and acceptance of the resume handoff step; the cold-start criterion was not run by his decision ("Just go without Kimi") ^t-d2cde9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 9c4b87621326cc869fe24f8622f4ec92d40bb32b
+- 2026-11-02T05:31:44Z · gate-closed · accept → accept · 0xLeif's implementation review and acceptance of the resume handoff step; the cold-start criterion was not run by his decision ("Just go without Kimi") ^t-6ffd00
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 145d2cdb7a9f0f336f955bb0b728c07e805708a6
+- 2026-11-02T05:32:09Z · advance · accept → done · native:archived ^t-1845a0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 145d2cdb7a9f0f336f955bb0b728c07e805708a6
+- 2026-11-02T16:06:36Z · reset · done → plan · Start the separately scoped issue #32 reporting work from completed main ^t-ee86d2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 26 case(s) and 101 observation(s) to re-check with `chough status`, native: the definition is approved; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status read-report-case-definitions-once-per-request-and-expose-local-phase-costs`; Chough does not change native state.
+- 2026-11-02T16:06:36Z · advance · plan → build · native:approved ^t-224670
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:32:08Z · advance · build → test · native:verifying ^t-2bb310
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:38:53Z · back · test → build · Fix the reproduced report cache diagnostic compatibility defect before acceptance ^t-5a0560
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, checkpoint references: 26 case(s) and 102 observation(s) to re-check with `chough status`
+- 2026-11-02T16:47:04Z · advance · build → test · native:verifying ^t-9ca514
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:51:29Z · gate-opened · test → test · 0xLeif implementation acceptance of the request-local report reads PR; scope approval is already recorded under the standing instruction and native review/ship and merge remain pending ^t-79d669
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:51:31Z · advance · test → accept · native:verifying ^t-54b94b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T22:54:25Z · gate-closed · accept → accept · 0xLeif implementation acceptance of the request-local report reads PR; scope approval is already recorded under the standing instruction and native review/ship and merge remain pending ^t-2054ad
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: be09e39075bd14a77172450b76dc9ed37af8fcd6
+- 2026-11-02T22:55:04Z · advance · accept → done · native:archived ^t-92eaff
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: be09e39075bd14a77172450b76dc9ed37af8fcd6
+- 2026-11-02T15:46:58Z · reset · done → plan · New cycle for #11 / BUG-0017 ordering half; existing HI criteria LIFE-6 and FLOW-7 cover it, so no new intent wording ^t-bcf756
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 26 case(s) and 101 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal`; Chough does not change native state.
+- 2026-11-02T15:51:17Z · gate-opened · plan → plan · Scope approval of case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the ^t-0c1482
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T15:57:19Z · gate-closed · plan → plan · Scope approval of case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the ^t-6d1b23
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 46790b408f8f418bdbaafef86119c5a642c55941
+- 2026-11-02T15:57:26Z · advance · plan → build · native:approved ^t-3b610a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 46790b408f8f418bdbaafef86119c5a642c55941
+- 2026-11-02T16:03:14Z · advance · build → test · Implementation tasks done; package tests failed first and pass ^t-49ab8f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 46790b408f8f418bdbaafef86119c5a642c55941
+- 2026-11-02T16:03:15Z · advance · test → accept · TC-cli-skill-orders-the-change-check-before-new-requirement-cases and TC-cli-0094 passed; verify lane passed (9 steps, 198 tests) ^t-5c2b10
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 46790b408f8f418bdbaafef86119c5a642c55941
+- 2026-11-02T16:03:15Z · gate-opened · accept → accept · Implementation review of case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the ^t-e3b17e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 46790b408f8f418bdbaafef86119c5a642c55941
+- 2026-11-02T16:22:23Z · gate-closed · accept → accept · Implementation review of case-recording-order-the-shipped-skill-keeps-running-and-recording-chough-cases-out-of-tasks-md-checkboxes-and-runs-the ^t-411849
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 84bae6e7abf1041a61ff2ce64a31f958704dc2fa
+- 2026-11-02T16:23:53Z · advance · accept → done · Archived with authenticated terminal evidence ^t-ddb6d2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 45426e8f2f581732edfc69434afc2881dad4b706
+- 2026-11-02T16:11:52Z · reset · done → plan · New cycle for issue #39: leaving test must not skip a failed case observation that no bug links; approved HI FLOW-7 and LIFE-5 already cover it, so intent is unchanged ^t-9d55bf
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 26 case(s) and 101 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal`; Chough does not change native state.
+- 2026-11-02T16:14:29Z · gate-opened · plan → plan · Scope approval of unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links (specsync change approve by 0xLeif) ^t-dc7bdb
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:15:12Z · gate-closed · plan → plan · Scope approval of unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links (specsync change approve by 0xLeif) ^t-1a90e8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:15:12Z · advance · plan → build · Scope approved (corvid-agent, per 0xLeif 9:14 AM MT instruction) ^t-d3f091
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:18:06Z · advance · build → test · Implementation and failing-first tests done ^t-2c4e6a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:19:52Z · advance · test → accept · Verify passed; referenced cases pass ^t-52c7e1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:20:58Z · advance · accept → done · Archived with authenticated terminal evidence ^t-4746cf
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: fa7e7a5cfff25c073fea1e4bc06eaf9ea12479f2
+- 2026-11-02T17:02:27Z · reset · done → plan · Follow-up cycle for PR #43 review (discussion_r4445242804): a later not-run observation clears an unlinked failure; HI FLOW-7 already covers this, so intent is unchanged ^t-b2cf37
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 466594bf7ed98b332c701afe1cae4d0f70355aa1
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 29 case(s) and 101 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status unlinked-failure-gate-leaving-test-refuses-while-a-checkpoint-case-s-latest-observation-failed-and-no-local-bug-links`; Chough does not change native state.
+- 2026-11-02T17:03:21Z · advance · plan → build · Scope approved (corvid-agent, per 0xLeif 9:14 AM MT instruction) ^t-d668bf
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 466594bf7ed98b332c701afe1cae4d0f70355aa1
+- 2026-11-02T17:04:35Z · advance · build → test · Implementation complete; regression test green ^t-e83882
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 466594bf7ed98b332c701afe1cae4d0f70355aa1
+- 2026-11-02T17:06:01Z · advance · test → accept · Regression case passed; fledge verify lane passed locally ^t-53a6f1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 466594bf7ed98b332c701afe1cae4d0f70355aa1
+- 2026-11-02T17:06:44Z · advance · accept → done · Accepted: archived SpecSync change, verify lane passed locally ^t-a37019
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 3f594d48ba4c06134f1b4c9c1f7a06be994dfdf9
+- 2026-11-02T23:13:35Z · back · done → test · Requalify merged main case-order and unlinked-failure behavior with PR 46 request-local report reads ^t-bf52dd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 7a8126781c64a906659f4b25ee4fd46b031d3b2a
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 35 case(s) and 115 observation(s) to re-check with `chough status`
+- 2026-11-02T16:31:23Z · reset · done → plan · New cycle for issue #38: stage advance and skip ignore open awaiting-human gates; HI FLOW-2 and LIFE-1 already cover human gates, so intent is unchanged ^t-be472c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 26 case(s) and 101 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal`; Chough does not change native state.
+- 2026-11-02T16:34:04Z · advance · plan → build · Scope approved (corvid-agent, per 0xLeif 9:14 AM MT instruction) ^t-97047a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:37:59Z · advance · build → test · Build complete: fix and tests pass (cargo test 198 passed, .chough/artifacts/bug38-after-fix.log) ^t-280867
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:43:47Z · advance · test → accept · Test complete: cases TC-cli-open-human-gates-* passed; verify passed ^t-7db019
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:45:08Z · advance · accept → done · Accept: change archived; PR #45 awaits 0xLeif's merge decision ^t-48194b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 44fddb4eb82534a2e6396c3d4e79fd7b6fe20cc9
+- 2026-11-02T23:29:01Z · advance · test → accept · Final main integration product qualification passed; root alone performs native integration closeout ^t-f83c3e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: cb7dad29fc253698fc074b1a0268d04b8badf5c1
+- 2026-11-02T17:00:30Z · reset · done → plan · New cycle for issue #40: no from-scratch setup path for HI and SpecSync, and chough next does not say that adopting SDD turns the gates on; HI LIFE-9, LIFE-6 and LIFE-7 already cover this, so intent is unchanged ^t-fcfe7b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 29 case(s) and 101 observation(s) to re-check with `chough status`
+- 2026-11-02T17:20:49Z · advance · plan → build · Scope approved (corvid-agent, per 0xLeif 9:14 AM MT instruction) ^t-886463
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 89130c01a28fb83f00f69d61f0d998a13bfc83a6
+- 2026-11-02T17:21:45Z · advance · build → test · Implementation and docs complete; new test green ^t-9f407e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 89130c01a28fb83f00f69d61f0d998a13bfc83a6
+- 2026-11-02T17:23:30Z · advance · test → accept · Case passed; fledge verify lane passed locally ^t-43a587
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 89130c01a28fb83f00f69d61f0d998a13bfc83a6
+- 2026-11-02T17:24:05Z · advance · accept → done · Accepted: archived SpecSync change, verify lane passed locally ^t-47b0b6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 892ef32c6eb6a4964a92f3e922816f2958a001be
+- 2026-11-02T23:45:49Z · back · accept → test · Requalify the properly approved d839 feature synchronization while preserving earlier intermediate passes ^t-a4e0f3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 05d4ec15790869c240ebfc926e91bbce9d0dbb70
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 38 case(s) and 123 observation(s) to re-check with `chough status`
+- 2026-11-02T23:49:57Z · advance · test → accept · d839 feature synchronization qualification passed; root alone performs the remaining native closeout ^t-7caa02
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: bb9853641040af6bd29dba37ceba55b1c671d713
+- 2026-11-03T00:04:00Z · advance · accept → done · native:archived ^t-b02132
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: e4c71baf4393e82bc2badb239b95b18b34034f72
+- 2026-11-03T01:12:45Z · reset · done → plan · Leif authorized resynchronizing approved green PRs; this is a bounded integration of accepted history and workflow with existing report reads under a new native scope ^t-c8248e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: d23ef42534b8d1d59229d4e84d8274072dbd6f74
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 38 case(s) and 128 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status integrate-merged-main-into-pr-46-while-preserving-report-reads-and-lifecycle-guidance`; Chough does not change native state.
+- 2026-11-03T01:12:45Z · advance · plan → build · native:approved ^t-f117d8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: d23ef42534b8d1d59229d4e84d8274072dbd6f74
+- 2026-11-02T05:54:58Z · reset · done → plan · 0xLeif asked to continue with issue #31 definition under existing LIFE intent; implementation scope approval is pending ^t-bec8c1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 26 case(s) and 101 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status agents-state-the-recorded-handoff-before-their-first-edit-the-skill-s-resume-steps-ask-a-fresh-agent-to-say-the-goal`; Chough does not change native state.
+- 2026-11-02T06:02:11Z · gate-opened · plan → plan · Scope approval of bound-transition-history-and-preserve-referenced-proof, including explicit adoption, the optional checkpoint cursor, proposed bounds and protected whole-cycle retention ^t-977a7e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T13:08:29Z · gate-closed · plan → plan · Scope approval of bound-transition-history-and-preserve-referenced-proof, including explicit adoption, the optional checkpoint cursor, proposed bounds and protected whole-cycle retention ^t-e29df4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 9a8b9b11e16bedac4808c56d48307fa29ad9cfe3
+- 2026-11-02T13:08:30Z · advance · plan → build · native:approved ^t-ec9f3a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 9a8b9b11e16bedac4808c56d48307fa29ad9cfe3
+- 2026-11-02T15:05:37Z · advance · build → test · native:verifying ^t-4d3329
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9a8b9b11e16bedac4808c56d48307fa29ad9cfe3
+- 2026-11-02T15:05:38Z · advance · test → accept · native:verifying ^t-402aed
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9a8b9b11e16bedac4808c56d48307fa29ad9cfe3
+- 2026-11-02T15:05:38Z · gate-opened · accept → accept · 0xLeif's implementation review and acceptance of PR #37; scope approval is already recorded, and native review/ship and merge remain pending ^t-3bd9f2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 9a8b9b11e16bedac4808c56d48307fa29ad9cfe3
+- 2026-11-02T17:14:24Z · back · accept → build · Address the independently reproduced frozen artifact alias retention blocker inside the approved scope ^t-611127
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 76da6287c145240ce580ddf35fedb71aac53acc4
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 32 case(s) and 119 observation(s) to re-check with `chough status`
+- 2026-11-02T17:14:26Z · advance · build → test · native:verifying ^t-2cb2fc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 76da6287c145240ce580ddf35fedb71aac53acc4
+- 2026-11-02T17:44:20Z · advance · test → accept · native:verifying ^t-78c440
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 76da6287c145240ce580ddf35fedb71aac53acc4
+- 2026-11-02T18:00:10Z · back · accept → test · Independent peer review reproduced cycle-age and post-prune missing-reference blockers; return to testing for focused repair and full qualification ^t-5f7598
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 489ecf50fc5ddb113a9a1053a2efa26c8a07f677
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 33 case(s) and 129 observation(s) to re-check with `chough status`
+- 2026-11-02T18:15:10Z · advance · test → accept · native:verifying ^t-823553
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 489ecf50fc5ddb113a9a1053a2efa26c8a07f677
+- 2026-11-02T22:49:52Z · back · accept → test · Incremental peer review reproduced missing cycle-directory reference forms; repair and requalify before native closeout ^t-1ff837
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 40d2d114d2a484b2ff84679cbee0847fbe9d7284
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 36 case(s) and 129 observation(s) to re-check with `chough status`
+- 2026-11-02T23:24:33Z · gate-closed · test → test · 0xLeif's implementation review and acceptance of PR #37; scope approval is already recorded, and native review/ship and merge remain pending ^t-17dc91
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ceb8192621a18c146255d753499389b3c5a47118
+- 2026-11-02T23:25:40Z · iterate · test → test · Requalify bounded history after integrating approved main41,43,45 while preserving all imported proof ^t-ae3c94
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ceb8192621a18c146255d753499389b3c5a47118
+- 2026-11-02T23:32:47Z · advance · test → accept · native:verifying ^t-9ae5f2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 19d6174b784d2c5895441c036f70fea8afe29fe1
+- 2026-11-02T23:42:16Z · back · accept → test · Requalify the accepted setup hint imported from main47 before closing the existing PR ^t-98b4d5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 582105e45eda3a5bf6141f180a47cfa9ef3e7410
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 45 case(s) and 134 observation(s) to re-check with `chough status`
+- 2026-11-03T00:31:44Z · advance · test → accept · native:verifying ^t-072bb6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: b25731739beba8a6fe9ad0e8c9e0fb126211da30
+- 2026-11-03T00:54:30Z · advance · accept → done · native:archived ^t-8d26a7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 3d8e53ec3637e714bbc72afb57333e4abf189155
+- 2026-11-02T16:07:19Z · reset · done → plan · Start the separately scoped issue42 workflow fix under actual standing human authorization; Grok41 owns the ordering repair ^t-364873
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 26 case(s) and 101 observation(s) to re-check with `chough status`
+- 2026-11-02T16:07:21Z · advance · plan → build · native:approved ^t-01db94
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:17:12Z · advance · build → test · native:verifying ^t-b46516
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:35:13Z · advance · test → accept · native:verifying ^t-c735d4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T16:35:13Z · gate-opened · accept → accept · Implementation review of the issue42 workflow PR; the agent handles native closeout after the applicable acceptance decision ^t-7bd51f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 825a3805530456005e361dfa6d96d93eee52cd09
+- 2026-11-02T17:34:05Z · back · accept → build · Resolve the remaining cross-bundle consistency review blocker on PR44 ^t-d2b150
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 7cd739219ff667dcf6d153a6f439d6c3661b1fce
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 27 case(s) and 110 observation(s) to re-check with `chough status`
+- 2026-11-02T17:40:54Z · advance · build → test · native:verifying ^t-dc6a01
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 7cd739219ff667dcf6d153a6f439d6c3661b1fce
+- 2026-11-02T17:47:41Z · advance · test → accept · native:verifying ^t-c3ade5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 7cd739219ff667dcf6d153a6f439d6c3661b1fce
+- 2026-11-02T18:01:47Z · back · accept → test · Peer review identified remaining user-documentation native writer contradictions; repair and expand consistency coverage before acceptance ^t-883b6e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9c41e95949adcb1009c986f97db50faa593d81b2
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 28 case(s) and 116 observation(s) to re-check with `chough status`
+- 2026-11-02T18:16:33Z · advance · test → accept · native:verifying ^t-4b94f2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9c41e95949adcb1009c986f97db50faa593d81b2
+- 2026-11-02T23:00:16Z · gate-closed · accept → accept · Implementation review of the issue42 workflow PR; the agent handles native closeout after the applicable acceptance decision ^t-0eb428
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 55208bd1bc48cff3b6b1946fd20df77acf8f12b3
+- 2026-11-02T23:00:55Z · advance · accept → done · native:archived ^t-139e21
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 55208bd1bc48cff3b6b1946fd20df77acf8f12b3
+- 2026-11-02T23:29:42Z · reset · done → plan · Start the approved bounded PR44 main integration after preserving the original closed cycle ^t-eb0939
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: f79d63d0cc054cfc79c59e50432d26cd2f15fc49
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 36 case(s) and 123 observation(s) to re-check with `chough status`, native: the definition is approved; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status integrate-the-approved-case-ordering-and-native-authority-workflow-changes`; Chough does not change native state.
+- 2026-11-02T23:29:43Z · advance · plan → build · native:approved ^t-2a34b6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: f79d63d0cc054cfc79c59e50432d26cd2f15fc49
+- 2026-11-02T23:52:01Z · advance · build → test · native:verifying ^t-2b1fb2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9
+- 2026-11-02T23:57:30Z · advance · test → accept · native:verifying ^t-234b06
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 04fa5906a8fc73ab7153d94d94ccea83fa5a3bf9
+- 2026-11-03T00:16:31Z · advance · accept → done · native:archived ^t-eba232
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 9e8b1788815841697ca0a10153742a629e1dd859
+- 2026-11-03T01:11:38Z · reset · done → plan · New bounded integration cycle after the human authorized merging green PRs and resynchronizing; main a788869 now contains accepted history work. ^t-ec4011
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 3e25fb494c15cb64d4e9f3ef209729e96fc968a5
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 37 case(s) and 133 observation(s) to re-check with `chough status`, native: the definition is approved; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status integrate-merged-bounded-history-into-the-agent-operated-native-workflow`; Chough does not change native state.
+- 2026-11-03T01:11:38Z · advance · plan → build · native:approved ^t-64f88c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 3e25fb494c15cb64d4e9f3ef209729e96fc968a5
+- 2026-11-03T01:20:08Z · advance · build → test · native:verifying ^t-b24e63
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 769b5269b87d2f822a1b41a4276eccd7d0fa3770
+- 2026-11-03T01:27:29Z · advance · test → accept · native:verifying ^t-7ac243
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 769b5269b87d2f822a1b41a4276eccd7d0fa3770
+- 2026-11-03T01:37:34Z · advance · accept → done · native:archived ^t-fb2100
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: ea9b765d3d8367457aa801a39853bb8c6169a00e
+- 2026-11-03T02:12:20Z · advance · build → test · native:verifying ^t-8f32e4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: b050046ea6a7f530f618a7f190ac9ca5a143e41e
+- 2026-11-03T02:12:23Z · advance · test → accept · native:verifying ^t-3e8c2e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: b050046ea6a7f530f618a7f190ac9ca5a143e41e
+- 2026-11-03T02:28:54Z · advance · accept → done · native:archived ^t-fdfb5c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 3905b29c088f1d039eb74e313932c909dee38ea6
+- 2026-11-03T03:30:01Z · reset · done → plan · PR46 archive executor performance follow-up within existing validation rules and budgets ^t-7a99f2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 9af1921a3bb1f7092d364a18489cb3028e97ff26
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 50 case(s) and 196 observation(s) to re-check with `chough status`
+- 2026-11-03T03:30:26Z · advance · plan → build · native:approved ^t-132fe6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 9af1921a3bb1f7092d364a18489cb3028e97ff26
+- 2026-11-03T03:49:09Z · advance · build → test · native:verifying ^t-a24226
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9af1921a3bb1f7092d364a18489cb3028e97ff26
+- 2026-11-03T03:49:42Z · advance · test → accept · native:verifying ^t-ed98e8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9af1921a3bb1f7092d364a18489cb3028e97ff26
+- 2026-11-03T03:54:56Z · advance · accept → done · native:archived ^t-288be7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: c1226fe7657a889833a072f6296767a78952a465
+- 2026-11-03T01:45:14Z · reset · done → plan · New cycle for issue #30 acceptance evidence: a pinned-clock same-second two-root test and a real Git integration fixture for generated records; HI FLOW-7, FLOW-9, FLOW-12, FLOW-13 already cover this, so intent is unchanged ^t-caef2e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 45 case(s) and 137 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status bound-transition-history-and-preserve-referenced-proof`; Chough does not change native state.
+- 2026-11-03T01:46:11Z · advance · plan → build · Native definition approved by corvid-agent; building the cfg(test) hooks and tests ^t-a32834
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+- 2026-11-03T01:50:06Z · advance · build → test · Build done: tests and cfg(test) hooks in place; moving to test ^t-800495
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+- 2026-11-03T01:51:28Z · advance · test → accept · Test done: both new cases passed on local-linux-x86_64 and fledge lanes run verify passed (235 tests, 0 failed) ^t-57c530
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+- 2026-11-03T01:52:27Z · advance · accept → done · Accepted: verify green locally, SpecSync review pass and finalize recorded by corvid-agent under Leif's standing authorization; PR #48 open ^t-77301a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 062c7d7cef3437b318b7097a75f81b05646a43db
+- 2026-11-03T01:58:21Z · reset · done → plan · Hosted Windows CI on PR #48 failed: the same-second unit test passed a Windows verbatim (\\?\) canonical path to git clone, which git cannot read; fix the test's git paths ^t-7fb30e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 46ca7a4407ebad831ee05f8fc580822190b36b74
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 47 case(s) and 137 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status identity-acceptance-evidence-for-issue-30-a-pinned-clock-same-second-run-in-two-git-roots-and-a-real-git-integration`; Chough does not change native state.
+- 2026-11-03T01:58:58Z · advance · plan → build · Native fix definition approved by corvid-agent ^t-3c4754
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 46ca7a4407ebad831ee05f8fc580822190b36b74
+- 2026-11-03T01:59:03Z · advance · build → test · Build done: Windows path fix in the test ^t-2c171f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 46ca7a4407ebad831ee05f8fc580822190b36b74
+- 2026-11-03T02:00:17Z · advance · test → accept · Test done: case rerun passed; verify passed (235 tests, 0 failed) ^t-aacfd5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 46ca7a4407ebad831ee05f8fc580822190b36b74
+- 2026-11-03T02:00:41Z · advance · accept → done · Accepted: verify green locally; SpecSync review pass and finalize by corvid-agent under Leif's standing authorization ^t-42f1ad
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 010a0bd23c038056aab98f4222d3ead4e1787db1
+- 2026-11-03T04:14:15Z · reset · done → plan · Integrate merged main 134ee19 (#46) into PR #48: three-way checkpoint reconciliation, version-history renumbering and the test call to the renamed freshness read ^t-6e2144
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 781ee446db654bd159295a48fdbee25cebb26cb1
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 52 case(s) and 197 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status windows-safe-git-paths-in-the-issue-30-same-second-test`; Chough does not change native state.
+- 2026-11-03T04:15:14Z · advance · plan → build · Approved ^t-072e4b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 781ee446db654bd159295a48fdbee25cebb26cb1
+- 2026-11-03T04:15:45Z · advance · build → test · Integrated ^t-a2c6c0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 781ee446db654bd159295a48fdbee25cebb26cb1
+- 2026-11-03T04:16:48Z · advance · test → accept · Verify passed ^t-f5cb7e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 781ee446db654bd159295a48fdbee25cebb26cb1
+- 2026-11-03T04:16:48Z · gate-opened · accept → accept · Implementation review of integrate-merged-main-134ee19-pr-46-report-reads-into-pr-48-identity-acceptance-evidence ^t-115d72
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 781ee446db654bd159295a48fdbee25cebb26cb1
+- 2026-11-03T04:17:20Z · gate-closed · accept → accept · Implementation review of integrate-merged-main-134ee19-pr-46-report-reads-into-pr-48-identity-acceptance-evidence ^t-8da359
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 40aa71abc942e6159d910b70e2b93cea6022d8d7
+- 2026-11-03T04:17:31Z · advance · accept → done · Shipped ^t-f12cdb
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 40aa71abc942e6159d910b70e2b93cea6022d8d7
+- 2026-11-03T02:01:33Z · reset · done → plan · New cycle for issue #49: small CLI and docs cleanups (hyphen values in bug add, next main-line repetition, ISO times in next text, help text, cli.md drift, exercise temp dir) ^t-d22290
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 45 case(s) and 137 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status bound-transition-history-and-preserve-referenced-proof`; Chough does not change native state.
+- 2026-11-03T02:02:18Z · advance · plan → build · Definition approved; build the #49 cleanups ^t-a2cf8e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+- 2026-11-03T02:07:14Z · advance · build → test · Build complete; run the focused cases and verify ^t-e3b293
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+- 2026-11-03T02:08:41Z · reset · test → plan · Recreate the unpublished #49 native change: its path scope missed tests/next.rs and docs/exercises/feature-bug-loop.md (audit: meaningful changed paths not covered) ^t-a45c6a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, checkpoint references: 47 case(s) and 137 observation(s) to re-check with `chough status`
+- 2026-11-03T02:08:59Z · advance · plan → build · Definition approved; implementation already present from the first attempt ^t-bcf0ce
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+- 2026-11-03T02:08:59Z · advance · build → test · Build complete; run focused cases and verify ^t-dfa8b5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+- 2026-11-03T02:11:14Z · advance · test → accept · Focused cases passed; fledge lanes run verify passed (exit 0) ^t-82132d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: a788869b32b8442cbc8d7be2bf19c19a922954a8
+- 2026-11-03T02:12:32Z · advance · accept → done · Native change archived; PR #50 open, not merged ^t-761062
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: d478fc4e69e329aee01faad781e78ae8d38a8ca6
+- 2026-11-03T03:06:26Z · reset · done → plan · PR #50 peer review at 250d637 (issuecomment-6594377374): exercise cleanup misses a relative TMPDIR work path; correct the mislabeled human-observation record ^t-2e4c54
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 250d6378614e9872ee0d55d493f4c2a7a920c87a
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 49 case(s) and 182 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status cli-cleanups-for-issue-49-hyphen-values-in-bug-add-no-repeated-native-next-action-in-the-next-main-line-iso-times-in`; Chough does not change native state.
+- 2026-11-03T03:07:00Z · advance · plan → build · native:approved ^t-ff0ff5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 250d6378614e9872ee0d55d493f4c2a7a920c87a
+- 2026-11-03T03:08:18Z · advance · build → test · Review fixes implemented ^t-942b0d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 250d6378614e9872ee0d55d493f4c2a7a920c87a
+- 2026-11-03T03:10:22Z · advance · test → accept · Case run and verify passed ^t-0ff757
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 250d6378614e9872ee0d55d493f4c2a7a920c87a
+- 2026-11-03T03:10:37Z · gate-opened · accept → accept · Implementation review of pr-50-review-fixes-absolute-exercise-work-path-for-relative-tmpdir-cleanup-with-a-regression-test-and-a-corrective ^t-f3830f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 250d6378614e9872ee0d55d493f4c2a7a920c87a
+- 2026-11-03T03:18:39Z · gate-closed · accept → accept · Implementation review of pr-50-review-fixes-absolute-exercise-work-path-for-relative-tmpdir-cleanup-with-a-regression-test-and-a-corrective ^t-289459
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 41f6fb7c480e8beca6753996b3b2aa0597dd43c9
+- 2026-11-03T03:18:48Z · advance · accept → done · Native change shipped; acceptance under Leif's standing corvid-agent authorization ^t-53578f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 41f6fb7c480e8beca6753996b3b2aa0597dd43c9
+- 2026-11-03T03:22:34Z · reset · done → plan · PR #50 review (0xLeif agent, 8:20 PM MT): OBS-product-test-035959f28aa76d052d48fe78 binds 250d637's snapshot to the a788869 issue-49-verify.log; replace it as current proof with a new clean-tree verify run ^t-10ee8f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ba3691cd54b8f776abdd3f9dde9c2fd023b04a50
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 49 case(s) and 182 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status pr-50-review-fixes-absolute-exercise-work-path-for-relative-tmpdir-cleanup-with-a-regression-test-and-a-corrective`; Chough does not change native state.
+- 2026-11-03T03:22:50Z · advance · plan → build · Definition approved ^t-504f8e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: ba3691cd54b8f776abdd3f9dde9c2fd023b04a50
+- 2026-11-03T03:23:58Z · advance · build → test · Observation recorded ^t-c1240c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 380acffcc4240c346a789198eea003d7dc90da9a
+- 2026-11-03T03:24:47Z · advance · test → accept · Verify passed ^t-bd4a8a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 380acffcc4240c346a789198eea003d7dc90da9a
+- 2026-11-03T03:24:53Z · gate-opened · accept → accept · Implementation review of pr-50-evidence-fix-record-a-fresh-clean-tree-verify-run-as-the-current-agent-assisted-proof-in-place-of-the-mis ^t-aac85c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 380acffcc4240c346a789198eea003d7dc90da9a
+- 2026-11-03T03:25:24Z · gate-closed · accept → accept · Implementation review of pr-50-evidence-fix-record-a-fresh-clean-tree-verify-run-as-the-current-agent-assisted-proof-in-place-of-the-mis ^t-ff683e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 525ce6074101c113710a8919d5c9fdda74bc5549
+- 2026-11-03T03:25:34Z · advance · accept → done · Native change shipped; acceptance under Leif's standing corvid-agent authorization ^t-008d31
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 525ce6074101c113710a8919d5c9fdda74bc5549
+- 2026-11-03T05:13:09Z · reset · done → plan · Root completes authorized PR50 resynchronization and proof-preserving bounded handoff ^t-a63160
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6715944ff6c4d0423f59e38d76a9cba6ea89e708
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 49 case(s) and 182 observation(s) to re-check with `chough status`
+- 2026-11-03T05:14:43Z · advance · plan → build · native:approved ^t-23577f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 6715944ff6c4d0423f59e38d76a9cba6ea89e708
+- 2026-11-03T05:34:28Z · advance · build → test · native:verifying ^t-a8bdb5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 890e821adc072327b413cf704c4cbfa840cb3db0
+- 2026-11-03T05:42:40Z · advance · test → accept · native:verifying ^t-0884e0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 890e821adc072327b413cf704c4cbfa840cb3db0
+- 2026-11-03T05:46:28Z · advance · accept → done · native:archived ^t-73963e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 5434178ec025e2249f5440f98757b9faf6575b27
+- 2026-11-03T04:44:19Z · reset · done → plan · Leif's 2026-11-02 9:40 PM MT decision: raise the checkpoint byte and observation pointer limits so PR #50 can take main 747a12c ^t-24abeb
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 747a12cc6fc396f0e8646fee1f2801e02b7d3035
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 52 case(s) and 197 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status integrate-merged-main-134ee19-pr-46-report-reads-into-pr-48-identity-acceptance-evidence`; Chough does not change native state.
+- 2026-11-03T04:44:19Z · advance · plan → build · native:approved ^t-34a1aa
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 747a12cc6fc396f0e8646fee1f2801e02b7d3035
+- 2026-11-03T04:47:58Z · advance · build → test · native:verifying ^t-24724c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 95d566b04196bf5d6a47bfdf0332eae22955ac88
+- 2026-11-03T04:49:10Z · advance · test → accept · native:verifying ^t-f68ea3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 36574fdde181138e56814bb23141db35584e81e7
+- 2026-11-03T04:49:51Z · advance · accept → done · native:archived ^t-23bf7c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 74e6a17f25da913ddfe9962acaacbdaf0da05e12
+- 2026-11-03T05:39:09Z · reset · done → plan · Finish the authorized capacity proposal through a new bounded diagnostic/provenance followup ^t-a094b7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: dbb66d979e2c34e41926401641d58971c0d65f65
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 55 case(s) and 200 observation(s) to re-check with `chough status`
+- 2026-11-03T05:40:26Z · advance · plan → build · native:approved ^t-729efd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: dbb66d979e2c34e41926401641d58971c0d65f65
+- 2026-11-03T06:09:00Z · advance · build → test · native:verifying ^t-6b4923
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 4ec128c9ddb838c7aede89bbd90dac94836b0299
+- 2026-11-03T06:13:20Z · advance · test → accept · native:verifying ^t-d82899
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 4ec128c9ddb838c7aede89bbd90dac94836b0299
+- 2026-11-03T06:17:47Z · advance · accept → done · native:archived ^t-f0cc0f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 69e1f17e2e5924883454c2d3a02052030f338df0
+- 2026-11-03T06:29:38Z · reset · done → plan · Repair the remaining PR51 writer capacity-refusal review defect under existing intent and standing authorization. ^t-431e56
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 9bd3d506b86cbb312a5a3e195697cd3138920039
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 57 case(s) and 203 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status finish-the-bounded-capacity-proposal-with-named-refusals-and-accurate-provenance`; Chough does not change native state.
+- 2026-11-03T06:29:39Z · advance · plan → build · native:approved ^t-f41922
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 9bd3d506b86cbb312a5a3e195697cd3138920039
+- 2026-11-03T06:52:44Z · advance · build → test · native:verifying ^t-c47c77
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 98a86bc14609c1c4cb68699b41ca9fa24665943b
+- 2026-11-03T06:52:47Z · advance · test → accept · native:verifying ^t-cd2b70
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 98a86bc14609c1c4cb68699b41ca9fa24665943b
+- 2026-11-03T07:02:58Z · gate-opened · accept → accept · Explicit exception requested after automatic approval review twice rejected corvid-agent native review under its interpretation of AGENTS.md; PR51 source and proof are published and independently reviewed. ^t-f42d40
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a55291d5cade18d06b7790107773058675c2d377
+- 2026-11-03T14:06:50Z · gate-closed · accept → accept · Explicit exception requested after automatic approval review twice rejected corvid-agent native review under its interpretation of AGENTS.md; PR51 source and proof are published and independently reviewed. ^t-7d8da2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 292a8d4e27368f3a8f73e936b00a8fbf84dbe813
+- 2026-11-03T14:07:48Z · advance · accept → done · native:archived ^t-fa73a7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: ba084ac0edf4136af2b8b059640a5bf6d941eb66
+- 2026-11-03T14:52:59Z · reset · done → plan · New cycle: approved-delta guard refusals tell the agent to ask the human and use the human's name as the native actor, contradicting the lifecycle actor rule (Leif standing instruction 2026-11-03 7:49 AM MT) ^t-c887f4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 8300b584e6e76c676d3da2f21aab9eb7e89b311a
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 57 case(s) and 203 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status refuse-over-bound-checkpoint-candidates-before-publishing-gate-history`; Chough does not change native state.
+- 2026-11-03T14:54:05Z · advance · plan → build · native:approved ^t-628df0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 8300b584e6e76c676d3da2f21aab9eb7e89b311a
+- 2026-11-03T14:55:19Z · advance · build → test · native:approved ^t-9a5c45
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 5810ca01ba05fbc5c822920217000049f84f981b
+- 2026-11-03T14:56:34Z · advance · test → accept · native:verifying ^t-497853
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: e45825f8ec7636d31f90c779928a398e85d7895c
+- 2026-11-03T15:21:45Z · advance · accept → done · native:archived ^t-77dd99
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 13037149fcd8a7681d1790008dada3b3207e2708
+- 2026-11-03T15:38:14Z · reset · done → intent · New cycle: Leif's approved intent (2026-11-03 8:09-8:27 AM MT) for one shared .agents skill copy and removing .claude ^t-7ef6dd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 58 case(s) and 205 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to`; Chough does not change native state.
+- 2026-11-03T15:38:25Z · skip · intent → design · CLI and docs change; no visuals or interactions ^t-231ab5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+- 2026-11-03T15:38:42Z · back · design → intent · Correction: intent was approved by Leif, not skipped; record it as advance ^t-63685e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, checkpoint references: 58 case(s) and 205 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to`; Chough does not change native state.
+- 2026-11-03T15:38:42Z · skip · intent → design · CLI and docs change; no visuals or interactions ^t-e66b13
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+- 2026-11-03T15:38:45Z · skip · design → plan · Design only when visuals or interactions change (Leif's interview answer); this is a CLI and docs change ^t-08bfcd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+- 2026-11-03T15:40:39Z · advance · plan → build · native:approved ^t-e69be5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+- 2026-11-03T15:47:30Z · advance · build → test · native:verifying ^t-22b1cc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+- 2026-11-03T16:33:35Z · advance · test → accept · Native change archived at 3d497fb after independent review https://github.com/CorvidLabs/chough/pull/54#pullrequestreview-5755869894 of d036d92 ^t-b31651
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 3d497fb7f83ecc179bd745889110366005201b6d
+- 2026-11-03T16:33:48Z · advance · accept → done · Leif's final acceptance 2026-11-03 9:32 AM MT, "Accept #54 and merge it"; native archived ^t-d3d572
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 3d497fb7f83ecc179bd745889110366005201b6d
+- 2026-11-03T16:52:30Z · reset · done → plan · New cycle: split the cli spec module so specs/cli/requirements.md has headroom (parent agent instruction 2026-11-03 9:46 AM MT, option 1; structural refactor, wording unchanged, existing intent covers it) ^t-c1ea4d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 7bd1b62dc8ac563c4100302088c89113977ffe7f
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 58 case(s) and 205 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status claude-host-installs-the-shared-agents-skill-copy-legacy-claude-copies-are-reported-and-removed-only-on-an-explicit`; Chough does not change native state.
+- 2026-11-03T16:53:45Z · advance · plan → build · native:approved ^t-d4cd47
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 7bd1b62dc8ac563c4100302088c89113977ffe7f
+- 2026-11-03T16:53:48Z · advance · build → test · native:approved ^t-94b714
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 7bd1b62dc8ac563c4100302088c89113977ffe7f
+- 2026-11-03T16:53:54Z · back · test → build · Correction: a repeated advance moved build to test before any implementation; returning to build ^t-d42f95
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 7bd1b62dc8ac563c4100302088c89113977ffe7f
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, checkpoint references: 58 case(s) and 205 observation(s) to re-check with `chough status`
+- 2026-11-03T16:59:36Z · advance · build → test · Build complete: split materialized, 23 history cases passed, 32/32 before/after identical, fledge verify passed 9 steps (258 tests). Authority: parent agent's 9:46 instruction relayed for leif.algo; independent review pending. ^t-d908fc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 1ca48c38a898c0e15a8987084c6b04619ca03d71
+- 2026-11-03T17:14:47Z · advance · test → accept · Independent review by the Chough teammate bot at exactly 878c409732e761574897a3c46e24846d9bf80aa7, nothing blocking: https://github.com/CorvidLabs/chough/pull/59#pullrequestreview-5756515246 (earlier at 8bd09b5: #pullrequestreview-5756425240). Recorded natively as specsync change review --reviewer corvid-agent. ^t-daf4ad
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: f2651b4a51fc9e01c05554fb5e5ac9192eb68dab
+- 2026-11-03T17:15:01Z · advance · accept → done · Human acceptance: Leif (0xLeif) in his Grok Bot chat, 2026-11-03 10:08 AM MT, verbatim: "Accept #59 and merge it". Relayed by the parent agent; recorded by corvid-agent. Native change finalized and archived by specsync change ship. ^t-884bd1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: f2651b4a51fc9e01c05554fb5e5ac9192eb68dab
+- 2026-11-03T15:52:49Z · reset · done → intent · New cycle: context knowledge directory, librarian default on and post-archive summary (Leif 2026-11-03 8:09-8:27 AM MT) ^t-ff84ae
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 58 case(s) and 205 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status approved-delta-guard-refusals-name-the-acting-agent-account-and-the-human-authority-note-instead-of-asking-the-human-to`; Chough does not change native state.
+- 2026-11-03T15:52:49Z · advance · intent → design ·  ^t-343867
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+- 2026-11-03T15:52:53Z · skip · design → plan · Design only when visuals or interactions change (Leif's interview answer); this is a CLI, docs and knowledge-directory change ^t-b562f3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+- 2026-11-03T15:54:28Z · advance · plan → build · native:approved ^t-7c0ca1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+- 2026-11-03T16:05:24Z · advance · build → test · native:verifying ^t-d751f5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 0363d4af368bb07cc07f16c2f5fff7645c1c05bc
+- 2026-11-03T19:56:38Z · advance · test → accept · Native change archived at be95e7d after independent review by the Chough teammate bot at 3b721ad3a7ae77d313277034e39a1ecfa1fc35d8, verdict APPROVE: https://github.com/CorvidLabs/chough/pull/55#pullrequestreview-5758470864. Recorded natively as specsync change review --reviewer corvid-agent at eae6f44 (lifecycle-only commits after 3b721ad) ^t-e28143
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: be95e7dbb06dd4970353a2f2da40026b23b70512
+- 2026-11-03T19:56:57Z · advance · accept → done · Human acceptance: Leif (0xLeif) in his Grok Bot chat, 2026-11-03 12:50 PM MST, verbatim: "Accept #55 and merge it". Relayed by the parent agent; recorded by corvid-agent. Native change finalized and archived by specsync change ship (be95e7d). ^t-e7c338
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: be95e7dbb06dd4970353a2f2da40026b23b70512
+- 2026-11-03T17:27:33Z · reset · done → plan · New cycle: read native SpecSync spec files under specs/ at any size, keeping every Chough record bound, plus composability guidance (parent agent instruction 2026-11-03 10:06 AM MT relaying Leif's 10:05 AM MT words: "Spec files can grow to whatever number they want ... we shouldn't really care about file size for specs."); traced to LIFE-11; no new HI criterion captured without Leif's confirmation ^t-532fc4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 4daf861509b70c14282ac16b5d0547d701e385b2
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 59 case(s) and 206 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-retention-and-transition-history-requirements-req-cli-018-and-req-cli-025-to-req-cli-027-to`; Chough does not change native state.
+- 2026-11-03T17:30:24Z · advance · plan → build · native:implementing ^t-48e679
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:implementing
+  - revision: c452125f04a7ede97cded21051d9b0be49754afb
+- 2026-11-03T17:31:37Z · advance · build → test · Build complete: REQ-cli-034 materialized; TC-cli-spec-files-read-at-any-size, TC-cli-build-reference-from-main-known-outdated and the 7 REQ-cli-032/005 bound cases passed on local-linux-x86_64; fledge verify passed. Authority: parent agent's 10:06 AM MT instruction relaying Leif's 10:05 AM MT words; independent review pending. ^t-618eea
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 4829099b814612e06211509c97146699408ae02c
+- 2026-11-03T17:32:43Z · iterate · test → test · Correction to the build-to-test note: the fledge verify run before that advance failed at the audit step (verification evidence stale because the case records were not yet committed). After committing them and rerunning specsync change check --commit, fledge lanes run verify passed (9 steps, 260 tests) on the committed tree at ced6a67. ^t-8efb34
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ced6a67b509d6aaa99c576f8194b4f1df83b7679
+- 2026-11-03T17:42:01Z · back · test → build · Review on #61 requested changes (https://github.com/CorvidLabs/chough/pull/61#pullrequestreview-5756873687): chough next still skipped a module context.md over 4 MiB; returning to build to read it at any size and re-approve REQ-cli-034 ^t-8b0428
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 55bc65a5b5818c25959100462d711c5a67c03337
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, checkpoint references: 59 case(s) and 206 observation(s) to re-check with `chough status`
+- 2026-11-03T17:47:24Z · advance · build → test · Build complete for the #61 review fixes: chough next searches context.md at any size (TC-cli-next-searches-large-context-md passed; failed first with 'larger than 4194304 bytes, not searched'), read_spec_file doc note, REQ-cli-034 re-approved. fledge verify: every test passed, but its audit step fails because src/main.rs is covered only by the dependent change search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of, which SpecSync starts only after this change is accepted. ^t-da284f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 3f4c3dcb21ca471dfb83d9502cb98d2b4c8beec5
+- 2026-11-03T18:05:07Z · back · test → plan · Review 5757165977 on #61: move the chough next context.md change (src/main.rs) and its acceptance line out of this change into the dependent change's follow-up PR, so this change covers only its own paths and verify passes ^t-b34a45
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0798c69b2aa8c6c491b6dffd375549b8ba37a814
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, checkpoint references: 59 case(s) and 206 observation(s) to re-check with `chough status`, native: the definition is verifying; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies`; Chough does not change native state.
+- 2026-11-03T18:05:42Z · advance · plan → build · Definition re-approved after review 5757165977; next's context.md change moved to the follow-up ^t-ce3d2b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 0798c69b2aa8c6c491b6dffd375549b8ba37a814
+- 2026-11-03T18:06:36Z · advance · build → test · Build done: next's change moved out; fmt, clippy and 260 tests pass ^t-28357c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 7e4055f43ab4a58700dd741a5febd301f91511c8
+- 2026-11-03T18:40:46Z · back · test → plan · Review 5757495438 finding 3: narrow REQ-cli-034 to name next's context.md cap and library snapshot's 4 MiB refusal as known exceptions ^t-dc2e81
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: f4eb2be87cf098fddb2be09fd999630d82cffe81
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, checkpoint references: 59 case(s) and 206 observation(s) to re-check with `chough status`, native: the definition is verifying; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status read-native-specsync-spec-files-under-specs-at-any-size-chough-s-65536-byte-structured-record-bound-no-longer-applies`; Chough does not change native state.
+- 2026-11-03T18:41:33Z · advance · plan → build · REQ-cli-034 narrowed and re-approved; no code change ^t-be949b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: f4eb2be87cf098fddb2be09fd999630d82cffe81
+- 2026-11-03T18:41:34Z · advance · build → test · Build unchanged since 8c4ae83; the requirement now names the next and library snapshot exceptions the code still has ^t-e0e5be
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: f4eb2be87cf098fddb2be09fd999630d82cffe81
+- 2026-11-03T23:42:01Z · advance · test → accept · Native changes C and D archived on #66. C: archived at 8494b0e after independent review at f4c9d29 (https://github.com/CorvidLabs/chough/pull/66#pullrequestreview-5759484795, verdict APPROVE for C), recorded natively as specsync change review --reviewer corvid-agent. D: archived at f404fb8 after independent review by the Chough teammate bot at 0df760fb7354821ad841fa3756d52e7fd628b8d9 (https://github.com/CorvidLabs/chough/pull/66#pullrequestreview-5760072603, verdict APPROVE for D), recorded natively as specsync change review --reviewer corvid-agent at 0df760f. ^t-b56572
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: f404fb8c57713e33c593385110c750735237a021
+- 2026-11-03T23:42:18Z · advance · accept → done · Human acceptance: Leif (0xLeif) in his Grok Bot chat, answering question card t808s9241 ("Accept and merge #66?"), 2026-11-03 4:39 PM MST, verbatim: "Accept #66, including the wider scope for the next fix, and merge it". Relayed by the parent agent; recorded by corvid-agent. Native changes finalized and archived by specsync change ship (C 8494b0e, D f404fb8). ^t-1ded6f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: f404fb8c57713e33c593385110c750735237a021
+- 2026-11-04T00:04:12Z · reset · done → plan · New cycle: 0.2.0 release prep. Leif (0xLeif) 2026-11-03 4:52 PM MST: "Tag v0.2.0 after #66 lands" (relayed by the parent agent); #66 merged as 8298e5a ^t-a243c2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 8298e5ab773aa7f6fb4c8685a6a29689951fd92b
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status search-a-module-context-md-for-its-lessons-heading-at-any-size-in-chough-next-as-req-cli-034-requires-instead-of`; Chough does not change native state.
+- 2026-11-04T00:04:23Z · advance · plan → build · Plan approved natively: version 0.2.0 and dated change log only ^t-800334
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: acebda3afc5efaf5ab5341a3080fb233cf9740c8
+- 2026-11-04T00:04:25Z · advance · build → test · Plan approved natively: version 0.2.0 and dated change log only ^t-f3c053
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: acebda3afc5efaf5ab5341a3080fb233cf9740c8
+- 2026-11-04T00:58:34Z · advance · test → accept · Test done: verify 9/9 (276 tests) and change check --commit verified at c3fd10d; independent review by the Chough teammate bot APPROVE at c3fd10d (https://github.com/CorvidLabs/chough/pull/67#pullrequestreview-5761682095); native review recorded by corvid-agent and change archived at 89c793c. Release authority: Leif (0xLeif) in his Grok Bot chat, answering question card t810s9257, 2026-11-03 4:52 PM MST, verbatim: "Tag v0.2.0 after #66 lands, and give me a prompt for Kimi to run a full cycle on a lab repo" (relayed by the parent agent) ^t-ab04c2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 89c793cb16b58d318ae9b4572a6b555766f4b041
+- 2026-11-04T00:58:49Z · advance · accept → done · Release prep accepted under Leif (0xLeif) in his Grok Bot chat, answering question card t810s9257, 2026-11-03 4:52 PM MST, verbatim: "Tag v0.2.0 after #66 lands, and give me a prompt for Kimi to run a full cycle on a lab repo" (relayed by the parent agent). corvid-agent records this under that authority; it is not a separate human acceptance of PR #67. Merge follows green hosted CI; tag v0.2.0 and the GitHub release follow the merge; no crates.io publish ^t-bbde12
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 89c793cb16b58d318ae9b4572a6b555766f4b041
+- 2026-11-04T02:13:11Z · reset · done → test · New cycle: #73 (DRIVE-5), chough stage backfill. Built and verified on its branch (verify passed 9/9 per the independent review at eddcc6a); native change archived at 54bee0a after the independent review ^t-8756f8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 54bee0aeeabe139dc50226e45f947e25d39c3bd1
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T02:13:28Z · advance · test → accept · Test done: verify 9/9 and change check --commit verified at eddcc6a; independent review by the Chough teammate bot APPROVE at eddcc6a (https://github.com/CorvidLabs/chough/pull/73#pullrequestreview-5762130468); native review recorded by corvid-agent (specsync change review --reviewer corvid-agent) and change archived at 54bee0a ^t-89b7a2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 54bee0aeeabe139dc50226e45f947e25d39c3bd1
+- 2026-11-04T02:13:43Z · advance · accept → done · Merge directed under Leif's (0xLeif) standing Chough authority (2026-11-03 7:49 AM MST: "I, 0xLeif, authorize bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge after all checks pass"), his t811u brief (5:03 PM MST) and his t820u ask (7:08 PM MST: "check out the C H O U G H repo and all those PRs and review all of them and get them merged too"), relayed by the parent agent. corvid-agent records this under that authority; Chough records no human approval or review itself, and native SpecSync state (archived) decided the gate ^t-f86f13
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 54bee0aeeabe139dc50226e45f947e25d39c3bd1
+- 2026-11-04T03:23:18Z · reset · done → test · New cycle: #68 (#56, #57, DRIVE-1, DRIVE-7), dotted IDs and small fixes. Built and verified on its branch (verify passed 9/9 per the independent review at f97323b); native change archived at 16eedcb after the independent review ^t-8e9a73
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 16eedcbb517fa46882ddee9f0ba79b80cdd28ca0
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T03:23:38Z · advance · test → accept · Test done: verify 9/9 and change check --commit verified at f97323b; independent review by the Chough teammate bot APPROVE at f97323b (https://github.com/CorvidLabs/chough/pull/68#pullrequestreview-5762585309); native review recorded by corvid-agent (specsync change review --reviewer corvid-agent) and change archived at 16eedcb ^t-223acd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 16eedcbb517fa46882ddee9f0ba79b80cdd28ca0
+- 2026-11-04T03:23:57Z · advance · accept → done · Merge directed under Leif's (0xLeif) standing Chough authority (2026-11-03 7:49 AM MST: "I, 0xLeif, authorize bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge after all checks pass"), his t811u brief (5:03 PM MST) and his t820u ask (7:08 PM MST: "check out the C H O U G H repo and all those PRs and review all of them and get them merged too"), relayed by the parent agent. corvid-agent records this under that authority; Chough records no human approval or review itself, and native SpecSync state (archived) decided the gate ^t-a49ffd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 16eedcbb517fa46882ddee9f0ba79b80cdd28ca0
+- 2026-11-04T04:53:45Z · reset · done → test · New cycle: #80, scale the SpecSync Archive check's status workers with the runner's CPUs (DRIVE-10, Leif's t813u speed direction). Built and verified on its branch (verify 9/9 and change check --commit at ee7318d); native change archived at e6f7af7 after the independent review ^t-e42fe2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: e6f7af71e88b422490afff5bfdba98911c8ba9c7
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T04:54:00Z · advance · test → accept · Test done: verify 9/9 and change check --commit verified at ee7318d; archive check timed on the box at 2, 4 and 8 workers (9 min 56 s, 5 min 4 s, 2 min 54 s); independent review by the Chough teammate bot APPROVE at ee7318d (https://github.com/CorvidLabs/chough/pull/80#pullrequestreview-5763387563); native review recorded by corvid-agent (specsync change review --reviewer corvid-agent) and change archived at e6f7af7 ^t-6fe260
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: e6f7af71e88b422490afff5bfdba98911c8ba9c7
+- 2026-11-04T04:54:15Z · advance · accept → done · Merge directed under Leif's (0xLeif) speed direction t813u (2026-11-03 6:30 PM MST: "make sure that the whole suite runs fast and is good"), his t820u ask (7:08 PM MST: "get them merged too") and his standing Chough authority (7:49 AM MST), relayed by the parent agent at 9:31 PM and 9:52 PM MST. corvid-agent records this under that authority; it is not a human approval or review ^t-093ad1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: e6f7af71e88b422490afff5bfdba98911c8ba9c7
+- 2026-11-04T05:28:12Z · reset · done → test · New cycle: #79 (FLOW-14, issue 75), stop what Chough started when Chough is stopped. Built and verified on its branch (verify 9/9, 297 tests at 8f18614); native changes archived at f7d2da5, 688ccc3 and 370d148 after the independent review ^t-8927df
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 370d14865e292a6e11c982009dffdbd7757efc0d
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T05:28:39Z · advance · test → accept · Test done: verify 9/9 and change check --commit verified at 8f18614; held-pipe repro TERM/INT/HUP end Chough in 7-15 ms with no survivors; independent review by the Chough teammate bot APPROVE at 8f18614 (https://github.com/CorvidLabs/chough/pull/79#pullrequestreview-5763624877); native reviews recorded by corvid-agent (specsync change review --reviewer corvid-agent) and the three changes archived at 370d148 ^t-546abe
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 370d14865e292a6e11c982009dffdbd7757efc0d
+- 2026-11-04T05:28:55Z · advance · accept → done · Merge directed under Leif's (0xLeif) standing Chough authority (2026-11-03 7:49 AM MST: "I, 0xLeif, authorize bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge after all checks pass"), his FLOW-14 answer (7:07 PM MST) and his t822u ask (7:26 PM MST: "Let's merge the PRs and review stuff"), relayed by the parent agent. corvid-agent records this under that authority; it is not a human approval or review ^t-77c0f0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 370d14865e292a6e11c982009dffdbd7757efc0d
+- 2026-11-04T06:10:18Z · reset · done → test · New cycle: #72 (DRIVE-6, Raven BUG-0004), let cases link a requirement the approved native delta adds before materialization. Built and verified on its branch (verify 9/9, 300 tests at d2fb697); native change archived at 526da50 after the independent review ^t-a22208
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 526da503cca456db0ac91aaf07d49f6ffcf299f5
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T06:10:35Z · advance · test → accept · Test done: verify 9/9 and change check --commit verified at d2fb697; independent review by the Chough teammate bot APPROVE at d2fb697 (https://github.com/CorvidLabs/chough/pull/72#pullrequestreview-5763936343); native review recorded by corvid-agent (specsync change review --reviewer corvid-agent) and change archived at 526da50 ^t-f7db22
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 526da503cca456db0ac91aaf07d49f6ffcf299f5
+- 2026-11-04T06:10:51Z · advance · accept → done · Merge directed under Leif's (0xLeif) standing Chough authority (2026-11-03 7:49 AM MST: "I, 0xLeif, authorize bounded fixes to existing Chough bug tickets through implementation, testing, independent review, native closeout and merge after all checks pass") and his t822u ask (7:26 PM MST: "Let's merge the PRs and review stuff"), relayed by the parent agent. corvid-agent records this under that authority; it is not a human approval or review ^t-df3f22
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 526da503cca456db0ac91aaf07d49f6ffcf299f5
+- 2026-11-04T06:41:20Z · reset · done → test · Record #70 test, accept and done after archive ^t-ba94af
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: d572c28678aada510f1e82eae5d0987b4e845436
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T06:41:38Z · advance · test → accept · Native review recorded and change archived ^t-899d81
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: d572c28678aada510f1e82eae5d0987b4e845436
+- 2026-11-04T06:41:56Z · advance · accept → done · Archived; closeout recorded ^t-8c5de9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: d572c28678aada510f1e82eae5d0987b4e845436
+- 2026-11-04T07:03:30Z · reset · done → test · Re-record #71 after merging main 6a525b8 ^t-40754a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 67ac30fabf9b5f95b4c4798aa9bd27634cbab788
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T07:06:03Z · advance · test → accept · Native review recorded as corvid-agent and change archived ^t-11b4d2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: dda1eb8e937c58364e40dd4ef4661972d9e77681
+- 2026-11-04T07:06:24Z · advance · accept → done · Archived; closeout recorded ^t-ee4383
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: dda1eb8e937c58364e40dd4ef4661972d9e77681
+- 2026-11-04T07:36:25Z · reset · done → test · Record #78 test, accept and done after archive ^t-426f2a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: ab42382f94d31afc2452e25509f0c1cf897e348c
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T07:36:45Z · advance · test → accept · Native review recorded as corvid-agent and change archived ^t-3cb3c8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: ab42382f94d31afc2452e25509f0c1cf897e348c
+- 2026-11-04T07:37:06Z · advance · accept → done · Archived; closeout recorded ^t-388c69
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: ab42382f94d31afc2452e25509f0c1cf897e348c
+- 2026-11-04T20:21:18Z · reset · done → intent · New cycle: issue #100, Chough's size bounds leaked onto native sources (HI export, SpecSync archive and policy files) and pushed an agent in CorvidLabs/jackdaw to rewrite the human's HI intent ^t-733f2e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+  - refresh: intent: HI criteria and FRD; append new criteria, never rewrite approved ones, design: canonical prototype and companion; their human approval covers the old version, plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T20:21:34Z · advance · intent → design · Intent is the owner's verbatim rule in issue #100, captured as LIFE-15; design skipped (no visual or interaction change) ^t-8545c7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+- 2026-11-04T20:21:38Z · skip · design → plan · CLI and file-reading change only; no visual or interaction change ^t-144a88
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+- 2026-11-04T20:33:59Z · advance · plan → build · Definition approved natively as claude under Leif's issue #100 and 2026-11-04 instruction ^t-4b5572
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+- 2026-11-04T20:39:28Z · advance · build → test · Build done: native reads at full size, skill guidance, docs; seven new cases passed on local-macos-arm64 ^t-e4931a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: a3ed589db6e436359ec9ad0d925f3ee8375b7b38
+- 2026-11-04T15:44:58Z · reset · done → plan · New cycle for issue #85 (replaces closed #89): FLOW-15 is captured from Leif's 2026-11-04 choice ^t-c70310
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1ea894c91144947915dcaccf11aecb0f6ab86751
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T15:45:36Z · advance · plan → build · Plan approved natively (0xLeif) ^t-6b9c3b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 1ea894c91144947915dcaccf11aecb0f6ab86751
+- 2026-11-04T15:47:44Z · advance · build → test · Native change verified (specsync change check --commit) ^t-81d8d0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 72cb859928f7ff95001321c2bef965e4885eb280
+- 2026-11-04T15:47:55Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-0d15c7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 72cb859928f7ff95001321c2bef965e4885eb280
+- 2026-11-04T15:47:55Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-1257fc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 72cb859928f7ff95001321c2bef965e4885eb280
+- 2026-11-04T16:40:04Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-b085aa
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 2d7326290b689bc2a70e090fc94688baaf81ae80
+- 2026-11-04T16:40:05Z · back · accept → build · Review on #92 (0xLeif inline 4470207697): bound the effective-command text in the warning so next stays within 16384 bytes ^t-891087
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 2d7326290b689bc2a70e090fc94688baaf81ae80
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 229 observation(s) to re-check with `chough status`
+- 2026-11-04T16:41:05Z · advance · build → test · Native change verified (specsync change check --commit) ^t-ec0ba8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 54234414a77655b98b09e2eb83922f3adf55f77a
+- 2026-11-04T16:41:17Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-dd3206
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 54234414a77655b98b09e2eb83922f3adf55f77a
+- 2026-11-04T16:41:17Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-c245b0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 54234414a77655b98b09e2eb83922f3adf55f77a
+- 2026-11-04T23:14:48Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-2ce06e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1a50d97192a0215732779247c4374e0405347af5
+- 2026-11-04T23:15:09Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-10f94a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 1a50d97192a0215732779247c4374e0405347af5
+- 2026-11-04T15:31:01Z · reset · done → plan · New cycle for issue #86: LIFE-7 and LIFE-3 cover showing a failed native check ^t-3653b1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T15:31:43Z · advance · plan → build · Plan approved natively (0xLeif) ^t-d77177
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+- 2026-11-04T15:36:40Z · advance · build → test · Native change verified (specsync change check --commit) ^t-08e818
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 21c1262833f5dde9490722b07d3792fe36725dac
+- 2026-11-04T15:36:47Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-91af72
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 21c1262833f5dde9490722b07d3792fe36725dac
+- 2026-11-04T15:36:47Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-a4a03d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 21c1262833f5dde9490722b07d3792fe36725dac
+- 2026-11-04T16:32:47Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-09d90b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0b4c5d7eee83b2980292132b050308d7d4ad32d1
+- 2026-11-04T16:32:48Z · back · accept → build · Review on #91 (0xLeif inline 4470206868): verifying alone must not clear the current-tree note; SpecSync handoff readiness says when the tree moved ^t-1a0ec9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 0b4c5d7eee83b2980292132b050308d7d4ad32d1
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 227 observation(s) to re-check with `chough status`
+- 2026-11-04T16:35:23Z · advance · build → test · Native change verified (specsync change check --commit) ^t-05ccf4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 1dd26ae721c13daf77648f6f3cd8c19b75da79cb
+- 2026-11-04T16:35:31Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-8ff42c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 1dd26ae721c13daf77648f6f3cd8c19b75da79cb
+- 2026-11-04T16:35:31Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-32c77d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1dd26ae721c13daf77648f6f3cd8c19b75da79cb
+- 2026-11-04T23:28:26Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-eaee64
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a5a34fd04f272001ce5a060f04b04c8950b9271d
+- 2026-11-04T23:28:54Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-df2d19
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: a5a34fd04f272001ce5a060f04b04c8950b9271d
+- 2026-11-04T23:38:49Z · reset · done → plan · New cycle on #91 for remove-the-65536-byte-cap-on-spec-requirements-files-from-tests-spec-split-rs-spec-files-have-no-size-cap: hosted CI failed tests/spec_split.rs with specs/cli/requirements.md at 66,330 bytes after #92 and #91; Leif chose Remove the size test (2026-11-04). Recorded after the definition was approved and committed in ceb9be4. ^t-b43df8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 149cc513d7ea08ddac64f5cc615fe1c123546919
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 257 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status show-the-latest-failed-native-check-in-next-and-say-when-it-has-not-passed-for-this-tree-issue-86`; Chough does not change native state.
+- 2026-11-04T23:38:51Z · advance · plan → build · Plan approved natively (0xLeif) ^t-bbf6ba
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 149cc513d7ea08ddac64f5cc615fe1c123546919
+- 2026-11-04T23:38:57Z · advance · build → test · Native change verified (specsync change check --commit) ^t-8c967f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 0c6cee051c6421b0ad717fef5430b7ce7c5c4136
+- 2026-11-04T23:39:02Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-607cee
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 0c6cee051c6421b0ad717fef5430b7ce7c5c4136
+- 2026-11-04T23:39:02Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-108286
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0c6cee051c6421b0ad717fef5430b7ce7c5c4136
+- 2026-11-04T23:41:23Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-c2a74e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 32f77e8d3e9bd91e298d74180e0e98b4e132db25
+- 2026-11-04T23:42:04Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-853f0a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 32f77e8d3e9bd91e298d74180e0e98b4e132db25
+- 2026-11-05T00:45:18Z · reset · done → plan · New cycle: hosted SpecSync Archive timed out at 10 minutes on #93; Leif chose Make the check faster (2026-11-04) ^t-0dc6d9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 166a8f52caa772fa6bb33361e195772f0005e2f4
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 259 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status remove-the-65536-byte-cap-on-spec-requirements-files-from-tests-spec-split-rs-spec-files-have-no-size-cap`; Chough does not change native state.
+- 2026-11-05T00:45:53Z · advance · plan → build · Plan approved natively (0xLeif) ^t-c4ee40
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 166a8f52caa772fa6bb33361e195772f0005e2f4
+- 2026-11-05T00:52:02Z · advance · build → test · Native change verified (specsync change check --commit) ^t-5b538d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 2f1161cf0db1b8f8b5c4ea86f1d47182c20207f7
+- 2026-11-05T00:52:03Z · advance · test → accept · Archive fixtures pass on Linux (local-linux-aarch64): Ran 23 tests, OK, including the 4 new shard tests that failed first ^t-5b9355
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 2f1161cf0db1b8f8b5c4ea86f1d47182c20207f7
+- 2026-11-05T00:52:03Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-6496f3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 2f1161cf0db1b8f8b5c4ea86f1d47182c20207f7
+- 2026-11-05T00:57:23Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-11685b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 598815f07e454433dc5a6b1d185904da4f569d72
+- 2026-11-05T00:57:46Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-15bc15
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 598815f07e454433dc5a6b1d185904da4f569d72
+- 2026-11-04T15:59:03Z · reset · done → plan · New cycle for issue #87: LIFE-7 covers reporting a failed native read in plain words ^t-655afb
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T15:59:37Z · advance · plan → build · Plan approved natively (0xLeif) ^t-668581
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+- 2026-11-04T16:01:57Z · advance · build → test · Native change verified (specsync change check --commit) ^t-4bd236
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 8c4f230cdd6a26d13f46a930bb5f894fa2ccf80e
+- 2026-11-04T16:02:02Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-7186ee
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 8c4f230cdd6a26d13f46a930bb5f894fa2ccf80e
+- 2026-11-04T16:02:02Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-9bc1db
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 8c4f230cdd6a26d13f46a930bb5f894fa2ccf80e
+- 2026-11-04T23:32:25Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-bdacae
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a51a52f47a2b73ddcbd31834430be98167e05824
+- 2026-11-04T23:32:49Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-81ee43
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: a51a52f47a2b73ddcbd31834430be98167e05824
+- 2026-11-04T16:45:09Z · reset · done → plan · New cycle for issue #81: FLOW-14 covers stopping everything Chough started; LIFE-7 covers reporting what happened ^t-19cbdd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T16:45:47Z · advance · plan → build · Plan approved natively (0xLeif) ^t-2e67b4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 91a1fdd82a4e314e5037c6256f17199ef0d604f0
+- 2026-11-04T16:51:01Z · advance · build → test · Native change verified (specsync change check --commit) ^t-4ad5c3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: d777675f0666aa9c122188302200b50d1c5a9716
+- 2026-11-04T16:51:10Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-93ce17
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: d777675f0666aa9c122188302200b50d1c5a9716
+- 2026-11-04T16:51:10Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-eafce9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: d777675f0666aa9c122188302200b50d1c5a9716
+- 2026-11-04T17:22:04Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-e2d2e5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 109d47ac2f7ee4e072395f4e668b934177f9d6b5
+- 2026-11-04T17:22:05Z · back · accept → build · Review on #95: unique sleep numbers in the new stop tests, locale-independent head_revision, docs and trace nits ^t-fda613
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 109d47ac2f7ee4e072395f4e668b934177f9d6b5
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 228 observation(s) to re-check with `chough status`
+- 2026-11-04T17:23:26Z · advance · build → test · Native change verified (specsync change check --commit) ^t-812210
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 64a6b70fa9671645ae67730131a0c0c3c21c25ec
+- 2026-11-04T17:23:36Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-4c7b3b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 64a6b70fa9671645ae67730131a0c0c3c21c25ec
+- 2026-11-04T17:23:36Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-f29b35
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 64a6b70fa9671645ae67730131a0c0c3c21c25ec
+- 2026-11-04T19:39:55Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-4c914e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 173c900352b292df54fbe0b7f4dc6d732c1945eb
+- 2026-11-04T19:39:56Z · back · accept → build · Review on #95: stop tests must find and reap only their own fixture's processes, not every same-user process with a matching command line ^t-e71a36
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 173c900352b292df54fbe0b7f4dc6d732c1945eb
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 232 observation(s) to re-check with `chough status`
+- 2026-11-04T19:42:09Z · advance · build → test · Native change verified (specsync change check --commit) ^t-885e56
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: dd444ceb53fa7046f8bb00d4f49b75776a2b14e1
+- 2026-11-04T19:42:20Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-1e8b51
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: dd444ceb53fa7046f8bb00d4f49b75776a2b14e1
+- 2026-11-04T19:42:20Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-45e6b6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: dd444ceb53fa7046f8bb00d4f49b75776a2b14e1
+- 2026-11-04T23:46:24Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-00f7f1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0730d95d77cb3a8cba0666d4006f0e3e4dd0d2ec
+- 2026-11-04T23:47:12Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-fd0e8f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 0730d95d77cb3a8cba0666d4006f0e3e4dd0d2ec
+- 2026-11-04T17:10:14Z · reset · done → plan · New cycle for issue #88: KNOW-13 is captured from Leif's 2026-11-04 choice ^t-d5326d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 2896f5ada1947a307b9958007a109c06dc3a2831
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T17:10:51Z · advance · plan → build · Plan approved natively (0xLeif) ^t-0f7abd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 2896f5ada1947a307b9958007a109c06dc3a2831
+- 2026-11-04T17:13:33Z · advance · build → test · Native change verified (specsync change check --commit) ^t-aed42f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 457a4af979db7874b1c88212c04928e8254f3b33
+- 2026-11-04T17:13:40Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-638f7c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 457a4af979db7874b1c88212c04928e8254f3b33
+- 2026-11-04T17:13:40Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-5766d7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 457a4af979db7874b1c88212c04928e8254f3b33
+- 2026-11-04T17:31:39Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-21461b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 4e755d044667fba0a317244f4cababba6c6c5132
+- 2026-11-04T17:31:40Z · back · accept → build · Review on #97: a recorded retention off must stop trimming at done ^t-34f903
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 4e755d044667fba0a317244f4cababba6c6c5132
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 227 observation(s) to re-check with `chough status`
+- 2026-11-04T17:32:46Z · advance · build → test · Native change verified (specsync change check --commit) ^t-c685d5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 38490df598fae0bf8ccf3f332ecee927e0851fc7
+- 2026-11-04T17:32:54Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-aa490b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 38490df598fae0bf8ccf3f332ecee927e0851fc7
+- 2026-11-04T17:32:54Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-a0c64f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 38490df598fae0bf8ccf3f332ecee927e0851fc7
+- 2026-11-04T23:50:35Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-ba801c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 4f6a058f7bfdac40c5c8590207eee90a49505b4e
+- 2026-11-04T23:51:07Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-9a4c56
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 4f6a058f7bfdac40c5c8590207eee90a49505b4e
+- 2026-11-04T07:56:57Z · reset · done → test · Native change archived after approved review 5765093646; recording test, accept and done ^t-b36c46
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 2698bd0b1179d0c8854ec1861f2418245481829c
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T07:57:17Z · advance · test → accept · Verify lane green at ad5c48a (345 passed, 0 failed); approved in review 5765093646 ^t-3230d2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 2698bd0b1179d0c8854ec1861f2418245481829c
+- 2026-11-04T07:57:36Z · advance · accept → done · Accepted by Chough bot review 5765093646; native change archived ^t-3a56e8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 2698bd0b1179d0c8854ec1861f2418245481829c
+- 2026-11-04T15:06:58Z · reset · done → plan · New cycle for issue #84: LIFE-3 and DRIVE-3 already cover showing open questions and the session inbox, so intent is covered ^t-dfe1ce
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 290cce3a024425cfd35600a43b8e458beaa89436
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T15:07:32Z · advance · plan → build · Plan approved natively (claude-agent under Leif standing approval 2026-11-04) ^t-8eb222
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 290cce3a024425cfd35600a43b8e458beaa89436
+- 2026-11-04T15:11:21Z · advance · build → test · Native change verified (specsync change check --commit) ^t-77bafa
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: d4e58b0f0df9c24b931d17f975c7d4bb51ed853f
+- 2026-11-04T15:11:30Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-964bb9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: d4e58b0f0df9c24b931d17f975c7d4bb51ed853f
+- 2026-11-04T15:11:30Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10); corvid-agent PR review is an agent review, not this ^t-629c74
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: d4e58b0f0df9c24b931d17f975c7d4bb51ed853f
+- 2026-11-04T15:14:12Z · reset · done → test · Native change let-chough-session-new-accept-the-specsync-module-ids-that-init-accepts-such-as-chat-service-review-thread-4465229406 archived after Chough bot review 5770708343 (agent review); recording test, accept and done ^t-9b466f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: a287aaa76399cbf71259e94873d31c6c7fc890c6
+  - refresh: test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`
+- 2026-11-04T15:14:38Z · advance · test → accept · Verify lane green at db51a99 (9 steps, 346 passed, 0 failed); Chough bot review 5770708343 ^t-c2c688
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: a287aaa76399cbf71259e94873d31c6c7fc890c6
+- 2026-11-04T15:15:05Z · advance · accept → done · Accepted on Chough bot review 5770708343 (agent review, not human); native change archived ^t-dd6515
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: a287aaa76399cbf71259e94873d31c6c7fc890c6
+- 2026-11-05T01:15:17Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10); corvid-agent PR review is an agent review, not this ^t-5751f0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 33582575094356e9cb8a72b24b3e12a2bd683ac2
+- 2026-11-05T01:16:09Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-0453f3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 33582575094356e9cb8a72b24b3e12a2bd683ac2
+- 2026-11-04T16:20:53Z · reset · done → plan · New cycle for issue #83: DRIVE-11 is captured from Leif's 2026-11-04 choice ^t-409405
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: d9269bec6ea0bc6c9e6c9f37bb9a6f6a05cd5024
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T16:21:48Z · advance · plan → build · Plan approved natively (0xLeif) ^t-11d70d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: e4d805a734617854a9c3804abefae578de498d21
+- 2026-11-04T16:24:14Z · advance · build → test · Native change verified (specsync change check --commit) ^t-9e42be
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 2bbbd5d6421de06a24d3bcc14e446a8d489410d4
+- 2026-11-04T16:24:23Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-0022d6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 2bbbd5d6421de06a24d3bcc14e446a8d489410d4
+- 2026-11-04T16:24:23Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-06ec56
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 2bbbd5d6421de06a24d3bcc14e446a8d489410d4
+- 2026-11-04T17:25:43Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-69dcff
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6fbf6605a11d746d75d65cd6cffa6f9ced463491
+- 2026-11-04T17:25:44Z · back · accept → build · Review on #94: test REQ-history-007 in sessions mode, assert the adoption refusal, write .gitignore atomically ^t-62318d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 6fbf6605a11d746d75d65cd6cffa6f9ced463491
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 228 observation(s) to re-check with `chough status`
+- 2026-11-04T17:27:40Z · advance · build → test · Native change verified (specsync change check --commit) ^t-6f7db8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 81f9764f864043374c96f40464225e3679299cfc
+- 2026-11-04T17:29:10Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-b00911
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: e6d8d98be720b65ed4942f35c298ffaf73afbdf8
+- 2026-11-04T17:29:10Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-b3db9e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: e6d8d98be720b65ed4942f35c298ffaf73afbdf8
+- 2026-11-05T01:24:40Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-a1b78d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 55d860ebf0abc5010eac9e2950c7eb40d9a9f2a4
+- 2026-11-05T01:25:40Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-12b215
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 55d860ebf0abc5010eac9e2950c7eb40d9a9f2a4
+- 2026-11-04T16:57:26Z · reset · done → plan · New cycle for issue #82: DRIVE-3 and REQ-history-002 cover it; Leif chose the cleanup on 2026-11-04 ^t-78fe78
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 75a732d8243181c375ee3c4f2651408ff9b41ab2
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T16:57:56Z · advance · plan → build · Plan approved natively (0xLeif) ^t-a2201b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 75a732d8243181c375ee3c4f2651408ff9b41ab2
+- 2026-11-04T17:00:43Z · advance · build → test · Native change verified (specsync change check --commit) ^t-57dea0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 7318e2bab97d2a4f7fdf8f20259daac71e02ee0a
+- 2026-11-04T17:00:49Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-d8eabd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 7318e2bab97d2a4f7fdf8f20259daac71e02ee0a
+- 2026-11-04T17:00:49Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-41fdef
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 7318e2bab97d2a4f7fdf8f20259daac71e02ee0a
+- 2026-11-04T17:05:12Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-094fed
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b3a63d96cdcc8ed844bd8827992aba4a8b3429c4
+- 2026-11-04T17:05:30Z · back · accept → build · REQ-history-002 wording is pinned by tests/spec_split.rs; the cleanup rule became ADDED REQ-history-008 ^t-c91770
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: e2d8da0a9a2e02f1480410fd3c4af1c88006b7d1
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 226 observation(s) to re-check with `chough status`
+- 2026-11-04T17:05:36Z · advance · build → test · Native change verified (specsync change check --commit) ^t-b47f57
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: b01955c1b81c41669d65296a42a6db746867ad8d
+- 2026-11-04T17:05:43Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-e62be3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: b01955c1b81c41669d65296a42a6db746867ad8d
+- 2026-11-04T17:05:43Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-a15bea
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b01955c1b81c41669d65296a42a6db746867ad8d
+- 2026-11-04T17:17:08Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-8f8aa4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: bf062892d9cc40801d4381a484300d63b889ee06
+- 2026-11-04T17:17:09Z · back · accept → build · Review on #96: discard_published must not delete an event a saved checkpoint already points to ^t-fed83e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: bf062892d9cc40801d4381a484300d63b889ee06
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 228 observation(s) to re-check with `chough status`
+- 2026-11-04T17:19:50Z · advance · build → test · Native change verified (specsync change check --commit) ^t-13fe23
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 97cc6cbedfc77cd7d76e112c54f6ff9db4c7356a
+- 2026-11-04T17:19:57Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-681787
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 97cc6cbedfc77cd7d76e112c54f6ff9db4c7356a
+- 2026-11-04T17:19:57Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-e1885b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 97cc6cbedfc77cd7d76e112c54f6ff9db4c7356a
+- 2026-11-04T19:32:47Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-b54408
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: e655f23e60983f7fe37a0c1742e94c8ae7fd9af8
+- 2026-11-04T19:32:48Z · back · accept → build · Review on #96: a saved event must survive a move of its checkpoint to any path, so retire published events when the save resolves its checkpoint ^t-9fec40
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: e655f23e60983f7fe37a0c1742e94c8ae7fd9af8
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 230 observation(s) to re-check with `chough status`
+- 2026-11-04T19:35:58Z · advance · build → test · Native change verified (specsync change check --commit) ^t-6ffbf5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 1a53e58a5775febae991d91789c6beb289df4ba1
+- 2026-11-04T19:36:06Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-91dc3f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 1a53e58a5775febae991d91789c6beb289df4ba1
+- 2026-11-04T19:36:06Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-60040d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 1a53e58a5775febae991d91789c6beb289df4ba1
+- 2026-11-05T01:32:20Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-637fbc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 104e3794138ab5129672f4ff9d374f9da3ae2ee3
+- 2026-11-05T01:33:01Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-73a54f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 104e3794138ab5129672f4ff9d374f9da3ae2ee3
+- 2026-11-05T01:45:00Z · reset · done → plan · New cycle on #96 for expect-each-archive-own-modules-in-the-approval-guard-test-so-a-history-only-archive-passes: hosted CI failed the approval guard test after the history-only #96 archive ^t-661a78
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 322a2e134fac0e4290b53b7dfa211fef6a6bde0c
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 337 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status remove-the-history-events-a-command-published-when-its-save-is-refused-because-the-session-file-vanished-and-test-that`; Chough does not change native state.
+- 2026-11-05T01:45:37Z · advance · plan → build · Plan approved natively (0xLeif) ^t-af9298
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 322a2e134fac0e4290b53b7dfa211fef6a6bde0c
+- 2026-11-05T01:45:42Z · advance · build → test · Native change verified (specsync change check --commit) ^t-5bd8e3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9f382aa191248e416d5a4815ae1d20f7331ea80c
+- 2026-11-05T01:45:43Z · advance · test → accept · The guard test fails before the change on this branch (unchanged: history) and passes after, on Linux (local-linux-aarch64) ^t-f9bdad
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9f382aa191248e416d5a4815ae1d20f7331ea80c
+- 2026-11-05T01:45:43Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-4a617d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 9f382aa191248e416d5a4815ae1d20f7331ea80c
+- 2026-11-05T01:48:35Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-87b06b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 47063fa2926ac657539df8a16fc74cd9a6d5422a
+- 2026-11-05T01:49:17Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-95367c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 47063fa2926ac657539df8a16fc74cd9a6d5422a
+- 2026-11-04T18:10:28Z · reset · done → plan · New cycle for issue #98: DRIVE-3 and LIFE-8 cover it; Leif asked for a PR stacked on #77 ^t-ec34a1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 75a732d8243181c375ee3c4f2651408ff9b41ab2
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 224 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status split-the-cli-spec-move-the-timing-and-reporting-requirements-req-cli-020-req-cli-024-and-req-cli-028-to-a-new`; Chough does not change native state.
+- 2026-11-04T18:10:58Z · advance · plan → build · Plan approved natively (0xLeif) ^t-3d2078
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 75a732d8243181c375ee3c4f2651408ff9b41ab2
+- 2026-11-04T18:12:44Z · advance · build → test · Native change verified (specsync change check --commit) ^t-270946
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: a29a3dfff39c545773ed70af71e6c07026e8a375
+- 2026-11-04T18:12:50Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-886b00
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: a29a3dfff39c545773ed70af71e6c07026e8a375
+- 2026-11-04T18:12:50Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-e11d9a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a29a3dfff39c545773ed70af71e6c07026e8a375
+- 2026-11-04T19:23:52Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-fde2fd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 246125479feb19c39b7b025d5449425f5d0cdbfa
+- 2026-11-04T19:23:53Z · back · accept → build · Review on #99: a partly written inbox entry must not break status, next or prune, and the unreadable-entry refusal needs a test ^t-776d46
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 246125479feb19c39b7b025d5449425f5d0cdbfa
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 226 observation(s) to re-check with `chough status`
+- 2026-11-04T19:27:31Z · advance · build → test · Native change verified (specsync change check --commit) ^t-610f36
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 149b8667cddb945503ff97d09552e14b0b719d63
+- 2026-11-04T19:27:40Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-a8e965
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 149b8667cddb945503ff97d09552e14b0b719d63
+- 2026-11-04T19:27:40Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-78aa2e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 149b8667cddb945503ff97d09552e14b0b719d63
+- 2026-11-05T01:37:18Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-6d87ee
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: df7e3e471a045e67b5992aa084a73bf955cec051
+- 2026-11-05T01:37:53Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-f65c2c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: df7e3e471a045e67b5992aa084a73bf955cec051
+- 2026-11-05T02:29:50Z · reset · done → plan · New cycle: knowledge/ was never built in Chough own repo and nothing builds it unless the trim removes something; Leif said yes (2026-11-04) ^t-1698d5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: f7e576410539c2922330afd773b64fa5df4d9636
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 347 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status lock-inbox-add-against-a-concurrent-archive-and-protect-observations-named-by-unfolded-inbox-entries-from-retention`; Chough does not change native state.
+- 2026-11-05T02:29:51Z · advance · plan → build · Plan approved natively (0xLeif) ^t-7f69a4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: f7e576410539c2922330afd773b64fa5df4d9636
+- 2026-11-05T02:32:42Z · advance · build → test · Native change verified (specsync change check --commit) ^t-101efa
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: aef4bb41221c5c3c36f4ac1ba418eea13d9a2a0c
+- 2026-11-05T02:32:57Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-e7dfc5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: aef4bb41221c5c3c36f4ac1ba418eea13d9a2a0c
+- 2026-11-05T02:32:57Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-cac8ee
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: aef4bb41221c5c3c36f4ac1ba418eea13d9a2a0c
+- 2026-11-05T02:40:17Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-955cb2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: d09e53234ab2e4d3eec3e4b8f6fca8e808d65260
+- 2026-11-05T02:40:46Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-6e9508
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: d09e53234ab2e4d3eec3e4b8f6fca8e808d65260
+- 2026-11-05T02:42:55Z · reset · done → plan · New cycle on #106 for record-the-2026-11-04-retention-lessons-in-the-history-lesson-source: the history lessons need their own covering change ^t-23a6bd
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 2660d7e3a6a2e9ab01f7d304f48a3b51fabc0ba5
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 359 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status build-the-knowledge-directory-by-default-chough-init-creates-it-and-every-move-into-done-refreshes-it-after-the-trim`; Chough does not change native state.
+- 2026-11-05T02:42:56Z · advance · plan → build · Plan approved natively (0xLeif) ^t-979893
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 2660d7e3a6a2e9ab01f7d304f48a3b51fabc0ba5
+- 2026-11-05T02:43:00Z · advance · build → test · Native change verified (specsync change check --commit) ^t-f62500
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 2b26a0c42ecde4f06eaca3befc891109148f6eba
+- 2026-11-05T02:43:01Z · advance · test → accept · Lessons only: no product test applies; the full verify lane runs next on Linux ^t-d60735
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 2b26a0c42ecde4f06eaca3befc891109148f6eba
+- 2026-11-05T02:43:01Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-8e4c1f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 2b26a0c42ecde4f06eaca3befc891109148f6eba
+- 2026-11-05T02:45:09Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-86d2ae
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: a1c91b197be8c29621be579cc9acdf88558fb33c
+- 2026-11-05T02:45:34Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-6e29c9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: a1c91b197be8c29621be579cc9acdf88558fb33c
+- 2026-11-05T03:02:55Z · reset · done → plan · New cycle: make the knowledge directory an Obsidian-style vault that compounds everything; Leif chose Front matter + MD links (2026-11-04) ^t-9a2099
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 8fbbbe71951f9145b91313c7cbde6524d709734a
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 359 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status record-the-2026-11-04-retention-lessons-in-the-history-lesson-source`; Chough does not change native state.
+- 2026-11-05T03:02:56Z · advance · plan → build · Plan approved natively (0xLeif) ^t-e0a307
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 8fbbbe71951f9145b91313c7cbde6524d709734a
+- 2026-11-05T03:12:48Z · advance · build → test · Native change verified (specsync change check --commit) ^t-95a915
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 6d931d87545617baa95e27d4751a6c9c89266b88
+- 2026-11-05T03:13:02Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-a10788
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 6d931d87545617baa95e27d4751a6c9c89266b88
+- 2026-11-05T03:13:02Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-67d7c1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6d931d87545617baa95e27d4751a6c9c89266b88
+- 2026-11-05T03:19:54Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-b69ad1
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 7d537ce1ef4cc7e0e53f5bc31e58f10eb6d2fdf3
+- 2026-11-05T03:20:19Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-c598b4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 7d537ce1ef4cc7e0e53f5bc31e58f10eb6d2fdf3
+- 2026-11-05T03:29:57Z · reset · done → plan · New cycle on #107 for corvid-agent review 5779445909: sub-criterion IDs and whole Trace lists in the vault, and the KNOW-14 wording Leif chose to fix ^t-5845ed
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 16dc3294fc8e91a3f6a116914412fe8714a28ddd
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 373 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status make-the-knowledge-directory-an-obsidian-style-vault-yaml-front-matter-on-every-note-iso-dates-standard-links-and`; Chough does not change native state.
+- 2026-11-05T03:29:58Z · advance · plan → build · Plan approved natively (0xLeif) ^t-f2e875
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 16dc3294fc8e91a3f6a116914412fe8714a28ddd
+- 2026-11-05T03:31:23Z · advance · build → test · Native change verified (specsync change check --commit) ^t-de29f9
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 6821c795c70a733a3ea643beadf6e1a9cad8346a
+- 2026-11-05T03:31:36Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-e68f1d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 6821c795c70a733a3ea643beadf6e1a9cad8346a
+- 2026-11-05T03:31:36Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-a42881
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6821c795c70a733a3ea643beadf6e1a9cad8346a
+- 2026-11-05T03:34:08Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-c48a8d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: e4d3b70362d8e9f6c709806fdb894ee5b1f14a60
+- 2026-11-05T03:34:45Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-6a44e4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: e4d3b70362d8e9f6c709806fdb894ee5b1f14a60
+- 2026-11-05T03:44:21Z · reset · done → plan · New cycle on #107 for the reviews at 94ebefc: the last Trace list of a line, and quoted and block HI family declarations ^t-24fbb8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 94ebefc04e6910f066800cc34698a6c2b3a101bd
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 377 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status list-hi-sub-criterion-ids-in-vault-notes-and-read-trace-lists-whole-and-correct-the-know-14-property-wording-corvid`; Chough does not change native state.
+- 2026-11-05T03:44:22Z · advance · plan → build · Plan approved natively (0xLeif) ^t-234b76
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 94ebefc04e6910f066800cc34698a6c2b3a101bd
+- 2026-11-05T03:44:55Z · advance · build → test · Native change verified (specsync change check --commit) ^t-d01f14
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 15f5374b5d4df22a5be4588f52b97dfee05e4aa3
+- 2026-11-05T03:45:06Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-06d506
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 15f5374b5d4df22a5be4588f52b97dfee05e4aa3
+- 2026-11-05T03:45:06Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-a8e09f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 15f5374b5d4df22a5be4588f52b97dfee05e4aa3
+- 2026-11-05T03:48:03Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-be2a6e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5587318ede4b1b3e374464b0e9efff92487f42ff
+- 2026-11-05T03:48:33Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-6156f6
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 5587318ede4b1b3e374464b0e9efff92487f42ff
+- 2026-11-05T03:58:48Z · reset · done → plan · New cycle on #107 for the review at 5326ec4: backticked Trace mentions, CRLF and commented families, and the README upgrade ^t-b344ee
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5326ec48b4ae856543e4d8cabd7c06b29daef0e5
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 381 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes`; Chough does not change native state.
+- 2026-11-05T03:58:49Z · advance · plan → build · Plan approved natively (0xLeif) ^t-c0e955
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 5326ec48b4ae856543e4d8cabd7c06b29daef0e5
+- 2026-11-05T03:59:55Z · advance · build → test · Native change verified (specsync change check --commit) ^t-e535d0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: ff8e44967b2f213301e4b16e9e2a368854cba3bc
+- 2026-11-05T04:00:05Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-8cb4ad
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: ff8e44967b2f213301e4b16e9e2a368854cba3bc
+- 2026-11-05T04:00:05Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-761b32
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ff8e44967b2f213301e4b16e9e2a368854cba3bc
+- 2026-11-05T04:02:34Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-84fe3c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 8f4ad5ce0a18e58d053a7970c9ca436d0b4a1305
+- 2026-11-05T04:03:03Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-589f91
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 8f4ad5ce0a18e58d053a7970c9ca436d0b4a1305
+- 2026-11-05T04:14:33Z · reset · done → plan · New cycle on #107: hosted Windows failed the README upgrade test (CRLF fixture), plus the unmatched-backtick note ^t-751c66
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6b2dfb557fe939b6b2d98e3fd50006d1dae4442e
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 385 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status ignore-trace-mentions-in-backticks-read-crlf-and-commented-hi-family-declarations-and-upgrade-an-untouched-earlier`; Chough does not change native state.
+- 2026-11-05T04:14:34Z · advance · plan → build · Plan approved natively (0xLeif) ^t-cb54a7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 6b2dfb557fe939b6b2d98e3fd50006d1dae4442e
+- 2026-11-05T04:15:56Z · advance · build → test · Native change verified (specsync change check --commit) ^t-52d952
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: ed70bb5d38bc3f9d2b2799a9db89ec9d25d67a85
+- 2026-11-05T04:16:10Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-249bbe
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: ed70bb5d38bc3f9d2b2799a9db89ec9d25d67a85
+- 2026-11-05T04:16:11Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-3c8326
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ed70bb5d38bc3f9d2b2799a9db89ec9d25d67a85
+- 2026-11-05T04:19:43Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-87ba24
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: cfca2a97d1fa11d895be2162fb23e5e107218b77
+- 2026-11-05T04:20:35Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-ac758c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: cfca2a97d1fa11d895be2162fb23e5e107218b77
+- 2026-11-05T03:54:28Z · reset · done → plan · New cycle: reduce old observation proof (KNOW-16, KNOW-17, KNOW-20); Leif: go ahead and build the reduction PR (2026-11-04) ^t-3c532a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5326ec48b4ae856543e4d8cabd7c06b29daef0e5
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 381 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status read-the-last-trace-list-of-a-requirement-line-and-accept-quoted-and-block-hi-family-declarations-in-vault-notes`; Chough does not change native state.
+- 2026-11-05T03:54:29Z · advance · plan → build · Plan approved natively (0xLeif) ^t-0ccdce
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 5326ec48b4ae856543e4d8cabd7c06b29daef0e5
+- 2026-11-05T04:25:09Z · advance · build → test · Native change verified (specsync change check --commit) ^t-63ef62
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 46c3c2dd3211c0f39e5377d55024c961a8c23c25
+- 2026-11-05T04:25:22Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-046fbc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 46c3c2dd3211c0f39e5377d55024c961a8c23c25
+- 2026-11-05T04:25:22Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-b4fb63
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 46c3c2dd3211c0f39e5377d55024c961a8c23c25
+- 2026-11-05T04:34:34Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-a8804d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 008782989c7c20cb39b01f7effbba79d6122243e
+- 2026-11-05T04:35:03Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-8c690a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 008782989c7c20cb39b01f7effbba79d6122243e
+- 2026-11-05T04:55:59Z · reset · done → plan · New cycle on #108: the closeout trim was refused when an earlier removal released a shared artifact (restored 21 files), and hook-timed tests raced with parallel validity reads ^t-96f05b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: f40ac53b8de66ebfc07d51294c8f6c13e22f8ad3
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 7 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status reduce-old-observation-proof-drop-closed-cycle-checkpoint-references-at-done-trim-superseded-runs-of-cold-changes`; Chough does not change native state.
+- 2026-11-05T04:56:00Z · advance · plan → build · Plan approved natively (0xLeif) ^t-cce495
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: f40ac53b8de66ebfc07d51294c8f6c13e22f8ad3
+- 2026-11-05T04:56:31Z · advance · build → test · Native change verified (specsync change check --commit) ^t-ed344c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: aa73e7de3e53e31376d4524bf7a39fffefc71d94
+- 2026-11-05T04:56:39Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-421c94
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: aa73e7de3e53e31376d4524bf7a39fffefc71d94
+- 2026-11-05T04:56:39Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-ac1616
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: aa73e7de3e53e31376d4524bf7a39fffefc71d94
+- 2026-11-05T04:59:28Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-1c66e3
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 81cf984747225e59ac520dd3ce545fb63dfc882f
+- 2026-11-05T04:59:58Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-e89137
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 81cf984747225e59ac520dd3ce545fb63dfc882f
+- 2026-11-05T05:13:16Z · reset · done → plan · New cycle on #108 for its review: an unreadable record must keep its reference ^t-0d8a0e
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 784b1406d9e5b4b3a53176c3772aaeb003483412
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 3 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls`; Chough does not change native state.
+- 2026-11-05T05:13:17Z · advance · plan → build · Plan approved natively (0xLeif) ^t-cd363f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 784b1406d9e5b4b3a53176c3772aaeb003483412
+- 2026-11-05T05:14:39Z · advance · build → test · Native change verified (specsync change check --commit) ^t-fb017b
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 0ad86da8bd59dd5686fff870ada438caafefd521
+- 2026-11-05T05:14:46Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-c11787
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 0ad86da8bd59dd5686fff870ada438caafefd521
+- 2026-11-05T05:14:46Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-5513fc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 0ad86da8bd59dd5686fff870ada438caafefd521
+- 2026-11-05T05:17:37Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-e8aa77
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: faa6f4865fc9dce94d57c472d27f8419dfd77cfa
+- 2026-11-05T05:18:17Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-3480c0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: faa6f4865fc9dce94d57c472d27f8419dfd77cfa
+- 2026-11-05T05:10:58Z · reset · done → plan · New cycle: move old proof into the knowledge vault (KNOW-18, KNOW-19); Leif asked that artifacts and evidence actually transition to the vault (2026-11-04) ^t-c6c117
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 784b1406d9e5b4b3a53176c3772aaeb003483412
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 3 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status keep-trimming-when-an-earlier-removal-releases-a-shared-artifact-to-another-eligible-set-and-count-stub-status-calls`; Chough does not change native state.
+- 2026-11-05T05:10:59Z · advance · plan → build · Plan approved natively (0xLeif) ^t-96a886
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 784b1406d9e5b4b3a53176c3772aaeb003483412
+- 2026-11-05T05:38:44Z · advance · build → test · Native change verified (specsync change check --commit) ^t-df231a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 927d67499811bd01fc2bbbe2784e0d6005d4eab5
+- 2026-11-05T05:38:54Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-8a0307
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 927d67499811bd01fc2bbbe2784e0d6005d4eab5
+- 2026-11-05T05:38:54Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-7501ac
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 927d67499811bd01fc2bbbe2784e0d6005d4eab5
+- 2026-11-05T05:47:05Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-558da5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: e64e02312fdab6703b723ad955d3d607a8926a11
+- 2026-11-05T05:47:39Z · advance · accept → done · Native review recorded as 0xLeif on Leif's implementation decision; change archived ^t-f09b97
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: e64e02312fdab6703b723ad955d3d607a8926a11
+- 2026-11-05T05:52:41Z · reset · done → plan · New cycle on #109: the closeout trim was refused when a loose folder gained a released file (restored 172 files) ^t-85b862
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 6009d42756364fd1c338b215ac8539c1b2a0d0b0
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 6 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status move-old-proof-into-the-knowledge-vault-trim-loose-artifacts-of-cold-changes-and-move-key-items-into-knowledge`; Chough does not change native state.
+- 2026-11-05T05:52:42Z · advance · plan → build · Plan approved natively (0xLeif) ^t-029492
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 6009d42756364fd1c338b215ac8539c1b2a0d0b0
+- 2026-11-05T05:58:26Z · advance · build → test · Native change verified (specsync change check --commit) ^t-3ea6d4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 04b87755577dcbc8dd4a47748e35fac97ef017a9
+- 2026-11-05T05:58:35Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-80a0c5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 04b87755577dcbc8dd4a47748e35fac97ef017a9
+- 2026-11-05T05:58:35Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-b77ab4
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 04b87755577dcbc8dd4a47748e35fac97ef017a9
+- 2026-11-05T13:09:03Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-712a8a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: dfa671d9c140d9f9ce00f5219b921fa32b675637
+- 2026-11-05T13:09:34Z · advance · accept → done · Native change archived; Leif's review recorded as 0xLeif ^t-62db23
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: dfa671d9c140d9f9ce00f5219b921fa32b675637
+- 2026-11-05T13:32:32Z · reset · done → plan · New cycle on #109: CI and corvid-agent review found vault attachment paths too long for Windows, file modes lost on restore and vault copy, and a test without a Git identity ^t-491460
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 8a91c5c491321e1ddd5575e99412459c7bdec7f4
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 4 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status keep-trimming-a-loose-artifact-group-that-gains-a-file-released-by-an-earlier-removal-109-closeout`; Chough does not change native state.
+- 2026-11-05T13:36:33Z · advance · plan → build · Plan approved natively (0xLeif) ^t-a12eeb
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 8a91c5c491321e1ddd5575e99412459c7bdec7f4
+- 2026-11-05T13:39:59Z · advance · build → test · Native change verified (specsync change check --commit) ^t-1abdab
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 126d0e3f4d0b67379592c64275de44daafafb1c4
+- 2026-11-05T13:40:21Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-ff88c8
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 126d0e3f4d0b67379592c64275de44daafafb1c4
+- 2026-11-05T13:40:21Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-e20126
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 126d0e3f4d0b67379592c64275de44daafafb1c4
+- 2026-11-05T13:48:28Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-ce52fb
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5ce788c38f67be8343dd7dd3f117fab1a4e8c96d
+- 2026-11-05T13:49:50Z · reset · accept → plan · Windows-path and file-mode fix archived; the done move and its trim wait for the fix of 3 P1s from the #109 review, at Leif's choice ^t-3a4168
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 5ce788c38f67be8343dd7dd3f117fab1a4e8c96d
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 10 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status keep-vault-attachment-paths-within-windows-limits-and-keep-file-modes-when-the-trim-moves-or-restores-files`; Chough does not change native state.
+- 2026-11-05T13:52:44Z · advance · plan → build · Plan approved natively (0xLeif) ^t-b2241a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: d165b0a20d05f29c884e6970a30fb50b88c950fd
+- 2026-11-05T13:58:08Z · advance · build → test · Native change verified (specsync change check --commit) ^t-9218b0
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 3e1ee4bacc11a982a9ea044ad56d584431eb8002
+- 2026-11-05T13:58:35Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-eb1594
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 3e1ee4bacc11a982a9ea044ad56d584431eb8002
+- 2026-11-05T13:58:35Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-eea99c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 3e1ee4bacc11a982a9ea044ad56d584431eb8002
+- 2026-11-05T14:06:15Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-084771
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- 2026-11-05T14:06:53Z · advance · accept → done · Native change archived; Leif's review recorded as 0xLeif ^t-9037cc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: b4fd6733393be3221d0588a4119c2486f8fbfcb0
+- 2026-11-05T14:31:37Z · reset · done → plan · New cycle: adopt event history and sessions in this repository so parallel pull requests stop conflicting (DRIVE-12, DRIVE-3) ^t-4a5469
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b9b27c2191835b0185ad449f3cac95bc7be013dd
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 8 observation(s) to re-check with `chough status`, native: the definition is archived; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status never-overwrite-an-attachment-let-folder-references-protect-their-files-and-keep-a-loose-folder-with-any-current-file`; Chough does not change native state.
+- 2026-11-05T14:33:00Z · advance · plan → build · Plan approved natively (0xLeif) ^t-985985
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: b9b27c2191835b0185ad449f3cac95bc7be013dd
+- 2026-11-05T14:53:32Z · reset · build → plan · Fix session new after legacy adoption before resuming the adoption change ^t-9a5564
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 88466daafc72145962cade5c7406a9fa84fe570f
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, checkpoint references: 66 case(s) and 8 observation(s) to re-check with `chough status`, native: the definition is approved; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog`; Chough does not change native state.
+- 2026-11-05T14:54:18Z · advance · plan → build · Plan approved natively (0xLeif) ^t-2c298f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: 88466daafc72145962cade5c7406a9fa84fe570f
+- 2026-11-05T14:56:37Z · advance · build → test · Native change verified (specsync change check --commit) ^t-406ad7
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 53e2a87c7df3e7781f719c6102b6949bb84c1e10
+- 2026-11-05T14:56:46Z · advance · test → accept · Cases for this change passed on Linux (local-linux-aarch64) ^t-41a3cf
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 53e2a87c7df3e7781f719c6102b6949bb84c1e10
+- 2026-11-05T14:56:47Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-137f9a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: 53e2a87c7df3e7781f719c6102b6949bb84c1e10
+- 2026-11-05T15:00:01Z · back · accept → build · The fix touched sessions.rs outside this change's paths; moved the archive path into history.rs ^t-1c83fe
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 9df66baf9631412f74f8f7dbb0f03200e3e8c7c9
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 9 observation(s) to re-check with `chough status`
+- 2026-11-05T15:02:05Z · gate-closed · build → build · Native implementation review of this change by Leif (FLOW-10) ^t-6b914a
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ae513dac84866bed603a1f686f404a594636bd55
+- 2026-11-05T15:02:06Z · advance · build → test · Native change verified again (specsync change check --commit) ^t-60d08d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: ae513dac84866bed603a1f686f404a594636bd55
+- 2026-11-05T15:02:07Z · advance · test → accept · TC-history-session-after-legacy-adoption passed on Linux (local-linux-aarch64) ^t-f121bc
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: ae513dac84866bed603a1f686f404a594636bd55
+- 2026-11-05T15:02:07Z · gate-opened · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-bbfec2
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: ae513dac84866bed603a1f686f404a594636bd55
+- 2026-11-05T15:02:32Z · gate-closed · accept → accept · Native implementation review of this change by Leif (FLOW-10) ^t-e709ff
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b6cbfa95473f80ef6b0ce40aef72d3d3ba2595cc
+- 2026-11-05T15:02:33Z · reset · accept → plan · Resume the adoption change; its session-after-adoption fix is at accept awaiting Leif's review ^t-4fc265
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b6cbfa95473f80ef6b0ce40aef72d3d3ba2595cc
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 66 case(s) and 10 observation(s) to re-check with `chough status`, native: the definition is verifying; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status let-a-session-started-after-legacy-history-adoption-write-events-while-the-adopted-legacy-log-stays-guarded`; Chough does not change native state.
+- 2026-11-05T15:02:33Z · gate-opened · plan → plan · Native implementation review of the session-after-adoption fix by Leif (FLOW-10) ^t-1498c5
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b6cbfa95473f80ef6b0ce40aef72d3d3ba2595cc
+- 2026-11-05T15:02:51Z · gate-closed · plan → plan · Native implementation review of the session-after-adoption fix by Leif (FLOW-10) ^t-da3e32
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - revision: b6cbfa95473f80ef6b0ce40aef72d3d3ba2595cc
+- 2026-11-05T15:02:51Z · advance · plan → build · Plan approved natively (0xLeif) ^t-bc395f
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:approved
+  - revision: b6cbfa95473f80ef6b0ce40aef72d3d3ba2595cc
+- 2026-11-05T15:06:24Z · advance · build → test · Native change verified (specsync change check --commit) ^t-8d904d
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 893824d45587dd5f1d02640c33625b7d901ce6d8
+- 2026-11-05T15:06:42Z · advance · test → accept · Parallel pull request simulation passed on Linux (local-linux-aarch64) ^t-7d39ea
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:verifying
+  - revision: 893824d45587dd5f1d02640c33625b7d901ce6d8
+- 2026-11-05T15:17:03Z · advance · accept → done · Native change archived; Leif's review recorded as 0xLeif ^t-dcdc5c
+  - native_change: adopt-event-history-and-per-change-sessions-in-this-repository-and-union-merge-the-retention-ledger-and-changelog
+  - gate: native:archived
+  - revision: 986f0ea71d613e963b3d887f486c95773ac6f51d
+
+
+Closed 2026-11-05: done.

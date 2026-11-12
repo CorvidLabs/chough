@@ -1,1 +1,0 @@
-Complete raw reproduction bytes, including fixture Git state, are retained in the archive. The first observation attempt was refused before publication because its per-file artifact list exceeded the existing 65536-byte record limit. The limit was retained; a bounded artifact list now binds the same capture. The unbound duplicate remains in temporary storage.
