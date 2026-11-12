@@ -638,7 +638,7 @@ fn sync_questions(
     }
     for want in open {
         let line = one_line(want);
-        if !present.iter().any(|item| *item == line) {
+        if !present.contains(&line) {
             record.append_to_section(THREADS, &format!("- {line}\n"))?;
         }
     }

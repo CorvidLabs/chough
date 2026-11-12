@@ -606,7 +606,7 @@ mkdir -p .chough/sessions/SYNTHETIC-session/evidence
 printf 'SYNTHETIC receipt\n' >.chough/sessions/SYNTHETIC-session/evidence/r1.md
 specsync change check free-shipping-at-the-threshold --commit >/dev/null
 test -n "$(git status --porcelain --untracked-files=all .chough/sessions/SYNTHETIC-session)"
-git init -q --bare "$ORIGIN"
+git init -q --bare --initial-branch=main "$ORIGIN"
 git push -q "$ORIGIN" main
 git clone -q "$ORIGIN" "$CLONE"
 "##,
