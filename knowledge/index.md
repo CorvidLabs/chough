@@ -24,7 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
-- [Ship human-first Chough records as one change, Chough 0.6.0: readable one-file Markdown records, date+slug session folders with agent/ working files, one-file archived stories, journal and feed, one source of truth, no leaks, gate approvals as the approving human; dogfooded on the chough repo only](journal/2026-11-12-ship-human-first-chough-records-as-one-change-chough-0-6-0.md) (2026-11-12, shipped)
+- [Chough 0.6.0: human-first records](journal/2026-11-12-chough-0-6-0-human-first-records.md) (2026-11-12, shipped)
+- [Turn the MVP interview into intent and a 1.0 roadmap](journal/2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md) (2026-11-12, shipped) (no time)
+- [Return observation and case IDs from cases record and evidence add](journal/2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md) (2026-11-10, shipped)
+- [Keep gated finished sessions open on session use and new (#181)](journal/2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md) (2026-11-10, shipped)
+- [Keep observations current across knowledge index rebuilds (#136)](journal/2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md) (2026-11-10, shipped)
+- [Refuse new sessions when the adopted legacy log is missing (#113)](journal/2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113.md) (2026-11-10, shipped)
+- [Move two #192 test cases into their own files (#196)](journal/2026-11-10-move-two-192-test-cases-into-their-own-files-196.md) (2026-11-10, shipped)
+- [Read diagnostic input inventories without touching freshness](journal/2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md) (2026-11-09, closed)
+- [Recognize pristine skill files from released bundles (#102)](journal/2026-11-09-recognize-pristine-skill-files-from-released-bundles-102.md) (2026-11-09, closed)
+- [Document what Chough automates and what the human decides](journal/2026-11-08-document-what-chough-automates-and-what-the-human-decides.md) (2026-11-08, shipped)
 
 ## Where things live
 
@@ -37,9 +46,10 @@ Newest posts:
 
 ## Open bugs
 
-15 open bugs, blocking first, then newest.
+16 open bugs, blocking first, then newest.
 
 - [2026-11-12-a-journal-post-s-title-is-the-raw-objective-and-its-body-a](../.chough/bugs/2026-11-12-a-journal-post-s-title-is-the-raw-objective-and-its-body-a.md) A journal post's title is the raw objective and its body a stale first bullet, and the stories archived before the journal have no post (fix-pending-verification)
+- [2026-11-12-chough-migrate-apply-can-write-a-session-md-that-ends-with-a](../.chough/bugs/2026-11-12-chough-migrate-apply-can-write-a-session-md-that-ends-with-a.md) chough migrate --apply can write a session.md that ends with a blank line, which git diff --check reports (open)
 - [2026-11-12-chough-status-cuts-its-next-action-mid-command-and-the](../.chough/bugs/2026-11-12-chough-status-cuts-its-next-action-mid-command-and-the.md) chough status cuts its next action mid-command, and the checkpoint's next action goes stale after a gate closes (open)
 - [2026-11-12-chough-context-includes-agents-md-files-from-above-the-git](../.chough/bugs/2026-11-12-chough-context-includes-agents-md-files-from-above-the-git.md) chough context includes AGENTS.md files from above the Git root, with their absolute path in the heading (open)
 - [2026-11-12-every-stage-move-prints-an-authority-line-saying-chough-never](../.chough/bugs/2026-11-12-every-stage-move-prints-an-authority-line-saying-chough-never.md) Every stage move prints an authority line saying Chough never writes native approval or review, which 0.6.0 gates do (open)

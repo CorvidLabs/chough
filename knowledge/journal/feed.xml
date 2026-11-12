@@ -2,14 +2,147 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-12T14:35:02Z</updated>
+<updated>2026-11-12T14:35:01Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
   <entry>
-<title>Ship human-first Chough records as one change, Chough 0.6.0: readable one-file Markdown records, date+slug session folders with agent/ working files, one-file archived stories, journal and feed, one source of truth, no leaks, gate approvals as the approving human; dogfooded on the chough repo only</title>
-<id>urn:chough:journal:2026-11-12-ship-human-first-chough-records-as-one-change-chough-0-6-0</id>
-<updated>2026-11-12T14:35:02Z</updated>
-<link href="2026-11-12-ship-human-first-chough-records-as-one-change-chough-0-6-0.md"/>
+<title>Chough 0.6.0: human-first records</title>
+<id>urn:chough:journal:2026-11-12-chough-0-6-0-human-first-records</id>
+<updated>2026-11-12T14:35:01Z</updated>
+<link href="2026-11-12-chough-0-6-0-human-first-records.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Turn the MVP interview into intent and a 1.0 roadmap</title>
+<id>urn:chough:journal:2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap</id>
+<updated>2026-11-12T00:00:00Z</updated>
+<link href="2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Return observation and case IDs from cases record and evidence add</title>
+<id>urn:chough:journal:2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence</id>
+<updated>2026-11-10T23:17:30Z</updated>
+<link href="2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Keep gated finished sessions open on session use and new (#181)</title>
+<id>urn:chough:journal:2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181</id>
+<updated>2026-11-10T23:06:59Z</updated>
+<link href="2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Keep observations current across knowledge index rebuilds (#136)</title>
+<id>urn:chough:journal:2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136</id>
+<updated>2026-11-10T22:48:57Z</updated>
+<link href="2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Refuse new sessions when the adopted legacy log is missing (#113)</title>
+<id>urn:chough:journal:2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113</id>
+<updated>2026-11-10T16:06:34Z</updated>
+<link href="2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Move two #192 test cases into their own files (#196)</title>
+<id>urn:chough:journal:2026-11-10-move-two-192-test-cases-into-their-own-files-196</id>
+<updated>2026-11-10T16:03:25Z</updated>
+<link href="2026-11-10-move-two-192-test-cases-into-their-own-files-196.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Read diagnostic input inventories without touching freshness</title>
+<id>urn:chough:journal:2026-11-09-read-diagnostic-input-inventories-without-touching-freshness</id>
+<updated>2026-11-09T07:44:46Z</updated>
+<link href="2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md"/>
+<category term="closed"/>
+</entry>
+  <entry>
+<title>Recognize pristine skill files from released bundles (#102)</title>
+<id>urn:chough:journal:2026-11-09-recognize-pristine-skill-files-from-released-bundles-102</id>
+<updated>2026-11-09T05:14:35Z</updated>
+<link href="2026-11-09-recognize-pristine-skill-files-from-released-bundles-102.md"/>
+<category term="closed"/>
+</entry>
+  <entry>
+<title>Document what Chough automates and what the human decides</title>
+<id>urn:chough:journal:2026-11-08-document-what-chough-automates-and-what-the-human-decides</id>
+<updated>2026-11-08T02:05:46Z</updated>
+<link href="2026-11-08-document-what-chough-automates-and-what-the-human-decides.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Fix PR 197&apos;s prune capture and rollback defects (issue 65)</title>
+<id>urn:chough:journal:2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65</id>
+<updated>2026-11-07T17:31:47Z</updated>
+<link href="2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Evidence prune fails closed and restores partial removals (#65)</title>
+<id>urn:chough:journal:2026-11-07-evidence-prune-fails-closed-and-restores-partial-removals-65</id>
+<updated>2026-11-07T15:51:32Z</updated>
+<link href="2026-11-07-evidence-prune-fails-closed-and-restores-partial-removals-65.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Prototype template keeps hidden state panels hidden (#58)</title>
+<id>urn:chough:journal:2026-11-07-prototype-template-keeps-hidden-state-panels-hidden-58</id>
+<updated>2026-11-07T04:50:06Z</updated>
+<link href="2026-11-07-prototype-template-keeps-hidden-state-panels-hidden-58.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Roadmap marks Chough 0.5.0 as published</title>
+<id>urn:chough:journal:2026-11-07-roadmap-marks-chough-0-5-0-as-published</id>
+<updated>2026-11-07T04:37:00Z</updated>
+<link href="2026-11-07-roadmap-marks-chough-0-5-0-as-published.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Library index check passes right after the move into done (#191)</title>
+<id>urn:chough:journal:2026-11-07-library-index-check-passes-right-after-the-move-into-done-191</id>
+<updated>2026-11-07T04:14:27Z</updated>
+<link href="2026-11-07-library-index-check-passes-right-after-the-move-into-done-191.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>chough timing skips direct writes without a partial report (#189)</title>
+<id>urn:chough:journal:2026-11-07-chough-timing-skips-direct-writes-without-a-partial-report-189</id>
+<updated>2026-11-07T04:10:52Z</updated>
+<link href="2026-11-07-chough-timing-skips-direct-writes-without-a-partial-report-189.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Zombie-aware native process test probes (#187, #132)</title>
+<id>urn:chough:journal:2026-11-07-zombie-aware-native-process-test-probes-187-132</id>
+<updated>2026-11-07T03:40:39Z</updated>
+<link href="2026-11-07-zombie-aware-native-process-test-probes-187-132.md"/>
+<category term="closed"/>
+</entry>
+  <entry>
+<title>Prepare the Chough 0.5.0 release</title>
+<id>urn:chough:journal:2026-11-07-prepare-the-chough-0-5-0-release</id>
+<updated>2026-11-07T02:35:28Z</updated>
+<link href="2026-11-07-prepare-the-chough-0-5-0-release.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Add chough gate list: one-screen gate summaries with digests (#184)</title>
+<id>urn:chough:journal:2026-11-07-add-chough-gate-list-one-screen-gate-summaries-with-digests</id>
+<updated>2026-11-07T02:24:48Z</updated>
+<link href="2026-11-07-add-chough-gate-list-one-screen-gate-summaries-with-digests.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>History flags direct SpecSync lifecycle writes (#183)</title>
+<id>urn:chough:journal:2026-11-07-history-flags-direct-specsync-lifecycle-writes-183</id>
+<updated>2026-11-07T01:29:05Z</updated>
+<link href="2026-11-07-history-flags-direct-specsync-lifecycle-writes-183.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
