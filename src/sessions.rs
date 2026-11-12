@@ -361,9 +361,25 @@ pub(super) fn pointer(root: &Path) -> Result<Option<String>> {
     Ok(Some(id))
 }
 
+/// The pointer's session: its own ID when a session folder or story has that ID,
+/// otherwise the session that holds it as an alias or bare key, which a 0.5.x pointer
+/// that an in-place migration keeps, or `session use <alias>`, may leave
+/// (REQ-records-009, REQ-records-003). A pointer that names nothing stays as it is.
+pub(super) fn pointed(root: &Path) -> Result<Option<String>> {
+    let Some(id) = pointer(root)? else {
+        return Ok(None);
+    };
+    if local_path(root, &session_file(&id))?.is_file()
+        || local_path(root, &archive_file(&id))?.is_file()
+    {
+        return Ok(Some(id));
+    }
+    Ok(Some(resolve_open(root, &id).unwrap_or(id)))
+}
+
 /// The active session's ID, or a refusal naming the next command.
 fn active(root: &Path) -> Result<String> {
-    if let Some(id) = pointer(root)? {
+    if let Some(id) = pointed(root)? {
         if local_path(root, &archive_file(&id))?.is_file() {
             bail!(
                 "the active session {id} is archived; run `chough session use <id>` or `chough session new <key>`"
@@ -849,7 +865,7 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
             kept.push(file);
         }
     }
-    if pointer(root).ok().flatten().as_deref() == Some(id) {
+    if pointed(root).ok().flatten().as_deref() == Some(id) {
         let _ = fs::remove_file(local_path(root, POINTER)?);
     }
     unpin(root);

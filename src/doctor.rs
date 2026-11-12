@@ -790,7 +790,7 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
 /// archives, stale gates and the sessions named with `--close`.
 fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     let mut found = vec![];
-    let pointer = sessions::pointer(root);
+    let pointer = sessions::pointed(root);
     let open = sessions::open_ids(root)?;
     match &pointer {
         Ok(Some(key)) if !open.contains(key) => found.push(Finding::new(

@@ -1356,8 +1356,8 @@ fn a_pointer_naming_a_migrated_key_still_names_its_session() {
     fixture.write(".chough/local/active-session", "open-one\n");
     migrate(&fixture, Some(CONSENT));
     let status = fixture.ok(&["status", "--json"]);
-    assert!(
-        status.to_string().contains("-open-one"),
+    assert_eq!(
+        status["objective"], "Open work one",
         "status does not read open-one: {status:#}"
     );
     let output = fixture.run(&["doctor"]);
