@@ -1483,7 +1483,9 @@ The next valid action follows these rules in order:
    verification counts Chough's records (`chough_writes` is `commit-first`), it also
    says to commit that gate and run `chough change check <id>` again before the ship.
    With the review gate open, the waiting action names the same ship. It never suggests
-   an agent review.
+   an agent review: where `next` and `status` show SpecSync's next action at accept,
+   its review command, which names a `--reviewer`, reads as the human's review at the
+   review gate, in the native summary and the gate to done alike (REQ-cli-021).
    While the native change is still approved or implementing, the action is the review
    preparation of the workflow's accept step, in its order: `chough change check <id>
    --no-commit` first when a delta of the change adds or modifies requirements, so the

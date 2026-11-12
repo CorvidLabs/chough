@@ -2212,12 +2212,15 @@ fn next_at_accept_never_passes_on_specsyncs_review_command() {
     ]);
     let mut found = vec![];
     strings(&fixture.ok(&["next", "--json"]), &mut found);
-    strings(&fixture.ok(&["status", "--json"]), &mut found);
-    for view in ["next", "status"] {
-        let output = fixture.run(&[view, "--environment", "local"]);
-        assert!(output.status.success(), "{view} failed");
-        found.push(String::from_utf8_lossy(&output.stdout).into_owned());
-    }
+    // `native_specsync` carries SpecSync's own report verbatim (REQ-cli-003), beside
+    // `native_next_action_authority`, which says a review it names is the human's
+    // decision; every field Chough derives from it is checked.
+    let mut status = fixture.ok(&["status", "--json"]);
+    status["native_specsync"] = Value::Null;
+    strings(&status, &mut found);
+    let output = fixture.run(&["next", "--environment", "local"]);
+    assert!(output.status.success(), "next failed");
+    found.push(String::from_utf8_lossy(&output.stdout).into_owned());
     let passed_on: Vec<&String> = found
         .iter()
         .filter(|text| text.contains("specsync change review"))

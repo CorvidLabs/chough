@@ -1833,11 +1833,20 @@ pub(super) fn names_native_approval(next: &str) -> bool {
     next.contains("specsync change approve")
 }
 
-/// SpecSync's next action as Chough shows it (REQ-cli-021, t38j): an approval it names
-/// for an actor is shown as the human's scope gate, never as a command for the agent.
+/// Whether SpecSync's next action names its review, which is the human's decision at
+/// the review gate (REQ-cli-021, t38m F1).
+pub(super) fn names_native_review(next: &str) -> bool {
+    next.contains("specsync change review")
+}
+
+/// SpecSync's next action as Chough shows it (REQ-cli-021, t38j, t38m F1): an approval
+/// it names for an actor is shown as the human's scope gate, and a review it names for
+/// a reviewer as the human's review gate, never as a command for the agent.
 pub(super) fn shown_native_next(next: &str) -> String {
     if names_native_approval(next) {
         "the human's scope approval: open the scope gate with `chough checkpoint --awaiting-human \"<gate>\" --drives approve` and record their decision with `chough checkpoint --close-gate`; never approve it yourself".into()
+    } else if names_native_review(next) {
+        "the human's review: open the review gate with `chough checkpoint --awaiting-human \"<gate>\" --holds accept --drives review` and record their decision to ship with `chough change ship <id> --close-gate \"<gate>\"`, or not to ship with `chough checkpoint --close-gate \"<gate>\"` and `--verdict block`; never review it yourself".into()
     } else {
         next.to_string()
     }
