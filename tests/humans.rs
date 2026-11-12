@@ -676,8 +676,12 @@ fn next_action(fixture: &Fixture) -> String {
         .to_string()
 }
 
-/// The next action a close leaves (fresh-eyes finding 12, t382's rule).
+/// The next action a close leaves (fresh-eyes finding 12, t382's rule): a close that
+/// decided nothing beyond closing says "closed" once (F12a).
 fn closed_next(gate: &str, decision: &str) -> String {
+    if decision == "closed" {
+        return format!("Gate \"{gate}\" closed; run `chough next` for the next action.");
+    }
     format!("Gate \"{gate}\" closed ({decision}); run `chough next` for the next action.")
 }
 
@@ -792,4 +796,42 @@ fn a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage() {
     open("SYNTHETIC later", "accept", "none");
     close("SYNTHETIC later", &[]);
     assert_eq!(next_action(&fixture), stale);
+}
+
+/// Fresh-eyes F12a (second round, 2026-11-12): a gate that drives no native step, or a
+/// close with --no-native, decides nothing beyond the close, and its next action read
+/// "Gate ... closed (closed)". It says "closed" once.
+#[cfg(unix)]
+#[test]
+fn a_close_that_runs_no_native_step_says_closed_once() {
+    let fixture = at_plan();
+    for (gate, drives, extra) in [
+        ("SYNTHETIC go-ahead", "none", &[][..]),
+        (
+            "SYNTHETIC changes requested",
+            "approve",
+            &["--no-native"][..],
+        ),
+    ] {
+        fixture.ok(&[
+            "checkpoint",
+            "--awaiting-human",
+            gate,
+            "--holds",
+            "plan",
+            "--drives",
+            drives,
+            "--next-action",
+            "SYNTHETIC: wait for the human.",
+        ]);
+        let mut list = relay(gate, "SYNTHETIC-human");
+        list.extend(extra.iter().map(|value| value.to_string()));
+        fixture.ok(&args(&list));
+        let next = next_action(&fixture);
+        assert!(
+            next.starts_with(&format!("Gate \"{gate}\" closed")),
+            "{next}"
+        );
+        assert_eq!(next.matches("closed").count(), 1, "{next}");
+    }
 }
