@@ -92,7 +92,7 @@ Record both failures with `chough cases run` and link each to a local bug (plain
 
 - [x] Send the change back to draft on SpecSync 6.3.0 and add `.specsync/config.toml` to its affected paths.
 - [x] Move every SpecSync pin to v6.3.0: CI, the archive scripts, the install remedy, tests, README, AGENTS.md, docs, the config comment and the skill.
-- [x] K1, K2, K6 and Q1 (t37f), and U2, R9, S6 and G1, each a delta and, where code changes, a red test and then the fix.
+- [x] K1, K2, K6 and Q1 (t37f), and U2, R9, S6, G1 and N1, each a delta and, where code changes, a red test and then the fix.
 
 ## 11. Docs and release preparation
 

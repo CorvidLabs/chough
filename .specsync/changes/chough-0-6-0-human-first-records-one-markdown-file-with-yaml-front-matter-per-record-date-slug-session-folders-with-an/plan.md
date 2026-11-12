@@ -311,6 +311,10 @@ paths, and the test stage's contract fixes joined the deltas:
   ruling, matching Leif's kept default Q5 and REQ-cli-030.
 - Q1 (REQ-records-011): posts record a UTC `time`, and newest means by time; Leif's
   decision ("posts should record time... they are time based posts").
+- N1 (REQ-cli-021): at accept, next names `chough change ship <id> --close-gate` for the
+  human's decision to ship, and in a project whose records SpecSync's verification counts,
+  says to commit the review gate and check again first, so nothing under `.chough/`
+  changes between the check and finalize (t37j's 6.3.0 re-run; t370 agreed).
 
 ## Risks
 

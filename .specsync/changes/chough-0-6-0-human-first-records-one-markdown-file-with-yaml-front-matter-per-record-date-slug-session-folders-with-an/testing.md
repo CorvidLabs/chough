@@ -130,7 +130,7 @@ TC-cli-init-sets-up-merge-drivers, TC-cli-init-appends-only-missing-merge-lines,
 TC-cli-doctor-merge-drivers and TC-history-doctor-merge-drivers (K1),
 TC-cli-knowledge-index-bounded-open-bugs (K2), TC-records-journal-posts-record-time
 (Q1), TC-records-the-standing-migration-preference-is-set-before-migrating (U2) and
-TC-history-doctor-reports-an-unreadable-record (R9). On SpecSync 6.3.0 the full suite
+TC-history-doctor-reports-an-unreadable-record (R9) and TC-cli-accept-ships-through-change-ship (N1). On SpecSync 6.3.0 the full suite
 runs again, with each tester's SpecSync-dependent checks.
 
 ## Suites and platforms
