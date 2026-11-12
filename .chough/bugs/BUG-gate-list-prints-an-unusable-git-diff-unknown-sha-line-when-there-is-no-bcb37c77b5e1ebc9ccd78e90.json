@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "BUG-gate-list-prints-an-unusable-git-diff-unknown-sha-line-when-there-is-no-bcb37c77b5e1ebc9ccd78e90",
+  "title": "gate list prints an unusable 'git diff unknown..<sha>' line when there is no merge base or base commit",
+  "symptom": "In a single-commit project the gate summary's Diff line is 'git diff unknown..<sha>'",
+  "trigger": "chough gate list in a project with no merge base and no recorded base commit",
+  "expected": "A compare URL or 'git diff <base>..<HEAD>' (REQ-cli-061), and an honest line when there is no base",
+  "actual": "The placeholder 'unknown' is pasted into a command",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-061"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester build at 367dc86b, debug, specsync stub (6.2.0 CLI)",
+  "revision": "30ac761f13feef4cc3ac765ad077d30630e4650a",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "A reviewer is given a command that fails",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t37b, test stage, area approvals and gates",
+  "notes": [],
+  "created_at_unix_seconds": 1794450243,
+  "updated_at_unix_seconds": 1794450243
+}
