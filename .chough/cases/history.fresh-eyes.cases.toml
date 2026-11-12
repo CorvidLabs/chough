@@ -57,3 +57,21 @@ expected = ["tests/journal.rs::a_storys_receipts_are_in_observation_time_order p
 adapter = "cargo-test"
 test_target = "journal"
 test = "a_storys_receipts_are_in_observation_time_order"
+
+[[case]]
+id = "TC-history-direct-write-entry-says-what-changed"
+title = "A direct-native-write Timeline entry says which lifecycle files changed outside Chough and how the state moved"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-history-013"]
+paths = ["src/direct_writes.rs", "src/stage.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/direct_writes.rs::a_direct_write_entry_says_what_changed_outside_chough passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "a_direct_write_entry_says_what_changed_outside_chough"

@@ -93,3 +93,39 @@ expected = ["tests/docs.rs::a_new_project_path_and_the_delta_format_are_document
 adapter = "cargo-test"
 test_target = "docs"
 test = "a_new_project_path_and_the_delta_format_are_documented"
+
+[[case]]
+id = "TC-cli-gate-record-reports-the-approval-it-ran"
+title = "gate record on a gate that drives approval reports the native step each close ran, and the approval note names chough gate record"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-history-014"]
+paths = ["src/humans.rs", "src/gates.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record"
+
+[[case]]
+id = "TC-cli-stage-move-authority-line-says-when-chough-runs-native-steps"
+title = "Every stage move's authority line says Chough runs a native approval or review only when a human's decision closes a gate that drives one"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::every_stage_move_says_when_chough_runs_native_approval_or_review passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "every_stage_move_says_when_chough_runs_native_approval_or_review"
