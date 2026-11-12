@@ -13,6 +13,7 @@ cases: [TC-cli-migration-receipt-has-one-follow-up-heading]
 evidence:
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migration-receipt-has-one-follow-up-heading
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migration-receipt-has-one-follow-up-heading-28f17b
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-records-migration-receipt-has-one-follow-up-heading
 receipts: []
 environment: local-macos-arm64
 revision: a0152789eec8d548d98dbd11f86b0818ad98f494
@@ -22,7 +23,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T20:25:59Z
-updated: 2026-11-12T20:31:17Z
+updated: 2026-11-12T20:56:47Z
 ---
 # A migration receipt can hold two Follow-up headings
 
@@ -44,3 +45,4 @@ Actual: Two '## Follow-up' headings
 - 2026-11-12T20:25:59Z · Reported (t38k's second fresh-eyes round report (relayed by t370); fixed by t38c); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migration-receipt-has-one-follow-up-heading · by claude-code (hc t382)
 - 2026-11-12T20:31:09Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migration-receipt-has-one-follow-up-heading-28f17b; fix: t38c's 31224474: the receipt holds every follow-up under one Follow-up heading (REQ-records-009). Red at a0152789, green at 34b7cbb7 · by claude-code (hc t382)
 - 2026-11-12T20:31:17Z · fix: 647b0690 (t38c's 31224474): the receipt holds every follow-up under one Follow-up heading (REQ-records-009). Fix line corrected to name the commit on leif/human-first-records · by claude-code (hc t382)
+- 2026-11-12T20:56:47Z · evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-records-migration-receipt-has-one-follow-up-heading. Its case moved to the records module as TC-records-migration-receipt-has-one-follow-up-heading (68c7a32a), passing there; TC-cli-migration-receipt-has-one-follow-up-heading is retired · by claude-code (hc t382)

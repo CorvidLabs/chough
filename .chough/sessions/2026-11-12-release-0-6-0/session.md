@@ -24,6 +24,9 @@ cases:
   - TC-cli-docs-show-the-requirement-evidence-table
   - TC-cli-docs-show-a-minimal-hi-file-and-requirements-md
   - TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta
+  - TC-cli-bug-observation-joins-the-session
+  - TC-records-migrate-preview-with-nothing-to-migrate
+  - TC-records-migration-receipt-has-one-follow-up-heading
 design: []
 files: []
 observations:
@@ -138,6 +141,9 @@ observations:
   - 2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta
   - 2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta-4437de
   - 2026-11-12-tc-cli-bug-observation-joins-the-session
+  - 2026-11-12-tc-cli-bug-observation-joins-the-session-736ba4
+  - 2026-11-12-tc-records-migrate-preview-with-nothing-to-migrate
+  - 2026-11-12-tc-records-migration-receipt-has-one-follow-up-heading
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -145,6 +151,7 @@ bugs:
   - 2026-11-12-chough-migrate-on-an-already-migrated-tree-previews-a-plan-and
   - 2026-11-12-a-migration-receipt-can-hold-two-follow-up-headings
   - 2026-11-12-an-executed-case-run-s-provenance-says-it-is-not-proof-of-test
+  - 2026-11-12-a-bug-added-with-an-observation-of-the-active-session-is-not
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -164,6 +171,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - F12b and F12c (t38k round 2, t38b): a close running no native step says why; an archived story lists as finished; red at 731aba24, green at c53da06c, bugs verified
 - t38c's batch one (t38k round 2): F10 migrate preview on a migrated tree, F12d one Follow-up heading, F12g executed-run provenance, F2 the Requirement evidence table, F7 minimal HI and requirements.md; red at a0152789, green at 34b7cbb7, three bugs verified
 - Kimi 2 and F12h (t38c, REQ-cli-005): evidence add needs only a criterion and resolves a requirement the session's delta adds; red then green, a contract change so no bug. REQ-cli-005's kept criterion on the check-first hint holds when no native change is recorded (tests/cli.rs)
+- F8's bug link (t38c, REQ-cli-012): red at 9b9bc010, green at 68c7a32a, bug verified; the migrate cases moved to the records module
 
 ## Decisions and why
 
@@ -290,6 +298,9 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test cases -- --exact evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements for TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta.md)
 - [Ran cargo test --locked --test cases -- --exact evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements for TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-evidence-add-needs-a-criterion-and-reads-the-delta-4437de.md)
 - [Ran cargo test --locked --test bugs -- --exact a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story for TC-cli-bug-observation-joins-the-session: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-bug-observation-joins-the-session.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story for TC-cli-bug-observation-joins-the-session: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-bug-observation-joins-the-session-736ba4.md)
+- [Ran cargo test --locked --test migrate -- --exact a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest for TC-records-migrate-preview-with-nothing-to-migrate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-preview-with-nothing-to-migrate.md)
+- [Ran cargo test --locked --test migrate -- --exact a_receipt_has_one_follow_up_heading_for_every_follow_up for TC-records-migration-receipt-has-one-follow-up-heading: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migration-receipt-has-one-follow-up-heading.md)
 
 ## Open threads
 

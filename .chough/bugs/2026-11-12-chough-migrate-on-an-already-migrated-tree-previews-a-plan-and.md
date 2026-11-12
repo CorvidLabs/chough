@@ -13,6 +13,7 @@ cases: [TC-cli-migrate-preview-with-nothing-to-migrate]
 evidence:
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate-da03d7
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-records-migrate-preview-with-nothing-to-migrate
 receipts: []
 environment: local-macos-arm64
 revision: a0152789eec8d548d98dbd11f86b0818ad98f494
@@ -22,7 +23,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T20:25:59Z
-updated: 2026-11-12T20:31:17Z
+updated: 2026-11-12T20:56:47Z
 ---
 # chough migrate on an already-migrated tree previews a plan and a digest that apply then calls nothing to do
 
@@ -44,3 +45,4 @@ Actual: A plan and a new digest, then nothing_to_do on apply
 - 2026-11-12T20:25:59Z · Reported (t38k's second fresh-eyes round report (relayed by t370); fixed by t38c); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate · by claude-code (hc t382)
 - 2026-11-12T20:31:08Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate-da03d7; fix: f68bf6c2-range (t38c's a17381c6): on a tree with no 0.5.x record the preview says there is nothing to migrate and gives no plan digest (REQ-records-009). Red at a0152789, green at 34b7cbb7 · by claude-code (hc t382)
 - 2026-11-12T20:31:17Z · fix: 24aa66ce (t38c's a17381c6): on a tree with no 0.5.x record the preview says there is nothing to migrate and gives no plan digest (REQ-records-009). Fix line corrected to name the commit on leif/human-first-records · by claude-code (hc t382)
+- 2026-11-12T20:56:47Z · evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-records-migrate-preview-with-nothing-to-migrate. Its case moved to the records module as TC-records-migrate-preview-with-nothing-to-migrate (68c7a32a), passing there; TC-cli-migrate-preview-with-nothing-to-migrate is retired · by claude-code (hc t382)
