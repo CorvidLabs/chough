@@ -1680,8 +1680,10 @@ bound to a case, `command` (the executed argument vector), `exit_code`, `tests_r
 `artifact_fingerprints` for project files given with `--artifact`, `criteria`,
 `requirements`, `contracts`, `limitations`, `observed` (the UTC time),
 `duration_seconds` when known and `actor`. Its body is the claim as one bold sentence
-and one plain sentence saying what the receipt shows, followed by the key failing lines
-when it failed.
+and one plain sentence saying what the receipt shows, followed, when it failed, by a
+`## Why it failed` section when Chough knows why, such as `The expected output was
+missing: "3".` with the expected text quoted, a time-out or an incomplete capture, and
+then the key failing lines.
 
 Every view of an entry, and what `cases run`, `cases record` and `evidence add` print,
 carries `provenance`, what the entry is and is not. A case run Chough executed, one with
