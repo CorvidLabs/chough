@@ -953,6 +953,68 @@ fn next_shows_the_five_newest_decisions_with_kind_and_reason() {
     assert!(!shown.contains("another old one"), "{shown}");
 }
 
+/// B1 (REQ-cli-021): the latest failure lists each bug that links it by the
+/// session-qualified form `bug add` stores (`<session>/<id>`, REQ-cli-023), while its
+/// session is open and after the session is archived and the failure is a receipt of
+/// its story.
+#[test]
+fn last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let session = fixture.active_id();
+    write_entry(
+        &fixture,
+        &observation("2026-11-10-fails-once", "failed", 3_000),
+    );
+    let added = fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC qualified link in next",
+        "--symptom",
+        "SYNTHETIC symptom of the latest failure",
+        "--trigger",
+        "SYNTHETIC trigger of the latest failure",
+        "--expected",
+        "SYNTHETIC pass",
+        "--actual",
+        "SYNTHETIC fail",
+        "--environment",
+        "local",
+        "--observation",
+        "2026-11-10-fails-once",
+    ]);
+    let bug = added["id"].as_str().unwrap().to_string();
+    let record = fixture.read(&format!(".chough/bugs/{bug}.md"));
+    assert!(
+        record.contains(&format!("evidence: [{session}/2026-11-10-fails-once]")),
+        "{record}"
+    );
+    let linked = json!({"total": 1, "items": [{"id": bug, "status": "open"}]});
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["last_failure"]["id"], "2026-11-10-fails-once",
+        "{next:#}"
+    );
+    assert_eq!(next["last_failure"]["bugs"], linked, "open: {next:#}");
+
+    fixture.commit("the session and its bug");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    fixture.ok(&[
+        "session",
+        "new",
+        "after",
+        "--objective",
+        "SYNTHETIC the next piece of work",
+    ]);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(
+        next["last_failure"]["id"], "2026-11-10-fails-once",
+        "{next:#}"
+    );
+    assert_eq!(next["last_failure"]["bugs"], linked, "archived: {next:#}");
+}
+
 #[test]
 fn next_names_the_latest_failed_observation_by_recorded_time_with_its_bugs() {
     let fixture = Fixture::new();

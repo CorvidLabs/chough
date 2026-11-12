@@ -1965,6 +1965,74 @@ fn a_later_not_run_keeps_an_unlinked_failure_refused() {
     assert_eq!(stage(&fixture), "accept");
 }
 
+/// B1 (REQ-cli-021, issue #39): a failure a bug links by the session-qualified form
+/// `bug add` stores (`<session>/<id>`, REQ-cli-023) lifts the unlinked-failure refusal,
+/// as a bare link does; so does a link qualified with another open session that holds
+/// the failure.
+#[test]
+fn a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal() {
+    let fixture = at_test_with_case();
+    let session = fixture.active_id();
+    case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
+    let added = fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC qualified link at the test gate",
+        "--symptom",
+        "SYNTHETIC symptom of the gate failure",
+        "--trigger",
+        "SYNTHETIC trigger of the gate failure",
+        "--expected",
+        "SYNTHETIC pass",
+        "--actual",
+        "SYNTHETIC fail",
+        "--environment",
+        "local",
+        "--observation",
+        FAILED,
+    ]);
+    let bug = added["id"].as_str().unwrap().to_string();
+    let record = fixture.read(&format!(".chough/bugs/{bug}.md"));
+    assert!(
+        record.contains(&format!("evidence: [{session}/{FAILED}]")),
+        "{record}"
+    );
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        !next["next_valid_action"]["action"]
+            .as_str()
+            .unwrap()
+            .contains("refused:unlinked-failure"),
+        "{next:#}"
+    );
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+
+    // The failure in another open session, linked qualified with that session.
+    let fixture = at_test_with_case();
+    let at_test = fixture.active_id();
+    fixture.ok(&[
+        "session",
+        "new",
+        "other",
+        "--objective",
+        "SYNTHETIC the session that holds the failure",
+    ]);
+    let other = fixture.active_id();
+    case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
+    fixture.ok(&["session", "use", &at_test]);
+    linking_bug(
+        &fixture,
+        "BUG-0001",
+        "open",
+        "in-scope",
+        &format!("{other}/{FAILED}"),
+    );
+    fixture.ok(&["stage", "advance"]);
+    assert_eq!(stage(&fixture), "accept");
+}
+
 /// A bug of any status that links the failed observation lifts the refusal; an open
 /// blocking bug keeps its own refusal first; a failure of an unreferenced case and a
 /// failure followed by a pass do not refuse; equal times order by observation ID.
