@@ -1504,8 +1504,9 @@ has no other home (REQ-cli-044, KNOW-30, KNOW-31). It links to `hi/`, `specs/`,
 
 Every note Chough writes starts with YAML front matter giving at least `id`, `title`,
 `type` and `tags`, with ISO 8601 dates, and links with standard relative Markdown links
-that resolve inside the repository, so the directory reads the same in Obsidian and on
-GitHub. Every note stays within 65,536 bytes. The generated `index.md` and `feed.xml`
+that resolve inside the repository, to a file or a folder, so the directory reads the
+same in Obsidian and on GitHub. A link to a folder, such as `../specs/`, opens on
+GitHub; Obsidian opens only links to files. Every note stays within 65,536 bytes. The generated `index.md` and `feed.xml`
 are byte-identical for the same sources; they copy no criterion, requirement, lesson
 or record text. A module's own lessons stay in its spec's lesson source. No gate reads
 the vault.

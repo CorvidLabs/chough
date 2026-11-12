@@ -8,17 +8,20 @@ reads it. `chough next` names its index.
 
 It holds only what has no other home (REQ-cli-044):
 - `index.md`, the reading guide: where to start, the journal, where things live, the
-  open bugs, the rules, skills and decisions, each module's lesson source with its
-  lesson count, and the snapshots and briefs. It links and copies no text.
-- `journal/`, one short dated post per finished piece of work, and `journal/feed.xml`,
-  an Atom feed of the newest 20 posts. The journal is the timeline of archived changes.
+  open bugs (at most 20, blocking first, with the total), the rules, skills and
+  decisions, each module's lesson source with its lesson count, and the snapshots and
+  briefs. It links and copies no text.
+- `journal/`, one short dated post per finished piece of work, each recording the UTC
+  `time` it was written, and `journal/feed.xml`, an Atom feed of the newest 20 posts,
+  newest first by time. The journal is the timeline of archived changes.
 - `lessons/`, lessons that span projects. A module's own lessons stay in its spec's
   lesson source.
 - Existing `snapshots/` and `briefs/`, and an earlier `library/` folder, as they are.
 
 It is an Obsidian-style vault: every note Chough writes starts with YAML front matter
 (`id`, `title`, `type`, `tags`, ISO dates) and links with standard relative Markdown
-links, so it reads in Obsidian and on GitHub alike.
+links, so it reads in Obsidian and on GitHub alike. A link to a folder, such as
+`../specs/`, opens on GitHub; Obsidian opens only links to files.
 
 `chough init` creates the folder. Every `chough stage advance` into done writes the
 session's `shipped` post, and `chough session close` a `closed` post, then regenerates
@@ -27,10 +30,11 @@ them with the work. Chough never rewrites a post, so a person's edit is kept, an
 nothing is trimmed or moved out of `.chough/` at done.
 
 `index.md` and `journal/feed.xml` are generated. They merge with
-`merge=chough-generated`; set up the driver once per clone with `git config --local
-merge.chough-generated.driver "chough library merge %O %A %B"`. A merge keeps ours,
-and `chough library index` rebuilds both; `chough library index --check` fails until
-it does.
+`merge=chough-generated`, and bugs with `merge=chough-bug`: `chough init` declares both
+in `.gitattributes` and sets the drivers in the clone's Git config. A fresh clone has
+no drivers, since Git does not clone config; `chough doctor` reports that as
+`merge_drivers`, and `chough doctor --fix` sets them. A merge keeps ours, and `chough
+library index` rebuilds both; `chough library index --check` fails until it does.
 
 ## From any stage
 
