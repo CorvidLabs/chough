@@ -344,6 +344,55 @@ fn one_gate_record_runs_at_most_one_native_step() {
     );
 }
 
+/// The fresh-eyes finding on gate record: a reply that closes a gate driving approval
+/// reports the step it ran, and the approval note names the command the reply came
+/// through, `chough gate record <list>`, not `chough checkpoint --close-gate`.
+#[cfg(unix)]
+#[test]
+fn gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record() {
+    let fixture = project();
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    let listed = fixture.ok(&["gate", "list", "--json"]);
+    let list = listed["list"].as_str().unwrap().to_string();
+    assert_eq!(listed["gates"][0]["drives"], "approve");
+    let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+    let reply = fixture.ok(&[
+        "gate",
+        "record",
+        &list,
+        "--gates",
+        "1",
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "yes, go",
+        "--where",
+        "SYNTHETIC chat, 2026-11-11",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ]);
+    let closed = &reply["closed"][0];
+    assert_eq!(closed["gate"], SCOPE, "{reply:#}");
+    assert_eq!(
+        closed["native_step"]["ran"],
+        format!("ran specsync change approve {ID} as SYNTHETIC-actor"),
+        "{reply:#}"
+    );
+    assert_eq!(
+        closed["native_step"]["specsync_actor"], "SYNTHETIC-actor",
+        "{reply:#}"
+    );
+    let calls = calls(&fixture);
+    assert_eq!(calls.len(), 1, "{calls:?}");
+    assert!(
+        calls[0].contains("Relayed and recorded by SYNTHETIC-agent at ")
+            && calls[0].ends_with(&format!(
+                " through chough gate record {list}; a relayed claim, not authenticated."
+            )),
+        "{calls:?}"
+    );
+}
+
 /// #237: a gate that holds a later stage does not stop moves out of earlier ones; it
 /// holds the stage it names.
 #[test]
