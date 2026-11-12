@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: build
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -99,5 +99,15 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - gate: native:approved
   - revision: 92ae99a6c8ea2d7679a76f95ac9846dfbca5c0fc
+  - by: claude-code (hc t382)
+- 2026-11-12T15:15:28Z · direct-native-write · build → build ·  ^t-1f4145
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 9b82a84361c74df793d321e369a7e8c435ce9fb6
+  - direct_write: {"change":"prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood","files":[{"path":"state.json","change":"changed"},{"path":"approvals.json","change":"changed"}],"before_state":"approved","after_state":"draft"}
+  - by: claude-code (hc t382)
+- 2026-11-12T15:15:28Z · back · build → plan · Leif re-scoped the release prep: D2 (REQ-cli-061 delta) and the migrate preview warning join 0.6.0 ('Block the tag', 2026-11-12T15:14Z); native change sent back to draft ^t-2c4fc4
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 9b82a84361c74df793d321e369a7e8c435ce9fb6
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, checkpoint references: 0 case(s) and 15 observation(s) to re-check with `chough status`
   - by: claude-code (hc t382)
 

@@ -50,5 +50,19 @@
       "approved_delta_bases": {}
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood",
+      "actor": "0xLeif",
+      "reason": "Leif decided that deferred bugs block the 0.6.0 tag (coordinator chat, hc t370, 2026-11-12T15:14Z: chose 'Block the tag', option text 'Fix both inside 0.6.0 before tagging. Skip 0.6.1.'), so D2 (the gate summary counting from the change's own base, a REQ-cli-061 delta) and the migrate preview's open-change warning join this change. Relayed by claude-code-t370; run by claude-code-t382.",
+      "timestamp": 1794496517,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    }
+  ]
 }

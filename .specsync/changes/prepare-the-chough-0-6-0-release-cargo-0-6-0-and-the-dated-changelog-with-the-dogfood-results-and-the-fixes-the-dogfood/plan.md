@@ -15,7 +15,7 @@ path), and the move into done keeps every earlier story byte-identical (#165).
 ## Out of scope
 
 Tagging, releasing or publishing 0.6.0, and merging #238: each waits for Leif's go.
-No contract change; if the dogfood finds one, it goes back to Leif as a send-back.
+One contract change, D2's REQ-cli-061 delta, which Leif chose to fix inside 0.6.0; any other the dogfood finds goes back to Leif as a send-back.
 
 ## Steps
 
@@ -30,9 +30,14 @@ No contract change; if the dogfood finds one, it goes back to Leif as a send-bac
    on this tree (green), and mark the bug verified.
 5. The four flaky-test bugs: reproduce each under load, fix and verify what has a
    cause, and leave open with its diagnostics, named to Leif, what never reproduces.
-6. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
+6. D2 (REQ-cli-061 delta): a red test (a second change on one branch counts the
+   earlier change's files), then the base selection in `src/gates.rs`; #190's test
+   stays green. docs/cli.md says the same, and its "planned after 0.6.0" note goes.
+7. The migrate preview warning: a red test (a preview with an open native change gives
+   no warning), then the warning in `src/migrate.rs`; the bug record red then green.
+8. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
    section with the dogfood results in its upgrade notes.
-7. `change check --commit`, Leif's review as him through `chough change ship
+9. `change check --commit`, Leif's review as him through `chough change ship
    --close-gate`, and the move into done with its two-step closeout.
 
 ## Risks

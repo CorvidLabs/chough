@@ -1,6 +1,6 @@
 ---
 id: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
-state: approved
+state: draft
 type: operations
 base_commit: 166d1ea1d37971e4c95ee8ba02249a1a46b2a0d2
 ---
@@ -27,6 +27,8 @@ Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the d
 - The #148 bug record is verified through Chough: a red run against the code before #157, then a later green run
 - Each of the four flaky-test bugs is settled through Chough: fixed and verified, or left open with its diagnostics and named to Leif
 - The closeout leaves chough doctor clean and every earlier archived story byte-identical
+- For a second native change on one branch, the gate summary counts only that change's own work since its base_commit (D2, REQ-cli-061, red then green), and #190's merged-main case still counts from the merge base
+- chough migrate's preview says up front that --apply will refuse while native changes are open, naming them, and still writes nothing (red then green)
 
 ## No-spec Rationale
 

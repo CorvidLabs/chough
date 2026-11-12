@@ -7,7 +7,7 @@ artifact: testing
 
 Each fix is red before it and green after, recorded through Chough with `chough
 cases run`: TC-records-a-0-5-pointer-still-names-its-session (D1) and
-TC-cli-empty-change-dir-not-open (#148). The KNOW gap list is recomputed from
+TC-cli-empty-change-dir-not-open (#148), TC-cli-gate-summary-counts-from-the-changes-own-base (D2, with #190's TC-cli-gate-summary-counts-only-the-changes-own-files still green) and TC-records-the-migrate-preview-warns-of-open-changes. The KNOW gap list is recomputed from
 `hi/knowledge.md` and the records and must come out empty. `tests/changelog.rs`
 checks the dated [0.6.0] section and the Cargo version. Full suites run on hosted CI;
 local runs are targeted. `chough doctor` is clean after the closeout.
