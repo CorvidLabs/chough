@@ -11,13 +11,13 @@ artifact: tasks
 - [x] #148: red against the code before #157, green on this tree, bug verified.
 - [x] D2: red test, the base selection, docs; #190 still green; bug red then green.
 - [x] The migrate preview warns of open native changes: red test, fix, bug red then green.
-- [ ] The four flaky-test bugs: each fixed and verified, or left open with its diagnostics and named to Leif.
-- [ ] The journal: checkpoint --title/--summary, the derived fallback and journal add --record, each red then green; the skill and docs.
-- [ ] Temporary paths in case definitions are not leaks: red test, fix, bug red then green.
-- [ ] The backfill: a post for each of the 68 earlier archived stories, and 0.6.0's post written again; library index --check passes.
-- [ ] A few cross-project lessons in knowledge/lessons/, each from recorded evidence.
-- [ ] The fresh-eyes bugs (t38j): each fixed red then green and verified, the docs gap closed, the CHANGELOG and docs corrected.
-- [ ] A migrated session.md ends with exactly one newline (jackdaw): red test, fix, bug red then green.
+- [x] The four flaky-test bugs: each fixed and verified, or left open with its diagnostics and named to Leif.
+- [x] The journal: checkpoint --title/--summary, the derived fallback and journal add --record, each red then green; the skill and docs.
+- [x] Temporary paths in case definitions are not leaks: red test, fix, bug red then green.
+- [x] The backfill: a post for each of the 68 earlier archived stories, and 0.6.0's post written again; library index --check passes.
+- [x] A few cross-project lessons in knowledge/lessons/, each from recorded evidence.
+- [x] The fresh-eyes bugs (t38j): each fixed red then green and verified, the docs gap closed, the CHANGELOG and docs corrected.
+- [x] A migrated session.md ends with exactly one newline (jackdaw): red test, fix, bug red then green.
 - [ ] A stopped command leaves no child it forked as the stop arrived (t38b): the stop stress red then green, bug verified.
 - [x] Cargo 0.6.0 and the dated CHANGELOG [0.6.0] section with the dogfood results.
 
