@@ -100,6 +100,9 @@ observations:
   - 2026-11-12-tc-cli-bug-trigger-and-fix
   - 2026-11-12-tc-records-receipt-says-none
   - 2026-11-12-tc-records-migrated-session-md-ends-with-one-newline
+  - 2026-11-12-tc-cli-bug-trigger-and-fix-807baa
+  - 2026-11-12-tc-records-receipt-says-none-95c8f5
+  - 2026-11-12-tc-records-migrated-session-md-ends-with-one-newline-fd0505
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -212,6 +215,9 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test bugs -- a_new_bugs_steps_start_with_the_labelled_trigger bug_update_fix_sets_the_fix_paragraph_and_logs_each_set verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision for TC-cli-bug-trigger-and-fix: failed (exit 101).](evidence/2026-11-12-tc-cli-bug-trigger-and-fix.md)
 - [Ran cargo test --locked --test migrate -- --exact a_receipt_section_with_nothing_to_list_says_none for TC-records-receipt-says-none: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-receipt-says-none.md)
 - [Ran cargo test --locked --test migrate -- --exact every_migrated_session_md_ends_with_exactly_one_newline for TC-records-migrated-session-md-ends-with-one-newline: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migrated-session-md-ends-with-one-newline.md)
+- [Ran cargo test --locked --test bugs -- a_new_bugs_steps_start_with_the_labelled_trigger bug_update_fix_sets_the_fix_paragraph_and_logs_each_set verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision for TC-cli-bug-trigger-and-fix: passed (exit 0).](evidence/2026-11-12-tc-cli-bug-trigger-and-fix-807baa.md)
+- [Ran cargo test --locked --test migrate -- --exact a_receipt_section_with_nothing_to_list_says_none for TC-records-receipt-says-none: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-receipt-says-none-95c8f5.md)
+- [Ran cargo test --locked --test migrate -- --exact every_migrated_session_md_ends_with_exactly_one_newline for TC-records-migrated-session-md-ends-with-one-newline: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrated-session-md-ends-with-one-newline-fd0505.md)
 
 ## Open threads
 
