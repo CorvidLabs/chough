@@ -369,3 +369,21 @@ expected = ["tests/humans.rs::a_close_that_runs_no_native_step_says_closed_once 
 adapter = "cargo-test"
 test_target = "humans"
 test = "a_close_that_runs_no_native_step_says_closed_once"
+
+[[case]]
+id = "TC-cli-next-with-no-native-change-says-only-none-recorded"
+title = "With no native change recorded, next's native line says only that none is recorded, with no read state, and SpecSync's own next step keeps its line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_with_no_native_change_says_only_that_none_is_recorded passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_with_no_native_change_says_only_that_none_is_recorded"
