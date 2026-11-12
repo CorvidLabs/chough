@@ -1879,6 +1879,8 @@ pub(super) struct Reads<'a> {
     root: &'a Path,
     cases: cases::Digests<'a>,
     artifact_time: std::cell::Cell<Duration>,
+    /// The evidence an ID can name, read once per request (REQ-cli-021).
+    index: std::cell::OnceCell<Index>,
 }
 
 impl<'a> Reads<'a> {
@@ -1887,7 +1889,44 @@ impl<'a> Reads<'a> {
             root,
             cases: cases::Digests::new(root),
             artifact_time: std::cell::Cell::new(Duration::ZERO),
+            index: std::cell::OnceCell::new(),
         }
+    }
+
+    /// This request's evidence index, read on first use.
+    fn index(&self) -> Result<&Index> {
+        if let Some(index) = self.index.get() {
+            return Ok(index);
+        }
+        let built = Index::build(self.root)?;
+        Ok(self.index.get_or_init(|| built))
+    }
+
+    /// Every open session's entry, read from this request's index, in folder and name
+    /// order; one that does not read as an entry refuses, as [`load_all`] does.
+    fn entries(&self) -> Result<Vec<Evidence>> {
+        self.index()?
+            .first
+            .iter()
+            .filter(|holder| matches!(holder.held, Held::Entry(_)))
+            .map(Holder::evidence)
+            .collect()
+    }
+
+    /// How many open sessions' entries no ID in `referenced` names, by ID or alias.
+    pub(super) fn unreferenced_entries(&self, referenced: &BTreeSet<&str>) -> Result<usize> {
+        Ok(self
+            .index()?
+            .first
+            .iter()
+            .filter(|holder| matches!(holder.held, Held::Entry(_)))
+            .filter(|holder| {
+                !holder
+                    .names
+                    .iter()
+                    .any(|name| referenced.contains(name.as_str()))
+            })
+            .count())
     }
 
     /// (all current, an external artifact pending) for one entry.
@@ -1965,7 +2004,7 @@ impl<'a> Reads<'a> {
         environment: Option<&str>,
     ) -> Result<Vec<Value>> {
         let mut values = vec![];
-        for evidence in load_all(self.root)? {
+        for evidence in self.entries()? {
             let state = self.freshness(&evidence, current, environment)?;
             let (artifacts_current, external_pending) = self.artifacts_current(&evidence)?;
             let mut view = json!({"record": evidence.to_json(), "freshness": state, "label": label_for(state, environment)});
@@ -2018,7 +2057,7 @@ fn label_for(state: &str, environment: Option<&str>) -> &'static str {
     }
 }
 
-/// Labels observation references current, historical or unavailable.
+/// Labels observation references current, historical, removed or unavailable.
 pub(super) struct Labels<'a> {
     reads: Reads<'a>,
     snapshot: Result<Snapshot>,
@@ -2043,42 +2082,44 @@ impl<'a> Labels<'a> {
             root == self.reads.root,
             "observation labels belong to another project root"
         );
-        if !is_present(self.reads.root, id)? {
-            return Ok("unavailable");
-        }
-        let evidence = load(self.reads.root, id)?;
-        Ok(
-            match self
-                .reads
-                .freshness(&evidence, &self.snapshot, environment)?
-            {
-                "current-observation" => "current",
-                "environment-unchecked" => "current",
-                "stale-revision-or-inputs" => "stale",
-                "stale-artifact" => "stale",
-                "stale-case-definition" => "stale-case-definition",
-                "stale-environment" => "stale-environment",
-                _ => "unknown",
-            },
-        )
+        let (label, _) = self
+            .reads
+            .label_reference(id, &self.snapshot, environment)?;
+        Ok(label)
+    }
+}
+
+/// A referenced observation's label (REQ-cli-021): current when present with matching
+/// inputs, its environment unchecked when no environment is given; otherwise
+/// historical, present but stale. Removed and unavailable come from the index.
+fn reference_label(state: &str, environment: Option<&str>) -> &'static str {
+    match (state, environment) {
+        ("current-observation", _) => "current",
+        ("environment-unchecked", None) => "current",
+        _ => "historical",
     }
 }
 
 impl Reads<'_> {
+    /// One reference's label, with the receipt that records a removed one
+    /// (REQ-records-009).
     fn label_reference(
         &self,
         id: &str,
         current: &Result<Snapshot>,
         environment: Option<&str>,
-    ) -> Result<&'static str> {
-        if !is_present(self.root, id)? {
-            return Ok("unavailable");
-        }
-        let evidence = load(self.root, id)?;
-        Ok(label_for(
-            self.freshness(&evidence, current, environment)?,
-            environment,
-        ))
+    ) -> Result<(&'static str, Option<String>)> {
+        Ok(match self.index()?.resolve(id)? {
+            Resolved::Present(evidence) => (
+                reference_label(
+                    self.freshness(&evidence, current, environment)?,
+                    environment,
+                ),
+                None,
+            ),
+            Resolved::Removed(receipt) => ("removed", Some(receipt)),
+            Resolved::Missing => ("unavailable", None),
+        })
     }
 
     /// Every observation an open session or a bug references, labelled.
@@ -2089,8 +2130,12 @@ impl Reads<'_> {
     ) -> Result<Vec<Value>> {
         let mut values = vec![];
         for (id, sources) in references_from(self.root)? {
-            let label = self.label_reference(&id, current, environment)?;
-            values.push(json!({"id": id, "label": label, "referenced_by": sources}));
+            let (label, receipt) = self.label_reference(&id, current, environment)?;
+            let mut value = json!({"id": id, "label": label, "referenced_by": sources});
+            if let Some(receipt) = receipt {
+                value["receipt"] = json!(receipt);
+            }
+            values.push(value);
         }
         Ok(values)
     }
