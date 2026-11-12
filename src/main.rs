@@ -533,7 +533,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "evidence_state": if observations.is_empty() { "missing" } else { "observations-present-not-acceptance" },
         "observations": observations,
         "observation_references": observation_references,
-        "observation_label_note": "current: present with matching inputs; historical: present but stale; removed: not carried by the 0.6.0 migration, as its receipt records; unavailable: missing. Removed and unavailable observations never count as current, passed or verifying evidence.",
+        "observation_label_note": "current: present with matching inputs; historical: present but stale; removed: not carried by the 0.6.0 migration, as its receipt records; ambiguous: a merge left two records with that name, and the row names its places; unavailable: missing. Removed, ambiguous and unavailable observations never count as current, passed or verifying evidence.",
         "environment": environment,
         "open_bugs": assessment.open_bugs,
         "blocking_bugs": assessment.blocking,
@@ -877,9 +877,23 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
                 "referenced_by": by.iter().take(3).map(|source| cut(source.as_str().unwrap_or_default())).collect::<Vec<_>>(),
                 "referenced_by_total": by.len(),
             });
-            // A removed ID names the migration receipt that records it (REQ-records-009).
+            // A removed ID names the migration receipt that records it (REQ-records-009);
+            // an ambiguous one its places, and a grouped row the form it resolved through.
             if let Some(receipt) = entry["receipt"].as_str() {
                 item["receipt"] = json!(cut(receipt));
+            }
+            if let Some(places) = entry["places"].as_array() {
+                item["places"] = json!(
+                    places
+                        .iter()
+                        .take(3)
+                        .map(|place| cut(place.as_str().unwrap_or_default()))
+                        .collect::<Vec<_>>()
+                );
+                item["places_total"] = json!(places.len());
+            }
+            if let Some(resolved) = entry["resolved"].as_str() {
+                item["resolved"] = json!(cut(resolved));
             }
             item
         })

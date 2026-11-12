@@ -285,7 +285,9 @@ approval). Until then the approved deltas stay as they are.
 6. REQ-cli-021 (the view's labels): 0.6.0 has no retention, so no observation reads
    `pruned`. An ID the migration did not carry resolves as `removed`, naming its
    receipt (REQ-records-009), so the criterion lists referenced observations that are
-   historical, removed or unavailable.
+   historical, removed, ambiguous or unavailable: a link a merge leaves naming two
+   records with one name reads ambiguous, naming its places, and never refuses the
+   view (REQ-cli-023's merge criterion).
 
 ## Risks
 
