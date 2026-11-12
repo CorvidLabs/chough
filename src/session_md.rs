@@ -305,13 +305,7 @@ pub(super) fn render_with(
     let verified = items(&record, VERIFIED);
     for observation in &session.observations {
         let (line, target) = match session.evidence_links.get(observation) {
-            Some((link, claim)) => (
-                format!(
-                    "[{}]({link})",
-                    one_line(claim).replace('[', "\\[").replace(']', "\\]")
-                ),
-                Some(format!("({link})")),
-            ),
+            Some((link, claim)) => (verified_link(claim, link), Some(format!("({link})"))),
             None => (observation.clone(), None),
         };
         let listed = verified.iter().any(|existing| {
@@ -819,6 +813,16 @@ fn pick(map: &[(String, String)], key: &str) -> String {
 }
 
 /// Text on one line, so a list item or field never spills into the next.
+/// The What was verified line of an observation whose entry has a file: its claim on
+/// one line, brackets escaped, linking `link` (REQ-records-004). A save and a migration
+/// write the same line (REQ-records-009).
+pub(super) fn verified_link(claim: &str, link: &str) -> String {
+    format!(
+        "[{}]({link})",
+        one_line(claim).replace('[', "\\[").replace(']', "\\]")
+    )
+}
+
 fn one_line(text: &str) -> String {
     text.replace("\r\n", " ").replace(['\n', '\r'], " ")
 }
