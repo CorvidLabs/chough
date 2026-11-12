@@ -1754,6 +1754,8 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
     // Entries by their qualified `<session>/<id>` form; bugs by their names.
     let mut ids = vec![];
     let mut bug_ids = vec![];
+    // Each root's case run, qualified as <session>/<id>, in root order.
+    let mut runs = vec![];
     for (fixture, side, bug) in [
         (&a, "a", "Version check flakes"),
         (&b, "b", "Version check is slow"),
@@ -1763,6 +1765,7 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         // The bare ID the run printed (REQ-cli-017), which the bug below links.
         let observation = run["observation"].as_str().unwrap().to_string();
         ids.push(format!("{session}/{observation}"));
+        runs.push(format!("{session}/{observation}"));
 
         let mut args = vec![
             "evidence",
@@ -1840,6 +1843,42 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
     );
 
     a.ok(&["cases", "check"]);
+    // Each bug linked its own root's run by the bare ID it printed, unambiguous when
+    // written. After the merge both sessions hold that name, and still both read
+    // (REQ-cli-023): each bug resolves to its own root's run, never the other root's
+    // same-named entry, and status and next report. Every problem is listed at once.
+    let mut problems = vec![];
+    for (bug, run) in bug_ids.iter().zip(&runs) {
+        let shown = a.run(&["bug", "show", bug]);
+        if !shown.status.success() {
+            problems.push(format!(
+                "bug show {bug}: {}",
+                String::from_utf8_lossy(&shown.stderr)
+            ));
+            continue;
+        }
+        let shown: Value = serde_json::from_slice(&shown.stdout).unwrap();
+        let labels = shown["observation_labels"].as_array().unwrap();
+        if labels.len() != 1 || labels[0]["label"] != "entry" || labels[0]["place"] != run.as_str()
+        {
+            problems.push(format!(
+                "bug {bug} does not resolve to its own root's run {run}: {labels:?}"
+            ));
+        }
+    }
+    for args in [
+        &["status", "--environment", "local", "--json"][..],
+        &["next", "--environment", "local", "--json"][..],
+    ] {
+        let output = a.run(args);
+        if !output.status.success() {
+            problems.push(format!(
+                "{args:?}: {}",
+                String::from_utf8_lossy(&output.stderr).trim()
+            ));
+        }
+    }
+    assert!(problems.is_empty(), "{problems:#?}");
     let status = a.ok(&["status", "--environment", "local", "--json"]);
     let observations = status["observations"].as_array().unwrap();
     assert_eq!(observations.len(), 4, "{observations:?}");
@@ -1860,17 +1899,8 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         bug_ids.iter().all(|id| bugs.contains(&id.as_str())),
         "{bug_ids:?} {bugs:?}"
     );
-    // Each bug linked its own root's run by the bare ID it printed, unambiguous when
-    // written. After the merge both sessions hold that name, and still both read
-    // (REQ-cli-023): next and status report, and each bug shows its link.
     let next = a.ok(&["next", "--environment", "local", "--json"]);
     assert!(next["observations"].is_object(), "{next:#}");
-    for bug in &bug_ids {
-        let shown = a.ok(&["bug", "show", bug]);
-        let labels = shown["observation_labels"].as_array().unwrap();
-        assert_eq!(labels.len(), 1, "{shown:#}");
-        assert_ne!(labels[0]["label"], "missing", "{shown:#}");
-    }
 }
 
 // ---------------------------------------------------------------------------
