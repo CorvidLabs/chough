@@ -24,17 +24,26 @@
   ],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-migrate-evidence-uppercase-digests-9ce28d5e695eb59d47b6b354"
+    "OBS-tc-records-migrate-evidence-uppercase-digests-9ce28d5e695eb59d47b6b354",
+    "OBS-tc-records-migrate-evidence-uppercase-digests-662277bf7ccc63e2a6cb7688"
   ],
   "impact": "A migrated tree is unusable until someone edits the entry by hand",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t38b's review (R4) of t37j's content check 9a914511; red at 8f019ca7 (leif/0.6.0-uppercase-digests-red)",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794442259,
+      "text": "status: open -> verified. Green after t38b's 6bf8e8c7: every carried digest is lowercased and status and next read the migrated entry.",
+      "observations": [
+        "OBS-tc-records-migrate-evidence-uppercase-digests-662277bf7ccc63e2a6cb7688"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794442239,
-  "updated_at_unix_seconds": 1794442239
+  "updated_at_unix_seconds": 1794442259
 }
