@@ -1382,7 +1382,10 @@ stage on that response, and shows:
 The text form (the default) carries the same fields as short lines. Each form is at
 most 16384 bytes: every list shows at most 10 entries beside its total, every string
 taken from a record is cut to at most 512 bytes, counted as JSON escapes it (a control
-character takes six), ending in ` [cut]`, and while the
+character takes six), ending in ` [cut]`. A command is never cut, whatever its length
+(REQ-cli-021): in the next valid action and the gate, each command in backticks stays
+whole and only the text around it counts toward the 512 bytes, so the commands after a
+cut follow ` [cut]` in order, and the `command` field is never cut. While the
 output is still over the cap the last entry of the longest list is dropped and
 `truncated` becomes true (text adds `Output truncated at 16384 bytes; run chough
 status.`). The decision items, linked bugs, lesson sources and archived bundle paths are
