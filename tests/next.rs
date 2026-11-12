@@ -2210,7 +2210,7 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
 fn next_at_accept_never_passes_on_specsyncs_review_command() {
     let fixture = approved_at_plan("review-change");
     while fixture.checkpoint()["stage"]["current"] != "accept" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     fixture.write(".stub-state", "verifying\n");
     fixture.write(
