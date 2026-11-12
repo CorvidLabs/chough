@@ -657,6 +657,76 @@ fn automatic_collision_root(case_id: &str, missing_output: &str) -> (Fixture, St
     (fixture, id)
 }
 
+/// S5 (REQ-cli-023, REQ-cli-012): automatic failure capture links each failed attempt
+/// as `bug add` links a session entry, `<session>/<id>`, both when it opens the bug for
+/// the case and when it appends a later failure to it, and its Log names the same form,
+/// so a merge that brings a same-named entry in another session cannot make it
+/// ambiguous.
+#[test]
+fn automatic_failure_capture_links_each_failure_by_its_session_qualified_id() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.write(
+        "specs/cli/requirements.md",
+        "### REQ-cli-012\nLocal bug backlog.\n",
+    );
+    common::stand_in(
+        &fixture.root().join("bin"),
+        "failure-probe",
+        "SYNTHETIC capture failure",
+    );
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-9101\"\ntitle = \"Capture probe\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"FLOW-8\"]\nrequirements = [\"REQ-cli-012\"]\nenvironments = [\"test-local\"]\nartifacts = [\"test-log\"]\nexpected = [\"The probe reports its expected output\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"failure-probe\"]\nexpect_output = [\"SYNTHETIC output that is absent\"]\n",
+    );
+    fixture.init();
+    fixture.commit("a capture fixture");
+    fixture.ok(&[
+        "consent",
+        "grant",
+        "repeat-validation",
+        "--source",
+        "SYNTHETIC authorization for two captures",
+    ]);
+    let run = fixture.ok(&[
+        "validate",
+        "run",
+        "TC-cli-9101",
+        "--times",
+        "2",
+        "--environment",
+        "test-local",
+    ]);
+    assert_eq!(run["run"]["failures"], 2, "{run}");
+    let bug = run["captured_locally"][0].as_str().unwrap().to_string();
+    let session = fixture.active_id();
+    let record = fixture.read(&bug_path(&bug));
+    let shown = fixture.ok(&["bug", "show", &bug]);
+    let links: Vec<String> = shown["bug"]["evidence"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|link| link.as_str().unwrap().to_string())
+        .collect();
+    assert_eq!(links.len(), 2, "{record}");
+    for link in &links {
+        let bare = link
+            .strip_prefix(&format!("{session}/"))
+            .unwrap_or_else(|| panic!("{link} is not qualified with {session}: {record}"));
+        let entry = fixture.read(&format!(".chough/sessions/{session}/evidence/{bare}.md"));
+        assert!(entry.contains("\nresult: failed\n"), "{entry}");
+    }
+    assert!(
+        record.contains("Additional failure from")
+            && record.contains(&format!("evidence: {}", links[1])),
+        "the appended failure's Log line does not name {}: {record}",
+        links[1]
+    );
+    for label in shown["observation_labels"].as_array().unwrap() {
+        assert_eq!(label["label"], "entry", "{shown:#}");
+    }
+}
+
 /// TC-cli-0125, rewritten for 0.6.0: independent roots name new bugs by date and title,
 /// never by a number after the highest one, manual reports and automatic failure
 /// capture alike; a migrated bug keeps answering to its 0.5.x ID as an alias in list,
