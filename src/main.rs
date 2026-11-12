@@ -872,12 +872,17 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         .take(LIST_LIMIT)
         .map(|entry| {
             let by = entry["referenced_by"].as_array().cloned().unwrap_or_default();
-            json!({
+            let mut item = json!({
                 "id": entry["id"],
                 "label": entry["label"],
                 "referenced_by": by.iter().take(3).map(|source| cut(source.as_str().unwrap_or_default())).collect::<Vec<_>>(),
                 "referenced_by_total": by.len(),
-            })
+            });
+            // A removed ID names the migration receipt that records it (REQ-records-009).
+            if let Some(receipt) = entry["receipt"].as_str() {
+                item["receipt"] = json!(cut(receipt));
+            }
+            item
         })
         .collect();
 
