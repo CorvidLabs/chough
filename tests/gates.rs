@@ -515,6 +515,41 @@ fn gate_summary_counts_only_the_changes_own_files() {
     assert!(!summary.contains("lib/merged-"), "{summary}");
 }
 
+/// D2 (REQ-cli-061): a second change on one branch counts from its own recorded base
+/// commit, so the first change's work, archived earlier on the same branch, is not
+/// counted again.
+#[test]
+fn a_second_change_on_one_branch_counts_from_its_own_base_commit() {
+    let fixture = project(&[SCOPE]);
+    fixture.commit("the product so far, on main");
+    fixture.git(&["checkout", "-q", "-B", "main"]);
+    fixture.git(&["checkout", "-q", "-b", "feature"]);
+    for index in 0..3 {
+        fixture.write(
+            &format!("lib/first-change-{index}.txt"),
+            "the first change\n",
+        );
+    }
+    fixture.commit("the first change, archived on this branch");
+    let second_base = git_head(&fixture);
+    fixture.write(
+        &format!("{DIR}/state.json"),
+        &json!({"id": ID, "title": "Free shipping at the threshold", "state": "approved", "base_commit": second_base}).to_string(),
+    );
+    fixture.write("src/second.txt", "one line\n");
+    fixture.commit("the second change");
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    assert!(
+        summary.contains(&format!(
+            "What changed: 1 files, +1 −0 since {}",
+            &second_base[..8]
+        )),
+        "{summary}"
+    );
+    assert!(!summary.contains("lib/first-change-"), "{summary}");
+}
+
 /// REQ-cli-061, TC-cli-gate-summary-says-when-there-is-no-base (G2): with no merge base
 /// and no recorded base commit, the summary's Diff line says the base is unknown instead
 /// of giving a `git diff unknown..<sha>` command that fails.
