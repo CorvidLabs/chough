@@ -828,7 +828,7 @@ fn execute(
 /// every line keeps its start and the text before its first ESC. Linear: an OSC that
 /// fails to complete fails at the next line break or the end, and so does every OSC
 /// that starts before that point. Returns whether anything was removed.
-fn strip_escapes(input: &[u8]) -> (Vec<u8>, bool) {
+pub(super) fn strip_escapes(input: &[u8]) -> (Vec<u8>, bool) {
     let mut output = Vec::with_capacity(input.len());
     let mut removed = false;
     let mut unterminated_until = 0;
@@ -894,20 +894,48 @@ fn osc_length(bytes: &[u8]) -> std::result::Result<usize, usize> {
 /// of standard error and then standard output. Escape sequences are already removed
 /// from the text the assertions read.
 fn failing_text(binding: &Binding, execution: &Captured, text: &str) -> String {
+    // The log's own headers are never key lines.
+    let lines: Vec<&str> = text
+        .lines()
+        .filter(|line| *line != "--- stdout ---" && *line != "--- stderr ---")
+        .collect();
     if binding.adapter == "cargo-test" {
-        let mut kept = vec![];
-        let mut in_failure = false;
-        for line in text.lines() {
-            if line.starts_with("failures:") && !in_failure {
-                in_failure = true;
-            }
-            if in_failure {
-                kept.push(line);
-            }
-            if line.starts_with("test result:") {
-                kept.push(line);
+        let result = lines
+            .iter()
+            .rev()
+            .find(|line| line.starts_with("test result:"))
+            .copied();
+        // The first failure block: from the first `---- <test> ... ----` after
+        // `failures:` up to the next block or the list of failed tests.
+        let mut block = vec![];
+        if let Some(start) = lines.iter().position(|line| line.starts_with("failures:")) {
+            let mut inside = false;
+            for line in &lines[start + 1..] {
+                if line.starts_with("---- ") {
+                    if inside {
+                        break;
+                    }
+                    inside = true;
+                } else if line.starts_with("failures:") || line.starts_with("test result:") {
+                    break;
+                }
+                if inside && !line.trim().is_empty() {
+                    block.push(*line);
+                }
             }
         }
+        // Its head, leaving room for the result line within the bounds.
+        let room = KEY_LINE_BYTES.saturating_sub(result.map_or(0, |line| line.len() + 1));
+        let mut kept = vec![];
+        let mut bytes = 0;
+        for line in block {
+            if kept.len() + 1 >= KEY_LINES || bytes + line.len() + 1 > room {
+                break;
+            }
+            bytes += line.len() + 1;
+            kept.push(line);
+        }
+        kept.extend(result);
         kept.join("\n")
     } else {
         let stderr_text = String::from_utf8_lossy(&execution.stderr).into_owned();
@@ -918,12 +946,17 @@ fn failing_text(binding: &Binding, execution: &Captured, text: &str) -> String {
         if !stderr.is_empty() {
             return stderr.join("\n");
         }
-        text.lines()
+        lines
+            .into_iter()
             .filter(|line| !line.trim().is_empty())
             .collect::<Vec<_>>()
             .join("\n")
     }
 }
+
+/// The key failing lines' bounds (REQ-records-005).
+const KEY_LINES: usize = 20;
+const KEY_LINE_BYTES: usize = 2_048;
 
 fn artifact(execution: &Captured) -> (Vec<u8>, String, bool) {
     const STDOUT_HEADER: &[u8] = b"--- stdout ---\n";

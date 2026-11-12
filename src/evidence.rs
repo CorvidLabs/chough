@@ -586,27 +586,14 @@ pub(super) fn run(root: &Path, command: EvidenceCommand) -> Result<()> {
     }
 }
 
-/// Key failing lines within the REQ-records-005 bounds: at most 20 lines and 2,048
-/// bytes, escape sequences removed (cases runs strip with their own adapter rules),
-/// redacted never refused.
+/// Key failing lines within the REQ-records-005 bounds, as a case run keeps them:
+/// complete terminal escape sequences removed, blank lines dropped, each match of
+/// REQ-records-006 redacted (never refused) and counted, then the last lines that fit
+/// in 20 lines and 2,048 bytes.
 pub(super) fn key_lines(text: &str) -> (Vec<String>, usize) {
-    let mut lines: Vec<String> = text
-        .replace("\r\n", "\n")
-        .lines()
-        .filter(|line| !line.trim().is_empty())
-        .map(str::to_string)
-        .collect();
-    if lines.len() > 20 {
-        lines = lines[lines.len() - 20..].to_vec();
-    }
-    let mut bytes: usize = lines.iter().map(|line| line.len() + 1).sum();
-    while bytes > 2_048 {
-        let first = lines.remove(0);
-        bytes -= first.len() + 1;
-    }
-    let mut redacted = 0;
     let local = leaks::Local::current();
-    let lines = lines
+    let mut redacted = 0;
+    let lines = text_lines(text)
         .into_iter()
         .map(|line| {
             let (clean, count) = leaks::redact(local, &line);
@@ -614,7 +601,43 @@ pub(super) fn key_lines(text: &str) -> (Vec<String>, usize) {
             clean
         })
         .collect();
-    (lines, redacted)
+    (bounded_tail(lines), redacted)
+}
+
+/// `evidence add --failing-lines`: the same lines and bounds, the kept text checked as
+/// REQ-records-006 checks other text: a leak refuses, naming the field and the kind,
+/// or under `--redact` is redacted and counted.
+fn manual_key_lines(text: &str) -> Result<(Vec<String>, usize)> {
+    if leaks::redacting() {
+        return Ok(key_lines(text));
+    }
+    let kept = bounded_tail(text_lines(text));
+    for line in &kept {
+        leaks::check(leaks::Local::current(), "--failing-lines", line)?;
+    }
+    Ok((kept, 0))
+}
+
+/// The non-blank lines of `text`, escape sequences removed.
+fn text_lines(text: &str) -> Vec<String> {
+    let (visible, _) = cases::strip_escapes(text.replace("\r\n", "\n").as_bytes());
+    String::from_utf8_lossy(&visible)
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
+/// The last of `lines` that fit in 20 lines and 2,048 bytes.
+fn bounded_tail(mut lines: Vec<String>) -> Vec<String> {
+    if lines.len() > 20 {
+        lines.drain(..lines.len() - 20);
+    }
+    let mut bytes: usize = lines.iter().map(|line| line.len() + 1).sum();
+    while bytes > 2_048 && !lines.is_empty() {
+        bytes -= lines.remove(0).len() + 1;
+    }
+    lines
 }
 
 /// Fingerprint an `--artifact` path: absolute paths outside the project are
@@ -734,7 +757,7 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     let base = identity::dated_name(&date, &source, "evidence");
     let id = args.id.clone().unwrap_or(base);
     let (key_lines, redacted) = match &args.failing_lines {
-        Some(text) if args.outcome != Outcome::Passed => key_lines(text),
+        Some(text) if args.outcome != Outcome::Passed => manual_key_lines(text)?,
         _ => (vec![], 0),
     };
     let mut limitations = args.limitations.clone();
