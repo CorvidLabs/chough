@@ -39,6 +39,7 @@ observations:
   - 2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes
   - 2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes-1c9708
   - 2026-11-12-tc-records-migrate-from-0-5
+  - 2026-11-12-reproduced-the-jackdaw-finding-t38f-on-a-rehearsal-migrated
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -84,6 +85,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test migrate -- --exact the_preview_names_open_native_changes_that_make_apply_refuse for TC-records-the-migrate-preview-warns-of-open-changes: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes.md)
 - [Ran cargo test --locked --test migrate -- --exact the_preview_names_open_native_changes_that_make_apply_refuse for TC-records-the-migrate-preview-warns-of-open-changes: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-the-migrate-preview-warns-of-open-changes-1c9708.md)
 - [Ran cargo test --locked --test migrate for TC-records-migrate-from-0-5: passed (exit 0).](evidence/2026-11-12-tc-records-migrate-from-0-5.md)
+- [Reproduced the jackdaw finding (t38f, on a rehearsal-migrated jackdaw tree whose case files set XDG_DATA_HOME under the temporary root, 4 findings) with the 0.6.0 build at 8d310373 in a throwaway project: a committed case file whose command binding sets XDG_DATA_HOME to a path under the temporary root (argv env XDG_DATA_HOME=<tmp>/probe-data true) made chough doctor report a leak finding (match system-path, the case file, line 19) with the fix chough doctor --fix --redact, which would rewrite the case's deliberate test setting and break the case](evidence/2026-11-12-reproduced-the-jackdaw-finding-t38f-on-a-rehearsal-migrated.md)
 
 ## Open threads
 
