@@ -95,8 +95,14 @@ different version (`--force` reinstalls). The binaries are `hi`, `fledge` and
 
 ## Start here
 
-For a new project without them, start with [New project](docs/walkthrough.md#new-project).
-In a Git project with HI criteria and SpecSync module contracts:
+For a new project without them, the order is: write the intent as an HI file and run
+`hi check`; create each module's contract with `specsync init` and `specsync scaffold
+<module>`; turn SpecSync's change gates on with `specsync change adopt` (`specsync init`
+leaves them off, and until then stage moves pass ungated); then run `chough init` as
+below. [New project](docs/walkthrough.md#new-project) walks through each step, and
+[A new project and its first change](docs/cli.md#a-new-project-and-its-first-change)
+shows what a change's delta looks like. In a Git project with HI criteria and SpecSync
+module contracts:
 
 ```sh
 chough init --objective "Free shipping from fifty dollars" \

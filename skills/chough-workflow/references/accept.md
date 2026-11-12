@@ -90,6 +90,12 @@ words, where and the recording agent as a relayed claim, not authenticated. If a
 after the ship is refused, the output says the change is shipped and names the
 command left to run.
 
+Before the move into done, give the journal post a short human title and a real
+summary: `chough checkpoint --title "<title>" --summary "<what changed and why; what
+was verified, with its final numbers; what is next>"`, one paragraph per line, at
+most 72 and 900 bytes. Without them, Chough derives both from the objective and the
+story.
+
 The move into done archives the session into one story,
 `.chough/archive/sessions/<id>.md`, with every evidence entry as a receipt. With the
 librarian on, it also writes a journal post and refreshes `knowledge/index.md` and its

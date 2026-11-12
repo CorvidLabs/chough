@@ -133,6 +133,28 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
 
 ### Also in 0.6.0
 
+- A journal post has a short human title and a real summary (REQ-records-011). Before
+  the move into done the agent sets them with `chough checkpoint --title "<title>"
+  --summary "<what changed and why; what was verified; what is next>"`; without them,
+  Chough derives a title from the objective's first clause and a body from the story's
+  Goal, first decision, newest verified entry and first open thread. `chough journal
+  add --record <story> --title T --body B` writes the post of an archived story that has
+  none, dated by the story's close, for a backfill. This repository's 69 archived
+  stories each got one.
+- At plan, while the change waits for its approval, `chough next` names the human scope
+  gate and never passes on SpecSync's own `specsync change approve <id> --actor
+  <name>`, so no agent is routed to approve its own scope (REQ-cli-021). At a scope
+  gate, `chough gate list`'s summary counts and names the change's own delta, plan and
+  other Markdown files first, since they are what the human approves (REQ-cli-061).
+- Timeline fields with parts, such as a relayed decision's `relayed_by` and a direct
+  write's `direct_write`, are labelled lines instead of JSON; entries written with JSON
+  still read (REQ-history-002). A story's receipts are in observation-time order
+  (REQ-history-006).
+- `chough doctor` no longer reports a path under `/tmp/` or `/private/tmp/` in a case
+  definition as a leak, since a case may set its own temporary data folder; a home path,
+  user or host name, email or credential there still counts (REQ-records-006).
+- `knowledge/lessons/` holds the first cross-project lessons, each from recorded
+  evidence.
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
   of `recorded` (#60, REQ-cli-011, REQ-cli-017).
