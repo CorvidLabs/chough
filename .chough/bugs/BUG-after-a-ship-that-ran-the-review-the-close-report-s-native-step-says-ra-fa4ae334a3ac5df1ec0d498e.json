@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "BUG-after-a-ship-that-ran-the-review-the-close-report-s-native-step-says-ra-fa4ae334a3ac5df1ec0d498e",
+  "title": "After a ship that ran the review, the close report's native_step says ran null while its why says the review ran",
+  "symptom": "relayed_decision.native_step is {ran: null, why: 'ran specsync change review <id> as <actor> with verdict pass'}",
+  "trigger": "chough change ship <id> --close-gate <review gate> with the relay, with no current scoped review",
+  "expected": "native_step names the step that ran, as a close that runs it does",
+  "actual": "The close reports only why, with ran null",
+  "criteria": [],
+  "requirements": [
+    "REQ-cli-059"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester build at 9c30b881, debug, real SpecSync 6.3.0",
+  "revision": "9c30b8817bc403d447e7469bb03a9fbc3351542e",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "A reader of the output sees a contradiction; the recorded relay is right",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t38b, A3-1 retest residual",
+  "notes": [
+    {
+      "at_unix_seconds": 1794469058,
+      "text": "Added despite similar reports: A3-1 fixed the recorded relay (native and actor on the Timeline); this is the command's printed close report, whose native_step still says ran null",
+      "observations": []
+    }
+  ],
+  "created_at_unix_seconds": 1794469058,
+  "updated_at_unix_seconds": 1794469058
+}

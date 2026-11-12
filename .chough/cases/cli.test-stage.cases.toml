@@ -129,3 +129,21 @@ expected = ["tests/change.rs::a_refused_step_for_an_unknown_change_leaves_no_bas
 adapter = "cargo-test"
 test_target = "change"
 test = "a_refused_step_for_an_unknown_change_leaves_no_baseline"
+
+[[case]]
+id = "TC-cli-a-ship-reports-the-review-it-ran"
+title = "The close report after a ship that ran the review names it in native_step, never ran null"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "FLOW-16"]
+requirements = ["REQ-cli-059"]
+paths = ["src/checkpoint.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::a_ship_that_runs_the_review_reports_it_in_native_step passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "a_ship_that_runs_the_review_reports_it_in_native_step"

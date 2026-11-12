@@ -1007,6 +1007,23 @@ fn a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay() {
     assert_eq!(relay["actor"], "SYNTHETIC-reviewer", "{story}");
 }
 
+/// REQ-cli-059, TC-cli-a-ship-reports-the-review-it-ran (A3-3 residual): the close
+/// report after a ship that ran the review names it in `native_step.ran` with the actor,
+/// as a close that runs the review itself reports it, never `ran: null`.
+#[test]
+fn a_ship_that_runs_the_review_reports_it_in_native_step() {
+    let fixture = shipping_session_at("accept");
+    fixture.write(".stub-ship-out", "SHIPPED a5\n");
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(output.status.success(), "{stdout}");
+    assert!(!stdout.contains("\"ran\": null"), "{stdout}");
+    assert!(
+        stdout.contains(&format!("\"ran\": \"ran specsync change review {SHIP_ID}")),
+        "{stdout}"
+    );
+}
+
 /// REQ-cli-057, REQ-cli-060, TC-cli-an-unknown-change-leaves-no-baseline (A3-2): a
 /// `chough change answer` or `check` that SpecSync refuses for a change ID with no
 /// workspace under `.specsync/changes/` writes nothing under `.chough/`, not even a
