@@ -3,14 +3,16 @@ kind: bug
 id: 2026-11-12-chough-migrate-on-an-already-migrated-tree-previews-a-plan-and
 aliases: []
 title: chough migrate on an already-migrated tree previews a plan and a digest that apply then calls nothing to do
-status: open
+status: verified
 classification: product-defect
 scope: in-scope
 impact: A user is sent to apply a plan that does nothing (t38k F10)
 criteria: []
 requirements: [REQ-records-009]
 cases: [TC-cli-migrate-preview-with-nothing-to-migrate]
-evidence: [2026-11-12-release-0-6-0/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate]
+evidence:
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate-da03d7
 receipts: []
 environment: local-macos-arm64
 revision: a0152789eec8d548d98dbd11f86b0818ad98f494
@@ -20,7 +22,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T20:25:59Z
-updated: 2026-11-12T20:25:59Z
+updated: 2026-11-12T20:31:17Z
 ---
 # chough migrate on an already-migrated tree previews a plan and a digest that apply then calls nothing to do
 
@@ -35,8 +37,10 @@ Actual: A plan and a new digest, then nothing_to_do on apply
 
 **Why it matters:** A user is sent to apply a plan that does nothing (t38k F10)
 
-**Fix:** Not fixed yet.
+**Fix:** 24aa66ce (t38c's a17381c6): on a tree with no 0.5.x record the preview says there is nothing to migrate and gives no plan digest (REQ-records-009)
 
 ## Log
 
 - 2026-11-12T20:25:59Z · Reported (t38k's second fresh-eyes round report (relayed by t370); fixed by t38c); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate · by claude-code (hc t382)
+- 2026-11-12T20:31:08Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate-da03d7; fix: f68bf6c2-range (t38c's a17381c6): on a tree with no 0.5.x record the preview says there is nothing to migrate and gives no plan digest (REQ-records-009). Red at a0152789, green at 34b7cbb7 · by claude-code (hc t382)
+- 2026-11-12T20:31:17Z · fix: 24aa66ce (t38c's a17381c6): on a tree with no 0.5.x record the preview says there is nothing to migrate and gives no plan digest (REQ-records-009). Fix line corrected to name the commit on leif/human-first-records · by claude-code (hc t382)

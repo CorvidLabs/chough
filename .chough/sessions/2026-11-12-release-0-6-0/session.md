@@ -18,6 +18,11 @@ cases:
   - TC-records-ship-names-a-configured-human-at-any-gate
   - TC-cli-close-running-no-native-step-says-why
   - TC-history-session-list-archived-story-is-finished
+  - TC-cli-migrate-preview-with-nothing-to-migrate
+  - TC-cli-migration-receipt-has-one-follow-up-heading
+  - TC-cli-executed-case-run-provenance
+  - TC-cli-docs-show-the-requirement-evidence-table
+  - TC-cli-docs-show-a-minimal-hi-file-and-requirements-md
 design: []
 files: []
 observations:
@@ -124,10 +129,18 @@ observations:
   - 2026-11-12-tc-cli-executed-case-run-provenance
   - 2026-11-12-tc-cli-docs-show-the-requirement-evidence-table
   - 2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md
+  - 2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate-da03d7
+  - 2026-11-12-tc-cli-migration-receipt-has-one-follow-up-heading-28f17b
+  - 2026-11-12-tc-cli-executed-case-run-provenance-0e0ebc
+  - 2026-11-12-tc-cli-docs-show-the-requirement-evidence-table-d97158
+  - 2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-b3ee78
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
   - 2026-11-12-session-list-reports-an-archived-story-as-finished-false
+  - 2026-11-12-chough-migrate-on-an-already-migrated-tree-previews-a-plan-and
+  - 2026-11-12-a-migration-receipt-can-hold-two-follow-up-headings
+  - 2026-11-12-an-executed-case-run-s-provenance-says-it-is-not-proof-of-test
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -145,6 +158,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - D2 red then green (acd2b0b0, d5381eef), the migrate preview warning red then green (0fa8cb7f, 8daaad23), the journal and case-definition temporary paths red then green (423169de, 69b60a68)
 - F1 (t38k round 2): every gate close names a configured human (REQ-records-008), red at ab5426a5, green at f5d8ed79, bug verified
 - F12b and F12c (t38k round 2, t38b): a close running no native step says why; an archived story lists as finished; red at 731aba24, green at c53da06c, bugs verified
+- t38c's batch one (t38k round 2): F10 migrate preview on a migrated tree, F12d one Follow-up heading, F12g executed-run provenance, F2 the Requirement evidence table, F7 minimal HI and requirements.md; red at a0152789, green at 34b7cbb7, three bugs verified
 
 ## Decisions and why
 
@@ -263,6 +277,11 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test cases -- --exact an_executed_case_runs_provenance_does_not_deny_the_execution for TC-cli-executed-case-run-provenance: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-executed-case-run-provenance.md)
 - [Ran cargo test --locked --test docs -- --exact the_requirement_evidence_table_in_a_changes_testing_md_is_documented for TC-cli-docs-show-the-requirement-evidence-table: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-the-requirement-evidence-table.md)
 - [Ran cargo test --locked --test docs -- --exact the_new_project_section_shows_a_minimal_hi_file_and_requirements_md for TC-cli-docs-show-a-minimal-hi-file-and-requirements-md: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md.md)
+- [Ran cargo test --locked --test migrate -- --exact a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest for TC-cli-migrate-preview-with-nothing-to-migrate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-migrate-preview-with-nothing-to-migrate-da03d7.md)
+- [Ran cargo test --locked --test migrate -- --exact a_receipt_has_one_follow_up_heading_for_every_follow_up for TC-cli-migration-receipt-has-one-follow-up-heading: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-migration-receipt-has-one-follow-up-heading-28f17b.md)
+- [Ran cargo test --locked --test cases -- --exact an_executed_case_runs_provenance_does_not_deny_the_execution for TC-cli-executed-case-run-provenance: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-executed-case-run-provenance-0e0ebc.md)
+- [Ran cargo test --locked --test docs -- --exact the_requirement_evidence_table_in_a_changes_testing_md_is_documented for TC-cli-docs-show-the-requirement-evidence-table: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-the-requirement-evidence-table-d97158.md)
+- [Ran cargo test --locked --test docs -- --exact the_new_project_section_shows_a_minimal_hi_file_and_requirements_md for TC-cli-docs-show-a-minimal-hi-file-and-requirements-md: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-docs-show-a-minimal-hi-file-and-requirements-md-b3ee78.md)
 
 ## Open threads
 
