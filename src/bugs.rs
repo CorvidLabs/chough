@@ -701,16 +701,16 @@ fn check_evidence(evidence: &Evidence<'_>, bug: &Stored, ids: &[String]) -> Resu
     Ok(stored)
 }
 
-/// How a bug stores a link that resolved to `linked`: an open session's entry named by
-/// a bare ID as `<session>/<id>`, so a later merge that brings a same-named entry in
-/// another session cannot make it ambiguous (REQ-cli-023); anything else as given.
+/// How a bug stores a link that resolved to `linked`: an open session's entry, named
+/// bare, qualified or by an alias, as its canonical `<session>/<id>`, the place it
+/// resolved to; so a later merge that brings a same-named entry in another session
+/// cannot make it ambiguous, and a dropped alias cannot break it (REQ-cli-023). Any
+/// other link is stored as given.
 fn stored_form(id: &str, linked: &Linked) -> String {
-    let session = (linked.label == "entry" && !id.contains('/'))
-        .then(|| linked.place.split_once('/').map(|(session, _)| session))
-        .flatten();
-    match session {
-        Some(session) => format!("{session}/{id}"),
-        None => id.to_string(),
+    if linked.label == "entry" {
+        linked.place.clone()
+    } else {
+        id.to_string()
     }
 }
 
