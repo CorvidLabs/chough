@@ -16,7 +16,9 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-12-tc-records-a-0-5-pointer-still-names-its-session
+  - 2026-11-12-tc-records-a-0-5-pointer-still-names-its-session-b81047
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -37,6 +39,9 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Leif decided "Approve the scope of the 0.6.0 release preparation": "Yes I approve" (coordinator chat (Claude Code, hc t370), 2026-11-12T14:44Z, replying to the coordinator's summary of the 0.6.0 release-prep scope; D2 deferred by Leif's choice 'Fix after 0.6.0' at 2026-11-12T14:46Z; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test migrate -- --exact a_pointer_naming_a_migrated_key_still_names_its_session for TC-records-a-0-5-pointer-still-names-its-session: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-a-0-5-pointer-still-names-its-session.md)
+- [Ran cargo test --locked --test migrate -- --exact a_pointer_naming_a_migrated_key_still_names_its_session for TC-records-a-0-5-pointer-still-names-its-session: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-a-0-5-pointer-still-names-its-session-b81047.md)
 
 ## Open threads
 
