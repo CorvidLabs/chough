@@ -2043,3 +2043,107 @@ fn bug_merge_unions_logs_and_takes_one_sided_edits() {
     assert!(!output.status.success(), "a status disagreement merged");
     assert_eq!(fixture.read(&bug_path(&id)), ours);
 }
+
+/// REQ-cli-012: a new bug's Steps start with its trigger, labelled `Trigger:`, then
+/// each numbered step; the trigger reads back without the label.
+#[test]
+fn a_new_bugs_steps_start_with_the_labelled_trigger() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.commit("fixture");
+    let added = json(&add_bug(&fixture, &["--step", "Open checkout"]));
+    let id = added["id"].as_str().unwrap().to_string();
+    let text = fixture.read(&bug_path(&id));
+    assert!(
+        text.contains(
+            "\n**Steps:** Trigger: Checkout total equal to the free shipping threshold\n1. Open checkout\n\n"
+        ),
+        "{text}"
+    );
+    let bug = bug_record(&fixture, &id);
+    assert_eq!(
+        bug["trigger"],
+        "Checkout total equal to the free shipping threshold"
+    );
+    assert_eq!(bug["steps"], json!(["Open checkout"]));
+}
+
+/// REQ-cli-012: `bug update --fix <text>` sets the Fix paragraph and logs each set; a
+/// Fix that is set stays when the bug is later verified.
+#[test]
+fn bug_update_fix_sets_the_fix_paragraph_and_logs_each_set() {
+    let fixture = ordered_bug(&[("the-failure", "failed", 1_793_000_000)]);
+    let id = only_bug_id(&fixture);
+    let first = fixture.ok(&[
+        "bug",
+        "update",
+        &id,
+        "--fix",
+        "Round the total once, at the end",
+    ]);
+    assert_eq!(first["bug"]["fix"], "Round the total once, at the end");
+    fixture.ok(&["bug", "update", &id, "--fix", "Round once, at checkout"]);
+    assert_eq!(bug_record(&fixture, &id)["fix"], "Round once, at checkout");
+    let text = fixture.read(&bug_path(&id));
+    assert!(
+        text.contains("\n**Fix:** Round once, at checkout\n\n## Log\n"),
+        "{text}"
+    );
+    let log = log(&fixture, &id);
+    for fix in [
+        "Round the total once, at the end",
+        "Round once, at checkout",
+    ] {
+        assert!(
+            log.iter().any(|line| line.contains(&format!("fix: {fix}"))),
+            "no Log entry for {fix}: {log:?}"
+        );
+    }
+    let pass = entry(&fixture, "the-pass", "passed", 1_793_000_100);
+    fixture.ok(&[
+        "bug",
+        "update",
+        &id,
+        "--status",
+        "verified",
+        "--observation",
+        &pass,
+    ]);
+    assert_eq!(bug_record(&fixture, &id)["fix"], "Round once, at checkout");
+}
+
+/// REQ-cli-012: marking a bug verified while its Fix still says `Not fixed yet.`
+/// replaces that with a line naming the passing observation and its revision.
+#[test]
+fn verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision() {
+    let fixture = ordered_bug(&[("the-failure", "failed", 1_793_000_000)]);
+    let id = only_bug_id(&fixture);
+    assert_eq!(bug_record(&fixture, &id)["fix"], "Not fixed yet.");
+    let pass = entry(&fixture, "the-pass", "passed", 1_793_000_100);
+    fixture.ok(&[
+        "bug",
+        "update",
+        &id,
+        "--status",
+        "verified",
+        "--observation",
+        &pass,
+    ]);
+    let bug = bug_record(&fixture, &id);
+    let linked = bug["evidence"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(Value::as_str)
+        .find(|link| link.ends_with(&pass))
+        .unwrap_or_else(|| panic!("{pass} is not linked: {bug}"))
+        .to_string();
+    let revision = head(&fixture).unwrap();
+    assert_eq!(
+        bug["fix"],
+        format!("Verified: {linked} passed at {revision}.")
+    );
+    let text = fixture.read(&bug_path(&id));
+    assert!(!text.contains("Not fixed yet."), "{text}");
+}
