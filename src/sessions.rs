@@ -769,7 +769,9 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
                         "status": if archived { "archived" } else { session.stage.status.as_str() },
                         "active": !archived && current.as_deref() == Some(id.as_str()),
                         "archived": archived,
-                        "finished": finished_open,
+                        // An archived story is finished; only a finished open session
+                        // still has a fix to run (F12c).
+                        "finished": archived || finished_open,
                         "fix": finished_open.then_some("chough doctor --fix"),
                         "inbox_unfolded": if archived { 0 } else { unfolded(root, &id)? },
                     }));
