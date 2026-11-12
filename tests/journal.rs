@@ -985,12 +985,12 @@ fn posts_record_a_time_and_sort_newest_first_by_it() {
         ("2026-05-02-b-untimed", "2026-05-02T00:00:00Z"),
         (stem.as_str(), time.as_str()),
     ] {
-        assert!(
-            feed.contains(&format!(
-                "<id>urn:chough:journal:{name}</id>\n    <updated>{updated}</updated>"
-            )),
-            "{name}: {feed}"
-        );
+        let entry = feed
+            .split(&format!("<id>urn:chough:journal:{name}</id>"))
+            .nth(1)
+            .and_then(|rest| rest.split("<updated>").nth(1))
+            .and_then(|rest| rest.split('<').next());
+        assert_eq!(entry, Some(updated), "{name}: {feed}");
     }
     assert_eq!(
         feed.split("<updated>")

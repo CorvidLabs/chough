@@ -372,8 +372,14 @@ pub(super) fn index(root: &Path, dir: &str, posts: &[Post], pending: &Pending) -
             } else {
                 format!(", {}", post.kind)
             };
+            // REQ-records-011: a post without a time sorts after its date's timed posts.
+            let untimed = if post.time.is_some() {
+                ""
+            } else {
+                " (no time)"
+            };
             format!(
-                "[{title}](journal/{name}.md) ({date}{kind})",
+                "[{title}](journal/{name}.md) ({date}{kind}){untimed}",
                 title = inert(&post.title),
                 name = post.name,
                 date = post.date,

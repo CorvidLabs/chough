@@ -1496,9 +1496,9 @@ has no other home (REQ-cli-044, KNOW-30, KNOW-31). It links to `hi/`, `specs/`,
 
 | Path | What it is |
 |---|---|
-| `index.md` | The reading guide, generated (`type: guide`): where to start; the journal and its feed as the timeline of archived changes, with `.specsync/archive/changes/` linked for changes archived before the journal began, and the newest 10 posts; where things live (`hi/`, `specs/`, `.specsync/archive/`, `.chough/README.md`, `.chough/archive/sessions/`, `fledge.toml`); at most 20 open bugs, blocking first and then the newest by `created`, each linked, with their total and, when more are open, `.chough/bugs/` linked and `chough bug list` named for the rest; the rule, skill, decision and policy files that exist; each module's lesson source with its count of lessons, every file in `lessons/` and the newest 3 archived lesson bundles; and existing snapshots and briefs |
+| `index.md` | The reading guide, generated (`type: guide`): where to start; the journal and its feed as the timeline of archived changes, with `.specsync/archive/changes/` linked for changes archived before the journal began, and the newest 10 posts in the feed's order, a post without a `time` marked "(no time)"; where things live (`hi/`, `specs/`, `.specsync/archive/`, `.chough/README.md`, `.chough/archive/sessions/`, `fledge.toml`); at most 20 open bugs, blocking first and then the newest by `created`, each linked, with their total and, when more are open, `.chough/bugs/` linked and `chough bug list` named for the rest; the rule, skill, decision and policy files that exist; each module's lesson source with its count of lessons, every file in `lessons/` and the newest 3 archived lesson bundles; and existing snapshots and briefs |
 | `journal/<date>-<slug>.md` | Short posts (`type: journal`), written once by create-new and never rewritten by Chough (REQ-records-011) |
-| `journal/feed.xml` | An Atom feed of the newest 20 posts by date and then name, generated |
+| `journal/feed.xml` | An Atom feed of the newest 20 posts, generated: newest first by `time`, and a post without one by its date and then name, after that date's timed posts. An entry's `updated` is its `time`, or its date at midnight UTC without one |
 | `lessons/<date>-<slug>.md` | Lessons that span projects (`type: lesson`, with `applies_to` and `source`) |
 | `snapshots/`, `briefs/` | Content from earlier releases, kept as it is and linked from the index (a snapshot by its `manifest.json`). The index also links the repository-root `library/` of earlier releases, outside this directory, unless `library-dir` makes it the vault itself |
 
@@ -1511,6 +1511,7 @@ or record text. A module's own lessons stay in its spec's lesson source. No gate
 the vault.
 
 A journal post's front matter gives `id`, `title`, `type: journal`, `tags`, `date`,
+`time` (the UTC time it was written, to the second; the file name keeps only the date),
 `kind` (`shipped`, `closed`, `intent`, `spec`, `broke` or `learned`), `links` and, for
 a finished session, `record`, the path of its archived story. The move into done
 writes a `shipped` post and `session close` a `closed` one; `chough journal add` writes

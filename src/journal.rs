@@ -46,6 +46,9 @@ pub(super) struct Post {
     pub(super) title: String,
     /// `YYYY-MM-DD`.
     pub(super) date: String,
+    /// The UTC time the post was written, `YYYY-MM-DDTHH:MM:SSZ`; None for a post that
+    /// records none (migrated or hand-written) or an invalid one.
+    pub(super) time: Option<String>,
     pub(super) kind: String,
 }
 
@@ -319,7 +322,10 @@ fn write_post(
         !title.is_empty() && !title.contains('\n'),
         "the title must be one non-blank line"
     );
-    let date = utc_date(now()?);
+    // REQ-records-011 (Q1): a post records the time it was written; its name keeps the date.
+    let at = now()?;
+    let date = utc_date(at);
+    let time = crate::session_md::iso_time(at);
     let name = dated_name(&date, title, "post");
     let up = up(dir);
     let mut body = heading(title);
@@ -338,6 +344,7 @@ fn write_post(
             Value::List(vec!["chough/journal".into(), format!("chough/{kind}")]),
         )?;
         record.set_scalar("date", &date)?;
+        record.set_scalar("time", &time)?;
         record.set_scalar("kind", kind)?;
         record.set("links", Value::List(targets.to_vec()))?;
         if let Some(story) = story {
@@ -396,13 +403,18 @@ pub(super) fn posts(root: &Path, dir: &str) -> Result<Vec<Post>> {
             name: stem.to_string(),
             title: field("title").unwrap_or_else(|| stem.to_string()),
             date,
+            time: field("time").filter(|time| crate::session_md::parse_time(time).is_ok()),
             kind: field("kind").unwrap_or_default(),
         });
     }
+    // Newest first: by date, then a timed post by its time before an untimed one, then by
+    // name, so the order needs no file time and the same posts give the same bytes.
     found.sort_by(|left, right| {
         right
             .date
             .cmp(&left.date)
+            .then_with(|| right.time.is_some().cmp(&left.time.is_some()))
+            .then_with(|| right.time.cmp(&left.time))
             .then_with(|| left.name.cmp(&right.name))
     });
     Ok(found)
@@ -427,16 +439,23 @@ fn xml(text: &str) -> String {
 
 /// The Atom feed of the newest 20 posts (REQ-records-011): identical bytes for the same
 /// posts, since every time in it comes from a post's date.
+/// When `post` was written, for the feed: its time, or its date at midnight UTC.
+fn updated(post: &Post) -> String {
+    post.time
+        .clone()
+        .unwrap_or_else(|| format!("{}T00:00:00Z", post.date))
+}
+
 pub(super) fn feed(posts: &[Post]) -> String {
-    let updated = posts
+    let updated_at = posts
         .first()
-        .map_or("1970-01-01".to_string(), |post| post.date.clone());
+        .map_or("1970-01-01T00:00:00Z".to_string(), updated);
     let mut out = format!(
         "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\
 <feed xmlns=\"http://www.w3.org/2005/Atom\">\n\
   <title>Project journal</title>\n\
   <id>urn:chough:journal</id>\n\
-  <updated>{updated}T00:00:00Z</updated>\n\
+  <updated>{updated_at}</updated>\n\
   <author><name>Chough</name></author>\n\
   <link rel=\"self\" href=\"{FEED}\"/>\n"
     );
@@ -445,13 +464,13 @@ pub(super) fn feed(posts: &[Post]) -> String {
             "  <entry>\n\
     <title>{title}</title>\n\
     <id>urn:chough:journal:{name}</id>\n\
-    <updated>{date}T00:00:00Z</updated>\n\
+    <updated>{updated}</updated>\n\
     <link href=\"{name}.md\"/>\n\
     <category term=\"{kind}\"/>\n\
   </entry>\n",
             title = xml(&post.title),
             name = xml(&post.name),
-            date = post.date,
+            updated = updated(post),
             kind = xml(&post.kind),
         ));
     }
@@ -480,6 +499,7 @@ mod tests {
                 name: format!("2026-11-{:02}-post", 25 - index),
                 title: "A & B <c>".into(),
                 date: format!("2026-11-{:02}", 25 - index),
+                time: None,
                 kind: "shipped".into(),
             })
             .collect();
