@@ -36,7 +36,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Wait for Leif's scope decision at the gate; then build: D1 red then green first"
+next: "Integrate the four flake fixes from t37f (timing) and t38b (lock timeout, verify lane): re-run each red and green, record bugs verified; then change check --commit and Leif's review via chough change ship --close-gate"
 ---
 # Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
