@@ -249,9 +249,12 @@ fn timeline_entries(path: &str, text: &str) -> Vec<String> {
     for line in section.lines().filter(|line| !line.starts_with("## ")) {
         if line.starts_with("- ") {
             entries.push(line.to_string());
-        } else if !line.trim().is_empty()
+        } else if line.starts_with([' ', '\t'])
+            && !line.trim().is_empty()
             && let Some(last) = entries.last_mut()
         {
+            // An entry continues only on its indented sub-items; a paragraph after the
+            // list, such as a story's `Closed <date>: <outcome>.`, is not part of it.
             last.push('\n');
             last.push_str(line);
         }
