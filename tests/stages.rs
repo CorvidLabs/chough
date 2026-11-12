@@ -289,15 +289,16 @@ fn transitions_cover_every_kind_and_keep_history() {
         .iter()
         .map(|transition| transition["kind"].as_str().unwrap().to_string())
         .collect();
+    // The session's start entry comes first (REQ-history-002).
     assert_eq!(
         kinds,
         [
-            "advance", "skip", "iterate", "advance", "advance", "back", "pause", "resume", "enter",
-            "enter", "return", "return", "reset"
+            "start", "advance", "skip", "iterate", "advance", "advance", "back", "pause", "resume",
+            "enter", "enter", "return", "return", "reset"
         ]
     );
     assert_eq!(
-        transitions(&fixture)[1]["text"],
+        transitions(&fixture)[2]["text"],
         "CLI-only change; nothing visual"
     );
 }

@@ -94,8 +94,10 @@ fn entries_are_appended_in_order_and_never_rewritten() {
     fixture.ok(&["stage", "advance"]);
     fixture.ok(&["checkpoint", "--awaiting-human", "Approve the design"]);
     let before = timeline(&fixture.read(&fixture.session_file()));
-    assert_eq!(before.len(), 2, "{before:?}");
-    assert!(before[1].contains(" · gate-opened · design → design · Approve the design ^t-"));
+    // The session's start entry comes first (REQ-history-002).
+    assert_eq!(before.len(), 3, "{before:?}");
+    assert!(before[0].contains(" · start · intent → intent · Ship alpha ^t-"));
+    assert!(before[2].contains(" · gate-opened · design → design · Approve the design ^t-"));
     fixture.ok(&[
         "stage",
         "back",
@@ -105,9 +107,9 @@ fn entries_are_appended_in_order_and_never_rewritten() {
         "Redo the intent",
     ]);
     let after = timeline(&fixture.read(&fixture.session_file()));
-    assert_eq!(&after[..2], &before[..]);
+    assert_eq!(&after[..3], &before[..]);
     assert!(
-        after[2].contains(" · back · design → intent · Redo the intent ^t-"),
+        after[3].contains(" · back · design → intent · Redo the intent ^t-"),
         "{after:?}"
     );
     let mut ids: Vec<&str> = after
@@ -118,8 +120,8 @@ fn entries_are_appended_in_order_and_never_rewritten() {
     ids.dedup();
     assert_eq!(ids.len(), after.len());
     let shown = fixture.ok(&["history", "show"]);
-    assert_eq!(shown["entries"].as_array().unwrap().len(), 3, "{shown:#}");
-    assert_eq!(shown["entries"][2]["kind"], "back", "{shown:#}");
+    assert_eq!(shown["entries"].as_array().unwrap().len(), 4, "{shown:#}");
+    assert_eq!(shown["entries"][3]["kind"], "back", "{shown:#}");
 }
 
 /// Append one hand-written entry line, with its field lines, to the active session's
