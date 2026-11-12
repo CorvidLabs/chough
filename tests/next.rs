@@ -2838,3 +2838,134 @@ fn at_plan_after_approval_next_shows_specsyncs_step_for_reference_only() {
     assert_eq!(view["native"]["next_action"], native, "{view:#}");
     assert_eq!(view["native"]["state"], "approved", "{view:#}");
 }
+
+/// A manual case for the F7 test, linking a requirement the fixture does not need to hold.
+const F7_CASE: &str = r#"profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-f7-run"
+title = "The F7 case"
+status = "active"
+track = "functional"
+method = "manual"
+criteria = ["LIFE-1"]
+requirements = ["REQ-cli-001"]
+environments = ["local"]
+artifacts = ["reviewer-note"]
+setup = ["Fixture"]
+steps = ["Look"]
+expected = ["it passes"]
+"#;
+
+/// Fresh-eyes round 3, F7 (2026-11-12; REQ-cli-021): at test after every case passed,
+/// next ran the checkpoint's next action into its own guidance with no separator, still
+/// said recorded test evidence was needed, and listed only superseded runs as needing
+/// attention, one of them twice (a bare ID and session-qualified through a bug). Once
+/// every referenced case's latest run passed and no blocking bug is open, next names
+/// `chough stage advance`, the checkpoint's own next action a sentence of its own; a
+/// superseded run is counted apart and never listed, and no observation is listed twice.
+#[test]
+fn at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.write(".chough/cases/cli.f7.cases.toml", F7_CASE);
+    fixture.commit("the F7 fixture");
+    fixture.ok(&["stage", "advance", "--to", "test", "--json"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--case",
+        "TC-cli-f7-run",
+        "--next-action",
+        "Run the selected cases at test",
+    ]);
+    // The case's earlier run failed, at a revision long gone; a bug links it,
+    // session-qualified, and the checkpoint links it bare.
+    let failed = "2026-11-10-f7-failed";
+    let mut entry = observation(failed, "failed", 1_000);
+    entry["cases"] = json!([{"id": "TC-cli-f7-run", "digest": "0".repeat(64)}]);
+    write_entry(&fixture, &entry);
+    fixture.ok(&["checkpoint", "--observation", failed]);
+    fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC the F7 case failed once",
+        "--symptom",
+        "SYNTHETIC wrong count",
+        "--trigger",
+        "SYNTHETIC running the case",
+        "--expected",
+        "SYNTHETIC three",
+        "--actual",
+        "SYNTHETIC two",
+        "--environment",
+        "local",
+        "--observation",
+        failed,
+    ]);
+    // Its later run passed.
+    fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--kind",
+        "product-test",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC the F7 case passed",
+        "--case",
+        "TC-cli-f7-run",
+    ]);
+
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    assert_eq!(action["command"], "chough stage advance", "{action:#}");
+    let said = action["action"].as_str().unwrap();
+    assert!(said.contains("`chough stage advance`"), "{said}");
+    assert!(
+        said.contains("Run the selected cases at test. "),
+        "the checkpoint's next action runs on: {said}"
+    );
+    assert!(!said.contains("chough cases select"), "{said}");
+    let reason = action["reason"].as_str().unwrap();
+    assert!(
+        !reason.contains("Recorded test evidence is needed"),
+        "{reason}"
+    );
+
+    let observations = &next["observations"];
+    let listed: Vec<String> = observations["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|item| item["id"].as_str().unwrap().to_string())
+        .collect();
+    assert!(
+        listed.iter().all(|id| !id.ends_with(failed)),
+        "a superseded run is listed: {observations:#}"
+    );
+    let mut unique = listed.clone();
+    unique.sort();
+    unique.dedup();
+    assert_eq!(unique.len(), listed.len(), "{observations:#}");
+    assert_eq!(observations["superseded"], 1, "{observations:#}");
+
+    let shown = text(&fixture, &["next"]);
+    let section: Vec<&str> = shown
+        .lines()
+        .skip_while(|line| !line.starts_with("Observations needing attention"))
+        .take_while(|line| line.starts_with("Observations") || line.starts_with("  "))
+        .collect();
+    assert!(!section.is_empty(), "{shown}");
+    assert!(section.iter().all(|line| !line.contains(failed)), "{shown}");
+    assert!(
+        section.iter().any(|line| line.contains(" 1 superseded, ")),
+        "{shown}"
+    );
+}
