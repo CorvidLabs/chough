@@ -64,6 +64,8 @@ cases:
   - TC-cli-a-stage-move-replaces-a-gate-close-next-action
   - TC-cli-scope-gate-summary-counts-uncommitted-change-files
   - TC-records-migration-names-skill-update-for-an-outdated-copy
+  - TC-cli-accept-next-reruns-cases-not-current
+  - TC-cli-accept-reference-lessons-before-case-runs
 design: []
 files: []
 observations:
@@ -332,6 +334,8 @@ observations:
   - 2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files-e361cf
   - 2026-11-12-tc-cli-accept-next-reruns-cases-not-current
   - 2026-11-12-tc-cli-accept-reference-lessons-before-case-runs
+  - 2026-11-12-tc-cli-accept-next-reruns-cases-not-current-d49346
+  - 2026-11-12-tc-cli-accept-reference-lessons-before-case-runs-bf5029
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -402,6 +406,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - t38b's round-3 batch: F10a to F10e (the story's layout and bugs, a failed run's reason, context as Markdown, migrated lines); red at 4e245263, green at 421a7034, four bugs verified; every round-3 finding integrated
 - Round-4 F1: a stage move replaces a gate close's next action (REQ-cli-021); red at 00f8f8d8, green at 3f28a915, bug verified
 - Round-4 F2 (t37f) and F3 (t38c): the scope summary counts the working tree; the migration names chough skill update; red at 730aba9f, green at f618819b, both bugs verified
+- Round-4 F4 (t38b): next reruns stale cases before the review gate; accept.md writes lessons before the case runs; red at 0c44e742, green at 648ebb94, bug verified; all four of Leif's real findings fixed
 
 ## Decisions and why
 
@@ -684,6 +689,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_counts_uncommitted_and_untracked_change_files for TC-cli-scope-gate-summary-counts-uncommitted-change-files: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files-e361cf.md)
 - [Ran cargo test --locked --test next -- --exact at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate for TC-cli-accept-next-reruns-cases-not-current: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-accept-next-reruns-cases-not-current.md)
 - [Ran cargo test --locked --test docs -- --exact the_accept_reference_writes_lessons_before_the_case_runs for TC-cli-accept-reference-lessons-before-case-runs: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs.md)
+- [Ran cargo test --locked --test next -- --exact at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate for TC-cli-accept-next-reruns-cases-not-current: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-accept-next-reruns-cases-not-current-d49346.md)
+- [Ran cargo test --locked --test docs -- --exact the_accept_reference_writes_lessons_before_the_case_runs for TC-cli-accept-reference-lessons-before-case-runs: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs-bf5029.md)
 
 ## Open threads
 

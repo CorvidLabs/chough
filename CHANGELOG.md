@@ -240,11 +240,10 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   (REQ-cli-061); and while the project's installed skill copy is not current, as
   `chough skill status` reports it, the `chough migrate` plan's and receipt's follow-ups
   name `chough skill update`, since migration leaves a 0.5.x copy that still names
-  removed commands and paths (REQ-records-009).
-- From a fourth fresh-eyes round: at accept, while the latest run of a case the
-  checkpoint references is not current, as after the first check materializes the
-  requirement text, `chough next` names rerunning it with `chough cases run` before the
-  review gate, and names the review gate once it passed (REQ-cli-021). The workflow's
+  removed commands and paths (REQ-records-009). At accept, while the latest run of a
+  case the checkpoint references is not current, as after the first check materializes
+  the requirement text, `chough next` names rerunning it with `chough cases run` before
+  the review gate, and the review gate once it passed (REQ-cli-021); the workflow's
   accept reference has any lesson written before the case runs, so one rerun covers it.
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.

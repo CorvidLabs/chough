@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-12-at-accept-next-routes-to-the-review-gate-past-stale-cases-and
 aliases: []
 title: At accept, next routes to the review gate past stale cases, and accept.md's order stales the evidence twice
-status: open
+status: verified
 classification: product-defect
 scope: in-scope
 impact: The review is presented on stale evidence, or the cases are rerun needlessly (t38n F4)
@@ -15,6 +15,8 @@ cases:
 evidence:
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-accept-next-reruns-cases-not-current
   - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-accept-next-reruns-cases-not-current-d49346
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs-bf5029
 receipts: []
 environment: local-macos-arm64
 revision: 0c44e742c25af1a4bd717991b53b49f49342f300
@@ -24,7 +26,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T23:54:34Z
-updated: 2026-11-12T23:54:34Z
+updated: 2026-11-12T23:55:31Z
 ---
 # At accept, next routes to the review gate past stale cases, and accept.md's order stales the evidence twice
 
@@ -40,9 +42,10 @@ Actual: next names the review gate; the cases are run three times
 
 **Why it matters:** The review is presented on stale evidence, or the cases are rerun needlessly (t38n F4)
 
-**Fix:** Not fixed yet.
+**Fix:** 648ebb94 (t38b's 44e9c7b7): at accept next names rerunning a case whose latest run is not current before the review gate, and accept.md has any lesson written before the case runs (REQ-cli-021)
 
 ## Log
 
 - 2026-11-12T23:54:34Z · Reported (t38n's fourth fresh-eyes round report, F4 (relayed by t370); fixed by t38b); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-accept-next-reruns-cases-not-current, 2026-11-12-release-0-6-0/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs · by claude-code (hc t382)
 - 2026-11-12T23:54:34Z · Added despite similar reports: The verified accept bugs covered next's review preparation while approved and the review command; this one is next routing past cases whose runs went stale after the materializing check, and accept.md's order that stales them twice · by claude-code (hc t382)
+- 2026-11-12T23:55:31Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-accept-next-reruns-cases-not-current-d49346, 2026-11-12-release-0-6-0/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs-bf5029; fix: 648ebb94 (t38b's 44e9c7b7): at accept next names rerunning a case whose latest run is not current before the review gate, and accept.md has any lesson written before the case runs (REQ-cli-021). Red at 0c44e742, green at 648ebb94 · by claude-code (hc t382)
