@@ -1177,6 +1177,16 @@ fn close_decision(
     }
 }
 
+/// The start and the decision mark of the next action a gate close leaves.
+const CLOSED_GATE_HEAD: &str = "Gate \"";
+const CLOSED_GATE_MARK: &str = "\" closed";
+
+/// Whether `next_action` is one a gate close left (REQ-cli-021, t38n F1), which the move
+/// it names replaces.
+pub(super) fn is_gate_close_next_action(next_action: &str) -> bool {
+    next_action.starts_with(CLOSED_GATE_HEAD) && next_action.contains(CLOSED_GATE_MARK)
+}
+
 /// The next action a close of the last gate holding the current stage leaves: the gate,
 /// on one line and cut so the next action stays within 4096 bytes, the decision when it
 /// made one beyond closing, and the step it allows, never `chough next` (F3). `change`
@@ -1206,8 +1216,8 @@ fn closed_gate_next_action(gate: &str, closed: Closed, change: Option<&str>) -> 
             "record the next action the decision calls for with `chough checkpoint --next-action \"<action>\"`".into(),
         ),
     };
-    let head = "Gate \"";
-    let tail = format!("\" closed{decided}; {step}.");
+    let head = CLOSED_GATE_HEAD;
+    let tail = format!("{CLOSED_GATE_MARK}{decided}; {step}.");
     let room = 4_096 - head.len() - tail.len();
     let mut name = String::new();
     for character in gate

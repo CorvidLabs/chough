@@ -552,7 +552,10 @@ decision allows, never `chough next` (REQ-cli-021):
 
 A close that decided nothing beyond closing says "closed" once. A `--next-action` given
 in the same call is kept, and a close that leaves another gate holding the stage changes
-nothing. The decision itself stays in the Timeline.
+nothing. The decision itself stays in the Timeline. A move to another stage carries out
+the step such a next action names, so the move replaces it with `Continue <stage>` for
+the stage it reaches, and `chough next` takes the step from that stage; a next action
+the agent wrote stays.
 
 Only a decision made at that gate is in the human's name. When an agent approves or
 reviews on authority the human gave in advance, without the human answering a gate, it

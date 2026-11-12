@@ -1425,7 +1425,7 @@ pub(super) fn assess(
             // The archive is the previous cycle's: keep the reset's guidance and name
             // the new native change, not the archived refusal or another reset.
             Action {
-                action: format!("Continue {current}: {}", session.next_action),
+                action: continue_action(current, &session.next_action),
                 reason: format!(
                     "Native change {} is archived from before the latest reset, so it belongs to the previous cycle; reaching {to} needs this cycle's new native change ({}).",
                     session
@@ -1453,7 +1453,13 @@ pub(super) fn assess(
         }
     } else if current == "test" {
         // F7: the checkpoint's own next action is a sentence of its own.
-        let next = sentence(&session.next_action);
+        // t38n F1: `Continue test`, which a move leaves in place of a gate close's next
+        // action, adds nothing to the action's own `Continue test`.
+        let next = if session.next_action.trim() == "Continue test" {
+            String::new()
+        } else {
+            sentence(&session.next_action)
+        };
         if observations().is_some_and(|all| every_case_passed(session, all)) {
             // F7 (REQ-cli-021): blocking bugs were handled above, so with every referenced
             // case's latest run passed, test is done.
@@ -1477,7 +1483,7 @@ pub(super) fn assess(
         }
     } else {
         Action {
-            action: format!("Continue {current}: {}", session.next_action),
+            action: continue_action(current, &session.next_action),
             reason: "No gate, human decision or blocking bug stops the current stage; this is the checkpoint's next action.".into(),
             command: None,
         }
@@ -1537,7 +1543,7 @@ fn done_action(
             command: Some(status_command(session.native_change.as_deref())),
         },
         (_, None) => Action {
-            action: format!("Continue done: {}", session.next_action),
+            action: continue_action("done", &session.next_action),
             reason: "Stage done has no native prerequisite here.".into(),
             command: None,
         },
@@ -1676,6 +1682,16 @@ fn log_transition_at(
             validate_records(&event)?;
             append_transition(root, session, event)?;
         }
+    }
+    // REQ-cli-021 (t38n F1): a gate close's next action names the move its decision
+    // allows; a move to another stage carries it out, so it is replaced with
+    // `Continue <stage>` for the stage reached, as a reset replaces its own. A next action
+    // the agent wrote is the agent's, and stays.
+    if STAGE_KINDS.contains(&kind)
+        && from != to
+        && crate::checkpoint::is_gate_close_next_action(&session.next_action)
+    {
+        session.next_action = format!("Continue {to}");
     }
     append_transition(root, session, transition)
 }
@@ -1922,6 +1938,17 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
 }
 
 /// How to record a human's decision on a gate on their behalf (REQ-cli-050).
+/// `Continue <stage>` with the checkpoint's own next action, or alone when that action is
+/// just `Continue <stage>`, as a stage move leaves it in place of a gate close's (t38n F1).
+fn continue_action(stage: &str, next_action: &str) -> String {
+    let plain = format!("Continue {stage}");
+    if next_action.trim().is_empty() || next_action.trim() == plain {
+        format!("{plain}.")
+    } else {
+        format!("{plain}: {next_action}")
+    }
+}
+
 /// The human's decision to ship at accept, as `chough change ship` records it: the review
 /// as them, then the native ship, and the gate closed only after it (REQ-cli-059), so
 /// nothing under `.chough/` changes between `change check --commit` and finalize.
