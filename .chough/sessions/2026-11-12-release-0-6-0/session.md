@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -109,7 +109,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Approve the 0.6.0 release prep with the stop-survivor fix folded in\" closed (approved); run `chough next` for the next action."
+next: "Gate \"Approve the 0.6.0 release prep re-scoped for the 16 second-round fresh-eyes findings\" closed (approved); run `chough next` for the next action."
 ---
 # Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
@@ -132,6 +132,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Leif decided "Approve the 0.6.0 release prep re-scoped for the fresh-eyes findings and the migrated blank line": "Yes, fix all (Recommended) / Yes, fix it (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12: at 16:26Z 'Yes, fix all (Recommended)' for every fresh-eyes finding (bugs and gaps c, d, e; messages f, g, h, i; requirement changes j, k, l), and at 16:38Z 'Yes, fix it (Recommended)' for the migrated session file's stray blank line; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 - Leif decided the macOS writer-lock timeout bug (2026-11-07): "Close: can't reproduce (Recommended)", closed as not reproducible with t38b's diagnostics (63 loaded runs, 0 failures, longest lock wait 410 ms); it reopens if seen again and the 1.0 rule of two clean weeks still applies (coordinator chat, Claude Code hc t370, 2026-11-12T17:11Z, relayed by claude-code-t370; recorded by claude-code-t382)
 - Leif decided "Approve the 0.6.0 release prep with the stop-survivor fix folded in": "Yes, fix it (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12T17:42Z, answering: 'One more flaky test turned out to be a real Chough bug. Stopping a command could leave behind a child process the command started at that exact moment, on macOS. The fix keeps signalling until none is left: before, 2 failures in 24 runs; after, 0 in 32. Fix it in 0.6.0 too?'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
+- Leif decided "Approve the 0.6.0 release prep re-scoped for the 16 second-round fresh-eyes findings": "Yes, fix all + re-rate (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12T19:43Z, answering: 'Fix all 16 new findings in Chough 0.6.0 (13 from the strict tester, 3 from Kimi), then re-rate again with a third fresh tester? The most important is that intent and design approvals currently accept any name.' (option text: 'Each fix gets a failing test first, and helpers split the work. Then a new fresh tester rates it against your 90% bar.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 
 ## What was verified
 
@@ -391,5 +392,27 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - revision: 73873a97888b78fd8a30ba0fe92b164d75a75ca3
   - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, checkpoint references: 0 case(s) and 88 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t382)
+- 2026-11-12T19:52:05Z · gate-opened · plan → plan · Approve the 0.6.0 release prep re-scoped for the 16 second-round fresh-eyes findings ^t-75ee77
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 817e79bbe6c7761fd53774e7d9a2871bb8a83e69
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-12T19:52:06Z · gate-closed · plan → plan · Approve the 0.6.0 release prep re-scoped for the 16 second-round fresh-eyes findings ^t-9e8e0d
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 817e79bbe6c7761fd53774e7d9a2871bb8a83e69
+  - relayed_by:
+    - decided_by: Leif
+    - words: Yes, fix all + re-rate (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-12T19:43Z, answering: 'Fix all 16 new findings in Chough 0.6.0 (13 from the strict tester, 3 from Kimi), then re-rate again with a third fresh tester? The most important is that intent and design approvals currently accept any name.' (option text: 'Each fix gets a failing test first, and helpers split the work. Then a new fresh tester rates it against your 90% bar.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-12T19:52:24Z · advance · plan → build · Leif approved the round-3 re-scope ('Yes, fix all + re-rate (Recommended)', 19:43Z, relayed by t370); build the 16 second-round fixes ^t-4f7ae3
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - gate: native:approved
+  - revision: a0fccdccd389792bd004a09db63c91fb81f5cb54
   - by: claude-code (hc t382)
 
