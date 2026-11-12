@@ -1203,3 +1203,73 @@ fn uppercase_digests_migrate_lowercased_and_read() {
         "{story}"
     );
 }
+
+/// The item lines of a record's What was verified section.
+fn verified_lines(text: &str) -> Vec<String> {
+    let start = text
+        .find("\n## What was verified\n")
+        .unwrap_or_else(|| panic!("no What was verified: {text}"));
+    let section = &text[start + 1..];
+    let section = &section[..section[3..]
+        .find("\n## ")
+        .map_or(section.len(), |at| at + 3)];
+    section
+        .lines()
+        .filter(|line| line.starts_with("- "))
+        .map(String::from)
+        .collect()
+}
+
+/// Fresh-eyes finding F10e (REQ-records-009): a migrated open session's What was
+/// verified links each carried entry, `[<claim>](evidence/<entry>.md)`, as a 0.6.0 save
+/// writes it, never the bare 0.5.x ID, which stays the entry's alias; a later save keeps
+/// one linked line per entry and adds no bare one.
+#[test]
+fn a_migrated_sessions_verified_lines_link_the_carried_entries() {
+    let fixture = project("releases/v0.5.0");
+    reference(
+        &fixture,
+        ".chough/sessions/fixture-first.json",
+        &[CASE_RUN, PRODUCT],
+    );
+    fixture.commit("a 0.5.x project whose open session references two observations");
+    let claims = [
+        (CASE_RUN, legacy(&fixture, CASE_RUN)),
+        (PRODUCT, legacy(&fixture, PRODUCT)),
+    ];
+    let (plan, _) = migrate(&fixture);
+    let open = session_folder(&plan, "fixture-first");
+    let file = format!(".chough/sessions/{open}/session.md");
+    let check = |when: &str| {
+        let lines = verified_lines(&fixture.read(&file));
+        for (old, record) in &claims {
+            let entry = alias(&plan, old);
+            let name = entry.rsplit('/').next().unwrap();
+            let link = format!("](evidence/{name})");
+            let linked: Vec<&String> = lines.iter().filter(|line| line.ends_with(&link)).collect();
+            assert_eq!(linked.len(), 1, "{when}: {old} {lines:#?}");
+            assert!(
+                linked[0].starts_with("- [")
+                    && linked[0].contains(record["summary"].as_str().unwrap()),
+                "{when}: {}",
+                linked[0]
+            );
+            assert!(
+                !lines.iter().any(|line| line.contains(old)),
+                "{when}: the bare {old} is still listed: {lines:#?}"
+            );
+            assert_eq!(
+                items(&front(&fixture.read(&entry))["aliases"]),
+                [old.to_string()],
+                "{when}"
+            );
+        }
+    };
+    check("after the apply");
+    fixture.ok(&[
+        "checkpoint",
+        "--decision",
+        "SYNTHETIC: a decision after migrating",
+    ]);
+    check("after a save");
+}
