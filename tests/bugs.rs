@@ -657,6 +657,70 @@ fn automatic_collision_root(case_id: &str, missing_output: &str) -> (Fixture, St
     (fixture, id)
 }
 
+/// R8 (REQ-cli-012, REQ-cli-023): a link given by an entry's alias, such as the 0.5.x
+/// ID a migrated entry keeps, is stored as the entry's canonical `<session>/<id>`, by
+/// `bug add` and by `bug update`, as `--related` stores a bug's canonical name; so the
+/// link survives the alias being dropped.
+#[test]
+fn a_link_by_an_entrys_alias_is_stored_as_its_canonical_session_qualified_id() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let session = fixture.active_id();
+    let failed = entry(&fixture, "alias-fails", "failed", 1_793_000_000);
+    let passed = entry(&fixture, "alias-passes", "passed", 1_793_000_100);
+    for (id, alias) in [
+        (&failed, "OBS-alias-fails-0123456789abcdef01234567"),
+        (&passed, "OBS-alias-passes-0123456789abcdef01234567"),
+    ] {
+        let path = format!(".chough/sessions/{session}/evidence/{id}.md");
+        let text = fixture.read(&path);
+        fixture.write(
+            &path,
+            &text.replace("\naliases: []\n", &format!("\naliases: [{alias}]\n")),
+        );
+    }
+    let added = json(&fixture.run(&[
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC link by an alias",
+        "--symptom",
+        "SYNTHETIC symptom linked by an alias",
+        "--trigger",
+        "SYNTHETIC trigger linked by an alias",
+        "--expected",
+        "SYNTHETIC pass",
+        "--actual",
+        "SYNTHETIC fail",
+        "--environment",
+        "local",
+        "--observation",
+        "OBS-alias-fails-0123456789abcdef01234567",
+    ]));
+    let bug = added["id"].as_str().unwrap().to_string();
+    let updated = fixture.ok(&[
+        "bug",
+        "update",
+        &bug,
+        "--observation",
+        "OBS-alias-passes-0123456789abcdef01234567",
+    ]);
+    assert_eq!(
+        updated["bug"]["evidence"],
+        json!([format!("{session}/{failed}"), format!("{session}/{passed}")]),
+        "{updated:#}"
+    );
+    let record = fixture.read(&bug_path(&bug));
+    assert!(
+        !record.contains("OBS-alias-"),
+        "an alias was stored: {record}"
+    );
+    assert_eq!(
+        fixture.ok(&["bug", "show", &bug])["verification"],
+        "reproduced-and-later-passed"
+    );
+}
+
 /// S2 (REQ-cli-012: "A migrated bug answers to its BUG-NNNN alias in list, search,
 /// show, update and report"): `bug list` names each bug's aliases, and `bug search`
 /// finds a bug by its alias or its name, first, before any word match; a search by

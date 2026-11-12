@@ -59,3 +59,22 @@ adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "bugs", "--", "--exact", "automatic_failure_capture_links_each_failure_by_its_session_qualified_id"]
 expect_output = ["test automatic_failure_capture_links_each_failure_by_its_session_qualified_id ... ok", "test result: ok. 1 passed"]
 timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-alias-link-stored-canonical"
+title = "A bug link given by an entry's alias is stored as the entry's canonical session-qualified ID"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-cli-012", "REQ-cli-023"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_link_by_an_entrys_alias_is_stored_as_its_canonical_session_qualified_id passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "bugs", "--", "--exact", "a_link_by_an_entrys_alias_is_stored_as_its_canonical_session_qualified_id"]
+expect_output = ["test a_link_by_an_entrys_alias_is_stored_as_its_canonical_session_qualified_id ... ok", "test result: ok. 1 passed"]
+timeout_seconds = 600
