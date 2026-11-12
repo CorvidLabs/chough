@@ -1,0 +1,59 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# Regressions for the 0.6.0 test stage (S1, K7), and the session-use wait case moved here
+# when REQ-history-008 was retired.
+
+[[case]]
+id = "TC-cli-session-use-waits-for-stage-advance"
+title = "session use waits for a running stage advance"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-11"]
+requirements = ["REQ-cli-040"]
+paths = ["src/sessions.rs", "src/history.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_use_waits_for_a_running_stage_advance passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_use_waits_for_a_running_stage_advance"
+
+[[case]]
+id = "TC-cli-every-active-case-links-a-current-requirement"
+title = "Every active case links requirements the specs hold, so cases check passes once the change's removed requirements are gone"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-009"]
+paths = [".chough/cases/", "tests/spec_split.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/spec_split.rs::every_active_case_links_a_requirement_the_specs_hold passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "spec_split"
+test = "every_active_case_links_a_requirement_the_specs_hold"
+
+[[case]]
+id = "TC-cli-docs-name-the-root-library-folder"
+title = "docs/cli.md's knowledge table names the repository-root library/, not one inside the knowledge directory"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-1", "KNOW-5"]
+requirements = ["REQ-cli-043"]
+paths = ["docs/cli.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_knowledge_table_names_the_repository_root_library passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_knowledge_table_names_the_repository_root_library"

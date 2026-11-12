@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "reporting"
+
+# Regression for the 0.6.0 test stage's timing source bug (S3).
+
+[[case]]
+id = "TC-reporting-timing-names-the-session-file"
+title = "timing names the session file for a skipped Timeline entry, with no 0.5.x file or lineage wording"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::an_unknown_timeline_kind_is_named_by_its_session_file passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "an_unknown_timeline_kind_is_named_by_its_session_file"

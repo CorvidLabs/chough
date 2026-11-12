@@ -352,3 +352,46 @@ fn with_the_librarian_off_the_vault_is_still_cleared_and_no_index_is_planned() {
         "{planned:#?}"
     );
 }
+
+/// REQ-records-009, TC-records-migrate-case-only-rename-reaches-git (U1): the 0.5.x
+/// `knowledge/INDEX.md` and the 0.6.0 `knowledge/index.md` differ only in case, one file
+/// on a case-insensitive file system, where Git keeps its index entry under the old
+/// name. After the apply and an ordinary `git add -A` and commit, the commit holds
+/// `knowledge/index.md` with the receipt's bytes and no `knowledge/INDEX.md`, on every
+/// file system.
+#[test]
+fn a_case_only_rename_reaches_git_under_the_new_name() {
+    let fixture = Fixture::new();
+    vault_0_5(&fixture);
+    fixture.commit("the 0.5.x vault");
+    let plan = fixture.ok(&["migrate"]);
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    fixture.ok(&[
+        "migrate",
+        "--apply",
+        &digest,
+        "--consent",
+        "SYNTHETIC-human said migrate the vault (fixture)",
+    ]);
+    fixture.git(&["add", "-A"]);
+    fixture.git(&["commit", "-q", "-m", "migrated"]);
+    let git = |arguments: &[&str]| -> std::process::Output {
+        std::process::Command::new("git")
+            .args(arguments)
+            .current_dir(fixture.root())
+            .output()
+            .unwrap()
+    };
+    let listed = git(&["ls-tree", "-r", "--name-only", "HEAD", "knowledge/"]);
+    let listed = String::from_utf8_lossy(&listed.stdout).into_owned();
+    let names: Vec<&str> = listed.lines().collect();
+    assert!(names.contains(&"knowledge/index.md"), "{names:#?}");
+    assert!(!names.contains(&"knowledge/INDEX.md"), "{names:#?}");
+    let committed = git(&["show", "HEAD:knowledge/index.md"]);
+    assert!(committed.status.success(), "no knowledge/index.md at HEAD");
+    assert_eq!(
+        writes(&plan).get("knowledge/index.md"),
+        Some(&sha256(&committed.stdout)),
+        "the committed index is not the planned one"
+    );
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "BUG-migrated-inbox-entries-lose-their-inb-ids-the-alias-map-points-at-the-r-9b4c38af5254610925b5bd88",
+  "title": "Migrated inbox entries lose their INB- IDs: the alias map points at the removed 0.5.x file and the new entry has no aliases",
+  "symptom": "The plan's aliases and the receipt's ID map send each INB- ID to .chough/sessions/<key>.inbox/<id>.json, which the apply removes; the new agent/inbox entry's front matter has no aliases",
+  "trigger": "Migrate a 0.5.0 project with inbox entries on an open session",
+  "expected": "Every 0.5.x ID is kept as an alias (REQ-records-003) and the receipt maps it to the new file (REQ-records-009)",
+  "actual": "The map names the removed source and the alias is dropped",
+  "criteria": [],
+  "requirements": [
+    "REQ-records-009",
+    "REQ-records-003"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "fd503b01e3cda963cb368fe514a39b08d2b761aa",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "A wrong receipt map and a lost alias; no 0.6.0 command takes an inbox ID yet",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t384, test stage, area upgrade",
+  "notes": [],
+  "created_at_unix_seconds": 1794448178,
+  "updated_at_unix_seconds": 1794448178
+}

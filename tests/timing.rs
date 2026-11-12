@@ -2360,3 +2360,28 @@ fn measure_report_pairs_two_binaries_on_one_root_and_keeps_native_wait_apart() {
         "{refusal}"
     );
 }
+
+/// REQ-reporting-001, TC-reporting-timing-names-the-session-file (S3): a Timeline entry
+/// of a kind timing does not know is skipped and named by the session file that holds
+/// it, with no 0.5.x file or lineage wording in the report.
+#[test]
+fn an_unknown_timeline_kind_is_named_by_its_session_file() {
+    let fixture = fixture_with(&[
+        transition(Some(T), "advance", "intent", "design", "intent approved"),
+        transition(Some(T + 100), "bogus", "design", "design", "hand edit"),
+    ]);
+    let report = timing(&fixture, &[]);
+    let text = report.to_string();
+    assert!(!text.contains("transitions.jsonl"), "{report:#}");
+    assert!(!text.contains("parent chain"), "{report:#}");
+    let file = fixture.session_file();
+    assert!(
+        report["partial"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|partial| partial["source"] == file.as_str()
+                && partial["reason"].as_str().unwrap().contains("unrecognised")),
+        "{report:#}"
+    );
+}

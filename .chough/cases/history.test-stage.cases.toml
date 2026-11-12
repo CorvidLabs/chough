@@ -1,0 +1,40 @@
+profile = "chough-testing/1"
+module = "history"
+
+# Regressions for the 0.6.0 test stage's session and story bugs (S4, R6, S7).
+
+[[case]]
+id = "TC-history-a-correction-keeps-the-timeline-one-list"
+title = "A correction joins the Timeline right after its last entry, so no blank line splits the list"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-18", "LIFE-7", "FLOW-13"]
+requirements = ["REQ-history-015", "REQ-history-010"]
+paths = ["src/session_md.rs", "tests/correct.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/correct.rs::a_correction_joins_the_timeline_list_with_no_blank_line passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "correct"
+test = "a_correction_joins_the_timeline_list_with_no_blank_line"
+
+[[case]]
+id = "TC-history-a-story-lists-each-entry-once"
+title = "A story's What was verified lists each entry once, as its receipt line, with the separator also when no command is shown"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-34", "KNOW-30"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_story_lists_each_entry_once_with_its_receipt passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_lists_each_entry_once_with_its_receipt"

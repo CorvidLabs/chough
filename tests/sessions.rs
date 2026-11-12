@@ -1450,3 +1450,70 @@ fn local_state_is_ignored_by_git() {
         "{neutral}"
     );
 }
+
+/// REQ-history-006, REQ-records-004, TC-history-a-story-lists-each-entry-once (R6, S7):
+/// a closed session's story lists each evidence entry once in What was verified, as
+/// its receipt line; an entry with no command still separates its claim from the
+/// fingerprint digits with ` — `.
+#[test]
+fn a_story_lists_each_entry_once_with_its_receipt() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let outside = tempfile::tempdir().unwrap();
+    let artifact = outside.path().join("SYNTHETIC-proof.bin");
+    std::fs::write(&artifact, b"SYNTHETIC proof bytes\n").unwrap();
+    let added = fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC external proof",
+        "--artifact",
+        artifact.to_str().unwrap(),
+    ]);
+    let entry = added["observation"]
+        .as_str()
+        .unwrap_or_else(|| panic!("{added:#}"))
+        .to_string();
+    let key = fixture.active_id();
+    fixture.commit("the entry");
+    fixture.ok(&[
+        "session",
+        "close",
+        &key,
+        "--reason",
+        "SYNTHETIC done testing",
+    ]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{key}.md"));
+    let start = story.find("\n## What was verified\n").unwrap();
+    let section = &story[start + 1..];
+    let section = &section[..section[3..]
+        .find("\n## ")
+        .map_or(section.len(), |at| at + 3)];
+    let naming: Vec<&str> = section
+        .lines()
+        .filter(|line| line.starts_with("- ") && line.contains(&entry))
+        .collect();
+    assert_eq!(naming.len(), 1, "{section}");
+    let line = naming[0];
+    let after = line
+        .strip_prefix("- SYNTHETIC external proof — ")
+        .unwrap_or_else(|| panic!("no separator: {line}"));
+    assert!(
+        after.len() > 12 && after[..12].bytes().all(|byte| byte.is_ascii_hexdigit()),
+        "{line}"
+    );
+}
