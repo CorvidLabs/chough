@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "BUG-a-migrated-observation-with-an-uppercase-content-digest-makes-status-an-c39258307ec6ded0e93a3d02",
+  "title": "A migrated observation with an uppercase content digest makes status and next refuse",
+  "symptom": "After migrating a 0.5.x observation whose snapshot content digest is uppercase, chough status and chough next exit 1: content must be a SHA-256 digest (64 lowercase hexadecimal digits)",
+  "trigger": "Migrate a 0.5.x project with an observation whose snapshot.content is uppercase hex and that an open session references, then run chough status",
+  "expected": "The migration carries every 0.5.x digest lowercased (the same SHA-256), so the migrated tree reads (REQ-records-009, REQ-cli-017)",
+  "actual": "The digest is carried as written, and 0.6.0's reader refuses the entry",
+  "criteria": [
+    "DRIVE-27"
+  ],
+  "requirements": [
+    "REQ-records-009",
+    "REQ-cli-017"
+  ],
+  "cases": [
+    "TC-records-migrate-evidence-uppercase-digests"
+  ],
+  "environment": "local-macos-arm64",
+  "revision": "bf54e24ff3d5ed73a4457bd351b42d56e6ccd518",
+  "steps": [
+    "Migrate a fixture whose observation has an uppercase content digest",
+    "Run chough status --environment fixture"
+  ],
+  "fixture": null,
+  "observations": [
+    "OBS-tc-records-migrate-evidence-uppercase-digests-9ce28d5e695eb59d47b6b354",
+    "OBS-tc-records-migrate-evidence-uppercase-digests-662277bf7ccc63e2a6cb7688"
+  ],
+  "impact": "A migrated tree is unusable until someone edits the entry by hand",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "verified",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t38b's review (R4) of t37j's content check 9a914511; red at 8f019ca7 (leif/0.6.0-uppercase-digests-red)",
+  "notes": [
+    {
+      "at_unix_seconds": 1794442259,
+      "text": "status: open -> verified. Green after t38b's 6bf8e8c7: every carried digest is lowercased and status and next read the migrated entry.",
+      "observations": [
+        "OBS-tc-records-migrate-evidence-uppercase-digests-662277bf7ccc63e2a6cb7688"
+      ]
+    }
+  ],
+  "created_at_unix_seconds": 1794442239,
+  "updated_at_unix_seconds": 1794442259
+}
