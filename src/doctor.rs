@@ -283,11 +283,11 @@ fn timeline_findings(root: &Path) -> Vec<Finding> {
         let story = path
             .strip_prefix(&format!("{}/", STORIES))
             .is_some_and(|name| !name.contains('/') && name.ends_with(".md"));
-        let session_id = sessions::id_of(&path);
-        if !story && session_id.is_none() {
+        let folder_id = sessions::id_of(&path);
+        if !story && folder_id.is_none() {
             continue;
         }
-        let working = match &session_id {
+        let working = match &folder_id {
             Some(id) if !local_path(root, &path).is_ok_and(|full| full.is_file()) => {
                 sessions::archive_file(id)
             }

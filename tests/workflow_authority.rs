@@ -753,12 +753,12 @@ fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
         "--decision",
         "decided: approved because corvid-agent approved the PR and every check passed",
     ]);
-    let session_id = fixture.active_id();
+    let session_folder = fixture.active_id();
     fixture.ok(&[
         "inbox",
         "add",
         "--session",
-        &session_id,
+        &session_folder,
         "--from",
         "reviewer-bot",
         "--kind",
