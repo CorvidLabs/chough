@@ -2,7 +2,7 @@
   "current_bundle_sha256": {
     "SKILL.md": "fb5c6b572897cc3838bca579bc92de3fe08385d80ebd97d0e447e7fa593f766c",
     "agents/openai.yaml": "e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0",
-    "references/accept.md": "09ea8306d85d50667d1cd3065b8cde55284da624e452f5b647fa4786b73631f6",
+    "references/accept.md": "b063138264e63d1aeb528163e90e5ec6da036ec96aa883145fd8c3d3d5796eb7",
     "references/bugs.md": "a81ae65f51ded7a9e09901f21b881ae47a1652e7722298df8d9d0470ccc876c1",
     "references/build.md": "970d5a96be20ac737f8e1c9650bc327355792b3ee4b2e525acbbd7dc14c7ad30",
     "references/checkpoint.md": "8e5684f9c6871f804e1c81a45ac83e6bcadac635d9603a72d1d539bff3a2058c",

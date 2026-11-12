@@ -2418,6 +2418,17 @@ fn reference_label(state: &str, environment: Option<&str>) -> &'static str {
 }
 
 impl Reads<'_> {
+    /// Whether `evidence` reads current, as `chough next` labels a reference to it
+    /// (REQ-cli-004), with no environment to check: its revision or content, its case
+    /// and its artifacts still match `current` (REQ-cli-021, F4).
+    pub(super) fn is_current(
+        &self,
+        evidence: &Evidence,
+        current: &Result<Snapshot>,
+    ) -> Result<bool> {
+        Ok(reference_label(self.freshness(evidence, current, None)?, None) == "current")
+    }
+
     /// One reference's label: current, historical, removed (naming the receipt),
     /// unavailable, or ambiguous (naming its places), never a refusal of the report.
     fn label_reference(
