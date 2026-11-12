@@ -205,7 +205,7 @@ milestone; nothing is closed yet. Read on 2026-11-11.
 #12, #14, #76, #132, #165, #167, #190 and #201 were closed on 2026-11-11 by the
 `corvid-agent` account, with no comment and no fix, and were reopened the same day and
 put in the Chough 0.6.0 milestone. Each is disposition 1, fixed in 0.6.0 with its case
-(testing.md): TC-cli-12-native-closeout-stays-current and the two #12 repro cases,
+(testing.md): TC-records-untracked-receipt-keeps-verification, TC-records-write-after-check-keeps-verification and the two #12 repro cases,
 TC-records-proof-split-and-external, TC-cli-76-next-guides-a-fresh-agent,
 TC-cli-132-fork-inheritance-stress, TC-history-165-earlier-archives-stay,
 TC-history-append-only-corrections, TC-cli-190-gate-summary-counts-the-change and
@@ -246,14 +246,21 @@ approved-delta guard, REQ-cli-022, refuses that move while a delta differs from 
 approval). Until then the approved deltas stay as they are.
 
 1. REQ-cli-021 (next after done): the move into done archives the session
-   (REQ-history-006), so there is no session left for a reset. At done, `chough next`
-   names `chough session new <key>`, unless release is authorized or unfolded inbox
-   entries keep the session open; it no longer names a reset into a new cycle.
+   (REQ-history-006), so there is no session left for a reset. Once the session has
+   archived itself, `chough next` reports "no open session" and names
+   `chough session new <key>`. A session kept open at done gets, release first,
+   `chough stage enter release --reason "<request>"` while an authorized release is
+   still ahead, and `chough inbox fold` (then `chough doctor --fix`) only when no
+   release is ahead; inbox entries still unfolded after the move from release into
+   done keep it open at that second done, and `next` then names `chough inbox fold`.
+   It no longer names a reset into a new cycle.
 2. REQ-history-006 (receipts): each receipt also carries `observed`, the entry's
    observation time (ISO UTC, REQ-cli-017), so a bug whose evidence is archived keeps
    its verified state, which needs a pass observed after the latest failure
    (REQ-cli-012), and timing can order case runs read from receipts (REQ-reporting-001).
-   A receipt's `aliases` is one scalar, comma-and-space separated.
+   A receipt's `aliases` is one scalar, comma-and-space separated. A receipt also
+   carries `duration_seconds` when known (correction 4), `raw_log` when present and
+   `actor` when known, as the step 4 receipt writer gives them.
 3. REQ-cli-054 (bug values), which the deltas leave unchanged: REQ-cli-012 adds
    `fixed-upstream` as a closed status, so REQ-cli-054 becomes modified: eight
    statuses, four of them closed (`verified`, `duplicate`, `wont-fix`,
@@ -264,12 +271,21 @@ approval). Until then the approved deltas stay as they are.
    reads for case run times (REQ-reporting-001); a repeated validation run's single
    entry also gives `state`, `started`, `completed`, `failures`, `not_run`,
    `elapsed_seconds` and `attempts`, one flat map per attempt with `started`,
-   `observed`, `result` and `duration_seconds`.
+   `observed`, `result` and `duration_seconds`, and also `validation_run: true`,
+   `run_case`, `authority`, `times`, `interval_seconds` and `bugs`, each attempt map
+   naming its `observation`, the attempt's own case-run entry. The run entry is a
+   structural summary (result `not-run`) that never counts as a run of its case, and
+   `chough validate resume` finds it by ID or alias. The timing report reads
+   `duration_seconds` (REQ-reporting-001).
 5. REQ-records-009 (the vaulted-adopter criterion): no release has that bug. The
    roll-up came after 0.4.0 (#135), and its fix (#142, 90e5de6f; the anchor holder
    kept out of the roll-up in #143/#161) is in 0.5.0. So "first recorded refusing on
    0.5.0" becomes "first recorded refusing on the last build before #142 (90e5de6f^),
    with the same tree recorded as observed on 0.5.0".
+6. REQ-cli-021 (the view's labels): 0.6.0 has no retention, so no observation reads
+   `pruned`. An ID the migration did not carry resolves as `removed`, naming its
+   receipt (REQ-records-009), so the criterion lists referenced observations that are
+   historical, removed or unavailable.
 
 ## Risks
 
