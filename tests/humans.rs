@@ -676,13 +676,29 @@ fn next_action(fixture: &Fixture) -> String {
         .to_string()
 }
 
-/// The next action a close leaves (fresh-eyes finding 12, t382's rule): a close that
-/// decided nothing beyond closing says "closed" once (F12a).
+/// The next action a close leaves (fresh-eyes finding 12, t382's rule): the gate, the
+/// decision, said once (F12a), and the step that decision allows, never `chough next`
+/// (F3): `closed` is a gate that drives nothing and `no-native` a close with
+/// --no-native.
 fn closed_next(gate: &str, decision: &str) -> String {
-    if decision == "closed" {
-        return format!("Gate \"{gate}\" closed; run `chough next` for the next action.");
-    }
-    format!("Gate \"{gate}\" closed ({decision}); run `chough next` for the next action.")
+    let (said, step) = match decision {
+        "approved" => (" (approved)", "run `chough stage advance` to move on".to_string()),
+        "closed" => ("", "run `chough stage advance` to move on".into()),
+        "review pass" => (
+            " (review pass)",
+            format!("run `chough change ship {ID}` to ship"),
+        ),
+        "review block" => (
+            " (review block)",
+            "run `chough stage back --to build --reason \"<why>\"` to address the review".into(),
+        ),
+        "no-native" => (
+            "",
+            "record the next action the decision calls for with `chough checkpoint --next-action \"<action>\"`".into(),
+        ),
+        other => panic!("no next action for {other}"),
+    };
+    format!("Gate \"{gate}\" closed{said}; {step}.")
 }
 
 /// A project at plan, as the fresh-eyes tester was when the scope gate opened.
@@ -765,7 +781,7 @@ fn a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage() {
             "SYNTHETIC changes requested",
             "approve",
             &["--no-native"][..],
-            "closed",
+            "no-native",
         ),
     ] {
         open(gate, "plan", drives);
@@ -833,5 +849,65 @@ fn a_close_that_runs_no_native_step_says_closed_once() {
             "{next}"
         );
         assert_eq!(next.matches("closed").count(), 1, "{next}");
+    }
+}
+
+/// Fresh-eyes F3 (second round, 2026-11-12; REQ-cli-021): after a gate closed, the next
+/// action said to run `chough next`, which showed that same next action again. A close
+/// that leaves no gate holding the stage names the step its decision allows: `chough
+/// stage advance` after an approval or a gate that drives nothing, `chough change ship
+/// <id>` after a review pass, `chough stage back --to build` after a review block, and
+/// `chough checkpoint --next-action` after a --no-native close; next never names itself.
+#[cfg(unix)]
+#[test]
+fn a_gate_close_names_the_step_its_decision_allows_never_chough_next() {
+    let fixture = at_plan();
+    for (gate, drives, extra, step) in [
+        (SCOPE, "approve", &[][..], "`chough stage advance`"),
+        (
+            "SYNTHETIC go-ahead",
+            "none",
+            &[][..],
+            "`chough stage advance`",
+        ),
+        (
+            "SYNTHETIC review to pass",
+            "review",
+            &["--verdict", "pass"][..],
+            "`chough change ship human-change`",
+        ),
+        (
+            "SYNTHETIC review to block",
+            "review",
+            &["--verdict", "block"][..],
+            "`chough stage back --to build",
+        ),
+        (
+            "SYNTHETIC changes requested",
+            "approve",
+            &["--no-native"][..],
+            "`chough checkpoint --next-action",
+        ),
+    ] {
+        fixture.ok(&[
+            "checkpoint",
+            "--awaiting-human",
+            gate,
+            "--holds",
+            "plan",
+            "--drives",
+            drives,
+            "--next-action",
+            "SYNTHETIC: wait for the human.",
+        ]);
+        let mut list = relay(gate, "SYNTHETIC-human");
+        list.extend(extra.iter().map(|value| value.to_string()));
+        fixture.ok(&args(&list));
+        let next = next_action(&fixture);
+        assert!(next.contains(step), "{gate}: {next}");
+        let shown = fixture.ok(&["next", "--json"])["next_valid_action"].clone();
+        for text in [next.as_str(), shown["action"].as_str().unwrap()] {
+            assert!(!text.contains("`chough next`"), "{gate}: {text}");
+        }
     }
 }
