@@ -66,6 +66,8 @@ observations:
   - 2026-11-12-green-rerun-of-the-timing-trace-flake-tests-timing-rs-timing
   - 2026-11-12-red-rerun-of-the-timing-native-budget-flake-tests-timing-rs-a
   - 2026-11-12-green-rerun-of-the-timing-native-budget-flake-tests-timing-rs
+  - 2026-11-12-red-rerun-of-the-verify-lane-flake-at-85dd828c-6-of-12-loaded
+  - 2026-11-12-green-rerun-of-the-verify-lane-flake-at-b6fcd0e9-t38b-s
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -143,6 +145,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Green rerun of the timing trace flake: tests/timing.rs::timing_trace_reports_native_reads_and_phases_without_changing_output_or_exit built with Rust 1.96.0 at b6fcd0e9 (with #172 and both warm-ups) passed 20 of 20 under load (20 busy loops and 8 loops that each write a new executable and run it once, the macOS first-exec assessment load), 2 lanes x 10 runs, inside the heavy-tests lock, with t37f's rerun.sh and stress.sh copied unchanged](evidence/2026-11-12-green-rerun-of-the-timing-trace-flake-tests-timing-rs-timing.md)
 - [Red rerun of the timing native-budget flake: tests/timing.rs::a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown built with Rust 1.88.0 at 9c41e959 (the bug's revision) in a throwaway worktree passed 3 of 20 and failed 17 under load (20 busy loops and 8 loops that each write a new executable and run it once, the macOS first-exec assessment load), 2 lanes x 10 runs, inside the heavy-tests lock, with t37f's rerun.sh and stress.sh copied unchanged](evidence/2026-11-12-red-rerun-of-the-timing-native-budget-flake-tests-timing-rs-a.md)
 - [Green rerun of the timing native-budget flake: tests/timing.rs::a_timed_out_or_unconfigured_native_read_leaves_native_times_unknown built with Rust 1.88.0 at b6fcd0e9 (this branch with t37f's warm-up 7210d0e7 and t38b's stand-in warm-up) passed 20 of 20 under load (20 busy loops and 8 loops that each write a new executable and run it once, the macOS first-exec assessment load), 2 lanes x 10 runs, inside the heavy-tests lock, with t37f's rerun.sh and stress.sh copied unchanged](evidence/2026-11-12-green-rerun-of-the-timing-native-budget-flake-tests-timing-rs.md)
+- [Red rerun of the verify-lane flake at 85dd828c: 6 of 12 loaded runs failed (peak 1-minute load 80.0): cases 3 of 3 (a_descendant_holding_the_pipes_cannot_outlast_the_case_deadline and a_descendant_holding_the_pipes_after_exit_is_stopped_by_the_deadline) and stop 3 of 3 (stopping_a_case_run_while_it_saves_stops_git_and_records_nothing); t38b's flaky_lane.sh and lane_stress.py copied unchanged, under the heavy-tests lock: the cli, change, stop and cases test binaries built with Rust 1.96.0, each run 3 times at once (12 runs) beside 30 CPU busy loops and 4 writers of 32 MiB with F_FULLFSYNC](evidence/2026-11-12-red-rerun-of-the-verify-lane-flake-at-85dd828c-6-of-12-loaded.md)
+- [Green rerun of the verify-lane flake at b6fcd0e9 (t38b's install-time stand-in warm-up 1888f4f5 and stub PIDs published by rename 2ee84412): 0 of 12 loaded runs failed (peak 1-minute load 93.9); t38b's flaky_lane.sh and lane_stress.py copied unchanged, under the heavy-tests lock: the cli, change, stop and cases test binaries built with Rust 1.96.0, each run 3 times at once (12 runs) beside 30 CPU busy loops and 4 writers of 32 MiB with F_FULLFSYNC](evidence/2026-11-12-green-rerun-of-the-verify-lane-flake-at-b6fcd0e9-t38b-s.md)
 
 ## Open threads
 

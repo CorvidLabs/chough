@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-07-full-macos-lane-checkpoint-writer-lock-timeout
 aliases: [BUG-full-macos-lane-checkpoint-writer-lock-timeout-ddac00a62f685f463c2b9f79]
 title: Full macOS lane checkpoint writer lock timeout
-status: open
+status: investigating
 classification: unclassified
 scope: out-of-scope
 impact: Not yet assessed.
@@ -35,7 +35,7 @@ revision: 3b9d008d6c48399f8ac4f7c62dee9fcb1b9cc4e9
 found_by: Corrective PR197 qualification; tests/cli.rs:2072 outside the two approved P1 behaviors
 related: []
 created: 2026-11-07T17:19:46Z
-updated: 2026-11-07T17:19:46Z
+updated: 2026-11-12T17:09:52Z
 ---
 # Full macOS lane checkpoint writer lock timeout
 
@@ -53,3 +53,4 @@ Actual: Initial full lane failed exit1/cargo101; identical isolated test and seq
 ## Log
 
 - 2026-11-07T17:19:46Z · Reported (Corrective PR197 qualification; tests/cli.rs:2072 outside the two approved P1 behaviors); evidence: OBS-product-test-80b95a49cc2ba0705ed1b2fb, OBS-product-test-4f7d63e468288e44cfd85c88
+- 2026-11-12T17:09:52Z · status: open -> investigating. Not reproduced (t38b, 2026-11-12, diagnostics for Leif): the real test cli --exact checkpoint_writers_in_parallel_keep_every_update ran 24 times (4 copies x 6) under 30 CPU hogs, 4 F_FULLFSYNC writers and the stop and cases binaries, 0 failed at peak load 89.6; the same on the bug's own revision 3b9d008d, 24 runs, 0 failed at peak 83.8; the whole cli binary 15 loaded runs, 0 failed. A probe outside the harness (3 writers x 8 rounds) waited at most 60 ms unloaded, 165 ms with 60 hogs, 410 ms with 8 F_FULLFSYNC writers and 96 ms under an exec storm at load 97. Ruled out: a pipe deadlock (at most 2.9 KB of output per writer) and the first-exec check (the writers run only real git). Reaching the 30 s refusal needs one writer stuck for over 30 s, or two for over 15 s; that day's conditions (a full macOS verify beside a pinned Linux verification in Docker and a preservation audit) were not reproduced. If it recurs, the refusal names the lock holder's PID and the test prints each writer's lock wait; sample the holder then. Left open for Leif: a flake that does not reproduce is never closed to clear the tag · by claude-code (hc t382)
