@@ -2207,10 +2207,9 @@ fn next_guides_a_fresh_agent_from_init_to_accept() {
     let text = action["action"].as_str().unwrap();
     assert!(text.starts_with("The human reviews next."), "{text}");
     for part in [
-        "--close-gate",
-        "`--verdict pass` or `--verdict block`",
+        "chough change ship verify-change --close-gate",
+        "--verdict block",
         "--awaiting-human \"Implementation review of verify-change\" --holds accept --drives review",
-        "chough change ship verify-change",
     ] {
         assert!(text.contains(part), "missing {part}: {text}");
     }
@@ -2234,8 +2233,54 @@ fn next_guides_a_fresh_agent_from_init_to_accept() {
     let text = action["action"].as_str().unwrap();
     assert!(
         text.starts_with("Waiting for a human decision: Implementation review of verify-change.")
-            && text.contains("--verdict pass or --verdict block"),
+            && text.contains("chough change ship verify-change")
+            && text.contains("--verdict block"),
         "{text}"
+    );
+}
+
+/// REQ-cli-021, REQ-records-014, TC-cli-accept-ships-through-change-ship (N1): at accept
+/// while verifying, the human's decision to ship goes through `chough change ship <id>
+/// --close-gate`, which closes the gate only after the native ship; in a project whose
+/// records SpecSync's verification counts, the action also says to commit the review
+/// gate and run `chough change check --commit` again before the ship, so nothing under
+/// `.chough/` changes between the check and the finalize.
+#[test]
+fn at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate() {
+    let fixture = approved_at_plan("ship-change");
+    while fixture.checkpoint()["stage"]["current"] != "accept" {
+        fixture.ok(&["stage", "advance"]);
+    }
+    fixture.write(".stub-state", "verifying\n");
+    let action = |fixture: &Fixture| -> String {
+        fixture.ok(&["next", "--json"])["next_valid_action"]["action"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    let commit_step =
+        "commit the gate and run `chough change check --commit` again before the ship";
+    fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
+    let commit_first = action(&fixture);
+    for part in [
+        "chough change ship ship-change --close-gate",
+        "--verdict block",
+        commit_step,
+    ] {
+        assert!(
+            commit_first.contains(part),
+            "missing {part}: {commit_first}"
+        );
+    }
+    fixture.write(
+        ".specsync/sdd.json",
+        "{\"enabled\": true, \"verification_ignored_paths\": [\".chough/sessions/\", \".chough/archive/\", \".chough/bugs/\"]}\n",
+    );
+    let any_point = action(&fixture);
+    assert!(
+        any_point.contains("chough change ship ship-change --close-gate")
+            && !any_point.contains(commit_step),
+        "{any_point}"
     );
 }
 

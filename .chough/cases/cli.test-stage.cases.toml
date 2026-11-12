@@ -75,3 +75,21 @@ expected = ["tests/gates.rs::a_summary_with_no_base_says_so_instead_of_a_broken_
 adapter = "cargo-test"
 test_target = "gates"
 test = "a_summary_with_no_base_says_so_instead_of_a_broken_diff_command"
+
+[[case]]
+id = "TC-cli-accept-ships-through-change-ship"
+title = "At accept the human's decision to ship goes through chough change ship --close-gate, and a commit-first project commits the review gate before the check"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3", "FLOW-13", "FLOW-2"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate"
