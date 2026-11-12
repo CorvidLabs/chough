@@ -1487,3 +1487,45 @@ fn every_migrated_session_md_ends_with_exactly_one_newline() {
         String::from_utf8_lossy(&check.stdout)
     );
 }
+
+/// REQ-records-009, F10 of the second fresh-eyes round: on a tree with no 0.5.x record the
+/// preview says there is nothing to migrate, gives no plan digest and writes nothing, both
+/// on a tree already migrated and on a project that never held a 0.5.x record. The apply's
+/// nothing-to-do answer stays.
+#[test]
+fn a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest() {
+    let migrated = migrate_project("adopted", &[]);
+    let (plan, _) = migrate(&migrated, Some(CONSENT));
+    migrated.commit("migrated");
+    let never = Fixture::new();
+    never.stubs();
+    never.init();
+    never.commit("a 0.6.0 project");
+    for (label, project) in [("migrated", &migrated), ("never 0.5.x", &never)] {
+        let before = files(project.root());
+        let preview = project.ok(&["migrate"]);
+        assert!(
+            files(project.root()) == before,
+            "{label}: the preview wrote"
+        );
+        for key in ["plan_digest", "apply"] {
+            assert!(
+                preview[key].is_null(),
+                "{label}: gives `{key}`: {preview:#}"
+            );
+        }
+        let says = preview["nothing_to_do"]
+            .as_str()
+            .unwrap_or_else(|| panic!("{label}: no `nothing_to_do`: {preview:#}"));
+        assert!(says.contains("nothing to migrate"), "{label}: {says}");
+    }
+    let applied = migrated.ok(&[
+        "migrate",
+        "--apply",
+        plan["plan_digest"].as_str().unwrap(),
+        "--consent",
+        CONSENT,
+    ]);
+    assert_eq!(applied["applied"], false, "{applied:#}");
+    assert!(applied["nothing_to_do"].is_string(), "{applied:#}");
+}
