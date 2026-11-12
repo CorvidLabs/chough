@@ -349,6 +349,8 @@ fn done_changes_no_knowledge_file_but_its_own_post_and_the_feed() {
 fn journal_add_writes_a_post_of_each_kind_and_refuses_an_oversized_body() {
     let fixture = Fixture::new();
     fixture.init();
+    // A link names a project path Git tracks (K4), so the index it links is committed.
+    fixture.commit("init");
     for kind in ["shipped", "closed", "intent", "spec", "broke", "learned"] {
         let out = fixture.ok(&[
             "journal",
@@ -662,4 +664,60 @@ fn library_merge_keeps_ours_and_refuses_a_missing_file() {
     assert_eq!(fixture.read("theirs.xml"), "theirs\n");
     let error = fixture.fails(&["library", "merge", &base, &path("gone.xml"), &theirs]);
     assert!(error.contains("gone.xml"), "{error}");
+}
+
+/// REQ-cli-044, KNOW-14, KNOW-33 (BUG-journal-add-link-accepts-untracked-ignored-and-git-paths-which-are-dead-2adf94a75196d7f71102d782):
+/// `journal add --link` takes an http(s) URL or a project path Git tracks, a file or a
+/// folder holding one, so every link resolves in a clone. A path under `.git/`, an
+/// ignored path (even one forced into the index), an untracked file and a missing path
+/// are refused, naming a project path, and the refusal writes nothing.
+#[test]
+fn journal_links_name_only_project_paths_git_tracks() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.write(".gitignore", "SYNTHETIC-ignored.log\n");
+    fixture.write("SYNTHETIC-ignored.log", "forced into the index\n");
+    fixture.commit("init");
+    fixture.git(&["add", "-f", "SYNTHETIC-ignored.log"]);
+    fixture.commit("force-add an ignored file");
+    fixture.write("SYNTHETIC-untracked.md", "never committed\n");
+    let add = |title: &str, link: &str| {
+        let args = [
+            "journal", "add", "--kind", "learned", "--title", title, "--body", "x", "--link", link,
+        ];
+        fixture.run(&args)
+    };
+    for (title, link) in [
+        ("Tracked file", "specs/cli/requirements.md"),
+        ("Tracked folder", "specs"),
+        ("A URL", PR),
+    ] {
+        let output = add(title, link);
+        assert!(
+            output.status.success(),
+            "{link}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let before = tree(&fixture, "knowledge");
+    for link in [
+        ".git/config",
+        ".chough/local/active-session",
+        "SYNTHETIC-ignored.log",
+        "SYNTHETIC-untracked.md",
+        "SYNTHETIC/missing.md",
+    ] {
+        let output = add("Refused link", link);
+        let error = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success(), "{link} was accepted");
+        assert!(
+            error.contains("neither an http(s) URL nor a project path Git tracks"),
+            "{link}: {error}"
+        );
+        assert_eq!(
+            tree(&fixture, "knowledge"),
+            before,
+            "{link} wrote something"
+        );
+    }
 }
