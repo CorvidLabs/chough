@@ -61,3 +61,22 @@ adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "doctor", "--", "--exact", "doctor_reports_missing_merge_drivers_and_fix_sets_them"]
 expect_output = ["test result: ok. 1 passed"]
 timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-knowledge-index-bounded-open-bugs"
+title = "The index lists at most 20 open bugs, blocking first and then the newest, with their total, linking .chough/bugs/ and naming chough bug list for the rest; with 1,500 open bugs it builds within its bound and --check passes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-12"]
+requirements = ["REQ-cli-043"]
+paths = ["src/vault.rs", "src/library.rs", "tests/vault.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::the_index_lists_at_most_twenty_open_bugs_blocking_first_then_newest passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "vault", "--", "--exact", "the_index_lists_at_most_twenty_open_bugs_blocking_first_then_newest"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600

@@ -587,3 +587,73 @@ fn index_titles_are_inert_markdown() {
         "{bundle:?}"
     );
 }
+
+/// REQ-cli-043, KNOW-12 (BUG-the-knowledge-index-lists-every-open-bug-with-no-bound-so-a-few-hundred-539000056d8d9cc6f09b429a):
+/// the index lists at most 20 open bugs, blocking first and then the newest, with their
+/// total, and links `.chough/bugs/` naming `chough bug list` for the rest, so 1,500 open
+/// bugs with long titles keep it within its bound and `--check` passes. A closed bug is
+/// neither listed nor counted.
+#[test]
+fn the_index_lists_at_most_twenty_open_bugs_blocking_first_then_newest() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let bug = |n: usize, scope: &str, status: &str, created: &str| {
+        let id = format!("2026-10-01-synthetic-open-bug-{n:04}");
+        let title = format!(
+            "SYNTHETIC open bug {n:04} with a long title that fills the line {}",
+            "x".repeat(40)
+        );
+        fixture.write(
+            &format!(".chough/bugs/{id}.md"),
+            &format!(
+                "---\nkind: bug\nid: {id}\naliases: []\ntitle: {title}\nstatus: {status}\n\
+                 classification: product-defect\nscope: {scope}\nimpact: Not yet assessed.\n\
+                 criteria: []\nrequirements: []\ncases: []\nevidence: []\nreceipts: []\n\
+                 environment: local\nfound_by: tester\nrelated: []\ncreated: {created}\n\
+                 updated: {created}\n---\n# {title}\n\n**What happened:** x\n\n\
+                 **Steps:** y\n\n**Expected:** z\n\n**Why it matters:** w\n\n\
+                 **Fix:** Not fixed yet.\n\n## Log\n\n- {created} · Reported (tester)\n"
+            ),
+        );
+    };
+    for n in 0..1_500 {
+        // Created a minute apart, so a higher number is newer.
+        let created = format!(
+            "2026-10-{:02}T{:02}:{:02}:00Z",
+            1 + n / 1_440,
+            n % 1_440 / 60,
+            n % 60
+        );
+        let scope = if n == 3 || n == 7 {
+            "blocking"
+        } else {
+            "in-scope"
+        };
+        bug(n, scope, "open", &created);
+    }
+    bug(1_500, "blocking", "verified", "2026-10-31T00:00:00Z");
+    fixture.ok(&["library", "index"]);
+    fixture.ok(&["library", "index", "--check"]);
+    let index = fixture.read("knowledge/index.md");
+    assert!(index.len() <= 65_536, "{} bytes", index.len());
+    let section = index
+        .split("## Open bugs\n\n")
+        .nth(1)
+        .and_then(|rest| rest.split("\n## ").next())
+        .unwrap_or_default();
+    let listed: Vec<&str> = section
+        .lines()
+        .filter_map(|line| line.strip_prefix("- [")?.split(']').next())
+        .collect();
+    let id = |n: usize| format!("2026-10-01-synthetic-open-bug-{n:04}");
+    let mut expected = vec![id(7), id(3)];
+    expected.extend((1_482..1_500).rev().map(id));
+    assert_eq!(listed, expected, "{section}");
+    assert!(section.contains("1500 open bugs"), "{section}");
+    assert!(
+        section.contains("[.chough/bugs/](../.chough/bugs/)"),
+        "{section}"
+    );
+    assert!(section.contains("`chough bug list`"), "{section}");
+    assert!(!section.contains(&id(1_500)), "{section}");
+}
