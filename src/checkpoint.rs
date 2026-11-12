@@ -812,10 +812,49 @@ pub(super) enum RelayProblem {
     WithoutGate(Vec<&'static str>),
     /// The gate, and the flags that are missing or blank.
     Incomplete(String, Vec<&'static str>),
-    /// No open gate has this exact text.
-    NotOpen(String),
+    /// No open gate has this exact text: the text, and the closest open gate when one
+    /// is close.
+    NotOpen(String, Option<String>),
     /// The gate, and the length in bytes the decision would have.
     TooLong(String, usize),
+}
+
+/// The open gate closest to `gate`, when one is close (F6): the fewest one-character
+/// edits once case and runs of whitespace are folded, at most a quarter of the longer
+/// text and at least one; the first open gate wins a tie.
+fn closest_gate(open: &[String], gate: &str) -> Option<String> {
+    let fold = |text: &str| -> Vec<char> {
+        text.split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+            .to_lowercase()
+            .chars()
+            .collect()
+    };
+    let given = fold(gate);
+    open.iter()
+        .filter_map(|candidate| {
+            let other = fold(candidate);
+            let edits = edit_distance(&given, &other);
+            (edits <= (given.len().max(other.len()) / 4).max(1)).then_some((edits, candidate))
+        })
+        .min_by_key(|(edits, _)| *edits)
+        .map(|(_, candidate)| candidate.clone())
+}
+
+/// The fewest single-character insertions, deletions and substitutions that turn
+/// `from` into `to`.
+fn edit_distance(from: &[char], to: &[char]) -> usize {
+    let mut previous: Vec<usize> = (0..=to.len()).collect();
+    for (row, left) in from.iter().enumerate() {
+        let mut current = vec![row + 1];
+        for (column, right) in to.iter().enumerate() {
+            let cost = previous[column] + usize::from(left != right);
+            current.push(cost.min(previous[column + 1] + 1).min(current[column] + 1));
+        }
+        previous = current;
+    }
+    previous[to.len()]
 }
 
 /// A relayed decision: the gate it closes, the relay and the decision text.
@@ -850,7 +889,7 @@ pub(super) fn check_relay(
         return Err(RelayProblem::Incomplete(gate.into(), missing));
     }
     if !open.iter().any(|open| open == gate) {
-        return Err(RelayProblem::NotOpen(gate.into()));
+        return Err(RelayProblem::NotOpen(gate.into(), closest_gate(open, gate)));
     }
     let text = |index: usize| values[index].1.unwrap_or_default().to_string();
     let relay = stage::RelayedBy {
@@ -1028,8 +1067,11 @@ fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Optio
                 missing.join(", "),
                 if missing.len() == 1 { "is" } else { "are" }
             ),
-            RelayProblem::NotOpen(gate) => anyhow::anyhow!(
-                "refused:gate-not-open: no open gate has the exact text \"{gate}\", so nothing was saved.\nRun `chough next` to list the open gates, then close one by its exact text."
+            RelayProblem::NotOpen(gate, closest) => anyhow::anyhow!(
+                "refused:gate-not-open: no open gate has the exact text \"{gate}\", so nothing was saved.{}\nRun `chough next` to list the open gates, then close one by its exact text.",
+                closest
+                    .map(|closest| format!(" Did you mean \"{closest}\"?"))
+                    .unwrap_or_default()
             ),
             RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
                 "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",

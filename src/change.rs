@@ -324,7 +324,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 if missing.len() == 1 { "is" } else { "are" },
                 relay_command(&gate)
             ),
-            RelayProblem::NotOpen(gate) => anyhow::anyhow!(
+            RelayProblem::NotOpen(gate, _) => anyhow::anyhow!(
                 "refused:gate-not-open: no gate is open, so there is no gate \"{gate}\" to close, and nothing ran.\nRun `chough change ship {id}` without --close-gate and the relay."
             ),
             RelayProblem::TooLong(gate, length) => anyhow::anyhow!(

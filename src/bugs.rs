@@ -1328,9 +1328,22 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         .filter(|candidate| candidate["score"].as_f64().unwrap_or(0.0) >= DUPLICATE_THRESHOLD)
         .collect();
     if !likely.is_empty() && args.distinct.is_none() {
+        // F6: each similar bug as a line a person reads, most similar first.
+        let similar: Vec<String> = likely
+            .iter()
+            .map(|bug| {
+                let field = |key: &str| bug[key].as_str().unwrap_or_default().to_string();
+                format!(
+                    "  {}: {} ({})",
+                    field("id"),
+                    field("title"),
+                    field("status")
+                )
+            })
+            .collect();
         bail!(
-            "similar bugs exist: {}. Append evidence with `chough bug update <id> --observation <id> --note <text>`, or add with --distinct <why this is a different defect>",
-            serde_json::to_string(&likely)?
+            "similar bugs exist, most similar first, so nothing was written:\n{}\nAppend evidence to one of them with `chough bug update <id> --observation <id> --note <text>`, or add this bug with --distinct <why this is a different defect>.",
+            similar.join("\n")
         );
     }
     for (label, value) in [
