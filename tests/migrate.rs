@@ -1266,3 +1266,54 @@ fn a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove() {
     );
     assert!(fixture.exists(fixture_path));
 }
+
+/// REQ-records-010, REQ-records-009, TC-records-the-standing-migration-preference-is-set-before-migrating
+/// (U2): on an unmigrated tree, `pref set migration` and `pref unset migration` run and
+/// write only `.chough/preferences.json`, which the migration keeps byte for byte; the
+/// standing preference then gives the apply its consent, and any other key is still
+/// refused as unmigrated.
+#[test]
+fn the_standing_migration_preference_is_set_before_the_first_migration() {
+    let fixture = migrate_project("adopted", &[]);
+    let refused = fixture.fails(&[
+        "pref",
+        "set",
+        "librarian",
+        "off",
+        "--source",
+        "SYNTHETIC-human said no librarian (fixture)",
+    ]);
+    assert!(refused.contains("refused:unmigrated"), "{refused}");
+    fixture.ok(&[
+        "pref",
+        "set",
+        "migration",
+        "standing",
+        "--source",
+        "SYNTHETIC-human said migrate whenever it is ready (fixture)",
+    ]);
+    fixture.ok(&[
+        "pref",
+        "unset",
+        "migration",
+        "--source",
+        "SYNTHETIC-human withdrew it (fixture)",
+    ]);
+    fixture.ok(&[
+        "pref",
+        "set",
+        "migration",
+        "standing",
+        "--source",
+        "SYNTHETIC-human said migrate whenever it is ready (fixture)",
+    ]);
+    let preferences = fixture.read(".chough/preferences.json");
+    fixture.commit("the standing migration preference");
+    let (_, applied) = migrate(&fixture, None);
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    assert!(
+        receipt.contains("SYNTHETIC-human said migrate whenever it is ready"),
+        "{receipt}"
+    );
+    assert_eq!(fixture.read(".chough/preferences.json"), preferences);
+}

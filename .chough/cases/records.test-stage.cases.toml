@@ -201,3 +201,21 @@ expected = ["tests/migrate.rs::a_second_migrate_keeps_an_open_bugs_fixture_and_h
 adapter = "cargo-test"
 test_target = "migrate"
 test = "a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove"
+
+[[case]]
+id = "TC-records-the-standing-migration-preference-is-set-before-migrating"
+title = "On an unmigrated tree pref set and unset migration run, the standing preference gives the apply its consent, and other keys are still refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20", "LIFE-8", "KNOW-30", "LIFE-26"]
+requirements = ["REQ-records-010", "REQ-records-009"]
+paths = ["src/main.rs", "src/prefs.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::the_standing_migration_preference_is_set_before_the_first_migration passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "the_standing_migration_preference_is_set_before_the_first_migration"
