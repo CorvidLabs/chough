@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "BUG-a-second-migrate-on-a-migrated-tree-plans-to-remove-an-open-bug-s-kept-93ef973bf38a70bc70488198",
+  "title": "A second migrate on a migrated tree plans to remove an open bug's kept fixture, and a later-day apply deletes it",
+  "symptom": "On a migrated tree whose open bug names a .chough/artifacts fixture, chough migrate prints a non-empty plan removing that fixture; the same day the apply refuses only because the dated receipt exists; on a later day it applies and deletes the fixture while the bug stays open",
+  "trigger": "Migrate a 0.5.0 project with an open bug's fixture, commit, then chough migrate again on a later day",
+  "expected": "A tree with no 0.5.x record has nothing to do, and an open bug's fixture is kept (REQ-records-009)",
+  "actual": "The kept-fixture rule reads only 0.5.x JSON bugs, so the migrated Markdown bug's fixture reads as an orphan artifact",
+  "criteria": [],
+  "requirements": [
+    "REQ-records-009"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 0ee26ac0, debug build, SpecSync 6.2.0",
+  "revision": "e71b11b32167cad7ff8e298f9eff04a13069c3eb",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "A routine second migrate deletes an open bug's reproduction fixture",
+  "classification": "product-defect",
+  "scope": "blocking",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t384, test stage, area upgrade (full pass)",
+  "notes": [],
+  "created_at_unix_seconds": 1794449975,
+  "updated_at_unix_seconds": 1794449975
+}
