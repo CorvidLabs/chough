@@ -2410,3 +2410,61 @@ fn an_unknown_timeline_kind_is_named_by_its_session_file() {
         "{report:#}"
     );
 }
+
+/// Fresh-eyes finding F11 (REQ-history-002): `chough init` and `chough session new`
+/// each write one `start` entry, from and to the stage the session starts in, whose text
+/// is its objective, or its key when none was given, and `chough timing` right after
+/// reports the intent segment as started at that entry's time, not unknown. A timeline
+/// without one, as an older or migrated one is, still reads with that start unknown.
+#[test]
+fn init_and_session_new_write_a_start_entry_that_timing_reads() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let started = |objective: &str| {
+        let entries = timeline_entries(&fixture);
+        assert_eq!(entries.len(), 1, "{entries:#?}");
+        let start = &entries[0];
+        assert_eq!(start["kind"], "start", "{start:#}");
+        assert_eq!(start["from"], "intent", "{start:#}");
+        assert_eq!(start["to"], "intent", "{start:#}");
+        assert_eq!(start["reason"], objective, "{start:#}");
+        let report = timing(&fixture, &[]);
+        let first = &report["before_first_record"];
+        assert_eq!(first["stage"], "intent", "{report:#}");
+        assert_eq!(
+            first["start"]["unix_seconds"], start["at_unix_seconds"],
+            "{report:#}"
+        );
+        assert_eq!(first["start"]["unknown"], Value::Null, "{report:#}");
+    };
+    started("Ship a focused change");
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    started("Ship beta");
+    fixture.ok(&["session", "new", "gamma"]);
+    started("gamma");
+
+    // An older timeline, with no start entry, still reads: the start stays unknown.
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    // The entry's line and the indented field lines under it.
+    let mut without = String::new();
+    let mut skipping = false;
+    for line in text.split_inclusive('\n') {
+        if line.starts_with("- ") {
+            skipping = line.contains(" · start · ");
+        } else if !line.starts_with("  ") {
+            skipping = false;
+        }
+        if !skipping {
+            without.push_str(line);
+        }
+    }
+    assert_ne!(without, text, "no start entry to remove: {text}");
+    fixture.write(&file, &without);
+    assert!(timeline_entries(&fixture).is_empty());
+    let report = timing(&fixture, &[]);
+    assert_eq!(
+        report["before_first_record"]["start"]["unknown"], "no transition before the first record",
+        "{report:#}"
+    );
+}
