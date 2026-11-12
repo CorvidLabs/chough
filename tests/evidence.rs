@@ -322,6 +322,90 @@ fn png() -> Vec<u8> {
     bytes
 }
 
+/// REQ-records-005 and REQ-cli-023 (t37f's finding): a raw log is named by its entry's
+/// ID alone, so an entry's name must be free as a log too. The same case run the same
+/// day in a second session takes a clash suffix rather than reuse the first session's
+/// log, which keeps its bytes; an explicit ID whose log is taken is refused with nothing
+/// written. A case run's body ends its claim once, `(exit 0).`, never `(exit 0)..`.
+#[cfg(unix)]
+#[test]
+fn a_log_name_taken_in_another_session_is_a_clash_and_the_claim_ends_once() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write(
+        ".chough/cases/cli.cases.toml",
+        "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]]\nid = \"TC-cli-0001\"\ntitle = \"Probe\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-cli-001\"]\nenvironments = [\"local\"]\nartifacts = [\"test-log\"]\nexpected = [\"Probe reports healthy\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"sh\", \"-c\", \"echo healthy: yes\"]\nexpect_output = [\"healthy: yes\"]\n",
+    );
+    fixture.init();
+    fixture.commit("fixture");
+    let first_session = fixture.active_id();
+    let run = |fixture: &Fixture| {
+        fixture.ok(&["cases", "run", "TC-cli-0001", "--environment", "local"])["observation"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    let first = run(&fixture);
+    let first_log = format!(".chough/local/logs/{first}.log");
+    let first_bytes = fixture.read(&first_log);
+    let text = fixture.read(&format!(
+        ".chough/sessions/{first_session}/evidence/{first}.md"
+    ));
+    assert!(!text.contains(".."), "a doubled period: {text}");
+    assert!(text.contains("(exit 0).**"), "{text}");
+
+    fixture.ok(&[
+        "session",
+        "new",
+        "second",
+        "--objective",
+        "SYNTHETIC second session",
+    ]);
+    let second_session = fixture.id_of("second");
+    fixture.ok(&["session", "use", &second_session]);
+    let second = run(&fixture);
+    assert_ne!(
+        second, first,
+        "the second session reused the first log's name"
+    );
+    assert!(second.starts_with(&format!("{first}-")), "{second}");
+    assert_eq!(
+        fixture.read(&first_log),
+        first_bytes,
+        "the first log changed"
+    );
+    assert!(fixture.exists(&format!(".chough/local/logs/{second}.log")));
+    assert!(fixture.exists(&format!(
+        ".chough/sessions/{second_session}/evidence/{second}.md"
+    )));
+
+    // An explicit date-slug ID whose log another session holds is refused.
+    let taken = "2020-01-01-taken-elsewhere";
+    fixture.write(
+        &format!(".chough/local/logs/{taken}.log"),
+        "SYNTHETIC log\n",
+    );
+    let output = fixture.run(&[
+        "cases",
+        "run",
+        "TC-cli-0001",
+        "--environment",
+        "local",
+        "--observation-id",
+        taken,
+    ]);
+    assert!(!output.status.success());
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(stderr.contains("identity collision"), "{stderr}");
+    assert_eq!(
+        fixture.read(&format!(".chough/local/logs/{taken}.log")),
+        "SYNTHETIC log\n"
+    );
+    assert!(!fixture.exists(&format!(
+        ".chough/sessions/{second_session}/evidence/{taken}.md"
+    )));
+}
+
 /// REQ-history-006 (the plan's delta correction 2): a finished session's story holds
 /// one receipt per entry, in the order and shape the migration writes: id; aliases as
 /// one comma-and-space scalar; claim; result; the command; revision; environment;
