@@ -1708,7 +1708,7 @@ fn report(root: &Path, session: &Checkpoint, applied: Option<Value>) -> Result<(
         "stages": STAGES.iter().map(|(name, kind)| json!({"name": name, "kind": kind})).collect::<Vec<_>>(),
         "recent_transitions": transitions,
         "transitions_partial": partial,
-        "authority": "Native SpecSync status decides lifecycle gates; Chough never writes native approval or review, and a relayed decision it keeps is a claim, not authenticated.",
+        "authority": "Native SpecSync status decides lifecycle gates. Chough runs a native approval or review only when a human's decision closes a gate that drives one, as that configured human; the relayed decision it keeps is a claim, not authenticated.",
     }))
 }
 
