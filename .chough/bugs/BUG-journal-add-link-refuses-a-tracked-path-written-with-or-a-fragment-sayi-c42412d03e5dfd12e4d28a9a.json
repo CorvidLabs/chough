@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-journal-link-dot-slash-and-fragment-115039dcdad143c8719c8fea"
+    "OBS-tc-cli-journal-link-dot-slash-and-fragment-115039dcdad143c8719c8fea",
+    "OBS-tc-cli-journal-link-dot-slash-and-fragment-88c631155d1b30dfcd655287"
   ],
   "impact": "A misleading refusal for a valid link",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-journal-link-dot-slash-and-fragment-115039dcdad143c8719c8fea"
       ]
+    },
+    {
+      "at_unix_seconds": 1794451410,
+      "text": "status: investigating -> verified. Green at 4038b765: TC-cli-journal-link-dot-slash-and-fragment passed; full suite 631 passed, clippy and fmt clean at 4038b765.",
+      "observations": [
+        "OBS-tc-cli-journal-link-dot-slash-and-fragment-88c631155d1b30dfcd655287"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794450171,
-  "updated_at_unix_seconds": 1794450708
+  "updated_at_unix_seconds": 1794451410
 }

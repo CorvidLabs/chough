@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-journal-post-heading-inert-9d93f8dc67cab65b03f785fe"
+    "OBS-tc-cli-journal-post-heading-inert-9d93f8dc67cab65b03f785fe",
+    "OBS-tc-cli-journal-post-heading-inert-23b996942afbf83ee77f8dae"
   ],
   "impact": "Dead links and stray HTML in posts",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -38,8 +39,15 @@
       "observations": [
         "OBS-tc-cli-journal-post-heading-inert-9d93f8dc67cab65b03f785fe"
       ]
+    },
+    {
+      "at_unix_seconds": 1794451408,
+      "text": "status: investigating -> verified. Green at 4038b765: TC-cli-journal-post-heading-inert passed; full suite 631 passed, clippy and fmt clean at 4038b765.",
+      "observations": [
+        "OBS-tc-cli-journal-post-heading-inert-23b996942afbf83ee77f8dae"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794450188,
-  "updated_at_unix_seconds": 1794450708
+  "updated_at_unix_seconds": 1794451408
 }

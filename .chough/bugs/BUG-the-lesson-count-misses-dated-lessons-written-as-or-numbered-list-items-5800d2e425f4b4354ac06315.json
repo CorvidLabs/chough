@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-knowledge-lesson-count-list-forms-6024a543bf0d2015655457d3"
+    "OBS-tc-cli-knowledge-lesson-count-list-forms-6024a543bf0d2015655457d3",
+    "OBS-tc-cli-knowledge-lesson-count-list-forms-04a2fc4fa42190204f477e3e"
   ],
   "impact": "Undercounted lessons for some writing styles",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -38,8 +39,15 @@
       "observations": [
         "OBS-tc-cli-knowledge-lesson-count-list-forms-6024a543bf0d2015655457d3"
       ]
+    },
+    {
+      "at_unix_seconds": 1794451412,
+      "text": "status: investigating -> verified. Green at 4038b765: TC-cli-knowledge-lesson-count-list-forms passed; full suite 631 passed, clippy and fmt clean at 4038b765.",
+      "observations": [
+        "OBS-tc-cli-knowledge-lesson-count-list-forms-04a2fc4fa42190204f477e3e"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794450189,
-  "updated_at_unix_seconds": 1794450708
+  "updated_at_unix_seconds": 1794451412
 }
