@@ -482,7 +482,15 @@ fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
         "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-reviewer\"\n",
     );
     fixture.ok(&["checkpoint", "--native-change", SHIP_ID]);
-    fixture.ok(&["stage", "reset", "--to", stage, "--reason", "Ready to ship"]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--json",
+        "--to",
+        stage,
+        "--reason",
+        "Ready to ship",
+    ]);
     for gate in gates {
         fixture.ok(&["checkpoint", "--awaiting-human", gate]);
     }
@@ -826,7 +834,7 @@ fn ship_refuses_before_running_without_the_relay_or_outside_accept() {
             native: true,
             gates: vec![],
             names: "chough stage advance --to accept`".into(),
-            recover: vec![vec!["stage", "advance", "--to", "accept"]],
+            recover: vec![vec!["stage", "advance", "--json", "--to", "accept"]],
             then: without_relay.clone(),
         },
         Case {
@@ -898,7 +906,7 @@ fn a_refused_done_move_after_ship_names_the_remaining_step() {
     assert_eq!(ship_session(&fixture)["stage"]["current"], "accept");
     // The step it names succeeds once native status answers.
     fs::remove_file(fixture.root().join(".stub-status-fail")).unwrap();
-    fixture.ok(&["stage", "advance", "--to", "done"]);
+    fixture.ok(&["stage", "advance", "--json", "--to", "done"]);
     assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
 }
 

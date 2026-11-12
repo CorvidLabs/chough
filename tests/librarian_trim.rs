@@ -56,7 +56,7 @@ fn at_accept() -> Fixture {
 }
 
 fn advance_to_done(fixture: &Fixture) -> Value {
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
     moved

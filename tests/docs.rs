@@ -1736,10 +1736,16 @@ fn the_new_project_section_shows_a_minimal_hi_file_and_requirements_md() {
 fn stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design() {
     let project = initialized_project();
     let root = project.path();
-    chough(Some(root), &["stage", "advance"]);
+    chough(Some(root), &["stage", "advance", "--json"]);
     chough(
         Some(root),
-        &["stage", "skip", "--reason", "SYNTHETIC: no visuals"],
+        &[
+            "stage",
+            "skip",
+            "--json",
+            "--reason",
+            "SYNTHETIC: no visuals",
+        ],
     );
     let mut timeline = String::new();
     for entry in fs::read_dir(root.join(".chough/sessions"))

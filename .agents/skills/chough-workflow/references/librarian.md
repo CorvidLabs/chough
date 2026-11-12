@@ -25,7 +25,8 @@ links, so it reads in Obsidian and on GitHub alike. A link to a folder, such as
 
 `chough init` creates the folder. Every `chough stage advance` into done writes the
 session's `shipped` post, and `chough session close` a `closed` post, then regenerates
-`index.md` and the feed (`applied.journal_post`, `applied.librarian_index`). Commit
+`index.md` and the feed (`applied.journal_post` and `applied.librarian_index` under
+`chough stage advance --json`; the default text names them on its `Closeout:` line). Commit
 them with the work. Chough never rewrites a post, so a person's edit is kept, and
 nothing is trimmed or moved out of `.chough/` at done.
 

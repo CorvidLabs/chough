@@ -292,7 +292,7 @@ fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
 
     // A paused checkpoint is checked before the first attempt; resuming the run after
     // the stage resumes continues with its stored limits.
-    fixture.ok(&["stage", "pause", "--reason", "Human stepped away"]);
+    fixture.ok(&["stage", "pause", "--json", "--reason", "Human stepped away"]);
     let paused = fixture.ok(&repeat("2", "0"));
     assert_eq!(paused["run"]["state"], "paused");
     assert_eq!(paused["run"]["completed"], 0);
@@ -301,7 +301,7 @@ fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
         fixture.ok(&["validate", "resume", &id])["run"]["state"],
         "paused"
     );
-    fixture.ok(&["stage", "resume"]);
+    fixture.ok(&["stage", "resume", "--json"]);
     let resumed = fixture.ok(&["validate", "resume", &id]);
     assert_eq!(resumed["run"]["state"], "complete");
     assert_eq!(resumed["run"]["completed"], 2);
@@ -325,7 +325,13 @@ fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
     // A pause during the interval is honored the same way.
     let child = spawn(&fixture, &repeat("3", "30"));
     first_attempt_recorded(&fixture);
-    fixture.ok(&["stage", "pause", "--reason", "Human asked to pause"]);
+    fixture.ok(&[
+        "stage",
+        "pause",
+        "--json",
+        "--reason",
+        "Human asked to pause",
+    ]);
     let (paused, after_pause) = finish(child, std::time::Instant::now());
     assert_eq!(paused["run"]["state"], "paused");
     assert_eq!(paused["run"]["completed"], 1, "{paused}");
@@ -549,11 +555,15 @@ fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
     fixture.ok(&[
         "stage",
         "enter",
+        "--json",
         "librarian",
         "--reason",
         "Snapshot the design",
     ]);
-    assert_eq!(fixture.ok(&["stage", "return"])["applied"]["to"], "intent");
+    assert_eq!(
+        fixture.ok(&["stage", "return", "--json"])["applied"]["to"],
+        "intent"
+    );
 }
 
 fn bundle_files() -> Vec<String> {

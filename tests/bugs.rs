@@ -323,7 +323,7 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
     let fixture = Fixture::new();
     fixture.init();
     for _ in 0..4 {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     assert_eq!(fixture.session()["stage"]["current"], "test");
     let added = json(&add_bug(&fixture, &["--scope", "blocking"]));
@@ -350,7 +350,9 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
             .contains("go back to build")
     );
     let reason = format!("Fix {id}");
-    fixture.ok(&["stage", "back", "--to", "build", "--reason", &reason]);
+    fixture.ok(&[
+        "stage", "back", "--json", "--to", "build", "--reason", &reason,
+    ]);
     fixture.ok(&[
         "bug",
         "update",
@@ -360,8 +362,8 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
         "--note",
         "The human moved it to a follow-up change",
     ]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.session()["stage"]["current"], "accept");
 }
 
@@ -1314,7 +1316,7 @@ fn only_an_open_blocking_bug_blocks_leaving_test() {
         }
     }
     for _ in 0..4 {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     assert_eq!(fixture.session()["stage"]["current"], "test");
     set_bug_fields(
@@ -1336,7 +1338,7 @@ fn only_an_open_blocking_bug_blocks_leaving_test() {
         "--note",
         "Not fixing",
     ]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.session()["stage"]["current"], "accept");
 }
 

@@ -82,7 +82,7 @@ fn direct_writes(fixture: &Fixture) -> Vec<Value> {
 }
 
 fn iterate(fixture: &Fixture, note: &str) {
-    fixture.ok(&["stage", "iterate", "--note", note]);
+    fixture.ok(&["stage", "iterate", "--json", "--note", note]);
 }
 
 /// Every file under `.chough/` with its bytes.
@@ -266,6 +266,7 @@ fn a_direct_write_before_ship_is_recorded_at_the_done_move() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "accept",
         "--reason",

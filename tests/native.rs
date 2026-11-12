@@ -116,13 +116,14 @@ fn warm_reports_reuse_but_every_lifecycle_read_stays_live() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "test",
         "--reason",
         "Exercise the live gate",
     ]);
     assert_eq!(fixture.native_calls(), 1, "stage reset reused the report");
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.native_calls(), 1, "stage advance reused the report");
 
     fixture.ok(&["timing", "--cycle", "current", "--json"]);

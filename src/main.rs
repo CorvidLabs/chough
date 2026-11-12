@@ -105,6 +105,10 @@ enum Commands {
     Checkpoint(Box<checkpoint::CheckpointArgs>),
     /// Route between stages within native lifecycle gates.
     Stage {
+        /// Print a move's full JSON report instead of its short text summary
+        /// (REQ-cli-008); `stage show` prints JSON either way.
+        #[arg(long, global = true)]
+        json: bool,
         #[command(subcommand)]
         command: stage::StageCommand,
     },
@@ -260,7 +264,7 @@ fn main() -> Result<()> {
         } => print!("{}", next(&root, environment.as_deref(), as_json)?),
         Commands::Migrate(args) => migrate::run(&root, args)?,
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
-        Commands::Stage { command } => stage::run(&root, command)?,
+        Commands::Stage { json, command } => stage::run(&root, command, json)?,
         Commands::History { command } => history::run(&root, command)?,
         Commands::Correct(args) => history::correct(&root, args)?,
         Commands::Cases { command } => {

@@ -1103,8 +1103,8 @@ fn native_reads_end_by_their_deadline_and_retain_bounded_output() {
         ".specsync/changes/bounded-change/approvals.json",
         "{\"approvals\":[{\"gate\":\"definition\",\"approved_delta_digests\":{}}]}\n",
     );
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     let stand_in = |script: &str| {
         common::install_executable(
             &fixture.root().join("bin/specsync"),
@@ -2900,9 +2900,9 @@ fn an_sdd_policy_over_the_record_bound_is_read() {
         ".specsync/sdd.json",
         &format!("{}{{\"enabled\": false}}\n", " ".repeat(70_000)),
     );
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
-    let advanced = fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
+    let advanced = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         advanced["applied"]["gate"], "ungated:sdd-disabled",
         "{advanced:#}"

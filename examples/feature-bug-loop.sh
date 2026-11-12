@@ -95,7 +95,7 @@ commit "Seed the shipping sample"
 $chough stage advance --note "SIMULATED: the exercise approves the sample intent; no human decided" >/dev/null
 
 step "Design: nothing visual changes, so the stage is skipped with a reason"
-$chough stage skip --reason "Fee calculation only; no visuals or interactions change" |
+$chough stage skip --json --reason "Fee calculation only; no visuals or interactions change" |
     jq -r '.applied | "\(.from) -> \(.to) (\(.kind))"'
 
 step "Plan: a native SpecSync change, and the scope gate before build"
@@ -190,7 +190,7 @@ expect_refusal "advancing while the scope decision is open" "refused:awaiting-hu
 specsync change approve "$id" --actor "SIMULATED-sample-approver-not-a-human" >/dev/null
 $chough checkpoint --clear-awaiting-human \
     --decision "Scope of $id approved by a SIMULATED actor in this sample; not a human decision" >/dev/null
-$chough stage advance | jq -r '"plan -> build, gate \(.applied.gate)"'
+$chough stage advance --json | jq -r '"plan -> build, gate \(.applied.gate)"'
 
 step "Build: implement the feature with its boundary tests"
 cp patches/lib.v1.rs src/lib.rs
@@ -241,7 +241,7 @@ if [ "$mode" = "prepare-cold-start" ]; then
 fi
 
 step "Back to build: fix the boundary and retest the focused cases"
-$chough stage back --to build --reason "$bug blocks acceptance" | jq -r '.applied.refresh[]'
+$chough stage back --json --to build --reason "$bug blocks acceptance" | jq -r '.applied.refresh[]'
 cp patches/lib.v2.rs src/lib.rs
 commit "Ship free at exactly the threshold ($bug)"
 specsync change check "$id" --commit >/dev/null
@@ -272,7 +272,7 @@ specsync change review "$id" --reviewer "SIMULATED-sample-reviewer-not-a-human" 
 specsync change finalize "$id" >/dev/null
 $chough checkpoint --clear-awaiting-human \
     --decision "Implementation of $id reviewed by a SIMULATED actor in this sample; not a human decision" >/dev/null
-$chough stage advance --note "SIMULATED review recorded; change archived" | jq -r '.applied | "\(.from) -> \(.to)"'
+$chough stage advance --json --note "SIMULATED review recorded; change archived" | jq -r '.applied | "\(.from) -> \(.to)"'
 commit "Close out $id"
 python3 "$inspector" --root "$work" --base "$seed" | head -1
 printf 'Archived and committed before any CI: now push and observe CI at this tip.\n'
