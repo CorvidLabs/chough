@@ -15,16 +15,26 @@
   "revision": "e71b11b32167cad7ff8e298f9eff04a13069c3eb",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-22e39cd74b59abbfc4bedf98"
+  ],
   "impact": "A routine second migrate deletes an open bug's reproduction fixture",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t384, test stage, area upgrade (full pass)",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794450101,
+      "text": "status: open -> investigating. Red at 748bca6d (leif/0.6.0-test1-red: d854ce1a plus the regression tests): the second plan carried the fixture as a source; fix in 9fd9e701.",
+      "observations": [
+        "OBS-tc-records-a-second-migrate-keeps-an-open-bugs-fixture-22e39cd74b59abbfc4bedf98"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794449975,
-  "updated_at_unix_seconds": 1794449975
+  "updated_at_unix_seconds": 1794450101
 }
