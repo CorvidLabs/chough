@@ -127,7 +127,22 @@ Each lesson carries a certainty label:
 - `verified`: supported by a test or a repeated observation.
 
 Each lesson names its source (an observation ID, a bug ID or a commit) and its limits
-(where it applies and where it was not checked). A project decision, meaning a
+(where it applies and where it was not checked).
+
+In `context.md`, start each lesson with its date, `YYYY-MM-DD`, then a space, comma or
+colon, as an item of the `## Lessons` section or as a `### YYYY-MM-DD` heading: the
+knowledge index counts only dated lessons, and an undated one counts as none. In
+`<module>.3md`, each plane after the first is one lesson. For example:
+
+```markdown
+## Lessons
+
+- 2026-11-12, verified: an order of exactly fifty dollars ships free, so the
+  threshold check is inclusive. Source: bug 2026-11-12-shipping-charged-at-fifty.
+  Limits: checkout totals only; refunds were not checked.
+```
+
+A project decision, meaning a
 checkpoint decision, a `docs/DECISIONS.md` entry or an approved contract, always
 outranks a lesson. A lesson never changes a decision; if a lesson argues against one,
 raise it with the human. A lesson that changes behavior or policy may need its own

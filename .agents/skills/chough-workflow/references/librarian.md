@@ -64,8 +64,9 @@ change check <id> --commit` and finalize. It is a skill step, not a command or a
 and it works whether the librarian is on or off (REQ-cli-015):
 
 1. Write the supported lessons from this change into the module lesson source, each
-   with its certainty label (`observation`, `hypothesis` or `verified`), source and
-   limits (see [accept.md](accept.md)).
+   starting with its date, `YYYY-MM-DD`, so the knowledge index counts it, with its
+   certainty label (`observation`, `hypothesis` or `verified`), source and limits (see
+   [accept.md](accept.md)).
 2. Check that new checkpoint decisions carry a reason and that verified bugs link
    their failed and passed observations.
 3. Add one `completed` checkpoint entry for the closeout.
