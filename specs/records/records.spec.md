@@ -1,6 +1,6 @@
 ---
 module: records
-version: 2
+version: 3
 status: active
 files:
   - src/markdown.rs
@@ -79,6 +79,8 @@ or redacting every value before it is written.
 | `body` | The Markdown body. |
 | `section` | The text of a `## ` section. |
 | `append_to_section` | Appends lines to the end of a `## ` section, or creates it at the end of the body. |
+| `remove_item` | Removes the line of one item of a `## ` section, matched by its exact text, such as a superseded case run's link once its session has finished. |
+| `insert_first_item` | Inserts one item before the first item of a `## ` section, or appends it as `append_to_section` does when the section has none, keeping every other byte. |
 | `replace_item` | Replaces one item of a `## ` section by its exact text, for a line Chough wrote whose target no longer exists, such as a session entry's link once the session has finished. |
 | `mark_item` | Marks one item of a `## ` section on its own line, the one in-place edit Chough makes to a section it owns. |
 | `render` | The whole record file. |
@@ -96,6 +98,7 @@ or redacting every value before it is written.
 | `check` | Refuses a value that leaks as `refused:leak`, naming the field and kinds, never the text. |
 | `redact` | Replaces every leak in a value with `<redacted:<kind>>` and counts them. |
 | `find` | Every non-overlapping leak match in a value. |
+| `find_in_case_definition` | The leak matches in a case definition's value, where a path under `/tmp/` or `/private/tmp/` is a deliberate test setting and not a match, while a home path, user or host name, email or credential still is. |
 | `Actor` | The acting agent of a record (REQ-records-007): its agent, model and hc terminal, each only when known; an unauthenticated claim. |
 | `AGENT` | `CHOUGH_ACTOR`, the variable that names the agent. |
 | `MODEL` | `CHOUGH_ACTOR_MODEL`, the variable that names the agent's model. |
@@ -196,3 +199,4 @@ use this one for every record they write.
 |---------|------|---------|
 | 1 | 2026-11-11 | Created by the Chough 0.6.0 change (human-first records): the record layer, names and the leak guard; `src/identity.rs` and `tests/ids.rs` move here from cli |
 | 2 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
+| 3 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
