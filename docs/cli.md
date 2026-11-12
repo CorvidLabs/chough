@@ -723,8 +723,9 @@ person's edit to an item's claim keeps the item.
   or a bare slug exactly one open session has; an archived one is refused. It touches
   no other session either.
 - `chough session list` reports each session's ID, aliases, stage, status (`archived`
-  for a story) and whether it is active, open or archived, and names `chough doctor
-  --fix` for each finished open session. A session that cannot be read, because it is
+  for a story), whether it is active, open or archived, and whether it is finished (an
+  archived story always is), and names `chough doctor --fix` for each finished open
+  session. A session that cannot be read, because it is
   over its bound or invalid, is listed with the reason and the recovery `chough session
   shelve <id>`, and does not stop `session list`, `session new`, `session use` or another
   session's `next`.
