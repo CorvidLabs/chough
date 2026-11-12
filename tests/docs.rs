@@ -1726,3 +1726,49 @@ fn the_new_project_section_shows_a_minimal_hi_file_and_requirements_md() {
         );
     }
 }
+
+/// Kimi's fresh-eyes finding (1), second round (2026-11-12): asked to skip design while
+/// at intent, an agent ran `chough stage skip` there, and the Timeline recorded `skip ·
+/// intent → design`. `skip` skips the current stage. docs/cli.md and both copies of the
+/// stage contract say so and say how to skip design, in the Timeline form the helper
+/// writes, which this test has the helper record first.
+#[test]
+fn stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design() {
+    let project = initialized_project();
+    let root = project.path();
+    chough(Some(root), &["stage", "advance"]);
+    chough(
+        Some(root),
+        &["stage", "skip", "--reason", "SYNTHETIC: no visuals"],
+    );
+    let mut timeline = String::new();
+    for entry in fs::read_dir(root.join(".chough/sessions"))
+        .unwrap()
+        .flatten()
+    {
+        let session = entry.path().join("session.md");
+        if session.is_file() {
+            timeline.push_str(&fs::read_to_string(session).unwrap());
+        }
+    }
+    assert!(
+        timeline.contains(" · skip · design → plan · SYNTHETIC: no visuals "),
+        "{timeline}"
+    );
+    for file in [
+        "docs/cli.md",
+        "skills/chough-workflow/references/stages.md",
+        ".agents/skills/chough-workflow/references/stages.md",
+    ] {
+        let text = read(file).split_whitespace().collect::<Vec<_>>().join(" ");
+        for part in [
+            "skips the current stage",
+            "`skip · <current> → <next>`",
+            "advance from intent into design with `chough stage advance`, then run `chough stage skip --reason \"<why>\"` at design",
+            "`skip · design → plan`",
+            "`skip · intent → design`",
+        ] {
+            assert!(text.contains(part), "{file} does not say {part:?}");
+        }
+    }
+}

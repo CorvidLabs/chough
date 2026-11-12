@@ -405,3 +405,21 @@ expected = ["tests/next.rs::next_and_status_reasons_name_no_trace_id passes"]
 adapter = "cargo-test"
 test_target = "next"
 test = "next_and_status_reasons_name_no_trace_id"
+
+[[case]]
+id = "TC-cli-stage-skip-docs-say-it-skips-the-current-stage"
+title = "docs/cli.md and the stage contract say chough stage skip skips the current stage and that design is skipped at design, after advancing into it, as the Timeline records"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["docs/cli.md", "skills/chough-workflow/references/stages.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design"
