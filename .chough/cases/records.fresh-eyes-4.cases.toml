@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# The fourth fresh-eyes round on 0.6.0 (2026-11-12), Leif's 'Fix 4 real ones, then
+# release (Recommended)' at 23:32Z.
+
+[[case]]
+id = "TC-records-migration-names-skill-update-for-an-outdated-copy"
+title = "On a 0.5.x project whose installed skill copy is a 0.5.x release, the migration preview's and receipt's follow-ups name chough skill update, and with a current copy they do not"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "src/skill.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::the_migration_follow_ups_name_skill_update_while_the_skill_copy_is_not_current passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "the_migration_follow_ups_name_skill_update_while_the_skill_copy_is_not_current"

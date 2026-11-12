@@ -1611,3 +1611,76 @@ fn the_preview_prints_the_plan_as_text_and_the_same_plan_as_json() {
         assert!(text.contains(&part), "{part} is not named in\n{text}");
     }
 }
+
+/// Install a skill bundle as the project's shared copy, `.agents/skills/chough-workflow/`:
+/// release `tag`'s files from tests/fixtures/skill-releases, or the current bundle.
+fn install_skill(fixture: &Fixture, tag: Option<&str>) {
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/skill-releases");
+    let manifest: Value =
+        serde_json::from_str(&std::fs::read_to_string(fixtures.join("manifest.json")).unwrap())
+            .unwrap();
+    let files: Vec<(String, Vec<u8>)> = match tag {
+        Some(tag) => manifest["releases"][tag]["files"]
+            .as_object()
+            .unwrap()
+            .iter()
+            .map(|(file, entry)| {
+                let blob = format!("blobs/{}.txt", entry["sha256"].as_str().unwrap());
+                (file.clone(), std::fs::read(fixtures.join(blob)).unwrap())
+            })
+            .collect(),
+        None => manifest["current_bundle_sha256"]
+            .as_object()
+            .unwrap()
+            .keys()
+            .map(|file| {
+                let source = Path::new(env!("CARGO_MANIFEST_DIR"))
+                    .join("skills/chough-workflow")
+                    .join(file);
+                (file.clone(), std::fs::read(source).unwrap())
+            })
+            .collect(),
+    };
+    assert!(!files.is_empty());
+    for (file, bytes) in files {
+        let target = fixture
+            .root()
+            .join(".agents/skills/chough-workflow")
+            .join(file);
+        std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+        std::fs::write(target, bytes).unwrap();
+    }
+}
+
+/// REQ-records-009, F3 of the fourth fresh-eyes round: a migrated project's installed
+/// skill copy is still the 0.5.x one, naming removed commands and paths, so while it is
+/// not current, as `chough skill status` reports it, the preview's and the receipt's
+/// follow-ups name `chough skill update`; with a current copy they do not.
+#[test]
+fn the_migration_follow_ups_name_skill_update_while_the_skill_copy_is_not_current() {
+    for (tag, named) in [(Some("v0.5.0"), true), (None, false)] {
+        let fixture = migrate_project("adopted", &[]);
+        install_skill(&fixture, tag);
+        fixture.commit("the installed skill copy");
+        let status = fixture.ok(&["skill", "status"]);
+        let states = status["hosts"].to_string();
+        assert_eq!(
+            states.contains("known-outdated"),
+            named,
+            "{tag:?}: {status:#}"
+        );
+        let (plan, applied) = migrate(&fixture, Some(CONSENT));
+        let follow_ups = plan["follow_ups"].to_string();
+        assert_eq!(
+            follow_ups.contains("chough skill update"),
+            named,
+            "{tag:?}: {follow_ups}"
+        );
+        let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+        assert_eq!(
+            receipt.contains("chough skill update"),
+            named,
+            "{tag:?}: {receipt}"
+        );
+    }
+}
