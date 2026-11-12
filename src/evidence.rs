@@ -2198,20 +2198,43 @@ impl Reads<'_> {
         })
     }
 
-    /// Every observation an open session or a bug references, labelled.
+    /// Every observation an open session or a bug references, labelled, one row per ID.
+    /// When the bare ID is ambiguous because two sessions hold same-named entries
+    /// (REQ-cli-023), a session's own reference resolves in that session, as
+    /// `<session>/<id>`, and the ID is one row per group of sources resolving alike.
     pub(super) fn reference_labels(
         &self,
         current: &Result<Snapshot>,
         environment: Option<&str>,
     ) -> Result<Vec<Value>> {
+        let index = self.index()?;
         let mut values = vec![];
         for (id, sources) in references_from(self.root)? {
-            let (label, receipt) = self.label_reference(&id, current, environment)?;
-            let mut value = json!({"id": id, "label": label, "referenced_by": sources});
-            if let Some(receipt) = receipt {
-                value["receipt"] = json!(receipt);
+            let mut groups: Vec<(String, Vec<String>)> = vec![];
+            if index.resolve(&id).is_ok() {
+                groups.push((id.clone(), sources));
+            } else {
+                for source in sources {
+                    let own = source
+                        .strip_prefix(&format!("{}/", crate::sessions::DIR))
+                        .and_then(|rest| rest.strip_suffix("/session.md"))
+                        .map(|session| format!("{session}/{id}"))
+                        .filter(|qualified| index.holds(qualified));
+                    let key = own.unwrap_or_else(|| id.clone());
+                    match groups.iter_mut().find(|(known, _)| *known == key) {
+                        Some((_, by)) => by.push(source),
+                        None => groups.push((key, vec![source])),
+                    }
+                }
             }
-            values.push(value);
+            for (key, by) in groups {
+                let (label, receipt) = self.label_reference(&key, current, environment)?;
+                let mut value = json!({"id": id, "label": label, "referenced_by": by});
+                if let Some(receipt) = receipt {
+                    value["receipt"] = json!(receipt);
+                }
+                values.push(value);
+            }
         }
         Ok(values)
     }
