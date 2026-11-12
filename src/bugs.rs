@@ -780,6 +780,32 @@ fn stored_form(id: &str, linked: &Linked) -> String {
     }
 }
 
+/// REQ-cli-012: a bug written with `--observation` naming an entry of the active session,
+/// which [`stored_form`] stores as `<session>/<id>`, joins that session's checkpoint as
+/// `checkpoint --bug` adds it (REQ-records-004), once, so the session's story names the
+/// bugs found in it. An entry of another session, a receipt or no active session leaves
+/// every checkpoint unchanged.
+fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
+    let Some(active) = crate::sessions::checkpoint_path(root)
+        .ok()
+        .and_then(|relative| crate::sessions::id_of(&relative))
+    else {
+        return Ok(());
+    };
+    let prefix = format!("{active}/");
+    if !links.iter().any(|link| link.starts_with(&prefix)) {
+        return Ok(());
+    }
+    let mut session = match crate::checkpoint::read_session(root)? {
+        crate::checkpoint::Session::V2(session) => *session,
+    };
+    if session.bugs.iter().any(|held| held == bug) {
+        return Ok(());
+    }
+    session.bugs.push(bug.to_string());
+    crate::checkpoint::save_checkpoint(root, &mut session)
+}
+
 fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Result<()> {
     if bug.text("classification") != "regression" {
         return Ok(());
@@ -1364,6 +1390,7 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         notes,
     };
     let (stored, redacted) = create(root, draft, false)?;
+    join_active_session(root, stored.id(), &stored.list("evidence"))?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
@@ -1527,6 +1554,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     validate(&stored)?;
     let redacted = guard(&mut stored.record, Local::current())?;
     markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
+    join_active_session(root, &id, &links)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,

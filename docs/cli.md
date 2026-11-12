@@ -429,6 +429,11 @@ update --fix <text>` sets it, which the Log records too; marking a bug verified 
 its Fix still says `Not fixed yet.` replaces that with a line naming the passing
 observation and its revision.
 
+`bug add` and `bug update` given `--observation` with an evidence entry of the active
+session also add the bug to that session's checkpoint, as `checkpoint --bug` does, once,
+so the session's story names the bugs found in it. An entry of another session, or a
+receipt, leaves the active checkpoint unchanged.
+
 Manual `bug add` and automatic failure capture both name a new bug `<date>-<title
 slug>` by create-new (see [Record names](#record-names)). An update never renames the
 record, even when its title has changed. A bug resolves by its name or any alias, so a
