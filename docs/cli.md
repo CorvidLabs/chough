@@ -752,10 +752,12 @@ person's edit to an item's claim keeps the item.
   shelve <id>`, and does not stop `session list`, `session new`, `session use` or another
   session's `next`.
 - `chough session close <key> --reason <text>` closes an open session for abandoned
-  work, without a native read: it adds the decision `Closed without done: <reason>`,
-  archives the session with outcome `closed-without-done` and writes a `closed` journal
-  post. A blank reason, an archived or missing session and one with unfolded inbox
-  entries are refused with nothing changed.
+  work, without a native read: it withdraws each open human gate of that session as
+  `chough checkpoint --clear-awaiting-human` does, one `gate-closed` entry each and no
+  decision, and names them under `withdrawn_gates`; it adds the decision `Closed
+  without done: <reason>`, archives the session with outcome `closed-without-done` and
+  writes a `closed` journal post. A blank reason, an archived or missing session and one
+  with unfolded inbox entries are refused with nothing changed.
 - `chough session shelve <id>` moves an unreadable or oversized session folder,
   unparsed and byte for byte, to `.chough/archive/shelved/<id>/`, with `shelved.md`
   inside it giving the folder's size, each file's size and SHA-256, the time and the

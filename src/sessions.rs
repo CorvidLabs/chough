@@ -1174,6 +1174,21 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
     let mut session = read_at(root, &session_file(&id))?;
     let decision = format!("Closed without done: {}", reason.trim());
     ensure_text("reason", &decision)?;
+    // REQ-history-006 (t38m F2): an open human gate is withdrawn as
+    // `chough checkpoint --clear-awaiting-human` does, one gate-closed entry each with no
+    // relayed decision, and named in the report, never dropped silently.
+    let withdrawn = std::mem::take(&mut session.awaiting_human);
+    let current_stage = session.stage.current.clone();
+    for gate in &withdrawn {
+        crate::stage::log_gate(
+            root,
+            &mut session,
+            crate::stage::GATE_CLOSED,
+            &current_stage,
+            gate,
+            None,
+        )?;
+    }
     session.decisions.push(decision);
     checkpoint::validate_v2(&session)?;
     let report = archive(root, &id, &session, "closed-without-done")?;
@@ -1186,6 +1201,7 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
         "archived": report.story,
         "kept": report.kept,
         "reason": reason.trim(),
+        "withdrawn_gates": withdrawn,
         "journal_post": post,
         "librarian_index": index,
     }))
