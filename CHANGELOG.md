@@ -236,6 +236,10 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   current, as `chough skill status` reports it, the `chough migrate` plan's and
   receipt's follow-ups name `chough skill update`, since migration leaves a 0.5.x copy
   that still names removed commands and paths (REQ-records-009).
+- From a fourth fresh-eyes round: `chough gate list` counts what changed in the
+  working tree, so a change's delta, plan and other files count, the delta named first,
+  before they are committed, and an untracked file counts its lines as insertions
+  (REQ-cli-061).
 - README, `docs/cli.md` and the workflow skill give a new project's path, with
   `specsync change adopt` and the format of a change's delta.
 - Stopping a command on macOS no longer leaves behind a child the command forked as the

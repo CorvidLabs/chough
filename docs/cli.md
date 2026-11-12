@@ -1216,7 +1216,9 @@ Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
 
 - what changed: the files, insertions and deletions since the change's own
   `base_commit` (from its `state.json`), so an earlier change on the same branch is not
-  counted again, leaving out `.chough/`, the knowledge directory and SpecSync's
+  counted again, counted in the working tree, so uncommitted and untracked files count
+  as a change's own files are before they are committed (an untracked file that Git
+  does not ignore counts all its lines as insertions, and a binary one none), leaving out `.chough/`, the knowledge directory and SpecSync's
   lifecycle bookkeeping, and naming the five files with the most changed lines among the
   rest (#190). At a gate that drives approval, the change's own Markdown files under
   `.specsync/changes/<id>/` (its `change.md`, deltas, plan and other artifacts) are what
