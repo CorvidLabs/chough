@@ -34,6 +34,12 @@ pub(super) struct Meta {
     pub(super) aliases: Vec<String>,
     pub(super) pr: String,
     pub(super) gates: Vec<GateMeta>,
+    /// The short human title of the session's journal post (REQ-records-011); empty
+    /// when the agent set none.
+    pub(super) title: String,
+    /// The summary of the session's journal post, one paragraph per item
+    /// (REQ-records-011); empty when the agent set none.
+    pub(super) summary: Vec<String>,
 }
 
 /// An open human gate with the stage it holds, the native step it drives and when it
@@ -172,6 +178,8 @@ pub(super) fn read(relative: &str, text: &str) -> Result<Checkpoint> {
         aliases: record.list("aliases"),
         pr: field("pr"),
         gates,
+        title: field("title"),
+        summary: record.list("summary"),
     };
     session.source = Some(record);
     Ok(session)
@@ -228,6 +236,18 @@ pub(super) fn render_with(
         session.native_change.as_deref().unwrap_or(""),
     )?;
     record.set_scalar("pr", &meta.pr)?;
+    // REQ-records-011: the journal post's title and summary, kept only once the agent
+    // gave them, so a session without them reads as before.
+    if meta.title.is_empty() {
+        record.remove("title");
+    } else {
+        record.set_scalar("title", &meta.title)?;
+    }
+    if meta.summary.is_empty() {
+        record.remove("summary");
+    } else {
+        record.set("summary", Value::List(meta.summary.clone()))?;
+    }
     record.set("criteria", list(&session.references.criteria))?;
     record.set("requirements", list(&session.references.requirements))?;
     record.set("cases", list(&session.references.cases))?;
@@ -593,7 +613,7 @@ mod erased_json {
 }
 
 /// The text of each top-level list item of a section, first line only.
-fn items(record: &Record, heading: &str) -> Vec<String> {
+pub(super) fn items(record: &Record, heading: &str) -> Vec<String> {
     record
         .section(heading)
         .unwrap_or_default()
@@ -613,6 +633,11 @@ fn open_items(record: &Record, heading: &str, marks: &[&str]) -> Vec<String> {
             !(heading == THREADS && item.contains(" (resolved: ") && item.ends_with(')'))
         })
         .collect()
+}
+
+/// The open threads of a session record or story: each Open threads item not resolved.
+pub(super) fn open_threads(record: &Record) -> Vec<String> {
+    open_items(record, THREADS, &[RESOLVED])
 }
 
 /// Open threads: as [`sync_items`], a question no longer open marked resolved, with its

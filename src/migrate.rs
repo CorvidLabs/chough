@@ -1272,6 +1272,8 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             },
             pr: String::new(),
             gates: vec![],
+            title: String::new(),
+            summary: vec![],
         };
         session.pending = transitions;
         let record = crate::session_md::render_with(&session, last, &mut |index, attempt| {

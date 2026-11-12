@@ -533,6 +533,10 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         count += guard(local, "alias", alias)?;
     }
     count += guard(local, "pr", &mut session.meta.pr)?;
+    count += guard(local, "title", &mut session.meta.title)?;
+    for line in &mut session.meta.summary {
+        count += guard(local, "summary", line)?;
+    }
     for transition in &mut session.pending {
         if let Some(reason) = transition.reason.as_mut() {
             count += guard(local, "reason", reason)?;
@@ -630,6 +634,16 @@ pub(super) struct CheckpointArgs {
     objective: Option<String>,
     #[arg(long)]
     next_action: Option<String>,
+    /// The short human title of the journal post the move into done writes, one line of
+    /// at most 72 bytes, such as "Chough 0.6.0: human-first records" (REQ-records-011);
+    /// an empty value removes it.
+    #[arg(long, allow_hyphen_values = true)]
+    title: Option<String>,
+    /// The journal post's summary, at most 900 bytes, one paragraph per line: what
+    /// changed and why, what was verified with its final numbers, and what is next
+    /// (REQ-records-011); an empty value removes it.
+    #[arg(long, allow_hyphen_values = true)]
+    summary: Option<String>,
     #[arg(long)]
     native_change: Option<String>,
     #[arg(long = "decision")]
@@ -1163,6 +1177,14 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     if let Some(next_action) = args.next_action {
         ensure_text("next action", &next_action)?;
         session.next_action = next_action;
+        changed = true;
+    }
+    if let Some(title) = args.title {
+        session.meta.title = crate::journal::checked_title(&title)?;
+        changed = true;
+    }
+    if let Some(summary) = args.summary {
+        session.meta.summary = crate::journal::checked_summary(&summary)?;
         changed = true;
     }
     if let Some(change) = args.native_change {

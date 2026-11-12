@@ -6,7 +6,7 @@
 use crate::identity::{create_named, dated_name, utc_date};
 use crate::markdown::{self, Kind, Record, Value};
 use crate::records::{local_path, now, print_json, read_bounded_record};
-use anyhow::{Result, ensure};
+use anyhow::{Result, bail, ensure};
 use clap::Subcommand;
 use serde_json::json;
 use std::path::{Component, Path};
@@ -14,6 +14,10 @@ use std::process::Command;
 
 /// The byte bound of a post's body (REQ-records-011).
 pub(super) const BODY_LIMIT: usize = 1_200;
+/// The byte bound of a post's title: a short human title (REQ-records-011).
+pub(super) const TITLE_LIMIT: usize = 72;
+/// The byte bound of the summary an agent gives a session's post (REQ-records-011).
+pub(super) const SUMMARY_LIMIT: usize = 900;
 /// How many posts the feed lists, newest first (REQ-records-011).
 const FEED_POSTS: usize = 20;
 /// The kinds a post may have (REQ-records-011).
@@ -25,9 +29,10 @@ pub(super) const FEED: &str = "feed.xml";
 pub(super) enum JournalCommand {
     /// Write a post by create-new; it is never rewritten, so a person's edit is kept.
     Add {
-        /// One of shipped, closed, intent, spec, broke or learned.
-        #[arg(long)]
-        kind: String,
+        /// One of shipped, closed, intent, spec, broke or learned; with --record, the
+        /// story's outcome sets it.
+        #[arg(long, required_unless_present = "record", conflicts_with = "record")]
+        kind: Option<String>,
         #[arg(long)]
         title: String,
         /// At most 1,200 bytes.
@@ -36,6 +41,11 @@ pub(super) enum JournalCommand {
         /// A project path Git tracks or an http(s) URL; repeat for more.
         #[arg(long = "link")]
         links: Vec<String>,
+        /// An archived story, by its ID: write that story's post for a backfill, dated by
+        /// its close, with its links and `record`; refused when a post already records
+        /// it (REQ-records-011).
+        #[arg(long)]
+        record: Option<String>,
     },
 }
 
@@ -65,6 +75,7 @@ pub(super) fn run(root: &Path, command: JournalCommand) -> Result<()> {
             title,
             body,
             links: given_links,
+            record,
         } => {
             let dir = crate::library::enabled_dir(root)?;
             ensure!(
@@ -87,15 +98,23 @@ pub(super) fn run(root: &Path, command: JournalCommand) -> Result<()> {
                 .iter()
                 .map(|link| (link.clone(), Some(link.clone())))
                 .collect();
-            let post = write_post(
-                root,
-                &dir,
-                &kind,
-                &title,
-                body.trim(),
-                (&labelled, &links),
-                None,
-            )?;
+            let (kind, post) = match record {
+                Some(id) => post_for_record(root, &dir, &id, &title, body.trim(), &links)?,
+                None => {
+                    let kind = kind.unwrap_or_default();
+                    let post = write_post(
+                        root,
+                        &dir,
+                        &kind,
+                        &title,
+                        body.trim(),
+                        (&labelled, &links),
+                        None,
+                        None,
+                    )?;
+                    (kind, post)
+                }
+            };
             let index = crate::library::regenerate(root, &dir)?;
             print_json(&json!({
                 "schema_version": 1,
@@ -127,22 +146,117 @@ fn report(result: Result<Option<String>>) -> serde_json::Value {
     }
 }
 
-/// Write the post for archived session `id`, read from its story: the title is the
-/// objective and the body the story's first Outcome or Where it stands paragraph, cut
-/// at a sentence end so the body stays within 1,200 bytes with its links.
+/// Write the post for archived session `id`, read from its story (REQ-records-011): the
+/// title is the session's `title`, else one derived from its objective; the body is its
+/// `summary`, one paragraph per line, else one derived from the story; either is cut at a
+/// sentence end so the body stays within 1,200 bytes with its links.
 fn post_for_story(root: &Path, id: &str, kind: &str) -> Result<Option<String>> {
     let Some(dir) = crate::library::librarian_dir(root)? else {
         return Ok(None);
     };
-    let story = crate::sessions::archive_file(id);
-    let text = read_bounded_record(&local_path(root, &story)?, Kind::Story.bound())?;
-    let record = markdown::parse(&story, &text)?;
+    let (story, record) = read_story(root, id)?;
+    let (links, targets) = story_links(root, &record, &story);
     let title = record
-        .scalar("objective")
+        .scalar("title")
         .map(str::trim)
-        .filter(|objective| !objective.is_empty())
-        .unwrap_or(id)
-        .to_string();
+        .filter(|title| !title.is_empty())
+        .map_or_else(
+            || derived_title(record.scalar("objective").unwrap_or(id)),
+            str::to_string,
+        );
+    let up = up(&dir);
+    let room = BODY_LIMIT
+        .saturating_sub(heading(&title).len())
+        .saturating_sub(links_line(&links, &up).len() + 2);
+    let summary = record.list("summary");
+    let body = if summary.is_empty() {
+        derived_body(&record, room)
+    } else {
+        cut_at_sentence(&summary.join("\n\n"), room)
+    };
+    write_post(
+        root,
+        &dir,
+        kind,
+        &title,
+        &body,
+        (&links, &targets),
+        Some(&story),
+        None,
+    )
+    .map(Some)
+}
+
+/// `chough journal add --record <story>` (REQ-records-011): the post of an archived story
+/// that has none, for a backfill. Its kind follows the story's outcome, its date is the
+/// story's `closed` and its time the latest Timeline time on that date, if any; it links
+/// what the post at the move into done links, then each `--link`.
+fn post_for_record(
+    root: &Path,
+    dir: &str,
+    id: &str,
+    title: &str,
+    body: &str,
+    given: &[String],
+) -> Result<(String, String)> {
+    let (story, record) = read_story(root, id)?;
+    if let Some(existing) = post_recording(root, dir, &story)? {
+        bail!(
+            "refused:post-exists: {existing} already records {story}, so nothing was written; Chough never rewrites a post, so edit that post by hand instead"
+        );
+    }
+    let kind = if record.scalar("outcome").map(str::trim) == Some("done") {
+        "shipped"
+    } else {
+        "closed"
+    };
+    let Some(closed) = record
+        .scalar("closed")
+        .map(str::trim)
+        .filter(|closed| is_date(closed))
+    else {
+        bail!("{story} has no `closed` date, so its post cannot be dated; nothing was written");
+    };
+    let time = latest_time(&record).filter(|time| time.starts_with(closed));
+    let (mut links, mut targets) = story_links(root, &record, &story);
+    for link in given {
+        links.push((link.clone(), Some(link.clone())));
+        targets.push(link.clone());
+    }
+    let post = write_post(
+        root,
+        dir,
+        kind,
+        title,
+        body,
+        (&links, &targets),
+        Some(&story),
+        Some((closed.to_string(), time)),
+    )?;
+    Ok((kind.to_string(), post))
+}
+
+/// Archived story `id` (given as an ID or as its path) and its record.
+fn read_story(root: &Path, id: &str) -> Result<(String, Record)> {
+    let id = id
+        .trim()
+        .trim_start_matches("./")
+        .trim_start_matches(".chough/archive/sessions/")
+        .trim_end_matches(".md");
+    let story = crate::sessions::archive_file(id);
+    let path = local_path(root, &story)?;
+    ensure!(
+        path.is_file(),
+        "no archived story {id}: {story} does not exist, so nothing was written; name a story under .chough/archive/sessions/ by its ID"
+    );
+    let text = read_bounded_record(&path, Kind::Story.bound())?;
+    let record = markdown::parse(&story, &text)?;
+    Ok((story, record))
+}
+
+/// The links a story's post carries: the pull request when the session names one, the
+/// story, and the native change's archive folder when it is archived.
+fn story_links(root: &Path, record: &Record, story: &str) -> (Vec<Link>, Vec<String>) {
     let mut links: Vec<Link> = vec![];
     let mut targets = vec![];
     if let Some(pr) = record
@@ -157,8 +271,8 @@ fn post_for_story(root: &Path, id: &str, kind: &str) -> Result<Option<String>> {
             links.push((format!("the pull request {pr}"), None));
         }
     }
-    links.push(("the story".to_string(), Some(story.clone())));
-    targets.push(story.clone());
+    links.push(("the story".to_string(), Some(story.to_string())));
+    targets.push(story.to_string());
     if let Some(folder) = record
         .scalar("native_change")
         .map(str::trim)
@@ -169,44 +283,215 @@ fn post_for_story(root: &Path, id: &str, kind: &str) -> Result<Option<String>> {
         links.push(("the archived change".to_string(), Some(folder.clone())));
         targets.push(folder);
     }
-    let up = up(&dir);
-    let room = BODY_LIMIT
-        .saturating_sub(heading(&title).len())
-        .saturating_sub(links_line(&links, &up).len() + 2);
-    let paragraph = cut_at_sentence(&first_paragraph(&record), room);
-    write_post(
-        root,
-        &dir,
-        kind,
-        &title,
-        &paragraph,
-        (&links, &targets),
-        Some(&story),
-    )
-    .map(Some)
+    (links, targets)
 }
 
-/// The first non-blank paragraph of the story's Outcome section, else of its Where it
-/// stands section, as one line of text.
-fn first_paragraph(record: &Record) -> String {
-    for heading in ["Outcome", "Where it stands"] {
-        let Some(section) = record.section(heading) else {
+/// The post in `<dir>/journal/` whose `record` names `story`, if any.
+fn post_recording(root: &Path, dir: &str, story: &str) -> Result<Option<String>> {
+    let journal = dir_of(dir);
+    for name in crate::library::sorted_entries(root, &journal)? {
+        if !name.ends_with(".md") {
+            continue;
+        }
+        let relative = format!("{journal}/{name}");
+        let Ok(text) = read_bounded_record(&local_path(root, &relative)?, Kind::Journal.bound())
+        else {
             continue;
         };
-        let paragraph = section
-            .lines()
-            .filter(|line| !line.starts_with("## "))
-            .collect::<Vec<_>>()
-            .join("\n");
-        if let Some(found) = paragraph
-            .split("\n\n")
-            .map(str::trim)
-            .find(|part| !part.is_empty())
-        {
-            return found.split_whitespace().collect::<Vec<_>>().join(" ");
+        let Ok(record) = markdown::parse(&relative, &text) else {
+            continue;
+        };
+        if record.scalar("record").map(str::trim) == Some(story) {
+            return Ok(Some(relative));
         }
     }
-    String::new()
+    Ok(None)
+}
+
+/// The latest time among a story's Timeline entries, `YYYY-MM-DDTHH:MM:SSZ`.
+fn latest_time(record: &Record) -> Option<String> {
+    record
+        .section(crate::session_md::TIMELINE)
+        .unwrap_or_default()
+        .lines()
+        .filter_map(|line| line.strip_prefix("- ")?.get(..20))
+        .filter(|time| crate::session_md::parse_time(time).is_ok())
+        .max()
+        .map(str::to_string)
+}
+
+/// `chough checkpoint --title` (REQ-records-011): one line of at most 72 bytes, trimmed;
+/// empty removes the title.
+pub(super) fn checked_title(title: &str) -> Result<String> {
+    let title = title.trim();
+    ensure!(
+        !title.contains(['\n', '\r']),
+        "--title must be one line, so nothing was saved; give a short human title such as \"Chough 0.6.0: human-first records\""
+    );
+    ensure!(
+        title.len() <= TITLE_LIMIT,
+        "--title is {} bytes, over the {TITLE_LIMIT}-byte bound of a post's title, so nothing was saved; give a shorter human title",
+        title.len()
+    );
+    Ok(title.to_string())
+}
+
+/// `chough checkpoint --summary` (REQ-records-011): its non-blank lines, trimmed, at most
+/// 900 bytes in all with a line break between each; empty removes the summary.
+pub(super) fn checked_summary(summary: &str) -> Result<Vec<String>> {
+    let lines: Vec<String> = summary
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .map(str::to_string)
+        .collect();
+    let size = lines.iter().map(String::len).sum::<usize>() + lines.len().saturating_sub(1);
+    ensure!(
+        size <= SUMMARY_LIMIT,
+        "--summary is {size} bytes, over the {SUMMARY_LIMIT}-byte bound of a post's summary, so nothing was saved; say less and let the story hold the rest"
+    );
+    Ok(lines)
+}
+
+/// A post title derived from an objective (REQ-records-011): the text before the first
+/// `: `, `; `, `, `, ` (` or ` — ` that starts at least 16 bytes in, cut at a word to at
+/// most 72 bytes and ending in `…` when cut.
+fn derived_title(objective: &str) -> String {
+    let text = objective.split_whitespace().collect::<Vec<_>>().join(" ");
+    let end = [": ", "; ", ", ", " (", " — "]
+        .iter()
+        .filter_map(|separator| {
+            text.match_indices(separator)
+                .map(|(at, _)| at)
+                .find(|at| *at >= 16)
+        })
+        .min()
+        .unwrap_or(text.len());
+    let clause = text[..end]
+        .trim_end_matches(['.', ',', ';', ':'])
+        .trim_end();
+    if clause.len() <= TITLE_LIMIT {
+        return clause.to_string();
+    }
+    let mut cut = TITLE_LIMIT - '…'.len_utf8();
+    while !clause.is_char_boundary(cut) {
+        cut -= 1;
+    }
+    let word = clause[..cut].rfind(' ').filter(|at| *at > 0).unwrap_or(cut);
+    format!("{}…", clause[..word].trim_end())
+}
+
+/// A post body derived from a story (REQ-records-011): the Goal's first paragraph, then
+/// `Why:` with the first Decisions and why entry, `Verified:` with the newest What was
+/// verified entry and `Next:` with the first open thread, an empty part left out. Each
+/// part is cut at a sentence end to its share of `room`; a short part's spare share goes
+/// to the parts that need it, the Goal first.
+fn derived_body(record: &Record, room: usize) -> String {
+    use crate::session_md::{DECISIONS, GOAL, VERIFIED, items, open_threads};
+    let decision = items(record, DECISIONS).into_iter().next().map(|decision| {
+        decision
+            .strip_prefix("decided: ")
+            .map_or(decision.clone(), str::to_string)
+    });
+    // Each part: its label's length, its text with the label, and its weight.
+    let parts: Vec<(usize, String, usize)> = [
+        ("", Some(first_paragraph(record, GOAL)), 2),
+        ("Why: ", decision, 1),
+        (
+            "Verified: ",
+            items(record, VERIFIED).into_iter().next_back(),
+            1,
+        ),
+        ("Next: ", open_threads(record).into_iter().next(), 1),
+    ]
+    .into_iter()
+    .filter_map(|(label, text, weight)| {
+        let text = plain(&text?);
+        (!text.is_empty()).then(|| (label.len(), format!("{label}{text}"), weight))
+    })
+    .collect();
+    let available = room.saturating_sub(2 * parts.len().saturating_sub(1));
+    let weights: usize = parts.iter().map(|(_, _, weight)| weight).sum();
+    let mut limits: Vec<usize> = parts
+        .iter()
+        .map(|(_, _, weight)| available * weight / weights.max(1))
+        .collect();
+    let mut spare: usize = parts
+        .iter()
+        .zip(&limits)
+        .map(|((_, text, _), limit)| limit.saturating_sub(text.len()))
+        .sum();
+    for ((_, text, _), limit) in parts.iter().zip(limits.iter_mut()) {
+        if text.len() > *limit {
+            let more = (text.len() - *limit).min(spare);
+            *limit += more;
+            spare -= more;
+        }
+    }
+    parts
+        .iter()
+        .zip(&limits)
+        .map(|((label, text, _), limit)| (label, cut_at_sentence(text, *limit)))
+        // A part cut down to its label says nothing, so it is left out.
+        .filter(|(label, part)| {
+            part.get(**label..)
+                .is_some_and(|rest| rest.chars().any(char::is_alphanumeric))
+        })
+        .map(|(_, part)| part)
+        .collect::<Vec<_>>()
+        .join("\n\n")
+}
+
+/// The first non-blank paragraph of section `heading`, as one line of text.
+fn first_paragraph(record: &Record, heading: &str) -> String {
+    let Some(section) = record.section(heading) else {
+        return String::new();
+    };
+    let paragraph = section
+        .lines()
+        .filter(|line| !line.starts_with("## "))
+        .collect::<Vec<_>>()
+        .join("\n");
+    paragraph
+        .split("\n\n")
+        .map(str::trim)
+        .find(|part| !part.is_empty())
+        .map(|found| found.split_whitespace().collect::<Vec<_>>().join(" "))
+        .unwrap_or_default()
+}
+
+/// `text` as one plain line: Markdown links become their text, so a link relative to the
+/// story never breaks in the post, and escaped brackets lose their backslash.
+fn plain(text: &str) -> String {
+    let mut out = String::new();
+    let mut rest = text;
+    while let Some(open) = rest.find('[') {
+        let escaped = open > 0 && rest.as_bytes()[open - 1] == b'\\';
+        let link = (!escaped)
+            .then(|| {
+                let close = open + rest[open..].find("](")?;
+                let end = close + rest[close..].find(')')?;
+                Some((close, end))
+            })
+            .flatten();
+        match link {
+            Some((close, end)) => {
+                out.push_str(&rest[..open]);
+                out.push_str(&rest[open + 1..close]);
+                rest = &rest[end + 1..];
+            }
+            None => {
+                out.push_str(&rest[..=open]);
+                rest = &rest[open + 1..];
+            }
+        }
+    }
+    out.push_str(rest);
+    out.replace("\\[", "[")
+        .replace("\\]", "]")
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 /// `text` cut to at most `limit` bytes at a sentence end; without one, at a word, marked
@@ -333,6 +618,7 @@ fn write_post(
     paragraph: &str,
     (links, targets): (&[Link], &[String]),
     story: Option<&str>,
+    when: Option<(String, Option<String>)>,
 ) -> Result<String> {
     ensure!(
         KINDS.contains(&kind),
@@ -345,9 +631,14 @@ fn write_post(
         "the title must be one non-blank line"
     );
     // REQ-records-011 (Q1): a post records the time it was written; its name keeps the date.
-    let at = now()?;
-    let date = utc_date(at);
-    let time = crate::session_md::iso_time(at);
+    // A backfilled post takes its story's date and the latest time on it, or no time.
+    let (date, time) = match when {
+        Some(when) => when,
+        None => {
+            let at = now()?;
+            (utc_date(at), Some(crate::session_md::iso_time(at)))
+        }
+    };
     let name = dated_name(&date, title, "post");
     let up = up(dir);
     let mut body = heading(title);
@@ -366,7 +657,9 @@ fn write_post(
             Value::List(vec!["chough/journal".into(), format!("chough/{kind}")]),
         )?;
         record.set_scalar("date", &date)?;
-        record.set_scalar("time", &time)?;
+        if let Some(time) = &time {
+            record.set_scalar("time", time)?;
+        }
         record.set_scalar("kind", kind)?;
         record.set("links", Value::List(targets.to_vec()))?;
         if let Some(story) = story {
@@ -512,6 +805,29 @@ mod tests {
         let words = "one two three four five six";
         let cut = cut_at_sentence(words, 14);
         assert!(cut.len() <= 14 && cut.ends_with('…'), "{cut}");
+    }
+
+    /// REQ-records-011: a derived title is the objective's first clause from 16 bytes in,
+    /// cut at a word within 72 bytes.
+    #[test]
+    fn a_derived_title_is_the_first_clause_within_72_bytes() {
+        assert_eq!(
+            derived_title("Ship a focused change"),
+            "Ship a focused change"
+        );
+        assert_eq!(
+            derived_title("Prepare the Chough 0.5.0 release: version 0.5.0 and a dated change log"),
+            "Prepare the Chough 0.5.0 release"
+        );
+        assert_eq!(
+            derived_title("chough#170: a project in a subdirectory records evidence (DRIVE-18)"),
+            "chough#170: a project in a subdirectory records evidence"
+        );
+        let long = derived_title(&"word ".repeat(30));
+        assert!(
+            long.len() <= TITLE_LIMIT && long.ends_with("word…"),
+            "{long}"
+        );
     }
 
     #[test]

@@ -204,11 +204,16 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
         let Some(text) = tracked_text(root, path) else {
             continue;
         };
+        // REQ-records-006: a temporary path in a case definition is a deliberate test
+        // setting, not a leak; everything else in it is checked as anywhere else.
+        let case_definition = path.starts_with(".chough/cases/") && path.ends_with(".cases.toml");
         for (number, line) in text.lines().enumerate() {
-            let mut kinds: Vec<&str> = crate::leaks::find(local, line)
-                .iter()
-                .map(|matched| matched.kind.name())
-                .collect();
+            let matches = if case_definition {
+                crate::leaks::find_in_case_definition(local, line)
+            } else {
+                crate::leaks::find(local, line)
+            };
+            let mut kinds: Vec<&str> = matches.iter().map(|matched| matched.kind.name()).collect();
             kinds.sort_unstable();
             kinds.dedup();
             for kind in kinds {
