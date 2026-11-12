@@ -790,3 +790,21 @@ expected = ["tests/cases.rs::a_failed_runs_body_says_the_expected_output_was_mis
 adapter = "cargo-test"
 test_target = "cases"
 test = "a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines"
+
+[[case]]
+id = "TC-cli-context-gives-the-timeline-and-bugs-as-markdown"
+title = "chough context, Markdown by default, gives the recent Timeline entries as session.md writes them and the open bug backlog as a Markdown list, never a JSON block, and --json keeps both as JSON"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["src/context.rs", "src/session_md.rs", "src/bugs.rs", "src/main.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::context_gives_the_timeline_and_open_bugs_as_markdown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "context_gives_the_timeline_and_open_bugs_as_markdown"

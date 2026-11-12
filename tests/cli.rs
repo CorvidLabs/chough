@@ -3181,3 +3181,89 @@ fn context_gives_the_session_as_markdown() {
         );
     }
 }
+
+/// The body of the Markdown context section whose heading starts with `## <start>`.
+fn context_section(text: &str, start: &str) -> String {
+    let heading = format!("\n## {start}");
+    let at = text
+        .find(&heading)
+        .unwrap_or_else(|| panic!("no section {start:?}: {text}"));
+    let rest = &text[at + 1..];
+    let body = &rest[rest.find('\n').unwrap() + 1..];
+    body[..body.find("\n## ").unwrap_or(body.len())].to_string()
+}
+
+/// Fresh-eyes finding F10d, the rest of it (REQ-cli-002): `chough context`, Markdown by
+/// default, gives the recent Timeline entries as `session.md` writes them and the open
+/// bug backlog as a Markdown list, never a JSON block; `--json` keeps both as JSON.
+#[test]
+fn context_gives_the_timeline_and_open_bugs_as_markdown() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["checkpoint", "--awaiting-human", "SYNTHETIC intent gate"]);
+    let added = fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC total is off by one",
+        "--symptom",
+        "The total is one short",
+        "--trigger",
+        "Counting a list",
+        "--expected",
+        "The full count",
+        "--actual",
+        "One short",
+        "--environment",
+        "local",
+    ]);
+    let bug = added["id"].as_str().unwrap().to_string();
+    let output = fixture.run(&["context"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = String::from_utf8_lossy(&output.stdout).to_string();
+    let timeline = context_section(&text, ".chough/sessions/");
+    assert!(
+        !timeline.contains('{') && !timeline.trim_start().starts_with('['),
+        "the Timeline section is JSON:\n{timeline}"
+    );
+    let entries: Vec<&str> = timeline
+        .lines()
+        .filter(|line| line.starts_with("- "))
+        .collect();
+    assert!(
+        entries
+            .iter()
+            .any(|line| line
+                .contains(" · gate-opened · intent → intent · SYNTHETIC intent gate ^t-")),
+        "{timeline}"
+    );
+    let bugs = context_section(&text, ".chough/bugs (open backlog)");
+    assert!(
+        !bugs.contains('{') && !bugs.trim_start().starts_with('['),
+        "the open backlog is JSON:\n{bugs}"
+    );
+    assert!(
+        bugs.lines()
+            .any(|line| line.starts_with(&format!("- {bug}: "))
+                && line.contains("SYNTHETIC total is off by one")
+                && line.contains("open")),
+        "{bugs}"
+    );
+    let packet = fixture.ok(&["context", "--json"]);
+    let sections = packet["sections"].as_array().unwrap();
+    for source in ["(Timeline)", "(open backlog)"] {
+        let section = sections
+            .iter()
+            .find(|section| section["source"].as_str().unwrap().ends_with(source))
+            .unwrap_or_else(|| panic!("no {source} section: {packet:#}"));
+        let content = section["content"].as_str().unwrap();
+        assert!(
+            serde_json::from_str::<Value>(content).is_ok_and(|value| value.is_array()),
+            "{source} in --json is not a JSON array: {content}"
+        );
+    }
+}
