@@ -1235,16 +1235,11 @@ pub(super) fn run_case(
         root,
         &record,
         evidence::EntryFiles {
-            screenshot: None,
             log: Some(output),
+            ..evidence::EntryFiles::default()
         },
     )?;
-    let observation = recorded
-        .trim_end_matches(".md")
-        .rsplit('/')
-        .next()
-        .expect("the record path has a stem")
-        .to_string();
+    let observation = evidence::recorded_id(&recorded);
     Ok(RunResult {
         observation,
         outcome,
@@ -1312,7 +1307,7 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         .join(", ");
     let explicit = requested_id.is_some();
     let observation = observation_id(id, requested_id)?;
-    let (external, artifact_fingerprints) = evidence::bind_artifacts(root, &artifacts)?;
+    let bound = evidence::bind_artifacts(root, &artifacts)?;
     let record = Evidence {
         id: observation.clone(),
         explicit_id: explicit,
@@ -1328,11 +1323,14 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         outcome: outcome.clone(),
         environment,
         summary: format!("Verdicts {verdict_text}. {summary}"),
-        artifacts: artifacts.clone(),
-        artifact_fingerprints,
-        external,
+        artifacts: bound.paths.clone(),
+        artifact_fingerprints: bound.fingerprints.clone(),
+        external: bound.external.as_ref().map(|external| external.id.clone()),
         screenshot: None,
-        fingerprint: None,
+        fingerprint: bound
+            .external
+            .as_ref()
+            .map(|external| external.fingerprint.clone()),
         raw_log: None,
         key_lines: vec![],
         redacted: 0,
@@ -1351,12 +1349,20 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         limitations,
         duration_seconds: None,
     };
-    let name = evidence::record(root, &record, evidence::EntryFiles::default())?;
-    // The same IDs `cases run` returns, so automation never parses a path (#60).
+    let name = evidence::record(
+        root,
+        &record,
+        evidence::EntryFiles {
+            external: bound.external,
+            ..evidence::EntryFiles::default()
+        },
+    )?;
+    // The same IDs `cases run` returns, with any clash suffix, so automation never
+    // parses a path (#60).
     Ok(json!({
         "schema_version": 1,
         "case": id,
-        "observation": observation,
+        "observation": evidence::recorded_id(&name),
         "recorded": name,
         "outcome": outcome,
         "provenance": PROVENANCE,

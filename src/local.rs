@@ -22,8 +22,12 @@ pub(crate) fn write_log(root: &Path, id: &str, bytes: &[u8]) -> Result<String> {
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent).with_context(|| format!("creating {LOGS}"))?;
     }
-    crate::records::write_new_bytes(root, &relative, bytes)
+    let created = crate::records::write_new_bytes(root, &relative, bytes)
         .with_context(|| format!("writing the local log for {id}"))?;
+    ensure!(
+        created,
+        "refused: {relative} already holds another entry's log; nothing was written"
+    );
     Ok(relative)
 }
 
@@ -33,24 +37,37 @@ pub(crate) struct External {
     pub(crate) fingerprint: String,
 }
 
-/// Record an external artifact's path and fingerprint under a fresh neutral ID,
-/// `ext-<6 lowercase hex>` from one random draw (REQ-records-005); a clash is refused
-/// without another draw (REQ-cli-023). Written by create-new. Returns the ID.
-pub(crate) fn record_external(root: &Path, path: &str, fingerprint: &str) -> Result<String> {
+/// A fresh neutral ID for an external artifact, `ext-<6 lowercase hex>` from one random
+/// draw (REQ-records-005); a clash with a recorded one is refused without another draw
+/// (REQ-cli-023). Nothing is written.
+pub(crate) fn draw_external_id(root: &Path) -> Result<String> {
     let id = crate::identity::suffixed("ext")?;
-    let file = local_path(root, EXTERNAL)?;
-    let existing = std::fs::read_to_string(&file).unwrap_or_default();
+    let existing = std::fs::read_to_string(local_path(root, EXTERNAL)?).unwrap_or_default();
     ensure!(
         !existing.contains(&format!("[{id}]")),
         "refused: {id} is already recorded; nothing was written and no other name was drawn"
     );
+    Ok(id)
+}
+
+/// Record an external artifact's path and fingerprint under its neutral ID, once the
+/// entry that names it is written. The ID must be new here.
+pub(crate) fn save_external(root: &Path, id: &str, path: &str, fingerprint: &str) -> Result<()> {
+    let file = local_path(root, EXTERNAL)?;
+    let existing = std::fs::read_to_string(&file).unwrap_or_default();
+    ensure!(
+        !existing.contains(&format!("[{id}]")),
+        "refused: {id} is already recorded; nothing was written"
+    );
+    let quote = |value: &str| value.replace('\\', "\\\\").replace('"', "\\\"");
     let mut content = existing;
     content.push_str(&format!(
-        "[{id}]\npath = \"{path}\"\nfingerprint = \"{fingerprint}\"\n\n"
+        "[{id}]\npath = \"{}\"\nfingerprint = \"{}\"\n\n",
+        quote(path),
+        quote(fingerprint)
     ));
     crate::records::write_replace(root, EXTERNAL, &content)
-        .with_context(|| format!("writing {EXTERNAL}"))?;
-    Ok(id)
+        .with_context(|| format!("writing {EXTERNAL}"))
 }
 
 /// The path and fingerprint a neutral ID holds, when this machine recorded it.

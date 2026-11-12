@@ -143,8 +143,13 @@ pub(super) struct Evidence {
 impl Evidence {
     /// The record for this entry; `name` is the file name the ID matches.
     fn to_record(&self, name: &str) -> Record {
+        let stop = if self.summary.ends_with(['.', '!', '?']) {
+            ""
+        } else {
+            "."
+        };
         let mut body = format!(
-            "**{}.**\n\nRecorded as {} in {} at revision {}, observed {}.",
+            "**{}{stop}**\n\nRecorded as {} in {} at revision {}, observed {}.",
             self.summary,
             self.outcome.name(),
             self.environment,
@@ -399,89 +404,62 @@ fn active_session(root: &Path) -> Result<String> {
     crate::sessions::id_of(&relative).with_context(|| format!("no session at {relative}"))
 }
 
-/// Write an entry by create-new (REQ-records-001), its ID equal to the file stem,
-/// refusing a same-name different-content creation with no retry (REQ-cli-023), then
-/// register it in the session: the `observations` front matter list, which the session
-/// writer links in What was verified (REQ-records-004).
+/// Write an entry by create-new (REQ-records-001), its ID equal to the file stem, then
+/// its side files, each new: the key screenshot beside it (REQ-records-013), the raw
+/// log under `.chough/local/logs/` and an external artifact's local record
+/// (REQ-records-005). The name holds for all of them: an automatic name taken by an
+/// entry, a log or a screenshot gets one clash suffix, and that name taken too
+/// refuses; an explicit name taken refuses (REQ-cli-023). A refusal writes nothing,
+/// and a side file that fails removes what this write made. The entry is then
+/// registered in the session's `observations` list, which the session writer links
+/// in What was verified (REQ-records-004). Returns the entry's path.
 pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Result<String> {
     validate_record(evidence, &evidence.id)?;
     let session_id = active_session(root)?;
     let dir = evidence_dir(&session_id);
-    // The screenshot is named by the entry's final ID, so it is written inside the
-    // name allocation; a refused entry write leaves no screenshot behind (it is new
-    // and uncommitted, REQ-records-012).
-    let written_shot = std::cell::Cell::new(None);
-    if evidence.explicit_id {
-        return record_explicit(root, evidence, files, &session_id, &dir);
-    }
-    let name = identity::create_named(
-        root,
-        &dir,
-        &evidence.id,
-        ".md",
-        markdown::RECORD_BOUND,
-        |name| {
-            let mut entry = evidence.clone();
-            if let Some((extension, bytes)) = &files.screenshot {
-                let file = write_screenshot(root, &session_id, name, extension, bytes)?;
-                written_shot.set(Some(format!("{dir}/{file}")));
-                entry.screenshot = Some(file);
-            }
-            if let Some(log) = &files.log {
-                crate::local::write_log(root, name, log)?;
-            }
-            let mut record = entry.to_record(name);
-            if leaks::redacting() {
-                record.redact_leaks(leaks::Local::current());
-            } else {
-                record.check_leaks(leaks::Local::current())?;
-            }
-            Ok(record.render())
-        },
-    );
-    let name = match name {
-        Ok(name) => name,
-        Err(error) => {
-            if let Some(shot) = written_shot.take() {
-                let _ = fs::remove_file(local_path(root, &shot)?);
-            }
-            return Err(error);
-        }
-    };
-
-    let mut session = match crate::checkpoint::read_session(root)? {
-        crate::checkpoint::Session::V2(session) => *session,
-    };
-    if !session.observations.contains(&name) {
-        session.observations.push(name.clone());
-    }
-    crate::checkpoint::save_checkpoint(root, &mut session)?;
-
-    Ok(format!("{dir}/{name}.md"))
-}
-
-/// An explicitly named entry: a name already in use refuses with nothing written
-/// and no clash suffix (REQ-cli-023).
-fn record_explicit(
-    root: &Path,
-    evidence: &Evidence,
-    files: EntryFiles,
-    session_id: &str,
-    dir: &str,
-) -> Result<String> {
-    let name = evidence.id.clone();
-    let target = format!("{dir}/{name}.md");
-    ensure!(
-        !local_path(root, &target)?.exists(),
-        "observation identity collision: {name} already exists; record a new observation or omit the ID"
-    );
     let mut entry = evidence.clone();
-    if let Some((extension, bytes)) = &files.screenshot {
-        let file = write_screenshot(root, session_id, &name, extension, bytes)?;
-        entry.screenshot = Some(file);
+    if let Some((_, bytes)) = &files.screenshot {
+        ensure!(
+            entry.external.is_none() && entry.fingerprint.is_none(),
+            "an entry holds one fingerprint: record the screenshot and the external artifact as separate entries"
+        );
+        screenshot_room(root, &session_id, bytes)?;
+        entry.fingerprint = Some(format!("sha256:{}", crate::records::digest_bytes(bytes)));
     }
-    if let Some(log) = &files.log {
-        crate::local::write_log(root, &name, log)?;
+    let taken = |name: &str| -> Result<bool> {
+        let mut paths = vec![format!("{dir}/{name}.md")];
+        if files.log.is_some() {
+            paths.push(crate::local::log_path(name));
+        }
+        if let Some((extension, _)) = &files.screenshot {
+            paths.push(format!("{dir}/{name}.{extension}"));
+        }
+        for path in paths {
+            if local_path(root, &path)?.exists() {
+                return Ok(true);
+            }
+        }
+        Ok(false)
+    };
+    let name = if evidence.explicit_id {
+        ensure!(
+            !taken(&evidence.id)?,
+            "observation identity collision: {} already exists; record a new observation or omit the ID",
+            evidence.id
+        );
+        evidence.id.clone()
+    } else if !taken(&evidence.id)? {
+        evidence.id.clone()
+    } else {
+        let suffixed = identity::suffixed(&evidence.id)?;
+        ensure!(
+            !taken(&suffixed)?,
+            "refused: {dir}/{suffixed}.md or its log or screenshot also exists; nothing was written and no other name was drawn"
+        );
+        suffixed
+    };
+    if let Some((extension, _)) = &files.screenshot {
+        entry.screenshot = Some(format!("{name}.{extension}"));
     }
     let mut record = entry.to_record(&name);
     if leaks::redacting() {
@@ -490,11 +468,20 @@ fn record_explicit(
         record.check_leaks(leaks::Local::current())?;
     }
     let text = record.render_within(markdown::Kind::Evidence)?;
-    let created = crate::records::write_new_bounded(root, &target, &text, markdown::RECORD_BOUND)?;
+    let target = format!("{dir}/{name}.md");
     ensure!(
-        created,
-        "observation identity collision: {name} already exists"
+        crate::records::write_new_bounded(root, &target, &text, markdown::RECORD_BOUND)?,
+        "observation identity collision: {name} already exists; nothing was written"
     );
+    let mut written = vec![target.clone()];
+    if let Err(error) = write_side_files(root, &dir, &name, &files, &mut written) {
+        for path in written.iter().rev() {
+            if let Ok(path) = local_path(root, path) {
+                let _ = fs::remove_file(path);
+            }
+        }
+        return Err(error);
+    }
 
     let mut session = match crate::checkpoint::read_session(root)? {
         crate::checkpoint::Session::V2(session) => *session,
@@ -504,6 +491,40 @@ fn record_explicit(
     }
     crate::checkpoint::save_checkpoint(root, &mut session)?;
     Ok(target)
+}
+
+/// The side files of a written entry, each by create-new, adding each path written.
+fn write_side_files(
+    root: &Path,
+    dir: &str,
+    name: &str,
+    files: &EntryFiles,
+    written: &mut Vec<String>,
+) -> Result<()> {
+    if let Some((extension, bytes)) = &files.screenshot {
+        let relative = format!("{dir}/{name}.{extension}");
+        ensure!(
+            crate::records::write_new_bytes(root, &relative, bytes)?,
+            "the screenshot {relative} already exists; nothing was written"
+        );
+        written.push(relative);
+    }
+    if let Some(log) = &files.log {
+        written.push(crate::local::write_log(root, name, log)?);
+    }
+    if let Some(external) = &files.external {
+        crate::local::save_external(root, &external.id, &external.path, &external.fingerprint)?;
+    }
+    Ok(())
+}
+
+/// The ID an entry's recorded path names: its file stem (REQ-cli-017).
+pub(super) fn recorded_id(path: &str) -> String {
+    path.rsplit('/')
+        .next()
+        .unwrap_or(path)
+        .trim_end_matches(".md")
+        .to_string()
 }
 
 // ---------------------------------------------------------------------------
@@ -599,19 +620,15 @@ pub(super) fn key_lines(text: &str) -> (Vec<String>, usize) {
 /// Fingerprint an `--artifact` path: absolute paths outside the project are
 /// fingerprinted in place and named by a neutral ID; project-relative paths keep their
 /// place and digest. Returns (external ID, project-local fingerprints).
-pub(super) fn bind_artifacts(
-    root: &Path,
-    artifacts: &[String],
-) -> Result<(Option<String>, BTreeMap<String, String>)> {
-    let mut external = None;
-    let mut local = BTreeMap::new();
+pub(super) fn bind_artifacts(root: &Path, artifacts: &[String]) -> Result<BoundArtifacts> {
+    let mut bound = BoundArtifacts::default();
     for artifact in artifacts {
         if Path::new(artifact).is_absolute() {
             ensure!(
-                external.is_none(),
+                bound.external.is_none(),
                 "one external artifact per entry; record another with its own entry"
             );
-            external = Some(bind_external(root, artifact)?);
+            bound.external = Some(bind_external(root, artifact)?);
         } else {
             ensure!(
                 canonical_path(artifact).as_deref() == Some(artifact.as_str()),
@@ -621,33 +638,59 @@ pub(super) fn bind_artifacts(
                 local_path(root, artifact)?.is_file(),
                 "missing artifact: {artifact}"
             );
-            local.insert(
+            ensure!(
+                !bound.fingerprints.contains_key(artifact),
+                "duplicate artifact paths"
+            );
+            bound.fingerprints.insert(
                 artifact.clone(),
                 crate::records::file_digest(root, artifact)?,
             );
+            bound.paths.push(artifact.clone());
         }
     }
-    ensure!(
-        local.len() + external.iter().count() == artifacts.len(),
-        "duplicate artifact paths"
-    );
-    Ok((external, local))
+    Ok(bound)
 }
 
-/// Fingerprint an external file in place and record it locally (REQ-records-005).
-fn bind_external(root: &Path, path: &str) -> Result<String> {
+/// An entry's artifacts: the project-local paths in their order with their digests,
+/// and the one external artifact, which the entry names only by its neutral ID.
+#[derive(Default)]
+pub(super) struct BoundArtifacts {
+    pub(super) paths: Vec<String>,
+    pub(super) fingerprints: BTreeMap<String, String>,
+    pub(super) external: Option<ExternalBinding>,
+}
+
+/// An external artifact fingerprinted in place (REQ-records-005): its neutral
+/// `ext-<6 hex>` ID, its machine-local path and `sha256:<64 hex>`. The local record is
+/// written only after the entry.
+#[derive(Clone)]
+pub(super) struct ExternalBinding {
+    pub(super) id: String,
+    pub(super) path: String,
+    pub(super) fingerprint: String,
+}
+
+/// Fingerprint an external file in place and draw its neutral ID; a missing path, a
+/// directory, a symlink or a file over 64 MiB refuses, naming the path on standard
+/// error only (REQ-records-005).
+fn bind_external(root: &Path, path: &str) -> Result<ExternalBinding> {
     let target = Path::new(path);
     ensure!(
         target.exists() && !target.is_dir() && !target.is_symlink(),
-        "external artifact cannot be read (missing, a directory or a symlink)"
+        "external artifact {path} cannot be read (missing, a directory or a symlink); nothing was recorded"
     );
     ensure!(
         target.metadata()?.len() <= 64 * 1_048_576,
-        "external artifact exceeds the 64 MiB bound"
+        "external artifact {path} exceeds the 64 MiB bound; nothing was recorded"
     );
-    let bytes = fs::read(target).context("reading the external artifact")?;
-    let fingerprint = format!("sha256:{}", crate::records::digest_bytes(&bytes));
-    crate::local::record_external(root, path, &fingerprint)
+    let bytes =
+        fs::read(target).with_context(|| format!("reading the external artifact {path}"))?;
+    Ok(ExternalBinding {
+        id: crate::local::draw_external_id(root)?,
+        path: path.to_string(),
+        fingerprint: format!("sha256:{}", crate::records::digest_bytes(&bytes)),
+    })
 }
 
 fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
@@ -673,11 +716,15 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
             digest,
         });
     }
-    let (external, artifact_fingerprints) = bind_artifacts(root, &args.artifacts)?;
+    let bound = bind_artifacts(root, &args.artifacts)?;
     let screenshot_data = match &args.screenshot {
         Some(path) => Some(read_screenshot(path)?),
         None => None,
     };
+    ensure!(
+        bound.external.is_none() || screenshot_data.is_none(),
+        "an entry holds one fingerprint: record the screenshot and the external artifact as separate entries"
+    );
     let date = identity::utc_date(now()?);
     let source = args
         .cases
@@ -705,11 +752,14 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         outcome: args.outcome,
         environment: args.environment,
         summary: args.summary,
-        artifacts: args.artifacts,
-        artifact_fingerprints,
-        external,
+        artifacts: bound.paths,
+        artifact_fingerprints: bound.fingerprints,
+        external: bound.external.as_ref().map(|external| external.id.clone()),
         screenshot: None,
-        fingerprint: None,
+        fingerprint: bound
+            .external
+            .as_ref()
+            .map(|external| external.fingerprint.clone()),
         raw_log: args.raw_log,
         observed_at_unix_seconds: now()?,
         snapshot: snapshot(root)?,
@@ -731,12 +781,14 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         EntryFiles {
             screenshot: screenshot_data,
             log: None,
+            external: bound.external,
         },
     )?;
-    // The stored ID, so automation never parses it out of `recorded` (#60).
+    // The stored ID, with any clash suffix, so automation never parses it out of
+    // `recorded` (#60, REQ-cli-017).
     print_json(&json!({
         "schema_version": 1,
-        "observation": evidence.id,
+        "observation": recorded_id(&name),
         "recorded": name,
         "provenance": PROVENANCE,
     }))
@@ -798,6 +850,8 @@ pub(super) fn validate_record(evidence: &Evidence, name: &str) -> Result<()> {
 // Key screenshots (REQ-records-013).
 
 const SCREENSHOT_BOUND: u64 = 524_288;
+/// The bounds and remedies every screenshot refusal names (REQ-records-013).
+const SCREENSHOT_REMEDY: &str = "a key screenshot is a PNG or JPEG of at most 524,288 bytes, at most 5 and 2,097,152 bytes per session; crop or compress it, or record it by fingerprint with --artifact";
 const SCREENSHOTS_PER_SESSION: usize = 5;
 const SCREENSHOTS_SESSION_BYTES: u64 = 2_097_152;
 
@@ -856,21 +910,19 @@ fn read_screenshot(path: &str) -> Result<(String, Vec<u8>)> {
     let target = Path::new(path);
     ensure!(
         target.exists() && !target.is_dir() && !target.is_symlink(),
-        "the screenshot cannot be read (missing, a directory or a symlink)"
+        "the screenshot cannot be read (missing, a directory or a symlink); {SCREENSHOT_REMEDY}"
     );
     let bytes = fs::read(target).context("reading the screenshot")?;
     ensure!(
         bytes.len() as u64 <= SCREENSHOT_BOUND,
-        "the screenshot is over the 524288-byte bound; crop or compress it, or record it by fingerprint with --artifact"
+        "the screenshot is over the 524,288-byte bound; {SCREENSHOT_REMEDY}"
     );
     if bytes.starts_with(b"\x89PNG") {
         Ok(("png".into(), strip_png(&bytes)?))
     } else if bytes.starts_with(b"\xff\xd8") {
         Ok(("jpg".into(), strip_jpeg(&bytes)?))
     } else {
-        bail!(
-            "the screenshot is not a PNG or JPEG; convert it, or record it by fingerprint with --artifact"
-        )
+        bail!("the screenshot is not a PNG or JPEG; {SCREENSHOT_REMEDY}")
     }
 }
 
@@ -896,27 +948,19 @@ fn screenshot_use(root: &Path, session_id: &str) -> (usize, u64) {
 
 /// Write the screenshot beside its entry, named by the entry's ID, by create-new;
 /// nothing is written when a bound is exceeded.
-fn write_screenshot(
-    root: &Path,
-    session_id: &str,
-    evidence_id: &str,
-    extension: &str,
-    bytes: &[u8],
-) -> Result<String> {
+/// Whether the session has room for one more screenshot of these bytes: at most 5 and
+/// 2,097,152 bytes in all (REQ-records-013), checked before anything is written.
+fn screenshot_room(root: &Path, session_id: &str, bytes: &[u8]) -> Result<()> {
     let (count, total) = screenshot_use(root, session_id);
     ensure!(
         count < SCREENSHOTS_PER_SESSION,
-        "a session holds at most {SCREENSHOTS_PER_SESSION} screenshots; crop or compress, or record by fingerprint with --artifact"
+        "a session holds at most {SCREENSHOTS_PER_SESSION} screenshots; {SCREENSHOT_REMEDY}"
     );
     ensure!(
         total + bytes.len() as u64 <= SCREENSHOTS_SESSION_BYTES,
-        "the session's screenshots would pass 2097152 bytes in all; crop or compress, or record by fingerprint with --artifact"
+        "the session's screenshots would pass 2,097,152 bytes in all; {SCREENSHOT_REMEDY}"
     );
-    let relative = format!("{}/{evidence_id}.{extension}", evidence_dir(session_id));
-    let created = crate::records::write_new_bytes(root, &relative, bytes)
-        .with_context(|| format!("writing the screenshot for {evidence_id}"))?;
-    ensure!(created, "the screenshot {relative} already exists");
-    Ok(format!("{evidence_id}.{extension}"))
+    Ok(())
 }
 
 // ---------------------------------------------------------------------------
@@ -2687,6 +2731,8 @@ pub(super) fn resolve_entry(root: &Path, id: &str) -> Result<Option<(String, Evi
 pub(super) struct EntryFiles {
     pub(super) screenshot: Option<(String, Vec<u8>)>,
     pub(super) log: Option<Vec<u8>>,
+    /// An external artifact's local record, written after the entry.
+    pub(super) external: Option<ExternalBinding>,
 }
 
 pub(super) struct ValidationRun {
