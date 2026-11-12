@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-accept-ships-through-change-ship-7ce40b4ea91bc33056aa1d1e",
+  "criteria": [
+    "LIFE-3",
+    "FLOW-13",
+    "FLOW-2"
+  ],
+  "requirements": [
+    "REQ-cli-021"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test next -- --exact at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate for TC-cli-accept-ships-through-change-ship: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-accept-ships-through-change-ship-7ce40b4ea91bc33056aa1d1e.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-accept-ships-through-change-ship-7ce40b4ea91bc33056aa1d1e.log": "05fb8ed6eefd7d667720f1a9d498ca5b9d5d779a1d095f000f15f9dbeee02d84"
+  },
+  "observed_at_unix_seconds": 1794467708,
+  "snapshot": {
+    "revision": "4efba39fde7dbbedefd1e7228354035217afb77d",
+    "dirty": false,
+    "fingerprint": "69da9bb0e3f97a50e084ebbc7abddcfd75d9dffdd93d0110183a2f62a1f7926d",
+    "content": "7e3accdef3b31e574d2f3dc584a68f552fafa43da6ade4d94c5f0e18db765b67"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-accept-ships-through-change-ship",
+      "digest": "afe04a706f4ce3acb6f37fc370827fc61cf339fe59b4a0f277c9437bea273487"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "next",
+    "--",
+    "--exact",
+    "at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}
