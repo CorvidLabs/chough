@@ -1257,12 +1257,18 @@ The next valid action follows these rules in order:
 5. Right after `chough init`, at intent with no criteria referenced, the action is to
    capture or read the intent: run `hi check`, then `chough context`, and reference the
    criteria the work covers with `chough checkpoint --criterion <id>` (#76).
-6. At accept while the native change is verifying, the human reviews next: the action
-   names `chough gate list` and `chough checkpoint --close-gate "<gate>"` with the relay
-   and `--verdict pass` or `--verdict block`, which runs the review as them, and then
-   `chough change ship <id>`; with no review gate open, its command opens one with
-   `chough checkpoint --awaiting-human "Implementation review of <id>" --holds accept
-   --drives review`. It never suggests an agent review.
+6. At accept while the native change is verifying, the human reviews next. The action
+   names `chough gate list`; for a decision to ship, `chough change ship <id>
+   --close-gate "<gate>"` with the relay, which runs the review as them, ships, and
+   closes the gate only after the native ship, so nothing under `.chough/` changes
+   between `change check` and finalize; and for a decision not to ship, `chough
+   checkpoint --close-gate "<gate>"` with the relay and `--verdict block`. With no
+   review gate open, its command opens one with `chough checkpoint --awaiting-human
+   "Implementation review of <id>" --holds accept --drives review`; while SpecSync's
+   verification counts Chough's records (`chough_writes` is `commit-first`), it also
+   says to commit that gate and run `chough change check <id>` again before the ship.
+   With the review gate open, the waiting action names the same ship. It never suggests
+   an agent review.
 7. In stage done, an archived change whose terminal evidence authenticates, or no
    recorded native change, closes the cycle. The move into done archives the session,
    so `next` then refuses with "no open session" and names `chough session new <key>`
@@ -1338,7 +1344,7 @@ authority.
 
 | Label | When | Next native action |
 |---|---|---|
-| `refused:native-delta-changed` | A delta differs from its approved digest, is deleted, or belongs to a module not in the approval | Restore the approved delta, or have the changed scope approved: open a scope gate with `chough checkpoint --awaiting-human "<gate>" --drives approve` and record the human's decision with `chough checkpoint --close-gate`, which runs the approval as them; on authority they gave in advance, record `specsync change approve <id> --actor "<agent>-<terminal>" --note "Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>)."`. Then run `specsync change check <id>` |
+| `refused:native-delta-changed` | A delta differs from its approved digest, is deleted, or belongs to a module not in the approval. SpecSync 6.3.0 itself reports such an approval invalid, so there the same edit is refused first as `refused:native-approval-invalid` | Restore the approved delta, or have the changed scope approved: open a scope gate with `chough checkpoint --awaiting-human "<gate>" --drives approve` and record the human's decision with `chough checkpoint --close-gate`, which runs the approval as them; on authority they gave in advance, record `specsync change approve <id> --actor "<agent>-<terminal>" --note "Approved under <the human's words> (<source>); covered scope: <scope>; limits: <limits>. Recorded by <agent> (<model>, hc <terminal>)."`. Then run `specsync change check <id>` |
 | `refused:native-delta-unverifiable` | The ledger is missing, unreadable, over 4 MiB or malformed; it has no definition approval; status reports no `change.affected_specs`; a module name is not one SpecSync 6.1.1 accepts; a delta cannot be read | Run `specsync change status <id>` |
 | `refused:native-delta-unverifiable` | A change with deltas has an approval without `approved_delta_digests` | An approval records the digests, the same two ways as for `refused:native-delta-changed`; then run `specsync change check <id>`; a status read cannot clear it |
 

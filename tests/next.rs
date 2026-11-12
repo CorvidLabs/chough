@@ -2243,7 +2243,7 @@ fn next_guides_a_fresh_agent_from_init_to_accept() {
 /// while verifying, the human's decision to ship goes through `chough change ship <id>
 /// --close-gate`, which closes the gate only after the native ship; in a project whose
 /// records SpecSync's verification counts, the action also says to commit the review
-/// gate and run `chough change check --commit` again before the ship, so nothing under
+/// gate and run `chough change check <id>` again before the ship, so nothing under
 /// `.chough/` changes between the check and the finalize.
 #[test]
 fn at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate() {
@@ -2259,7 +2259,7 @@ fn at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the
             .to_string()
     };
     let commit_step =
-        "commit the gate and run `chough change check --commit` again before the ship";
+        "commit the gate and run `chough change check ship-change` again before the ship";
     fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
     let commit_first = action(&fixture);
     for part in [

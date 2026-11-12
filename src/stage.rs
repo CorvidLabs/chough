@@ -1221,10 +1221,12 @@ pub(super) fn assess(
             action: format!(
                 "Waiting for a human decision: {}. Do not decide it for them; continue only independent work within scope. When they decide, record their words with `{CLOSE_GATE_COMMAND}`{}. `chough stage advance` and `chough stage skip` are refused until it is closed.",
                 holding.join("; "),
-                if review {
-                    ", adding their verdict as --verdict pass or --verdict block for a review, which runs the review as them"
-                } else {
-                    ""
+                match (review, session.native_change.as_deref()) {
+                    (true, Some(id)) if current == "accept" => format!(
+                        ", with --verdict block not to ship; to ship, `chough change ship {id} --close-gate \"<gate>\"` with the relay instead"
+                    ),
+                    (true, _) => ", adding their verdict as --verdict pass or --verdict block for a review, which runs the review as them".into(),
+                    _ => String::new(),
                 }
             ),
             reason: "Only a person can close these gates.".into(),
@@ -1277,16 +1279,25 @@ pub(super) fn assess(
         let open_review = session.awaiting_human.iter().find(|gate| {
             crate::session_md::gate(session, gate).drives() == crate::humans::Drives::Review
         });
+        // REQ-records-014: while SpecSync's verification counts Chough's records, the
+        // gate is committed and the change checked again before the ship.
+        let exclusions = crate::doctor::exclusions(root);
+        let commit_first = !exclusions.no_policy && !exclusions.in_force();
         Action {
             action: format!(
-                "The human reviews next.{} Show them `chough gate list`; record their decision with `chough checkpoint --close-gate \"<gate>\"`, the relay and `--verdict pass` or `--verdict block`, which runs the review as them; then `chough change ship {id}` with that relay ships.",
+                "The human reviews next.{} Show them `chough gate list`. Not to ship: `chough checkpoint --close-gate \"<gate>\"`, the relay and `--verdict block`. To ship: {}.",
                 if open_review.is_some() {
                     String::new()
+                } else if commit_first {
+                    format!(
+                        " Open the review gate: `chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review`; then commit the gate and run `chough change check {id}` again before the ship, since SpecSync's verification counts Chough's records here."
+                    )
                 } else {
                     format!(
                         " Open the review gate: `chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review`."
                     )
-                }
+                },
+                ship_command(id)
             ),
             reason: "Native change is verifying: only the human's review and the ship remain, and an agent's review never stands in for theirs (FLOW-10).".into(),
             command: Some(match open_review {
@@ -1702,6 +1713,15 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
 }
 
 /// How to record a human's decision on a gate on their behalf (REQ-cli-050).
+/// The human's decision to ship at accept, as `chough change ship` records it: the review
+/// as them, then the native ship, and the gate closed only after it (REQ-cli-059), so
+/// nothing under `.chough/` changes between `change check --commit` and finalize.
+fn ship_command(id: &str) -> String {
+    format!(
+        "`chough change ship {id} --close-gate \"<gate>\"` and the relay, which reviews as them, ships, then closes the gate"
+    )
+}
+
 pub(super) const CLOSE_GATE_COMMAND: &str = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
 
 /// What keeps an open session at done open (REQ-history-006), as the action that
