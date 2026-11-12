@@ -19,12 +19,16 @@
     "OBS-tc-cli-init-sets-up-merge-drivers-c80aae4f9ae0fc0fd1582321",
     "OBS-tc-cli-init-appends-only-missing-merge-lines-d913104da5e7419d149c5f81",
     "OBS-tc-cli-doctor-merge-drivers-94c47290140fd3dc5794d767",
-    "OBS-tc-cli-init-sets-up-merge-drivers-5e4791b139c2cb1c5763f531"
+    "OBS-tc-cli-init-sets-up-merge-drivers-5e4791b139c2cb1c5763f531",
+    "OBS-tc-cli-init-sets-up-merge-drivers-e131a616df6317747142b432",
+    "OBS-tc-cli-init-appends-only-missing-merge-lines-fea655d42dffdbafdca2eb18",
+    "OBS-tc-history-doctor-merge-drivers-aa529b8d7136855b732daadc",
+    "OBS-tc-cli-doctor-merge-drivers-071d776393914339fae22380"
   ],
   "impact": "Every project that finishes sessions on two branches hits the conflict",
   "classification": "requirement-gap",
   "scope": "blocking",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -57,8 +61,36 @@
       "observations": [
         "OBS-tc-cli-init-sets-up-merge-drivers-5e4791b139c2cb1c5763f531"
       ]
+    },
+    {
+      "at_unix_seconds": 1794466781,
+      "text": "Green at 8091890c on 6.3.0: TC-cli-init-sets-up-merge-drivers passed.",
+      "observations": [
+        "OBS-tc-cli-init-sets-up-merge-drivers-e131a616df6317747142b432"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794466781,
+      "text": "Green at 8091890c on 6.3.0: TC-cli-init-appends-only-missing-merge-lines passed.",
+      "observations": [
+        "OBS-tc-cli-init-appends-only-missing-merge-lines-fea655d42dffdbafdca2eb18"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794466781,
+      "text": "Green at 8091890c on 6.3.0: TC-history-doctor-merge-drivers passed.",
+      "observations": [
+        "OBS-tc-history-doctor-merge-drivers-aa529b8d7136855b732daadc"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794466781,
+      "text": "status: investigating -> verified. Green at 8091890c: TC-cli-doctor-merge-drivers passed; full suite 638 passed, clippy and fmt clean on SpecSync 6.3.0 at 596ced67; t38b's black-box retest passed.",
+      "observations": [
+        "OBS-tc-cli-doctor-merge-drivers-071d776393914339fae22380"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794466713
+  "updated_at_unix_seconds": 1794466781
 }

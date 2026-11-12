@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-records-journal-posts-record-time-713338546a554690331e034a",
+  "criteria": [
+    "KNOW-33"
+  ],
+  "requirements": [
+    "REQ-records-011"
+  ],
+  "contracts": [
+    "specs/records/records.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test journal -- --exact posts_record_a_time_and_sort_newest_first_by_it for TC-records-journal-posts-record-time: passed (exit 0).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-records-journal-posts-record-time-713338546a554690331e034a.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-records-journal-posts-record-time-713338546a554690331e034a.log": "2d305b4620961e42ca9bebf8e8c3414816c745fe6e2e92beabda684dcf0ef24c"
+  },
+  "observed_at_unix_seconds": 1794466763,
+  "snapshot": {
+    "revision": "8091890cb874cf2bf33f8d5e3a6467d3bbee0dbb",
+    "dirty": false,
+    "fingerprint": "1f272158a8250c7d9c4da20f2a3477c62252e6ba1f35ab12b10d018f9eea90ba",
+    "content": "0d709ba899b8dfcf2dc898f29ca4dbb97df391dcac2ed6abe29f19ea553c235d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-records-journal-posts-record-time",
+      "digest": "74ec8f28cd200721a2d67fef9434b49aae0a56e2cdc1e90db85085a4b456f503"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "journal",
+    "--",
+    "--exact",
+    "posts_record_a_time_and_sort_newest_first_by_it"
+  ],
+  "exit_code": 0,
+  "limitations": [
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

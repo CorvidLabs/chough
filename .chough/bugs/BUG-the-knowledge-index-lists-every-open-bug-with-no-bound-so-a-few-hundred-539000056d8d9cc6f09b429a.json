@@ -16,12 +16,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-cli-knowledge-index-bounded-open-bugs-ea0827c5ad2f87c839e961a5"
+    "OBS-tc-cli-knowledge-index-bounded-open-bugs-ea0827c5ad2f87c839e961a5",
+    "OBS-tc-cli-knowledge-index-bounded-open-bugs-f9088b287fd3f64ad9fbbf8d"
   ],
   "impact": "Large backlogs, such as spec-sync's, lose the index and fail the verify lane",
   "classification": "requirement-gap",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -33,8 +34,15 @@
       "observations": [
         "OBS-tc-cli-knowledge-index-bounded-open-bugs-ea0827c5ad2f87c839e961a5"
       ]
+    },
+    {
+      "at_unix_seconds": 1794466781,
+      "text": "status: investigating -> verified. Green at 8091890c: TC-cli-knowledge-index-bounded-open-bugs passed; full suite 638 passed, clippy and fmt clean on SpecSync 6.3.0 at 596ced67; t38b's black-box retest passed.",
+      "observations": [
+        "OBS-tc-cli-knowledge-index-bounded-open-bugs-f9088b287fd3f64ad9fbbf8d"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794466654
+  "updated_at_unix_seconds": 1794466781
 }

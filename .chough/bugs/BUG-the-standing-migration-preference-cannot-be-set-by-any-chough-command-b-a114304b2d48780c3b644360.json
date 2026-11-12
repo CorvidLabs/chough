@@ -17,12 +17,13 @@
   "steps": [],
   "fixture": null,
   "observations": [
-    "OBS-tc-records-the-standing-migration-preference-is-set-before-migrating-3941ab5e1920731f8bc23a8a"
+    "OBS-tc-records-the-standing-migration-preference-is-set-before-migrating-3941ab5e1920731f8bc23a8a",
+    "OBS-tc-records-the-standing-migration-preference-is-set-before-migrating-e1012340b1f60207dcc997c6"
   ],
   "impact": "The standing route is documented but unreachable without a hand edit",
   "classification": "requirement-gap",
   "scope": "in-scope",
-  "status": "investigating",
+  "status": "verified",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
@@ -34,8 +35,15 @@
       "observations": [
         "OBS-tc-records-the-standing-migration-preference-is-set-before-migrating-3941ab5e1920731f8bc23a8a"
       ]
+    },
+    {
+      "at_unix_seconds": 1794466781,
+      "text": "status: investigating -> verified. Green at 8091890c: TC-records-the-standing-migration-preference-is-set-before-migrating passed; full suite 638 passed, clippy and fmt clean on SpecSync 6.3.0 at 596ced67; t38b's black-box retest passed.",
+      "observations": [
+        "OBS-tc-records-the-standing-migration-preference-is-set-before-migrating-e1012340b1f60207dcc997c6"
+      ]
     }
   ],
   "created_at_unix_seconds": 1794447937,
-  "updated_at_unix_seconds": 1794466653
+  "updated_at_unix_seconds": 1794466781
 }

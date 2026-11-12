@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-history-doctor-reports-an-unreadable-record-cb13b6075c9ee456ae1b5100",
+  "criteria": [
+    "DRIVE-17",
+    "DRIVE-16",
+    "DRIVE-13"
+  ],
+  "requirements": [
+    "REQ-history-012"
+  ],
+  "contracts": [
+    "specs/history/history.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "passed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test doctor -- --exact doctor_reports_a_committed_record_its_reader_refuses for TC-history-doctor-reports-an-unreadable-record: passed (exit 0, tests run 1).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-history-doctor-reports-an-unreadable-record-cb13b6075c9ee456ae1b5100.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-history-doctor-reports-an-unreadable-record-cb13b6075c9ee456ae1b5100.log": "47a541408022376ecef72c570c64787d73e59d2c97fa5a99cbc1c4876d14be41"
+  },
+  "observed_at_unix_seconds": 1794466751,
+  "snapshot": {
+    "revision": "8091890cb874cf2bf33f8d5e3a6467d3bbee0dbb",
+    "dirty": false,
+    "fingerprint": "1f272158a8250c7d9c4da20f2a3477c62252e6ba1f35ab12b10d018f9eea90ba",
+    "content": "0d709ba899b8dfcf2dc898f29ca4dbb97df391dcac2ed6abe29f19ea553c235d"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-history-doctor-reports-an-unreadable-record",
+      "digest": "1159f8f73e0d9c54f45095e186216b3b4465d3af29fe8369c7b9153bda32100e"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "doctor",
+    "--",
+    "--exact",
+    "doctor_reports_a_committed_record_its_reader_refuses"
+  ],
+  "exit_code": 0,
+  "tests_run": 1,
+  "limitations": [
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 2
+}
