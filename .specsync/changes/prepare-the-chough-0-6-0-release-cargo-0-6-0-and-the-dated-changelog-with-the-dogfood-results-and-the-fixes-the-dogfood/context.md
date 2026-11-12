@@ -75,3 +75,7 @@ scope.
 On 2026-11-12T16:38Z Leif also chose "Yes, fix it (Recommended)" for a finding from
 jackdaw's real migration (t38f): `chough migrate --apply` can write a `session.md` that
 ends with a blank line, which `git diff --check` rejects.
+
+On 2026-11-12T17:42Z Leif chose "Yes, fix it (Recommended)" for a fifth flaky test that
+t38b traced to Chough itself: on macOS, one SIGKILL to a stopped command's process
+group can miss a child the group gains while it is signalled, so the child survives.

@@ -59,7 +59,9 @@ back to Leif as a send-back.
     `status` and the stale next action; the new-project docs (README, docs/cli.md and the
     skill: `specsync change adopt` and the delta format); the CHANGELOG and docs
     corrections (drift checks red then green); and jackdaw's finding that a migrated
-    `session.md` can end with a blank line, red then green.
+    `session.md` can end with a blank line, red then green; and t38b's stop survivor,
+    a child forked as a stop arrives, fixed in `src/records.rs` and rerun red then green
+    under load.
 13. Cargo 0.6.0 (Cargo.toml and Cargo.lock), and the CHANGELOG's dated [0.6.0]
     section with the dogfood results in its upgrade notes.
 14. This session's post title and summary, then `change check --commit`, Leif's review as him through `chough change ship

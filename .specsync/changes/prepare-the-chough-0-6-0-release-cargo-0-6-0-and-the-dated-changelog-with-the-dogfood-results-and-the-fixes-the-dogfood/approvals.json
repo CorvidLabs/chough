@@ -289,6 +289,18 @@
       "cancelled_approvals": 3,
       "cancelled_review_attempts": 0,
       "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood",
+      "actor": "0xLeif",
+      "reason": "Leif chose 'Yes, fix it (Recommended)' (coordinator chat, Claude Code, hc t370, 2026-11-12T17:42Z) for a fifth flaky test that is a real Chough bug: stopping a command could leave a child it forked at that moment running on macOS, since one SIGKILL to the process group can miss it; the fix signals the group until no member is left. No contract text: a stop already stops the command and its descendants. Relayed by claude-code-t370; run by claude-code-t382.",
+      "timestamp": 1794505713,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 4,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
     }
   ]
 }
