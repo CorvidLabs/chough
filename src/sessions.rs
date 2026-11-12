@@ -72,10 +72,7 @@ pub(super) enum SessionCommand {
     /// session is touched.
     New {
         key: String,
-        #[arg(
-            long,
-            default_value = "Describe the current objective before beginning work."
-        )]
+        #[arg(long, default_value = DEFAULT_OBJECTIVE)]
         objective: String,
         #[arg(long, default_value = "")]
         intent_scope: String,
@@ -166,6 +163,9 @@ pub(super) fn session_file(id: &str) -> String {
 pub(super) fn archive_file(id: &str) -> String {
     format!("{ARCHIVE}/{id}.md")
 }
+
+/// The objective `chough session new` records when none is given.
+const DEFAULT_OBJECTIVE: &str = "Describe the current objective before beginning work.";
 
 /// The stage status an archived story's front matter gives (REQ-history-006).
 pub(super) const ARCHIVED_STATUS: &str = "archived";
@@ -681,8 +681,16 @@ pub(super) fn create(
     }
     let date = crate::identity::utc_date(now()?);
     let name = crate::identity::dated_name(&date, key, "session");
+    // REQ-history-002 (F11): the session's first entry starts its first stage segment,
+    // with its objective, or its key when none was given.
+    let start = if objective == DEFAULT_OBJECTIVE {
+        key.to_string()
+    } else {
+        objective.clone()
+    };
     let mut session = checkpoint::new_checkpoint(objective, intent_scope, modules);
     session.meta.aliases = vec![key.to_string()];
+    crate::stage::log_start(root, &mut session, &start)?;
     let render = |id: &str| -> Result<String> {
         let mut draft = session.clone();
         draft.meta.id = id.to_string();

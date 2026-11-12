@@ -632,13 +632,14 @@ fn doctor_reports_a_rewritten_timeline_entry_and_fixes_nothing() {
         "SYNTHETIC side trip",
     ]);
     fixture.ok(&["stage", "return"]);
-    fixture.commit("two timeline entries");
+    fixture.commit("the side trip's entries");
     let file = fixture.session_file();
     let text = fixture.read(&file);
+    // The side trip's entry, after the session's start entry (REQ-history-002).
     let first = common::timeline(&text)
         .into_iter()
-        .next()
-        .unwrap_or_else(|| panic!("no timeline entry: {text}"));
+        .find(|entry| entry.contains("SYNTHETIC side trip"))
+        .unwrap_or_else(|| panic!("no side trip entry: {text}"));
     let id = first
         .rsplit_once('^')
         .map(|(_, anchor)| anchor.trim().to_string())

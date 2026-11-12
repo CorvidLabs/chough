@@ -154,6 +154,10 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   What was verified gives each case's latest run once, with its command once, and one
   line counting the earlier runs, which stay in its receipts, and its front matter says
   `stage_status: archived` with no stale `next` (REQ-history-006).
+- `chough init` and `chough session new` each write a `start` entry first, from and to
+  the stage the session starts in, with its objective or key, so `chough timing` right
+  after reports when the first stage started instead of an unknown start; a timeline
+  without one still reads (REQ-history-002).
 - `chough change check <id> --no-commit` runs SpecSync's check without `--commit`, the
   check the accept step runs first to materialize requirement text, so following the
   workflow records no direct lifecycle write; and a gate close with a human's decision

@@ -148,8 +148,30 @@ fn full_history(with_gates: bool) -> Vec<String> {
 fn fixture_with(lines: &[String]) -> Fixture {
     let fixture = Fixture::new();
     fixture.init();
+    // A 0.5.x-shaped history has no start entry (REQ-history-002).
+    without_start(&fixture);
     write_transitions(&fixture, lines);
     fixture
+}
+
+/// Remove the active session's `start` entry, with its field lines, as an older or
+/// migrated timeline has none.
+fn without_start(fixture: &Fixture) {
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let mut kept = String::new();
+    let mut skipping = false;
+    for line in text.split_inclusive('\n') {
+        if line.starts_with("- ") {
+            skipping = line.contains(" · start · ");
+        } else if !line.starts_with("  ") {
+            skipping = false;
+        }
+        if !skipping {
+            kept.push_str(line);
+        }
+    }
+    fixture.write(&file, &kept);
 }
 
 fn timing(fixture: &Fixture, extra: &[&str]) -> Value {
@@ -282,7 +304,8 @@ fn every_transition_kind_yields_the_expected_segments_and_cycles() {
     let report = timing(&fixture, &[]);
     assert_eq!(report["schema_version"], 1);
 
-    // init and migrate write no transition, so the first segment's start is unknown.
+    // A 0.5.x-shaped history has no start entry, so the first segment's start is
+    // unknown.
     let first = &report["before_first_record"];
     assert_eq!(first["stage"], "intent");
     assert_eq!(first["start"]["unix_seconds"], Value::Null);
@@ -440,7 +463,14 @@ fn gate_records_start_or_end_no_segment_and_give_waiting_time() {
 fn checkpoint_gates_append_one_record_when_opened_and_one_when_cleared() {
     let fixture = Fixture::new();
     fixture.init();
-    let records = |fixture: &Fixture| -> Vec<Value> { timeline_entries(fixture) };
+    // Every entry after the session's start entry (REQ-history-002).
+    assert_eq!(timeline_entries(&fixture)[0]["kind"], "start");
+    let records = |fixture: &Fixture| -> Vec<Value> {
+        timeline_entries(fixture)
+            .into_iter()
+            .filter(|record| record["kind"] != "start")
+            .collect()
+    };
     fixture.ok(&["checkpoint", "--awaiting-human", "Scope approval of x"]);
     let after_open = records(&fixture);
     assert_eq!(after_open.len(), 1, "{after_open:#?}");
@@ -541,7 +571,8 @@ fn checkpoint_gates_append_one_record_when_opened_and_one_when_cleared() {
     assert!(context["sections"].to_string().contains("gate-opened"));
     fixture.ok(&["next", "--json"]);
     let shown = fixture.ok(&["stage", "show"]);
-    assert_eq!(shown["recent_transitions"].as_array().unwrap().len(), 7);
+    // The seven gate entries and the session's start entry.
+    assert_eq!(shown["recent_transitions"].as_array().unwrap().len(), 8);
 }
 
 #[test]

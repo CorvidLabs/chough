@@ -109,11 +109,15 @@ fn each_session_has_its_own_folder_and_timeline() {
     assert_eq!(beta_session["objective"], "Ship beta");
     assert_eq!(beta_session["aliases"], json!(["beta"]));
     assert_eq!(beta_session["stage"]["current"], "design");
-    assert!(timeline(&before).is_empty());
+    // Each timeline starts with its own session's start entry (REQ-history-002).
+    let alpha_entries = timeline(&before);
+    assert_eq!(alpha_entries.len(), 1, "{before}");
+    assert!(alpha_entries[0].contains(" · start · intent → intent · Ship alpha ^t-"));
     let entries = timeline(&beta_text);
-    assert_eq!(entries.len(), 1, "{beta_text}");
+    assert_eq!(entries.len(), 2, "{beta_text}");
+    assert!(entries[0].contains(" · start · intent → intent · Ship beta ^t-"));
     assert!(
-        entries[0].contains(" · advance · intent → design · "),
+        entries[1].contains(" · advance · intent → design · "),
         "{entries:?}"
     );
     assert!(!fixture.exists(".chough/history"));
@@ -1171,13 +1175,14 @@ fn branches_with_different_sessions_merge_without_conflict() {
     fixture.ok(&["stage", "advance"]);
     fixture.commit("beta moves");
     fixture.git(&["merge", "-q", "--no-edit", "work-alpha"]);
+    // Each keeps its start entry and its own move.
     assert_eq!(
         timeline(&fixture.read(&fixture.session_file_of("alpha"))).len(),
-        1
+        2
     );
     assert_eq!(
         timeline(&fixture.read(&fixture.session_file_of("beta"))).len(),
-        1
+        2
     );
 }
 

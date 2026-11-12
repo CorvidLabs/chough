@@ -265,6 +265,7 @@ fn read_transitions(_root: &Path, session: &Session, all: bool) -> Result<Transi
             continue;
         }
         if !stage::STAGE_KINDS.contains(&kind.as_str())
+            && kind != stage::START
             && kind != stage::GATE_OPENED
             && kind != stage::GATE_CLOSED
         {
@@ -594,20 +595,27 @@ fn derive(transitions: &Transitions, session: &Session, at: u64) -> Derived {
         active: None,
         backfilled: false,
     };
+    // REQ-history-002 (F11): the session's `start` entry, its first, starts the first
+    // segment; a timeline without one, as an older or migrated one is, leaves that start
+    // unknown.
+    let started = transitions
+        .records
+        .first()
+        .filter(|record| record.kind == stage::START)
+        .map_or_else(
+            || Time::Unknown(NO_FIRST.into()),
+            |record| record.at.clone(),
+        );
     let Some(first) = moves.first() else {
-        // No stage record yet: the current stage since an unrecorded start.
-        let open = blank(&current, paused, Time::Unknown(NO_FIRST.into()));
+        // No stage record yet: the current stage since the session started.
+        let open = blank(&current, paused, started);
         return Derived {
             before_first: Some(close(open, Time::Known(at), true, &gates, at)),
             cycles: vec![],
             gates,
         };
     };
-    let mut open = blank(
-        &first.from,
-        first.kind == "resume",
-        Time::Unknown(NO_FIRST.into()),
-    );
+    let mut open = blank(&first.from, first.kind == "resume", started);
     let mut before_first = None;
     let mut cycles: Vec<Cycle> = vec![];
     let mut visits: BTreeMap<String, u32> = BTreeMap::new();

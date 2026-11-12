@@ -154,11 +154,14 @@ from the current one up to `<stage>`, as consecutive advances (REQ-cli-052, DRIV
 
 Every transition of a session is one entry of its `session.md`'s `## Timeline`
 (REQ-history-002): `- <time> · <kind> · <from> → <to> · <text> ^t-xxxxxx`. `<time>` is
-UTC to the second in ISO 8601; `<kind>` is `advance`, `iterate`, `back`, `reset`,
-`pause`, `resume`, `skip`, `enter`, `return`, `gate-opened`, `gate-closed`,
+UTC to the second in ISO 8601; `<kind>` is `start`, `advance`, `iterate`, `back`,
+`reset`, `pause`, `resume`, `skip`, `enter`, `return`, `gate-opened`, `gate-closed`,
 `direct-native-write` or `correction`; `<text>` is the reason, gate or note; and
 `^t-xxxxxx` is the entry ID, `t-` and 6 lowercase hex digits from fresh random bits,
-unique in its file. The structured fields follow as indented `- key: value` lines
+unique in its file. `chough init --objective` and `chough session new` each write one
+`start` entry first, from and to the stage the session starts in, with its objective,
+or its key when none was given; `chough timing` reads it as the start of that stage's
+first segment. The structured fields follow as indented `- key: value` lines
 (`native_change`, `gate`, `revision`, `refresh`, a backfill's `recorded_at`, `commit`
 and `quote`, a gate-opened entry's `holds` and `drives`, a closed gate's
 `relayed_by`, the direct-write fields, a correction's `corrects`, and `by`). A field
@@ -1887,7 +1890,7 @@ reads (above).
 
 | Section | Derived from |
 |---|---|
-| Stages | The Timeline of every open session and every archived story, within 4,096 entries and 16 MiB in one request; a session or story that cannot be read is named and the report marked partial. Each `advance`, `iterate`, `back`, `reset`, `skip`, `pause`, `resume`, `enter` and `return` entry ends the open segment and starts the next; `gate-opened`, `gate-closed`, `direct-native-write` and `correction` entries start or end none. Every `reset` starts a new cycle and `back` never does; the first cycle starts at the first entry. The segment before it has an unknown start, because `init` writes no transition. Time in `done` until the next reset is idle between cycles. Iterations, side-stage visits and paused time are shown separately; active time is stage time minus waiting on a human, and paused segments are not stage time. The open segment ends now and is `ongoing`. |
+| Stages | The Timeline of every open session and every archived story, within 4,096 entries and 16 MiB in one request; a session or story that cannot be read is named and the report marked partial. Each `advance`, `iterate`, `back`, `reset`, `skip`, `pause`, `resume`, `enter` and `return` entry ends the open segment and starts the next; `gate-opened`, `gate-closed`, `direct-native-write` and `correction` entries start or end none. Every `reset` starts a new cycle and `back` never does; the first cycle starts at the first entry. The segment before it starts at the session's `start` entry; a timeline without one, such as a migrated 0.5.x one, leaves that start unknown. Time in `done` until the next reset is idle between cycles. Iterations, side-stage visits and paused time are shown separately; active time is stage time minus waiting on a human, and paused segments are not stage time. The open segment ends now and is `ongoing`. |
 | Human gates | `gate-opened` and `gate-closed` entries paired by gate text and reconciled with the checkpoint's awaiting gates: opened and still listed is open (elapsed so far); opened, never closed and no longer listed was `cleared without a gate record` (close time unknown); listed with no entry, or closed with no opening, was `opened before gate records or record missing`. A second `gate-opened` for a gate already open means it was cleared in between without a record: the earlier opening is closed at an unknown time and a new gate starts. A gate whose close is before its open (or that is open with an open time after now) has one wrong time, so every segment it could overlap under either reading has unknown waiting and active time. Overlapping gates are merged, so waiting time is never counted twice; a gate with an unknown end leaves the affected segments' active time unknown. A gate entry says when; a relayed one also carries a claim of who decided (REQ-cli-050), which timing does not report. |
 | Tests | Case runs per case and environment: time, outcome and run time, from evidence entries and the receipts of archived stories and bugs. `cases run` records `duration_seconds` in whole seconds, and a run under one second is `recorded together`, not a measured zero; manual records and earlier runs have no run time, shown unknown. |
 | Validation runs | Started, completed, failures, not run, recorded attempts and `elapsed_seconds`, labelled total run wall-clock, including intervals and resumes: it is never a per-test time. |

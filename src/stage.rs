@@ -283,6 +283,10 @@ pub(super) fn validate_direct_write(transition: &Transition) -> Result<()> {
 
 /// Every check of a transition's optional records.
 pub(super) fn validate_records(transition: &Transition) -> Result<()> {
+    ensure!(
+        transition.kind != START || transition.from == transition.to,
+        "invalid transition payload: a start entry stays in the stage the session starts in"
+    );
     validate_relay(transition)?;
     validate_direct_write(transition)?;
     validate_gate_and_correction(transition)
@@ -370,10 +374,31 @@ pub(super) struct Transition {
 /// no stage segment.
 pub(super) const CORRECTION: &str = "correction";
 
+/// The first entry of a session, which `chough init` and `chough session new` write
+/// (REQ-history-002, F11): it starts the first stage segment and ends none.
+pub(super) const START: &str = "start";
+
 /// Whether `kind` is a Timeline entry kind (REQ-history-002).
 pub(super) fn is_kind(kind: &str) -> bool {
     STAGE_KINDS.contains(&kind)
-        || [GATE_OPENED, GATE_CLOSED, DIRECT_WRITE, CORRECTION].contains(&kind)
+        || [START, GATE_OPENED, GATE_CLOSED, DIRECT_WRITE, CORRECTION].contains(&kind)
+}
+
+/// Queue a new session's `start` entry, from and to the stage it starts in, with
+/// `text`, its objective or key (REQ-history-002).
+pub(super) fn log_start(root: &Path, session: &mut Checkpoint, text: &str) -> Result<()> {
+    let stage = session.stage.current.clone();
+    log_transition_at(
+        root,
+        session,
+        START,
+        (&stage, &stage),
+        Some(text),
+        None,
+        vec![],
+        None,
+        None,
+    )
 }
 
 /// What native lifecycle state allows, without inventing any of it.
