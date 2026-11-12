@@ -664,3 +664,39 @@ expected = ["tests/next.rs::at_plan_after_approval_next_shows_specsyncs_step_for
 adapter = "cargo-test"
 test_target = "next"
 test = "at_plan_after_approval_next_shows_specsyncs_step_for_reference_only"
+
+[[case]]
+id = "TC-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line"
+title = "A duplicate bug add lists each similar bug as a line with its ID, title and status, never a raw JSON array, and keeps both ways forward"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_duplicate_bug_add_lists_each_similar_bug_as_a_line passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_duplicate_bug_add_lists_each_similar_bug_as_a_line"
+
+[[case]]
+id = "TC-cli-near-miss-gate-close-names-the-closest-open-gate"
+title = "Closing a gate by a near-miss text is refused as gate-not-open naming the closest open gate when one is close, and none when none is, with nothing saved"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs", "tests/relay.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/relay.rs::a_near_miss_gate_close_names_the_closest_open_gate passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "relay"
+test = "a_near_miss_gate_close_names_the_closest_open_gate"

@@ -482,3 +482,32 @@ fn a_relayed_decision_is_written_as_labelled_lines_and_reads_back() {
     );
     assert_eq!(closed[0]["relayed_by"]["where"], "a test, 2026-11-12");
 }
+
+/// Fresh-eyes round 3, F6 (2026-11-12; REQ-cli-050): closing a gate by a near-miss text
+/// gave refused:gate-not-open with no "did you mean". The refusal names the closest open
+/// gate when one is close, and none when no open gate is; nothing is saved either way.
+#[test]
+fn a_near_miss_gate_close_names_the_closest_open_gate() {
+    let fixture = new_history_project();
+    let full = relay("SYNTHETIC-human", "Approve", "orc tab", "SYNTHETIC-agent");
+    fixture.ok(&["checkpoint", "--awaiting-human", "Release approval"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "Scope approval"]);
+    for (given, suggested) in [
+        ("Release aproval", Some("Release approval")),
+        ("release approval", Some("Release approval")),
+        ("Scope  approvl", Some("Scope approval")),
+        ("Ship it to production now", None),
+    ] {
+        let before = snapshot(fixture.root());
+        let error = fixture.fails(&close(given, &full));
+        assert!(error.contains("refused:gate-not-open"), "{given}: {error}");
+        match suggested {
+            Some(gate) => assert!(
+                error.contains(&format!("Did you mean \"{gate}\"?")),
+                "{given}: {error}"
+            ),
+            None => assert!(!error.contains("Did you mean"), "{given}: {error}"),
+        }
+        assert!(before == snapshot(fixture.root()), "{given} wrote records");
+    }
+}

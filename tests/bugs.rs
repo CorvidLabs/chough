@@ -2223,3 +2223,35 @@ fn a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story() {
         assert!(story.contains(bug.as_str()), "{bug} missing from\n{story}");
     }
 }
+
+/// Fresh-eyes round 3, F6 (2026-11-12; REQ-cli-054): a duplicate `bug add` printed
+/// "similar bugs exist: [{\"id\":...,\"score\":0.71,...}]", a raw JSON array. Each similar
+/// bug is a readable line with its ID, title and status, and the refusal keeps both ways
+/// forward: append evidence to one, or add with --distinct.
+#[test]
+fn a_duplicate_bug_add_lists_each_similar_bug_as_a_line() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let refused = add_bug(&fixture, &[]);
+    assert!(!refused.status.success());
+    let error = String::from_utf8_lossy(&refused.stderr).into_owned();
+    assert!(error.contains("similar bugs exist"), "{error}");
+    assert!(
+        error.lines().any(|line| line.trim()
+            == format!("{id}: Shipping is charged at exactly the free threshold (open)")),
+        "{error}"
+    );
+    for raw in ["[{", "\"id\"", "\"score\""] {
+        assert!(!error.contains(raw), "raw JSON {raw}: {error}");
+    }
+    for way in [
+        "chough bug update <id> --observation <id> --note <text>",
+        "--distinct <why this is a different defect>",
+    ] {
+        assert!(error.contains(way), "{way}: {error}");
+    }
+}
