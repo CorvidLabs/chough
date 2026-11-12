@@ -1551,12 +1551,38 @@ pub(super) fn open_backlog(root: &Path) -> Result<Vec<Value>> {
 }
 
 /// Every evidence ID each bug links, whatever its status, labeled `<bug-id> <status>`:
-/// its evidence and its regression baseline.
+/// its evidence and its regression baseline, a session-qualified link also by its bare
+/// ID (see [`with_bare_ids`]).
 pub(super) fn observation_references(root: &Path) -> Result<Vec<(String, Vec<String>)>> {
     Ok(read_all(root)?
         .iter()
-        .map(|bug| (format!("{} {}", bug.id(), bug.status()), bug.linked()))
+        .map(|bug| {
+            (
+                format!("{} {}", bug.id(), bug.status()),
+                with_bare_ids(bug.linked()),
+            )
+        })
         .collect())
+}
+
+/// Each linked ID as stored and, for a session-qualified link (`<session>/<id>`, as
+/// `bug add` and `bug update` store a link to a session entry, REQ-cli-023), its bare
+/// evidence ID too, the part after the last `/`. The test gate and next's last failure
+/// match bug links against bare observation IDs, so both forms count as a link.
+fn with_bare_ids(links: Vec<String>) -> Vec<String> {
+    let mut ids = vec![];
+    for link in links {
+        if let Some((_, bare)) = link.rsplit_once('/')
+            && !bare.is_empty()
+            && !ids.iter().any(|id| id == bare)
+        {
+            ids.push(bare.to_string());
+        }
+        if !ids.contains(&link) {
+            ids.push(link);
+        }
+    }
+    ids
 }
 
 /// Whether a bug status is closed: verified, duplicate, wont-fix or fixed-upstream.
