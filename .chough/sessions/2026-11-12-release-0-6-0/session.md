@@ -352,7 +352,11 @@ bugs:
   - 2026-11-12-migrated-sessions-and-stories-keep-bare-0-5-x-observation-ids
   - 2026-11-12-an-archived-story-opens-with-its-receipts-and-never-names-the
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Approve the 0.6.0 release prep re-scoped for the fourth round's 4 real findings
+    holds: plan
+    drives: approve
+    opened: 2026-11-12T23:34:22Z
 run_consents: []
 next: "Gate \"Approve the 0.6.0 release prep re-scoped for the 12 third-round fresh-eyes findings\" closed (approved); run `chough stage advance` to move on."
 title: "Chough 0.6.0 release prep: the dogfood cycle and three fresh-eyes rounds"
@@ -942,5 +946,11 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - revision: 2bd80ec92fa0c3986d32a2b5acf8b194babef5bb
   - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 47 case(s) and 257 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t382)
+- 2026-11-12T23:34:16Z · gate-opened · plan → plan · Approve the 0.6.0 release prep re-scoped for the fourth round's 4 real findings ^t-0d0046
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 3e902b47a4ffa5c80ff1c7674c8e69917bd6482b
+  - holds: plan
+  - drives: approve
   - by: claude-code (hc t382)
 
