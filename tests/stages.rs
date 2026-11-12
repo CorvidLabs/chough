@@ -3243,3 +3243,55 @@ fn every_stage_move_says_when_chough_runs_native_approval_or_review() {
         assert_eq!(moved["authority"], expected, "{args:?}: {moved:#}");
     }
 }
+
+/// REQ-cli-008, F9 of the third fresh-eyes round: a stage move prints by default a short
+/// text summary, at most 10 lines, naming the move, the stage it reached and the next
+/// action, and prints its full JSON report, with every field it gave before, under
+/// `--json`.
+#[test]
+fn a_stage_move_prints_a_short_summary_and_its_full_report_under_json() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["checkpoint", "--next-action", "SYNTHETIC sketch the design"]);
+    let output = fixture.run(&["stage", "advance", "--note", "SYNTHETIC intent agreed"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(
+        serde_json::from_str::<Value>(&text).is_err(),
+        "the default output is JSON:\n{text}"
+    );
+    let lines = text.lines().count();
+    assert!((1..=10).contains(&lines), "{lines} lines:\n{text}");
+    for part in ["intent", "design", "SYNTHETIC sketch the design"] {
+        assert!(text.contains(part), "{part:?} missing from\n{text}");
+    }
+    assert_eq!(stage(&fixture), "design");
+
+    let report = fixture.ok(&[
+        "stage",
+        "skip",
+        "--reason",
+        "SYNTHETIC no visuals",
+        "--json",
+    ]);
+    for key in [
+        "schema_version",
+        "applied",
+        "stage",
+        "native_change",
+        "awaiting_human",
+        "valid_transitions",
+        "stages",
+        "recent_transitions",
+        "transitions_partial",
+        "authority",
+    ] {
+        assert!(report.get(key).is_some(), "{key} missing: {report:#}");
+    }
+    assert_eq!(report["applied"]["kind"], "skip", "{report:#}");
+    assert_eq!(report["applied"]["to"], "plan", "{report:#}");
+}
