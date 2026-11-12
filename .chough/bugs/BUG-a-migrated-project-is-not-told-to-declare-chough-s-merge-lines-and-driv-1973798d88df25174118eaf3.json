@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "BUG-a-migrated-project-is-not-told-to-declare-chough-s-merge-lines-and-driv-1973798d88df25174118eaf3",
+  "title": "A migrated project is not told to declare Chough's merge lines and drivers, so doctor reports merge_drivers after every migration",
+  "symptom": "After chough migrate --apply, doctor reports merge_drivers for the three .gitattributes lines and both drivers, while the plan's and receipt's follow-ups name only the verification exclusions",
+  "trigger": "Migrate any 0.5.x project, then chough doctor",
+  "expected": "The migration's follow-ups say how to declare the merge lines and set the drivers (REQ-cli-047), as they already do for the verification exclusions",
+  "actual": "Only doctor says it",
+  "criteria": [],
+  "requirements": [
+    "REQ-records-009",
+    "REQ-cli-047"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester build at 596ced67, debug, SpecSync 6.3.0",
+  "revision": "6360516bdac4f5480902097986c2218b411356f5",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "A migrated project merges its generated files with Git's text merge until someone runs doctor",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t384, 6.3.0 re-run, area upgrade (N1)",
+  "notes": [],
+  "created_at_unix_seconds": 1794466925,
+  "updated_at_unix_seconds": 1794466925
+}

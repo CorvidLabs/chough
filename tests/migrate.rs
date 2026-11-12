@@ -1318,3 +1318,30 @@ fn the_standing_migration_preference_is_set_before_the_first_migration() {
     );
     assert_eq!(fixture.read(".chough/preferences.json"), preferences);
 }
+
+/// REQ-records-009, REQ-cli-047, TC-records-the-migration-names-the-merge-setup (U7): a
+/// migrated project's `.gitattributes` lacks Chough's merge lines, so the plan's and the
+/// receipt's follow-ups name each missing line and `chough doctor --fix`, which sets the
+/// merge drivers in a clone, as they name the verification exclusions.
+#[test]
+fn the_migration_follow_ups_name_the_merge_lines_and_drivers() {
+    let fixture = migrate_project("adopted", &[]);
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    let follow_ups = plan["follow_ups"].to_string();
+    for line in [
+        ".chough/bugs/*.md merge=chough-bug",
+        "knowledge/index.md merge=chough-generated",
+        "knowledge/journal/feed.xml merge=chough-generated",
+        "chough doctor --fix",
+    ] {
+        assert!(
+            follow_ups.contains(line),
+            "{line} missing from {follow_ups}"
+        );
+    }
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    assert!(
+        receipt.contains("knowledge/journal/feed.xml merge=chough-generated"),
+        "{receipt}"
+    );
+}
