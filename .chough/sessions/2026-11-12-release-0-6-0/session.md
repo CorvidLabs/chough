@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -61,7 +61,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Journal red then green (title/summary, derived fallback, journal add --record), then case-definition temporary paths red then green, then the backfill, 0.6.0's post and lessons; flakes when t37f and t38b report
+next: Backfill the 69 journal posts from t38c's drafts with journal add --record; build j, k, l, d and the blank line red then green; integrate t37f's c, e, i and t38b's f, g, h; record the flake reruns
 ---
 # Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
@@ -81,6 +81,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - decided: re-scoped the release prep on Leif's 'Block the tag' (2026-11-12T15:14Z): D2's REQ-cli-061 delta, the migrate preview warning (a REQ-records-009 delta) and D1's pointer clarification (a REQ-history-006 delta, since delta modules must match the affected specs cli, history and records, which own the code this change touches); SpecSync offers no command to clear no_spec_change, which approve refuses with a public contract change, so I set it false in state.json by hand (a direct lifecycle write); rehearsed approve and change check --commit in a throwaway clone with a synthetic actor first, verified
 - Leif decided "Approve the re-scoped 0.6.0 release preparation": "Yes, go ahead" (coordinator chat (Claude Code, hc t370), 2026-11-12T15:24Z, answering the coordinator's plain summary of the three contract sentences (REQ-cli-061, REQ-records-009, REQ-history-006) for the re-scoped 0.6.0 release prep; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 - Leif decided "Approve the 0.6.0 release prep re-scoped for the journal, lessons and temporary paths in case definitions": "yes put the journal fixes in 0.6.0 / yes add lessons in 0.6.0 / Yes, add both (Recommended) / Yes (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12: 'yes put the journal fixes in 0.6.0' at 15:35Z (short titles, real summaries, the backfill); 'yes add lessons in 0.6.0' at 15:37Z; at 15:41Z 'Yes, add both (Recommended)' for chough checkpoint --title/--summary and chough journal add --record with a derived fallback, and 'Yes (Recommended)' for /tmp paths in test-case definitions not counting as leaks; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
+- Leif decided "Approve the 0.6.0 release prep re-scoped for the fresh-eyes findings and the migrated blank line": "Yes, fix all (Recommended) / Yes, fix it (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-12: at 16:26Z 'Yes, fix all (Recommended)' for every fresh-eyes finding (bugs and gaps c, d, e; messages f, g, h, i; requirement changes j, k, l), and at 16:38Z 'Yes, fix it (Recommended)' for the migrated session file's stray blank line; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood as 0xLeif
 
 ## What was verified
 
@@ -222,5 +223,21 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - revision: ad3214229cc6513156f661fbe960eaed929765cb
   - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, checkpoint references: 0 case(s) and 40 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t382)
+- 2026-11-12T16:39:04Z · gate-opened · plan → plan · Approve the 0.6.0 release prep re-scoped for the fresh-eyes findings and the migrated blank line ^t-0ea94d
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 3a5dc792021065b81fbe8853199f4916afc8c069
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-12T16:39:05Z · gate-closed · plan → plan · Approve the 0.6.0 release prep re-scoped for the fresh-eyes findings and the migrated blank line ^t-92acd1
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 3a5dc792021065b81fbe8853199f4916afc8c069
+  - relayed_by: {"decided_by":"Leif","words":"Yes, fix all (Recommended) / Yes, fix it (Recommended)","where":"coordinator chat (Claude Code, hc t370), 2026-11-12: at 16:26Z 'Yes, fix all (Recommended)' for every fresh-eyes finding (bugs and gaps c, d, e; messages f, g, h, i; requirement changes j, k, l), and at 16:38Z 'Yes, fix it (Recommended)' for the migrated session file's stray blank line; relayed by claude-code-t370","recorded_by":"claude-code-t382","native":"specsync change approve prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood","actor":"0xLeif"}
+  - by: claude-code (hc t382)
+- 2026-11-12T16:39:10Z · advance · plan → build · Leif approved the fresh-eyes re-scope (16:26Z, 16:38Z, relayed by t370) ^t-66baf7
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - gate: native:approved
+  - revision: 3a5dc792021065b81fbe8853199f4916afc8c069
   - by: claude-code (hc t382)
 
