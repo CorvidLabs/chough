@@ -657,6 +657,40 @@ fn automatic_collision_root(case_id: &str, missing_output: &str) -> (Fixture, St
     (fixture, id)
 }
 
+/// S2 (REQ-cli-012: "A migrated bug answers to its BUG-NNNN alias in list, search,
+/// show, update and report"): `bug list` names each bug's aliases, and `bug search`
+/// finds a bug by its alias or its name, first, before any word match; a search by
+/// words alone is unchanged, and `bug add`'s duplicate check still compares words.
+#[test]
+fn a_migrated_bug_answers_to_its_alias_in_bug_list_and_bug_search() {
+    let fixture = Fixture::new();
+    fixture.init();
+    seed_migrated_legacy_bug(&fixture);
+    let listed = fixture.ok(&["bug", "list", "--all"]);
+    let legacy = listed["bugs"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|bug| bug["id"] == LEGACY)
+        .unwrap_or_else(|| panic!("{listed:#}"))
+        .clone();
+    assert_eq!(legacy["aliases"], json!(["BUG-0019"]), "{legacy:#}");
+    for query in ["BUG-0019", "what is BUG-0019 about?", LEGACY] {
+        let found = fixture.ok(&["bug", "search", query]);
+        let first = &found["matches"][0];
+        assert_eq!(first["id"], LEGACY, "{query}: {found:#}");
+        assert_eq!(first["matched"], "id or alias", "{query}: {found:#}");
+    }
+    // An alias that no bug holds finds nothing; words still score as before.
+    assert_eq!(
+        fixture.ok(&["bug", "search", "BUG-9999"])["matches"],
+        json!([])
+    );
+    let words = fixture.ok(&["bug", "search", "legacy allocator sentinel"]);
+    assert_eq!(words["matches"][0]["id"], LEGACY, "{words:#}");
+    assert!(words["matches"][0].get("matched").is_none(), "{words:#}");
+}
+
 /// S5 (REQ-cli-023, REQ-cli-012): automatic failure capture links each failed attempt
 /// as `bug add` links a session entry, `<session>/<id>`, both when it opens the bug for
 /// the case and when it appends a later failure to it, and its Log names the same form,
