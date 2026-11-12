@@ -644,3 +644,23 @@ expected = ["tests/stages.rs::a_stage_move_prints_a_short_summary_and_its_full_r
 adapter = "cargo-test"
 test_target = "stages"
 test = "a_stage_move_prints_a_short_summary_and_its_full_report_under_json"
+
+# The third fresh-eyes round (t38m, 2026-11-12), fixed on leif/0.6.0-r4-t37f.
+
+[[case]]
+id = "TC-cli-next-shows-specsyncs-step-for-reference-only"
+title = "At plan after the scope approval, next's text shows SpecSync's own next step labelled for reference, so Next alone is the step to take now, and the JSON keeps the native read fields"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_plan_after_approval_next_shows_specsyncs_step_for_reference_only passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_plan_after_approval_next_shows_specsyncs_step_for_reference_only"

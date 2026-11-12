@@ -2582,7 +2582,9 @@ fn next_with_no_native_change_says_only_that_none_is_recorded() {
         assert_eq!(native, ["Native change: none recorded"], "{shown}");
         assert!(!shown.contains("(read "), "{shown}");
         assert_eq!(
-            shown.contains("  Native next action: stub next action for draft"),
+            shown.contains(
+                "  SpecSync's own next step, for reference (the step to take now is Next): stub next action for draft"
+            ),
             native_next,
             "{shown}"
         );
@@ -2802,4 +2804,37 @@ fn next_and_status_show_every_command_whole_for_a_long_change_id() {
             assert!(commands_closed(text), "a command is cut open:\n{text}");
         }
     }
+}
+
+/// Fresh-eyes round 3, F8 (2026-11-12; REQ-cli-021): at plan after the scope approval,
+/// next printed SpecSync's "Native next action: run `specsync change check <id>
+/// --commit`" beside Chough's own Next, two next actions that disagree. The text view
+/// shows SpecSync's step as its own, for reference, so Next alone is the step to take
+/// now; the JSON keeps the native read fields.
+#[cfg(unix)]
+#[test]
+fn at_plan_after_approval_next_shows_specsyncs_step_for_reference_only() {
+    let fixture = approved_at_plan("after-approval");
+    let native = "run `specsync change check after-approval --commit`";
+    fixture.write(".stub-next", &format!("{native}\n"));
+    let shown = text(&fixture, &["next"]);
+    let line = shown
+        .lines()
+        .find(|line| line.contains(native))
+        .unwrap_or_else(|| panic!("SpecSync's step is not shown:\n{shown}"));
+    assert_eq!(
+        line,
+        format!(
+            "  SpecSync's own next step, for reference (the step to take now is Next): {native}"
+        )
+    );
+    assert!(!shown.contains("Native next action"), "{shown}");
+    let next = shown
+        .lines()
+        .find(|line| line.starts_with("Next: "))
+        .unwrap();
+    assert!(!next.contains("specsync"), "{next}");
+    let view = fixture.ok(&["next", "--json"]);
+    assert_eq!(view["native"]["next_action"], native, "{view:#}");
+    assert_eq!(view["native"]["state"], "approved", "{view:#}");
 }
