@@ -1552,3 +1552,62 @@ fn a_receipt_has_one_follow_up_heading_for_every_follow_up() {
         );
     }
 }
+
+/// REQ-records-009, F12b of the third fresh-eyes round: a person consents to the plan, so
+/// `chough migrate` prints it as text, naming each 0.5.x file with its SHA-256 and what it
+/// becomes, each file it writes, each redaction by file, field and kind, each removal and
+/// the digest with the apply command, and writes nothing; `chough migrate --json` prints
+/// the same plan and digest as JSON.
+#[test]
+fn the_preview_prints_the_plan_as_text_and_the_same_plan_as_json() {
+    let fixture = migrate_project("adopted", &[]);
+    let before = files(fixture.root());
+    let output = fixture.run(&["migrate"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(
+        serde_json::from_str::<Value>(&text).is_err(),
+        "the preview is JSON:\n{text}"
+    );
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert!(files(fixture.root()) == before, "the preview wrote");
+    let digest = plan["plan_digest"].as_str().unwrap();
+    assert!(
+        text.contains(&format!("chough migrate --apply {digest}")),
+        "{text}"
+    );
+    let mut named: Vec<String> = vec![];
+    for (path, sha) in plan["sources"].as_object().unwrap() {
+        named.push(format!("`{path}` {}", sha.as_str().unwrap()));
+    }
+    for targets in plan["becomes"].as_object().unwrap().values() {
+        for target in targets.as_array().unwrap() {
+            named.push(format!("`{}`", target.as_str().unwrap()));
+        }
+    }
+    for write in written(&plan) {
+        named.push(format!("`{write}`"));
+    }
+    let redactions = plan["redactions"].as_array().unwrap();
+    assert!(!redactions.is_empty(), "{plan:#}");
+    for redaction in redactions {
+        named.push(format!(
+            "`{}` {}: {}",
+            redaction["file"].as_str().unwrap(),
+            redaction["field"].as_str().unwrap(),
+            redaction["kind"].as_str().unwrap()
+        ));
+    }
+    let removed = plan["removed"].as_object().unwrap();
+    assert!(!removed.is_empty(), "{plan:#}");
+    for path in removed.keys() {
+        named.push(format!("`{path}`"));
+    }
+    for part in named {
+        assert!(text.contains(&part), "{part} is not named in\n{text}");
+    }
+}
