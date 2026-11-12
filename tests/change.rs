@@ -303,7 +303,7 @@ fn a_missing_specsync_refuses_naming_install_and_the_step_to_rerun() {
         assert_eq!(output.status.code(), Some(1), "{chough:?}");
         let error = String::from_utf8_lossy(&output.stderr);
         assert!(
-            error.contains("`cargo install --locked specsync@6.2.0`"),
+            error.contains("`cargo install --locked specsync@6.3.0`"),
             "{chough:?} names no install: {error}"
         );
         let step = format!("`chough {}`", chough[..2].join(" "));

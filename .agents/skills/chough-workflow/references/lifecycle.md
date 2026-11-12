@@ -2,7 +2,7 @@
 
 `chough change status <id>` (SpecSync's own status, passed through unchanged),
 `specsync change ship-status <id>` and installed command help are authoritative for
-the current state and recovery path. This reference follows SpecSync 6.2; do not
+the current state and recovery path. This reference follows SpecSync 6.3; do not
 hardcode it over another version's output.
 Match the SpecSync version used by lifecycle writers and CI.
 

@@ -72,7 +72,7 @@ hi --version; specsync --version; fledge --version
 ```
 
 Use the same SpecSync version for every lifecycle writer and CI (this repository uses
-6.2.0). In the project:
+6.3.0). In the project:
 
 ```sh
 chough init --objective "Free shipping from fifty dollars" \

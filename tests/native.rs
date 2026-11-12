@@ -13,7 +13,7 @@ const MARKER: &str = "chough_archive_authentication";
 
 #[cfg(unix)]
 const NATIVE_STUB: &str = r#"#!/bin/sh
-if [ "$1" = --version ]; then printf 'specsync 6.2.0\n'; exit 0; fi
+if [ "$1" = --version ]; then printf 'specsync 6.3.0\n'; exit 0; fi
 if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
 if [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi
 if [ -f .stub-sleep ]; then
@@ -270,7 +270,7 @@ fn a_live_reply_cannot_supply_the_cached_proof_marker() {
     fixture.write(
         "bin/specsync",
         &format!(
-            "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.2.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf '%s\\n' '{{\"summary\":{{\"id\":\"old-change\",\"state\":\"archived\",\"next_action\":\"none\",\"correction_valid\":true,\"approval_valid\":true,\"terminal_evidence\":{{\"validity\":\"authenticated-history\"}}}},\"change\":{{\"id\":\"old-change\",\"state\":\"archived\"}},\"acceptance_entries\":[],\"{MARKER}\":{forged}}}'\n"
+            "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.3.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf '%s\\n' '{{\"summary\":{{\"id\":\"old-change\",\"state\":\"archived\",\"next_action\":\"none\",\"correction_valid\":true,\"approval_valid\":true,\"terminal_evidence\":{{\"validity\":\"authenticated-history\"}}}},\"change\":{{\"id\":\"old-change\",\"state\":\"archived\"}},\"acceptance_entries\":[],\"{MARKER}\":{forged}}}'\n"
         ),
     );
     fixture.executable("bin/specsync");
@@ -390,7 +390,7 @@ fn failed_malformed_and_oversized_inputs_never_become_authenticated() {
         } else {
             fixture.write(
                 "bin/specsync",
-                "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.2.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf 'not json\\n'\n",
+                "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'specsync 6.3.0\\n'; exit 0; fi\nif [ -f .stub-count ]; then echo \"$*\" >>.stub-calls; fi\nprintf 'not json\\n'\n",
             );
             fixture.executable("bin/specsync");
         }

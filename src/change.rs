@@ -20,7 +20,7 @@ const SPECSYNC: &str = "specsync";
 /// The variable and default of the native read bound, as for every native read.
 const NATIVE_TIMEOUT_VARIABLE: &str = "CHOUGH_NATIVE_TIMEOUT_SECONDS";
 const NATIVE_DEADLINE: Duration = Duration::from_secs(120);
-const INSTALL: &str = "cargo install --locked specsync@6.2.0";
+const INSTALL: &str = "cargo install --locked specsync@6.3.0";
 
 #[derive(Subcommand)]
 pub(super) enum ChangeCommand {

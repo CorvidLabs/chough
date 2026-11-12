@@ -2486,7 +2486,7 @@ fn versions_agree_across_readme_agents_ci_and_specsync_config() {
             "human-intent@0.8.0",
             "human-intent@9.9.9",
         ),
-        ("README.md", "SpecSync", "specsync@6.2.0", "specsync@9.9.9"),
+        ("README.md", "SpecSync", "specsync@6.3.0", "specsync@9.9.9"),
         ("README.md", "Fledge", "fledge@1.8.0", "fledge@9.9.9"),
         (
             "README.md",
@@ -2495,7 +2495,7 @@ fn versions_agree_across_readme_agents_ci_and_specsync_config() {
             "Chough needs Rust 9.9",
         ),
         ("AGENTS.md", "HI (human-intent)", "hi 0.8.0", "hi 9.9.9"),
-        ("AGENTS.md", "SpecSync", "specsync 6.2.0", "specsync 9.9.9"),
+        ("AGENTS.md", "SpecSync", "specsync 6.3.0", "specsync 9.9.9"),
         ("AGENTS.md", "Fledge", "fledge 1.8.0", "fledge 9.9.9"),
         (
             ".github/workflows/ci.yml",
@@ -2506,7 +2506,7 @@ fn versions_agree_across_readme_agents_ci_and_specsync_config() {
         (
             ".github/workflows/ci.yml",
             "SpecSync",
-            "version: '6.2.0'",
+            "version: '6.3.0'",
             "version: '9.9.9'",
         ),
         (
@@ -2536,7 +2536,7 @@ fn versions_agree_across_readme_agents_ci_and_specsync_config() {
         (
             "docs/ci.md",
             "SpecSync",
-            "SpecSync **6.2.0**",
+            "SpecSync **6.3.0**",
             "SpecSync **9.9.9**",
         ),
         ("docs/ci.md", "Fledge", "Fledge is 1.8.0", "Fledge is 9.9.9"),
@@ -2555,7 +2555,7 @@ fn versions_agree_across_readme_agents_ci_and_specsync_config() {
         (
             "docs/integrations.md",
             "SpecSync",
-            "CorvidLabs/spec-sync) 6.2.0",
+            "CorvidLabs/spec-sync) 6.3.0",
             "CorvidLabs/spec-sync) 9.9.9",
         ),
         (
@@ -2573,7 +2573,7 @@ fn versions_agree_across_readme_agents_ci_and_specsync_config() {
         (
             ".specsync/config.toml",
             "SpecSync",
-            "SpecSync 6.2.0",
+            "SpecSync 6.3.0",
             "SpecSync 9.9.9",
         ),
         (
@@ -2642,24 +2642,24 @@ fn versions_agree_across_readme_agents_ci_and_specsync_config() {
 
     // The shape around the pins: README's toolchain command stays one command naming
     // all three tools, and the MSRV job needs the Archive job and runs the suite.
-    let toolchain = "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.2.0";
+    let toolchain = "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.3.0";
     let shapes = [
         (
             0,
             toolchain,
-            "cargo install --locked human-intent@0.8.0 fledge@1.8.0\ncargo install --locked specsync@6.2.0",
+            "cargo install --locked human-intent@0.8.0 fledge@1.8.0\ncargo install --locked specsync@6.3.0",
             "README.md: Install the toolchain is not one cargo install command",
         ),
         (
             0,
             toolchain,
-            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.2.0 && hi --version",
+            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.3.0 && hi --version",
             "README.md: Install the toolchain is not one cargo install command",
         ),
         (
             0,
             toolchain,
-            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.2.0 cargo-nextest@0.9.0",
+            "cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.3.0 cargo-nextest@0.9.0",
             "README.md: Install the toolchain is not one cargo install command",
         ),
         (

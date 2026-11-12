@@ -947,7 +947,7 @@ nothing and writes nothing under `.chough/`.
   waits until you stop Chough. Stopping Chough with SIGINT, SIGTERM or SIGHUP stops
   SpecSync and its descendants (FLOW-14).
 - When `specsync` cannot be started, the step refuses with exit 1 and runs nothing,
-  naming `cargo install --locked specsync@6.2.0` and the step to run again.
+  naming `cargo install --locked specsync@6.3.0` and the step to run again.
 
 A human's approval and review run through their gate (see
 [Relayed decisions at gates](#relayed-decisions-at-gates)). The plain `specsync change

@@ -85,10 +85,10 @@ Chough works with HI, SpecSync and Fledge. One command installs the versions CI
 uses:
 
 ```sh
-cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.2.0
+cargo install --locked human-intent@0.8.0 fledge@1.8.0 specsync@6.3.0
 ```
 
-This command needs Rust 1.89 or later, because SpecSync 6.2.0 declares it. Cargo
+This command needs Rust 1.89 or later, because SpecSync 6.3.0 declares it. Cargo
 skips a tool already installed from crates.io at that version and replaces a
 different version (`--force` reinstalls). The binaries are `hi`, `fledge` and
 `specsync`. Install Chough itself as shown in [Install](#install).
