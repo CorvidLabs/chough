@@ -1,0 +1,137 @@
+--- stdout ---
+
+running 1 test
+test last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived ... FAILED
+
+failures:
+
+---- last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived stdout ----
+
+thread 'last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived' (905011624) panicked at tests/next.rs:999:5:
+assertion `left == right` failed: open: {
+  "awaiting_human": {
+    "items": [],
+    "total": 0
+  },
+  "blockers": {
+    "items": [],
+    "total": 0
+  },
+  "blocking_bugs": {
+    "items": [],
+    "total": 0
+  },
+  "chough_writes": {
+    "missing": [],
+    "policy": ".specsync/sdd.json",
+    "state": "any-point",
+    "text": "no .specsync/sdd.json, so no native verification digests Chough's records; they may be written and committed at any point"
+  },
+  "corrections": {
+    "items": [],
+    "total": 0
+  },
+  "decisions": {
+    "items": [],
+    "total": 0
+  },
+  "direct_writes": null,
+  "environment": null,
+  "full_view": "chough status",
+  "gate": null,
+  "gates": [],
+  "knowledge": {
+    "dir": "knowledge",
+    "index": "knowledge/index.md",
+    "librarian": "on"
+  },
+  "last_actor": null,
+  "last_failure": {
+    "bugs": {
+      "items": [],
+      "total": 0
+    },
+    "id": "2026-11-10-fails-once",
+    "observed_at_unix_seconds": 3000,
+    "summary": "fixture observation 2026-11-10-fails-once"
+  },
+  "lessons": {
+    "archived_bundles": {
+      "items": [],
+      "total": 0
+    },
+    "sources": {
+      "items": [
+        {
+          "module": "cli",
+          "note": "missing",
+          "path": "specs/cli/context.md",
+          "section_line": null
+        }
+      ],
+      "total": 1
+    }
+  },
+  "native": {
+    "approval_valid": null,
+    "approved_deltas": "not checked: no native lifecycle",
+    "change": null,
+    "correction_valid": null,
+    "next_action": null,
+    "read": "not-configured",
+    "state": null,
+    "terminal_evidence": null
+  },
+  "native_check": null,
+  "native_verification_warning": null,
+  "next_valid_action": {
+    "action": "Capture or read the intent: run `hi check` to see the human-intent criteria and their state, then `chough context` for this session's bounded context, and reference the criteria the work covers with `chough checkpoint --criterion <id>`.",
+    "command": "hi check",
+    "reason": "No criteria are referenced yet; the work starts from the human's intent in HI."
+  },
+  "objective": "Ship a focused change",
+  "observations": {
+    "items": [
+      {
+        "id": "2026-11-12-ship-a-focused-change/2026-11-10-fails-once",
+        "label": "historical",
+        "referenced_by": [
+          ".chough/bugs/2026-11-12-synthetic-qualified-link-in-next.md"
+        ],
+        "referenced_by_total": 1
+      }
+    ],
+    "needs_attention_total": 1,
+    "referenced_current": 0,
+    "unreferenced": 1
+  },
+  "open_questions": {
+    "items": [],
+    "total": 0
+  },
+  "other_open_bugs": 1,
+  "schema_version": 1,
+  "stage": {
+    "callers": [],
+    "current": "intent",
+    "iteration": 1,
+    "status": "active"
+  },
+  "truncated": false,
+  "view": "next"
+}
+  left: Object {"items": Array [], "total": Number(0)}
+ right: Object {"items": Array [Object {"id": String("2026-11-12-synthetic-qualified-link-in-next"), "status": String("open")}], "total": Number(1)}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    last_failure_names_a_bug_linking_it_by_its_session_qualified_id_open_and_archived
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 22 filtered out; finished in 0.56s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/next.rs (target/debug/deps/next-1e7e61bb16f68fdb)
+error: test failed, to rerun pass `--test next`

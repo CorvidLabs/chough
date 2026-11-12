@@ -15,16 +15,26 @@
   "revision": "d854ce1ac06a195e0c81d2aaf22d61bd64e2c556",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-knowledge-index-titles-inert-a7c1b95199bf50b68b19b227"
+  ],
   "impact": "Dead links and stray HTML in the reading guide",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37f, test stage, area knowledge",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448972,
+      "text": "status: open -> investigating. Red at 3b0bf3ca (TC-cli-knowledge-index-titles-inert, on t37x's branch before its fix): failed for this bug's reason; fix in 8d5c5c38.",
+      "observations": [
+        "OBS-tc-cli-knowledge-index-titles-inert-a7c1b95199bf50b68b19b227"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794447528
+  "updated_at_unix_seconds": 1794448972
 }

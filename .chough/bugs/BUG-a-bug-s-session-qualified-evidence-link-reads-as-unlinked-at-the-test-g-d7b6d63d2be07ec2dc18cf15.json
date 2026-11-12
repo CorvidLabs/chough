@@ -15,16 +15,34 @@
   "revision": "c226da4259bfafd37e83208bfe37a7636589e12c",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-qualified-link-leaves-test-db9b137477577e9d19416c85",
+    "OBS-tc-cli-qualified-link-last-failure-d95a707ab518bb9d07487756"
+  ],
   "impact": "Any session with a linked failure cannot leave test",
   "classification": "product-defect",
   "scope": "blocking",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37j, test stage, area sessions",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448972,
+      "text": "status: open -> investigating. Red at ef4540b0 (TC-cli-qualified-link-leaves-test, on t37x's branch before its fix): failed for this bug's reason; fix in e942c1eb.",
+      "observations": [
+        "OBS-tc-cli-qualified-link-leaves-test-db9b137477577e9d19416c85"
+      ]
+    },
+    {
+      "at_unix_seconds": 1794448972,
+      "text": "Red at ef4540b0 (TC-cli-qualified-link-last-failure, on t37x's branch before its fix): failed for this bug's reason; fix in e942c1eb.",
+      "observations": [
+        "OBS-tc-cli-qualified-link-last-failure-d95a707ab518bb9d07487756"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447596,
-  "updated_at_unix_seconds": 1794447596
+  "updated_at_unix_seconds": 1794448972
 }

@@ -15,16 +15,26 @@
   "revision": "d854ce1ac06a195e0c81d2aaf22d61bd64e2c556",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-journal-link-tracked-only-e616203f178de12d5d50482e"
+  ],
   "impact": "Posts carry links that resolve nowhere in a clone or on GitHub",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t37f, test stage, area knowledge",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448972,
+      "text": "status: open -> investigating. Red at 17ad11b2 (TC-cli-journal-link-tracked-only, on t37x's branch before its fix): failed for this bug's reason; fix in ec1f58b0.",
+      "observations": [
+        "OBS-tc-cli-journal-link-tracked-only-e616203f178de12d5d50482e"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794447528,
-  "updated_at_unix_seconds": 1794447528
+  "updated_at_unix_seconds": 1794448972
 }

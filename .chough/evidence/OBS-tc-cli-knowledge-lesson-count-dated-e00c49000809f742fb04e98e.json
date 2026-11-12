@@ -1,0 +1,56 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-knowledge-lesson-count-dated-e00c49000809f742fb04e98e",
+  "criteria": [
+    "KNOW-12"
+  ],
+  "requirements": [
+    "REQ-cli-043"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test vault -- --exact the_lesson_count_reads_every_dated_entry for TC-cli-knowledge-lesson-count-dated: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-knowledge-lesson-count-dated-e00c49000809f742fb04e98e.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-knowledge-lesson-count-dated-e00c49000809f742fb04e98e.log": "fba499e4d52614961a9d6b077d84c623fa0c52c6e628d7b05d6ca0a1a3cd4220"
+  },
+  "observed_at_unix_seconds": 1794448944,
+  "snapshot": {
+    "revision": "faa164dc71e3c8a0ae749d435c356741994b6854",
+    "dirty": false,
+    "fingerprint": "39fd6349a47a2d114ea355d48daf5ac9c9cf56bd68de79abf4994dbd08c7807f",
+    "content": "45219ed1e1c5bd4001129a7d7e0643964dcd02390d076f2524c6058386015177"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-knowledge-lesson-count-dated",
+      "digest": "b22c652d32461fa354e0154d28086e28b09a16ba5546f71fe862b5cd53867ad4"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "vault",
+    "--",
+    "--exact",
+    "the_lesson_count_reads_every_dated_entry"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test result: ok. 1 passed\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 0
+}

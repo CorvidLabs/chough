@@ -1,0 +1,24 @@
+--- stdout ---
+
+running 1 test
+test journal_links_name_only_project_paths_git_tracks ... FAILED
+
+failures:
+
+---- journal_links_name_only_project_paths_git_tracks stdout ----
+
+thread 'journal_links_name_only_project_paths_git_tracks' (905018008) panicked at tests/journal.rs:712:9:
+.git/config was accepted
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    journal_links_name_only_project_paths_git_tracks
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.84s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/journal.rs (target/debug/deps/journal-43c8f9c057e108c5)
+error: test failed, to rerun pass `--test journal`

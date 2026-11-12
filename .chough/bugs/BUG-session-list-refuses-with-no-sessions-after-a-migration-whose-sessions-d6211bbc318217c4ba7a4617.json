@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "BUG-session-list-refuses-with-no-sessions-after-a-migration-whose-sessions-d6211bbc318217c4ba7a4617",
+  "title": "session list refuses with no sessions after a migration whose sessions were all archived",
+  "symptom": "After migrating a 0.5.0 project whose sessions are all finished, chough session list exits 1 'no sessions; run chough session new <key>', though .chough/archive/sessions/ holds the migrated stories",
+  "trigger": "Migrate a 0.5.x project with no open session, then chough session list",
+  "expected": "Every record is readable by session list after the migration (REQ-records-009); archived stories are listed",
+  "actual": "session list requires .chough/sessions/ to exist",
+  "criteria": [],
+  "requirements": [
+    "REQ-records-009",
+    "REQ-history-006"
+  ],
+  "cases": [],
+  "environment": "local-macos-arm64, tester clone at 367dc86b, debug build, SpecSync 6.2.0",
+  "revision": "ebb812d8adfecacba8bacee838f42f996bd2c056",
+  "steps": [],
+  "fixture": null,
+  "observations": [],
+  "impact": "A migrated project cannot list its history until a new session is made",
+  "classification": "product-defect",
+  "scope": "in-scope",
+  "status": "open",
+  "regression_baseline": null,
+  "duplicate_of": null,
+  "related": [],
+  "source": "t384, test stage, area upgrade",
+  "notes": [],
+  "created_at_unix_seconds": 1794448930,
+  "updated_at_unix_seconds": 1794448930
+}

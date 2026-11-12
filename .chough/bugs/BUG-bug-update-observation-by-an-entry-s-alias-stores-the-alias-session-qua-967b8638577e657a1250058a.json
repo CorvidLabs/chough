@@ -15,16 +15,26 @@
   "revision": "81d2bf8c3bc2a1705e67113cb95c14ce0a3b4c59",
   "steps": [],
   "fixture": null,
-  "observations": [],
+  "observations": [
+    "OBS-tc-cli-alias-link-stored-canonical-6f34e0b6fbd87f144506730e"
+  ],
   "impact": "Fixing an alias conflict doctor reported breaks the bug's evidence link",
   "classification": "product-defect",
   "scope": "in-scope",
-  "status": "open",
+  "status": "investigating",
   "regression_baseline": null,
   "duplicate_of": null,
   "related": [],
   "source": "t38b, test stage, area records",
-  "notes": [],
+  "notes": [
+    {
+      "at_unix_seconds": 1794448972,
+      "text": "status: open -> investigating. Red at 1071f972 (TC-cli-alias-link-stored-canonical, on t37x's branch before its fix): failed for this bug's reason; fix in 2944a6f2.",
+      "observations": [
+        "OBS-tc-cli-alias-link-stored-canonical-6f34e0b6fbd87f144506730e"
+      ]
+    }
+  ],
   "created_at_unix_seconds": 1794448165,
-  "updated_at_unix_seconds": 1794448165
+  "updated_at_unix_seconds": 1794448972
 }

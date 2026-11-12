@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "id": "OBS-tc-cli-qualified-link-leaves-test-db9b137477577e9d19416c85",
+  "criteria": [
+    "LIFE-5"
+  ],
+  "requirements": [
+    "REQ-cli-021",
+    "REQ-cli-012"
+  ],
+  "contracts": [
+    "specs/cli/cli.spec.md"
+  ],
+  "kind": "product-test",
+  "outcome": "failed",
+  "environment": "local-macos-arm64",
+  "summary": "Ran cargo test --locked --test stages -- --exact a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal for TC-cli-qualified-link-leaves-test: failed (exit 101).",
+  "artifacts": [
+    ".chough/artifacts/OBS-tc-cli-qualified-link-leaves-test-db9b137477577e9d19416c85.log"
+  ],
+  "artifact_fingerprints": {
+    ".chough/artifacts/OBS-tc-cli-qualified-link-leaves-test-db9b137477577e9d19416c85.log": "4ae9b800e1595a7d0aed8ee3d8ba969a2e9d7bca1a419704ef44e16fd0d3b917"
+  },
+  "observed_at_unix_seconds": 1794448926,
+  "snapshot": {
+    "revision": "ef4540b027990eb8099b4a10b455975a19057870",
+    "dirty": false,
+    "fingerprint": "3ad84de8229f97e978c198d91b1758ad2e26fffc5fb1f1e9416151b85dc2fda5",
+    "content": "75bfc74101d1c0bc38684a2e8b6f534159124aa32491fc95f371db80dcc5a18a"
+  },
+  "provenance": "unauthenticated observation; not proof of human approval, test execution, or deployment",
+  "cases": [
+    {
+      "id": "TC-cli-qualified-link-leaves-test",
+      "digest": "4b02adff933ff55016884aa0710bcca12bd98647435279bd9213722e22264a50"
+    }
+  ],
+  "method": "automated",
+  "track": "functional",
+  "argv": [
+    "cargo",
+    "test",
+    "--locked",
+    "--test",
+    "stages",
+    "--",
+    "--exact",
+    "a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal"
+  ],
+  "exit_code": 101,
+  "limitations": [
+    "expected output missing: \"test a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal ... ok\", \"test result: ok. 1 passed\"",
+    "outcome rests on the exit code and the declared output fragments; the command's own assertions are not inspected",
+    "inherited environment variables were not recorded"
+  ],
+  "duration_seconds": 1
+}

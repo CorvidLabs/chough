@@ -1,0 +1,140 @@
+--- stdout ---
+
+running 1 test
+test a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal ... FAILED
+
+failures:
+
+---- a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal stdout ----
+
+thread 'a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal' (905010384) panicked at tests/stages.rs:2002:5:
+{
+  "awaiting_human": {
+    "items": [],
+    "total": 0
+  },
+  "blockers": {
+    "items": [],
+    "total": 0
+  },
+  "blocking_bugs": {
+    "items": [],
+    "total": 0
+  },
+  "chough_writes": {
+    "missing": [],
+    "policy": ".specsync/sdd.json",
+    "state": "any-point",
+    "text": "no .specsync/sdd.json, so no native verification digests Chough's records; they may be written and committed at any point"
+  },
+  "corrections": {
+    "items": [],
+    "total": 0
+  },
+  "decisions": {
+    "items": [],
+    "total": 0
+  },
+  "direct_writes": null,
+  "environment": null,
+  "full_view": "chough status",
+  "gate": {
+    "allowed": true,
+    "detail": "No native SpecSync configuration; this transition is not gated by a native lifecycle.",
+    "label": "ungated:not-configured",
+    "to": "accept"
+  },
+  "gates": [],
+  "knowledge": {
+    "dir": "knowledge",
+    "index": "knowledge/index.md",
+    "librarian": "on"
+  },
+  "last_actor": null,
+  "last_failure": {
+    "bugs": {
+      "items": [],
+      "total": 0
+    },
+    "id": "2026-01-01-fail-1",
+    "observed_at_unix_seconds": 200,
+    "summary": "fixture observation 2026-01-01-fail-1"
+  },
+  "lessons": {
+    "archived_bundles": {
+      "items": [],
+      "total": 0
+    },
+    "sources": {
+      "items": [
+        {
+          "module": "cli",
+          "note": "missing",
+          "path": "specs/cli/context.md",
+          "section_line": null
+        }
+      ],
+      "total": 1
+    }
+  },
+  "native": {
+    "approval_valid": null,
+    "approved_deltas": "not checked: no native lifecycle",
+    "change": null,
+    "correction_valid": null,
+    "next_action": null,
+    "read": "not-configured",
+    "state": null,
+    "terminal_evidence": null
+  },
+  "native_check": null,
+  "native_verification_warning": null,
+  "next_valid_action": {
+    "action": "Leaving test is refused (refused:unlinked-failure): case TC-cli-0001 latest observation 2026-01-01-fail-1 failed and no bug links it; rerun the case until it passes, or link the failure with `chough bug add ... --observation 2026-01-01-fail-1` or `chough bug update <bug> --observation 2026-01-01-fail-1`",
+    "command": "chough bug add ... --observation <id>",
+    "reason": "A failing case stays failed until it passes or a bug records the failure (FLOW-7, LIFE-5)."
+  },
+  "objective": "Ship a focused change",
+  "observations": {
+    "items": [
+      {
+        "id": "2026-11-12-ship-a-focused-change/2026-01-01-fail-1",
+        "label": "historical",
+        "referenced_by": [
+          ".chough/bugs/2026-11-12-synthetic-qualified-link-at-the-test-gate.md"
+        ],
+        "referenced_by_total": 1
+      }
+    ],
+    "needs_attention_total": 1,
+    "referenced_current": 0,
+    "unreferenced": 1
+  },
+  "open_questions": {
+    "items": [],
+    "total": 0
+  },
+  "other_open_bugs": 1,
+  "schema_version": 1,
+  "stage": {
+    "callers": [],
+    "current": "test",
+    "iteration": 1,
+    "status": "active"
+  },
+  "truncated": false,
+  "view": "next"
+}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refusal
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 47 filtered out; finished in 0.70s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/stages.rs (target/debug/deps/stages-ce01d5b97a0c27a5)
+error: test failed, to rerun pass `--test stages`

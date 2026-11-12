@@ -1,0 +1,62 @@
+--- stdout ---
+
+running 1 test
+test automatic_failure_capture_links_each_failure_by_its_session_qualified_id ... FAILED
+
+failures:
+
+---- automatic_failure_capture_links_each_failure_by_its_session_qualified_id stdout ----
+
+thread 'automatic_failure_capture_links_each_failure_by_its_session_qualified_id' (905012955) panicked at tests/bugs.rs:715:32:
+2026-11-12-tc-cli-9101 is not qualified with 2026-11-12-ship-a-focused-change: ---
+kind: bug
+id: 2026-11-12-tc-cli-9101-failed-during-validation-run-2026-11-12-tc-cli
+aliases: []
+title: TC-cli-9101 failed during validation run 2026-11-12-tc-cli-9101-run
+status: open
+classification: unclassified
+scope: in-scope
+impact: Not yet assessed.
+criteria: [FLOW-8]
+requirements: [REQ-cli-012]
+cases: [TC-cli-9101]
+evidence: [2026-11-12-tc-cli-9101, 2026-11-12-tc-cli-9101-81c04e]
+receipts: []
+environment: test-local
+revision: d2145194f7130d6253c467bba1c004c2c8803dde
+found_by: validation run 2026-11-12-tc-cli-9101-run
+related: []
+created: 2026-11-12T02:02:11Z
+updated: 2026-11-12T02:02:11Z
+---
+# TC-cli-9101 failed during validation run 2026-11-12-tc-cli-9101-run
+
+**What happened:** Ran failure-probe for TC-cli-9101: failed (exit 0).
+
+**Steps:** Running case TC-cli-9101
+1. chough cases run TC-cli-9101 --environment test-local
+
+**Expected:** Case TC-cli-9101 passes its declared assertion
+
+**Why it matters:** Not yet assessed.
+
+**Fix:** Not fixed yet.
+
+## Log
+
+- 2026-11-12T02:02:11Z · Reported (validation run 2026-11-12-tc-cli-9101-run); evidence: 2026-11-12-tc-cli-9101
+- 2026-11-12T02:02:11Z · Additional failure from validation run 2026-11-12-tc-cli-9101-run; evidence: 2026-11-12-tc-cli-9101-81c04e
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    automatic_failure_capture_links_each_failure_by_its_session_qualified_id
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 24 filtered out; finished in 1.53s
+
+
+--- stderr ---
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/bugs.rs (target/debug/deps/bugs-24a5606d0085572f)
+error: test failed, to rerun pass `--test bugs`
