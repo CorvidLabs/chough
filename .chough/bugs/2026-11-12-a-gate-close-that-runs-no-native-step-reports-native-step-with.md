@@ -3,14 +3,16 @@ kind: bug
 id: 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
 aliases: []
 title: A gate close that runs no native step reports native_step with ran and why both null
-status: open
+status: verified
 classification: product-defect
 scope: in-scope
 impact: An agent reading the output cannot tell whether a step was skipped or failed (t38k F12)
 criteria: []
 requirements: [REQ-cli-050]
 cases: [TC-cli-close-running-no-native-step-says-why]
-evidence: [2026-11-12-release-0-6-0/2026-11-12-tc-cli-close-running-no-native-step-says-why]
+evidence:
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-close-running-no-native-step-says-why
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-close-running-no-native-step-says-why-012a8a
 receipts: []
 environment: local-macos-arm64
 revision: 731aba24c9db412aaa2f1b570043ee4c1f16cc31
@@ -20,7 +22,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T20:09:16Z
-updated: 2026-11-12T20:09:16Z
+updated: 2026-11-12T20:09:55Z
 ---
 # A gate close that runs no native step reports native_step with ran and why both null
 
@@ -35,8 +37,9 @@ Actual: {"ran": null, "why": null}
 
 **Why it matters:** An agent reading the output cannot tell whether a step was skipped or failed (t38k F12)
 
-**Fix:** Not fixed yet.
+**Fix:** a01d6d03 (t38b's a69e38e8): a close that runs no native step reports why: 'no native step ran (the gate drives none)', or the --no-native reason
 
 ## Log
 
 - 2026-11-12T20:09:16Z · Reported (t38k's second fresh-eyes round report, F12 (relayed by t370)); evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-close-running-no-native-step-says-why · by claude-code (hc t382)
+- 2026-11-12T20:09:55Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-close-running-no-native-step-says-why-012a8a; fix: a01d6d03 (t38b's a69e38e8): a close that runs no native step reports why: 'no native step ran (the gate drives none)', or the --no-native reason. Red at 731aba24, green at c53da06c · by claude-code (hc t382)

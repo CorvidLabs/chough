@@ -16,6 +16,8 @@ requirements: []
 cases:
   - TC-records-every-gate-close-names-a-configured-human
   - TC-records-ship-names-a-configured-human-at-any-gate
+  - TC-cli-close-running-no-native-step-says-why
+  - TC-history-session-list-archived-story-is-finished
 design: []
 files: []
 observations:
@@ -113,7 +115,14 @@ observations:
   - 2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-79d253
   - 2026-11-12-tc-cli-close-running-no-native-step-says-why
   - 2026-11-12-tc-history-session-list-archived-story-is-finished
-bugs: [2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records]
+  - 2026-11-12-tc-cli-close-running-no-native-step-says-why-012a8a
+  - 2026-11-12-tc-history-session-list-archived-story-is-finished-77f110
+  - 2026-11-12-tc-records-every-gate-close-names-a-configured-human-9b34bf
+  - 2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-ef5323
+bugs:
+  - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
+  - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
+  - 2026-11-12-session-list-reports-an-archived-story-as-finished-false
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -130,6 +139,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - After #239 squash-merged as a2e30b8c, git diff 977bd246 origin/main printed 0 lines (checked by t370 and by t382), so origin/main was merged into leif/human-first-records with -s ours as 2852997c, whose tree equals its first parent's (git diff HEAD^1 HEAD printed 0 lines); #238 then showed 54 files, only the release-prep work; no force-push
 - D2 red then green (acd2b0b0, d5381eef), the migrate preview warning red then green (0fa8cb7f, 8daaad23), the journal and case-definition temporary paths red then green (423169de, 69b60a68)
 - F1 (t38k round 2): every gate close names a configured human (REQ-records-008), red at ab5426a5, green at f5d8ed79, bug verified
+- F12b and F12c (t38k round 2, t38b): a close running no native step says why; an archived story lists as finished; red at 731aba24, green at c53da06c, bugs verified
 
 ## Decisions and why
 
@@ -239,6 +249,10 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test change -- --exact ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing for TC-records-ship-names-a-configured-human-at-any-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-79d253.md)
 - [Ran cargo test --locked --test humans -- --exact a_close_that_runs_no_native_step_says_why for TC-cli-close-running-no-native-step-says-why: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-close-running-no-native-step-says-why.md)
 - [Ran cargo test --locked --test sessions -- --exact session_list_reports_an_archived_story_as_finished for TC-history-session-list-archived-story-is-finished: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-history-session-list-archived-story-is-finished.md)
+- [Ran cargo test --locked --test humans -- --exact a_close_that_runs_no_native_step_says_why for TC-cli-close-running-no-native-step-says-why: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-close-running-no-native-step-says-why-012a8a.md)
+- [Ran cargo test --locked --test sessions -- --exact session_list_reports_an_archived_story_as_finished for TC-history-session-list-archived-story-is-finished: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-history-session-list-archived-story-is-finished-77f110.md)
+- [Ran cargo test --locked --test humans -- --exact every_gate_close_names_a_configured_human for TC-records-every-gate-close-names-a-configured-human: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-every-gate-close-names-a-configured-human-9b34bf.md)
+- [Ran cargo test --locked --test change -- --exact ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing for TC-records-ship-names-a-configured-human-at-any-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-ef5323.md)
 
 ## Open threads
 
