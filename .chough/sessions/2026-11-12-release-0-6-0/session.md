@@ -13,7 +13,9 @@ native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-change
 pr: ""
 criteria: [KNOW-3, KNOW-4, KNOW-6, KNOW-15, KNOW-24, DRIVE-27]
 requirements: []
-cases: []
+cases:
+  - TC-records-every-gate-close-names-a-configured-human
+  - TC-records-ship-names-a-configured-human-at-any-gate
 design: []
 files: []
 observations:
@@ -105,7 +107,11 @@ observations:
   - 2026-11-12-tc-records-migrated-session-md-ends-with-one-newline-fd0505
   - 2026-11-12-red-rerun-of-the-stop-survivor-at-048a7c84-without-the-fix-7
   - 2026-11-12-green-rerun-of-the-stop-survivor-at-36ae763d-t38b-s-fix
-bugs: []
+  - 2026-11-12-tc-records-every-gate-close-names-a-configured-human
+  - 2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate
+  - 2026-11-12-tc-records-every-gate-close-names-a-configured-human-f93c42
+  - 2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-79d253
+bugs: [2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records]
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -121,6 +127,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 
 - After #239 squash-merged as a2e30b8c, git diff 977bd246 origin/main printed 0 lines (checked by t370 and by t382), so origin/main was merged into leif/human-first-records with -s ours as 2852997c, whose tree equals its first parent's (git diff HEAD^1 HEAD printed 0 lines); #238 then showed 54 files, only the release-prep work; no force-push
 - D2 red then green (acd2b0b0, d5381eef), the migrate preview warning red then green (0fa8cb7f, 8daaad23), the journal and case-definition temporary paths red then green (423169de, 69b60a68)
+- F1 (t38k round 2): every gate close names a configured human (REQ-records-008), red at ab5426a5, green at f5d8ed79, bug verified
 
 ## Decisions and why
 
@@ -224,6 +231,10 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test migrate -- --exact every_migrated_session_md_ends_with_exactly_one_newline for TC-records-migrated-session-md-ends-with-one-newline: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrated-session-md-ends-with-one-newline-fd0505.md)
 - [Red rerun of the stop survivor at 048a7c84 (without the fix): 7 of 48 loaded runs failed (peak 1-minute loads 41.0 to 64.7), each with '<signal>: the command chough started survived' (HUP 3, INT 3, TERM 1) in stopping_a_gate_list_stops_git_and_records_nothing, stopping_a_native_read_stops_specsync_and_records_nothing and stopping_a_case_run_stops_its_command_and_records_nothing; t38b's flaky_stop.sh and lane_stress.py copied unchanged, under the heavy-tests lock: the stop test binary built with Rust 1.96.0 and run 8 times at once per round beside 30 CPU busy loops and 4 F_FULLFSYNC writers, 6 rounds (48 runs)](evidence/2026-11-12-red-rerun-of-the-stop-survivor-at-048a7c84-without-the-fix-7.md)
 - [Green rerun of the stop survivor at 36ae763d (t38b's fix 16afb63a, signalling the process group until no live member is left): 0 of 48 loaded runs failed (peak 1-minute loads 54.8 to 64.0); t38b's flaky_stop.sh and lane_stress.py copied unchanged, under the heavy-tests lock: the stop test binary built with Rust 1.96.0 and run 8 times at once per round beside 30 CPU busy loops and 4 F_FULLFSYNC writers, 6 rounds (48 runs)](evidence/2026-11-12-green-rerun-of-the-stop-survivor-at-36ae763d-t38b-s-fix.md)
+- [Ran cargo test --locked --test humans -- --exact every_gate_close_names_a_configured_human for TC-records-every-gate-close-names-a-configured-human: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-every-gate-close-names-a-configured-human.md)
+- [Ran cargo test --locked --test change -- --exact ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing for TC-records-ship-names-a-configured-human-at-any-gate: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate.md)
+- [Ran cargo test --locked --test humans -- --exact every_gate_close_names_a_configured_human for TC-records-every-gate-close-names-a-configured-human: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-every-gate-close-names-a-configured-human-f93c42.md)
+- [Ran cargo test --locked --test change -- --exact ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing for TC-records-ship-names-a-configured-human-at-any-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-ship-names-a-configured-human-at-any-gate-79d253.md)
 
 ## Open threads
 
