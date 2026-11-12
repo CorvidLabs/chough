@@ -89,6 +89,10 @@ observations:
   - 2026-11-12-tc-cli-delivery-kinds-kept-dry-run-not
   - 2026-11-12-tc-cli-delivery-kinds-kept-dry-run-not-5f607b
   - 2026-11-12-tc-records-journal-post-derives-a-title-and-body-36c430
+  - 2026-11-12-tc-cli-cases-check-a-module-without-requirements-md
+  - 2026-11-12-tc-cli-context-reads-agents-md-from-the-git-root
+  - 2026-11-12-tc-cli-status-gives-the-next-action-whole
+  - 2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -190,6 +194,10 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test reduce -- --exact delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not for TC-cli-delivery-kinds-kept-dry-run-not: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-delivery-kinds-kept-dry-run-not.md)
 - [Ran cargo test --locked --test reduce -- --exact delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not for TC-cli-delivery-kinds-kept-dry-run-not: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-delivery-kinds-kept-dry-run-not-5f607b.md)
 - [Ran cargo test --locked --test journal -- --exact without_a_title_or_summary_the_post_derives_both_from_the_story for TC-records-journal-post-derives-a-title-and-body: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-journal-post-derives-a-title-and-body-36c430.md)
+- [Ran cargo test --locked --test cases -- --exact a_module_without_requirements_md_links_what_its_approved_delta_adds for TC-cli-cases-check-a-module-without-requirements-md: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-cases-check-a-module-without-requirements-md.md)
+- [Ran cargo test --locked --test subdirectory -- --exact context_reads_agents_md_from_the_git_root_down_only for TC-cli-context-reads-agents-md-from-the-git-root: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-context-reads-agents-md-from-the-git-root.md)
+- [Ran cargo test --locked --test next -- --exact status_gives_the_next_valid_action_whole for TC-cli-status-gives-the-next-action-whole: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-status-gives-the-next-action-whole.md)
+- [Ran cargo test --locked --test humans -- approving_the_scope_gate_replaces_the_next_action_it_left_stale a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage for TC-cli-gate-close-replaces-a-stale-next-action: failed (exit 101).](evidence/2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action.md)
 
 ## Open threads
 
