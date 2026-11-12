@@ -324,6 +324,8 @@ observations:
   - 2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-7c81c5
   - 2026-11-12-tc-cli-a-stage-move-replaces-a-gate-close-next-action
   - 2026-11-12-tc-cli-a-stage-move-replaces-a-gate-close-next-action-ee36e0
+  - 2026-11-12-tc-records-migration-names-skill-update-for-an-outdated-copy
+  - 2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -355,6 +357,8 @@ bugs:
   - 2026-11-12-migrated-sessions-and-stories-keep-bare-0-5-x-observation-ids
   - 2026-11-12-an-archived-story-opens-with-its-receipts-and-never-names-the
   - 2026-11-12-a-gate-close-s-next-action-outlives-the-stage-move-it-named
+  - 2026-11-12-the-scope-gate-summary-ignores-uncommitted-change-files
+  - 2026-11-12-after-a-migration-nothing-says-the-project-s-skill-copy-is
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -666,6 +670,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_storys_verified_lines_are_receipt_lines for TC-records-migrate-evidence-story-lines-are-receipt-lines: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-records-migrate-evidence-story-lines-are-receipt-lines-7c81c5.md)
 - [Ran cargo test --locked --test humans -- --exact a_stage_move_replaces_the_next_action_a_gate_close_left for TC-cli-a-stage-move-replaces-a-gate-close-next-action: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-a-stage-move-replaces-a-gate-close-next-action.md)
 - [Ran cargo test --locked --test humans -- --exact a_stage_move_replaces_the_next_action_a_gate_close_left for TC-cli-a-stage-move-replaces-a-gate-close-next-action: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-a-stage-move-replaces-a-gate-close-next-action-ee36e0.md)
+- [Ran cargo test --locked --test migrate -- --exact the_migration_follow_ups_name_skill_update_while_the_skill_copy_is_not_current for TC-records-migration-names-skill-update-for-an-outdated-copy: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-records-migration-names-skill-update-for-an-outdated-copy.md)
+- [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_counts_uncommitted_and_untracked_change_files for TC-cli-scope-gate-summary-counts-uncommitted-change-files: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-scope-gate-summary-counts-uncommitted-change-files.md)
 
 ## Open threads
 
