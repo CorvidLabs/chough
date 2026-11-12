@@ -27,6 +27,14 @@ cases:
   - TC-cli-bug-observation-joins-the-session
   - TC-records-migrate-preview-with-nothing-to-migrate
   - TC-records-migration-receipt-has-one-follow-up-heading
+  - TC-cli-a-close-that-runs-no-native-step-says-closed-once
+  - TC-cli-next-with-no-native-change-says-only-none-recorded
+  - TC-cli-next-and-status-reasons-name-no-trace-id
+  - TC-cli-stage-skip-docs-say-it-skips-the-current-stage
+  - TC-cli-a-gate-close-names-the-step-its-decision-allows
+  - TC-cli-next-at-accept-while-approved-names-the-review-preparation
+  - TC-cli-next-and-status-show-every-command-whole
+  - TC-cli-gate-list-names-the-ship-for-a-verifying-gate
 design: []
 files: []
 observations:
@@ -152,6 +160,15 @@ observations:
   - 2026-11-12-tc-cli-next-at-accept-while-approved-names-the-review
   - 2026-11-12-tc-cli-next-and-status-show-every-command-whole
   - 2026-11-12-tc-cli-gate-list-names-the-ship-for-a-verifying-gate
+  - 2026-11-12-tc-cli-a-close-that-runs-no-native-step-says-closed-once-e1bc50
+  - 2026-11-12-tc-cli-next-with-no-native-change-says-only-none-recorded-30b630
+  - 2026-11-12-tc-cli-next-and-status-reasons-name-no-trace-id-149f4c
+  - 2026-11-12-tc-cli-stage-skip-docs-say-it-skips-the-current-stage-e1f9e9
+  - 2026-11-12-tc-cli-a-gate-close-names-the-step-its-decision-allows-3c3207
+  - 2026-11-12-tc-cli-next-at-accept-while-approved-names-the-review-88be5c
+  - 2026-11-12-tc-cli-next-and-status-show-every-command-whole-1869e9
+  - 2026-11-12-tc-cli-gate-list-names-the-ship-for-a-verifying-gate-21e743
+  - 2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action-eba666
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -187,6 +204,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - t38c's batch one (t38k round 2): F10 migrate preview on a migrated tree, F12d one Follow-up heading, F12g executed-run provenance, F2 the Requirement evidence table, F7 minimal HI and requirements.md; red at a0152789, green at 34b7cbb7, three bugs verified
 - Kimi 2 and F12h (t38c, REQ-cli-005): evidence add needs only a criterion and resolves a requirement the session's delta adds; red then green, a contract change so no bug. REQ-cli-005's kept criterion on the check-first hint holds when no native change is recorded (tests/cli.rs)
 - F8's bug link (t38c, REQ-cli-012): red at 9b9bc010, green at 68c7a32a, bug verified; the migrate cases moved to the records module
+- t37f's batch (t38k round 2): F12a, F12e, F12f, Kimi 1, F3, F4, F5, F6; red at 5195bd67, green at cca98758, seven bugs verified
 
 ## Decisions and why
 
@@ -324,6 +342,15 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test next -- --exact at_accept_while_approved_next_names_the_review_preparation_in_order for TC-cli-next-at-accept-while-approved-names-the-review-preparation: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-while-approved-names-the-review.md)
 - [Ran cargo test --locked --test next -- next_and_status_show_every_command_whole_for_a_long_change_id status_gives_the_next_valid_action_whole both_forms_stay_within_the_cap_with_totals_for_large_records for TC-cli-next-and-status-show-every-command-whole: failed (exit 101).](evidence/2026-11-12-tc-cli-next-and-status-show-every-command-whole.md)
 - [Ran cargo test --locked --test gates -- --exact the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why for TC-cli-gate-list-names-the-ship-for-a-verifying-gate: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-gate-list-names-the-ship-for-a-verifying-gate.md)
+- [Ran cargo test --locked --test humans -- --exact a_close_that_runs_no_native_step_says_closed_once for TC-cli-a-close-that-runs-no-native-step-says-closed-once: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-a-close-that-runs-no-native-step-says-closed-once-e1bc50.md)
+- [Ran cargo test --locked --test next -- --exact next_with_no_native_change_says_only_that_none_is_recorded for TC-cli-next-with-no-native-change-says-only-none-recorded: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-with-no-native-change-says-only-none-recorded-30b630.md)
+- [Ran cargo test --locked --test next -- --exact next_and_status_reasons_name_no_trace_id for TC-cli-next-and-status-reasons-name-no-trace-id: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-and-status-reasons-name-no-trace-id-149f4c.md)
+- [Ran cargo test --locked --test docs -- --exact stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design for TC-cli-stage-skip-docs-say-it-skips-the-current-stage: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-stage-skip-docs-say-it-skips-the-current-stage-e1f9e9.md)
+- [Ran cargo test --locked --test humans -- --exact a_gate_close_names_the_step_its_decision_allows_never_chough_next for TC-cli-a-gate-close-names-the-step-its-decision-allows: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-a-gate-close-names-the-step-its-decision-allows-3c3207.md)
+- [Ran cargo test --locked --test next -- --exact at_accept_while_approved_next_names_the_review_preparation_in_order for TC-cli-next-at-accept-while-approved-names-the-review-preparation: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-next-at-accept-while-approved-names-the-review-88be5c.md)
+- [Ran cargo test --locked --test next -- next_and_status_show_every_command_whole_for_a_long_change_id status_gives_the_next_valid_action_whole both_forms_stay_within_the_cap_with_totals_for_large_records for TC-cli-next-and-status-show-every-command-whole: passed (exit 0).](evidence/2026-11-12-tc-cli-next-and-status-show-every-command-whole-1869e9.md)
+- [Ran cargo test --locked --test gates -- --exact the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why for TC-cli-gate-list-names-the-ship-for-a-verifying-gate: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-gate-list-names-the-ship-for-a-verifying-gate-21e743.md)
+- [Ran cargo test --locked --test humans -- approving_the_scope_gate_replaces_the_next_action_it_left_stale a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage for TC-cli-gate-close-replaces-a-stale-next-action: passed (exit 0).](evidence/2026-11-12-tc-cli-gate-close-replaces-a-stale-next-action-eba666.md)
 
 ## Open threads
 
