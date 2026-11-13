@@ -43,6 +43,12 @@ observations:
   - 2026-11-13-tc-cli-integrations-digest-detects-change-75ba7d
   - 2026-11-13-tc-cli-integrations-no-runtime-dependency-819e19
   - 2026-11-13-tc-cli-integrations-readme-6e82a9
+  - 2026-11-13-tc-cli-integrations-templates-11a405
+  - 2026-11-13-tc-cli-integrations-manifest-62440e
+  - 2026-11-13-tc-cli-integrations-digest-detects-change-3f83e7
+  - 2026-11-13-tc-cli-integrations-no-runtime-dependency-30a5bd
+  - 2026-11-13-tc-cli-integrations-readme-3d43b8
+  - 2026-11-13-the-full-test-suite-passed-740-of-740-across-49-targets-cargo
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -82,6 +88,12 @@ next: "Record green, then accept: materialize, full suite, check --commit, revie
 - [Ran cargo test --locked --test integrations -- --exact a_changed_template_byte_no_longer_matches_its_listed_digest for TC-cli-integrations-digest-detects-change: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-digest-detects-change-75ba7d.md)
 - [Ran cargo test --locked --test integrations -- --exact chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them for TC-cli-integrations-no-runtime-dependency: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-no-runtime-dependency-819e19.md)
 - [Ran cargo test --locked --test integrations -- --exact the_readme_names_every_template_and_says_chough_has_no_runtime_dependency for TC-cli-integrations-readme: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-readme-6e82a9.md)
+- [Ran cargo test --locked --test integrations -- --exact each_template_has_hcs_front_matter_resumes_with_chough_next_and_holds_no_local_path for TC-cli-integrations-templates: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-templates-11a405.md)
+- [Ran cargo test --locked --test integrations -- --exact the_manifest_versions_every_template_with_its_digest for TC-cli-integrations-manifest: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-manifest-62440e.md)
+- [Ran cargo test --locked --test integrations -- --exact a_changed_template_byte_no_longer_matches_its_listed_digest for TC-cli-integrations-digest-detects-change: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-digest-detects-change-3f83e7.md)
+- [Ran cargo test --locked --test integrations -- --exact chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them for TC-cli-integrations-no-runtime-dependency: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-no-runtime-dependency-30a5bd.md)
+- [Ran cargo test --locked --test integrations -- --exact the_readme_names_every_template_and_says_chough_has_no_runtime_dependency for TC-cli-integrations-readme: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-readme-3d43b8.md)
+- [The full test suite passed 740 of 740 across 49 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at a442a2ac, #219's head with main (#248) merged and REQ-cli-065 materialized; clippy on the integrations test with -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-740-of-740-across-49-targets-cargo.md)
 
 ## Open threads
 
