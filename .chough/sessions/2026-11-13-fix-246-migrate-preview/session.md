@@ -5,7 +5,7 @@ aliases: [fix-246-migrate-preview]
 objective: "Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
 bugs: [2026-11-13-chough-migrate-s-preview-omits-the-finished-sessions-and-stale]
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
-    holds: accept
-    drives: review
-    opened: 2026-11-13T07:59:29Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: "Fix #246: migrate's preview names what doctor will report"
 summary:
   - "chough migrate's preview and receipt name each session chough doctor will report right after the apply: finished sessions to archive with chough doctor --fix, and stale-gated ones with each gate's text and chough doctor --fix --reason, from doctor's own session check (REQ-records-009, REQ-cli-055)."
@@ -46,6 +42,7 @@ Fix #246: chough migrate's preview and receipt name the sessions chough doctor w
 
 - Leif decided "Approve fixing #246: the migration preview and receipt also list the sessions doctor will flag right after the apply": "Chough #246 migrate preview" (coordinator chat (Claude Code, hc t370), 2026-11-13T04:37Z, answering: 'Approve these two?', he selected 'Chough #246 migrate preview' (option text: 'The migration preview and receipt also list the sessions doctor will flag right after, so one consent round covers both. Small migration wording change, with a failing test ready.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
 - Leif decided "Approve the scope of fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply": "Chough #246 migrate preview" (coordinator chat (Claude Code, hc t370), 2026-11-13T04:37Z, answering: 'Approve these two?', he selected 'Chough #246 migrate preview' (option text: 'The migration preview and receipt also list the sessions doctor will flag right after, so one consent round covers both. Small migration wording change, with a failing test ready.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply as 0xLeif
+- Leif decided "Implementation review of fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply": "#259 migrate preview (#246)" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering: 'Chough PRs passed by the reviewer, part 1: approve the implementation? Each ships after your yes, then you'll get a merge it.', he selected '#256 record polish (0.6.1)', '#258 CI flake fix (#247)', '#259 migrate preview (#246)' and '#261 relay details (#249)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -119,4 +116,20 @@ Fix #246: chough migrate's preview and receipt name the sessions chough doctor w
   - revision: 9a081e0c6317beacb6ea4afa7365d1f0884914e6
   - holds: accept
   - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T14:17:16Z · gate-closed · accept → accept · Implementation review of fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply ^t-f8c7b7
+  - native_change: fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
+  - revision: 61b24a4163736e03e03071ace41022b73f3b64ae
+  - relayed_by:
+    - decided_by: Leif
+    - words: #259 migrate preview (#246)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering: 'Chough PRs passed by the reviewer, part 1: approve the implementation? Each ships after your yes, then you'll get a merge it.', he selected '#256 record polish (0.6.1)', '#258 CI flake fix (#247)', '#259 migrate preview (#246)' and '#261 relay details (#249)'; relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T14:17:18Z · advance · accept → done · native:archived ^t-4869c4
+  - native_change: fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
+  - gate: native:archived
+  - revision: 61b24a4163736e03e03071ace41022b73f3b64ae
   - by: claude-code (hc t382)
