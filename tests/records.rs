@@ -1321,3 +1321,123 @@ fn nothing_leaves_the_tree_unless_head_holds_it() {
         );
     }
 }
+
+/// Make a FIFO at `path` with the system's `mkfifo`.
+#[cfg(unix)]
+fn mkfifo(path: &Path) {
+    let made = std::process::Command::new("mkfifo")
+        .arg(path)
+        .output()
+        .unwrap();
+    assert!(made.status.success(), "mkfifo failed: {made:?}");
+}
+
+/// Run chough on `fixture` with `args`, with the environment `Fixture::run` gives it, and
+/// allow it `seconds` to finish: its exit success, standard output and standard error, or
+/// None when it was still running and was killed, so a hang fails the test instead of the
+/// suite. Its output goes to files, so a large report never blocks on a full pipe.
+#[cfg(unix)]
+fn run_within(fixture: &Fixture, args: &[&str], seconds: u64) -> Option<(bool, String, String)> {
+    use std::process::{Command, Stdio};
+    use std::time::{Duration, Instant};
+    let outputs = tempfile::TempDir::new().unwrap();
+    let stdout = outputs.path().join("stdout");
+    let stderr = outputs.path().join("stderr");
+    let mut paths = vec![fixture.root().join("bin")];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
+    command
+        .arg("--root")
+        .arg(fixture.root())
+        .args(args)
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG))
+        .stdin(Stdio::null())
+        .stdout(std::fs::File::create(&stdout).unwrap())
+        .stderr(std::fs::File::create(&stderr).unwrap());
+    for name in common::ACTOR_VARIABLES {
+        command.env_remove(name);
+    }
+    let mut child = command.spawn().unwrap();
+    let deadline = Instant::now() + Duration::from_secs(seconds);
+    while Instant::now() < deadline {
+        if let Some(status) = child.try_wait().unwrap() {
+            return Some((
+                status.success(),
+                std::fs::read_to_string(&stdout).unwrap(),
+                std::fs::read_to_string(&stderr).unwrap(),
+            ));
+        }
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    child.kill().unwrap();
+    child.wait().unwrap();
+    None
+}
+
+/// #262 (Kimi's swarm report, #273; REQ-records-001): a FIFO in `.chough/bugs/` made
+/// `chough status` and `chough next` block forever opening it, while `chough bug list`
+/// skipped it. A file in a record folder that is not a regular file never blocks a
+/// reader: every command here finishes, and either reads the project or refuses naming
+/// that file.
+#[cfg(unix)]
+#[test]
+fn a_fifo_in_the_bugs_folder_never_hangs_a_reader() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let fifo = ".chough/bugs/2026-11-13-fifo.md";
+    std::fs::create_dir_all(fixture.root().join(".chough/bugs")).unwrap();
+    mkfifo(&fixture.root().join(fifo));
+    for args in [
+        &["status"][..],
+        &["next"],
+        &["next", "--json"],
+        &["bug", "list", "--all"],
+        &["doctor"],
+    ] {
+        let (succeeded, _, stderr) = run_within(&fixture, args, 15).unwrap_or_else(|| {
+            panic!("{args:?} was still running after 15 seconds: it blocked on {fifo}")
+        });
+        assert!(
+            succeeded || stderr.contains(fifo),
+            "{args:?} refused without naming {fifo}: {stderr}"
+        );
+    }
+}
+
+/// #262's variant (REQ-history-006): a FIFO at a session's `session.md` made that session
+/// vanish from `chough session list`, with no unreadable entry and no `chough session
+/// shelve <id>` recovery, which an unreadable session is promised. The session is listed
+/// unreadable with its recovery, and the list does not block on the FIFO.
+#[cfg(unix)]
+#[test]
+fn a_session_file_that_is_a_fifo_is_listed_unreadable_with_its_recovery() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "wedged", "--objective", "Wedged work"]);
+    let wedged = fixture.id_of("wedged");
+    let file = fixture
+        .root()
+        .join(format!(".chough/sessions/{wedged}/session.md"));
+    std::fs::remove_file(&file).unwrap();
+    mkfifo(&file);
+    let (succeeded, stdout, stderr) = run_within(&fixture, &["session", "list"], 15)
+        .unwrap_or_else(|| panic!("session list was still running after 15 seconds"));
+    assert!(succeeded, "session list failed: {stderr}");
+    let list: serde_json::Value = serde_json::from_str(&stdout).unwrap();
+    let entry = list["sessions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|session| session["id"] == wedged.as_str())
+        .unwrap_or_else(|| panic!("{wedged} is not listed: {list:#}"))
+        .clone();
+    assert_eq!(entry["readable"], false, "{entry}");
+    assert_eq!(
+        entry["recovery"],
+        format!("chough session shelve {wedged}"),
+        "{entry}"
+    );
+}
