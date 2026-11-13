@@ -20,7 +20,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-13T03:49:04Z
-updated: 2026-11-13T03:49:04Z
+updated: 2026-11-13T03:58:27Z
 ---
 # The verify lane's exercise flakes when the example's failing run and its fixed rerun land in the same second
 
@@ -40,3 +40,4 @@ Actual: The script reruns at once; with one-second observed times the rerun can 
 ## Log
 
 - 2026-11-13T03:49:04Z · Reported (GitHub #247 (t384, from CI run 43357893936 on #244)) · by claude-code (hc t382)
+- 2026-11-13T03:58:27Z · Tracked by the flake window (DRIVE-19); GitHub #247 · by claude-code (hc t382)
