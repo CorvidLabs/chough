@@ -1963,7 +1963,8 @@ fn at_test_with_case() -> Fixture {
 }
 
 /// Write a 0.6.0 evidence entry of the active session (REQ-records-005) for `case`,
-/// with a fixed observed time, as a hand-written fixture.
+/// with a fixed observed time, as a hand-written fixture, and reference it from the
+/// session as every write does: only a referenced run counts (REQ-cli-032).
 fn case_observation(fixture: &Fixture, id: &str, case: &str, outcome: &str, observed: u64) {
     let session = fixture.active_id();
     let (hours, rest) = (observed / 3600, observed % 3600);
@@ -1977,6 +1978,7 @@ fn case_observation(fixture: &Fixture, id: &str, case: &str, outcome: &str, obse
             "---\nkind: evidence\nid: {id}\naliases: []\nclaim: fixture observation {id}\nresult: {outcome}\nevidence_kind: product-test\ncase: [{case}]\ncase_digest: [{zeros}]\ncriteria: [LIFE-1]\nrequirements: [REQ-cli-001]\ncontracts: [specs/cli/cli.spec.md]\nenvironment: local\nrevision: {revision}\nobserved: {time}\n---\n**fixture observation {id}.**\n"
         ),
     );
+    fixture.ok(&["checkpoint", "--observation", id]);
 }
 
 fn linking_bug(fixture: &Fixture, id: &str, status: &str, scope: &str, observation: &str) {
@@ -2157,6 +2159,8 @@ fn a_failure_linked_by_its_session_qualified_id_lifts_the_unlinked_failure_refus
     let other = fixture.active_id();
     case_observation(&fixture, FAILED, "TC-cli-0001", "failed", 200);
     fixture.ok(&["session", "use", &at_test]);
+    // The session at test references the other session's failure, so it is its run.
+    fixture.ok(&["checkpoint", "--observation", FAILED]);
     linking_bug(
         &fixture,
         "BUG-0001",
