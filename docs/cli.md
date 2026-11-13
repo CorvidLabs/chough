@@ -299,7 +299,11 @@ matter and body, for (REQ-records-006):
 - an absolute path under a home, temporary or system root (`/Users/`, `/home/`,
   `/root/`, `/private/`, `/tmp/`, `/var/`, `/Volumes/`, `/mnt/`) or a Windows drive path,
   and a `~/` path;
-- the local host name, and the local user name inside a path or as `<user>@<host>`;
+- the local host name anywhere when it is at least 8 characters long or holds a digit,
+  a hyphen or a dot, and a shorter all-letter host name, which may be an ordinary word,
+  only inside a path or a URL or as `<user>@<host>`, so a word that happens to be this
+  machine's name is written;
+- the local user name inside a path or as `<user>@<host>`;
 - an email address;
 - credentials: GitHub, GitLab, Slack, AWS and model-provider token forms, private key
   blocks, bearer and basic authorization values, JSON web tokens, and `password`,
