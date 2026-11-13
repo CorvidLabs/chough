@@ -16,8 +16,13 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
-bugs: []
+observations:
+  - 2026-11-13-tc-cli-next-with-no-open-session-says-so-and-exits-0
+  - 2026-11-13-tc-history-next-after-done-exits-0-and-status-refuses
+  - 2026-11-13-tc-reporting-timing-says-elapsed-wall-clock-once-on-every-line
+bugs:
+  - 2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open
+  - 2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -37,6 +42,10 @@ next: Continue build
 - Leif decided "Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test next -- --exact next_with_no_open_session_says_so_and_exits_0 for TC-cli-next-with-no-open-session-says-so-and-exits-0: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-next-with-no-open-session-says-so-and-exits-0.md)
+- [Ran cargo test --locked --test sessions -- --exact after_the_move_into_done_next_exits_0_and_status_refuses for TC-history-next-after-done-exits-0-and-status-refuses: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-history-next-after-done-exits-0-and-status-refuses.md)
+- [Ran cargo test --locked --test timing -- --exact timing_says_elapsed_wall_clock_once_on_gate_run_and_fix_lines for TC-reporting-timing-says-elapsed-wall-clock-once-on-every-line: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-reporting-timing-says-elapsed-wall-clock-once-on-every-line.md)
 
 ## Open threads
 

@@ -3,14 +3,15 @@ kind: bug
 id: 2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate
 aliases: []
 title: chough timing still says elapsed wall-clock on the human-gate line, and its notes say read read-only
-status: deferred
+status: open
 classification: product-defect
 scope: out-of-scope
 impact: Report polish (t38n F5)
 criteria: []
 requirements: [REQ-reporting-001]
 cases: []
-evidence: []
+evidence:
+  - 2026-11-13-cli-output-fixes/2026-11-13-tc-reporting-timing-says-elapsed-wall-clock-once-on-every-line
 receipts: []
 environment: local-macos-arm64
 revision: fe6d0f857ebee5f609fc990c8eb89fc87cf1e217
@@ -20,7 +21,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-12T23:36:01Z
-updated: 2026-11-12T23:36:03Z
+updated: 2026-11-13T03:00:46Z
 ---
 # chough timing still says elapsed wall-clock on the human-gate line, and its notes say read read-only
 
@@ -40,3 +41,4 @@ Actual: The phrase on the gate line; 'read read-only'
 
 - 2026-11-12T23:36:01Z · Reported (t38n's fourth fresh-eyes round report (relayed by t370)) · by claude-code (hc t382)
 - 2026-11-12T23:36:03Z · status: open -> deferred. Deferred to 0.6.1 by Leif's decision: 'Fix 4 real ones, then release (Recommended)', whose option text says 'Polish and the <redacted:host-name> leak-check go to 0.6.1. Real use on jackdaw will tell us more than another tester.' (coordinator chat, Claude Code hc t370, 2026-11-12T23:32Z, relayed by claude-code-t370) · by claude-code (hc t382)
+- 2026-11-13T03:00:46Z · status: deferred -> open; evidence: 2026-11-13-cli-output-fixes/2026-11-13-tc-reporting-timing-says-elapsed-wall-clock-once-on-every-line. Taken up in 0.6.1 PR 6 on Leif's 'Yes, start (Recommended)' (02:03Z, relayed by t370); red at 1a57d6f3 · by claude-code (hc t382)
