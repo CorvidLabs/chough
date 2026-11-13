@@ -13,6 +13,13 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>0.6.1: at the observation cap, writes refuse before writing</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing</id>
+<updated>2026-11-13T03:08:31Z</updated>
+<link href="2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>0.6.1: chough change ship prints a short summary</title>
 <id>urn:chough:journal:2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary</id>
 <updated>2026-11-13T02:58:41Z</updated>
@@ -136,13 +143,6 @@
 <id>urn:chough:journal:2026-11-07-roadmap-marks-chough-0-5-0-as-published</id>
 <updated>2026-11-07T04:37:00Z</updated>
 <link href="2026-11-07-roadmap-marks-chough-0-5-0-as-published.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Library index check passes right after the move into done (#191)</title>
-<id>urn:chough:journal:2026-11-07-library-index-check-passes-right-after-the-move-into-done-191</id>
-<updated>2026-11-07T04:14:27Z</updated>
-<link href="2026-11-07-library-index-check-passes-right-after-the-move-into-done-191.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
