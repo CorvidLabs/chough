@@ -2209,10 +2209,16 @@ fn rerun_commands(
     };
     let reads = evidence::Reads::new(root);
     let current = evidence::snapshot(root);
+    // A case that is retired or no longer defined cannot be run again (`chough cases run`
+    // refuses it), so it is never named for a rerun; the suite is read once.
+    let digests = crate::cases::Digests::new(root);
     latest_runs(session, all)
         .into_iter()
         .filter_map(|(case, latest)| {
             let run = latest?;
+            if matches!(digests.current(case), Ok(None)) {
+                return None;
+            }
             (!reads.is_current(run, &current).unwrap_or(true))
                 .then(|| format!("chough cases run {case} --environment {}", run.environment))
         })
