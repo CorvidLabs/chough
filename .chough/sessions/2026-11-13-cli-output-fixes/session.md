@@ -26,13 +26,25 @@ observations:
   - 2026-11-13-tc-cli-next-with-no-open-session-says-so-and-exits-0-a87838
   - 2026-11-13-tc-history-next-after-done-exits-0-and-status-refuses-5ec968
   - 2026-11-13-tc-reporting-timing-says-elapsed-wall-clock-once-on-every-line-22f376
+  - 2026-11-13-tc-cli-next-with-no-open-session-says-so-and-exits-0-3758f7
+  - 2026-11-13-tc-history-next-after-done-exits-0-and-status-refuses-a6f491
+  - 2026-11-13-tc-reporting-timing-says-elapsed-wall-clock-once-on-every-line-24eb81
+  - 2026-11-13-the-full-test-suite-passed-734-of-734-across-48-targets-cargo
 bugs:
   - 2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open
   - 2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+    holds: accept
+    drives: review
+    opened: 2026-11-13T03:38:41Z
 run_consents: []
 next: Continue accept
+title: "0.6.1: next with no open session exits 0, and timing says elapsed once"
+summary:
+  - With no open session, the normal state after done, chough next says so, names chough session new <key> and exits 0, while status still refuses (REQ-cli-021, REQ-history-006); chough timing says elapsed wall-clock once, in its header (REQ-reporting-001).
+  - "Verified: the cases red then green, both bugs verified, and the full suite 734 of 734. Next: Leif's review and merge."
 ---
 # 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once
 
@@ -59,6 +71,10 @@ next: Continue accept
 - [Ran cargo test --locked --test next -- --exact next_with_no_open_session_says_so_and_exits_0 for TC-cli-next-with-no-open-session-says-so-and-exits-0: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-next-with-no-open-session-says-so-and-exits-0-a87838.md)
 - [Ran cargo test --locked --test sessions -- --exact after_the_move_into_done_next_exits_0_and_status_refuses for TC-history-next-after-done-exits-0-and-status-refuses: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-history-next-after-done-exits-0-and-status-refuses-5ec968.md)
 - [Ran cargo test --locked --test timing -- --exact timing_says_elapsed_wall_clock_once_on_gate_run_and_fix_lines for TC-reporting-timing-says-elapsed-wall-clock-once-on-every-line: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-reporting-timing-says-elapsed-wall-clock-once-on-every-line-22f376.md)
+- [Ran cargo test --locked --test next -- --exact next_with_no_open_session_says_so_and_exits_0 for TC-cli-next-with-no-open-session-says-so-and-exits-0: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-next-with-no-open-session-says-so-and-exits-0-3758f7.md)
+- [Ran cargo test --locked --test sessions -- --exact after_the_move_into_done_next_exits_0_and_status_refuses for TC-history-next-after-done-exits-0-and-status-refuses: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-history-next-after-done-exits-0-and-status-refuses-a6f491.md)
+- [Ran cargo test --locked --test timing -- --exact timing_says_elapsed_wall_clock_once_on_gate_run_and_fix_lines for TC-reporting-timing-says-elapsed-wall-clock-once-on-every-line: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-reporting-timing-says-elapsed-wall-clock-once-on-every-line-24eb81.md)
+- [The full test suite passed 734 of 734 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 4001748c, PR 6 with main merged in (#243); clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-734-of-734-across-48-targets-cargo.md)
 
 ## Open threads
 
@@ -203,4 +219,10 @@ next: Continue accept
   - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
   - gate: native:approved
   - revision: 5f68ad78cdfefb6bf2025c2986b24a7a5b578265
+  - by: claude-code (hc t382)
+- 2026-11-13T03:38:41Z · gate-opened · accept → accept · Implementation review of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once ^t-7379a8
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - revision: 4001748c5694f643883219e37d690c4271bfc064
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t382)
