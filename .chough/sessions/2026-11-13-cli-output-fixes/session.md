@@ -5,7 +5,7 @@ aliases: [cli-output-fixes]
 objective: "0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -34,13 +34,9 @@ bugs:
   - 2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open
   - 2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
-    holds: accept
-    drives: review
-    opened: 2026-11-13T03:38:41Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: "0.6.1: next with no open session exits 0, and timing says elapsed once"
 summary:
   - With no open session, the normal state after done, chough next says so, names chough session new <key> and exits 0, while status still refuses (REQ-cli-021, REQ-history-006); chough timing says elapsed wall-clock once, in its header (REQ-reporting-001).
@@ -62,6 +58,7 @@ summary:
 - Leif decided "Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once as 0xLeif
 - Leif decided "Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once with its corrected file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once as 0xLeif
 - Leif decided "Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once with its exact file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once as 0xLeif
+- Leif decided "Implementation review of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:40Z, answering: 'Approve 0.6.1 PR #248? chough next with no open session (the normal state after done) says so, names chough session new, and exits cleanly. chough timing says elapsed wall-clock once, in its header. 734 of 734 tests pass, with failing tests first.' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -225,4 +222,20 @@ summary:
   - revision: 4001748c5694f643883219e37d690c4271bfc064
   - holds: accept
   - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T03:42:00Z · gate-closed · accept → accept · Implementation review of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once ^t-3f6e86
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - revision: d7ca4e5f2a1bee9dfc416c7dc75b6d2f8c941c68
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T03:40Z, answering: 'Approve 0.6.1 PR #248? chough next with no open session (the normal state after done) says so, names chough session new, and exits cleanly. chough timing says elapsed wall-clock once, in its header. 734 of 734 tests pass, with failing tests first.' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T03:42:01Z · advance · accept → done · native:archived ^t-840077
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - gate: native:archived
+  - revision: d7ca4e5f2a1bee9dfc416c7dc75b6d2f8c941c68
   - by: claude-code (hc t382)
