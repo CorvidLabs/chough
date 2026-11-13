@@ -19,6 +19,7 @@ files: [tests/package.rs, .github/workflows/ci.yml, docs/ci.md, CHANGELOG.md]
 observations:
   - 2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base
   - 2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-d92603
+  - 2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-c0b0ac
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -47,6 +48,7 @@ next: Record the red run, then add the schedule and the base fallback to ci.yml
 
 - [Ran cargo test --locked --test package -- --exact ci_runs_once_a_day_on_main_with_a_real_archive_base for TC-cli-ci-runs-daily-with-a-real-archive-base: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base.md)
 - [Ran cargo test --locked --test package -- --exact ci_runs_once_a_day_on_main_with_a_real_archive_base for TC-cli-ci-runs-daily-with-a-real-archive-base: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-d92603.md)
+- [Ran cargo test --locked --test package -- --exact ci_runs_once_a_day_on_main_with_a_real_archive_base for TC-cli-ci-runs-daily-with-a-real-archive-base: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-c0b0ac.md)
 
 ## Open threads
 
