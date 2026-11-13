@@ -531,6 +531,9 @@ Each step also passes the relay to SpecSync 6.3.0's own fields, `--words`, `--wh
 and `--recorded-by`, so SpecSync's approval or review records the relayed decision
 (#249). Chough bounds the whole decision at 4,096 bytes, so no field exceeds
 SpecSync's 4,096-byte bound for each.
+SpecSync 6.3.0 records a change approved or reviewed this way at workflow version 3,
+which SpecSync 6.2.x refuses, so every checkout and CI job of the project needs
+SpecSync 6.3.0.
 
 Every check the save makes runs before the native step. When SpecSync refuses, Chough
 passes its output and exit code through, the gate stays open and nothing is written.
