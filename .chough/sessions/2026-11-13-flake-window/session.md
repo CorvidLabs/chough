@@ -35,6 +35,12 @@ observations:
   - 2026-11-13-tc-cli-flake-window-blocked
   - 2026-11-13-tc-cli-flake-window-fails-closed
   - 2026-11-13-tc-cli-flake-window-wiring
+  - 2026-11-13-tc-cli-flake-window-clean-356549
+  - 2026-11-13-tc-cli-flake-window-restarts-5cbeb4
+  - 2026-11-13-tc-cli-flake-window-blocked-d43986
+  - 2026-11-13-tc-cli-flake-window-fails-closed-e42a32
+  - 2026-11-13-tc-cli-flake-window-wiring-b968fa
+  - 2026-11-13-the-check-read-live-ci-history-for-corvidlabs-chough-in-27-6-s
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -66,6 +72,12 @@ next: Record the green case runs, merge main, run the full suite, then change ch
 - [Ran python3 .github/scripts/test-flake-window.py BlockedTests for TC-cli-flake-window-blocked: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-blocked.md)
 - [Ran python3 .github/scripts/test-flake-window.py FailClosedTests for TC-cli-flake-window-fails-closed: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-fails-closed.md)
 - [Ran python3 .github/scripts/test-flake-window.py WiringTests for TC-cli-flake-window-wiring: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-wiring.md)
+- [Ran python3 .github/scripts/test-flake-window.py CleanWindowTests for TC-cli-flake-window-clean: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-clean-356549.md)
+- [Ran python3 .github/scripts/test-flake-window.py RestartTests for TC-cli-flake-window-restarts: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-restarts-5cbeb4.md)
+- [Ran python3 .github/scripts/test-flake-window.py BlockedTests for TC-cli-flake-window-blocked: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-blocked-d43986.md)
+- [Ran python3 .github/scripts/test-flake-window.py FailClosedTests for TC-cli-flake-window-fails-closed: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-fails-closed-e42a32.md)
+- [Ran python3 .github/scripts/test-flake-window.py WiringTests for TC-cli-flake-window-wiring: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-wiring-b968fa.md)
+- [The check read live CI history for CorvidLabs/chough in 27.6 s: 808 runs over 45 days, 135 main runs, 134 job lists, 0 flake issues, 205 bug records (3 name DRIVE-19). Verdict running: latest restart the rerun of run 43357893936 on leif/0.6.1-observation-cap at 2026-11-13T03:33:05Z, clean from 2026-11-27T03:33:05Z, 15 restarts in the window. Recomputing from the saved input gave a byte-identical receipt (input sha256 40fe8591bf6c78c0). This shows the check runs on real data, not that the window is clean](evidence/2026-11-13-the-check-read-live-ci-history-for-corvidlabs-chough-in-27-6-s.md)
 
 ## Open threads
 
