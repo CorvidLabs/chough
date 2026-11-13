@@ -7,10 +7,11 @@
   "title": "0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json",
   "description": "0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
   "created_at": 1794536149,
-  "updated_at": 1794536179,
+  "updated_at": 1794537218,
   "affected_specs": [
     "cli"
   ],

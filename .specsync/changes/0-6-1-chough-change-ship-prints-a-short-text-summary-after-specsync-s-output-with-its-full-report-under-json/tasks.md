@@ -5,6 +5,6 @@ artifact: tasks
 
 # Tasks
 
-- [ ] A failing test: change ship's default output after SpecSync's is not a short summary.
-- [ ] The summary in `src/change.rs`, every report under `--json`, with the docs and the CHANGELOG.
-- [ ] Red then green recorded through Chough, and the full local suite.
+- [x] A failing test: change ship's default output after SpecSync's is not a short summary.
+- [x] The summary in `src/change.rs`, every report under `--json`, with the docs and the CHANGELOG.
+- [x] Red then green recorded through Chough, and the full local suite.

@@ -1,6 +1,6 @@
 ---
 id: 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 9d53604071df50b537adccad0ccf5cac9a2fc32b
 ---
