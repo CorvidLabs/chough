@@ -5,11 +5,11 @@ aliases: [fix-245-index-ignored]
 objective: "Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
-native_change: ""
+native_change: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
 pr: ""
 criteria: []
 requirements: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue plan
+next: Continue build
 ---
 # Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes
 
@@ -34,6 +34,7 @@ Fix #245: chough library index links no source Git ignores, so a fresh clone's i
 ## Decisions and why
 
 - Leif decided "Approve fixing #245: chough library index stops linking skill copies that Git ignores": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:12Z, answering: 'Chough #245 (from corvid-agent): chough library index stops linking skill copies that Git ignores, so the index check passes in a fresh clone and in CI, where it fails today. Small wording change, with a failing test ready. Approve?' (option text: 't37f builds it. A separate warning in chough init would come later as its own change.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
+- Leif decided "Approve the scope of fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:12Z, answering: 'Chough #245 (from corvid-agent): chough library index stops linking skill copies that Git ignores, so the index check passes in a fresh clone and in CI, where it fails today. Small wording change, with a failing test ready. Approve?' (option text: 't37f builds it. A separate warning in chough init would come later as its own change.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes as 0xLeif
 
 ## What was verified
 
@@ -62,4 +63,26 @@ Fix #245: chough library index links no source Git ignores, so a fresh clone's i
   - by: claude-code (hc t382)
 - 2026-11-13T14:13:02Z · skip · design → plan · No visuals or interactions change ^t-8f1126
   - revision: d2d2f60d5be07b6c43a827f576a3b974578af8b7
+  - by: claude-code (hc t382)
+- 2026-11-13T14:13:47Z · gate-opened · plan → plan · Approve the scope of fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes ^t-4c589e
+  - native_change: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
+  - revision: 85304969e053e7477dff11d2ee53b6dddcb6a070
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-13T14:13:47Z · gate-closed · plan → plan · Approve the scope of fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes ^t-ef3036
+  - native_change: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
+  - revision: 85304969e053e7477dff11d2ee53b6dddcb6a070
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T14:12Z, answering: 'Chough #245 (from corvid-agent): chough library index stops linking skill copies that Git ignores, so the index check passes in a fresh clone and in CI, where it fails today. Small wording change, with a failing test ready. Approve?' (option text: 't37f builds it. A separate warning in chough init would come later as its own change.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T14:13:49Z · advance · plan → build · Leif approved the scope (14:12Z, relayed by t370) ^t-e7479d
+  - native_change: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
+  - gate: native:approved
+  - revision: 85304969e053e7477dff11d2ee53b6dddcb6a070
   - by: claude-code (hc t382)
