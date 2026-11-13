@@ -5,7 +5,7 @@ aliases: [fix-247-example-race]
 objective: "Fix #247: the verify lane's example waits past the failing run's second before its rerun"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -23,13 +23,9 @@ observations:
   - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
 bugs: [2026-11-13-the-verify-lane-s-exercise-flakes-when-the-example-s-failing]
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
-    holds: accept
-    drives: review
-    opened: 2026-11-13T07:31:25Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: "Fix #247: the example waits past the failing run's second"
 summary:
   - examples/feature-bug-loop.sh waits until the clock is past the latest failure's recorded second before TC-shipping-0001's rerun, so the verify lane's exercise no longer flakes on REQ-cli-012's same-second rule, which is unchanged.
@@ -47,6 +43,7 @@ Fix #247: the verify lane's example waits past the failing run's second before i
 
 - Leif decided "Approve fixing #247: the verify lane's example waits past the failing run's second before its rerun": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough fix #247: the verify lane's example script now waits past the failing run's second before rerunning, so CI stops flaking on Chough's same-second rule. Approve its scope?' (option text: 't37f builds it with a failing test first.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
 - Leif decided "Approve the scope of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough fix #247: the verify lane's example script now waits past the failing run's second before rerunning, so CI stops flaking on Chough's same-second rule. Approve its scope?' (option text: 't37f builds it with a failing test first.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun as 0xLeif
+- Leif decided "Implementation review of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun": "#258 CI flake fix (#247)" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering: 'Chough PRs passed by the reviewer, part 1: approve the implementation? Each ships after your yes, then you'll get a merge it.', he selected '#256 record polish (0.6.1)', '#258 CI flake fix (#247)', '#259 migrate preview (#246)' and '#261 relay details (#249)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -118,4 +115,20 @@ Fix #247: the verify lane's example waits past the failing run's second before i
   - revision: 72cb5ef655762dcd4b1979e3e1d87149428baa68
   - holds: accept
   - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T14:15:53Z · gate-closed · accept → accept · Implementation review of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun ^t-bbf40e
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - revision: 97d0c93a36776603c43f1ae982dffc2c53f38d0b
+  - relayed_by:
+    - decided_by: Leif
+    - words: #258 CI flake fix (#247)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering: 'Chough PRs passed by the reviewer, part 1: approve the implementation? Each ships after your yes, then you'll get a merge it.', he selected '#256 record polish (0.6.1)', '#258 CI flake fix (#247)', '#259 migrate preview (#246)' and '#261 relay details (#249)'; relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T14:15:55Z · advance · accept → done · native:archived ^t-574dd0
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - gate: native:archived
+  - revision: 97d0c93a36776603c43f1ae982dffc2c53f38d0b
   - by: claude-code (hc t382)
