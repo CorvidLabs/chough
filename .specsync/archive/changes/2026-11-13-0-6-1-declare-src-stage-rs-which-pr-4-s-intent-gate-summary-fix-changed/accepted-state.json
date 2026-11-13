@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed",
+  "slug": "0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed",
+  "title": "0.6.1: declare src/stage.rs, which PR 4's intent gate summary fix changed",
+  "description": "0.6.1: declare src/stage.rs, which PR 4's intent gate summary fix changed",
+  "kind": "refactor",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "30b770aafc0b5ecce8185df9de30cd2594a0519f",
+  "created_at": 1794538473,
+  "updated_at": 1794538589,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/stage.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "A record of a file the archived PR 4 change touched but did not list; no code or contract changes.",
+  "acceptance_criteria": [
+    "src/stage.rs, changed by PR 4 (its added_and_modified helper split for the intent gate summary), is covered by a change, so specsync change audit finds no uncovered path; no code or contract changes"
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif approved this covering record at 02:53Z (relayed by t370): one yes covers its scope and review. No code or contract change; it only covers src/stage.rs, which the archived PR 4 change touched without listing.",
+    "public_contract": "no"
+  }
+}
