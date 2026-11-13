@@ -7,11 +7,11 @@
   "title": "0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak",
   "description": "0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
   "created_at": 1794535610,
-  "updated_at": 1794536605,
+  "updated_at": 1794536803,
   "affected_specs": [
     "records"
   ],
