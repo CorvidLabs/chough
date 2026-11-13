@@ -293,7 +293,11 @@ pub(super) fn write_new_bounded(
     write_new_bytes(root, relative, content.as_bytes())
 }
 
-/// Create a file of any bounded size only when it does not exist.
+/// Create a file of any bounded size only when it does not exist. The content is written
+/// to a temporary file first (see [`temporary_for`]) and linked into place only when it
+/// is whole, so a write that fails partway, on a full disk or past a file-size limit,
+/// leaves no partial file (#260); the temporary is removed either way. A file that
+/// appears under the name meanwhile is kept, as when it existed before.
 pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Result<bool> {
     let path = local_path(root, relative)?;
     if path.exists() {
@@ -302,12 +306,22 @@ pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Re
     }
     fs::create_dir_all(path.parent().context("file has no parent")?)?;
     local_path(root, relative)?;
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&path)?;
-    file.write_all(content)?;
-    Ok(true)
+    let temporary = temporary_for(root, relative, &path)?;
+    let created = (|| -> std::io::Result<bool> {
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&temporary)?;
+        file.write_all(content)?;
+        file.sync_all()?;
+        match fs::hard_link(&temporary, &path) {
+            Ok(()) => Ok(true),
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => Ok(false),
+            Err(error) => Err(error),
+        }
+    })();
+    let _ = fs::remove_file(&temporary);
+    Ok(created?)
 }
 
 /// Replace a managed record atomically: write a sibling temporary file, then rename.

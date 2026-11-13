@@ -248,7 +248,9 @@ replaces the front matter, appends list items to the end of a named section, or 
 a missing named section at the end of the body, and does nothing else to an existing
 body, so a person's edit to a Goal, a bug's Steps or an entry's body survives. Files
 are written with LF line endings by an atomic replace under the writer lock, or by
-create-new for a new record.
+create-new for a new record: written whole to a temporary file first and linked into
+place only when complete, so a write that fails partway, on a full disk or past a
+file-size limit, leaves no partial record (#260).
 
 | Record | Bound |
 |---|---|
