@@ -1129,7 +1129,10 @@ fn a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay() {
 fn a_ship_that_runs_the_review_reports_it_in_native_step() {
     let fixture = shipping_session_at("accept");
     fixture.write(".stub-ship-out", "SHIPPED a5\n");
-    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    // The close's report is behind --json (REQ-cli-059).
+    let mut args = ship_with(SHIP_ID, &review_relay());
+    args.push("--json");
+    let output = run_env(&fixture, &args, &[]);
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(output.status.success(), "{stdout}");
     assert!(!stdout.contains("\"ran\": null"), "{stdout}");
