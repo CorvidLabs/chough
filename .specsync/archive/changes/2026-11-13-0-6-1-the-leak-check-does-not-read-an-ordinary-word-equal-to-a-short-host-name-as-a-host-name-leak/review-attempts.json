@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "4ca672d671b04ff14fb033ed13ed7ffd709e95d9",
+      "contract_digest": "0ccb3a345b433c8494a210fecbd995537f44442737ae69e1748f92660e62a129",
+      "execution_digest": "69b129a539d1beb797ed510c0d706697a3127f302b12051094fdf16b0feda94e",
+      "workspace_digest": "f3e8f090b82c1c2afdb5ba35acce1be3c367ea5717ede8aae4869b19c33f9215",
+      "timestamp": 1794536792
+    }
+  ]
+}
