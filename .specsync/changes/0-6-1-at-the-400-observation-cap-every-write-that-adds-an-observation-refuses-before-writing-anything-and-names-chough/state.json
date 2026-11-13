@@ -10,19 +10,16 @@
   "state": "approved",
   "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
   "created_at": 1794535713,
-  "updated_at": 1794535749,
+  "updated_at": 1794538750,
   "affected_specs": [
     "cli"
   ],
   "affected_paths": [
-    "src/cases.rs",
-    "src/evidence.rs",
-    "src/checkpoint.rs",
-    "src/stage.rs",
-    "tests/cases.rs",
-    "tests/next.rs",
-    "docs/cli.md",
-    "CHANGELOG.md"
+    "src/",
+    "tests/",
+    "docs/",
+    "CHANGELOG.md",
+    "README.md"
   ],
   "no_spec_change": true,
   "no_spec_change_rationale": "A fix within the existing requirements; no contract text changes.",
