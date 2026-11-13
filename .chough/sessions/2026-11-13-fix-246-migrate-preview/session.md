@@ -63,3 +63,6 @@ Fix #246: chough migrate's preview and receipt name the sessions chough doctor w
 - 2026-11-13T04:37:59Z · skip · design → plan · No visuals or interactions change ^t-c2fd70
   - revision: 38fe24c063e3afde49a5be5093cd69791bd06126
   - by: claude-code (hc t382)
+- 2026-11-13T04:38:28Z · correction · plan → plan · The note's time is wrong: Leif approved this intent at 2026-11-13T04:37Z (relayed by t370), as the gate-closed entry's where says, not 03:44Z; the setup script reused the time of the #247 and #249 approvals ^t-d6f2d1
+  - corrects: ^t-5b8d0e
+  - by: claude-code (hc t382)
