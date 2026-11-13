@@ -366,6 +366,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
             } else {
                 let step = crate::humans::Step::Review {
                     verdict: "pass".into(),
+                    relay: (&*relay).into(),
                 };
                 let ran = crate::humans::run(root, id, &human, &step)?;
                 if ran.code != 0 {
