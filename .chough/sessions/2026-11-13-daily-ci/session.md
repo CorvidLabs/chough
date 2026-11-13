@@ -5,7 +5,7 @@ aliases: [daily-ci]
 objective: "#217: CI also runs once a day on main, so the flake window sees a macOS and Linux run every day; the SpecSync Archive jobs take the run's own commit as their base when the event has none (REQ-cli-064)"
 intent_scope: LIFE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -20,6 +20,8 @@ observations:
   - 2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base
   - 2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-d92603
   - 2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-c0b0ac
+  - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
+  - 2026-11-13-with-the-base-set-to-the-commit-itself-as-a-scheduled-run-now
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -49,6 +51,8 @@ next: Record the red run, then add the schedule and the base fallback to ci.yml
 - [Ran cargo test --locked --test package -- --exact ci_runs_once_a_day_on_main_with_a_real_archive_base for TC-cli-ci-runs-daily-with-a-real-archive-base: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base.md)
 - [Ran cargo test --locked --test package -- --exact ci_runs_once_a_day_on_main_with_a_real_archive_base for TC-cli-ci-runs-daily-with-a-real-archive-base: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-d92603.md)
 - [Ran cargo test --locked --test package -- --exact ci_runs_once_a_day_on_main_with_a_real_archive_base for TC-cli-ci-runs-daily-with-a-real-archive-base: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-c0b0ac.md)
+- [The full test suite passed 736 of 736 across 48 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at a2d271c9, the daily CI head on main 38fe24c0 with REQ-cli-064 materialized; rustfmt --check was clean](evidence/2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo.md)
+- [With the base set to the commit itself, as a scheduled run now passes, the archive inspector exited 0 on main 38fe24c0: shard 1/4 walked 1 of 1 PR revision and authenticated 45 of 177 archives. This shows a github.sha base is a real base the inspector accepts; the other three shards were not run locally](evidence/2026-11-13-with-the-base-set-to-the-commit-itself-as-a-scheduled-run-now.md)
 
 ## Open threads
 
@@ -97,4 +101,14 @@ next: Record the red run, then add the schedule and the base fallback to ci.yml
   - native_change: 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
   - gate: native:approved
   - revision: 38fe24c063e3afde49a5be5093cd69791bd06126
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:48:29Z · advance · build → test · native:approved ^t-6bea3e
+  - native_change: 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
+  - gate: native:approved
+  - revision: a2d271c9c60126932d4dd03a40ddc5433419eb25
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:48:30Z · advance · test → accept · native:approved ^t-5ad6d6
+  - native_change: 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
+  - gate: native:approved
+  - revision: a2d271c9c60126932d4dd03a40ddc5433419eb25
   - by: claude-code (hc t38r)
