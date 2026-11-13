@@ -550,3 +550,70 @@ fn a_given_name_holding_the_host_name_is_refused() {
     let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
     refused(&fixture, &arguments, "id", "host-name", &words);
 }
+
+/// #267 (REQ-records-006): a token glued to a word by a hyphen, as slugs, IDs and run
+/// names glue one (`x-ghp_…`, `run-ghp_…`), evaded every token form: a question and a
+/// session key holding one were written byte for byte, and `chough doctor --leaks` did
+/// not report one in a committed record. A hyphen-glued token of each form is refused as
+/// `refused:leak: <field> holds token`, never echoed and with every file unchanged, as
+/// the same token after a space is; a committed record holding one is a `leak` finding.
+#[test]
+fn a_hyphen_glued_token_is_refused_and_reported() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("fixture");
+    let tokens = [
+        concat!("ghp_", "abcdefghij0123456789abcdefghij0123"),
+        concat!("github_", "pat_", "abcdefghij0123456789abcd"),
+        concat!("glp", "at-abcdefghijklmnopqrstuvwx"),
+        concat!("xo", "xb-123456789012-abcdef"),
+        concat!("sk-", "ant-api03-abcdefghijklmnopqrstuv"),
+        concat!("AKIA", "ABCDEFGHIJKLMNOP"),
+    ];
+    for token in tokens {
+        // The control: after a space the token is refused already.
+        for text in [format!("probe x {token}"), format!("probe x-{token}")] {
+            refused(
+                &fixture,
+                &["checkpoint", "--question", &text],
+                "question",
+                "token",
+                token,
+            );
+        }
+    }
+    let token = tokens[0];
+    let key = format!("x-{token}");
+    refused(
+        &fixture,
+        &["session", "new", &key, "--objective", "SYNTHETIC probe"],
+        "key",
+        "token",
+        token,
+    );
+
+    // A committed record an earlier build wrote with a run name holding a token.
+    let lesson = "knowledge/lessons/2026-01-01-glued-token.md";
+    fixture.write(
+        lesson,
+        &format!(
+            "---\nid: 2026-01-01-glued-token\ntitle: \"Glued\"\ntype: lesson\ntags: []\n---\n\nThe log of run-{token} is kept.\n"
+        ),
+    );
+    fixture.git(&["add", lesson]);
+    fixture.git(&["commit", "-qm", "a lesson holding a glued token"]);
+    let output = run(&fixture, &["doctor", "--leaks"]);
+    let said = String::from_utf8_lossy(&output.stdout).into_owned();
+    assert!(!said.contains(token), "doctor echoed the token: {said}");
+    let report: serde_json::Value = serde_json::from_str(&said).unwrap();
+    let leaks: Vec<&serde_json::Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["kind"] == "leak")
+        .collect();
+    assert_eq!(leaks.len(), 1, "{report:#}");
+    assert_eq!(leaks[0]["target"], lesson, "{report:#}");
+    assert_eq!(leaks[0]["match"], "token", "{report:#}");
+    assert_eq!(output.status.code(), Some(1), "{said}");
+}
