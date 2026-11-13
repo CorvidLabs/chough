@@ -7,11 +7,11 @@
   "title": "Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve",
   "description": "Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "338bbae296e3a7f9b00f57018b46ab8f27b932f8",
   "created_at": 1794541897,
-  "updated_at": 1794559373,
+  "updated_at": 1794579464,
   "affected_specs": [
     "records",
     "cli"

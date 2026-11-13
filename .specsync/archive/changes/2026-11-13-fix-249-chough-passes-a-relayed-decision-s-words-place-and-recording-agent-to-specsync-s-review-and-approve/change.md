@@ -1,6 +1,6 @@
 ---
 id: fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 338bbae296e3a7f9b00f57018b46ab8f27b932f8
 ---
