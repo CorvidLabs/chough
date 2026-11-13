@@ -24,6 +24,8 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
+- [Fix #247: the example waits past the failing run's second](journal/2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second.md) (2026-11-13, shipped)
 - [0.6.1: next with no open session exits 0, and timing says elapsed once](journal/2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says.md) (2026-11-13, shipped)
 - [0.6.1: at the observation cap, writes refuse before writing](journal/2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md) (2026-11-13, shipped)
 - [0.6.1: chough change ship prints a short summary](journal/2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md) (2026-11-13, shipped)
@@ -32,8 +34,6 @@ Newest posts:
 - [0.6.1: a short host name in an ordinary word is not a leak](journal/2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md) (2026-11-13, shipped)
 - [Chough 0.6.0 marked published in the roadmap](journal/2026-11-13-chough-0-6-0-marked-published-in-the-roadmap.md) (2026-11-13, shipped)
 - [Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds](journal/2026-11-13-chough-0-6-0-release-prep-the-dogfood-cycle-and-four-fresh.md) (2026-11-13, shipped)
-- [Chough 0.6.0: human-first records](journal/2026-11-12-chough-0-6-0-human-first-records.md) (2026-11-12, shipped)
-- [Turn the MVP interview into intent and a 1.0 roadmap](journal/2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md) (2026-11-12, shipped) (no time)
 
 ## Where things live
 
@@ -46,11 +46,7 @@ Newest posts:
 
 ## Open bugs
 
-3 open bugs, blocking first, then newest.
-
-- [2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from](../.chough/bugs/2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from.md) A fresh project's records README names artifacts as kept from 0.5.x, and the README init paragraph is long (deferred)
-- [2026-11-12-migrated-records-keep-old-observation-ids-in-their-front](../.chough/bugs/2026-11-12-migrated-records-keep-old-observation-ids-in-their-front.md) Migrated records keep old observation IDs in their front matter (deferred)
-- [2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one](../.chough/bugs/2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one.md) A bug body runs its symptom and its Actual line into one paragraph (deferred)
+- none
 
 ## Rules, skills and decisions
 
@@ -84,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s](../.specsync/archive/changes/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s/lesson-bundle.md), 0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed
+- [fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun](../.specsync/archive/changes/2026-11-13-fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun/lesson-bundle.md), Fix #247: the verify lane's example waits past the failing run's second before its rerun
 - [0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once](../.specsync/archive/changes/2026-11-13-0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once/lesson-bundle.md), 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once
-- [0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough](../.specsync/archive/changes/2026-11-13-0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough/lesson-bundle.md), 0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve
-- [0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json](../.specsync/archive/changes/2026-11-13-0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json/lesson-bundle.md), 0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json
 
 ## Snapshots and briefs
 

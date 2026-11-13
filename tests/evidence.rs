@@ -170,7 +170,17 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
         .collect();
     assert_eq!(listed["old-pass"], "removed", "{next}");
     assert_eq!(listed["never-recorded"], "unavailable", "{next}");
-    assert_eq!(listed["n1"], "historical", "{next}");
+    // PR 5 (F9): migrated front matter names the carried entry, so next lists it by its
+    // new name, with the 0.5.x ID `n1` kept as its alias.
+    let n1 = plan["aliases"]["n1"]
+        .as_str()
+        .unwrap()
+        .rsplit('/')
+        .next()
+        .unwrap()
+        .trim_end_matches(".md")
+        .to_string();
+    assert_eq!(listed[&n1], "historical", "{next}");
     assert!(listed.values().all(|label| label != "current"), "{next}");
     // A removed reference names the receipt that records its removal (REQ-records-009).
     let item = |id: &str| {
@@ -195,7 +205,7 @@ fn removed_and_missing_observations_are_labeled_and_never_count() {
     };
     assert_eq!(label("old-pass"), "removed");
     assert_eq!(label("never-recorded"), "unavailable");
-    assert_eq!(label("n1"), "historical");
+    assert_eq!(label(&n1), "historical");
     let row = |id: &str| {
         references
             .iter()
