@@ -2255,3 +2255,37 @@ fn a_duplicate_bug_add_lists_each_similar_bug_as_a_line() {
         assert!(error.contains(way), "{way}: {error}");
     }
 }
+
+/// t38n's round-4 F8 (REQ-cli-012): a bug's actual behaviour stands as its own paragraph
+/// under What happened, so Markdown never runs it into the symptom, and both read back;
+/// a bug written with `Actual:` on the symptom's next line still reads back the same.
+#[test]
+fn a_bug_body_gives_its_actual_line_its_own_paragraph() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.commit("fixture");
+    let id = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let text = fixture.read(&bug_path(&id));
+    assert!(
+        text.contains(
+            "**What happened:** Order of exactly 50.00 is charged shipping\n\nActual: Shipping fee of 4.99 applied\n\n**Steps:** "
+        ),
+        "{text}"
+    );
+    let shown = bug_record(&fixture, &id);
+    assert_eq!(
+        shown["symptom"],
+        "Order of exactly 50.00 is charged shipping"
+    );
+    assert_eq!(shown["actual"], "Shipping fee of 4.99 applied");
+
+    // A bug written before 0.6.1, with Actual on the symptom's next line.
+    seed_migrated_legacy_bug(&fixture);
+    let legacy = bug_record(&fixture, LEGACY);
+    assert_eq!(legacy["symptom"], "Seeded legacy record remains readable");
+    assert_eq!(legacy["actual"], "The legacy identity is present");
+}
