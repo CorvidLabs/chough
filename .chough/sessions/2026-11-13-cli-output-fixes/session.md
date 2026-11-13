@@ -49,6 +49,7 @@ next: Continue accept
 - Leif decided "Approve the intent: next with no session exits 0, and timing says wall-clock once": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
 - Leif decided "Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once as 0xLeif
 - Leif decided "Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once with its corrected file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once as 0xLeif
+- Leif decided "Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once with its exact file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once as 0xLeif
 
 ## What was verified
 
@@ -154,4 +155,52 @@ next: Continue accept
   - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
   - gate: native:approved
   - revision: a0a2b49ac4030dd765050567ccf82c7ae1a67c7e
+  - by: claude-code (hc t382)
+- 2026-11-13T03:14:32Z · direct-native-write · accept → accept · 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-b3e911
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - revision: 5f68ad78cdfefb6bf2025c2986b24a7a5b578265
+  - direct_write:
+    - change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: claude-code (hc t382)
+- 2026-11-13T03:14:32Z · back · accept → plan · The file list names exactly the changed files (Leif, 02:53Z, relayed by t370) ^t-d30b2d
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - revision: 5f68ad78cdfefb6bf2025c2986b24a7a5b578265
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 3 case(s) and 6 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t382)
+- 2026-11-13T03:14:33Z · gate-opened · plan → plan · Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once with its exact file list ^t-8dc4a0
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - revision: 5f68ad78cdfefb6bf2025c2986b24a7a5b578265
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-13T03:14:33Z · gate-closed · plan → plan · Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once with its exact file list ^t-e61693
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - revision: 5f68ad78cdfefb6bf2025c2986b24a7a5b578265
+  - relayed_by:
+    - decided_by: Leif
+    - words: Yes, start (Recommended) / Yes, fix and keep (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T03:14:35Z · advance · plan → build · Leif kept his approval with the exact file list (02:53Z, relayed by t370) ^t-d4f057
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - gate: native:approved
+  - revision: 5f68ad78cdfefb6bf2025c2986b24a7a5b578265
+  - by: claude-code (hc t382)
+- 2026-11-13T03:14:35Z · advance · build → test · Leif kept his approval with the exact file list (02:53Z, relayed by t370) ^t-fc5685
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - gate: native:approved
+  - revision: 5f68ad78cdfefb6bf2025c2986b24a7a5b578265
+  - by: claude-code (hc t382)
+- 2026-11-13T03:14:35Z · advance · test → accept · Leif kept his approval with the exact file list (02:53Z, relayed by t370) ^t-36b0b1
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - gate: native:approved
+  - revision: 5f68ad78cdfefb6bf2025c2986b24a7a5b578265
   - by: claude-code (hc t382)
