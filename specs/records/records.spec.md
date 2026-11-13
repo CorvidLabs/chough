@@ -125,6 +125,7 @@ or redacting every value before it is written.
 | `LOCAL_FILE` | `.chough/local/identity.toml`, the project's identity file, which replaces the user file when present. |
 | `USER_FILE` | `chough/identity.toml` under `XDG_CONFIG_HOME` or `~/.config`, the user identity file. |
 | `Step` | A native step run as a human: an approval with its note, or a review with its verdict. |
+| `Relay` | A relayed decision's words, place and recording agent, which a native step passes to SpecSync as `--words`, `--where` and `--recorded-by` (REQ-records-008). |
 | `arguments` | The SpecSync arguments of a step, with the human's configured actor. |
 | `summary` | A step as one line for the decision and the output, without the note's text. |
 | `approval_note` | The note an approval records: the human's words, where and when, and the relaying agent. |
