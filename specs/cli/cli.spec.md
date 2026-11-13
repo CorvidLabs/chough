@@ -28,6 +28,7 @@ files:
   - tests/cases.rs
   - tests/optional.rs
   - tests/package.rs
+  - tests/integrations.rs
   - tests/stages.rs
   - tests/common/mod.rs
   - tests/native.rs

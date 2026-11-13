@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a",
+  "slug": "219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a",
+  "title": "#219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune",
+  "description": "#219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune",
+  "kind": "feature",
+  "state": "approved",
+  "base_commit": "63200149608d01550722a2033cadc83103c69c9a",
+  "created_at": 1794542024,
+  "updated_at": 1794542127,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "integrations/README.md",
+    "integrations/templates.toml",
+    "integrations/claude-code/hc-template.md",
+    "integrations/codex/hc-template.md",
+    "integrations/kimi/hc-template.md",
+    "integrations/grok/hc-template.md",
+    "integrations/local/hc-template.md",
+    "tests/integrations.rs",
+    "specs/cli/cli.spec.md",
+    "docs/integrations.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "integrations/ holds a README and one hc template per host (claude-code, codex, kimi, grok, local) whose front matter is exactly name, description and command, whose body runs chough next and names a chough init --host value chough accepts, with no absolute or home path; integrations/templates.toml lists each with its version, init host, status (local unqualified until #220) and SHA-256, and a changed template fails tests/integrations.rs until its digest and version are updated; src/ never runs hc, Herdr or Rune and the skill never names them (red then green in tests/integrations.rs)"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "LIFE-24: no runtime dependency on hc, Herdr or Rune, and Rune stays a separate Fledge plugin; LIFE-26: committed files hold no local paths or user names; docs/integrations.md host mappings (Kimi uses --host openai; Codex was observed through the openai mapping); hc's own guidance that Codex runs with --no-daemon",
+    "public_contract": "no"
+  }
+}
