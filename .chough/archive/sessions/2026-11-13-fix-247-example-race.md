@@ -1,0 +1,181 @@
+---
+kind: session
+id: 2026-11-13-fix-247-example-race
+aliases: [fix-247-example-race]
+objective: "Fix #247: the verify lane's example waits past the failing run's second before its rerun"
+stage: done
+stage_status: archived
+iteration: 1
+native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+observations:
+  - 2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second
+  - 2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second-0f1174
+  - 2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second-aae03e
+  - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
+bugs: [2026-11-13-the-verify-lane-s-exercise-flakes-when-the-example-s-failing]
+title: "Fix #247: the example waits past the failing run's second"
+summary:
+  - examples/feature-bug-loop.sh waits until the clock is past the latest failure's recorded second before TC-shipping-0001's rerun, so the verify lane's exercise no longer flakes on REQ-cli-012's same-second rule, which is unchanged.
+  - "Verified: the case red then green, the bug verified, and the full suite 736 of 736. Next: Leif's review and merge."
+closed: 2026-11-13
+outcome: done
+---
+# Fix #247: the verify lane's example waits past the failing run's second before its rerun
+
+## Goal
+
+Fix #247: the verify lane's example waits past the failing run's second before its rerun
+
+## Where it stands
+
+## Decisions and why
+
+- Leif decided "Approve fixing #247: the verify lane's example waits past the failing run's second before its rerun": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough fix #247: the verify lane's example script now waits past the failing run's second before rerunning, so CI stops flaking on Chough's same-second rule. Approve its scope?' (option text: 't37f builds it with a failing test first.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
+- Leif decided "Approve the scope of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough fix #247: the verify lane's example script now waits past the failing run's second before rerunning, so CI stops flaking on Chough's same-second rule. Approve its scope?' (option text: 't37f builds it with a failing test first.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun as 0xLeif
+- Leif decided "Implementation review of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun": "#258 CI flake fix (#247)" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering: 'Chough PRs passed by the reviewer, part 1: approve the implementation? Each ships after your yes, then you'll get a merge it.', he selected '#256 record polish (0.6.1)', '#258 CI flake fix (#247)', '#259 migrate preview (#246)' and '#261 relay details (#249)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun as 0xLeif with verdict pass
+
+## What was verified
+
+- 2 earlier runs of the cases below are kept in this story's receipts, not listed here.
+- Ran cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying for TC-cli-exercise-rerun-waits-past-the-failing-runs-second: passed (exit 0, tests run 1). — 082ca76ae392 ^2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second-aae03e
+- The full test suite passed 736 of 736 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 72cb5ef6, #247's fix with main merged in (#248); clippy --all-targets -D warnings and rustfmt --check were clean ^2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
+
+## Bugs
+
+- [The verify lane's exercise flakes when the example's failing run and its fixed rerun land in the same second](../../bugs/2026-11-13-the-verify-lane-s-exercise-flakes-when-the-example-s-failing.md): verified
+
+## Open threads
+
+## Timeline
+
+- 2026-11-13T03:46:00Z · start · intent → intent · Fix #247: the verify lane's example waits past the failing run's second before its rerun ^t-3a2255
+  - revision: 63200149608d01550722a2033cadc83103c69c9a
+  - by: claude-code (hc t382)
+- 2026-11-13T03:46:00Z · gate-opened · intent → intent · Approve fixing #247: the verify lane's example waits past the failing run's second before its rerun ^t-4632d2
+  - revision: 63200149608d01550722a2033cadc83103c69c9a
+  - holds: intent
+  - drives: none
+  - by: claude-code (hc t382)
+- 2026-11-13T03:46:00Z · gate-closed · intent → intent · Approve fixing #247: the verify lane's example waits past the failing run's second before its rerun ^t-ebe132
+  - revision: 63200149608d01550722a2033cadc83103c69c9a
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough fix #247: the verify lane's example script now waits past the failing run's second before rerunning, so CI stops flaking on Chough's same-second rule. Approve its scope?' (option text: 't37f builds it with a failing test first.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+  - by: claude-code (hc t382)
+- 2026-11-13T03:46:00Z · advance · intent → design · Leif approved the intent (03:44Z, relayed by t370) ^t-0b420a
+  - revision: 63200149608d01550722a2033cadc83103c69c9a
+  - by: claude-code (hc t382)
+- 2026-11-13T03:46:01Z · skip · design → plan · No visuals or interactions change ^t-e1e1f4
+  - revision: 63200149608d01550722a2033cadc83103c69c9a
+  - by: claude-code (hc t382)
+- 2026-11-13T03:49:25Z · gate-opened · plan → plan · Approve the scope of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun ^t-1f8891
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - revision: e6df71e010f5cea1ce9358fc8c854b22b5e6eeab
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-13T03:49:25Z · gate-closed · plan → plan · Approve the scope of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun ^t-6d2dc4
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - revision: e6df71e010f5cea1ce9358fc8c854b22b5e6eeab
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough fix #247: the verify lane's example script now waits past the failing run's second before rerunning, so CI stops flaking on Chough's same-second rule. Approve its scope?' (option text: 't37f builds it with a failing test first.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T03:49:47Z · advance · plan → build · Leif approved the scope (03:44Z, relayed by t370) ^t-fda85f
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - gate: native:approved
+  - revision: e6df71e010f5cea1ce9358fc8c854b22b5e6eeab
+  - by: claude-code (hc t382)
+- 2026-11-13T06:43:34Z · advance · build → test · Built: t37f's red (190a11ae) and fix (ff954002), the case red then green, the bug verified ^t-85f78e
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - gate: native:approved
+  - revision: ff954002c5fe6f5a0a0834d29d2f6209ace21509
+  - by: claude-code (hc t382)
+- 2026-11-13T07:31:25Z · advance · test → accept · Tested: the case green on the final tree and the full suite 736/736 ^t-a10d64
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - gate: native:verifying
+  - revision: 72cb5ef655762dcd4b1979e3e1d87149428baa68
+  - by: claude-code (hc t382)
+- 2026-11-13T07:31:25Z · gate-opened · accept → accept · Implementation review of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun ^t-7b5fe3
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - revision: 72cb5ef655762dcd4b1979e3e1d87149428baa68
+  - holds: accept
+  - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T14:15:53Z · gate-closed · accept → accept · Implementation review of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun ^t-bbf40e
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - revision: 97d0c93a36776603c43f1ae982dffc2c53f38d0b
+  - relayed_by:
+    - decided_by: Leif
+    - words: #258 CI flake fix (#247)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering: 'Chough PRs passed by the reviewer, part 1: approve the implementation? Each ships after your yes, then you'll get a merge it.', he selected '#256 record polish (0.6.1)', '#258 CI flake fix (#247)', '#259 migrate preview (#246)' and '#261 relay details (#249)'; relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T14:15:55Z · advance · accept → done · native:archived ^t-574dd0
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - gate: native:archived
+  - revision: 97d0c93a36776603c43f1ae982dffc2c53f38d0b
+  - by: claude-code (hc t382)
+
+Closed 2026-11-13: done.
+
+## Receipts
+
+```yaml
+receipts:
+  - id: 2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second
+    claim: "Ran cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying for TC-cli-exercise-rerun-waits-past-the-failing-runs-second: failed (exit 101, tests run 1)."
+    result: failed
+    command: cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying
+    revision: 190a11aee2a6112a730861c6f84290717326c965
+    environment: local-macos-arm64
+    content: 019163cbe0fd37541970689058d86f8044450b785c2b9b7e9ac65d87a6925c86
+    fingerprint: sha256:938c409cf04220bce5544178c84f98bb08c976f455ac54a017436711588a6129
+    case: TC-cli-exercise-rerun-waits-past-the-failing-runs-second
+    case_digest: 2fcdba62200566d70f3268854ea254ed8f611eb833246f725a34c519545a84f1
+    observed: 2026-11-13T06:08:24Z
+    duration_seconds: 2
+    actor: claude-code (hc t382)
+  - id: 2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second-0f1174
+    claim: "Ran cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying for TC-cli-exercise-rerun-waits-past-the-failing-runs-second: passed (exit 0, tests run 1)."
+    result: passed
+    command: cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying
+    revision: ff954002c5fe6f5a0a0834d29d2f6209ace21509
+    environment: local-macos-arm64
+    content: 271785d961b582c0ea3d747c220e909a54ca8f430bcbbef337b06f190cdb08a7
+    fingerprint: sha256:0385bcba39af0e016ea5d78e01f0accbd27c5fe326f8d834bb60488e9792f53c
+    case: TC-cli-exercise-rerun-waits-past-the-failing-runs-second
+    case_digest: 2fcdba62200566d70f3268854ea254ed8f611eb833246f725a34c519545a84f1
+    observed: 2026-11-13T06:42:54Z
+    duration_seconds: 6
+    actor: claude-code (hc t382)
+  - id: 2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second-aae03e
+    claim: "Ran cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying for TC-cli-exercise-rerun-waits-past-the-failing-runs-second: passed (exit 0, tests run 1)."
+    result: passed
+    command: cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying
+    revision: 72cb5ef655762dcd4b1979e3e1d87149428baa68
+    environment: local-macos-arm64
+    content: 471d8569037ea762369eded05e2e6db52624aedf49636a831eb073c7fdc8cdca
+    fingerprint: sha256:082ca76ae392c6636a05a6f598ac111c3e0b632cc27b51454f146aa427cb3417
+    case: TC-cli-exercise-rerun-waits-past-the-failing-runs-second
+    case_digest: 2fcdba62200566d70f3268854ea254ed8f611eb833246f725a34c519545a84f1
+    observed: 2026-11-13T07:31:12Z
+    duration_seconds: 8
+    actor: claude-code (hc t382)
+  - id: 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
+    claim: "The full test suite passed 736 of 736 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 72cb5ef6, #247's fix with main merged in (#248); clippy --all-targets -D warnings and rustfmt --check were clean"
+    result: passed
+    revision: 72cb5ef655762dcd4b1979e3e1d87149428baa68
+    environment: local-macos-arm64
+    content: 471d8569037ea762369eded05e2e6db52624aedf49636a831eb073c7fdc8cdca
+    observed: 2026-11-13T07:31:22Z
+    actor: claude-code (hc t382)
+```

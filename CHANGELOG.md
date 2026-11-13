@@ -6,6 +6,7 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
 - Record polish: a bug's actual behaviour is its own `Actual:` paragraph under What
   happened; `chough migrate` names each carried entry or receipt in front matter, its
   0.5.x ID kept as the alias, so `chough next` lists the new names; a fresh project's

@@ -13,6 +13,13 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>Fix #247: the example waits past the failing run&apos;s second</title>
+<id>urn:chough:journal:2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second</id>
+<updated>2026-11-13T14:15:55Z</updated>
+<link href="2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>0.6.1: next with no open session exits 0, and timing says elapsed once</title>
 <id>urn:chough:journal:2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says</id>
 <updated>2026-11-13T03:42:02Z</updated>
@@ -136,13 +143,6 @@
 <id>urn:chough:journal:2026-11-08-document-what-chough-automates-and-what-the-human-decides</id>
 <updated>2026-11-08T02:05:46Z</updated>
 <link href="2026-11-08-document-what-chough-automates-and-what-the-human-decides.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Fix PR 197&apos;s prune capture and rollback defects (issue 65)</title>
-<id>urn:chough:journal:2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65</id>
-<updated>2026-11-07T17:31:47Z</updated>
-<link href="2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
