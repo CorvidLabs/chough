@@ -22,6 +22,7 @@ observations:
   - 2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-c0b0ac
   - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
   - 2026-11-13-with-the-base-set-to-the-commit-itself-as-a-scheduled-run-now
+  - 2026-11-13-the-full-test-suite-passed-738-of-738-across-48-targets-cargo
 bugs: []
 blockers: []
 waiting_on_human:
@@ -57,6 +58,7 @@ next: Review, then Leif's implementation review (relayed by t370); after merge, 
 - [Ran cargo test --locked --test package -- --exact ci_runs_once_a_day_on_main_with_a_real_archive_base for TC-cli-ci-runs-daily-with-a-real-archive-base: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-c0b0ac.md)
 - [The full test suite passed 736 of 736 across 48 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at a2d271c9, the daily CI head on main 38fe24c0 with REQ-cli-064 materialized; rustfmt --check was clean](evidence/2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo.md)
 - [With the base set to the commit itself, as a scheduled run now passes, the archive inspector exited 0 on main 38fe24c0: shard 1/4 walked 1 of 1 PR revision and authenticated 45 of 177 archives. This shows a github.sha base is a real base the inspector accepts; the other three shards were not run locally](evidence/2026-11-13-with-the-base-set-to-the-commit-itself-as-a-scheduled-run-now.md)
+- [The full test suite passed 738 of 738 across 48 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at 7b9c837f, the daily CI head with main (#242) merged and REQ-cli-064 materialized as cli version 90](evidence/2026-11-13-the-full-test-suite-passed-738-of-738-across-48-targets-cargo.md)
 
 ## Open threads
 
