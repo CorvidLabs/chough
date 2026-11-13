@@ -325,7 +325,7 @@ check "turn 4: one archived session story" \
     sh -c '[ "$(ls .chough/archive/sessions/*.md 2>/dev/null | wc -l | tr -d " ")" = 1 ]'
 check "turn 4: the native change is archived" \
     sh -c 'specsync change status "$1" --json | jq -e ".summary.state == \"archived\""' _ "$id"
-check "turn 4: the reply states stage done" test "$(reported STAGE 4)" = done
+check "turn 4: the reply states stage done" test "$(reported STAGE 4)" = "done"
 stop_if_failed 4
 
 # --- Turn 5: cold resume ------------------------------------------------------
@@ -333,7 +333,7 @@ before=$(git rev-parse HEAD)
 run_turn 5
 check "turn 5: the cold resume changed nothing" sh -c '[ "$(git rev-parse HEAD)" = "$1" ]' _ "$before"
 check "turn 5: the host read the skill" grep -Eq "$HOST_SKILL_READ" "$logs/turn-5.log"
-check "turn 5: the cold resume states stage done" test "$(reported STAGE 5)" = done
+check "turn 5: the cold resume states stage done" test "$(reported STAGE 5)" = "done"
 check "turn 5: the cold resume names chough session new" \
     sh -c 'printf "%s" "$1" | grep -q "session new"' _ "$(reported NEXT 5)"
 stop_if_failed 5

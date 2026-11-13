@@ -1,6 +1,7 @@
 # Adapter for the scripted stand-in host (REQ-cli-066): no model, used by the
 # self-test. Sourced by tools/host-matrix/run.sh; every adapter defines the same names
 # (see tools/host-matrix/README.md).
+# shellcheck disable=SC2034 # run.sh, which sources this file, reads these settings
 
 HOST_LABEL=stand-in
 HOST_INIT_ARGS="--host openai"

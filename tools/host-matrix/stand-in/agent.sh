@@ -181,14 +181,14 @@ turn_done() {
     quiet chough doctor --fix
     commit "Remove the archived session folder"
     reply "The change is archived and the session is finished." \
-        done "Start new work with chough session new <key>."
+        "done" "Start new work with chough session new <key>."
 }
 
 turn_resume() {
     read_skill
     printf '+ chough next --environment %s\n' "$env_name"
     chough next --environment "$env_name" 2>&1 || true
-    stage=done
+    stage="done"
     if [ "$fault" = wrong-resume ]; then stage=accept; fi
     reply "Nothing is open: the last session is archived." \
         "$stage" "Start new work with chough session new <key>."
