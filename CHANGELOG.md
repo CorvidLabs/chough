@@ -6,6 +6,8 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough next` with no open session, the normal state after done, says so, names `chough session new <key>` and exits 0 instead of failing, while `chough status` still refuses; `chough timing` says elapsed wall-clock once, in its header, with no gate-wait, case run or fix-time line repeating it, and its native note no longer reads "read read-only" (REQ-cli-021, REQ-history-006, REQ-reporting-001).
+
 ## [0.6.0] - 2026-11-12
 
 ### Human-first records (breaking)
