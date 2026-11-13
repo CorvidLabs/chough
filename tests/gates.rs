@@ -735,12 +735,12 @@ fn a_scope_gate_summary_names_each_delta_first_with_its_requirements() {
     deltas.sort_unstable();
     assert!(
         deltas[0].starts_with(&format!("{DIR}/deltas/cli.md +"))
-            && deltas[0].ends_with("(adds or modifies REQ-cli-001)"),
+            && deltas[0].ends_with("(adds REQ-cli-001)"),
         "{summary}"
     );
     assert!(
         deltas[1].starts_with(&format!("{DIR}/deltas/history.md +"))
-            && deltas[1].ends_with("(adds or modifies REQ-history-002)"),
+            && deltas[1].ends_with("(modifies REQ-history-002)"),
         "{summary}"
     );
     assert!(
@@ -790,18 +790,163 @@ fn an_intent_gate_summary_names_the_criteria_and_their_hi_files() {
         .iter()
         .position(|line| line.starts_with("Intent: "))
         .expect(&summary);
-    for id in ["LIFE-1", "FLOW-2", "LIFE-99"] {
-        assert!(lines[intent].contains(id), "{summary}");
-    }
     let held: Vec<&str> = lines[intent + 1..]
         .iter()
         .take_while(|line| line.starts_with("  "))
         .map(|line| line.trim())
         .collect();
-    assert!(held.contains(&"hi/life.md: LIFE-1"), "{summary}");
-    assert!(held.contains(&"hi/flow.md: FLOW-2"), "{summary}");
+    // Each hi/ file that holds a criterion is named, with that criterion under it.
+    for (file, id) in [("hi/life.md", "LIFE-1"), ("hi/flow.md", "FLOW-2")] {
+        let at = held.iter().position(|line| *line == file).expect(&summary);
+        assert!(held[at + 1].starts_with(&format!("{id}  ")), "{summary}");
+    }
     assert!(held.contains(&"in no hi/ file: LIFE-99"), "{summary}");
     assert!(lines.len() <= 24 && summary.len() <= 4_096, "{summary}");
+}
+
+/// 0.6.1 (t38n's fourth fresh-eyes round, F7; REQ-cli-061): the intent gate's summary
+/// gave criterion IDs ("Intent: TALLY-2", "hi/tally.md: TALLY-2") without the sentences
+/// being approved, and printed "Diff: unknown, with no merge base and no recorded base
+/// commit". At an intent gate with no native change, the summary gives each criterion
+/// the session references by ID with its sentence from the HI file that holds it, laid
+/// out as `hi ls` lays it out, and no diff line, since there is no base. A file that only
+/// mentions a criterion does not hold it. Long sentences share the summary's bounds, so
+/// the tests and risks still show.
+#[test]
+fn an_intent_gate_summary_gives_each_criterions_sentence_and_no_diff_line() {
+    let fixture = Fixture::new();
+    fixture.write(
+        "hi/tally.md",
+        "---\nhi: 1\nfamilies: [TALLY]\n---\n\n# Tally\n\n## Criteria\n\n- **TALLY-1**  Piping text into tally prints the number of words.\n- **TALLY-2**  Running tally with --lines prints the number of lines instead of words.\n",
+    );
+    // Mentions TALLY-2 without holding it.
+    fixture.write(
+        "hi/notes.md",
+        "# Notes\n\n## Criteria\n\n- **NOTES-1**  Notes stay short, unlike TALLY-2 output.\n",
+    );
+    fixture.init();
+    fixture.ok(&[
+        "checkpoint",
+        "--criterion",
+        "TALLY-2",
+        "--criterion",
+        "TALLY-1",
+        "--criterion",
+        "TALLY-99",
+        "--awaiting-human",
+        "Approve the tally intent",
+    ]);
+    fixture.commit("the intent to approve");
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap().to_string();
+    let lines: Vec<&str> = summary.lines().collect();
+    let intent = lines
+        .iter()
+        .position(|line| line.starts_with("Intent: "))
+        .expect(&summary);
+    assert_eq!(
+        lines[intent + 1..intent + 5],
+        [
+            "  hi/tally.md",
+            "    TALLY-2  Running tally with --lines prints the number of lines instead of words.",
+            "    TALLY-1  Piping text into tally prints the number of words.",
+            "  in no hi/ file: TALLY-99",
+        ],
+        "{summary}"
+    );
+    assert!(!summary.contains("hi/notes.md"), "{summary}");
+    assert!(
+        !lines.iter().any(|line| line.starts_with("Diff:")),
+        "{summary}"
+    );
+    assert!(!summary.contains("unknown"), "{summary}");
+    // The same tree gives the same summary and digest.
+    let again = list(&fixture);
+    assert_eq!(again["gates"][0]["digest"], listed["gates"][0]["digest"]);
+
+    // Twenty long criteria share the bounds: the summary stays within 24 lines and 4,096
+    // bytes, a short sentence stays whole, a long one is cut where it says so, and the
+    // tests and risks lines are not cut off.
+    let long = "and the count stays right however the input ends, ".repeat(8);
+    let many: String = (1..=20)
+        .map(|n| format!("- **MANY-{n}**  Counting case {n} {long}\n"))
+        .collect();
+    fixture.write("hi/many.md", &format!("# Many\n\n## Criteria\n\n{many}"));
+    let mut args = vec!["checkpoint".to_string()];
+    for n in 1..=20 {
+        args.extend(["--criterion".to_string(), format!("MANY-{n}")]);
+    }
+    let args: Vec<&str> = args.iter().map(String::as_str).collect();
+    fixture.ok(&args);
+    let summary = list(&fixture)["gates"][0]["summary"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert!(
+        summary.lines().count() <= 24 && summary.len() <= 4_096,
+        "{} lines, {} bytes:\n{summary}",
+        summary.lines().count(),
+        summary.len()
+    );
+    assert!(
+        summary.contains("\n    TALLY-1  Piping text into tally prints the number of words.\n"),
+        "{summary}"
+    );
+    assert!(
+        summary.lines().any(|line| {
+            line.starts_with("    MANY-1  Counting case 1 ") && line.ends_with("… (cut)")
+        }),
+        "{summary}"
+    );
+    assert!(
+        summary.lines().any(|line| line.starts_with("Tests: "))
+            && summary.lines().any(|line| line.starts_with("Risks: ")),
+        "{summary}"
+    );
+    assert!(summary.contains(" more: "), "{summary}");
+}
+
+/// 0.6.1 (t38n's fourth fresh-eyes round, F7; REQ-cli-061): a delta that only adds read
+/// "(adds or modifies REQ-…)". Each delta is named with the requirement IDs it adds and
+/// those it modifies, each said as such: a delta that only adds says adds, and one that
+/// adds and modifies names each.
+#[test]
+fn a_scope_gate_summary_says_what_each_delta_adds_and_what_it_modifies() {
+    let fixture = project(&[]);
+    fixture.write(&format!("{DIR}/approvals.json"), "{}\n");
+    fixture.write(
+        &format!("{DIR}/deltas/history.md"),
+        "## ADDED\n\n### REQUIREMENT REQ-history-003\n\nThe Timeline SHALL wrap.\n\n## MODIFIED\n\n### REQUIREMENT REQ-history-002\n\nThe Timeline SHALL read.\n\n## REMOVED\n\n### REQUIREMENT REQ-history-099\n",
+    );
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--drives",
+        "approve",
+    ]);
+    fixture.commit("the scope to approve");
+    let summary = list(&fixture)["gates"][0]["summary"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let delta = |name: &str| -> String {
+        summary
+            .lines()
+            .map(str::trim)
+            .find(|line| line.starts_with(&format!("{DIR}/deltas/{name} +")))
+            .unwrap_or_else(|| panic!("no {name}:\n{summary}"))
+            .to_string()
+    };
+    assert!(
+        delta("cli.md").ends_with(" −0 (adds REQ-cli-001)"),
+        "{summary}"
+    );
+    assert!(
+        delta("history.md").ends_with(" (adds REQ-history-003; modifies REQ-history-002)"),
+        "{summary}"
+    );
+    assert!(!summary.contains("adds or modifies"), "{summary}");
 }
 
 /// Fresh-eyes round 4, F2 (2026-11-12; REQ-cli-061): with the change's delta, plan and
@@ -869,12 +1014,12 @@ fn a_scope_gate_summary_counts_uncommitted_and_untracked_change_files() {
     deltas.sort();
     assert!(
         deltas[0].starts_with(&format!("{DIR}/deltas/cli.md +"))
-            && deltas[0].ends_with("(adds or modifies REQ-cli-001, REQ-cli-002)"),
+            && deltas[0].ends_with("(adds REQ-cli-001, REQ-cli-002)"),
         "{summary}"
     );
     assert!(
         deltas[1].starts_with(&format!("{DIR}/deltas/history.md +5 −0"))
-            && deltas[1].ends_with("(adds or modifies REQ-history-002)"),
+            && deltas[1].ends_with("(modifies REQ-history-002)"),
         "{summary}"
     );
     for named in [
