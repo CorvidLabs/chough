@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794535664,
+      "digest": "0ccb3a345b433c8494a210fecbd995537f44442737ae69e1748f92660e62a129",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of 0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak\": \"Yes, start (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Leak check: an ordinary word equal to a short host name is not a leak (REQ-records-006 text)'; relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T02:07:43Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak",
+        "title": "0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak",
+        "description": "0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/leaks.rs",
+          "tests/leaks.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With a short all-letter host name, a record using it as an ordinary word is written and chough doctor reports nothing, while the same name inside a path, a URL or as <user>@<host> is still refused; a host name of 8 or more characters, or one holding a digit, hyphen or dot, is still refused anywhere (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved 0.6.1 at 02:03Z (relayed by t370) as six small PRs, one fix each, him merging each; this PR's scope is the leak check reading an ordinary word equal to a short host name as a leak, with REQ-records-006 text. Code stays in src/leaks.rs (records); a failing test first; the full local suite before review.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "records": "1fe5c040b1f862c4f9789f0b80c961b292d868183d18b614261c773c9b848664"
+      },
+      "approved_delta_bases": {
+        "records: REQUIREMENT REQ-records-006": "47912f8babb1ca75fb1e0de0cb819ecb83a8cd756896cd11824c9981cdcdd08f"
+      }
+    }
+  ],
+  "reopenings": []
+}
