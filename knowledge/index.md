@@ -24,16 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
 - [Fix #249: the relay reaches SpecSync's approval and review](journal/2026-11-13-fix-249-the-relay-reaches-specsync-s-approval-and-review.md) (2026-11-13, shipped)
+- [Fix #246: migrate's preview names what doctor will report](journal/2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report.md) (2026-11-13, shipped)
+- [Fix #247: the example waits past the failing run's second](journal/2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second.md) (2026-11-13, shipped)
 - [0.6.1: next with no open session exits 0, and timing says elapsed once](journal/2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says.md) (2026-11-13, shipped)
 - [0.6.1: at the observation cap, writes refuse before writing](journal/2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md) (2026-11-13, shipped)
 - [0.6.1: chough change ship prints a short summary](journal/2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md) (2026-11-13, shipped)
 - [0.6.1: src/stage.rs recorded for PR 4](journal/2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md) (2026-11-13, shipped)
 - [0.6.1: the intent gate summary shows what is approved](journal/2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md) (2026-11-13, shipped)
 - [0.6.1: a short host name in an ordinary word is not a leak](journal/2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md) (2026-11-13, shipped)
-- [Chough 0.6.0 marked published in the roadmap](journal/2026-11-13-chough-0-6-0-marked-published-in-the-roadmap.md) (2026-11-13, shipped)
-- [Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds](journal/2026-11-13-chough-0-6-0-release-prep-the-dogfood-cycle-and-four-fresh.md) (2026-11-13, shipped)
-- [Chough 0.6.0: human-first records](journal/2026-11-12-chough-0-6-0-human-first-records.md) (2026-11-12, shipped)
 
 ## Where things live
 
@@ -46,11 +46,7 @@ Newest posts:
 
 ## Open bugs
 
-3 open bugs, blocking first, then newest.
-
-- [2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from](../.chough/bugs/2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from.md) A fresh project's records README names artifacts as kept from 0.5.x, and the README init paragraph is long (deferred)
-- [2026-11-12-migrated-records-keep-old-observation-ids-in-their-front](../.chough/bugs/2026-11-12-migrated-records-keep-old-observation-ids-in-their-front.md) Migrated records keep old observation IDs in their front matter (deferred)
-- [2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one](../.chough/bugs/2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one.md) A bug body runs its symptom and its Actual line into one paragraph (deferred)
+- none
 
 ## Rules, skills and decisions
 
@@ -84,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s](../.specsync/archive/changes/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s/lesson-bundle.md), 0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed
 - [fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve](../.specsync/archive/changes/2026-11-13-fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve/lesson-bundle.md), Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve
-- [0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once](../.specsync/archive/changes/2026-11-13-0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once/lesson-bundle.md), 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once
-- [0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough](../.specsync/archive/changes/2026-11-13-0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough/lesson-bundle.md), 0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve
+- [fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply](../.specsync/archive/changes/2026-11-13-fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply/lesson-bundle.md), Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply
 
 ## Snapshots and briefs
 

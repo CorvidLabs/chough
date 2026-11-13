@@ -2,14 +2,35 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-13T14:18:13Z</updated>
+<updated>2026-11-13T14:19:22Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>0.6.1: record polish: a bug&apos;s Actual line, migrated names, a fresh guide</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh</id>
+<updated>2026-11-13T14:19:22Z</updated>
+<link href="2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>Fix #249: the relay reaches SpecSync&apos;s approval and review</title>
 <id>urn:chough:journal:2026-11-13-fix-249-the-relay-reaches-specsync-s-approval-and-review</id>
 <updated>2026-11-13T14:18:13Z</updated>
 <link href="2026-11-13-fix-249-the-relay-reaches-specsync-s-approval-and-review.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Fix #246: migrate&apos;s preview names what doctor will report</title>
+<id>urn:chough:journal:2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report</id>
+<updated>2026-11-13T14:17:18Z</updated>
+<link href="2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Fix #247: the example waits past the failing run&apos;s second</title>
+<id>urn:chough:journal:2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second</id>
+<updated>2026-11-13T14:15:55Z</updated>
+<link href="2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
@@ -123,26 +144,5 @@
 <updated>2026-11-09T07:44:46Z</updated>
 <link href="2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md"/>
 <category term="closed"/>
-</entry>
-  <entry>
-<title>Recognize pristine skill files from released bundles (#102)</title>
-<id>urn:chough:journal:2026-11-09-recognize-pristine-skill-files-from-released-bundles-102</id>
-<updated>2026-11-09T05:14:35Z</updated>
-<link href="2026-11-09-recognize-pristine-skill-files-from-released-bundles-102.md"/>
-<category term="closed"/>
-</entry>
-  <entry>
-<title>Document what Chough automates and what the human decides</title>
-<id>urn:chough:journal:2026-11-08-document-what-chough-automates-and-what-the-human-decides</id>
-<updated>2026-11-08T02:05:46Z</updated>
-<link href="2026-11-08-document-what-chough-automates-and-what-the-human-decides.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Fix PR 197&apos;s prune capture and rollback defects (issue 65)</title>
-<id>urn:chough:journal:2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65</id>
-<updated>2026-11-07T17:31:47Z</updated>
-<link href="2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65.md"/>
-<category term="shipped"/>
 </entry>
 </feed>
