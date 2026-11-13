@@ -16,8 +16,8 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
-bugs: []
+observations: [2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second]
+bugs: [2026-11-13-the-verify-lane-s-exercise-flakes-when-the-example-s-failing]
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -37,6 +37,8 @@ Fix #247: the verify lane's example waits past the failing run's second before i
 - Leif decided "Approve the scope of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough fix #247: the verify lane's example script now waits past the failing run's second before rerunning, so CI stops flaking on Chough's same-second rule. Approve its scope?' (option text: 't37f builds it with a failing test first.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying for TC-cli-exercise-rerun-waits-past-the-failing-runs-second: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second.md)
 
 ## Open threads
 

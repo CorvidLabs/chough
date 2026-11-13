@@ -10,7 +10,8 @@ impact: Intermittent red CI on unrelated PRs (#244), which costs a rerun and a t
 criteria: []
 requirements: [REQ-cli-012]
 cases: []
-evidence: []
+evidence:
+  - 2026-11-13-fix-247-example-race/2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second
 receipts: []
 environment: ubuntu-latest
 revision: e6df71e010f5cea1ce9358fc8c854b22b5e6eeab
@@ -20,7 +21,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-13T03:49:04Z
-updated: 2026-11-13T03:58:27Z
+updated: 2026-11-13T06:08:52Z
 ---
 # The verify lane's exercise flakes when the example's failing run and its fixed rerun land in the same second
 
@@ -41,3 +42,4 @@ Actual: The script reruns at once; with one-second observed times the rerun can 
 
 - 2026-11-13T03:49:04Z · Reported (GitHub #247 (t384, from CI run 43357893936 on #244)) · by claude-code (hc t382)
 - 2026-11-13T03:58:27Z · Tracked by the flake window (DRIVE-19); GitHub #247 · by claude-code (hc t382)
+- 2026-11-13T06:08:52Z · evidence: 2026-11-13-fix-247-example-race/2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second. Red at 190a11ae (t37f's test): with the failing run's recorded second ahead of the clock, the example's rerun-and-verify lines refuse verified with run 43357893936's error · by claude-code (hc t382)
