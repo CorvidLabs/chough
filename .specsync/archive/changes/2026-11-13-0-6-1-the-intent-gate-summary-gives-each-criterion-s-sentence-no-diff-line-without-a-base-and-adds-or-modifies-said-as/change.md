@@ -1,6 +1,6 @@
 ---
 id: 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 9d53604071df50b537adccad0ccf5cac9a2fc32b
 ---

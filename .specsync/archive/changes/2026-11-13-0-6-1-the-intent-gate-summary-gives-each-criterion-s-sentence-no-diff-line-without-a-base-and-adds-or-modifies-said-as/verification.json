@@ -1,0 +1,124 @@
+{
+  "timestamp": 1794537672,
+  "commit": "a5202ffec0de488819b78ee79037bbdb8b363498",
+  "contract_digest": "2f93795386088c1bdf9e666c58ddebdbb9c99bad1f27e07049b63b43e3377476",
+  "execution_digest": "dd16dead5926a778883471c5c3fcf454462fde40c62636d48fbed6c1213fec39",
+  "workspace_digest": "95ba1e651db43c069dbac0a27a8c59650f495847075e063aae2790f38819fef2",
+  "acceptance_input_digest": "6315fc401614e286796671f517aca3815314c1f8f83766d0eb991f72b7e7ceff",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8912a35a0da1c28130d40dc852b1e1bb7d267913084b714bb5279746b361888d",
+        "entry_digest": "8fc0b4aeb2a47a090e676318b765fa64c2c33738b6addaee1e370ff6462db432",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "docs/cli.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "bbd93f699156209ac86291ba94ac7b2fcfa504367d64c30d83b31700fcb63c63",
+        "entry_digest": "e794b62c1a16cbabb5a65be8d9f6cdc4193b4f1719653091be671b361a1992d2",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.3md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "35c0238b3221ca8b600366541d910327bd81b6a85cde2f9278bf38af5ae99074",
+        "entry_digest": "0ed50b4fc722a134345453943f6afc0e00078c6006f0a4df0843db3e745a7cd3",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "692c5be2c741795864daba76f3cd5129266e01043cae7a328f2bc142cf792e40",
+        "entry_digest": "a7f4a71774f1c48a9f24b8c695940eeb03a08fca14ff5932acf279366bc5897a",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+        "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c5f236ff5eae51b892757140696f69ec43f80c2ff2304e0c57e72408b1c98c8a",
+        "entry_digest": "267c8b86ba9da50d13211032dd3bb2c076cde7cd668cb988e65e48857c880cd9",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "06f3a8c0850c62325383f36e79273eb2fd9d355ce4d83a543f3c306c43294c3d",
+        "entry_digest": "8f5dc063d921267ddba11b030ed5d923c31baaedd8368d9816a654c8bf950e56",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "483933ab74792a113e55a1b3bf4ab1bc2e36578229a52a89c5dbee82d5375eec",
+        "entry_digest": "8ff2dbf45ad083bbcbd7ab754fb4bf49d644ee8baea9f02dc8dd4f4c313ce848",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/gates.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "25a210568e022c822069d556293dc99782d63f038bfb52a82411901b94e2da6b",
+        "entry_digest": "83d708b08813e62de59294e185b870f9a5eeab26c7c32e602348afaca6284795",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "tests/gates.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "0e1f2643744620cac246c9650646910ef93625b39d7f95222f9e3635fc107e3f",
+        "entry_digest": "b1a70a1a76594e0f24954e6eb043fef67be1102f948df8536f4638c5178c7e91",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": [
+    "REQ-cli-061"
+  ]
+}
