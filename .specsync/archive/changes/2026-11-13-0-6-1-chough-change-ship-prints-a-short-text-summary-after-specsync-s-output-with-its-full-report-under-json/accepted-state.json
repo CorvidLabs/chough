@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json",
+  "slug": "0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json",
+  "title": "0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json",
+  "description": "0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
+  "created_at": 1794536149,
+  "updated_at": 1794538690,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/change.rs",
+    "tests/change.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough change ship prints SpecSync output, then a short text summary of the review, the ship, the gate close and the move into done, at most 12 lines; with --json it prints every step full report as before (red then green)"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif approved 0.6.1 at 02:03Z (relayed by t370) as six small PRs, one fix each, him merging each; this PR is change ship's output, with REQ-cli-059 text. Code stays in src/change.rs (cli); a failing test first; the full local suite before review.",
+    "public_contract": "yes"
+  }
+}

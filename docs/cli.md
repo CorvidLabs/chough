@@ -296,7 +296,11 @@ matter and body, for (REQ-records-006):
 - an absolute path under a home, temporary or system root (`/Users/`, `/home/`,
   `/root/`, `/private/`, `/tmp/`, `/var/`, `/Volumes/`, `/mnt/`) or a Windows drive path,
   and a `~/` path;
-- the local host name, and the local user name inside a path or as `<user>@<host>`;
+- the local host name anywhere when it is at least 8 characters long or holds a digit,
+  a hyphen or a dot, and a shorter all-letter host name, which may be an ordinary word,
+  only inside a path or a URL or as `<user>@<host>`, so a word that happens to be this
+  machine's name is written;
+- the local user name inside a path or as `<user>@<host>`;
 - an email address;
 - credentials: GitHub, GitLab, Slack, AWS and model-provider token forms, private key
   blocks, bearer and basic authorization values, JSON web tokens, and `password`,
@@ -1181,8 +1185,8 @@ that shows it:
 ### Ship
 
 `chough change ship <id> [--close-gate <gate> --decided-by <who> --words <words>
---where <where> --recorded-by <agent>]` is the closeout after the human's review
-(REQ-cli-059). It runs in these steps:
+--where <where> --recorded-by <agent>] [--json]` is the closeout after the human's
+review (REQ-cli-059). It runs in these steps:
 
 1. Before anything runs, with nothing written, it refuses unless the active session's
    native change is `<id>` and its stage is accept, and unless every open human gate is
@@ -1200,8 +1204,13 @@ that shows it:
    nothing is written.
 4. After a successful ship, it closes the gate as `chough checkpoint --close-gate` would,
    with the relay (a relayed claim), and then moves the session as `chough stage advance
-   --to done` would, printing each report after SpecSync's output. If either is
-   refused, it exits 1, says the change is shipped and names the remaining commands.
+   --to done` would. If either is refused, it exits 1, says the change is shipped and
+   names the remaining commands.
+5. After SpecSync's output it prints a short text summary of at most 12 lines: the
+   review it ran or why none ran, the ship, the gate close, and the move into done
+   as `chough stage advance` summarizes it, ending with the next action. With
+   `--json` it prints each step's full report instead, the gate close's and the
+   move's, so an agent loses nothing.
 
 The gate closes after the ship, so even a project that keeps Chough's records in
 SpecSync's verification writes nothing under `.chough/` between `change check
