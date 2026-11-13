@@ -666,15 +666,19 @@ fn ship_passes_the_relay_to_the_native_review() {
     let words = "-x Ship it, the review passes";
     let place = "-SYNTHETIC chat, 2026-11-13 03:44Z, relayed by SYNTHETIC-coordinator";
     let (words_flag, place_flag) = (format!("--words={words}"), format!("--where={place}"));
+    // As a person types them: ship's own relay flags take a value that starts with `-`,
+    // as checkpoint's do.
     let relay = [
         "--close-gate",
         REVIEW_GATE,
         "--decided-by",
         "SYNTHETIC-human",
-        words_flag.as_str(),
-        place_flag.as_str(),
+        "--words",
+        words,
+        "--where",
+        place,
         "--recorded-by",
-        "SYNTHETIC-agent",
+        "-SYNTHETIC-agent",
     ];
     let output = run_env(&fixture, &ship_with(SHIP_ID, &relay), &[]);
     assert!(
@@ -692,7 +696,7 @@ fn ship_passes_the_relay_to_the_native_review() {
             "--verdict=pass",
             words_flag.as_str(),
             place_flag.as_str(),
-            "--recorded-by=SYNTHETIC-agent",
+            "--recorded-by=-SYNTHETIC-agent",
         ]
         .map(String::from)
         .to_vec()]
