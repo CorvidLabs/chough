@@ -5,7 +5,7 @@ aliases: [change-ship-output]
 objective: "0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -24,13 +24,9 @@ observations:
   - 2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo
 bugs: [2026-11-12-chough-change-ship-prints-specsync-s-text-a-long-json]
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json
-    holds: accept
-    drives: review
-    opened: 2026-11-13T02:42:04Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: "0.6.1: chough change ship prints a short summary"
 summary:
   - After SpecSync's output, chough change ship prints a short summary of the review, the ship, the gate close and the move into done, at most 12 lines, with every step's full report under --json (REQ-cli-059).
@@ -50,6 +46,7 @@ summary:
 
 - Leif decided "Approve the intent: change ship prints a short summary, its full report behind --json": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'chough change ship prints a short text summary, with its full JSON under --json, as stage moves already do'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
 - Leif decided "Approve the scope of 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'chough change ship prints a short text summary, with its full JSON under --json, as stage moves already do'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json as 0xLeif
+- Leif decided "Implementation review of 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:44Z, answering: 'Approve 0.6.1 PR #243? chough change ship prints at most 12 lines (review, ship, gate close, move into done), with the full detail under --json. Only src/change.rs changed, with a test that failed first.' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -122,4 +119,20 @@ summary:
   - revision: d0fc7e970adb7ed2f55cc8c23c2bbb5d6112fcd9
   - holds: accept
   - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T02:58:40Z · gate-closed · accept → accept · Implementation review of 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json ^t-be498f
+  - native_change: 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json
+  - revision: d67d3110cb3acc8a9de698e287d9391c484fa914
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T02:44Z, answering: 'Approve 0.6.1 PR #243? chough change ship prints at most 12 lines (review, ship, gate close, move into done), with the full detail under --json. Only src/change.rs changed, with a test that failed first.' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T02:58:41Z · advance · accept → done · native:archived ^t-c8fd22
+  - native_change: 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json
+  - gate: native:archived
+  - revision: d67d3110cb3acc8a9de698e287d9391c484fa914
   - by: claude-code (hc t382)
