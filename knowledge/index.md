@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds](journal/2026-11-13-chough-0-6-0-release-prep-the-dogfood-cycle-and-four-fresh.md) (2026-11-13, shipped)
 - [Chough 0.6.0: human-first records](journal/2026-11-12-chough-0-6-0-human-first-records.md) (2026-11-12, shipped)
 - [Turn the MVP interview into intent and a 1.0 roadmap](journal/2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md) (2026-11-12, shipped) (no time)
 - [Return observation and case IDs from cases record and evidence add](journal/2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md) (2026-11-10, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [Move two #192 test cases into their own files (#196)](journal/2026-11-10-move-two-192-test-cases-into-their-own-files-196.md) (2026-11-10, shipped)
 - [Read diagnostic input inventories without touching freshness](journal/2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md) (2026-11-09, closed)
 - [Recognize pristine skill files from released bundles (#102)](journal/2026-11-09-recognize-pristine-skill-files-from-released-bundles-102.md) (2026-11-09, closed)
-- [Document what Chough automates and what the human decides](journal/2026-11-08-document-what-chough-automates-and-what-the-human-decides.md) (2026-11-08, shipped)
 
 ## Where things live
 
@@ -90,9 +90,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood](../.specsync/archive/changes/2026-11-13-prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood/lesson-bundle.md), Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found
 - [chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an](../.specsync/archive/changes/2026-11-12-chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an/lesson-bundle.md), Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt
 - [capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping](../.specsync/archive/changes/2026-11-11-capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping/lesson-bundle.md), Capture the 2026-11-10 MVP interview as hi criteria and add the 1.0 roadmap, test plan and draft issue mapping
-- [return-the-observation-id-from-cases-record-and-evidence-add-issue-60](../.specsync/archive/changes/2026-11-10-return-the-observation-id-from-cases-record-and-evidence-add-issue-60/lesson-bundle.md), Return the observation ID from cases record and evidence add (issue 60)
 
 ## Snapshots and briefs
 
