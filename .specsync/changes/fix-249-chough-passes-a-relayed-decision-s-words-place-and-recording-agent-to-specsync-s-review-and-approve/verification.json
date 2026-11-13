@@ -1,0 +1,25 @@
+{
+  "timestamp": 1794555987,
+  "commit": "fd6efe7663471370b9119a34dc4d8f62f86aa487",
+  "contract_digest": "83809409c845d2277cd94e3b3e752eb71d3f2527850afd2b24c8e605463e2b3a",
+  "execution_digest": "63e1cf7a152e7b82adc7528f6922bf6d3ffe957297d4a05467cf4359410a215b",
+  "workspace_digest": "a74333850336c2fd7fe35e7129f25a107a0ea5deca040b1f62a68dde34bc4ce4",
+  "passed": false,
+  "commands": [
+    {
+      "command": "specsync check --spec cli --spec records",
+      "success": true,
+      "exit_code": 0
+    },
+    {
+      "command": "specsync change check fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve (effective contract: records)",
+      "success": false,
+      "exit_code": 1,
+      "output": "effective contract `records`: 107/108 exports documented\neffective contract `records`: Undocumented export 'Relay' from src/humans.rs"
+    }
+  ],
+  "requirement_ids": [
+    "REQ-cli-059",
+    "REQ-records-008"
+  ]
+}

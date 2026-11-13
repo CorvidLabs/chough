@@ -5,7 +5,7 @@ aliases: [review-relay]
 objective: "Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve"
 intent_scope: ""
 modules: []
-stage: build
+stage: test
 stage_status: active
 iteration: 1
 callers: []
@@ -19,11 +19,13 @@ files: []
 observations:
   - 2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review
   - 2026-11-13-tc-records-approval-as-the-human
+  - 2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review-567cea
+  - 2026-11-13-tc-records-approval-as-the-human-29ac02
 bugs: [2026-11-13-chough-change-ship-s-native-review-drops-the-relay-review-json]
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue test
 ---
 # Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve
 
@@ -42,6 +44,8 @@ Fix #249: chough passes a relayed decision's words, place and recording agent to
 
 - [Ran cargo test --locked --test change -- --exact ship_passes_the_relay_to_the_native_review for TC-cli-ship-passes-the-relay-to-the-native-review: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review.md)
 - [Ran cargo test --locked --test humans -- a_scope_gate_runs_the_approval_once_as_the_configured_human a_review_gate_needs_a_verdict_and_runs_the_review_with_it an_unknown_or_ambiguous_human_is_refused_before_anything_runs the_project_file_overrides_the_user_file no_source_names_a_person_as_the_default_human for TC-records-approval-as-the-human: failed (exit 101).](evidence/2026-11-13-tc-records-approval-as-the-human.md)
+- [Ran cargo test --locked --test change -- --exact ship_passes_the_relay_to_the_native_review for TC-cli-ship-passes-the-relay-to-the-native-review: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review-567cea.md)
+- [Ran cargo test --locked --test humans -- a_scope_gate_runs_the_approval_once_as_the_configured_human a_review_gate_needs_a_verdict_and_runs_the_review_with_it an_unknown_or_ambiguous_human_is_refused_before_anything_runs the_project_file_overrides_the_user_file no_source_names_a_person_as_the_default_human for TC-records-approval-as-the-human: passed (exit 0).](evidence/2026-11-13-tc-records-approval-as-the-human-29ac02.md)
 
 ## Open threads
 
@@ -90,4 +94,9 @@ Fix #249: chough passes a relayed decision's words, place and recording agent to
   - native_change: fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
   - gate: native:approved
   - revision: 338bbae296e3a7f9b00f57018b46ab8f27b932f8
+  - by: claude-code (hc t382)
+- 2026-11-13T07:46:26Z · advance · build → test · Built: the red and the fix, the cases red then green, the bug verified ^t-cd83cf
+  - native_change: fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
+  - gate: native:approved
+  - revision: fd6efe7663471370b9119a34dc4d8f62f86aa487
   - by: claude-code (hc t382)
