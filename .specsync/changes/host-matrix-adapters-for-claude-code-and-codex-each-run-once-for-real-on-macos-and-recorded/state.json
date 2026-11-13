@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "host-matrix-adapters-for-claude-code-and-codex-each-run-once-for-real-on-macos-and-recorded",
+  "slug": "host-matrix-adapters-for-claude-code-and-codex-each-run-once-for-real-on-macos-and-recorded",
+  "title": "Host-matrix adapters for Claude Code and Codex, each run once for real on macOS and recorded",
+  "description": "Host-matrix adapters for Claude Code and Codex, each run once for real on macOS and recorded",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "7386391e54c94dff3dabebf58225d618650bd742",
+  "created_at": 1794582025,
+  "updated_at": 1794582035,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".chough/cases/cli.host-matrix-hosts.cases.toml",
+    "CHANGELOG.md",
+    "docs/integrations.md",
+    "integrations/claude-code/adapter.sh",
+    "integrations/codex/adapter.sh",
+    "tools/host-matrix/README.md",
+    "tools/host-matrix/prompts/common.md",
+    "tools/host-matrix/run.sh",
+    "tools/host-matrix/selftest.sh"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "The self-test reads a turn that exits 75 as UNAVAILABLE naming the reason, on macOS and Linux",
+    "Claude Code and Codex each have an adapter under integrations/<host>/adapter.sh",
+    "One real macOS run of each host is recorded as a manual case with its verdict and receipt, whatever the verdict"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The cli lessons in specs/cli/cli.3md (local Git identity in disposable repositories; plain-text gates in tasks; the delta frozen at approval; confirm an external agent can start before relying on it) and PR #254's review: the harness stays POSIX sh and runs under dash.",
+    "public_contract": "yes"
+  }
+}
