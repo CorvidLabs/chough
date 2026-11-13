@@ -15,8 +15,10 @@ criteria: [LIFE-21, DRIVE-19]
 requirements: [REQ-cli-064]
 cases: [TC-cli-ci-runs-daily-with-a-real-archive-base]
 design: []
-files: [tests/package.rs]
-observations: []
+files: [tests/package.rs, .github/workflows/ci.yml, docs/ci.md, CHANGELOG.md]
+observations:
+  - 2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base
+  - 2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-d92603
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -31,6 +33,8 @@ next: Record the red run, then add the schedule and the base fallback to ci.yml
 
 ## Where it stands
 
+- REQ-cli-064: a daily 05:23 UTC schedule and the github.sha archive base fallback; package 27/27 and docs 19/19 pass; the workflow parses with push, pull_request and schedule
+
 ## Decisions and why
 
 - A daily scheduled CI run on main, macOS and Linux (Leif, Q3, 2026-11-13T03:30Z, relayed by t370; rejected: counting only real pushes)
@@ -40,6 +44,9 @@ next: Record the red run, then add the schedule and the base fallback to ci.yml
 - Leif decided "Approve the scope of 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs": "Yes, macOS + Linux (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q3 'Run CI once a day on main so a quiet week still counts?' for #217; this change's scope is that daily run plus the Archive base fallback a scheduled run needs, REQ-cli-064; relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change approve 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test package -- --exact ci_runs_once_a_day_on_main_with_a_real_archive_base for TC-cli-ci-runs-daily-with-a-real-archive-base: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base.md)
+- [Ran cargo test --locked --test package -- --exact ci_runs_once_a_day_on_main_with_a_real_archive_base for TC-cli-ci-runs-daily-with-a-real-archive-base: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-ci-runs-daily-with-a-real-archive-base-d92603.md)
 
 ## Open threads
 

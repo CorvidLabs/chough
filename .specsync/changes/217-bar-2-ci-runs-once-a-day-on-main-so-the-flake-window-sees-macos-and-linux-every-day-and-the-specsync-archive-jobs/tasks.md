@@ -5,7 +5,7 @@ artifact: tasks
 
 # Tasks
 
-- [ ] A failing test in tests/package.rs for the schedule and the base fallback.
-- [ ] The schedule trigger and the fallback in ci.yml.
-- [ ] docs/ci.md and the CHANGELOG.
+- [x] A failing test in tests/package.rs for the schedule and the base fallback.
+- [x] The schedule trigger and the fallback in ci.yml.
+- [x] docs/ci.md and the CHANGELOG.
 - [ ] Red then green recorded through Chough, the audit, and the full local suite.

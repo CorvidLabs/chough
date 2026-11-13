@@ -5,6 +5,11 @@ on:
     branches: [main]
   # Every pull request, including stacked ones whose base is not main.
   pull_request:
+  # Once a day on main, so the flake window (REQ-cli-062) sees macOS and Linux every
+  # day even when nothing merges (REQ-cli-064). Off the hour: GitHub delays scheduled
+  # runs at busy times.
+  schedule:
+    - cron: '23 5 * * *'
 
 permissions:
   contents: read
@@ -124,7 +129,9 @@ jobs:
       # Expected red until every native scope has been reviewed and finalized.
       - name: Inspect native lifecycle closure without writing evidence
         env:
-          ARCHIVE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          # A scheduled run has neither a pull request base nor a previous commit, so it
+          # takes its own commit as the trusted base (REQ-cli-064).
+          ARCHIVE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
         run: python3 .github/scripts/check-specsync-archive.py --base "$ARCHIVE_BASE_SHA" --shard "${{ matrix.shard }}/4"
 
   ci-fixtures:
