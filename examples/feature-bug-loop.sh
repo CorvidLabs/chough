@@ -35,6 +35,7 @@ cleanup() {
 }
 trap cleanup EXIT
 # work-dir setup: end
+# helpers: begin
 chough=${CHOUGH:-chough}
 env_name=${CHOUGH_ENVIRONMENT:-exercise-local}
 last_observation=""
@@ -58,6 +59,17 @@ run_case() {
     [ "$outcome" = "$2" ] || fail "$1 expected $2 but was $outcome: $out"
     printf '%s: %s, observation %s\n' "$1" "$outcome" "$last_observation"
 }
+# REQ-cli-012 counts a pass only when it is observed in a later second than the bug's
+# latest linked failure, and observed times have one-second resolution. On a fast
+# runner the rerun after the fix can land in the failing run's second (#247), so it
+# first waits until the clock is past the latest failure's recorded second.
+wait_past_last_failure() {
+    failed_at=$($chough next --environment "$env_name" --json |
+        jq -r '.last_failure.observed_at_unix_seconds // empty')
+    [ -n "$failed_at" ] || fail "no recorded failure to wait past"
+    while [ "$(date -u +%s)" -le "$failed_at" ]; do sleep 1; done
+}
+# helpers: end
 commit() {
     git add -A
     git -c user.name="Chough exercise" -c user.email=exercise@example.invalid \
@@ -246,12 +258,15 @@ cp patches/lib.v2.rs src/lib.rs
 commit "Ship free at exactly the threshold ($bug)"
 specsync change check "$id" --commit >/dev/null
 $chough stage advance >/dev/null
+# rerun after the fix: begin
+wait_past_last_failure
 run_case TC-shipping-0001 passed
 fixed_observation=$last_observation
 run_case TC-shipping-0002 passed
 run_case TC-shipping-0003 passed
 $chough bug update "$bug" --status verified --observation "$fixed_observation" \
     --note "Boundary fixed; TC-shipping-0001 passes" | jq -r '"\(.bug.id): \(.bug.status), \(.verification)"'
+# rerun after the fix: end
 
 step "Accept: only a human review and native archive can close this"
 $chough stage advance >/dev/null

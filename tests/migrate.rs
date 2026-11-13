@@ -1684,3 +1684,129 @@ fn the_migration_follow_ups_name_skill_update_while_the_skill_copy_is_not_curren
         );
     }
 }
+
+/// A 0.5.x session record at accept for native change `change`, waiting on `gates`, with
+/// no history cursor, as a session an older build left.
+fn session_0_5(objective: &str, change: &str, gates: &[&str]) -> String {
+    serde_json::to_string_pretty(&serde_json::json!({
+        "schema_version": 2,
+        "objective": objective,
+        "intent_scope": "",
+        "modules": [],
+        "stage": {"current": "accept", "status": "active", "callers": [], "iteration": 1},
+        "native_change": change,
+        "references": {"criteria": [], "requirements": [], "cases": [], "design": [], "files": []},
+        "decisions": [],
+        "open_questions": [],
+        "completed": [],
+        "observations": [],
+        "bugs": [],
+        "blockers": [],
+        "awaiting_human": gates,
+        "run_consents": [],
+        "next_action": "Wait for the human's decision.",
+    }))
+    .unwrap()
+        + "\n"
+}
+
+/// #246 (REQ-records-009, REQ-cli-055): the preview's Follow-ups named the verification
+/// exclusions, the merge lines and the skill update, yet right after the apply
+/// `chough doctor` reported `finished_session` and `stale_gates` findings the preview
+/// never named, so the one consent round missed the gates' decisions. The preview, and
+/// the receipt's `## Follow-up`, name each session doctor reports on the migrated tree:
+/// a finished one, and one holding open gates on an archived change with each gate's
+/// text and the decision it needs, `chough doctor --fix --reason <text>`.
+#[test]
+fn the_preview_names_the_sessions_doctor_reports_after_the_apply() {
+    let gates = [
+        "SYNTHETIC-human's go for the tag and merge",
+        "Acceptance review of gated-work",
+    ];
+    let archive = |change: &str| {
+        (
+            format!(".specsync/archive/changes/2026-11-01-{change}/finalization.json"),
+            format!(
+                "{{\"schema_version\": 2, \"change_id\": \"{change}\", \"timestamp\": 500, \"implementation_commit\": \"{}\"}}\n",
+                "1".repeat(40)
+            ),
+        )
+    };
+    let files = [
+        archive("gated-work"),
+        archive("finished-work"),
+        (
+            ".chough/sessions/gated.json".to_string(),
+            session_0_5("Gated work", "gated-work", &gates),
+        ),
+        (
+            ".chough/sessions/finished.json".to_string(),
+            session_0_5("Finished work", "finished-work", &[]),
+        ),
+    ];
+    let extra: Vec<(&str, &str)> = files
+        .iter()
+        .map(|(path, text)| (path.as_str(), text.as_str()))
+        .collect();
+    let fixture = migrate_project("adopted", &extra);
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+
+    let output = fixture.run(&["doctor"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
+        panic!(
+            "doctor: {error}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        )
+    });
+    let reported: Vec<(String, String)> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|finding| {
+            (
+                finding["kind"].as_str().unwrap().to_string(),
+                finding["target"].as_str().unwrap().to_string(),
+            )
+        })
+        .filter(|(kind, _)| kind == "finished_session" || kind == "stale_gates")
+        .collect();
+    // The fixture reproduces the report: one session with stale gates, one finished.
+    for kind in ["finished_session", "stale_gates"] {
+        assert!(
+            reported.iter().any(|(found, _)| found == kind),
+            "doctor reports no {kind}: {report:#}"
+        );
+    }
+
+    let follow_ups = plan["follow_ups"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|follow_up| follow_up.as_str().unwrap())
+        .collect::<Vec<_>>()
+        .join("\n\n");
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    let section = receipt
+        .split_once("\n## Follow-up\n")
+        .map_or("", |(_, section)| section);
+    for (place, text) in [("preview", follow_ups.as_str()), ("receipt", section)] {
+        for (kind, session) in &reported {
+            assert!(
+                text.contains(session.as_str()),
+                "the {place}'s follow-ups do not name {kind} {session}:\n{text}"
+            );
+            if kind == "stale_gates" {
+                for gate in gates {
+                    assert!(
+                        text.contains(gate),
+                        "the {place} does not name the gate {gate:?} of {session}:\n{text}"
+                    );
+                }
+                assert!(
+                    text.contains("chough doctor --fix --reason"),
+                    "the {place} names no decision for {session}'s gates:\n{text}"
+                );
+            }
+        }
+    }
+}

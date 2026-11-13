@@ -892,31 +892,11 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
         let Ok(session) = sessions::read_at(root, &sessions::session_file(&key)) else {
             continue;
         };
-        if !sessions::finished(root, &session) {
-            continue;
+        match session_check(root, &key, &session, || sessions::unfolded(root, &key))? {
+            Some(finding) if finding.kind == Kind::StaleGates => gates.push(finding),
+            Some(finding) => finished.push(finding),
+            None => {}
         }
-        if !session.awaiting_human.is_empty() && archived(root, session.native_change.as_deref()) {
-            gates.push(Finding::new(
-                Kind::StaleGates,
-                &key,
-                "chough doctor --fix --reason <text>".into(),
-                true,
-            ));
-            continue;
-        }
-        let mut finding = Finding::new(
-            Kind::FinishedSession,
-            &key,
-            "chough doctor --fix".into(),
-            false,
-        );
-        if sessions::unfolded(root, &key)? > 0 {
-            finding.fix = format!("chough session use {key} && chough inbox fold");
-            finding.blocked = Some(format!(
-                "session {key} has unfolded inbox entries; fold them first"
-            ));
-        }
-        finished.push(finding);
     }
     found.extend(finished);
     let mut archives = vec![];
@@ -961,6 +941,118 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
         ));
     }
     Ok(found)
+}
+
+/// Doctor's check of one open session (REQ-cli-055): a finished session that holds open
+/// gates on its archived native change is `stale_gates`, a decision; another finished one
+/// is `finished_session`, blocked while `unfolded` counts inbox entries; an unfinished
+/// one has no finding. `chough migrate` runs it on the records it plans
+/// ([`session_follow_ups`], REQ-records-009), so on a tree just migrated doctor reports
+/// exactly the sessions the follow-ups named.
+fn session_check(
+    root: &Path,
+    key: &str,
+    session: &checkpoint::Checkpoint,
+    unfolded: impl FnOnce() -> Result<usize>,
+) -> Result<Option<Finding>> {
+    if !sessions::finished(root, session) {
+        return Ok(None);
+    }
+    if !session.awaiting_human.is_empty() && archived(root, session.native_change.as_deref()) {
+        return Ok(Some(Finding::new(
+            Kind::StaleGates,
+            key,
+            "chough doctor --fix --reason <text>".into(),
+            true,
+        )));
+    }
+    let mut finding = Finding::new(
+        Kind::FinishedSession,
+        key,
+        "chough doctor --fix".into(),
+        false,
+    );
+    if unfolded()? > 0 {
+        finding.fix = format!("chough session use {key} && chough inbox fold");
+        finding.blocked = Some(format!(
+            "session {key} has unfolded inbox entries; fold them first"
+        ));
+    }
+    Ok(Some(finding))
+}
+
+/// The follow-ups a migration plan gives for what [`session_check`] finds on the migrated
+/// tree (REQ-records-009, #246): in `planned`, each open session the plan writes, with
+/// its record and its unfolded inbox entries, then each session already open that the
+/// plan leaves, read as doctor reads it. One follow-up names the finished sessions that
+/// `chough doctor --fix` archives, and one each session whose open gates are on an
+/// archived native change, with each gate's text and the decision it needs.
+pub(super) fn session_follow_ups(
+    root: &Path,
+    planned: &[(String, checkpoint::Checkpoint, usize)],
+) -> Result<Vec<String>> {
+    let mut checked = vec![];
+    for (key, session, unfolded) in planned {
+        if let Some(finding) = session_check(root, key, session, || Ok(*unfolded))? {
+            checked.push((finding, session.clone()));
+        }
+    }
+    for key in sessions::keys_in(root, sessions::DIR)? {
+        if planned.iter().any(|(planned, _, _)| *planned == key) {
+            continue;
+        }
+        let Ok(session) = sessions::read_at(root, &sessions::session_file(&key)) else {
+            continue;
+        };
+        if let Some(finding) =
+            session_check(root, &key, &session, || sessions::unfolded(root, &key))?
+        {
+            checked.push((finding, session));
+        }
+    }
+    let mut finished = vec![];
+    let mut gated = vec![];
+    for (finding, session) in &checked {
+        let key = &finding.target;
+        if finding.kind == Kind::StaleGates {
+            let gates: Vec<String> = session
+                .awaiting_human
+                .iter()
+                .map(|gate| format!("\"{gate}\""))
+                .collect();
+            gated.push(format!(
+                "session `{key}`, whose native change `{}` is archived, waits on {}",
+                session.native_change.as_deref().unwrap_or_default(),
+                gates.join(" and ")
+            ));
+        } else if finding.blocked.is_some() {
+            finished.push(format!(
+                "`{key}`, once its inbox entries are folded with `{}`",
+                finding.fix
+            ));
+        } else {
+            finished.push(format!("`{key}`"));
+        }
+    }
+    let mut follow_ups = vec![];
+    if !finished.is_empty() {
+        follow_ups.push(format!(
+            "After the apply, `chough doctor` reports {} finished, at done or with its native change archived (`finished_session`, REQ-cli-055): {}. Run `chough doctor --fix`, which archives each into its story, then commit the result.",
+            if finished.len() == 1 {
+                "this session"
+            } else {
+                "these sessions"
+            },
+            finished.join("; ")
+        ));
+    }
+    if !gated.is_empty() {
+        follow_ups.push(format!(
+            "After the apply, `chough doctor` reports open human gates on archived native changes (`stale_gates`, REQ-cli-055): {}. Withdrawing a gate is the human's decision, so ask them in the same round as this consent; then run `chough doctor --fix --reason \"<their decision>\"`, which withdraws the gates as `chough checkpoint --clear-awaiting-human` does, recording no human decision, and archives the session.",
+            gated.join("; ")
+        ));
+    }
+    Ok(follow_ups)
 }
 
 /// Apply one finding's fix (REQ-history-012).

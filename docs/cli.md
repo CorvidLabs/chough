@@ -430,8 +430,9 @@ gives `kind: bug`, `id`, `aliases`, `title`, `status`, `classification`, `scope`
 `impact`, `criteria`, `requirements`, `cases`, `evidence` (the linked evidence IDs),
 `receipts`, `regression_baseline`, `fixture`, `environment`, `revision`, `found_by`
 (the acting agent), `fixed_in`, `duplicate_of`, `related`, `created` and `updated`.
-Its body gives `# <title>` and the paragraphs What happened, Steps (led by
-`Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
+Its body gives `# <title>` and the paragraphs What happened (with the actual
+behaviour as its own `Actual:` paragraph when it differs from the symptom), Steps (led
+by `Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
 `## Log`, an append-only list with one dated entry per report,
 note, evidence link and status change. A person's edits to the paragraphs stay, and
 every earlier Log line stays byte-identical. Fix says `Not fixed yet.` until `bug
@@ -1034,7 +1035,10 @@ SHA-256 of the old ID, so the preview and the apply name everything alike, and e
 ID is an alias. The session's What was verified item for such an entry links it, as a
 0.6.0 save writes it (see [Sessions](#sessions)), and a story's item for an observation
 it holds as a receipt is that receipt's line, as at archiving (see
-[Moving into done](#moving-into-done)), never the bare old ID. A raw log under
+[Moving into done](#moving-into-done)), never the bare old ID. Front matter names
+them the same way: a session's or story's `observations` and a bug's `evidence` and
+`regression_baseline` give each entry's or receipt's new name, so `chough next` and
+`chough status` list those, and a removed observation keeps its old ID. A raw log under
 `.chough/artifacts/` is removed and its recorded digest becomes the fingerprint. A PNG or JPEG artifact of a carried observation is stripped of
 its metadata and kept beside its session or story within the bounds of
 [key screenshots](#evidence-entries); an artifact elsewhere in the project stays where
@@ -1053,8 +1057,15 @@ receipt also list the `records_in_verification` advice as a follow-up, and, whil
 installed skill copy is not current as `chough skill status` reports it, one naming
 `chough skill update` with each such copy's directory and how many files are
 known-outdated, missing or edited: the migration does not touch the skill copy, which
-still names 0.5.x commands and paths until it is updated. The receipt holds every
-follow-up under one `## Follow-up` heading, one paragraph each.
+still names 0.5.x commands and paths until it is updated. They also name what
+`chough doctor` will report on the migrated tree, found by doctor's own session check
+run on the records the plan writes, so on a tree just migrated doctor reports exactly
+those sessions (REQ-cli-055): the sessions that are finished (`finished_session`),
+which `chough doctor --fix` archives, and each session whose open human gates are on an
+archived native change (`stale_gates`), with each gate's text and the decision it
+needs, `chough doctor --fix --reason "<their decision>"`, so the human answers those
+gates in the same round as the consent. The receipt holds every follow-up under one
+`## Follow-up` heading, one paragraph each.
 
 ## SpecSync change steps
 
