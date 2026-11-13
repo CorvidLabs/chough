@@ -1194,14 +1194,13 @@ fn plan(root: &Path) -> Result<Plan> {
     carried.absorb(retired_files_0_5(root)?)?;
     // REQ-records-002: the reading guide, written only when there is none; one an
     // interrupted apply already wrote with these bytes stays planned, so the plan the
-    // resumed apply builds has the same digest.
+    // resumed apply builds has the same digest. A migrated guide names `artifacts/`.
     let guide = local_path(root, ".chough/README.md")?;
-    if !guide.exists()
-        || std::fs::read(&guide).is_ok_and(|bytes| bytes == crate::sessions::README.as_bytes())
-    {
+    let readme = crate::sessions::migrated_readme();
+    if !guide.exists() || std::fs::read(&guide).is_ok_and(|bytes| bytes == readme.as_bytes()) {
         carried.written.push(Written {
             path: ".chough/README.md".into(),
-            bytes: crate::sessions::README.into(),
+            bytes: readme,
         });
     }
     let links = bug_links_0_5(root)?;
