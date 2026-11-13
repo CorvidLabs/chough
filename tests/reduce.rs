@@ -214,9 +214,14 @@ fn the_move_into_done_archives_the_session_and_clears_the_pointer() {
     assert_eq!(story["stage"]["current"], "done", "{story:#}");
     assert_eq!(story["outcome"], "done", "{story:#}");
     assert!(!fixture.exists(".chough/local/active-session"));
-    let next = fixture.fails(&["next"]);
+    // No open session is the normal state after done: next says so and exits 0, while
+    // status refuses with that message (REQ-history-006).
+    let next = fixture.ok_text(&["next"]);
     assert!(next.contains("no open session"), "{next}");
     assert!(next.contains("chough session new <key>"), "{next}");
+    let refused = fixture.fails(&["status"]);
+    assert!(refused.contains("no open session"), "{refused}");
+    assert!(refused.contains("chough session new <key>"), "{refused}");
     let started = fixture.ok(&["session", "new", "beta", "--objective", "Next work"]);
     assert!(started.get("archived").is_none(), "{started:#}");
     let list = fixture.ok(&["session", "list"]);
@@ -343,6 +348,11 @@ fn next_at_done_names_what_keeps_the_session_open() {
     // Neither: the session archived itself, and next names a new session.
     let fixture = project();
     fixture.ok(&["stage", "advance", "--json"]);
-    let refused = fixture.fails(&["next", "--json"]);
-    assert!(refused.contains("chough session new <key>"), "{refused}");
+    let next = fixture.ok(&["next", "--json"]);
+    assert!(
+        next["next_valid_action"]["command"]
+            .as_str()
+            .is_some_and(|command| command.starts_with("chough session new <key>")),
+        "{next:#}"
+    );
 }
