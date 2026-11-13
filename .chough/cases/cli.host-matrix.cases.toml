@@ -1,0 +1,24 @@
+# The host-matrix harness self-test (REQ-cli-066, #218).
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-host-matrix-selftest"
+title = "The host-matrix harness passes the scripted stand-in host's good run and fails each known-bad run on the check that names it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21", "LIFE-22", "LIFE-24", "LIFE-27", "FLOW-10", "FLOW-16", "FLOW-21"]
+requirements = ["REQ-cli-066"]
+paths = ["tools/host-matrix/run.sh", "tools/host-matrix/shape.sh", "tools/host-matrix/selftest.sh", "tools/host-matrix/acceptance.rs", "tools/host-matrix/expected-shape.json", "tools/host-matrix/prompts/common.md", "tools/host-matrix/prompts/turn-1.md", "tools/host-matrix/prompts/turn-2.md", "tools/host-matrix/prompts/turn-3.md", "tools/host-matrix/prompts/turn-4.md", "tools/host-matrix/prompts/turn-5.md", "tools/host-matrix/stand-in/adapter.sh", "tools/host-matrix/stand-in/agent.sh", "examples/shipping/src/lib.rs", "examples/shipping/patches/lib.v2.rs", "examples/shipping/patches/threshold.rs"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+setup = ["chough built from this checkout (CHOUGH), with hi, specsync, cargo, git and jq on PATH"]
+steps = ["Run sh tools/host-matrix/selftest.sh"]
+expected = ["The good run is PASS, each known-bad run is FAIL on its named check, a missing host is UNAVAILABLE, and the script prints HOST MATRIX SELFTEST PASSED"]
+
+[case.bind]
+adapter = "command"
+argv = ["sh", "tools/host-matrix/selftest.sh"]
+expect_output = ["HOST MATRIX SELFTEST PASSED"]
+timeout_seconds = 1200

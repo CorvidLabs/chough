@@ -1,0 +1,43 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794544302,
+      "digest": "64f4ba113cd02ebb34f23273583cc9df37f67e0f804caf67e7c5e916eb0540e1",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each\": \"Repo script + fledge task (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q1 'Where should the two-week check live?' for #217; this change's scope is that design's seed step: the flake label on #187, #132, #169 and #247, DRIVE-19 notes on their bug records, and one docs line, with no contract text; relayed by claude-code-t370). Relayed and recorded by claude-code-t38r at 2026-11-13T04:31:41Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each",
+        "title": "#217 bar 2: seed the flake tracker: the GitHub flake label on the known flake issues, and a note naming DRIVE-19 and each GitHub issue on the flake bug records",
+        "description": "#217 bar 2: seed the flake tracker: the GitHub flake label on the known flake issues, and a note naming DRIVE-19 and each GitHub issue on the flake bug records",
+        "kind": "documentation",
+        "affected_specs": [],
+        "affected_paths": [
+          "docs/test-plan-1.0.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Seeding only: a GitHub label, bug record notes (outside verification) and one docs line naming the seeded issues; the tracker's rules are already in docs/test-plan-1.0.md bar 2 and the window's contract is REQ-cli-062",
+        "acceptance_criteria": [
+          "The flake label exists on CorvidLabs/chough and is on #187, #132, #169 and #247; the bug records for #187, #132 and #169 carry a Log note naming DRIVE-19 and their issue as GitHub #<n>, and the three local-only flake records a note naming DRIVE-19 and that no issue was filed; docs/test-plan-1.0.md bar 2 names the seeded issues instead of 'Known today: #187 and #132'"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794580992,
+      "digest": "3a29c8df21ac294079b9e90a456c04e8fbcf0538162e79be905221cc08410eb3",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
