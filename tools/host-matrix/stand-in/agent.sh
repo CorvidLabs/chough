@@ -202,7 +202,9 @@ if [ ! -f .chough/README.md ]; then
     turn_intent
     exit 0
 fi
-if ! next=$(chough next --environment "$env_name" --json 2>/dev/null); then
+# With no open session, `chough next` gives a null stage (0.6.1) or fails (earlier).
+if ! next=$(chough next --environment "$env_name" --json 2>/dev/null) ||
+    printf '%s' "$next" | jq -e '.stage == null' >/dev/null; then
     turn_resume
     exit 0
 fi

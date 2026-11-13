@@ -186,6 +186,12 @@ with_deadline() {
 next_json() {
     chough next --environment "$environment" --json 2>/dev/null
 }
+# No open session: `chough next` says so with a null stage (since 0.6.1) or, before
+# that, exits non-zero.
+no_open_session() {
+    if ! out=$(next_json); then return 0; fi
+    printf '%s' "$out" | jq -e '.stage == null' >/dev/null
+}
 reported() {
     grep -E "^$1:" "$logs/turn-$2.reply" 2>/dev/null | tail -n 1 | sed "s/^$1:[[:space:]]*//; s/[[:space:]]*\$//" |
         tr '[:upper:]' '[:lower:]'
@@ -319,7 +325,7 @@ commit_stand_in "implementation reviewed and archived (SIMULATED)"
 
 # --- Turn 4: done -------------------------------------------------------------
 run_turn 4
-check "turn 4: no session is left open" sh -c '! chough next --environment "$1" --json' _ "$environment"
+check "turn 4: no session is left open" no_open_session
 check "turn 4: no session folder is left" sh -c '[ -z "$(ls -A .chough/sessions 2>/dev/null)" ]'
 check "turn 4: one archived session story" \
     sh -c '[ "$(ls .chough/archive/sessions/*.md 2>/dev/null | wc -l | tr -d " ")" = 1 ]'
