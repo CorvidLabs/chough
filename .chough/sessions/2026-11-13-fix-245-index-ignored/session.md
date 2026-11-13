@@ -16,8 +16,8 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
-bugs: []
+observations: [2026-11-13-tc-cli-index-links-no-source-git-ignores]
+bugs: [2026-11-13-the-knowledge-index-links-a-skill-copy-git-ignores-so-library]
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -37,6 +37,8 @@ Fix #245: chough library index links no source Git ignores, so a fresh clone's i
 - Leif decided "Approve the scope of fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:12Z, answering: 'Chough #245 (from corvid-agent): chough library index stops linking skill copies that Git ignores, so the index check passes in a fresh clone and in CI, where it fails today. Small wording change, with a failing test ready. Approve?' (option text: 't37f builds it. A separate warning in chough init would come later as its own change.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test vault -- --exact the_index_links_no_source_git_ignores_so_a_fresh_clone_checks_clean for TC-cli-index-links-no-source-git-ignores: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-index-links-no-source-git-ignores.md)
 
 ## Open threads
 
