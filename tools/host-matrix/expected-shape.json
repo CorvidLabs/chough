@@ -1,0 +1,51 @@
+{
+  "sessions": {
+    "open": 0,
+    "archived": 1
+  },
+  "stage_path": [
+    "intent",
+    "design",
+    "plan",
+    "build",
+    "test",
+    "accept",
+    "done"
+  ],
+  "gates": [
+    {
+      "holds": "accept",
+      "drives": "review",
+      "state": "closed"
+    },
+    {
+      "holds": "intent",
+      "drives": "none",
+      "state": "closed"
+    },
+    {
+      "holds": "plan",
+      "drives": "approve",
+      "state": "closed"
+    }
+  ],
+  "decisions_in_a_persons_name": 0,
+  "native": {
+    "state": "archived",
+    "approved_by": [
+      "SIMULATED-host-matrix-not-a-human"
+    ],
+    "reviewed_by": [
+      "SIMULATED-host-matrix-not-a-human"
+    ]
+  },
+  "cases_passed": [
+    "TC-shipping-0001",
+    "TC-shipping-0002",
+    "TC-shipping-0003"
+  ],
+  "product_files": [
+    "src/lib.rs",
+    "tests/threshold.rs"
+  ]
+}

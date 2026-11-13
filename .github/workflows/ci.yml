@@ -127,6 +127,34 @@ jobs:
           ARCHIVE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: python3 .github/scripts/check-specsync-archive.py --base "$ARCHIVE_BASE_SHA" --shard "${{ matrix.shard }}/4"
 
+  # The host-matrix harness's self-test (REQ-cli-066): the scripted stand-in host, with
+  # no model and no secrets, on both supported platforms (FLOW-21). Real agent hosts
+  # run before each release, not here.
+  host-matrix-selftest:
+    name: Host matrix self-test / ${{ matrix.os }}
+    needs: archive-gate
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+      - uses: CorvidLabs/spec-sync@b87bbd88efea06ffd9474af02018240f24300419 # v6.3.0
+        with:
+          version: '6.3.0'
+          strict: 'true'
+          require-coverage: '100'
+      - run: cargo install human-intent --version 0.8.0 --locked
+      - run: cargo build --locked
+      - run: CHOUGH="$PWD/target/debug/chough" sh tools/host-matrix/selftest.sh
+
   ci-fixtures:
     name: CI gate fixtures
     needs: archive-gate

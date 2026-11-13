@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A host-matrix harness in `tools/host-matrix/` drives one scripted Chough cycle per
+  agent host, one fresh host run per turn, in a throwaway copy of the shipping sample.
+  It stands in for every human gate only as `SIMULATED-host-matrix-not-a-human` and
+  judges the result only from the files, Git and native status. Its self-test runs a
+  scripted stand-in host with no model, and hosted CI runs it on Ubuntu and macOS. Real
+  host adapters follow (REQ-cli-066, #218).
 - `chough migrate`'s preview and the receipt's `## Follow-up` also name what `chough doctor` will report on the migrated tree, from doctor's own session check run on the planned records: the finished sessions `chough doctor --fix` archives, and each session whose open human gates are on an archived native change, with each gate's text and the decision it needs, `chough doctor --fix --reason` (#246, REQ-records-009, REQ-cli-055).
 - The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
 - Record polish: a bug's actual behaviour is its own `Actual:` paragraph under What

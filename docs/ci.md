@@ -11,7 +11,13 @@ inspection in disposable Git repos. `SpecSync Archive` then checks that every na
 scope, including archived history, is authenticated before merge. Expect a draft PR
 with an open change to show Archive red and every other job skipped.
 
-The `SpecSync Archive`, `Fledge / HI / SpecSync` and `CI gate fixtures` jobs use
+`Host matrix self-test` runs `tools/host-matrix/selftest.sh` on Ubuntu and macOS. It
+drives the host-matrix harness (REQ-cli-066) with its scripted stand-in host, which runs
+no model and needs no secrets: once correctly, which must pass, and once per known
+fault, each of which must fail on the check that names it. The real agent hosts run
+before each release, not in hosted CI ([tools/host-matrix/README.md](../tools/host-matrix/README.md)).
+
+The `SpecSync Archive`, `Fledge / HI / SpecSync`, `Host matrix self-test` and `CI gate fixtures` jobs use
 published SpecSync **6.3.0**, its pinned action commit, and the upstream action's
 release archive/checksum verification. The action version input is explicit: the
 v6.3.0 wrapper's default binary is 6.2.0. The `Archive` job pins the same v6.3.0

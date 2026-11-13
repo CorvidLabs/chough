@@ -20,6 +20,13 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>Host-matrix harness</title>
+<id>urn:chough:journal:2026-11-13-host-matrix-harness</id>
+<updated>2026-11-13T14:19:19Z</updated>
+<link href="2026-11-13-host-matrix-harness.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>Fix #246: migrate&apos;s preview names what doctor will report</title>
 <id>urn:chough:journal:2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report</id>
 <updated>2026-11-13T14:17:18Z</updated>
@@ -137,12 +144,5 @@
 <updated>2026-11-10T16:03:25Z</updated>
 <link href="2026-11-10-move-two-192-test-cases-into-their-own-files-196.md"/>
 <category term="shipped"/>
-</entry>
-  <entry>
-<title>Read diagnostic input inventories without touching freshness</title>
-<id>urn:chough:journal:2026-11-09-read-diagnostic-input-inventories-without-touching-freshness</id>
-<updated>2026-11-09T07:44:46Z</updated>
-<link href="2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md"/>
-<category term="closed"/>
 </entry>
 </feed>
