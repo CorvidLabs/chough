@@ -1006,9 +1006,11 @@ pub(super) fn native_step_for(
                 relay,
                 &crate::session_md::iso_time(crate::records::now()?),
             ),
+            relay: relay.into(),
         },
         _ => Step::Review {
             verdict: verdict.unwrap_or("pass").to_string(),
+            relay: relay.into(),
         },
     };
     let summary = step.summary(&change, &human);

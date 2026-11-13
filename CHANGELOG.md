@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A relayed gate close's native approval or review, including the review `chough change
+  ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
+  `--recorded-by`, so SpecSync's approval and review records hold the relayed decision
+  (#249, REQ-records-008).
 - `chough change ship` prints SpecSync's output, then a short text summary of at most 12
   lines naming the review, the ship, the gate close and the move into done, in place of
   the gate close's long JSON report and the move's summary; `--json` prints every step's
