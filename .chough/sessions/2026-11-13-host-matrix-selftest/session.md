@@ -21,6 +21,7 @@ observations:
   - 2026-11-13-tc-cli-host-matrix-selftest-5e18df
   - 2026-11-13-tc-cli-host-matrix-selftest-201a83
   - 2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-at-6b7376cf
+  - 2026-11-13-full-suite-at-2bce65a2-clean-tree-under-the-heavy-tests-lock
 bugs: []
 blockers: []
 waiting_on_human:
@@ -43,6 +44,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - Green: TC-cli-host-matrix-selftest passed on macOS arm64 with GIT_CONFIG_GLOBAL=/dev/null (8 harness runs, all as expected)
 - Green at 6b7376cf (after merging main): TC-cli-host-matrix-selftest passed on macOS arm64; fledge verify passed toolchain, fmt, lint, test, intent and spec
 - Verify lane passed in two passes (6b7376cf, fdf6561e); draft PR #254 opened and pushed
+- Full suite at 2bce65a2: 735 passed in 48 targets (Rust 1.96.0), clippy and fmt clean
 
 ## Decisions and why
 
@@ -59,6 +61,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-5e18df.md)
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-201a83.md)
 - [fledge lanes run verify (Fledge 1.8.0, the CI pin) at 6b7376cf passed toolchain, fmt, lint, test (48 targets), intent and spec, then stopped at audit because verification predated the last edits; after chough change check --commit, audit, cases, knowledge, leaks, exercise and build passed at fdf6561e. Between the two heads only Chough records and SpecSync lifecycle bookkeeping changed.](evidence/2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-at-6b7376cf.md)
+- [Full suite at 2bce65a2 (clean tree) under the heavy-tests lock with Rust 1.96.0: cargo +1.96.0 test --locked --no-fail-fast passed 735 tests in 48 targets, 0 failed, 0 ignored; cargo +1.96.0 clippy --all-targets --locked -- -D warnings and cargo +1.96.0 fmt --check exited 0.](evidence/2026-11-13-full-suite-at-2bce65a2-clean-tree-under-the-heavy-tests-lock.md)
 
 ## Open threads
 
