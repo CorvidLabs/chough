@@ -16,8 +16,8 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
-bugs: []
+observations: [2026-11-13-tc-cli-change-ship-prints-a-short-summary-and-its-reports]
+bugs: [2026-11-12-chough-change-ship-prints-specsync-s-text-a-long-json]
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -37,6 +37,8 @@ next: Continue build
 - Leif decided "Approve the scope of 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'chough change ship prints a short text summary, with its full JSON under --json, as stage moves already do'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test change -- --exact ship_prints_a_short_summary_after_specsync_and_every_report_under_json for TC-cli-change-ship-prints-a-short-summary-and-its-reports-under-json: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-change-ship-prints-a-short-summary-and-its-reports.md)
 
 ## Open threads
 
