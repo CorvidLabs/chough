@@ -351,7 +351,7 @@ fn the_project_file_overrides_the_user_file() {
     let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
     fixture.ok(&args(&relay("First scope", "SYNTHETIC-human")));
     assert!(
-        calls(&fixture)[0].contains("--actor user-actor "),
+        calls(&fixture)[0].contains("--actor=user-actor "),
         "{:?}",
         calls(&fixture)
     );
@@ -359,7 +359,7 @@ fn the_project_file_overrides_the_user_file() {
     let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
     fixture.ok(&args(&relay("Second scope", "SYNTHETIC-human")));
     assert!(
-        calls(&fixture)[0].contains("--actor SYNTHETIC-actor "),
+        calls(&fixture)[0].contains("--actor=SYNTHETIC-actor "),
         "{:?}",
         calls(&fixture)
     );
