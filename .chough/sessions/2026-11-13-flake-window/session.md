@@ -53,9 +53,13 @@ observations:
   - 2026-11-13-live-run-after-the-fix-with-the-flake-labels-on-github-but
 bugs: [2026-11-13-flake-window-counts-a-day-covered-when-its-product-jobs-passed]
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+    holds: accept
+    drives: review
+    opened: 2026-11-13T05:52:25Z
 run_consents: []
-next: "Fix t384's must-fix on #252 red first, then re-verify and reopen the review gate"
+next: t384's re-review, then Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay
 ---
 # #217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)
 
@@ -182,4 +186,10 @@ next: "Fix t384's must-fix on #252 red first, then re-verify and reopen the revi
   - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
   - gate: native:verifying
   - revision: 05786a14526a1c168e7ff6678d81ac884abd579f
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:52:25Z · gate-opened · accept → accept · Implementation review of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read ^t-b72c1b
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - revision: 69fccd81a9b17ab3f386c60a71529d3fd656ac76
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t38r)
