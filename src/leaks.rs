@@ -473,6 +473,14 @@ fn token_byte(byte: u8) -> bool {
 /// A token prefix, the fewest bytes that follow it, and which bytes may follow.
 type TokenForm = (&'static str, usize, fn(u8) -> bool);
 
+/// Whether a token prefix at `start` begins a token: at the start of the value or after
+/// a byte that is not a letter or digit, so a token glued to a word by a hyphen or an
+/// underscore, as slugs, IDs and run names glue one, is still found (#267), while a
+/// prefix inside a word, such as the `sk-` of `risk-`, is not.
+fn token_starts(bytes: &[u8], start: usize) -> bool {
+    start == 0 || !bytes[start - 1].is_ascii_alphanumeric()
+}
+
 fn tokens(value: &str, all: &mut Vec<Match>) {
     let bytes = value.as_bytes();
     let forms: [TokenForm; 12] = [
@@ -493,7 +501,7 @@ fn tokens(value: &str, all: &mut Vec<Match>) {
     ];
     for (prefix, minimum, allowed) in forms {
         for (start, _) in value.match_indices(prefix) {
-            if start > 0 && token_byte(bytes[start - 1]) {
+            if !token_starts(bytes, start) {
                 continue;
             }
             let end = run(bytes, start + prefix.len(), allowed);
@@ -511,7 +519,7 @@ fn tokens(value: &str, all: &mut Vec<Match>) {
             let end = run(bytes, start + prefix.len(), |byte| {
                 byte.is_ascii_uppercase() || byte.is_ascii_digit()
             });
-            if (start == 0 || !token_byte(bytes[start - 1])) && end - start == 20 {
+            if token_starts(bytes, start) && end - start == 20 {
                 all.push(Match {
                     kind: Kind::Token,
                     start,

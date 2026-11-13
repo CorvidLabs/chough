@@ -305,7 +305,9 @@ matter and body, for (REQ-records-006):
   machine's name is written;
 - the local user name inside a path or as `<user>@<host>`;
 - an email address;
-- credentials: GitHub, GitLab, Slack, AWS and model-provider token forms, private key
+- credentials: GitHub, GitLab, Slack, AWS and model-provider token forms, each found
+  wherever its prefix starts after a byte that is not a letter or digit, so a token
+  glued to a word by a hyphen or an underscore (`run-ghp_…`) is found, private key
   blocks, bearer and basic authorization values, JSON web tokens, and `password`,
   `secret`, `token` or `api_key` assignments with a value of 8 or more characters.
 
