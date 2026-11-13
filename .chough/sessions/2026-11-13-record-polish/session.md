@@ -13,7 +13,11 @@ native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-fro
 pr: ""
 criteria: []
 requirements: []
-cases: []
+cases:
+  - TC-cli-a-bug-body-gives-its-actual-line-its-own-paragraph
+  - TC-records-migrated-front-matter-names-the-carried-entries
+  - TC-cli-the-readme-init-paragraph-names-the-host-directories-briefly
+  - TC-records-a-fresh-projects-reading-guide-names-no-folder-kept-from-0-5
 design: []
 files: []
 observations:
@@ -21,6 +25,10 @@ observations:
   - 2026-11-13-tc-records-migrated-front-matter-names-the-carried-entries
   - 2026-11-13-tc-cli-the-readme-init-paragraph-names-the-host-directories
   - 2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept
+  - 2026-11-13-tc-cli-a-bug-body-gives-its-actual-line-its-own-paragraph-be05bb
+  - 2026-11-13-tc-records-migrated-front-matter-names-the-carried-entries-752301
+  - 2026-11-13-tc-cli-the-readme-init-paragraph-names-the-host-directories-ed78e8
+  - 2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept-24ba1f
 bugs:
   - 2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one
   - 2026-11-12-migrated-records-keep-old-observation-ids-in-their-front
@@ -38,6 +46,8 @@ next: Continue build
 
 ## Where it stands
 
+- PR 5: a bug's Actual paragraph, migrated front matter naming the carried entries, and a fresh project's reading guide and README init paragraph; red then green, three bugs verified
+
 ## Decisions and why
 
 - Leif decided "Approve the intent: record polish for bugs, migrated front matter and the READMEs": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
@@ -50,6 +60,10 @@ next: Continue build
 - [Ran cargo test --locked --test migrate_evidence -- --exact migrated_front_matter_names_the_carried_entries for TC-records-migrated-front-matter-names-the-carried-entries: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-records-migrated-front-matter-names-the-carried-entries.md)
 - [Ran cargo test --locked --test docs -- --exact the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthetical for TC-cli-the-readme-init-paragraph-names-the-host-directories-briefly: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-the-readme-init-paragraph-names-the-host-directories.md)
 - [Ran cargo test --locked --test records -- --exact a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5 for TC-records-a-fresh-projects-reading-guide-names-no-folder-kept-from-0-5: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_body_gives_its_actual_line_its_own_paragraph for TC-cli-a-bug-body-gives-its-actual-line-its-own-paragraph: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-a-bug-body-gives-its-actual-line-its-own-paragraph-be05bb.md)
+- [Ran cargo test --locked --test migrate_evidence -- --exact migrated_front_matter_names_the_carried_entries for TC-records-migrated-front-matter-names-the-carried-entries: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-records-migrated-front-matter-names-the-carried-entries-752301.md)
+- [Ran cargo test --locked --test docs -- --exact the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthetical for TC-cli-the-readme-init-paragraph-names-the-host-directories-briefly: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-the-readme-init-paragraph-names-the-host-directories-ed78e8.md)
+- [Ran cargo test --locked --test records -- --exact a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5 for TC-records-a-fresh-projects-reading-guide-names-no-folder-kept-from-0-5: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept-24ba1f.md)
 
 ## Open threads
 

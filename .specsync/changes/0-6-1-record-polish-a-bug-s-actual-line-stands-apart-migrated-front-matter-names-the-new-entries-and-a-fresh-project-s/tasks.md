@@ -5,6 +5,6 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Failing tests for the bug body's Actual paragraph, migrated front matter IDs and a fresh project's records README.
-- [ ] The fixes, with the docs and the CHANGELOG.
-- [ ] Red then green recorded through Chough, and the full local suite.
+- [x] Failing tests for the bug body's Actual paragraph, migrated front matter IDs and a fresh project's records README.
+- [x] The fixes, with the docs and the CHANGELOG.
+- [x] Red then green recorded through Chough, and the full local suite.
