@@ -979,19 +979,30 @@ pub(super) fn delta_requirements(
 
 /// The requirement IDs a delta's `ADDED` and `MODIFIED` sections hold.
 pub(super) fn added_or_modified(text: &str) -> BTreeSet<String> {
+    let (mut ids, modified) = added_and_modified(text);
+    ids.extend(modified);
+    ids
+}
+
+/// The requirement IDs a delta's `ADDED` section holds, and those its `MODIFIED` section
+/// holds, apart, so each can be said as such (REQ-cli-061).
+pub(super) fn added_and_modified(text: &str) -> (BTreeSet<String>, BTreeSet<String>) {
     let mut section = "";
-    let mut ids = BTreeSet::new();
+    let (mut added, mut modified) = (BTreeSet::new(), BTreeSet::new());
     for line in text.lines().map(str::trim_end) {
         if let Some(heading) = line.strip_prefix("## ") {
             section = heading.trim();
         } else if let Some(rest) = line.strip_prefix("### REQUIREMENT ")
-            && matches!(section, "ADDED" | "MODIFIED")
             && let Some(id) = rest.split_whitespace().next()
         {
-            ids.insert(id.to_string());
+            match section {
+                "ADDED" => added.insert(id.to_string()),
+                "MODIFIED" => modified.insert(id.to_string()),
+                _ => false,
+            };
         }
     }
-    ids
+    (added, modified)
 }
 
 /// Whether a delta of `change` in its workspace adds or modifies a requirement, so the
