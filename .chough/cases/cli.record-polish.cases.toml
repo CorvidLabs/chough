@@ -20,3 +20,23 @@ expected = ["the bugs test a_bug_body_gives_its_actual_line_its_own_paragraph pa
 adapter = "cargo-test"
 test_target = "bugs"
 test = "a_bug_body_gives_its_actual_line_its_own_paragraph"
+
+# t38n's round-4 F11: the README's init paragraph has no long parenthetical about hosts.
+
+[[case]]
+id = "TC-cli-the-readme-init-paragraph-names-the-host-directories-briefly"
+title = "The README's init paragraph names each host's skill directory without a long parenthetical, keeping the hosts, their directories and the CLAUDE.md line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["README.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the docs test the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthetical passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthetical"
