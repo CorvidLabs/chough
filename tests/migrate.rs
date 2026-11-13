@@ -1265,6 +1265,79 @@ fn a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove() {
     assert!(fixture.exists(fixture_path));
 }
 
+/// A 0.5.x session as an agent still on 0.5.x writes it (`chough session new
+/// stray-work`), with no history yet.
+const STRAY_SESSION: &str = r#"{"schema_version":2,"objective":"Stray work","intent_scope":"","modules":[],"stage":{"current":"intent","status":"active","callers":[],"iteration":1},"native_change":null,"references":{"criteria":[],"requirements":[],"cases":[],"design":[],"files":[]},"decisions":[],"open_questions":[],"completed":[],"observations":[],"bugs":[],"blockers":[],"awaiting_human":[],"run_consents":[],"next_action":"Read scoped intent and native status, then choose the next action within the authorized scope."}"#;
+
+/// Today's UTC date, `YYYY-MM-DD`.
+fn utc_day() -> String {
+    let seconds = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    iso(seconds)[..10].to_string()
+}
+
+/// REQ-records-009 (#264): a 0.5.x record written into a migrated tree, as an agent
+/// still on 0.5.x writes it, is migrated by a second apply on the same UTC day. That
+/// apply's receipt takes a name of its own beside the first receipt, which stays byte
+/// for byte, rather than clashing with it after part of the plan is written.
+#[test]
+fn a_second_migration_on_the_same_day_writes_its_own_receipt_beside_the_first() {
+    let day = utc_day();
+    let fixture = migrate_project("adopted", &[]);
+    let (_, first) = migrate(&fixture, Some(CONSENT));
+    let first_receipt = first["receipt"].as_str().unwrap().to_string();
+    fixture.commit("migrated");
+    let first_bytes = fixture.read(&first_receipt);
+    fixture.write(".chough/sessions/stray-work.json", STRAY_SESSION);
+    fixture.commit("a 0.5.x session written into the migrated tree");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(plan["unaccounted"], serde_json::json!([]), "{plan:#}");
+    assert!(
+        plan["sources"][".chough/sessions/stray-work.json"].is_string(),
+        "{plan:#}"
+    );
+    let output = fixture.run(&[
+        "migrate",
+        "--apply",
+        plan["plan_digest"].as_str().unwrap(),
+        "--consent",
+        CONSENT,
+    ]);
+    if utc_day() != day {
+        eprintln!("skipped: the UTC day changed during the test, so the receipts' days differ");
+        return;
+    }
+    assert!(
+        output.status.success(),
+        "the second apply on the same day failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let second: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let second_receipt = second["receipt"].as_str().unwrap();
+    assert_ne!(second_receipt, first_receipt, "{second:#}");
+    assert!(
+        second_receipt.starts_with(&format!(".chough/archive/migrations/{day}-from-0-5")),
+        "{second_receipt}"
+    );
+    assert_eq!(
+        fixture.read(&first_receipt),
+        first_bytes,
+        "the second apply changed the first receipt"
+    );
+    assert!(
+        fixture
+            .read(second_receipt)
+            .contains(plan["plan_digest"].as_str().unwrap()),
+        "{second_receipt} does not name the second plan"
+    );
+    assert!(!fixture.exists(".chough/sessions/stray-work.json"));
+    for path in written(&plan) {
+        assert!(fixture.exists(&path), "{path} was not written");
+    }
+}
+
 /// REQ-records-010, REQ-records-009, TC-records-the-standing-migration-preference-is-set-before-migrating
 /// (U2): on an unmigrated tree, `pref set migration` and `pref unset migration` run and
 /// write no committed file other than `.chough/preferences.json`, which the migration keeps
