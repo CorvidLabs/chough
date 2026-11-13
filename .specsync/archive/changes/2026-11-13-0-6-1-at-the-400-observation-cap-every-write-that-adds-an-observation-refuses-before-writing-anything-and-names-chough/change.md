@@ -1,6 +1,6 @@
 ---
 id: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 9d53604071df50b537adccad0ccf5cac9a2fc32b
 ---
