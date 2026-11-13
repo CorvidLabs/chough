@@ -16,8 +16,10 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
-bugs: []
+observations:
+  - 2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review
+  - 2026-11-13-tc-records-approval-as-the-human
+bugs: [2026-11-13-chough-change-ship-s-native-review-drops-the-relay-review-json]
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -37,6 +39,9 @@ Fix #249: chough passes a relayed decision's words, place and recording agent to
 - Leif decided "Approve the scope of fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve": "Reviews and approvals (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough relay fix: when you approve in chat, SpecSync's review record gets the details of who decided, where and who relayed it. Today only a free-text note has them. It's a small requirement wording change. Do it for approvals too, not just reviews?' (option text: 'Both records carry your words, where you said them and who relayed them. t38b builds it, and an issue gets filed.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test change -- --exact ship_passes_the_relay_to_the_native_review for TC-cli-ship-passes-the-relay-to-the-native-review: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review.md)
+- [Ran cargo test --locked --test humans -- a_scope_gate_runs_the_approval_once_as_the_configured_human a_review_gate_needs_a_verdict_and_runs_the_review_with_it an_unknown_or_ambiguous_human_is_refused_before_anything_runs the_project_file_overrides_the_user_file no_source_names_a_person_as_the_default_human for TC-records-approval-as-the-human: failed (exit 101).](evidence/2026-11-13-tc-records-approval-as-the-human.md)
 
 ## Open threads
 

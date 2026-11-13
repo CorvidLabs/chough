@@ -10,7 +10,9 @@ impact: "SpecSync's own review record cannot tell a relayed claim from a direct 
 criteria: []
 requirements: [REQ-records-008, REQ-cli-059]
 cases: []
-evidence: []
+evidence:
+  - 2026-11-13-review-relay/2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review
+  - 2026-11-13-review-relay/2026-11-13-tc-records-approval-as-the-human
 receipts: []
 environment: local-macos-arm64
 revision: 4a7a273b3ff6d617ef7475b8a19f28ff8ac22e4c
@@ -20,7 +22,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-13T03:40:50Z
-updated: 2026-11-13T03:46:38Z
+updated: 2026-11-13T07:44:49Z
 ---
 # chough change ship's native review drops the relay: review.json names the reviewer with no words, place or recorder
 
@@ -43,3 +45,4 @@ Actual: src/humans.rs Step::Review runs only specsync change review <id> --revie
 - 2026-11-13T03:40:50Z · Reported (t370 (coordinator), from t384's review of chough#242 and #244) · by claude-code (hc t382)
 - 2026-11-13T03:40:50Z · Added despite similar reports: The verified 2026-11-12 ship bugs fixed Chough's own close report and gate-closed relay; this one is the relay missing from SpecSync's review.json, which Chough's native call never passes · by claude-code (hc t382)
 - 2026-11-13T03:46:38Z · Tracked as GitHub #249; Leif chose reviews and approvals at 2026-11-13T03:44Z (relayed by t370) · by claude-code (hc t382)
+- 2026-11-13T07:44:49Z · evidence: 2026-11-13-review-relay/2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review, 2026-11-13-review-relay/2026-11-13-tc-records-approval-as-the-human. Red at da86ddcb (t38b's tests): the ship's review gets only --reviewer and --verdict, and the approve and review closes carry no --words, --where or --recorded-by · by claude-code (hc t382)

@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #249: chough change ship's native review passed only --reviewer and --verdict,
+# so SpecSync's review.json carried no relay (words, place, recording agent).
+
+[[case]]
+id = "TC-cli-ship-passes-the-relay-to-the-native-review"
+title = "chough change ship runs specsync change review once as the human, with the relay's words, place and recording agent as --words, --where and --recorded-by, then specsync change ship"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "FLOW-23"]
+requirements = ["REQ-cli-059", "REQ-records-008"]
+paths = ["src/change.rs", "src/humans.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_passes_the_relay_to_the_native_review passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_passes_the_relay_to_the_native_review"
