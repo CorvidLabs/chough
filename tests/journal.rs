@@ -1391,3 +1391,54 @@ fn a_storys_receipts_are_in_observation_time_order() {
         "receipts are not in observation-time order: {story}"
     );
 }
+
+/// #260 (Kimi's swarm report, #273; REQ-records-001, REQ-records-011): `chough journal
+/// add` whose write could not finish left a partial post in `knowledge/journal/`, after
+/// which `chough library index --check` failed. Under `ulimit -f 1` (512 or 1,024 bytes)
+/// the write of a post of about 1,400 bytes fails; the command refuses, leaves no post,
+/// partial or whole, and the knowledge directory still checks clean.
+#[cfg(unix)]
+#[test]
+fn a_journal_add_that_cannot_finish_its_write_leaves_no_post() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let journal = fixture.root().join("knowledge/journal");
+    let names = || -> BTreeMap<String, u64> {
+        std::fs::read_dir(&journal)
+            .map(|entries| {
+                entries
+                    .map(|entry| {
+                        let entry = entry.unwrap();
+                        (
+                            entry.file_name().to_string_lossy().into_owned(),
+                            entry.metadata().unwrap().len(),
+                        )
+                    })
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
+    let before = names();
+    let body = "A post past the file size limit. ".repeat(34);
+    assert!(body.len() <= 1_200 && body.len() > 1_100);
+    let added = fixture.run_with_file_size_limit(
+        1,
+        &[
+            "journal",
+            "add",
+            "--kind",
+            "learned",
+            "--title",
+            "Past the limit",
+            "--body",
+            &body,
+        ],
+    );
+    let stderr = String::from_utf8_lossy(&added.stderr);
+    assert!(
+        !added.status.success() && stderr.contains("os error 27"),
+        "the write was meant to fail past the limit: {added:?}"
+    );
+    assert_eq!(names(), before, "a failed journal add left a post");
+    fixture.ok(&["library", "index", "--check"]);
+}

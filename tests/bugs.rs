@@ -2255,3 +2255,61 @@ fn a_duplicate_bug_add_lists_each_similar_bug_as_a_line() {
         assert!(error.contains(way), "{way}: {error}");
     }
 }
+
+/// #260 (Kimi's swarm report, #273; REQ-records-001): `chough bug add` whose write could
+/// not finish (ENOSPC on a full disk, or EFBIG past a file-size limit) left a partial
+/// record: a 0-byte file that every reader then refused, or a truncated one whose front
+/// matter was whole, which `bug list` and `status` accepted as an open bug although the
+/// command had failed. Under `ulimit -f 8` (4 or 8 KiB) the write of a 20 KB bug record
+/// fails; the command refuses and leaves nothing in `.chough/bugs/`, partial or whole,
+/// and every reader still reads the project.
+#[cfg(unix)]
+#[test]
+fn a_bug_add_that_cannot_finish_its_write_leaves_no_record() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let long = "x".repeat(4_000);
+    let added = fixture.run_with_file_size_limit(
+        8,
+        &[
+            "bug",
+            "add",
+            "--title",
+            "A record past the file size limit",
+            "--symptom",
+            &long,
+            "--trigger",
+            &long,
+            "--expected",
+            &long,
+            "--actual",
+            &long,
+            "--impact",
+            &long,
+            "--environment",
+            "test-local",
+        ],
+    );
+    let stderr = String::from_utf8_lossy(&added.stderr);
+    assert!(
+        !added.status.success() && stderr.contains("os error 27"),
+        "the write was meant to fail past the limit: {added:?}"
+    );
+    let left: Vec<String> = std::fs::read_dir(fixture.root().join(".chough/bugs"))
+        .map(|entries| {
+            entries
+                .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+                .collect()
+        })
+        .unwrap_or_default();
+    assert!(left.is_empty(), "a failed bug add left {left:?}");
+    let listed = fixture.ok(&["bug", "list", "--all"]);
+    assert_eq!(listed["bugs"], json!([]), "{listed:#}");
+    fixture.ok(&["next", "--json"]);
+    let status = fixture.run(&["status"]);
+    assert!(
+        status.status.success(),
+        "{}",
+        String::from_utf8_lossy(&status.stderr)
+    );
+}

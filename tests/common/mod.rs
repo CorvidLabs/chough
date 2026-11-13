@@ -141,6 +141,33 @@ impl Fixture {
     pub(super) fn run_with_env(&self, args: &[&str], environment: &[(&str, &str)]) -> Output {
         let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
         command.arg("--root").arg(self.root()).args(args);
+        self.environment(&mut command);
+        command.envs(environment.iter().copied());
+        command.output().unwrap()
+    }
+
+    /// Run chough with `args` under a file-size limit of `blocks` (`ulimit -f`, whose
+    /// block is 512 or 1,024 bytes by shell), with SIGXFSZ ignored as it was in the run
+    /// that found #260, so a write past the limit fails with EFBIG ("File too large",
+    /// os error 27) instead of killing the process.
+    #[cfg(unix)]
+    pub(super) fn run_with_file_size_limit(&self, blocks: u32, args: &[&str]) -> Output {
+        let mut command = Command::new("sh");
+        command
+            .arg("-c")
+            .arg(format!("trap '' XFSZ; ulimit -f {blocks}; exec \"$@\""))
+            .arg("sh")
+            .arg(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(self.root())
+            .args(args);
+        self.environment(&mut command);
+        command.output().unwrap()
+    }
+
+    /// The environment every chough run gets: this build and `bin/` first on PATH, no
+    /// actor variables and no user identity file but the fixture's.
+    fn environment(&self, command: &mut Command) {
         let mut paths = vec![self.root().join("bin")];
         // The `chough` a merge driver runs, which doctor finds through PATH
         // (REQ-history-012), is this build unless a test puts another in `bin/`.
@@ -159,8 +186,6 @@ impl Fixture {
         // No test reads this machine's identity file (REQ-records-008); a test that
         // needs a user file writes it under USER_CONFIG.
         command.env("XDG_CONFIG_HOME", self.root().join(USER_CONFIG));
-        command.envs(environment.iter().copied());
-        command.output().unwrap()
     }
 
     /// Run a command that must succeed and print JSON.
