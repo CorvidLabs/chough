@@ -1,0 +1,53 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794535790,
+      "digest": "2f93795386088c1bdf9e666c58ddebdbb9c99bad1f27e07049b63b43e3377476",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as\": \"Yes, start (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'The intent gate summary gives each criterion's sentence, no 'Diff: unknown' line, and 'adds' for an ADDED-only delta'; relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T02:09:49Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as",
+        "title": "0.6.1: the intent gate summary gives each criterion's sentence, no diff line without a base, and adds or modifies said as such",
+        "description": "0.6.1: the intent gate summary gives each criterion's sentence, no diff line without a base, and adds or modifies said as such",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/gates.rs",
+          "tests/gates.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "At an intent gate with no native change, chough gate list gives each referenced criterion by ID with its sentence from the HI file that holds it and no diff line; a delta that only adds says adds, and one that adds and modifies names each (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved 0.6.1 at 02:03Z (relayed by t370) as six small PRs, one fix each, him merging each; this PR is the intent gate summary, with REQ-cli-061 text. Code stays in src/gates.rs (cli); a failing test first; the full local suite before review.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "632d631a5728359857ddd2f644fa86c7b3ea0784424341882d75864a2ad0b88c"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-061": "1e9da7e6425079c1ee067749827efc707d98eb484954a74e54ee1598ff87c761"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794537722,
+      "digest": "77b7202c078a2b8a3267ee306a9b887e45977dc8c210a9346ff6669508cc3f98",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
