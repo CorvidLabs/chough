@@ -1,6 +1,6 @@
 ---
 id: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 9d53604071df50b537adccad0ccf5cac9a2fc32b
 ---

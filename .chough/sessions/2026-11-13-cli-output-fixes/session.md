@@ -5,7 +5,7 @@ aliases: [cli-output-fixes]
 objective: "0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -32,7 +32,7 @@ bugs:
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once
 
@@ -144,4 +144,14 @@ next: Continue build
   - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
   - gate: native:approved
   - revision: 95aebfd72ecb84c4811ed921027520bab991f43a
+  - by: claude-code (hc t382)
+- 2026-11-13T03:01:45Z · advance · build → test · The fixes are green ^t-b08bb3
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - gate: native:approved
+  - revision: a0a2b49ac4030dd765050567ccf82c7ae1a67c7e
+  - by: claude-code (hc t382)
+- 2026-11-13T03:01:45Z · advance · test → accept · The fixes are green ^t-37d950
+  - native_change: 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once
+  - gate: native:approved
+  - revision: a0a2b49ac4030dd765050567ccf82c7ae1a67c7e
   - by: claude-code (hc t382)
