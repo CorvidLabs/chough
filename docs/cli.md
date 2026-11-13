@@ -528,6 +528,14 @@ whose SpecSync actor comes from the identity file (REQ-records-008, see
   `specsync_actor` as the reviewer and the verdict given as `--verdict pass` or
   `--verdict block`, which is required there and is never read from the words.
 
+Each step also passes the relay to SpecSync 6.3.0's own fields, `--words`, `--where`
+and `--recorded-by`, so SpecSync's approval or review records the relayed decision
+(#249). Chough bounds the whole decision at 4,096 bytes, so no field exceeds
+SpecSync's 4,096-byte bound for each.
+SpecSync 6.3.0 records a change approved or reviewed this way at workflow version 3,
+which SpecSync 6.2.x refuses, so every checkout and CI job of the project needs
+SpecSync 6.3.0.
+
 Every check the save makes runs before the native step. When SpecSync refuses, Chough
 passes its output and exit code through, the gate stays open and nothing is written.
 When it succeeds, Chough closes the gate and adds the decision, which names the step
@@ -1211,7 +1219,8 @@ review (REQ-cli-059). It runs in these steps:
    --native-change <id>`, or `chough checkpoint --close-gate` for another open gate.
 2. When the named gate drives review and the change has no current scoped review, it
    first runs SpecSync's change review as the decided human with verdict `pass`,
-   since a ship is run only on acceptance (REQ-records-008). The identity is resolved
+   since a ship is run only on acceptance, passing the relay's words, place and
+   recording agent as `--words`, `--where` and `--recorded-by` (REQ-records-008). The identity is resolved
    before SpecSync runs (`refused:human-identity-unknown` otherwise), and a refused
    review stops here with SpecSync's output and exit code and nothing written.
 3. It runs `specsync change ship <id>` in `--root` with no time bound, and passes

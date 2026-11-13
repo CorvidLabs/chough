@@ -151,38 +151,76 @@ pub(crate) fn resolve(root: &Path, decided_by: &str) -> Result<Human> {
     }
 }
 
+/// The relayed decision a native step records in SpecSync's own fields (SpecSync 6.3.0,
+/// #249): the human's exact words, where and when they said them, and the agent that
+/// recorded them (REQ-records-008).
+#[derive(Clone, Debug)]
+pub(crate) struct Relay {
+    pub(crate) words: String,
+    pub(crate) place: String,
+    pub(crate) recorded_by: String,
+}
+
+impl From<&crate::stage::RelayedBy> for Relay {
+    fn from(relay: &crate::stage::RelayedBy) -> Self {
+        Self {
+            words: relay.words.clone(),
+            place: relay.place.clone(),
+            recorded_by: relay.recorded_by.clone(),
+        }
+    }
+}
+
 /// A native step to run as a human.
 #[derive(Clone, Debug)]
 pub(crate) enum Step {
-    /// `specsync change approve <id> --actor <actor> --note <note>`.
-    Approve { note: String },
-    /// `specsync change review <id> --reviewer <actor> --verdict <verdict>`.
-    Review { verdict: String },
+    /// `specsync change approve <id> --actor <actor> --note <note>`, then the relay.
+    Approve { note: String, relay: Relay },
+    /// `specsync change review <id> --reviewer <actor> --verdict <verdict>`, then the
+    /// relay.
+    Review { verdict: String, relay: Relay },
 }
 
 impl Step {
-    /// The arguments after `specsync`.
+    /// The arguments after `specsync`: the step, then the relay as `--words`, `--where`
+    /// and `--recorded-by`, so SpecSync's approval or review records the relayed
+    /// decision (REQ-records-008). Chough's relay bound keeps each within SpecSync's.
     pub(crate) fn arguments(&self, change: &str, human: &Human) -> Vec<String> {
-        match self {
-            Step::Approve { note } => vec![
-                "change".into(),
-                "approve".into(),
-                change.into(),
-                "--actor".into(),
-                human.specsync_actor.clone(),
-                "--note".into(),
-                note.clone(),
-            ],
-            Step::Review { verdict } => vec![
-                "change".into(),
-                "review".into(),
-                change.into(),
-                "--reviewer".into(),
-                human.specsync_actor.clone(),
-                "--verdict".into(),
-                verdict.clone(),
-            ],
-        }
+        let (mut arguments, relay) = match self {
+            Step::Approve { note, relay } => (
+                vec![
+                    "change".into(),
+                    "approve".into(),
+                    change.into(),
+                    "--actor".into(),
+                    human.specsync_actor.clone(),
+                    "--note".into(),
+                    note.clone(),
+                ],
+                relay,
+            ),
+            Step::Review { verdict, relay } => (
+                vec![
+                    "change".into(),
+                    "review".into(),
+                    change.into(),
+                    "--reviewer".into(),
+                    human.specsync_actor.clone(),
+                    "--verdict".into(),
+                    verdict.clone(),
+                ],
+                relay,
+            ),
+        };
+        arguments.extend([
+            "--words".into(),
+            relay.words.clone(),
+            "--where".into(),
+            relay.place.clone(),
+            "--recorded-by".into(),
+            relay.recorded_by.clone(),
+        ]);
+        arguments
     }
 
     /// The step as one line for the decision and the output, without the note's text.
@@ -192,7 +230,7 @@ impl Step {
                 "ran specsync change approve {change} as {}",
                 human.specsync_actor
             ),
-            Step::Review { verdict } => format!(
+            Step::Review { verdict, .. } => format!(
                 "ran specsync change review {change} as {} with verdict {verdict}",
                 human.specsync_actor
             ),

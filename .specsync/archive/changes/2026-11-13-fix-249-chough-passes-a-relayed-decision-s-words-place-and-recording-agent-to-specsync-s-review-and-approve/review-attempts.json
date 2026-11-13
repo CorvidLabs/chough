@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "6821f9a6106eb57815d09af59184167b3e27b30b",
+      "contract_digest": "83809409c845d2277cd94e3b3e752eb71d3f2527850afd2b24c8e605463e2b3a",
+      "execution_digest": "63e1cf7a152e7b82adc7528f6922bf6d3ffe957297d4a05467cf4359410a215b",
+      "workspace_digest": "f68a814787e1149a8294c2030d9f437aa67838884c10ea68cc42adc28d0e9dff",
+      "timestamp": 1794579451
+    }
+  ]
+}

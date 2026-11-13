@@ -6,6 +6,12 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A relayed gate close's native approval or review, including the review `chough change
+  ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
+  `--recorded-by`, so SpecSync's approval and review records hold the relayed decision
+  (#249, REQ-records-008).
+  SpecSync 6.3.0 then records such a change at workflow version 3, which SpecSync
+  6.2.x refuses, so every checkout and CI job of a project that uses it needs 6.3.0.
 - `chough migrate`'s preview and the receipt's `## Follow-up` also name what `chough doctor` will report on the migrated tree, from doctor's own session check run on the planned records: the finished sessions `chough doctor --fix` archives, and each session whose open human gates are on an archived native change, with each gate's text and the decision it needs, `chough doctor --fix --reason` (#246, REQ-records-009, REQ-cli-055).
 - The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
 - Record polish: a bug's actual behaviour is its own `Actual:` paragraph under What

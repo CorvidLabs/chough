@@ -416,9 +416,13 @@ const REVIEW_GATE: &str = "Implementation review of a5";
 /// argument on its own line in `.stub-ship-calls` (appending), publishes its PID in
 /// `.stub-pid` whole (renamed into place), sleeps `.stub-ship-sleep` seconds when that
 /// file exists, prints `.stub-ship-out` and `.stub-ship-err`, and exits with
-/// `.stub-ship-exit` (0 when absent). Status reports an archived change, or exits 2
+/// `.stub-ship-exit` (0 when absent). Review and approve record their call on one line in
+/// `.stub-native-calls`, and each argument on its own line in `.stub-native-args`, each
+/// call ended by an empty line. Ship, review and approve each add their name to
+/// `.stub-steps`, in the order they run. Status reports an archived change, or exits 2
 /// while `.stub-status-fail` exists.
 const SHIP_STUB: &str = r#"#!/bin/sh
+if [ "$2" = ship ] || [ "$2" = review ] || [ "$2" = approve ]; then echo "$2" >>.stub-steps; fi
 if [ "$2" = ship ]; then
     for argument in "$@"; do printf '%s\n' "$argument"; done >>.stub-ship-calls
     echo $$ >.stub-pid.tmp && mv .stub-pid.tmp .stub-pid
@@ -429,6 +433,7 @@ if [ "$2" = ship ]; then
 fi
 if [ "$2" = review ] || [ "$2" = approve ]; then
     echo "$*" >>.stub-native-calls
+    { for argument in "$@"; do printf '%s\n' "$argument"; done; echo; } >>.stub-native-args
     if [ -f .stub-review-exit ]; then echo 'review refused' >&2; exit "$(cat .stub-review-exit)"; fi
     exit 0
 fi
@@ -542,6 +547,18 @@ fn ship_calls(fixture: &Fixture) -> Vec<String> {
         .collect()
 }
 
+/// The arguments of each native review or approve call, in order.
+fn native_arguments(fixture: &Fixture) -> Vec<Vec<String>> {
+    if !fixture.exists(".stub-native-args") {
+        return vec![];
+    }
+    fixture
+        .read(".stub-native-args")
+        .split_terminator("\n\n")
+        .map(|call| call.lines().map(String::from).collect())
+        .collect()
+}
+
 /// Every file under `.chough/` except the lock directory, with its bytes.
 fn records(root: &Path) -> BTreeMap<String, Vec<u8>> {
     dot_chough(root)
@@ -617,7 +634,9 @@ fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
     // REQ-records-008: the review ran once, as the decided human, before the ship.
     assert_eq!(
         fixture.read(".stub-native-calls"),
-        format!("change review {SHIP_ID} --reviewer SYNTHETIC-reviewer --verdict pass\n")
+        format!(
+            "change review {SHIP_ID} --reviewer SYNTHETIC-reviewer --verdict pass --words pass --where a test --recorded-by SYNTHETIC-agent\n"
+        )
     );
     assert!(
         output.stdout.starts_with(b"SHIPPED a5\n"),
@@ -631,6 +650,59 @@ fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
     let session = ship_session(&fixture);
     assert_eq!(session["stage"]["current"], "done", "{session:#}");
     assert_eq!(session["awaiting_human"], serde_json::json!([]));
+}
+
+/// #249 (REQ-records-008, REQ-cli-059): the native review `chough change ship` runs as the
+/// decided human passed only `--reviewer` and `--verdict`, so SpecSync's review.json named
+/// the reviewer with no relay. SpecSync 6.3.0's `change review` takes the relay as
+/// `--words`, `--where` and `--recorded-by`: ship runs `specsync change review` once as
+/// that human, with the relay's words, place and recording agent as `--words`, `--where`
+/// and `--recorded-by`, each one argument, then `specsync change ship`.
+#[test]
+fn ship_passes_the_relay_to_the_native_review() {
+    let fixture = shipping_session_at("accept");
+    let words = "Ship it, the review passes";
+    let place = "SYNTHETIC chat, 2026-11-13 03:44Z, relayed by SYNTHETIC-coordinator";
+    let relay = [
+        "--close-gate",
+        REVIEW_GATE,
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        words,
+        "--where",
+        place,
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ];
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &relay), &[]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        native_arguments(&fixture),
+        [[
+            "change",
+            "review",
+            SHIP_ID,
+            "--reviewer",
+            "SYNTHETIC-reviewer",
+            "--verdict",
+            "pass",
+            "--words",
+            words,
+            "--where",
+            place,
+            "--recorded-by",
+            "SYNTHETIC-agent",
+        ]
+        .map(String::from)
+        .to_vec()]
+    );
+    assert_eq!(fixture.read(".stub-steps"), "review\nship\n");
+    assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID]);
 }
 
 /// REQ-cli-059 (0.6.1), TC-cli-change-ship-prints-a-short-summary-and-its-reports-under-json:

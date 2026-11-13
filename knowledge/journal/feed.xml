@@ -13,6 +13,13 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>Fix #249: the relay reaches SpecSync&apos;s approval and review</title>
+<id>urn:chough:journal:2026-11-13-fix-249-the-relay-reaches-specsync-s-approval-and-review</id>
+<updated>2026-11-13T14:18:13Z</updated>
+<link href="2026-11-13-fix-249-the-relay-reaches-specsync-s-approval-and-review.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>Fix #246: migrate&apos;s preview names what doctor will report</title>
 <id>urn:chough:journal:2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report</id>
 <updated>2026-11-13T14:17:18Z</updated>
@@ -136,13 +143,6 @@
 <id>urn:chough:journal:2026-11-09-read-diagnostic-input-inventories-without-touching-freshness</id>
 <updated>2026-11-09T07:44:46Z</updated>
 <link href="2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md"/>
-<category term="closed"/>
-</entry>
-  <entry>
-<title>Recognize pristine skill files from released bundles (#102)</title>
-<id>urn:chough:journal:2026-11-09-recognize-pristine-skill-files-from-released-bundles-102</id>
-<updated>2026-11-09T05:14:35Z</updated>
-<link href="2026-11-09-recognize-pristine-skill-files-from-released-bundles-102.md"/>
 <category term="closed"/>
 </entry>
 </feed>

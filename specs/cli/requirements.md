@@ -534,7 +534,7 @@ Acceptance Criteria
 - When the move into done is refused after a successful ship, the exit is 1, the output says the change was shipped and names `chough stage advance --to done`, and that command then succeeds.
 - `chough change ship` completes after the native read bound has passed.
 - With `--list` and `--gate` for a listed review gate, the ship closes that gate with the summary digest and the list in its relay, and a summary changed since it was listed is refused before SpecSync runs, naming `chough gate list`.
-- With a configured human and the review gate's relay, `chough change ship` runs `specsync change review` once as that human, then `specsync change ship`; with no configured identity for `--decided-by` it refuses with `refused:human-identity-unknown` before SpecSync runs.
+- With a configured human and the review gate's relay, `chough change ship` runs `specsync change review` once as that human, with the relay's words, place and recording agent as `--words`, `--where` and `--recorded-by`, then `specsync change ship`; with no configured identity for `--decided-by` it refuses with `refused:human-identity-unknown` before SpecSync runs.
 - The walkthrough and the skill's closeout run `chough change new`, `chough change check` and `chough change ship`, and record review through the human's gate decision.
 - `chough change ship` prints SpecSync's output, then at most 12 lines naming the review, the ship, the gate close and the move into done; `chough change ship --json` prints every step's full report as before.
 

@@ -25,6 +25,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 Newest posts:
 
 - [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
+- [Fix #249: the relay reaches SpecSync's approval and review](journal/2026-11-13-fix-249-the-relay-reaches-specsync-s-approval-and-review.md) (2026-11-13, shipped)
 - [Fix #246: migrate's preview names what doctor will report](journal/2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report.md) (2026-11-13, shipped)
 - [Fix #247: the example waits past the failing run's second](journal/2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second.md) (2026-11-13, shipped)
 - [0.6.1: next with no open session exits 0, and timing says elapsed once](journal/2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says.md) (2026-11-13, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [0.6.1: src/stage.rs recorded for PR 4](journal/2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md) (2026-11-13, shipped)
 - [0.6.1: the intent gate summary shows what is approved](journal/2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md) (2026-11-13, shipped)
 - [0.6.1: a short host name in an ordinary word is not a leak](journal/2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md) (2026-11-13, shipped)
-- [Chough 0.6.0 marked published in the roadmap](journal/2026-11-13-chough-0-6-0-marked-published-in-the-roadmap.md) (2026-11-13, shipped)
 
 ## Where things live
 
@@ -81,8 +81,8 @@ Lessons that span projects:
 Lesson bundles of the newest 3 archived changes:
 
 - [0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s](../.specsync/archive/changes/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s/lesson-bundle.md), 0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed
+- [fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve](../.specsync/archive/changes/2026-11-13-fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve/lesson-bundle.md), Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve
 - [fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply](../.specsync/archive/changes/2026-11-13-fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply/lesson-bundle.md), Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply
-- [fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun](../.specsync/archive/changes/2026-11-13-fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun/lesson-bundle.md), Fix #247: the verify lane's example waits past the failing run's second before its rerun
 
 ## Snapshots and briefs
 
