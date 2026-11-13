@@ -64,9 +64,13 @@ bugs:
   - 2026-11-13-the-grok-template-opens-a-skill-file-its-own-chough-init-does
   - 2026-11-13-a-changed-integrations-template-passes-with-its-version
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+    holds: accept
+    drives: review
+    opened: 2026-11-13T06:47:55Z
 run_consents: []
-next: "Fix t384's two must-fixes on #253 red first, then re-verify and reopen the review gate"
+next: t384's re-review, then Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay
 ---
 # #219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)
 
@@ -213,4 +217,10 @@ next: "Fix t384's two must-fixes on #253 red first, then re-verify and reopen th
   - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
   - gate: native:verifying
   - revision: dbe09d422be76fe12904652e04ba10d8e0d3fdeb
+  - by: claude-code (hc t38r)
+- 2026-11-13T06:47:55Z · gate-opened · accept → accept · Implementation review of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a ^t-1448a9
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - revision: 2450471835f4326725e0babe19cedb032ea0197d
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t38r)
