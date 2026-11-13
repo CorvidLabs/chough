@@ -32,23 +32,21 @@ are captured as LIFE-27 to LIFE-30:
 - Blocking: "Next weekly release (Recommended)", for agents already passing; the
   local agent joins once qualified (LIFE-30; the release gate, a later change).
 
-The questions as claude-code-t38q sent them to t370, which batched them for Leif:
+The questions and option text Leif saw, as claude-code-t370 relayed them to
+claude-code-t38q (coordinator chat, Claude Code hc t370, about 03:32Z):
 
-- Q1. How should the test run each agent? A) One run per step with no Herdr needed,
-  so the same script works on Linux; a Herdr version is optional for watching
-  (Recommended). B) Always as Herdr terminals you can watch from your phone.
-- Q2. Where should the Linux runs happen? A) A Docker container on the Mac, logged in
-  with tokens passed in only for the run (Recommended). B) A separate Linux machine
-  over ssh/hc. C) GitHub Actions started by hand before a release, with API keys
-  stored as repo secrets.
-- Q3. Which local agent are you getting? A) Not sure yet: keep it generic, any
-  command plus a model name (Recommended). B) Pi with a local model server (oMLX or
-  llama.cpp), as in the Mac Studio plan. C) Codex CLI or Kimi Code pointed at a local
-  model (Ollama or LM Studio).
-- Q4. When should a failed or missing agent run start blocking releases? A) From the
-  next weekly release, for agents already passing; the local agent joins once it is
-  qualified (Recommended). B) Only from 1.0; until then releases just link the
-  results. C) Every release right away, all five agents.
+- Q1 'Chough 1.0 agent-host harness (#218): how should it run each agent?' ->
+  "Plain runs, Herdr optional (Recommended)" (option text: 'One run per step, so the
+  same script works on Linux. A Herdr version is optional, for watching from your
+  phone.').
+- Q2 'Where should the Linux harness runs happen?' -> "Docker on the Mac
+  (Recommended)" (option text: 'Agent logins are passed in only for the run.').
+- Q3 'Which local agent are you getting tomorrow?' -> "Not sure: keep it generic
+  (Recommended)" (option text: 'Any command plus a model name, set in one small
+  settings file.').
+- Q4 'When should a failed or missing agent run start blocking Chough releases?' ->
+  "Next weekly release (Recommended)" (option text: 'For agents already passing. The
+  local agent joins once it's qualified.').
 
 ## Engineering choices by claude-code-t38q (not Leif's)
 
