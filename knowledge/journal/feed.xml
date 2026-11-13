@@ -2,9 +2,16 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-13T01:58:40Z</updated>
+<updated>2026-11-13T02:27:14Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>0.6.1: a short host name in an ordinary word is not a leak</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak</id>
+<updated>2026-11-13T02:27:14Z</updated>
+<link href="2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>Chough 0.6.0 marked published in the roadmap</title>
 <id>urn:chough:journal:2026-11-13-chough-0-6-0-marked-published-in-the-roadmap</id>
@@ -137,12 +144,5 @@
 <updated>2026-11-07T03:40:39Z</updated>
 <link href="2026-11-07-zombie-aware-native-process-test-probes-187-132.md"/>
 <category term="closed"/>
-</entry>
-  <entry>
-<title>Prepare the Chough 0.5.0 release</title>
-<id>urn:chough:journal:2026-11-07-prepare-the-chough-0-5-0-release</id>
-<updated>2026-11-07T02:35:28Z</updated>
-<link href="2026-11-07-prepare-the-chough-0-5-0-release.md"/>
-<category term="shipped"/>
 </entry>
 </feed>

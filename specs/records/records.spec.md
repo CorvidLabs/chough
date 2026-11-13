@@ -1,6 +1,6 @@
 ---
 module: records
-version: 3
+version: 4
 status: active
 files:
   - src/markdown.rs
@@ -205,3 +205,4 @@ use this one for every record they write.
 | 1 | 2026-11-11 | Created by the Chough 0.6.0 change (human-first records): the record layer, names and the leak guard; `src/identity.rs` and `tests/ids.rs` move here from cli |
 | 2 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
 | 3 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
+| 4 | 2026-11-13 | 0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak: 0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak |

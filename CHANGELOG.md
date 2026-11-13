@@ -7,6 +7,10 @@ All notable changes to Chough are recorded here. The format follows
 ## [Unreleased]
 
 - The intent gate summary in `chough gate list` gives each criterion the session references by ID with its sentence from the `hi/` file that holds it, and no diff line, and each delta at a scope gate says which requirement IDs it adds and which it modifies instead of "adds or modifies" (REQ-cli-061).
+- The leak check no longer refuses an ordinary word that equals a short all-letter host
+  name: such a name is a leak only inside a path or a URL or as `<user>@<host>`, while a
+  host name of 8 or more characters, or holding a digit, a hyphen or a dot, is still
+  refused anywhere, in writes and in `chough doctor` alike (REQ-records-006).
 
 ## [0.6.0] - 2026-11-12
 
