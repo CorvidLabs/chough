@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [0.6.1: at the observation cap, writes refuse before writing](journal/2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md) (2026-11-13, shipped)
 - [0.6.1: a short host name in an ordinary word is not a leak](journal/2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md) (2026-11-13, shipped)
 - [Chough 0.6.0 marked published in the roadmap](journal/2026-11-13-chough-0-6-0-marked-published-in-the-roadmap.md) (2026-11-13, shipped)
 - [Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds](journal/2026-11-13-chough-0-6-0-release-prep-the-dogfood-cycle-and-four-fresh.md) (2026-11-13, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [Keep gated finished sessions open on session use and new (#181)](journal/2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md) (2026-11-10, shipped)
 - [Keep observations current across knowledge index rebuilds (#136)](journal/2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md) (2026-11-10, shipped)
 - [Refuse new sessions when the adopted legacy log is missing (#113)](journal/2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113.md) (2026-11-10, shipped)
-- [Move two #192 test cases into their own files (#196)](journal/2026-11-10-move-two-192-test-cases-into-their-own-files-196.md) (2026-11-10, shipped)
 
 ## Where things live
 
@@ -88,9 +88,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough](../.specsync/archive/changes/2026-11-13-0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough/lesson-bundle.md), 0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve
 - [0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak](../.specsync/archive/changes/2026-11-13-0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak/lesson-bundle.md), 0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak
 - [mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-13-mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md), Mark the 0.6.0 release published in the roadmap with its install observation
-- [prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood](../.specsync/archive/changes/2026-11-13-prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood/lesson-bundle.md), Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found
 
 ## Snapshots and briefs
 

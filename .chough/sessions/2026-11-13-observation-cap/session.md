@@ -5,7 +5,7 @@ aliases: [observation-cap]
 objective: "0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -24,13 +24,9 @@ observations:
   - 2026-11-13-tc-cli-observation-cap-refuses-before-writing-b9a4e8
 bugs: [2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry]
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
-    holds: accept
-    drives: review
-    opened: 2026-11-13T03:00:00Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: "0.6.1: at the observation cap, writes refuse before writing"
 summary:
   - At REQ-cli-032's 400-observation cap, every write that adds an observation refuses before running or writing anything, naming chough session shelve <id>; next and the leave-test gate read a case's latest run only from the observations the checkpoint references.
@@ -52,6 +48,7 @@ summary:
 - Leif decided "Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough as 0xLeif
 - Leif decided "Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough with its corrected file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough as 0xLeif
 - Leif decided "Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough with its exact file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough as 0xLeif
+- Leif decided "Implementation review of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:01Z, answering: 'Approve 0.6.1 PR #244 (the 400-run limit refuses before writing and says what to do; next and the test gate only count linked runs)?' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -220,4 +217,20 @@ summary:
   - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
   - gate: native:approved
   - revision: 9e14f23d911b9d33b3923afc429e225e04a96ddc
+  - by: claude-code (hc t382)
+- 2026-11-13T03:08:29Z · gate-closed · accept → accept · Implementation review of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough ^t-96c7f4
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: f46911da772edc3318d14e7bdb48dde547525120
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T03:01Z, answering: 'Approve 0.6.1 PR #244 (the 400-run limit refuses before writing and says what to do; next and the test gate only count linked runs)?' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T03:08:30Z · advance · accept → done · native:archived ^t-ab1bf1
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:archived
+  - revision: f46911da772edc3318d14e7bdb48dde547525120
   - by: claude-code (hc t382)
