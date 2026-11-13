@@ -1,5 +1,11 @@
 # Chough CI and native closure
 
+CI runs on every push to main, on every pull request, and once a day on main at 05:23 UTC.
+The daily run lets the flake window (REQ-cli-062) see macOS and Linux every day even
+when nothing merges (REQ-cli-064). A scheduled run has no pull request base and no
+previous commit, so the `SpecSync Archive` jobs take its own commit as their trusted
+base.
+
 The CI workflow runs a first job, `Archive`, that every other job needs: if a pull
 request has any open SpecSync change under `.specsync/changes/`, Archive fails and no
 other job runs until the change is archived. After it, CI runs product tests and

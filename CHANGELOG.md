@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- CI also runs once a day on main at 05:23 UTC, so the flake window sees macOS and
+  Linux every day even when nothing merges. On a scheduled run the `SpecSync Archive`
+  jobs take the run's own commit as their trusted base, since the event has neither a
+  pull request base nor a previous commit (REQ-cli-064, #217).
 - A host-matrix harness in `tools/host-matrix/` drives one scripted Chough cycle per
   agent host, one fresh host run per turn, in a throwaway copy of the shipping sample.
   It stands in for every human gate only as `SIMULATED-host-matrix-not-a-human` and

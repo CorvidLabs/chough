@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [#217: CI also runs once a day on main](journal/2026-11-13-217-ci-also-runs-once-a-day-on-main.md) (2026-11-13, shipped)
 - [#217: seed the flake tracker](journal/2026-11-13-217-seed-the-flake-tracker.md) (2026-11-13, shipped)
 - [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
 - [Host-matrix harness](journal/2026-11-13-host-matrix-harness.md) (2026-11-13, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [0.6.1: at the observation cap, writes refuse before writing](journal/2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md) (2026-11-13, shipped)
 - [0.6.1: chough change ship prints a short summary](journal/2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md) (2026-11-13, shipped)
 - [0.6.1: src/stage.rs recorded for PR 4](journal/2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md) (2026-11-13, shipped)
-- [0.6.1: the intent gate summary shows what is approved](journal/2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md) (2026-11-13, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs](../.specsync/archive/changes/2026-11-13-217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs/lesson-bundle.md), #217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none
 - [217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each](../.specsync/archive/changes/2026-11-13-217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each/lesson-bundle.md), #217 bar 2: seed the flake tracker: the GitHub flake label on the known flake issues, and a note naming DRIVE-19 and each GitHub issue on the flake bug records
 - [host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in](../.specsync/archive/changes/2026-11-13-host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in/lesson-bundle.md), Host-matrix harness: one scripted Chough cycle per agent host, judged from the files, with a stand-in-host self-test in hosted CI on macOS and Linux
-- [0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s](../.specsync/archive/changes/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s/lesson-bundle.md), 0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed
 
 ## Snapshots and briefs
 

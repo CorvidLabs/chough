@@ -4140,3 +4140,60 @@ a { color: var(--proto-accent); }
   .surface { margin: 0; border-radius: 0; border-left: 0; border-right: 0; }
 }
 "##;
+
+/// REQ-cli-064: CI runs once a day on main as well as on pushes and pull requests, so
+/// the flake window (REQ-cli-062) sees macOS and Linux every day; a scheduled run has
+/// no pull request base and no previous commit, so the SpecSync Archive jobs fall back
+/// to the run's own commit instead of handing the inspector an empty base.
+#[test]
+fn ci_runs_once_a_day_on_main_with_a_real_archive_base() {
+    let workflow = fs::read_to_string(manifest_dir().join(".github/workflows/ci.yml")).unwrap();
+    let triggers: Vec<&str> = workflow
+        .split("\non:\n")
+        .nth(1)
+        .and_then(|rest| rest.split("\n\n").next())
+        .expect("ci.yml has an `on:` block")
+        .lines()
+        .collect();
+    for trigger in ["  push:", "  pull_request:", "  schedule:"] {
+        assert!(
+            triggers.contains(&trigger),
+            "ci.yml's `on:` block lacks `{}`: {triggers:#?}",
+            trigger.trim()
+        );
+    }
+    let crons: Vec<&str> = triggers
+        .iter()
+        .filter_map(|line| line.trim().strip_prefix("- cron: "))
+        .collect();
+    assert_eq!(crons.len(), 1, "one daily cron entry: {triggers:#?}");
+    let fields: Vec<&str> = crons[0].trim_matches('\'').split_whitespace().collect();
+    assert_eq!(fields.len(), 5, "a five-field cron: {}", crons[0]);
+    assert!(
+        fields[0].parse::<u8>().is_ok() && fields[1].parse::<u8>().is_ok(),
+        "the cron names one minute and one hour: {}",
+        crons[0]
+    );
+    assert_eq!(
+        &fields[2..],
+        ["*", "*", "*"],
+        "the cron runs every day: {}",
+        crons[0]
+    );
+    let bases: Vec<&str> = workflow
+        .lines()
+        .filter(|line| line.trim_start().starts_with("ARCHIVE_BASE_SHA:"))
+        .collect();
+    assert!(
+        !bases.is_empty(),
+        "the SpecSync Archive jobs set ARCHIVE_BASE_SHA"
+    );
+    for base in bases {
+        assert!(
+            base.trim_end().ends_with(
+                "github.event.pull_request.base.sha || github.event.before || github.sha }}"
+            ),
+            "the SpecSync Archive base falls back to github.sha: {base}"
+        );
+    }
+}
