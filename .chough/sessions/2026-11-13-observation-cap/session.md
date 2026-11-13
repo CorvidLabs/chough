@@ -19,11 +19,21 @@ files: []
 observations:
   - 2026-11-13-tc-cli-observation-cap-refuses-before-writing
   - 2026-11-13-tc-cli-observation-cap-refuses-before-writing-578f54
+  - 2026-11-13-tc-cli-observation-cap-refuses-before-writing-ffac2d
+  - 2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo
 bugs: [2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry]
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+    holds: accept
+    drives: review
+    opened: 2026-11-13T03:00:00Z
 run_consents: []
 next: Continue accept
+title: "0.6.1: at the observation cap, writes refuse before writing"
+summary:
+  - At REQ-cli-032's 400-observation cap, every write that adds an observation refuses before running or writing anything, naming chough session shelve <id>; next and the leave-test gate read a case's latest run only from the observations the checkpoint references.
+  - "Verified: the case red then green, the bug verified, and the full suite 731 of 731. Next: Leif's review and merge."
 ---
 # 0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve
 
@@ -45,6 +55,8 @@ next: Continue accept
 
 - [Ran cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs for TC-cli-observation-cap-refuses-before-writing: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-observation-cap-refuses-before-writing.md)
 - [Ran cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs for TC-cli-observation-cap-refuses-before-writing: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-observation-cap-refuses-before-writing-578f54.md)
+- [Ran cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs for TC-cli-observation-cap-refuses-before-writing: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-observation-cap-refuses-before-writing-ffac2d.md)
+- [The full test suite passed 731 of 731 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 31f85795, PR 2 with main merged in; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo.md)
 
 ## Open threads
 
@@ -151,4 +163,10 @@ next: Continue accept
   - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
   - gate: native:approved
   - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - by: claude-code (hc t382)
+- 2026-11-13T03:00:00Z · gate-opened · accept → accept · Implementation review of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough ^t-eb3355
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: d247ac6b17a0a48cfa00ece86730ed758d212389
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t382)
