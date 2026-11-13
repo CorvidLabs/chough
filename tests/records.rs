@@ -1321,3 +1321,15 @@ fn nothing_leaves_the_tree_unless_head_holds_it() {
         );
     }
 }
+
+/// t38n's round-4 F11 (REQ-records-002): a fresh project's reading guide names no
+/// folder kept from Chough 0.5.x. `artifacts/` holds only files a migration kept for an
+/// open bug, so `chough init` leaves it out of the guide.
+#[test]
+fn a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5() {
+    let fixture = Fixture::new();
+    fixture.ok(&["init", "--intent-scope", "LIFE", "--module", "cli"]);
+    let readme = fixture.read(".chough/README.md");
+    assert!(!readme.contains("artifacts/"), "{readme}");
+    assert!(!readme.contains("kept from Chough 0.5.x"), "{readme}");
+}
