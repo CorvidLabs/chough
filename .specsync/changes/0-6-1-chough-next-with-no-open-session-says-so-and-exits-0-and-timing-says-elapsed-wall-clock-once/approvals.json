@@ -50,7 +50,69 @@
         "history: REQUIREMENT REQ-history-006": "683218d184b1a562772c7030e4dee68323306b446b74f66192d1f713713e8812",
         "reporting: REQUIREMENT REQ-reporting-001": "257f4d030ea5263cd57d8c13de37868d30f84ab52fc66bcd7419001f9125f2cc"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794538891,
+      "digest": "c4c970435a635c86ad6eaf893f5bb812b943090f91f376191a64401b4c359856",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once with its corrected file list\": \"Yes, start (Recommended) / Yes, fix and keep (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Small CLI output fixes: chough next with no open session exits 0 with a plain message (F10); timing says elapsed wall-clock once and drops 'read read-only' (F5)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T03:01:30Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once",
+        "title": "0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once",
+        "description": "0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "reporting"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "README.md",
+          "docs/",
+          "src/",
+          "tests/"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With no open session, chough next prints that there is no open session and names chough session new <key>, exiting 0, while chough status still refuses with that message; chough timing says elapsed wall-clock once, in its header, on no gate-wait, segment or estimate line, and its notes say read-only once (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved 0.6.1 at 02:03Z (relayed by t370) as six small PRs, one fix each, him merging each; this PR is two small CLI output fixes, with REQ-cli-021, REQ-history-006 and REQ-reporting-001 text. A failing test first; the full local suite before review.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "1245c8f2aa28bacbd113b4d05bf59bf60cfc2e0910f2ebe67745752a8de7dde0",
+        "history": "ee57f6afcca0931f3f92a354b303cbb6612cfce2271837218bdb6839cefd0f63",
+        "reporting": "21f012fa73506cca415a67c38f5c2579989e2b761dc3f16cf11ad50ad97127d1"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-021": "f0e3e5f950e11b4acd72339adf5d2026095a057eb1630e48132a8ecff0e93ae4",
+        "history: REQUIREMENT REQ-history-006": "683218d184b1a562772c7030e4dee68323306b446b74f66192d1f713713e8812",
+        "reporting: REQUIREMENT REQ-reporting-001": "257f4d030ea5263cd57d8c13de37868d30f84ab52fc66bcd7419001f9125f2cc"
+      }
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once",
+      "actor": "0xLeif",
+      "reason": "Leif chose 'Yes, fix and keep (Recommended)' (coordinator chat, Claude Code, hc t370, 2026-11-13T02:53Z): the change's file list named too few files, which SpecSync's audit catches; widen it with no code change and keep his approvals. Relayed by claude-code-t370; run by claude-code-t382.",
+      "timestamp": 1794538889,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    }
+  ]
 }

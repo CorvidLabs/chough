@@ -10,21 +10,18 @@
   "state": "approved",
   "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
   "created_at": 1794536958,
-  "updated_at": 1794537000,
+  "updated_at": 1794538891,
   "affected_specs": [
     "cli",
     "history",
     "reporting"
   ],
   "affected_paths": [
-    "src/main.rs",
-    "src/sessions.rs",
-    "src/timing.rs",
-    "tests/next.rs",
-    "tests/sessions.rs",
-    "tests/timing.rs",
-    "docs/cli.md",
-    "CHANGELOG.md"
+    "src/",
+    "tests/",
+    "docs/",
+    "CHANGELOG.md",
+    "README.md"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
