@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun",
+  "implementation_commit": "96817a4a3de55d4fd7f6ef5f0a7e567f12d9d1e7",
+  "implementation_tree": "8d56c36c4f847fcaac66930ef3f067f2dcb7c21a",
+  "contract_digest": "29936db067e25f4a9327b9a2aac6358cfc2f7ec325c98545e65e10b0bc634eb0",
+  "workspace_digest": "625db37c07b11053a1a9064c574f622f3b79c7aac52949a805d3688cf4dd83c3",
+  "closing_digest": "61ea4478f046bb1a7df9a3d62fbf16058364641451333c324a24fd3455366233",
+  "review_digest": "f98c557acdfaf0f3d568614bb03e4fcbebbd0c9df79a9ea7864bb9932d487239",
+  "finalization_digest": "c8e9080e3f86b1fea3ffd252a93b18b4fcda5c1a2333126fce6df8d604222beb",
+  "timestamp": 1794579321
+}

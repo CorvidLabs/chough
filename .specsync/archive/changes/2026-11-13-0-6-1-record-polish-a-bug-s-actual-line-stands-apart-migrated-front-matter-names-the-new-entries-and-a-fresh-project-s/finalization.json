@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s",
+  "implementation_commit": "71b02c952046ad6739504ee0be42bd7a0e693bc1",
+  "implementation_tree": "561057664c8ff828ddf943fc39cb9bbea97eb6ba",
+  "contract_digest": "1a48c35996457ace8df89e08fb9ebec2ba2eff90e26407bef3f0f387af7f06b0",
+  "workspace_digest": "04e0e76c76e30f8e093403f015cc9c4b7917d73073f53a232cb2cdc86eee3c8a",
+  "closing_digest": "981cedfe634bb862df29c63e5b5a1ee25a9f837e7ff13ac2416a2ba1c1e95738",
+  "review_digest": "08e60398bd1f0d01a6eeaf647d1dfc5eb947cb2ec30d4c46de2c4954eff5b1ad",
+  "finalization_digest": "3f5a5d16f70fb511ec9231a382eedd9f347fe19bd4a3277f712f04a3b526de23",
+  "timestamp": 1794579528
+}

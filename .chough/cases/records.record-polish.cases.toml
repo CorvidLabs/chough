@@ -1,0 +1,41 @@
+profile = "chough-testing/1"
+module = "records"
+
+# 0.6.1 record polish (t38n's round-4 F9 and F11): migrated front matter names the
+# carried entries, and a fresh project's reading guide names no 0.5.x folder.
+
+[[case]]
+id = "TC-records-migrated-front-matter-names-the-carried-entries"
+title = "A migrated session's observations and a migrated bug's evidence name the carried entries and receipts, each keeping its 0.5.x ID as its alias, and next lists the new names"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "src/evidence_migrate.rs", "src/bugs.rs", "tests/migrate_evidence.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the migrate_evidence test migrated_front_matter_names_the_carried_entries passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "migrated_front_matter_names_the_carried_entries"
+
+[[case]]
+id = "TC-records-a-fresh-projects-reading-guide-names-no-folder-kept-from-0-5"
+title = "chough init writes a reading guide that names no folder kept from Chough 0.5.x"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24", "KNOW-32"]
+requirements = ["REQ-records-002"]
+paths = ["src/sessions.rs", "src/migrate.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the records test a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5 passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5"

@@ -12,6 +12,13 @@ All notable changes to Chough are recorded here. The format follows
   judges the result only from the files, Git and native status. Its self-test runs a
   scripted stand-in host with no model, and hosted CI runs it on Ubuntu and macOS. Real
   host adapters follow (REQ-cli-066, #218).
+- `chough migrate`'s preview and the receipt's `## Follow-up` also name what `chough doctor` will report on the migrated tree, from doctor's own session check run on the planned records: the finished sessions `chough doctor --fix` archives, and each session whose open human gates are on an archived native change, with each gate's text and the decision it needs, `chough doctor --fix --reason` (#246, REQ-records-009, REQ-cli-055).
+- The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
+- Record polish: a bug's actual behaviour is its own `Actual:` paragraph under What
+  happened; `chough migrate` names each carried entry or receipt in front matter, its
+  0.5.x ID kept as the alias, so `chough next` lists the new names; a fresh project's
+  `.chough/README.md` no longer lists `artifacts/`; and the README's init paragraph
+  names each host's skill directory in one sentence.
 - The intent gate summary in `chough gate list` gives each criterion the session references by ID with its sentence from the `hi/` file that holds it, and no diff line, and each delta at a scope gate says which requirement IDs it adds and which it modifies instead of "adds or modifies" (REQ-cli-061).
 - `chough next` with no open session, the normal state after done, says so, names `chough session new <key>` and exits 0 instead of failing, while `chough status` still refuses; `chough timing` says elapsed wall-clock once, in its header, with no gate-wait, case run or fix-time line repeating it, and its native note no longer reads "read read-only" (REQ-cli-021, REQ-history-006, REQ-reporting-001).
 - At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).

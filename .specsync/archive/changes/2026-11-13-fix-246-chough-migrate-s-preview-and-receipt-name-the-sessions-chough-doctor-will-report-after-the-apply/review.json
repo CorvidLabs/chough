@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "a3479d697016981e7e3507c3be1876e67a0d4303",
+  "contract_digest": "fad3047a117278e3d25d4d7f74e31c43777f303fd16e41daeadabd7c98664ef3",
+  "execution_digest": "2093295c45f094b3aa10344b6ec89e99144d1d978af1ba07ba448f8a649da2df",
+  "workspace_digest": "5c9ea61a34816f17092c4fa6400da116d1cd042d520be7fbd9b359bf747098f2",
+  "timestamp": 1794579388
+}

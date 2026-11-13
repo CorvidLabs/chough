@@ -40,7 +40,7 @@ x86_64 (hi 0.8.0, fledge 1.8.0) through `fledge lanes run verify` for issue #40.
 | test → accept | with BUG-0001 open | refused: `refused:blocking-bugs` |
 | validate | `chough validate run` under the standing `repeat-validation off` | refused: not authorized |
 | build | `stage back --to build`, fix `>` to `>=`, `change check --commit` | refresh list printed |
-| test | rerun the three cases | all passed; BUG-0001 `verified`, `reproduced-and-later-passed` |
+| test | once the clock is past the failing run's recorded second, since a pass in that second does not count (REQ-cli-012, #247), rerun the three cases | all passed; BUG-0001 `verified`, `reproduced-and-later-passed` |
 | accept → done | before a human review and native archive | refused: `refused:native-verifying` |
 
 ## What the first run taught
