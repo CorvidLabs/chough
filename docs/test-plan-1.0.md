@@ -117,3 +117,21 @@ Design:
   host, not the driver.
 - Before each release, the matrix run's receipts are linked from the release
   notes; a missing or failed host leg blocks the release.
+
+How it is built, after Leif's choices of 2026-11-13 (LIFE-27 to LIFE-30):
+
+- The harness is `tools/host-matrix/` (REQ-cli-066). Each host runs as plain
+  command-line runs, one per turn, with no Herdr; an hc template for watching a run is
+  optional (LIFE-27). Its self-test drives a scripted stand-in host with no model. It
+  must pass the good run and fail each known-bad run on the check that names it, and it
+  runs in hosted CI on Ubuntu and macOS. How it judges is in
+  [its README](../tools/host-matrix/README.md).
+- Per-host adapters follow in later changes at `integrations/<host>/adapter.sh`, beside
+  each host's hc template (#219).
+- The Linux legs run in a Docker container on Leif's own computer, with the agents'
+  logins passed in only for the run (LIFE-28).
+- The local-agent leg is generic: any local command-line agent, with one settings file
+  naming its command and model, counts once one full run passes and is recorded
+  (LIFE-29, #220).
+- From the next weekly release, a failed or missing leg blocks the release for every
+  host that already passes; the local agent joins once it is qualified (LIFE-30).
