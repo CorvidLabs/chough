@@ -2223,8 +2223,15 @@ pub(super) fn migrate_0_5(
             criteria: legacy.criteria.clone(),
             requirements: legacy.requirements.clone(),
             cases: legacy.cases.clone(),
+            // The Reported Log line keeps the IDs the report linked, as the notes' lines
+            // do; the front matter `evidence` is set below.
             evidence: reported,
-            regression_baseline: legacy.regression_baseline.clone(),
+            // t38n's round-4 F9: front matter names the carried entry or receipt, whose
+            // alias keeps the 0.5.x ID.
+            regression_baseline: legacy
+                .regression_baseline
+                .as_deref()
+                .map(|id| homes.name(id)),
             fixture: legacy.fixture.clone(),
             environment: legacy.environment.clone(),
             source: legacy.source.clone(),
@@ -2245,19 +2252,16 @@ pub(super) fn migrate_0_5(
         .with_context(|| format!("{source} does not carry into a bug record"))?;
         record.set_scalar("status", &legacy.status)?;
         record.set("aliases", Front::List(vec![legacy.id.clone()]))?;
-        // The evidence it links: its observations, then its notes'; the regression
-        // baseline keeps its own field.
-        let mut evidence: Vec<String> = vec![];
-        for id in legacy
+        // The evidence it links: its observations, then its notes', each by the name of
+        // the entry or receipt it became (t38n's round-4 F9); the regression baseline
+        // keeps its own field.
+        let linked_ids: Vec<String> = legacy
             .observations
             .iter()
             .chain(legacy.notes.iter().flat_map(|note| &note.observations))
-        {
-            if !evidence.contains(id) {
-                evidence.push(id.clone());
-            }
-        }
-        record.set("evidence", Front::List(evidence))?;
+            .cloned()
+            .collect();
+        record.set("evidence", Front::List(homes.names(&linked_ids)))?;
         let mut receipts: Vec<Vec<(String, String)>> = vec![];
         for id in &linked {
             if let Some(map) = homes.receipts.get(id) {
@@ -3105,9 +3109,16 @@ mod tests {
         assert_eq!(bug.list("aliases"), vec!["BUG-0007"]);
         assert_eq!(bug.scalar("status"), Some("investigating"));
         assert_eq!(bug.scalar("scope"), Some("blocking"));
+        // t38n's round-4 F9: by the entry's and the receipt's names; a removed one keeps
+        // its 0.5.x ID, which resolves as removed.
         assert_eq!(
             bug.list("evidence"),
-            vec!["OBS-entry", "OBS-receipt", "OBS-gone", "OBS-later"]
+            vec![
+                "2026-11-01-entry",
+                "2026-11-01-receipt",
+                "OBS-gone",
+                "OBS-later"
+            ]
         );
         let tombstone = |id: &str| {
             vec![
@@ -3159,7 +3170,7 @@ mod tests {
         };
         assert_eq!(label("OBS-gone")["label"], "removed");
         assert_eq!(label("OBS-gone")["receipt"], receipt.as_str());
-        assert_eq!(label("OBS-receipt")["label"], "bug-receipt");
+        assert_eq!(label("2026-11-01-receipt")["label"], "bug-receipt");
         assert_eq!(evidence.verification(&stored).unwrap(), "reproduced");
         let mut gone_only = stored.clone();
         gone_only
