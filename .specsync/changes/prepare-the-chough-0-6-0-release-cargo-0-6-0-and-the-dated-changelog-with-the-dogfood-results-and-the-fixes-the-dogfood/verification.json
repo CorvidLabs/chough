@@ -1,9 +1,9 @@
 {
-  "timestamp": 1794531339,
-  "commit": "fb7033fc52068f9916c7d55097b3e3838f6a61aa",
-  "contract_digest": "06901093da36833f34ed9dbe1b5c0d77dcc88e8d814b3044083fb893e1fe2ea1",
-  "execution_digest": "30afe58f350713be085048b1b7cf9a297ed4af5ffaf3583ea26421eebfff61d5",
-  "workspace_digest": "83007e37a1a91e55d563537206aedfaaab2d19b13dcbe9c2b4660988503a63c1",
+  "timestamp": 1794531639,
+  "commit": "fd5397bb391b4a98db91f150e3979ebec4844955",
+  "contract_digest": "db5a1bceb60edcda36a29d245645d26d43026bc859d50bccbd656f4f18f4cd4a",
+  "execution_digest": "58765b1fd6b898d54c9498a7e3d246ac006daa39141afba4de32dada1defdee3",
+  "workspace_digest": "5358c82cdc27d4003a2978844e11c4524cf6d37e945f5383ca76d6e58a3c323b",
   "passed": true,
   "commands": [
     {
@@ -27,6 +27,7 @@
     "REQ-records-006",
     "REQ-records-008",
     "REQ-records-009",
-    "REQ-records-011"
+    "REQ-records-011",
+    "REQ-reporting-001"
   ]
 }

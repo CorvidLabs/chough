@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry
 aliases: []
 title: At the 400-observation cap, cases run writes its evidence entry and then refuses, leaving it unreferenced
-status: open
+status: deferred
 classification: product-defect
 scope: in-scope
 impact: Records change on a refused write, and next can count an unlinked run as current; reached only by a very long session
@@ -20,7 +20,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-13T01:24:58Z
-updated: 2026-11-13T01:24:58Z
+updated: 2026-11-13T01:26:12Z
 ---
 # At the 400-observation cap, cases run writes its evidence entry and then refuses, leaving it unreferenced
 
@@ -41,3 +41,4 @@ Actual: An unreferenced evidence entry written; 'too many observation (limit 400
 ## Log
 
 - 2026-11-13T01:24:58Z · Reported (Found by t382 rerunning the referenced cases for Leif's review, 2026-11-13) · by claude-code (hc t382)
+- 2026-11-13T01:26:12Z · status: open -> deferred. Deferred to 0.6.1 by Leif's decision: 'Defer to 0.6.1, ship (Recommended)', whose option text says 'Recorded as deferred with your words. t382 ships now, then CI, merge it and the release go. It only affects very long sessions, and nothing is lost.' (coordinator chat, Claude Code hc t370, 2026-11-13T01:25Z, relayed by claude-code-t370) · by claude-code (hc t382)

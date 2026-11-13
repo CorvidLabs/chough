@@ -46,8 +46,9 @@ Newest posts:
 
 ## Open bugs
 
-8 open bugs, blocking first, then newest.
+9 open bugs, blocking first, then newest.
 
+- [2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry](../.chough/bugs/2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry.md) At the 400-observation cap, cases run writes its evidence entry and then refuses, leaving it unreferenced (deferred)
 - [2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open](../.chough/bugs/2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open.md) chough next with no open session exits 1 with Error: no open session (deferred)
 - [2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their](../.chough/bugs/2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their.md) The intent gate summary names criterion IDs without their sentences and says the diff is unknown (deferred)
 - [2026-11-12-the-leak-check-reads-an-ordinary-word-equal-to-a-short-host](../.chough/bugs/2026-11-12-the-leak-check-reads-an-ordinary-word-equal-to-a-short-host.md) The leak check reads an ordinary word equal to a short host name as a host-name leak (deferred)

@@ -508,7 +508,11 @@ bugs:
   - 2026-11-13-a-batched-advance-after-a-gate-close-leaves-continue-for-a
   - 2026-11-13-at-accept-next-names-a-rerun-of-a-retired-case-which-cases-run
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+    holds: accept
+    drives: review
+    opened: 2026-11-13T01:26:27Z
 run_consents: []
 next: Continue accept
 title: "Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds"
@@ -1338,5 +1342,11 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - gate: native:approved
   - revision: 33e053d7faa875daf5a2b2fddd5e93fa3a9ca618
+  - by: claude-code (hc t382)
+- 2026-11-13T01:26:12Z · gate-opened · accept → accept · Implementation review of prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood ^t-76cfb6
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - revision: 04b85491ef437839c894d5edd183e032fd54a6c3
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t382)
 
