@@ -45,7 +45,7 @@ revision: 599ff184c3a42d94ce6728eaa0f9bb17cd5b19ea
 found_by: "GitHub issue #187 and deterministic regression at 599ff184"
 related: []
 created: 2026-11-07T03:38:09Z
-updated: 2026-11-07T03:42:14Z
+updated: 2026-11-13T04:33:19Z
 ---
 # kill-zero reports a killed unreaped zombie alive 187
 
@@ -66,3 +66,4 @@ Actual: kill -0 succeeds and the regression fails
 
 - 2026-11-07T03:38:09Z · Reported (GitHub issue #187 and deterministic regression at 599ff184); evidence: OBS-tc-cli-killed-unreaped-child-not-alive-9af058ce944cce5d05f3feb7
 - 2026-11-07T03:42:14Z · status: open -> verified. The bounded zombie-aware helper passes the same regression after the failure; the running-child assertion also passes.; evidence: OBS-tc-cli-killed-unreaped-child-not-alive-ab310389bde5c4d51a54535d
+- 2026-11-13T04:33:19Z · Tracked by the flake window (DRIVE-19); GitHub #187 · by claude-code (hc t38r)

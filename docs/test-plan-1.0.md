@@ -35,9 +35,13 @@ list at close, and the receipts. A row with an unrecorded step does not count.
 
 The flake tracker is a GitHub label (`flake`) plus one local bug record per flake in
 `.chough/bugs/`, which holds its failing runs, diagnostics and stress results in its
-Log (#217); there is no notes file under `docs/`. Known today: #187 (timing test under a full
-macOS verify, DRIVE-19) and #132 (fork/fd inheritance: ETXTBSY on stand-in
-scripts, held checkpoint lock).
+Log (#217); there is no notes file under `docs/`. Each record names DRIVE-19 and its
+issue as `GitHub #<n>` in a Log note. The label is the current list. It was seeded on
+2026-11-13 with three closed flakes and one open one:
+- #187: a timing test under a full macOS verify;
+- #132: fork and fd inheritance (ETXTBSY on stand-in scripts, a held checkpoint lock);
+- #169: a timing trace test straddling a second;
+- #247: the exercise's same-second race, still open.
 
 Rules:
 

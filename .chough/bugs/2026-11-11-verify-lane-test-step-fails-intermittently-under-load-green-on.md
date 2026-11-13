@@ -20,7 +20,7 @@ revision: 956acbe2adb5c8f25852a0b979507c18f89faa18
 found_by: manual report
 related: []
 created: 2026-11-11T04:21:21Z
-updated: 2026-11-12T17:09:42Z
+updated: 2026-11-13T04:33:19Z
 ---
 # Verify lane test step fails intermittently under load, green on isolated rerun
 
@@ -39,3 +39,4 @@ Actual: Intermittent failures that pass on retry; matches the #132 fork/fd-inher
 
 - 2026-11-11T04:21:21Z · Reported (manual report)
 - 2026-11-12T17:09:42Z · status: open -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-red-rerun-of-the-verify-lane-flake-at-85dd828c-6-of-12-loaded, 2026-11-12-release-0-6-0/2026-11-12-green-rerun-of-the-verify-lane-flake-at-b6fcd0e9-t38b-s. Root cause (t38b, measured): macOS checks every newly written executable on its first exec, one at a time across the machine; under load a fresh stand-in's first exec took 3.9 s at the median, inside the tests' time bounds (stop: the command never started; cases: returned after 12 to 31 s); and the specsync stubs wrote their PID file before its content, so a polling test could read it empty. Fixes: install_executable warms each stand-in once at setup (1888f4f5) and the stubs publish their PID by rename (2ee84412); no assertion or bound changed. Rerun by t382 with t38b's scripts: red at 85dd828c 6/12 runs failed, green at b6fcd0e9 0/12. t38b is investigating a different, rarer flake (HUP survivor) separately · by claude-code (hc t382)
+- 2026-11-13T04:33:19Z · Tracked by the flake window (DRIVE-19); GitHub #132 · by claude-code (hc t38r)
