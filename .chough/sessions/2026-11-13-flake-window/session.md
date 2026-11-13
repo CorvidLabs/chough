@@ -5,7 +5,7 @@ aliases: [flake-window]
 objective: "#217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)"
 intent_scope: LIFE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -126,4 +126,14 @@ next: Record the green case runs, merge main, run the full suite, then change ch
   - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
   - gate: native:approved
   - revision: 4a7a273b3ff6d617ef7475b8a19f28ff8ac22e4c
+  - by: claude-code (hc t38r)
+- 2026-11-13T04:12:48Z · advance · build → test · native:approved ^t-f3f272
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - gate: native:approved
+  - revision: 0ecf6166900c69420695dd46cfb20fff012e1d1d
+  - by: claude-code (hc t38r)
+- 2026-11-13T04:12:49Z · advance · test → accept · native:approved ^t-c05b1e
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - gate: native:approved
+  - revision: 0ecf6166900c69420695dd46cfb20fff012e1d1d
   - by: claude-code (hc t38r)
