@@ -5,7 +5,7 @@ aliases: [flake-window]
 objective: "#217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)"
 intent_scope: LIFE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -49,6 +49,8 @@ observations:
   - 2026-11-13-tc-cli-flake-window-blocked-7a226e
   - 2026-11-13-tc-cli-flake-window-fails-closed-fe148d
   - 2026-11-13-tc-cli-flake-window-wiring-816737
+  - 2026-11-13-the-full-test-suite-passed-735-of-735-across-48-targets-at
+  - 2026-11-13-live-run-after-the-fix-with-the-flake-labels-on-github-but
 bugs: [2026-11-13-flake-window-counts-a-day-covered-when-its-product-jobs-passed]
 blockers: []
 waiting_on_human: []
@@ -94,6 +96,8 @@ next: "Fix t384's must-fix on #252 red first, then re-verify and reopen the revi
 - [Ran python3 .github/scripts/test-flake-window.py BlockedTests for TC-cli-flake-window-blocked: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-blocked-7a226e.md)
 - [Ran python3 .github/scripts/test-flake-window.py FailClosedTests for TC-cli-flake-window-fails-closed: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-fails-closed-fe148d.md)
 - [Ran python3 .github/scripts/test-flake-window.py WiringTests for TC-cli-flake-window-wiring: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-wiring-816737.md)
+- [The full test suite passed 735 of 735 across 48 targets at 05786a14, #252's head after t384's must-fix, under the heavy-tests lock; the flake-window fixtures passed 27 of 27 and rustfmt --check was clean. No Rust file changed, so clippy was not rerun](evidence/2026-11-13-the-full-test-suite-passed-735-of-735-across-48-targets-at.md)
+- [Live run after the fix, with the flake labels on GitHub but this branch's records not seeded: verdict blocked by #132, #169 and #187 having no bug record naming them (the seed PR #255 adds those) and #247 open with its record on its fix branch; 814 runs, 136 main runs, 4 flake issues, 206 bug records. This shows the check on live data, not that the window is clean](evidence/2026-11-13-live-run-after-the-fix-with-the-flake-labels-on-github-but.md)
 
 ## Open threads
 
@@ -168,4 +172,14 @@ next: "Fix t384's must-fix on #252 red first, then re-verify and reopen the revi
   - gate: native:verifying
   - revision: 3287c91f35c7d024b21e7ba423ab15e68d85b0c8
   - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 5 case(s) and 12 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:02:52Z · advance · build → test · native:verifying ^t-2f4562
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - gate: native:verifying
+  - revision: 05786a14526a1c168e7ff6678d81ac884abd579f
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:02:54Z · advance · test → accept · native:verifying ^t-eed87d
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - gate: native:verifying
+  - revision: 05786a14526a1c168e7ff6678d81ac884abd579f
   - by: claude-code (hc t38r)
