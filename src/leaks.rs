@@ -160,7 +160,8 @@ pub(crate) fn check(local: &Local, field: &str, value: &str) -> Result<()> {
 /// Refuse a name a person gives, such as a session key or an explicit entry ID, that
 /// holds this machine's host name as hyphen-separated words: a name becomes a committed
 /// folder or file name, its `id` and its alias, and `--redact` cannot rename it
-/// (REQ-records-006). Every other kind is checked as in any value.
+/// (REQ-records-006). Since the name is a path, this holds for a short all-letter host
+/// name too, as it does inside any path. Every other kind is checked as in any value.
 pub(super) fn check_name(local: &Local, field: &str, name: &str) -> Result<()> {
     check(local, field, name)?;
     let words = |text: &str| -> String {
@@ -329,18 +330,57 @@ fn windows_paths(value: &str, all: &mut Vec<Match>) {
     }
 }
 
+/// Whether a host name is a leak anywhere: one of 8 or more characters, or holding a
+/// digit, a hyphen or a dot. A shorter all-letter one may be an ordinary word, so it is
+/// a leak only where it names a host (REQ-records-006).
+fn host_anywhere(host: &str) -> bool {
+    host.len() >= 8 || !host.bytes().all(|byte| byte.is_ascii_alphabetic())
+}
+
+/// The byte ranges of the URLs in `value`: a scheme, `://` and the rest of its token.
+fn urls(value: &str) -> Vec<(usize, usize)> {
+    let bytes = value.as_bytes();
+    let mut found = vec![];
+    for (at, _) in value.match_indices("://") {
+        let mut start = at;
+        while start > 0
+            && (bytes[start - 1].is_ascii_alphanumeric()
+                || matches!(bytes[start - 1], b'+' | b'-' | b'.'))
+        {
+            start -= 1;
+        }
+        if start < at {
+            found.push((start, path_end(bytes, at + 3)));
+        }
+    }
+    found
+}
+
+/// Whether the name at `start..end` names a host: inside a path, as a component after a
+/// `/` or `\` or before a `/`, inside a URL, or after `<user>@` (REQ-records-006). A `\`
+/// after the name is not a separator, since in TOML or JSON it escapes a quote.
+fn names_a_host(bytes: &[u8], start: usize, end: usize, urls: &[(usize, usize)]) -> bool {
+    let in_path =
+        (start > 0 && matches!(bytes[start - 1], b'/' | b'\\')) || bytes.get(end) == Some(&b'/');
+    let at_host = start >= 2 && bytes[start - 1] == b'@' && name_byte(bytes[start - 2]);
+    let in_url = urls.iter().any(|(from, to)| *from <= start && end <= *to);
+    in_path || at_host || in_url
+}
+
 fn names(local: &Local, value: &str, all: &mut Vec<Match>) {
     let bytes = value.as_bytes();
     let lower = value.to_ascii_lowercase();
+    let urls = urls(value);
     for host in &local.hosts {
         let needle = host.to_ascii_lowercase();
+        let anywhere = host_anywhere(host);
         for (start, _) in lower.match_indices(&needle) {
             let end = start + needle.len();
             let before = start == 0
                 || !(bytes[start - 1].is_ascii_alphanumeric() || bytes[start - 1] == b'-');
             let after =
                 end == bytes.len() || !(bytes[end].is_ascii_alphanumeric() || bytes[end] == b'-');
-            if before && after {
+            if before && after && (anywhere || names_a_host(bytes, start, end, &urls)) {
                 all.push(Match {
                     kind: Kind::HostName,
                     start,
