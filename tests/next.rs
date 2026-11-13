@@ -2993,6 +2993,39 @@ argv = ["sh", "-c", "echo ok"]
 expect_output = ["ok"]
 "#;
 
+/// F4's rerun list, continued (REQ-cli-021): a referenced case that was retired after its
+/// run cannot be run again (`chough cases run` refuses it), so next names no rerun of it
+/// and goes on to the review gate.
+#[cfg(unix)]
+#[test]
+fn at_accept_next_names_no_rerun_of_a_retired_case() {
+    let case = "TC-cli-f4-rerun";
+    let id = "f4-retired";
+    let fixture = approved_at_plan(id);
+    for counter in [".stub-count", ".stub-calls"] {
+        let _ = std::fs::remove_file(fixture.root().join(counter));
+    }
+    fixture.write(
+        ".chough/cases/cli.f4.cases.toml",
+        &F4_CASE.replace("status = \"active\"", "status = \"retired\""),
+    );
+    fixture.commit("the F4 case, retired");
+    while fixture.checkpoint()["stage"]["current"] != "accept" {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let stale = "2026-11-12-f4-retired-stale";
+    let mut entry = observation(stale, "passed", 1_000);
+    entry["cases"] = json!([{"id": case, "digest": "0".repeat(64)}]);
+    write_entry(&fixture, &entry);
+    fixture.ok(&["checkpoint", "--case", case, "--observation", stale]);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(
+        !action.contains(&format!("chough cases run {case}")),
+        "a retired case is named for a rerun: {action}"
+    );
+}
+
 /// Fresh-eyes round 4, F4 (2026-11-12; REQ-cli-021): right after the accept step's first
 /// check materialized the requirement text, next routed straight to opening the review
 /// gate while it listed the referenced runs as not current. At accept, while the latest

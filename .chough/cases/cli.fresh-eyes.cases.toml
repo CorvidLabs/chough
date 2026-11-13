@@ -900,3 +900,21 @@ expected = ["tests/humans.rs::a_batched_advance_leaves_continue_for_the_stage_it
 adapter = "cargo-test"
 test_target = "humans"
 test = "a_batched_advance_leaves_continue_for_the_stage_it_reaches"
+
+[[case]]
+id = "TC-cli-accept-next-reruns-no-retired-case"
+title = "At accept, a referenced case retired after its run is not named for a rerun, since chough cases run refuses a retired case"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "FLOW-23"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_accept_next_names_no_rerun_of_a_retired_case passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_accept_next_names_no_rerun_of_a_retired_case"
