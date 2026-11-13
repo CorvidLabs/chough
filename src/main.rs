@@ -263,7 +263,15 @@ fn main() -> Result<()> {
         Commands::Next {
             environment,
             json: as_json,
-        } => print!("{}", next(&root, environment.as_deref(), as_json)?),
+        } => {
+            // REQ-cli-021, REQ-history-006: no open session is the normal state after
+            // the move into done, so next says so and exits 0; status still refuses.
+            if sessions::none_open(&root)? {
+                print!("{}", no_open_session(as_json));
+            } else {
+                print!("{}", next(&root, environment.as_deref(), as_json)?);
+            }
+        }
         Commands::Migrate(args) => migrate::run(&root, args)?,
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
         Commands::Stage { json, command } => stage::run(&root, command, json)?,
@@ -911,6 +919,31 @@ fn lessons(root: &Path, modules: &[String]) -> Result<Value> {
         "sources": {"total": modules.len(), "items": sources},
         "archived_bundles": archived_bundles(root)?,
     }))
+}
+
+/// The command that opens the next session, as the move into done names it.
+const NEW_SESSION: &str = "chough session new <key> --objective \"<outcome>\"";
+
+/// The next view with no open session, the normal state after the move into done
+/// archives one (REQ-cli-021, REQ-history-006): that no session is open and the command
+/// that opens the next one, as text or compact JSON, with no session to read.
+fn no_open_session(as_json: bool) -> String {
+    let action = json!({
+        "action": "Start the next piece of work in a new session.",
+        "reason": "There is no open session, the normal state after the move into done archives one.",
+        "command": NEW_SESSION,
+    });
+    if as_json {
+        return format!(
+            "{}\n",
+            json!({"session": null, "next_valid_action": action})
+        );
+    }
+    format!(
+        "Session: none open\nNext: {}\n  Why: {}\n  Run: {NEW_SESSION}\n",
+        action["action"].as_str().unwrap_or_default(),
+        action["reason"].as_str().unwrap_or_default()
+    )
 }
 
 /// The focused next view (REQ-cli-021): text by default, compact JSON with `--json`.

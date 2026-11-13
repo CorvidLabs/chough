@@ -329,8 +329,8 @@ fn sessions_live_in_folders_and_finish_into_one_story() {
     );
     assert!(!fixture.exists(&format!(".chough/sessions/{id}/agent/notes.md")));
     assert!(!fixture.exists(".chough/local/active-session"));
-    let refused = fixture.fails(&["next"]);
-    assert!(refused.contains("chough session new <key>"), "{refused}");
+    let next = fixture.ok_text(&["next"]);
+    assert!(next.contains("chough session new <key>"), "{next}");
     // With no session open, `history show` reads the story it finished into.
     let shown = fixture.ok(&["history", "show"]);
     assert_eq!(shown["session"], id.as_str(), "{shown:#}");
@@ -1407,7 +1407,7 @@ fn an_uncommitted_file_keeps_the_folder_until_a_commit_and_doctor_fix() {
     assert!(fixture.exists(&format!(".chough/sessions/{id}/agent/scratch.md")));
     assert!(
         fixture
-            .fails(&["next"])
+            .ok_text(&["next"])
             .contains("chough session new <key>")
     );
     let blocked = fixture.run(&["doctor", "--fix"]);
@@ -2023,4 +2023,35 @@ fn a_story_puts_its_receipts_last_and_names_its_bugs() {
         report.to_string().contains(&format!("receipt in {id}")),
         "{report:#}"
     );
+}
+
+/// 0.6.1 (t38n's fourth fresh-eyes round, F10; REQ-history-006): after the move into done
+/// archived the session, the normal state until the next session opens, `chough next`
+/// printed "Error: no open session" and exited 1. It exits 0, says there is no open
+/// session and names `chough session new <key>`, and writes nothing, while `chough
+/// status` refuses with the same message; the named command opens the next session.
+#[test]
+fn after_the_move_into_done_next_exits_0_and_status_refuses() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    advance_to(&fixture, "accept");
+    fixture.commit("alpha at accept");
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(
+        moved["applied"]["session_archive"]["status"], "archived",
+        "{moved:#}"
+    );
+    let before = snapshot(&fixture);
+    let next = fixture.ok_text(&["next"]);
+    assert!(next.contains("no open session"), "{next}");
+    assert!(next.contains("Run: chough session new <key>"), "{next}");
+    assert_eq!(snapshot(&fixture), before, "next wrote a record");
+    let refused = fixture.fails(&["status"]);
+    assert!(
+        refused.contains("no open session; run `chough session new <key>`"),
+        "{refused}"
+    );
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    let next = fixture.ok_text(&["next"]);
+    assert!(next.starts_with("Objective: Ship beta\n"), "{next}");
 }

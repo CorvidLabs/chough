@@ -452,6 +452,9 @@ fn active_session(root: &Path) -> Result<String> {
 /// in What was verified (REQ-records-004). Returns the entry's path.
 pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Result<String> {
     validate_record(evidence, &evidence.id)?;
+    // The entry adds a reference, so a session at its observation bound refuses it
+    // before anything is written (REQ-cli-032).
+    crate::checkpoint::observation_room(root)?;
     let session_id = active_session(root)?;
     let dir = evidence_dir(&session_id);
     let mut entry = evidence.clone();
@@ -765,7 +768,7 @@ fn bind_external(root: &Path, path: &str) -> Result<ExternalBinding> {
 
 fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
     let _redact_guard = RedactGuard::new(args.redact);
-    crate::checkpoint::read_session(root)?;
+    crate::checkpoint::observation_room(root)?;
     if let Some(id) = &args.id {
         ensure!(valid_name(id), "invalid evidence ID");
         identity::require_explicit_observation_id(id)?;

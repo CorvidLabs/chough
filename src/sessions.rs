@@ -392,6 +392,17 @@ pub(super) fn pointed(root: &Path) -> Result<Option<String>> {
     Ok(Some(resolve_open(root, &id).unwrap_or(id)))
 }
 
+/// Whether the project has Chough's records but no open session and no pointer: the
+/// normal state after the move into done archives one, until a session is opened
+/// (REQ-history-006). `chough next` then says so and exits 0, while `chough status`
+/// still refuses, as `active` does.
+pub(super) fn none_open(root: &Path) -> Result<bool> {
+    Ok(local_path(root, ".chough")?.is_dir()
+        && pinned(root).is_none()
+        && pointed(root)?.is_none()
+        && open_ids(root)?.is_empty())
+}
+
 /// The active session's ID, or a refusal naming the next command.
 fn active(root: &Path) -> Result<String> {
     if let Some(id) = pointed(root)? {

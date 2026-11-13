@@ -36,3 +36,21 @@ expected = ["the next test handoff_blocks_stay_within_the_cap_and_are_byte_ident
 adapter = "cargo-test"
 test_target = "next"
 test = "handoff_blocks_stay_within_the_cap_and_are_byte_identical"
+
+[[case]]
+id = "TC-cli-observation-cap-refuses-before-writing"
+title = "At the 400-observation cap, cases run, cases record, evidence add and checkpoint --observation refuse before running or writing anything, naming chough session shelve, and next reads a case's latest run only from referenced observations"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-14", "FLOW-13"]
+requirements = ["REQ-cli-032"]
+paths = ["src/cases.rs", "src/evidence.rs", "src/checkpoint.rs", "src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs"
