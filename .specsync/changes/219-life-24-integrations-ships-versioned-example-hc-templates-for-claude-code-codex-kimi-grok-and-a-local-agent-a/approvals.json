@@ -45,7 +45,79 @@
         "cli": "25d28a85b3989e528c8fa99ae4325ca59b93e7f0367b32facd4ddfe6461afbde"
       },
       "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794579646,
+      "digest": "f31c1a14f696a0fcedd3feabcf44c3e0509c23f4f00173c1b600836e23d28e59",
+      "note": "Approved by Leif at the Chough gate \"Approve the narrowed scope of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a\": \"Claude, Codex, Kimi, Grok + local (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q4 'Which hosts get an example template?' for #219; re-recorded after the send-back for REQ-cli-065's narrowed version wording (t384's re-review of #253): the coordinator claude-code-t370 checked the narrowed wording against this pick and judged it aligned on 2026-11-13 after Leif's 14:14Z approvals, under Leif's standing rule that the coordinator approves aligned requirement wording (coordinator chat, 2026-11-11); relayed by claude-code-t370). Relayed and recorded by claude-code-t38r at 2026-11-13T14:20:45Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a",
+        "title": "#219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune",
+        "description": "#219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/integrations.md",
+          "integrations/README.md",
+          "integrations/claude-code/hc-template.md",
+          "integrations/codex/hc-template.md",
+          "integrations/grok/hc-template.md",
+          "integrations/kimi/hc-template.md",
+          "integrations/local/hc-template.md",
+          "integrations/templates.toml",
+          "specs/cli/cli.spec.md",
+          "tests/integrations.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "integrations/ holds a README and one hc template per host (claude-code, codex, kimi, grok, local) whose front matter is exactly name, description and command, whose body runs chough next and loads the skill file its own chough init --host creates, with no absolute or home path; integrations/templates.toml lists each with its init host, status (local unqualified until #220) and an ordered versions list with their SHA-256, and tests/integrations.rs fails while a template differs from its newest listed digest, its versions skip, or a digest repeats (an in-place edit of a listed entry is left to review); src/ never runs hc, Herdr or Rune and the skill never names Herdr or Rune (red then green in tests/integrations.rs)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "LIFE-24: no runtime dependency on hc, Herdr or Rune, and Rune stays a separate Fledge plugin; LIFE-26: committed files hold no local paths or user names; docs/integrations.md host mappings (Kimi uses --host openai; Codex was observed through the openai mapping); hc's own guidance that Codex runs with --no-daemon",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "3847cb5f7c622f793f099f4652c04205a6e06e223f80be3998f980d5323c83fc"
+      },
+      "approved_delta_bases": {}
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a",
+      "actor": "claude-code-t370",
+      "reason": "REQ-cli-065 overclaims: the tests cannot detect an in-place edit of a template's newest listed digest (t384's re-review of #253). The coordinator claude-code-t370 judged the narrowed wording aligned with Leif's Q4 pick under his standing rule that the coordinator approves aligned requirement wording (coordinator chat, 2026-11-11); recorded by claude-code-t38r",
+      "timestamp": 1794579596,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "cli",
+          "operation": "added",
+          "target": "requirement",
+          "key": "REQ-cli-065",
+          "content": "Example hc templates. The repository SHALL hold an optional `integrations/` folder with a README and, for each of `claude-code`, `codex`, `kimi`, `grok` and `local`, an hc template at `integrations/<host>/hc-template.md`. Each template:\n- SHALL have a front matter with exactly `name`, `description` and `command`;\n- SHALL have a body that tells the agent to run `chough next --environment local` and names one `chough init --host` value that `chough init` accepts;\n- SHALL hold no absolute or home-folder path.\n\n`integrations/templates.toml` SHALL list each template with its host, file, name, version, init host, status and the SHA-256 of its file. The local template's status SHALL be `unqualified` until a local agent setup is qualified (#220); every other template's status SHALL be `supported`. A template whose bytes differ from its listed digest SHALL fail the repository's tests until its digest and version are updated.\n\nChough SHALL never start hc, Herdr or Rune: no program Chough runs is one of them, and neither `src/` nor the shipped skill names Herdr or Rune. The README SHALL say that the folder is optional and that Chough has no runtime dependency on hc, Herdr or Rune, and that Rune is a separate Fledge plugin. Trace: LIFE-24, LIFE-22.\n\nAcceptance Criteria\n- Each of the five templates has exactly hc's three front-matter keys, runs `chough next --environment local`, names a `chough init --host` value that `chough init --help` lists and that equals its manifest entry, and holds no absolute or home-folder path.\n- `integrations/templates.toml` lists exactly the five templates, each with a version of at least 1. The local one is `unqualified` and the rest are `supported`. Each digest equals its file's SHA-256, so changing one byte fails the test.\n- No `Command::new` in `src/` starts hc, Herdr or Rune, and neither `src/` nor `skills/` names Herdr or Rune.\n- The README names every template, says the folder is optional, and says Chough has no runtime dependency on hc, Herdr or Rune."
+        }
+      ],
+      "applied_modules": [
+        "cli"
+      ]
+    }
+  ]
 }

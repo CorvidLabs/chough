@@ -5,7 +5,7 @@ aliases: [integrations-templates]
 objective: "#219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)"
 intent_scope: LIFE
 modules: [cli]
-stage: accept
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -64,13 +64,9 @@ bugs:
   - 2026-11-13-the-grok-template-opens-a-skill-file-its-own-chough-init-does
   - 2026-11-13-a-changed-integrations-template-passes-with-its-version
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
-    holds: accept
-    drives: review
-    opened: 2026-11-13T06:47:55Z
+waiting_on_human: []
 run_consents: []
-next: t384's re-review, then Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay
+next: "Gate \"Approve the narrowed scope of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a\" closed (approved); run `chough stage advance` to move on."
 ---
 # #219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)
 
@@ -94,6 +90,7 @@ next: t384's re-review, then Leif's implementation review (relayed by t370), the
 - TC-cli-integrations-no-runtime-dependency's red run at ced59395 failed on a defect in the test itself: it banned the word hc in skills/, stricter than REQ-cli-065, while the skill rightly names an actor's hc terminal (REQ-history-002). The fix narrows the skill check to Herdr and Rune. That case is a guard on existing code, so it has no red-then-green; the other four went red then green
 - TC-cli-integrations-digest-detects-change now unit-tests the manifest checker (version_problems) on made-up data, so it passed at the red commit 2cf5facb by construction; the red-first proof for the version rule is TC-cli-integrations-manifest, red at 2cf5facb
 - Grok's template uses --host openai, the shared .agents copy, not --host grok: --host grok installs only .grok/skills, while a project set up for any other host has .agents/skills; one row of the approved design table said grok (reported to t370)
+- Leif decided "Approve the narrowed scope of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a": "Claude, Codex, Kimi, Grok + local (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q4 'Which hosts get an example template?' for #219; re-recorded after the send-back for REQ-cli-065's narrowed version wording (t384's re-review of #253): the coordinator claude-code-t370 checked the narrowed wording against this pick and judged it aligned on 2026-11-13 after Leif's 14:14Z approvals, under Leif's standing rule that the coordinator approves aligned requirement wording (coordinator chat, 2026-11-11); relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change approve 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a as 0xLeif
 
 ## What was verified
 
@@ -126,7 +123,7 @@ next: t384's re-review, then Leif's implementation review (relayed by t370), the
 
 ## Open threads
 
-- REQ-cli-065 rewording (t384 re-review of #253, wording only): is the delta in the coordinator's queue judged aligned? Pending t370; the README already says what the tests enforce
+- REQ-cli-065 rewording (t384 re-review of #253, wording only): is the delta in the coordinator's queue judged aligned? Pending t370; the README already says what the tests enforce (resolved: Aligned (t370, 2026-11-13, after Leif's 14:14Z approvals): same meaning, the overclaim removed and review covering in-place edits; send back and re-record the approval with Leif's Q4 words plus a note that claude-code-t370 checked the narrowed wording)
 
 ## Timeline
 
@@ -225,4 +222,41 @@ next: t384's re-review, then Leif's implementation review (relayed by t370), the
   - revision: 2450471835f4326725e0babe19cedb032ea0197d
   - holds: accept
   - drives: review
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:19:53Z · gate-closed · accept → accept · Implementation review of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a ^t-27a155
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - revision: 0cf360ba26c14864a749d4558c01004a3b44102d
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:19:55Z · back · accept → plan · REQ-cli-065's wording overclaims what the version tests enforce (t384's re-review of #253, mutation B); t370 judged the narrowed wording aligned, so the definition goes back for that rewording ^t-0ee6cd
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - revision: 0cf360ba26c14864a749d4558c01004a3b44102d
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 6 case(s) and 26 observation(s) to re-check with `chough status`, native: the definition is verifying; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a`; Chough does not change native state.
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:20:45Z · gate-opened · plan → plan · Approve the narrowed scope of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a ^t-065ec8
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - revision: 0cf360ba26c14864a749d4558c01004a3b44102d
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:20:45Z · direct-native-write · plan → plan · 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-1adfad
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - revision: 0cf360ba26c14864a749d4558c01004a3b44102d
+  - direct_write:
+    - change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:20:45Z · gate-closed · plan → plan · Approve the narrowed scope of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a ^t-d53899
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - revision: 0cf360ba26c14864a749d4558c01004a3b44102d
+  - relayed_by:
+    - decided_by: Leif
+    - words: Claude, Codex, Kimi, Grok + local (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q4 'Which hosts get an example template?' for #219; re-recorded after the send-back for REQ-cli-065's narrowed version wording (t384's re-review of #253): the coordinator claude-code-t370 checked the narrowed wording against this pick and judged it aligned on 2026-11-13 after Leif's 14:14Z approvals, under Leif's standing rule that the coordinator approves aligned requirement wording (coordinator chat, 2026-11-11); relayed by claude-code-t370
+    - recorded_by: claude-code-t38r
+    - native: specsync change approve 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+    - actor: 0xLeif
   - by: claude-code (hc t38r)
