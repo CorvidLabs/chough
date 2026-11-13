@@ -114,18 +114,18 @@ chough next --environment local
 `init` never overwrites existing files. With `--objective` it creates the first
 session, `.chough/sessions/<date>-<slug>/session.md`, whose front matter is the
 checkpoint; it writes the reading guide `.chough/README.md`, creates the librarian's
-`knowledge/` directory (on by default) and copies the skill bundle into each requested host's project skill directory
-(`openai`, the default, → `.agents/skills`, a shared skills directory, which `claude`
-shares (Claude Code 2.1.316 did not discover `.agents/skills` alone, so add a
-`CLAUDE.md` line pointing at `.agents/skills/chough-workflow/SKILL.md`; `init --host
-claude` prints that line as `claude_md` and does not write it, see
-[integrations](docs/integrations.md)); `gemini` → `.gemini/skills`, which
-no run has exercised; also `codex` → `.codex/skills`, `cursor` → `.cursor/skills` and
-`grok` → `.grok/skills`). Start each later change with
+`knowledge/` directory (on by default) and copies the skill bundle into each requested
+host's project skill directory: `openai` (the default) and `claude` share
+`.agents/skills`, and `gemini`, `codex`, `cursor` and `grok` use `.gemini/skills`,
+`.codex/skills`, `.cursor/skills` and `.grok/skills`. Claude Code 2.1.316 did not
+discover `.agents/skills` alone, so `init --host claude` prints a `CLAUDE.md` line
+pointing at `.agents/skills/chough-workflow/SKILL.md` as `claude_md`, and does not
+write it (see [integrations](docs/integrations.md)). Start each later change with
 `chough session new <change-id>`. Kimi Code CLI uses the existing `openai`
 installer value and discovered `.agents/skills/chough-workflow/SKILL.md` in one
-observed run. Google Antigravity read the skill from `.agents/skills` in one run
-reported narratively in closed PR #20 and not independently verified. `chough next`
+observed run, and no run has exercised `gemini`. Google Antigravity read the skill
+from `.agents/skills` in one run reported narratively in closed PR #20 and not
+independently verified. `chough next`
 prints the focused next action as text (`--json` for compact JSON); `chough status`
 is the full JSON report. Then ask your agent in plain language, for example "Use the
 Chough workflow to add free shipping at fifty dollars", or give it

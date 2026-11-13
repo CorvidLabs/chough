@@ -1906,3 +1906,55 @@ fn the_accept_reference_writes_lessons_before_the_case_runs() {
         );
     }
 }
+
+/// t38n's round-4 F11 (REQ-cli-016): the README's init paragraph names each host's skill
+/// directory without a long parenthetical, and keeps every fact: the hosts, their
+/// directories, the shared `.agents/skills` copy and the `CLAUDE.md` line `init --host
+/// claude` prints.
+#[test]
+fn the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthetical() {
+    let readme = read("README.md");
+    let paragraph = readme
+        .split("\n\n")
+        .find(|paragraph| paragraph.starts_with("`init` never overwrites existing files."))
+        .expect("README's init paragraph");
+    // The longest parenthetical, nested ones counted inside it.
+    let mut longest = 0;
+    let mut opened = vec![];
+    for (at, character) in paragraph.char_indices() {
+        match character {
+            '(' => opened.push(at),
+            ')' => {
+                if let Some(start) = opened.pop() {
+                    longest = longest.max(at - start);
+                }
+            }
+            _ => {}
+        }
+    }
+    assert!(
+        longest <= 120,
+        "a parenthetical of {longest} bytes in README's init paragraph: {paragraph}"
+    );
+    for fact in [
+        "`openai`",
+        "`claude`",
+        "`gemini`",
+        "`codex`",
+        "`cursor`",
+        "`grok`",
+        "`.agents/skills`",
+        "`.gemini/skills`",
+        "`.codex/skills`",
+        "`.cursor/skills`",
+        "`.grok/skills`",
+        "`CLAUDE.md`",
+        "`claude_md`",
+        "docs/integrations.md",
+    ] {
+        assert!(
+            paragraph.contains(fact),
+            "README's init paragraph no longer names {fact}: {paragraph}"
+        );
+    }
+}
