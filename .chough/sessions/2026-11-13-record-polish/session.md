@@ -33,6 +33,11 @@ observations:
   - 2026-11-13-tc-records-migrated-front-matter-names-the-carried-entries-305164
   - 2026-11-13-tc-cli-the-readme-init-paragraph-names-the-host-directories-fd85ba
   - 2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept-2098aa
+  - 2026-11-13-tc-cli-a-bug-body-gives-its-actual-line-its-own-paragraph-9d1662
+  - 2026-11-13-tc-records-migrated-front-matter-names-the-carried-entries-cf4667
+  - 2026-11-13-tc-cli-the-readme-init-paragraph-names-the-host-directories-239237
+  - 2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept-d27b46
+  - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
 bugs:
   - 2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one
   - 2026-11-12-migrated-records-keep-old-observation-ids-in-their-front
@@ -73,6 +78,11 @@ next: Continue accept
 - [Ran cargo test --locked --test migrate_evidence -- --exact migrated_front_matter_names_the_carried_entries for TC-records-migrated-front-matter-names-the-carried-entries: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-records-migrated-front-matter-names-the-carried-entries-305164.md)
 - [Ran cargo test --locked --test docs -- --exact the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthetical for TC-cli-the-readme-init-paragraph-names-the-host-directories-briefly: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-the-readme-init-paragraph-names-the-host-directories-fd85ba.md)
 - [Ran cargo test --locked --test records -- --exact a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5 for TC-records-a-fresh-projects-reading-guide-names-no-folder-kept-from-0-5: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept-2098aa.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_body_gives_its_actual_line_its_own_paragraph for TC-cli-a-bug-body-gives-its-actual-line-its-own-paragraph: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-a-bug-body-gives-its-actual-line-its-own-paragraph-9d1662.md)
+- [Ran cargo test --locked --test migrate_evidence -- --exact migrated_front_matter_names_the_carried_entries for TC-records-migrated-front-matter-names-the-carried-entries: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-records-migrated-front-matter-names-the-carried-entries-cf4667.md)
+- [Ran cargo test --locked --test docs -- --exact the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthetical for TC-cli-the-readme-init-paragraph-names-the-host-directories-briefly: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-the-readme-init-paragraph-names-the-host-directories-239237.md)
+- [Ran cargo test --locked --test records -- --exact a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5 for TC-records-a-fresh-projects-reading-guide-names-no-folder-kept-from-0-5: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept-d27b46.md)
+- [The full test suite passed 736 of 736 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at a1f4735a, PR 5 with #243 merged in; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo.md)
 
 ## Open threads
 
