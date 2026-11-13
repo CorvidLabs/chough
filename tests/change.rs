@@ -635,7 +635,7 @@ fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
     assert_eq!(
         fixture.read(".stub-native-calls"),
         format!(
-            "change review {SHIP_ID} --reviewer SYNTHETIC-reviewer --verdict pass --words pass --where a test --recorded-by SYNTHETIC-agent\n"
+            "change review {SHIP_ID} --reviewer=SYNTHETIC-reviewer --verdict=pass --words=pass --where=a test --recorded-by=SYNTHETIC-agent\n"
         )
     );
     assert!(
@@ -657,21 +657,22 @@ fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
 /// the reviewer with no relay. SpecSync 6.3.0's `change review` takes the relay as
 /// `--words`, `--where` and `--recorded-by`: ship runs `specsync change review` once as
 /// that human, with the relay's words, place and recording agent as `--words`, `--where`
-/// and `--recorded-by`, each one argument, then `specsync change ship`.
+/// and `--recorded-by`, then `specsync change ship`. #261's review: a value passed as its
+/// own argument after its flag, such as words that start with `-`, made SpecSync refuse
+/// it as an unexpected argument, so each value goes in `--flag=value` form, intact.
 #[test]
 fn ship_passes_the_relay_to_the_native_review() {
     let fixture = shipping_session_at("accept");
-    let words = "Ship it, the review passes";
-    let place = "SYNTHETIC chat, 2026-11-13 03:44Z, relayed by SYNTHETIC-coordinator";
+    let words = "-x Ship it, the review passes";
+    let place = "-SYNTHETIC chat, 2026-11-13 03:44Z, relayed by SYNTHETIC-coordinator";
+    let (words_flag, place_flag) = (format!("--words={words}"), format!("--where={place}"));
     let relay = [
         "--close-gate",
         REVIEW_GATE,
         "--decided-by",
         "SYNTHETIC-human",
-        "--words",
-        words,
-        "--where",
-        place,
+        words_flag.as_str(),
+        place_flag.as_str(),
         "--recorded-by",
         "SYNTHETIC-agent",
     ];
@@ -687,16 +688,11 @@ fn ship_passes_the_relay_to_the_native_review() {
             "change",
             "review",
             SHIP_ID,
-            "--reviewer",
-            "SYNTHETIC-reviewer",
-            "--verdict",
-            "pass",
-            "--words",
-            words,
-            "--where",
-            place,
-            "--recorded-by",
-            "SYNTHETIC-agent",
+            "--reviewer=SYNTHETIC-reviewer",
+            "--verdict=pass",
+            words_flag.as_str(),
+            place_flag.as_str(),
+            "--recorded-by=SYNTHETIC-agent",
         ]
         .map(String::from)
         .to_vec()]

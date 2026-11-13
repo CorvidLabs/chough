@@ -117,7 +117,7 @@ fn a_scope_gate_runs_the_approval_once_as_the_configured_human() {
     assert_eq!(calls.len(), 1, "{calls:?}");
     assert!(
         calls[0].starts_with(&format!(
-            "change approve {ID} --actor SYNTHETIC-actor --note Approved by SYNTHETIC Person at the Chough gate \"{SCOPE}\": \"yes, go\" (SYNTHETIC chat, 2026-11-11). Relayed and recorded by SYNTHETIC-agent at "
+            "change approve {ID} --actor=SYNTHETIC-actor --note=Approved by SYNTHETIC Person at the Chough gate \"{SCOPE}\": \"yes, go\" (SYNTHETIC chat, 2026-11-11). Relayed and recorded by SYNTHETIC-agent at "
         )),
         "{calls:?}"
     );
@@ -125,7 +125,7 @@ fn a_scope_gate_runs_the_approval_once_as_the_configured_human() {
     // approval record holds the relayed decision.
     assert!(
         calls[0].ends_with(
-            "; a relayed claim, not authenticated. --words yes, go --where SYNTHETIC chat, 2026-11-11 --recorded-by SYNTHETIC-agent"
+            "; a relayed claim, not authenticated. --words=yes, go --where=SYNTHETIC chat, 2026-11-11 --recorded-by=SYNTHETIC-agent"
         ),
         "{calls:?}"
     );
@@ -172,7 +172,7 @@ fn a_review_gate_needs_a_verdict_and_runs_the_review_with_it() {
     assert_eq!(
         calls(&fixture),
         [format!(
-            "change review {ID} --reviewer SYNTHETIC-actor --verdict block --words yes, go --where SYNTHETIC chat, 2026-11-11 --recorded-by SYNTHETIC-agent"
+            "change review {ID} --reviewer=SYNTHETIC-actor --verdict=block --words=yes, go --where=SYNTHETIC chat, 2026-11-11 --recorded-by=SYNTHETIC-agent"
         )]
     );
     let decision = decisions(&fixture).pop().unwrap();
@@ -422,7 +422,7 @@ fn one_gate_record_runs_at_most_one_native_step() {
     fixture.ok(&args(&reply(&one)));
     let calls = calls(&fixture);
     assert_eq!(calls.len(), 1, "{calls:?}");
-    assert!(calls[0].starts_with(&format!("change approve {ID} --actor SYNTHETIC-actor")));
+    assert!(calls[0].starts_with(&format!("change approve {ID} --actor=SYNTHETIC-actor")));
     assert_eq!(
         fixture.checkpoint()["awaiting_human"],
         serde_json::json!(["Second scope"])
@@ -474,7 +474,7 @@ fn gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record() {
     assert!(
         calls[0].contains("Relayed and recorded by SYNTHETIC-agent at ")
             && calls[0].ends_with(&format!(
-                " through chough gate record {list}; a relayed claim, not authenticated. --words yes, go --where SYNTHETIC chat, 2026-11-11 --recorded-by SYNTHETIC-agent"
+                " through chough gate record {list}; a relayed claim, not authenticated. --words=yes, go --where=SYNTHETIC chat, 2026-11-11 --recorded-by=SYNTHETIC-agent"
             )),
         "{calls:?}"
     );
@@ -991,4 +991,59 @@ fn a_gate_close_names_the_step_its_decision_allows_never_chough_next() {
             assert!(!text.contains("`chough next`"), "{gate}: {text}");
         }
     }
+}
+
+/// #261's review (REQ-records-008): Chough passed each value to `specsync change approve`
+/// and `change review` as its own argument after its flag, so a value starting with `-`,
+/// such as words that begin with one, made SpecSync 6.3.0 refuse the step as an
+/// unexpected argument. Every value goes in `--flag=value` form, so the approval and the
+/// review a relayed close runs receive the words and the place intact.
+#[cfg(unix)]
+#[test]
+fn relay_values_starting_with_a_hyphen_reach_specsync_intact() {
+    let fixture = project();
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        REVIEW,
+        "--holds",
+        "accept",
+    ]);
+    let close = |gate: &str, verdict: Option<&str>| {
+        let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+        let mut list = vec![
+            "checkpoint",
+            "--close-gate",
+            gate,
+            "--decided-by",
+            "SYNTHETIC-human",
+            "--words",
+            "-x, go",
+            "--where",
+            "-SYNTHETIC chat, 2026-11-13",
+            "--recorded-by",
+            "SYNTHETIC-agent",
+        ];
+        if let Some(verdict) = verdict {
+            list.extend(["--verdict", verdict]);
+        }
+        fixture.ok(&list);
+        calls(&fixture)
+    };
+    let tail = "--words=-x, go --where=-SYNTHETIC chat, 2026-11-13 --recorded-by=SYNTHETIC-agent";
+    let approved = close(SCOPE, None);
+    assert_eq!(approved.len(), 1, "{approved:?}");
+    assert!(
+        approved[0].starts_with(&format!(
+            "change approve {ID} --actor=SYNTHETIC-actor --note=Approved by SYNTHETIC Person at the Chough gate \"{SCOPE}\": \"-x, go\" (-SYNTHETIC chat, 2026-11-13)."
+        )) && approved[0].ends_with(&format!(" {tail}")),
+        "{approved:?}"
+    );
+    assert_eq!(
+        close(REVIEW, Some("pass")),
+        [format!(
+            "change review {ID} --reviewer=SYNTHETIC-actor --verdict=pass {tail}"
+        )]
+    );
 }
