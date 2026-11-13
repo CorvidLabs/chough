@@ -3,14 +3,16 @@ kind: bug
 id: 2026-11-13-the-knowledge-index-links-a-skill-copy-git-ignores-so-library
 aliases: []
 title: The knowledge index links a skill copy Git ignores, so library index --check fails in every fresh clone
-status: open
+status: verified
 classification: product-defect
 scope: in-scope
 impact: Every project that gitignores a host skill directory has an index check that can never pass in CI (seen in CorvidLabs/peck)
 criteria: []
 requirements: [REQ-cli-043, REQ-cli-044]
 cases: []
-evidence: [2026-11-13-fix-245-index-ignored/2026-11-13-tc-cli-index-links-no-source-git-ignores]
+evidence:
+  - 2026-11-13-fix-245-index-ignored/2026-11-13-tc-cli-index-links-no-source-git-ignores
+  - 2026-11-13-fix-245-index-ignored/2026-11-13-tc-cli-index-links-no-source-git-ignores-dca64a
 receipts: []
 environment: local-macos-arm64
 revision: 825447c42fc4a6e85dc6849af6f2384b9fdfc258
@@ -20,7 +22,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-13T14:20:36Z
-updated: 2026-11-13T14:50:05Z
+updated: 2026-11-13T14:59:32Z
 ---
 # The knowledge index links a skill copy Git ignores, so library index --check fails in every fresh clone
 
@@ -36,10 +38,11 @@ Actual: src/vault.rs rule_files() links every host's <dir>/chough-workflow/SKILL
 
 **Why it matters:** Every project that gitignores a host skill directory has an index check that can never pass in CI (seen in CorvidLabs/peck)
 
-**Fix:** Not fixed yet.
+**Fix:** f50a25cb (t37f's 4c673dbe): src/vault.rs rule_files() keeps only the rule, skill, decision and policy files that exist and Git does not ignore, asking git check-ignore --stdin -z once; outside a Git work tree nothing is left out, and a force-added tracked copy stays linked
 
 ## Log
 
 - 2026-11-13T14:20:36Z · Reported (GitHub #245 (corvid-agent, adopting Chough 0.6.0 in CorvidLabs/peck)) · by claude-code (hc t382)
 - 2026-11-13T14:20:36Z · Added despite similar reports: Distinct from #148's empty deltas folder: this is an ignored skill copy linked by the index · by claude-code (hc t382)
 - 2026-11-13T14:50:05Z · evidence: 2026-11-13-fix-245-index-ignored/2026-11-13-tc-cli-index-links-no-source-git-ignores. Red at 825447c4 (t37f's test): a fresh clone's chough library index --check fails with the issue's exact error · by claude-code (hc t382)
+- 2026-11-13T14:59:32Z · status: open -> verified; evidence: 2026-11-13-fix-245-index-ignored/2026-11-13-tc-cli-index-links-no-source-git-ignores-dca64a; fix: f50a25cb (t37f's 4c673dbe): src/vault.rs rule_files() keeps only the rule, skill, decision and policy files that exist and Git does not ignore, asking git check-ignore --stdin -z once; outside a Git work tree nothing is left out, and a force-added tracked copy stays linked. Green at f50a25cb: the cases pass · by claude-code (hc t382)

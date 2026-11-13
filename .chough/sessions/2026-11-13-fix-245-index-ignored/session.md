@@ -5,7 +5,7 @@ aliases: [fix-245-index-ignored]
 objective: "Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes"
 intent_scope: ""
 modules: []
-stage: build
+stage: test
 stage_status: active
 iteration: 1
 callers: []
@@ -16,12 +16,14 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: [2026-11-13-tc-cli-index-links-no-source-git-ignores]
+observations:
+  - 2026-11-13-tc-cli-index-links-no-source-git-ignores
+  - 2026-11-13-tc-cli-index-links-no-source-git-ignores-dca64a
 bugs: [2026-11-13-the-knowledge-index-links-a-skill-copy-git-ignores-so-library]
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue test
 ---
 # Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes
 
@@ -39,6 +41,7 @@ Fix #245: chough library index links no source Git ignores, so a fresh clone's i
 ## What was verified
 
 - [Ran cargo test --locked --test vault -- --exact the_index_links_no_source_git_ignores_so_a_fresh_clone_checks_clean for TC-cli-index-links-no-source-git-ignores: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-index-links-no-source-git-ignores.md)
+- [Ran cargo test --locked --test vault -- --exact the_index_links_no_source_git_ignores_so_a_fresh_clone_checks_clean for TC-cli-index-links-no-source-git-ignores: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-index-links-no-source-git-ignores-dca64a.md)
 
 ## Open threads
 
@@ -87,4 +90,9 @@ Fix #245: chough library index links no source Git ignores, so a fresh clone's i
   - native_change: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
   - gate: native:approved
   - revision: 85304969e053e7477dff11d2ee53b6dddcb6a070
+  - by: claude-code (hc t382)
+- 2026-11-13T14:59:33Z · advance · build → test · Built: the red and the fix, the cases red then green, the bug verified ^t-18648a
+  - native_change: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
+  - gate: native:approved
+  - revision: f50a25cb2399fb57bf8074046d2662fb73e7d7ae
   - by: claude-code (hc t382)

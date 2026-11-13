@@ -1,6 +1,6 @@
 ---
 id: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 85304969e053e7477dff11d2ee53b6dddcb6a070
 ---

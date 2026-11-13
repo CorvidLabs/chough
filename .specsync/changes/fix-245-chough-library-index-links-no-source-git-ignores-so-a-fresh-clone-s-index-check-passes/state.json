@@ -7,10 +7,11 @@
   "title": "Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes",
   "description": "Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "85304969e053e7477dff11d2ee53b6dddcb6a070",
   "created_at": 1794579205,
-  "updated_at": 1794579228,
+  "updated_at": 1794581975,
   "affected_specs": [
     "cli"
   ],
