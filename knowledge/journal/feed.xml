@@ -34,6 +34,20 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>0.6.1: src/stage.rs recorded for PR 4</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4</id>
+<updated>2026-11-13T02:57:03Z</updated>
+<link href="2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>0.6.1: the intent gate summary shows what is approved</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved</id>
+<updated>2026-11-13T02:42:34Z</updated>
+<link href="2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>0.6.1: a short host name in an ordinary word is not a leak</title>
 <id>urn:chough:journal:2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak</id>
 <updated>2026-11-13T02:27:14Z</updated>
@@ -129,20 +143,6 @@
 <id>urn:chough:journal:2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65</id>
 <updated>2026-11-07T17:31:47Z</updated>
 <link href="2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Evidence prune fails closed and restores partial removals (#65)</title>
-<id>urn:chough:journal:2026-11-07-evidence-prune-fails-closed-and-restores-partial-removals-65</id>
-<updated>2026-11-07T15:51:32Z</updated>
-<link href="2026-11-07-evidence-prune-fails-closed-and-restores-partial-removals-65.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Prototype template keeps hidden state panels hidden (#58)</title>
-<id>urn:chough:journal:2026-11-07-prototype-template-keeps-hidden-state-panels-hidden-58</id>
-<updated>2026-11-07T04:50:06Z</updated>
-<link href="2026-11-07-prototype-template-keeps-hidden-state-panels-hidden-58.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
