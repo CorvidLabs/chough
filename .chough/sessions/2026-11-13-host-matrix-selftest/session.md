@@ -5,7 +5,7 @@ aliases: [host-matrix-selftest]
 objective: "Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-test in hosted CI on macOS and Linux (#218, first PR)"
 intent_scope: LIFE
 modules: [cli]
-stage: accept
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -22,7 +22,8 @@ observations:
   - 2026-11-13-tc-cli-host-matrix-selftest-201a83
   - 2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-at-6b7376cf
   - 2026-11-13-full-suite-at-2bce65a2-clean-tree-under-the-heavy-tests-lock
-bugs: []
+  - 2026-11-13-reproduced-t384-s-finding-run-sh-s-with-deadline-at-2bce65a2
+bugs: [2026-11-13-the-host-matrix-turn-deadline-does-not-end-a-hung-turn-under]
 blockers: []
 waiting_on_human:
   - gate: Implementation review of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
@@ -62,6 +63,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-201a83.md)
 - [fledge lanes run verify (Fledge 1.8.0, the CI pin) at 6b7376cf passed toolchain, fmt, lint, test (48 targets), intent and spec, then stopped at audit because verification predated the last edits; after chough change check --commit, audit, cases, knowledge, leaks, exercise and build passed at fdf6561e. Between the two heads only Chough records and SpecSync lifecycle bookkeeping changed.](evidence/2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-at-6b7376cf.md)
 - [Full suite at 2bce65a2 (clean tree) under the heavy-tests lock with Rust 1.96.0: cargo +1.96.0 test --locked --no-fail-fast passed 735 tests in 48 targets, 0 failed, 0 ignored; cargo +1.96.0 clippy --all-targets --locked -- -D warnings and cargo +1.96.0 fmt --check exited 0.](evidence/2026-11-13-full-suite-at-2bce65a2-clean-tree-under-the-heavy-tests-lock.md)
+- [Reproduced t384's finding: run.sh's with_deadline at 2bce65a2, run by /bin/dash with stdin not a terminal, let 'with_deadline 2 sleep 8' run the full 8 s and return 0; bash ends it at 2 s.](evidence/2026-11-13-reproduced-t384-s-finding-run-sh-s-with-deadline-at-2bce65a2.md)
 
 ## Open threads
 
@@ -126,4 +128,10 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
   - revision: 6b7376cf61b3b7431180580c989661393f26ff44
   - holds: accept
   - drives: review
+  - by: claude-code (claude-opus-5-5, hc t38q)
+- 2026-11-13T06:57:38Z · back · accept → build · Independent review (t384, PR #254): the turn deadline needs job control, which dash (Ubuntu's sh) turns off without a terminal, so a hung turn is never ended on Linux ^t-9a5953
+  - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+  - gate: native:verifying
+  - revision: 0886a48aaebf05878bdb15a7be1b6ae73e88abf9
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 1 case(s) and 5 observation(s) to re-check with `chough status`
   - by: claude-code (claude-opus-5-5, hc t38q)

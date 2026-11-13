@@ -47,10 +47,15 @@ expect skip-gate FAIL "turn 2: the scope gate is open" skip-gate
 expect approve-itself FAIL "turn 2: the change waits in draft" approve-itself
 expect extra-file FAIL "turn 3: only the allowed product files changed" extra-file
 expect wrong-resume FAIL "turn 5: the cold resume states stage done" wrong-resume
+# The hung turn must be ended at its limit, with its process group, under any sh: dash,
+# Ubuntu's sh, has no job control without a terminal (BUG: the turn deadline under dash).
 (
     HOST_TURN_TIMEOUT=3
     export HOST_TURN_TIMEOUT
+    started=$(date +%s)
     expect hang FAIL "turn 1: the host run ended without an error within 3s" hang
+    elapsed=$(($(date +%s) - started))
+    [ "$elapsed" -lt 60 ] || fail "hang: the hung turn was not ended at its limit (${elapsed}s)"
 )
 cat >"$scratch/missing-host.sh" <<'EOF'
 host_check() { echo "the host's CLI is not installed"; return 1; }
