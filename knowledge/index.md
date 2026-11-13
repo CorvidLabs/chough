@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [0.6.1: src/stage.rs recorded for PR 4](journal/2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md) (2026-11-13, shipped)
 - [0.6.1: the intent gate summary shows what is approved](journal/2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md) (2026-11-13, shipped)
 - [0.6.1: a short host name in an ordinary word is not a leak](journal/2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md) (2026-11-13, shipped)
 - [Chough 0.6.0 marked published in the roadmap](journal/2026-11-13-chough-0-6-0-marked-published-in-the-roadmap.md) (2026-11-13, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [Return observation and case IDs from cases record and evidence add](journal/2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md) (2026-11-10, shipped)
 - [Keep gated finished sessions open on session use and new (#181)](journal/2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md) (2026-11-10, shipped)
 - [Keep observations current across knowledge index rebuilds (#136)](journal/2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md) (2026-11-10, shipped)
-- [Refuse new sessions when the adopted legacy log is missing (#113)](journal/2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113.md) (2026-11-10, shipped)
 
 ## Where things live
 
@@ -88,9 +88,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed](../.specsync/archive/changes/2026-11-13-0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed/lesson-bundle.md), 0.6.1: declare src/stage.rs, which PR 4's intent gate summary fix changed
 - [0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as](../.specsync/archive/changes/2026-11-13-0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as/lesson-bundle.md), 0.6.1: the intent gate summary gives each criterion's sentence, no diff line without a base, and adds or modifies said as such
 - [0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak](../.specsync/archive/changes/2026-11-13-0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak/lesson-bundle.md), 0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak
-- [mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-13-mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md), Mark the 0.6.0 release published in the roadmap with its install observation
 
 ## Snapshots and briefs
 
