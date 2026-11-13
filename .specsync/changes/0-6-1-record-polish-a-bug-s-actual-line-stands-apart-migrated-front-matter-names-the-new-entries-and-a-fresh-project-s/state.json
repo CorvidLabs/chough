@@ -10,23 +10,18 @@
   "state": "approved",
   "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
   "created_at": 1794536904,
-  "updated_at": 1794536933,
+  "updated_at": 1794538438,
   "affected_specs": [
     "cli",
     "records",
     "history"
   ],
   "affected_paths": [
-    "src/bugs.rs",
-    "src/migrate.rs",
-    "src/evidence_migrate.rs",
-    "src/sessions.rs",
-    "tests/bugs.rs",
-    "tests/migrate_evidence.rs",
-    "tests/sessions.rs",
-    "README.md",
-    "docs/cli.md",
-    "CHANGELOG.md"
+    "src/",
+    "tests/",
+    "docs/",
+    "CHANGELOG.md",
+    "README.md"
   ],
   "no_spec_change": true,
   "no_spec_change_rationale": "A fix within the existing requirements; no contract text changes.",
