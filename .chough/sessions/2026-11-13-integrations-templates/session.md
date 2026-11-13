@@ -5,7 +5,7 @@ aliases: [integrations-templates]
 objective: "#219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)"
 intent_scope: LIFE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -59,6 +59,7 @@ observations:
   - 2026-11-13-tc-cli-integrations-no-runtime-dependency-f79cdd
   - 2026-11-13-tc-cli-integrations-readme-0e6fc0
   - 2026-11-13-tc-cli-integrations-skill-file-exists-after-init-bda2c8
+  - 2026-11-13-the-full-test-suite-passed-741-of-741-across-49-targets-cargo
 bugs:
   - 2026-11-13-the-grok-template-opens-a-skill-file-its-own-chough-init-does
   - 2026-11-13-a-changed-integrations-template-passes-with-its-version
@@ -117,6 +118,7 @@ next: "Fix t384's two must-fixes on #253 red first, then re-verify and reopen th
 - [Ran cargo test --locked --test integrations -- --exact chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them for TC-cli-integrations-no-runtime-dependency: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-no-runtime-dependency-f79cdd.md)
 - [Ran cargo test --locked --test integrations -- --exact the_readme_names_every_template_and_says_chough_has_no_runtime_dependency for TC-cli-integrations-readme: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-readme-0e6fc0.md)
 - [Ran cargo test --locked --test integrations -- --exact each_templates_skill_file_exists_after_its_own_chough_init for TC-cli-integrations-skill-file-exists-after-init: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-skill-file-exists-after-init-bda2c8.md)
+- [The full test suite passed 741 of 741 across 49 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at dbe09d42, #253's head after t384's two must-fixes; clippy -D warnings on the integrations test and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-741-of-741-across-49-targets-cargo.md)
 
 ## Open threads
 
@@ -201,4 +203,14 @@ next: "Fix t384's two must-fixes on #253 red first, then re-verify and reopen th
   - gate: native:verifying
   - revision: 81eccae15ccf4aac8ba89692cabb5aa59740b782
   - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 5 case(s) and 16 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t38r)
+- 2026-11-13T06:20:14Z · advance · build → test · native:verifying ^t-8b5524
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - gate: native:verifying
+  - revision: dbe09d422be76fe12904652e04ba10d8e0d3fdeb
+  - by: claude-code (hc t38r)
+- 2026-11-13T06:20:17Z · advance · test → accept · native:verifying ^t-d2e66b
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - gate: native:verifying
+  - revision: dbe09d422be76fe12904652e04ba10d8e0d3fdeb
   - by: claude-code (hc t38r)
