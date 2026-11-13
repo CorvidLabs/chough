@@ -13,6 +13,13 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>0.6.1: chough change ship prints a short summary</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary</id>
+<updated>2026-11-13T02:58:41Z</updated>
+<link href="2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>0.6.1: a short host name in an ordinary word is not a leak</title>
 <id>urn:chough:journal:2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak</id>
 <updated>2026-11-13T02:27:14Z</updated>
@@ -136,13 +143,6 @@
 <id>urn:chough:journal:2026-11-07-library-index-check-passes-right-after-the-move-into-done-191</id>
 <updated>2026-11-07T04:14:27Z</updated>
 <link href="2026-11-07-library-index-check-passes-right-after-the-move-into-done-191.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>chough timing skips direct writes without a partial report (#189)</title>
-<id>urn:chough:journal:2026-11-07-chough-timing-skips-direct-writes-without-a-partial-report-189</id>
-<updated>2026-11-07T04:10:52Z</updated>
-<link href="2026-11-07-chough-timing-skips-direct-writes-without-a-partial-report-189.md"/>
 <category term="shipped"/>
 </entry>
 </feed>

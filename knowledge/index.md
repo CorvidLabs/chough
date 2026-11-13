@@ -25,6 +25,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 Newest posts:
 
 - [0.6.1: at the observation cap, writes refuse before writing](journal/2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md) (2026-11-13, shipped)
+- [0.6.1: chough change ship prints a short summary](journal/2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md) (2026-11-13, shipped)
 - [0.6.1: a short host name in an ordinary word is not a leak](journal/2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md) (2026-11-13, shipped)
 - [Chough 0.6.0 marked published in the roadmap](journal/2026-11-13-chough-0-6-0-marked-published-in-the-roadmap.md) (2026-11-13, shipped)
 - [Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds](journal/2026-11-13-chough-0-6-0-release-prep-the-dogfood-cycle-and-four-fresh.md) (2026-11-13, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [Return observation and case IDs from cases record and evidence add](journal/2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md) (2026-11-10, shipped)
 - [Keep gated finished sessions open on session use and new (#181)](journal/2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md) (2026-11-10, shipped)
 - [Keep observations current across knowledge index rebuilds (#136)](journal/2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md) (2026-11-10, shipped)
-- [Refuse new sessions when the adopted legacy log is missing (#113)](journal/2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113.md) (2026-11-10, shipped)
 
 ## Where things live
 
@@ -46,14 +46,13 @@ Newest posts:
 
 ## Open bugs
 
-7 open bugs, blocking first, then newest.
+6 open bugs, blocking first, then newest.
 
 - [2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open](../.chough/bugs/2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open.md) chough next with no open session exits 1 with Error: no open session (deferred)
 - [2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their](../.chough/bugs/2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their.md) The intent gate summary names criterion IDs without their sentences and says the diff is unknown (deferred)
 - [2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from](../.chough/bugs/2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from.md) A fresh project's records README names artifacts as kept from 0.5.x, and the README init paragraph is long (deferred)
 - [2026-11-12-migrated-records-keep-old-observation-ids-in-their-front](../.chough/bugs/2026-11-12-migrated-records-keep-old-observation-ids-in-their-front.md) Migrated records keep old observation IDs in their front matter (deferred)
 - [2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one](../.chough/bugs/2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one.md) A bug body runs its symptom and its Actual line into one paragraph (deferred)
-- [2026-11-12-chough-change-ship-prints-specsync-s-text-a-long-json](../.chough/bugs/2026-11-12-chough-change-ship-prints-specsync-s-text-a-long-json.md) chough change ship prints SpecSync's text, a long JSON checkpoint and the move summary together (deferred)
 - [2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate](../.chough/bugs/2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate.md) chough timing still says elapsed wall-clock on the human-gate line, and its notes say read read-only (deferred)
 
 ## Rules, skills and decisions
@@ -89,8 +88,8 @@ Lessons that span projects:
 Lesson bundles of the newest 3 archived changes:
 
 - [0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough](../.specsync/archive/changes/2026-11-13-0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough/lesson-bundle.md), 0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve
+- [0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json](../.specsync/archive/changes/2026-11-13-0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json/lesson-bundle.md), 0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json
 - [0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak](../.specsync/archive/changes/2026-11-13-0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak/lesson-bundle.md), 0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak
-- [mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation](../.specsync/archive/changes/2026-11-13-mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation/lesson-bundle.md), Mark the 0.6.0 release published in the roadmap with its install observation
 
 ## Snapshots and briefs
 
