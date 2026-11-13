@@ -388,6 +388,13 @@ pub(super) fn read_spec_file(path: &Path) -> Result<String> {
 
 /// Read a structured record within an explicit byte bound.
 pub(super) fn read_bounded_record(path: &Path, limit: u64) -> Result<String> {
+    // A record is a regular file. A FIFO would block the open and a device might never
+    // end, so anything else is refused, naming it, before it is opened (#262).
+    ensure!(
+        fs::metadata(path)?.is_file(),
+        "{} is not a regular file, so it was not read: remove it, or move it out of the record folder",
+        path.display()
+    );
     let file = File::open(path)?;
     let mut content = String::new();
     file.take(limit + 1).read_to_string(&mut content)?;

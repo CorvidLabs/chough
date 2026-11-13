@@ -241,7 +241,9 @@ scalars; and block lists of flat maps of scalars. Front matter outside that subs
 duplicate key or a missing closing `---` is refused naming the file, the line and the
 rule, and the command writes nothing.
 
-Reading is tolerant: an unknown front matter key is kept byte for byte, in place, when
+A file in a record folder that is not a regular file, such as a FIFO, is never opened, so
+no reader blocks on one: a listing skips it, and a read of it by name refuses, naming it
+(#262). Reading is tolerant: an unknown front matter key is kept byte for byte, in place, when
 Chough rewrites the front matter; a missing optional key takes its default; CRLF reads
 as LF. Chough owns only the front matter and the sections it appends to. A write
 replaces the front matter, appends list items to the end of a named section, or creates
@@ -758,7 +760,7 @@ person's edit to an item's claim keeps the item.
   for a story), whether it is active, open or archived, and whether it is finished (an
   archived story always is), and names `chough doctor --fix` for each finished open
   session. A session that cannot be read, because it is
-  over its bound or invalid, is listed with the reason and the recovery `chough session
+  over its bound or invalid, or its `session.md` is not a regular file (#262), is listed with the reason and the recovery `chough session
   shelve <id>`, and does not stop `session list`, `session new`, `session use` or another
   session's `next`.
 - `chough session close <key> --reason <text>` closes an open session for abandoned
@@ -770,8 +772,9 @@ person's edit to an item's claim keeps the item.
   with unfolded inbox entries are refused with nothing changed.
 - `chough session shelve <id>` moves an unreadable or oversized session folder,
   unparsed and byte for byte, to `.chough/archive/shelved/<id>/`, with `shelved.md`
-  inside it giving the folder's size, each file's size and SHA-256, the time and the
-  reason, and clears the active pointer when it named it. Shelving never replaces a file, and
+  inside it giving the folder's size, each regular file's size and SHA-256 (a file
+  that is not a regular file, such as a FIFO, is moved without being opened), the time
+  and the reason, and clears the active pointer when it named it. Shelving never replaces a file, and
   no reader scans `.chough/archive/shelved/`.
 
 A session is finished when it is at stage done, or when its native change is archived

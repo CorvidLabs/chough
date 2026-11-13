@@ -249,9 +249,12 @@ pub(super) fn open_ids(root: &Path) -> Result<Vec<String>> {
         let Some(id) = entry.file_name().to_str().map(str::to_string) else {
             continue;
         };
+        // A `session.md` that is not a regular file, such as a FIFO, still makes the
+        // folder a session, one that cannot be read, so it is listed with its recovery
+        // rather than vanishing (#262).
         if entry.file_type()?.is_dir()
             && valid_change_id(&id)
-            && local_path(root, &session_file(&id))?.is_file()
+            && local_path(root, &session_file(&id))?.exists()
             && !local_path(root, &archive_file(&id))?.exists()
         {
             ids.push(id);
@@ -1328,7 +1331,13 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
         !from.join(SHELVED_NOTE).exists(),
         "{source}/{SHELVED_NOTE} would become {note}, which shelving writes; it never replaces a file, so nothing was moved"
     );
-    let session_bytes = fs::read(from.join("session.md")).unwrap_or_default();
+    // Only a regular file is read: a FIFO would block shelving, its own recovery (#262).
+    let session_path = from.join("session.md");
+    let session_bytes = if fs::metadata(&session_path).is_ok_and(|metadata| metadata.is_file()) {
+        fs::read(&session_path).unwrap_or_default()
+    } else {
+        vec![]
+    };
     let readable = session_bytes.len() as u64 <= checkpoint::SESSION_LIMIT
         && String::from_utf8(session_bytes.clone())
             .ok()

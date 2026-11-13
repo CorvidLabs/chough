@@ -1139,8 +1139,11 @@ fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     let Ok(entries) = fs::read_dir(&folder) else {
         return Ok(found);
     };
+    // A FIFO or another file that is not a regular file is skipped, never opened, so no
+    // reader blocks on one (#262).
     let mut names: Vec<String> = entries
         .flatten()
+        .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_file()))
         .map(|entry| entry.file_name().to_string_lossy().into_owned())
         .filter(|name| name.ends_with(".md"))
         .collect();
@@ -2623,7 +2626,9 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
         for entry in fs::read_dir(&bugs)? {
             let entry = entry?;
             let name = entry.file_name().to_string_lossy().into_owned();
-            if !name.ends_with(".json") && !name.ends_with(".md") {
+            // Only regular files are read, so a FIFO never blocks the reader (#262).
+            if !entry.file_type()?.is_file() || (!name.ends_with(".json") && !name.ends_with(".md"))
+            {
                 continue;
             }
             let text = read_bounded_record(&entry.path(), markdown::RECORD_BOUND)?;
@@ -3038,7 +3043,8 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
         for entry in fs::read_dir(&bugs)? {
             let entry = entry?;
             let name = entry.file_name().to_string_lossy().into_owned();
-            if name.ends_with(".md") {
+            // Only regular files are read, so a FIFO never blocks the reader (#262).
+            if name.ends_with(".md") && entry.file_type()?.is_file() {
                 let text = read_bounded_record(&entry.path(), markdown::RECORD_BOUND)?;
                 let record = markdown::parse(&name, &text)?;
                 for map in record.maps("receipts") {
