@@ -1,6 +1,6 @@
 ---
 id: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
-state: approved
+state: implementing
 type: bug_fix
 base_commit: e6df71e010f5cea1ce9358fc8c854b22b5e6eeab
 ---

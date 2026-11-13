@@ -7,10 +7,11 @@
   "title": "Fix #247: the verify lane's example waits past the failing run's second before its rerun",
   "description": "Fix #247: the verify lane's example waits past the failing run's second before its rerun",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "e6df71e010f5cea1ce9358fc8c854b22b5e6eeab",
   "created_at": 1794541706,
-  "updated_at": 1794541767,
+  "updated_at": 1794552216,
   "affected_specs": [
     "cli"
   ],

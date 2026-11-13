@@ -5,7 +5,7 @@ aliases: [fix-247-example-race]
 objective: "Fix #247: the verify lane's example waits past the failing run's second before its rerun"
 intent_scope: ""
 modules: []
-stage: build
+stage: test
 stage_status: active
 iteration: 1
 callers: []
@@ -16,12 +16,14 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: [2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second]
+observations:
+  - 2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second
+  - 2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second-0f1174
 bugs: [2026-11-13-the-verify-lane-s-exercise-flakes-when-the-example-s-failing]
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue test
 ---
 # Fix #247: the verify lane's example waits past the failing run's second before its rerun
 
@@ -39,6 +41,7 @@ Fix #247: the verify lane's example waits past the failing run's second before i
 ## What was verified
 
 - [Ran cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying for TC-cli-exercise-rerun-waits-past-the-failing-runs-second: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second.md)
+- [Ran cargo test --locked --test cli -- --exact exercise_rerun_waits_past_the_failing_runs_second_before_verifying for TC-cli-exercise-rerun-waits-past-the-failing-runs-second: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-exercise-rerun-waits-past-the-failing-runs-second-0f1174.md)
 
 ## Open threads
 
@@ -87,4 +90,9 @@ Fix #247: the verify lane's example waits past the failing run's second before i
   - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
   - gate: native:approved
   - revision: e6df71e010f5cea1ce9358fc8c854b22b5e6eeab
+  - by: claude-code (hc t382)
+- 2026-11-13T06:43:34Z · advance · build → test · Built: t37f's red (190a11ae) and fix (ff954002), the case red then green, the bug verified ^t-85f78e
+  - native_change: fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun
+  - gate: native:approved
+  - revision: ff954002c5fe6f5a0a0834d29d2f6209ace21509
   - by: claude-code (hc t382)
