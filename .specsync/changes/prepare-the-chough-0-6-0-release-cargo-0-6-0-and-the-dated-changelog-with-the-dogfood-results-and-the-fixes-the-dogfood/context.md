@@ -114,3 +114,11 @@ ignoring uncommitted change files (F2); no pointer to `chough skill update` afte
 migration leaves the skill copy outdated (F3); and accept steps that stale the evidence
 twice, with `next` routing to the review gate past stale cases (F4). F5 to F11 and the
 host-name leak rule are recorded as deferred bugs, quoting him. No fifth tester.
+
+On 2026-11-13T00:58Z Leif chose "Yes (Recommended)" to add one reporting sentence and let
+his 00:56Z approval of 0.6.0 ("Approve (Recommended)") stand: SpecSync's scoped review
+refused to finalize because `src/timing.rs`, which the F11 timing fixes touched, is owned
+by the reporting module this change had not declared. The change now declares reporting,
+with a delta that writes into REQ-reporting-001 what timing already does: the `start`
+entry begins Cycle 1, and the wall-clock label is said once in the text header. No code
+changed.
