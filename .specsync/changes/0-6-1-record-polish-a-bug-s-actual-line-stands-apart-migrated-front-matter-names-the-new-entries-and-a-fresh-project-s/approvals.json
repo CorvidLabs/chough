@@ -1,0 +1,50 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794536933,
+      "digest": "6335955f34efd0b9c6c5014f9acb59d3b324438f5804208ea4423a15772ed265",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s\": \"Yes, start (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T02:28:52Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s",
+        "title": "0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed",
+        "description": "0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "README.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/evidence_migrate.rs",
+          "src/migrate.rs",
+          "src/sessions.rs",
+          "tests/bugs.rs",
+          "tests/migrate_evidence.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A fix within the existing requirements; no contract text changes.",
+        "acceptance_criteria": [
+          "A bug body gives its Actual line as its own paragraph; a migrated session and bug name the carried entries in front matter, keeping each 0.5.x ID as an alias; a fresh project .chough/README.md names no 0.5.x folder; and the README init paragraph has no long parenthetical about hosts (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved 0.6.1 at 02:03Z (relayed by t370) as six small PRs, one fix each, him merging each; this PR is record polish within the existing requirements, with no contract text. A failing test first; the full local suite before review.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}

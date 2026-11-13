@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s",
+  "slug": "0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s",
+  "title": "0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed",
+  "description": "0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
+  "created_at": 1794536904,
+  "updated_at": 1794536933,
+  "affected_specs": [
+    "cli",
+    "records",
+    "history"
+  ],
+  "affected_paths": [
+    "src/bugs.rs",
+    "src/migrate.rs",
+    "src/evidence_migrate.rs",
+    "src/sessions.rs",
+    "tests/bugs.rs",
+    "tests/migrate_evidence.rs",
+    "tests/sessions.rs",
+    "README.md",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "A fix within the existing requirements; no contract text changes.",
+  "acceptance_criteria": [
+    "A bug body gives its Actual line as its own paragraph; a migrated session and bug name the carried entries in front matter, keeping each 0.5.x ID as an alias; a fresh project .chough/README.md names no 0.5.x folder; and the README init paragraph has no long parenthetical about hosts (red then green)"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif approved 0.6.1 at 02:03Z (relayed by t370) as six small PRs, one fix each, him merging each; this PR is record polish within the existing requirements, with no contract text. A failing test first; the full local suite before review.",
+    "public_contract": "no"
+  }
+}
