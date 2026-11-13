@@ -50,7 +50,9 @@ Rules:
   no flake open, and no retried-then-passed job. Any new flake or retry
   restarts the window.
 - The window is computed from the CI run history, not from memory; the
-  computation is a recorded observation at release time.
+  computation is a recorded observation at release time. `fledge run flake-window`
+  computes it (REQ-cli-062); [docs/ci.md](ci.md#flakes-and-the-clean-window) gives the
+  filing steps, what restarts the window and how to read the receipt.
 
 ## Bar 3: migration fixtures
 

@@ -20,13 +20,26 @@ cases:
   - TC-cli-flake-window-fails-closed
   - TC-cli-flake-window-wiring
 design: []
-files: [.github/scripts/test-flake-window.py]
-observations: []
+files:
+  - .github/scripts/test-flake-window.py
+  - .github/scripts/flake-window.py
+  - fledge.toml
+  - .github/workflows/ci.yml
+  - docs/ci.md
+  - docs/releasing.md
+  - docs/test-plan-1.0.md
+  - CHANGELOG.md
+observations:
+  - 2026-11-13-tc-cli-flake-window-clean
+  - 2026-11-13-tc-cli-flake-window-restarts
+  - 2026-11-13-tc-cli-flake-window-blocked
+  - 2026-11-13-tc-cli-flake-window-fails-closed
+  - 2026-11-13-tc-cli-flake-window-wiring
 bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Record the red fixture run, then add .github/scripts/flake-window.py
+next: Record the green case runs, merge main, run the full suite, then change check --commit and review
 ---
 # #217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)
 
@@ -35,6 +48,8 @@ next: Record the red fixture run, then add .github/scripts/flake-window.py
 #217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)
 
 ## Where it stands
+
+- REQ-cli-062: flake-window.py, the fledge tasks, the CI fixtures step and the docs; 24 of 24 fixtures pass locally
 
 ## Decisions and why
 
@@ -45,6 +60,12 @@ next: Record the red fixture run, then add .github/scripts/flake-window.py
 - Leif decided "Approve the scope of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read": "Any red, rerun or new flake (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q2 'What restarts the window?' for #217 (same answer set: Q1 'Where should the two-week check live?': 'Repo script + fledge task (Recommended)'); this change's scope is that design: a read-only repo script and fledge task, REQ-cli-062; relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change approve 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read as 0xLeif
 
 ## What was verified
+
+- [Ran python3 .github/scripts/test-flake-window.py CleanWindowTests for TC-cli-flake-window-clean: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-clean.md)
+- [Ran python3 .github/scripts/test-flake-window.py RestartTests for TC-cli-flake-window-restarts: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-restarts.md)
+- [Ran python3 .github/scripts/test-flake-window.py BlockedTests for TC-cli-flake-window-blocked: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-blocked.md)
+- [Ran python3 .github/scripts/test-flake-window.py FailClosedTests for TC-cli-flake-window-fails-closed: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-fails-closed.md)
+- [Ran python3 .github/scripts/test-flake-window.py WiringTests for TC-cli-flake-window-wiring: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-wiring.md)
 
 ## Open threads
 
