@@ -1,0 +1,39 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794534404,
+      "digest": "5cc6ce4322a575f598ee20e3ccc468aa024b418ab9da03cf4785bb80aad57690",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation\": \"Yes (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T01:43Z, answering: 'Last release step: mark 0.6.0 as published in Chough's roadmap, plus the install check result, as one small docs PR with no requirement change. OK?' (option text: 't382 opens it. Your merge of it counts as the review.'); relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T01:46:43Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation",
+        "title": "Mark the 0.6.0 release published in the roadmap with its install observation",
+        "description": "Mark the 0.6.0 release published in the roadmap with its install observation",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "docs/roadmap-1.0.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Documentation of a completed release; no contract changes.",
+        "acceptance_criteria": [
+          "docs/roadmap-1.0.md has a 0.6.0 release row, in place of the in-progress human-first records row, naming the v0.6.0 tag at 443c63ab, release prep PRs #238 and #239, crates.io chough 0.6.0, the GitHub release and the clean install result, and the clean install is recorded as an installation observation"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved this last release step at 01:43Z (relayed by t370): one small docs PR marking 0.6.0 published in docs/roadmap-1.0.md with the clean-install result; his merge counts as the review. Scope is docs/roadmap-1.0.md plus native lifecycle and Chough records; no contract, HI or code change; no tag or release from this change.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}
