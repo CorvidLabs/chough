@@ -5,7 +5,7 @@ aliases: [host-matrix-selftest]
 objective: "Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-test in hosted CI on macOS and Linux (#218, first PR)"
 intent_scope: LIFE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -23,6 +23,9 @@ observations:
   - 2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-at-6b7376cf
   - 2026-11-13-full-suite-at-2bce65a2-clean-tree-under-the-heavy-tests-lock
   - 2026-11-13-reproduced-t384-s-finding-run-sh-s-with-deadline-at-2bce65a2
+  - 2026-11-13-tc-cli-host-matrix-selftest-282f87
+  - 2026-11-13-tc-cli-host-matrix-selftest-349558
+  - 2026-11-13-tc-cli-host-matrix-selftest-b12eb5
 bugs: [2026-11-13-the-host-matrix-turn-deadline-does-not-end-a-hung-turn-under]
 blockers: []
 waiting_on_human:
@@ -46,6 +49,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - Green at 6b7376cf (after merging main): TC-cli-host-matrix-selftest passed on macOS arm64; fledge verify passed toolchain, fmt, lint, test, intent and spec
 - Verify lane passed in two passes (6b7376cf, fdf6561e); draft PR #254 opened and pushed
 - Full suite at 2bce65a2: 735 passed in 48 targets (Rust 1.96.0), clippy and fmt clean
+- Fixed the dash deadline bug (91b227be); self-test green under dash and bash
 
 ## Decisions and why
 
@@ -55,6 +59,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - Leif decided "Approve the intent: the host-matrix harness and its local-agent leg as Leif chose them (LIFE-27 to LIFE-30, under LIFE-21 item 4, LIFE-22 and LIFE-24)": "Plain runs, Herdr optional (Recommended); Docker on the Mac (Recommended); Not sure: keep it generic (Recommended); Next weekly release (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:32Z, his four answers to the design questions for #218 and #220 (run mode, Linux legs, local agent, when a leg blocks a release), relayed by claude-code-t370, who said to quote them at this change's intent and scope gates); recorded by claude-code-t38q; a relayed claim, not authenticated
 - Leif decided "Scope approval of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:53Z, answering: 'Chough 1.0 harness, PR 1 of 5 (#218): add the test harness that runs one Chough cycle per agent and judges it from the files it leaves. It comes with a fake, no-model agent that tests the harness itself on Mac and Linux CI; no real agents run yet. It lives in tools/host-matrix/, with per-agent adapters next to the #219 templates. Approve this scope?' (option text: 't38q builds it. Its self-test already catches skipped gates, self-approval, wrong resumes and hung turns.'); per t370 his yes also covers REQ-cli-066 as aligned with his four 03:32Z answers and claude-code-t38q's engineering choices (a) to (c) in this change's context.md; relayed by claude-code-t370); recorded by claude-code-t38q; a relayed claim, not authenticated; ran specsync change approve host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in as 0xLeif
 - decided: no open session is read from chough next's null stage, or its failure before 0.6.1, because main's #248 made next exit 0 with no open session
+- decided: each turn and its timer start as process groups through perl's setpgrp because dash, sh on Ubuntu, turns job control off without a terminal (t384's review); rejected: requiring bash because the harness and its callers are POSIX sh like the rest of tools/
 
 ## What was verified
 
@@ -64,6 +69,9 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - [fledge lanes run verify (Fledge 1.8.0, the CI pin) at 6b7376cf passed toolchain, fmt, lint, test (48 targets), intent and spec, then stopped at audit because verification predated the last edits; after chough change check --commit, audit, cases, knowledge, leaks, exercise and build passed at fdf6561e. Between the two heads only Chough records and SpecSync lifecycle bookkeeping changed.](evidence/2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-at-6b7376cf.md)
 - [Full suite at 2bce65a2 (clean tree) under the heavy-tests lock with Rust 1.96.0: cargo +1.96.0 test --locked --no-fail-fast passed 735 tests in 48 targets, 0 failed, 0 ignored; cargo +1.96.0 clippy --all-targets --locked -- -D warnings and cargo +1.96.0 fmt --check exited 0.](evidence/2026-11-13-full-suite-at-2bce65a2-clean-tree-under-the-heavy-tests-lock.md)
 - [Reproduced t384's finding: run.sh's with_deadline at 2bce65a2, run by /bin/dash with stdin not a terminal, let 'with_deadline 2 sleep 8' run the full 8 s and return 0; bash ends it at 2 s.](evidence/2026-11-13-reproduced-t384-s-finding-run-sh-s-with-deadline-at-2bce65a2.md)
+- [Red at 6457d8a8 under dash: HOST_MATRIX_FAULT=hang HOST_TURN_TIMEOUT=3 sh tools/host-matrix/run.sh stand-in, with sh as /bin/dash and stdin not a terminal, judged the run PASS after 1540 s: no turn was ended at its 3 s limit, so each stand-in turn's 300 s hang ran out.](evidence/2026-11-13-tc-cli-host-matrix-selftest-282f87.md)
+- [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-349558.md)
+- [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-b12eb5.md)
 
 ## Open threads
 
@@ -134,4 +142,14 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
   - gate: native:verifying
   - revision: 0886a48aaebf05878bdb15a7be1b6ae73e88abf9
   - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 1 case(s) and 5 observation(s) to re-check with `chough status`
+  - by: claude-code (claude-opus-5-5, hc t38q)
+- 2026-11-13T07:33:12Z · advance · build → test · native:verifying ^t-9be443
+  - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+  - gate: native:verifying
+  - revision: 91b227be06a40a5fea5950bcf92c8a812820491b
+  - by: claude-code (claude-opus-5-5, hc t38q)
+- 2026-11-13T07:33:14Z · advance · test → accept · native:verifying ^t-ff5e35
+  - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+  - gate: native:verifying
+  - revision: 91b227be06a40a5fea5950bcf92c8a812820491b
   - by: claude-code (claude-opus-5-5, hc t38q)
