@@ -1649,7 +1649,7 @@ fn bugs_are_markdown_with_an_append_only_log() {
     let body = text.split_once("\n---\n").unwrap().1;
     assert!(
         body.starts_with(
-            "# Shipping is charged at exactly the free threshold\n\n**What happened:** Order of exactly 50.00 is charged shipping\nActual: Shipping fee of 4.99 applied\n\n**Steps:** Trigger: Checkout total equal to the free shipping threshold\n1. Open checkout\n\n**Expected:** Free shipping at 50.00\n\n**Why it matters:** Not yet assessed.\n\n**Fix:** Not fixed yet.\n\n## Log\n\n- "
+            "# Shipping is charged at exactly the free threshold\n\n**What happened:** Order of exactly 50.00 is charged shipping\n\nActual: Shipping fee of 4.99 applied\n\n**Steps:** Trigger: Checkout total equal to the free shipping threshold\n1. Open checkout\n\n**Expected:** Free shipping at 50.00\n\n**Why it matters:** Not yet assessed.\n\n**Fix:** Not fixed yet.\n\n## Log\n\n- "
         ),
         "{body}"
     );
