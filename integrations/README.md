@@ -13,14 +13,16 @@ terminal. Rune is a separate Fledge plugin, not Chough behavior (LIFE-24).
 | Claude Code | [claude-code/hc-template.md](claude-code/hc-template.md) | `claude` | `claude` | supported |
 | Codex | [codex/hc-template.md](codex/hc-template.md) | `codex --no-daemon` | `openai` | supported |
 | Kimi Code | [kimi/hc-template.md](kimi/hc-template.md) | `kimi` | `openai` | supported |
-| Grok | [grok/hc-template.md](grok/hc-template.md) | `grok` | `grok` | supported |
+| Grok | [grok/hc-template.md](grok/hc-template.md) | `grok` | `openai` | supported |
 | Local agent | [local/hc-template.md](local/hc-template.md) | `chough-local-agent` (a placeholder) | `openai` | unqualified until #220 |
 
 Every template tells the agent to read the project's `AGENTS.md`, load the
 chough-workflow skill, resume with `chough next --environment local`, stop at the human
 gates and report back with `hc send`. They differ only in the command and the `--host`
 value. The `--host` values follow [the host table](../docs/integrations.md#hosts):
-Codex and Kimi use the shared `.agents/skills` copy (`openai`). Claude Code's
+Codex, Kimi, Grok and the local agent use the shared `.agents/skills` copy (`openai`),
+which a project set up for any of them already has. Each template's skill file is the
+one its own `chough init` creates. Claude Code's
 template also says to open the skill file directly, since Claude Code does not
 discover `.agents/skills` on its own. Codex runs with `--no-daemon`, as hc requires.
 
@@ -42,10 +44,11 @@ and `command`. The body is the agent's instructions, and hc adds your task after
 
 ## Versions
 
-[templates.toml](templates.toml) lists each template with its version, its
-`chough init --host` value, its status and the SHA-256 of its file. When you change a
-template, raise its version and update its `sha256`. `tests/integrations.rs` fails
-until both match, so a changed template never ships under an old version.
+[templates.toml](templates.toml) lists each template with its `chough init --host`
+value, its status and an ordered list of its versions, each with the SHA-256 of the file
+at that version. When you change a template, append the next version with the new
+digest, and never edit an earlier entry. `tests/integrations.rs` fails until the newest
+entry is the file's digest, so a changed template never ships under an old version.
 
 ## Host-matrix runs
 

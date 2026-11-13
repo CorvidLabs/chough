@@ -10,7 +10,8 @@ impact: A Grok agent in a new project is pointed at a missing file; found before
 criteria: [LIFE-22]
 requirements: [REQ-cli-065]
 cases: []
-evidence: []
+evidence:
+  - 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-skill-file-exists-after-init
 receipts: []
 environment: local-macos-arm64
 revision: 81eccae15ccf4aac8ba89692cabb5aa59740b782
@@ -20,7 +21,7 @@ actor:
     terminal: t38r
 related: []
 created: 2026-11-13T05:34:36Z
-updated: 2026-11-13T05:34:36Z
+updated: 2026-11-13T06:07:38Z
 ---
 # the Grok template opens a skill file its own chough init does not create
 
@@ -40,3 +41,4 @@ Actual: --host grok writes only .grok/skills; the named .agents path is missing 
 ## Log
 
 - 2026-11-13T05:34:36Z · Reported (manual report) · by claude-code (hc t38r)
+- 2026-11-13T06:07:38Z · evidence: 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-skill-file-exists-after-init · by claude-code (hc t38r)

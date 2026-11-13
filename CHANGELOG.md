@@ -9,8 +9,9 @@ All notable changes to Chough are recorded here. The format follows
 - `integrations/` ships optional, versioned example hc templates for Claude Code,
   Codex, Kimi, Grok and a local agent, the local one unqualified until #220
   (REQ-cli-065, #219). Each has hc's three front-matter keys, resumes with
-  `chough next` and holds no local path. `integrations/templates.toml` lists each
-  template's version, status and SHA-256, and a README says Chough has no runtime
+  `chough next`, loads the skill file its own `chough init` creates and holds no local
+  path. `integrations/templates.toml` lists each template's status and an ordered list
+  of its versions with their SHA-256, and a README says Chough has no runtime
   dependency on hc, Herdr or Rune.
 - `chough next` with no open session, the normal state after done, says so, names `chough session new <key>` and exits 0 instead of failing, while `chough status` still refuses; `chough timing` says elapsed wall-clock once, in its header, with no gate-wait, case run or fix-time line repeating it, and its native note no longer reads "read read-only" (REQ-cli-021, REQ-history-006, REQ-reporting-001).
 - At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).

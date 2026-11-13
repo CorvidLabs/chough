@@ -10,7 +10,7 @@ impact: A changed template could ship under an old version; found before merge
 criteria: [LIFE-24]
 requirements: [REQ-cli-065]
 cases: []
-evidence: []
+evidence: [2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-manifest-1e9fe6]
 receipts: []
 environment: local-macos-arm64
 revision: 81eccae15ccf4aac8ba89692cabb5aa59740b782
@@ -20,7 +20,7 @@ actor:
     terminal: t38r
 related: []
 created: 2026-11-13T05:34:36Z
-updated: 2026-11-13T05:34:36Z
+updated: 2026-11-13T06:07:38Z
 ---
 # a changed integrations template passes with its version unchanged
 
@@ -40,3 +40,4 @@ Actual: The tests pass with the version left at 1 (t384)
 ## Log
 
 - 2026-11-13T05:34:36Z · Reported (manual report) · by claude-code (hc t38r)
+- 2026-11-13T06:07:38Z · evidence: 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-manifest-1e9fe6 · by claude-code (hc t38r)

@@ -1,49 +1,56 @@
 # Versioned example hc templates (REQ-cli-065). One entry per integrations/<host>/hc-template.md.
-# When you change a template, raise its version and set sha256 to the new file's SHA-256
-# (shasum -a 256 <file>); tests/integrations.rs fails until both match.
+# Each template keeps an ordered list of its versions. When you change a template, append
+# { version = <next>, sha256 = "<the new file's SHA-256>" } to its versions (shasum -a 256
+# <file>) and never edit an earlier entry. tests/integrations.rs fails until the newest
+# entry is the file's digest, the versions run 1, 2, 3 in order, and no digest repeats.
 schema = "chough-integrations/1"
 
 [[template]]
 host = "claude-code"
 file = "integrations/claude-code/hc-template.md"
 name = "chough-claude"
-version = 1
 init_host = "claude"
 status = "supported"
-sha256 = "c8ff86ab08d0025b4441e1198cc7cd6fa7ef28b81ae084ecc7108568368fd985"
+versions = [
+  { version = 1, sha256 = "c8ff86ab08d0025b4441e1198cc7cd6fa7ef28b81ae084ecc7108568368fd985" },
+]
 
 [[template]]
 host = "codex"
 file = "integrations/codex/hc-template.md"
 name = "chough-codex"
-version = 1
 init_host = "openai"
 status = "supported"
-sha256 = "eb7b0a11bdbed966718ac3dbd5728af53bc38f250eb527af39aec77a584cd97d"
+versions = [
+  { version = 1, sha256 = "eb7b0a11bdbed966718ac3dbd5728af53bc38f250eb527af39aec77a584cd97d" },
+]
 
 [[template]]
 host = "kimi"
 file = "integrations/kimi/hc-template.md"
 name = "chough-kimi"
-version = 1
 init_host = "openai"
 status = "supported"
-sha256 = "69c740ffd1ed47aee46a4ef32140c26364b28e6909b58f53feef52df84915d5a"
+versions = [
+  { version = 1, sha256 = "69c740ffd1ed47aee46a4ef32140c26364b28e6909b58f53feef52df84915d5a" },
+]
 
 [[template]]
 host = "grok"
 file = "integrations/grok/hc-template.md"
 name = "chough-grok"
-version = 1
-init_host = "grok"
+init_host = "openai"
 status = "supported"
-sha256 = "caebfb974893f6e8734ed88f0f758aa573eb536a7afb61fc6ff5e61da7b8e5a6"
+versions = [
+  { version = 1, sha256 = "2687d6e56b12bceec9e976d26464b4d15e4c67fbbb3a7842d0e819dfaa0a8a56" },
+]
 
 [[template]]
 host = "local"
 file = "integrations/local/hc-template.md"
 name = "chough-local"
-version = 1
 init_host = "openai"
 status = "unqualified"
-sha256 = "d5a3832fb9485df343d753544058b91a3dfd6aefb171b044db585b8944197bdd"
+versions = [
+  { version = 1, sha256 = "d5a3832fb9485df343d753544058b91a3dfd6aefb171b044db585b8944197bdd" },
+]

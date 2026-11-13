@@ -13,7 +13,7 @@ const HOSTS: &[(&str, &str, &str)] = &[
     ("claude-code", "chough-claude", "claude"),
     ("codex", "chough-codex", "openai"),
     ("kimi", "chough-kimi", "openai"),
-    ("grok", "chough-grok", "grok"),
+    ("grok", "chough-grok", "openai"),
     ("local", "chough-local", "openai"),
 ];
 

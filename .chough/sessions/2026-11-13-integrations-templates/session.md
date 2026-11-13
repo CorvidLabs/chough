@@ -50,6 +50,9 @@ observations:
   - 2026-11-13-tc-cli-integrations-no-runtime-dependency-30a5bd
   - 2026-11-13-tc-cli-integrations-readme-3d43b8
   - 2026-11-13-the-full-test-suite-passed-740-of-740-across-49-targets-cargo
+  - 2026-11-13-tc-cli-integrations-manifest-1e9fe6
+  - 2026-11-13-tc-cli-integrations-digest-detects-change-401e9b
+  - 2026-11-13-tc-cli-integrations-skill-file-exists-after-init
 bugs:
   - 2026-11-13-the-grok-template-opens-a-skill-file-its-own-chough-init-does
   - 2026-11-13-a-changed-integrations-template-passes-with-its-version
@@ -78,6 +81,8 @@ next: "Fix t384's two must-fixes on #253 red first, then re-verify and reopen th
 - Local template command stays the placeholder chough-local-agent, status unqualified; t38q sets the real command and bumps its version and digest in #220 (t38q, 2026-11-13; Leif chose a generic local setup, LIFE-29). The harness reads only adapter.sh and hc-template.md, so templates.toml is this lane's
 - Leif decided "Approve the scope of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a": "Claude, Codex, Kimi, Grok + local (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q4 'Which hosts get an example template?' for #219 (local marked unqualified until #220); this change's scope is that design's first #219 PR: the folder, five templates, the manifest and the README, REQ-cli-065; relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change approve 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a as 0xLeif
 - TC-cli-integrations-no-runtime-dependency's red run at ced59395 failed on a defect in the test itself: it banned the word hc in skills/, stricter than REQ-cli-065, while the skill rightly names an actor's hc terminal (REQ-history-002). The fix narrows the skill check to Herdr and Rune. That case is a guard on existing code, so it has no red-then-green; the other four went red then green
+- TC-cli-integrations-digest-detects-change now unit-tests the manifest checker (version_problems) on made-up data, so it passed at the red commit 2cf5facb by construction; the red-first proof for the version rule is TC-cli-integrations-manifest, red at 2cf5facb
+- Grok's template uses --host openai, the shared .agents copy, not --host grok: --host grok installs only .grok/skills, while a project set up for any other host has .agents/skills; one row of the approved design table said grok (reported to t370)
 
 ## What was verified
 
@@ -97,6 +102,9 @@ next: "Fix t384's two must-fixes on #253 red first, then re-verify and reopen th
 - [Ran cargo test --locked --test integrations -- --exact chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them for TC-cli-integrations-no-runtime-dependency: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-no-runtime-dependency-30a5bd.md)
 - [Ran cargo test --locked --test integrations -- --exact the_readme_names_every_template_and_says_chough_has_no_runtime_dependency for TC-cli-integrations-readme: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-readme-3d43b8.md)
 - [The full test suite passed 740 of 740 across 49 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at a442a2ac, #219's head with main (#248) merged and REQ-cli-065 materialized; clippy on the integrations test with -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-740-of-740-across-49-targets-cargo.md)
+- [Ran cargo test --locked --test integrations -- --exact the_manifest_versions_every_template_with_its_digest for TC-cli-integrations-manifest: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-integrations-manifest-1e9fe6.md)
+- [Ran cargo test --locked --test integrations -- --exact a_changed_template_fails_until_a_new_version_lists_its_digest for TC-cli-integrations-digest-detects-change: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-digest-detects-change-401e9b.md)
+- [Ran cargo test --locked --test integrations -- --exact each_templates_skill_file_exists_after_its_own_chough_init for TC-cli-integrations-skill-file-exists-after-init: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-integrations-skill-file-exists-after-init.md)
 
 ## Open threads
 
