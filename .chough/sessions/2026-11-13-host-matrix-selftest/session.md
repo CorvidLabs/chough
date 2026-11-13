@@ -16,7 +16,9 @@ requirements: [REQ-cli-066]
 cases: [TC-cli-host-matrix-selftest]
 design: []
 files: []
-observations: [2026-11-13-tc-cli-host-matrix-selftest]
+observations:
+  - 2026-11-13-tc-cli-host-matrix-selftest
+  - 2026-11-13-tc-cli-host-matrix-selftest-5e18df
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -32,6 +34,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 ## Where it stands
 
 - Red: TC-cli-host-matrix-selftest fails before the harness exists (selftest.sh cannot find run.sh)
+- Green: TC-cli-host-matrix-selftest passed on macOS arm64 with GIT_CONFIG_GLOBAL=/dev/null (8 harness runs, all as expected)
 
 ## Decisions and why
 
@@ -44,6 +47,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 ## What was verified
 
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: failed (exit 1).](evidence/2026-11-13-tc-cli-host-matrix-selftest.md)
+- [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-5e18df.md)
 
 ## Open threads
 

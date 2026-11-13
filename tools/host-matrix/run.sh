@@ -103,7 +103,7 @@ unset CLAUDECODE CLAUDE_CODE_ENTRYPOINT CLAUDE_CODE_SESSION_ID CLAUDE_CODE_CHILD
     CLAUDE_CODE_EXECPATH CLAUDE_CODE_PLUGIN_DIRS CLAUDE_PID CLAUDE_EFFORT \
     CHOUGH_HC_TERMINAL CHOUGH_ACTOR_MODEL
 as_harness() {
-    CHOUGH_ACTOR=host-matrix-harness
+    CHOUGH_ACTOR="host-matrix-harness"
     export CHOUGH_ACTOR
 }
 as_host() {
@@ -301,7 +301,8 @@ git clone -q "$work" "$logs/acceptance"
 mkdir -p "$logs/acceptance/tests"
 cp "$here/acceptance.rs" "$logs/acceptance/tests/host_matrix_acceptance.rs"
 check "turn 3: the harness's own acceptance test passes" \
-    sh -c 'cd "$1" && cargo test --quiet --test host_matrix_acceptance >"$2" 2>&1' _ "$logs/acceptance" "$logs/acceptance.log"
+    sh -c 'cd "$1" && cargo test --quiet --test host_matrix_acceptance >"$2" 2>&1' _ \
+    "$logs/acceptance" "$logs/acceptance.log"
 stop_if_failed 3
 review_and_ship() {
     specsync change review "$id" --reviewer "$simulated" --verdict pass &&
