@@ -2,9 +2,16 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-13T03:08:31Z</updated>
+<updated>2026-11-13T03:42:02Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>0.6.1: next with no open session exits 0, and timing says elapsed once</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says</id>
+<updated>2026-11-13T03:42:02Z</updated>
+<link href="2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>0.6.1: at the observation cap, writes refuse before writing</title>
 <id>urn:chough:journal:2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing</id>
@@ -136,13 +143,6 @@
 <id>urn:chough:journal:2026-11-07-roadmap-marks-chough-0-5-0-as-published</id>
 <updated>2026-11-07T04:37:00Z</updated>
 <link href="2026-11-07-roadmap-marks-chough-0-5-0-as-published.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Library index check passes right after the move into done (#191)</title>
-<id>urn:chough:journal:2026-11-07-library-index-check-passes-right-after-the-move-into-done-191</id>
-<updated>2026-11-07T04:14:27Z</updated>
-<link href="2026-11-07-library-index-check-passes-right-after-the-move-into-done-191.md"/>
 <category term="shipped"/>
 </entry>
 </feed>

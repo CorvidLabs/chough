@@ -2567,3 +2567,71 @@ fn timing_starts_cycle_1_at_the_start_entry_and_says_elapsed_wall_clock_once() {
         "elapsed wall-clock"
     );
 }
+
+/// 0.6.1 (t38n's fourth fresh-eyes round, F5; REQ-reporting-001): with a closed human
+/// gate, `chough timing` printed "waiting 1m 40s (elapsed wall-clock)" on the gate line,
+/// and a case run and a bug's fix time repeated the label too, though the header says it
+/// once; the native note read "native record files read read-only". The text says
+/// elapsed wall-clock once, in its header, and no gate-wait, run or fix-time line repeats
+/// it, while the JSON keeps the label on every value; the note has no doubled word.
+#[cfg(unix)]
+#[test]
+fn timing_says_elapsed_wall_clock_once_on_gate_run_and_fix_lines() {
+    let gated = fixture_with(&full_history(true));
+    let rendered = text(&gated, &[]);
+    assert_eq!(
+        rendered.matches("elapsed wall-clock").count(),
+        1,
+        "{rendered}"
+    );
+    assert!(
+        rendered.lines().any(|line| {
+            line.starts_with("- \"Review\" (closed): opened ") && line.ends_with(", waiting 1m 40s")
+        }),
+        "{rendered}"
+    );
+    let report = timing(&gated, &[]);
+    assert_eq!(
+        report["gates"][0]["waiting"]["label"], "elapsed wall-clock",
+        "{report:#}"
+    );
+
+    // A case's runs and a bug's fix time.
+    let fixture = Fixture::new();
+    fixture.init();
+    write_entry(&fixture, "fail-early", "TC-a", "failed", T + 200);
+    write_entry(&fixture, "pass", "TC-a", "passed", T + 900);
+    write_bug(
+        &fixture,
+        "BUG-0001",
+        "verified",
+        &["fail-early", "pass"],
+        json!([{"at_unix_seconds": T + 1_000, "text": "status: investigating -> verified"}]),
+    );
+    let rendered = text(&fixture, &[]);
+    assert_eq!(
+        rendered.matches("elapsed wall-clock").count(),
+        1,
+        "{rendered}"
+    );
+    assert!(rendered.contains("; run time 3s\n"), "{rendered}");
+    assert!(rendered.contains("; fix time 13m 20s\n"), "{rendered}");
+    let report = timing(&fixture, &[]);
+    assert_eq!(
+        report["bugs"][0]["fix_time"]["label"], "elapsed wall-clock",
+        "{report:#}"
+    );
+
+    // The native lifecycle note.
+    let native = native_fixture();
+    let report = timing(&native, &[]);
+    let rendered = text(&native, &[]);
+    let detail = report["native"]["detail"].as_str().unwrap().to_string();
+    for output in [&detail, &rendered] {
+        assert!(!output.contains("read read-only"), "{output}");
+    }
+    assert!(
+        detail.contains("native record files, opened read-only (gate and timestamp only)"),
+        "{detail}"
+    );
+}

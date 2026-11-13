@@ -13,6 +13,7 @@ All notable changes to Chough are recorded here. The format follows
   partly skipped main run, any rerun, a filed flake and a day without a green main run
   on both macOS and Linux restart the window. It exits 2 when GitHub cannot be read in
   full. Its fixtures run in the `CI gate fixtures` job.
+- `chough next` with no open session, the normal state after done, says so, names `chough session new <key>` and exits 0 instead of failing, while `chough status` still refuses; `chough timing` says elapsed wall-clock once, in its header, with no gate-wait, case run or fix-time line repeating it, and its native note no longer reads "read read-only" (REQ-cli-021, REQ-history-006, REQ-reporting-001).
 - At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).
 - `chough change ship` prints SpecSync's output, then a short text summary of at most 12
   lines naming the review, the ship, the gate close and the move into done, in place of
