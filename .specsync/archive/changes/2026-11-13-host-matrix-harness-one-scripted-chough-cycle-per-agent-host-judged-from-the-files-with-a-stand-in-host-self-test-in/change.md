@@ -1,6 +1,6 @@
 ---
 id: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
-state: implementing
+state: archived
 type: feature
 base_commit: 598c4bc527007f9bebe53f7291e31130b2891561
 ---
