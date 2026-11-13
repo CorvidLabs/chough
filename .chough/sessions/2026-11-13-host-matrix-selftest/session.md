@@ -5,7 +5,7 @@ aliases: [host-matrix-selftest]
 objective: "Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-test in hosted CI on macOS and Linux (#218, first PR)"
 intent_scope: LIFE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,11 +19,16 @@ files: []
 observations:
   - 2026-11-13-tc-cli-host-matrix-selftest
   - 2026-11-13-tc-cli-host-matrix-selftest-5e18df
+  - 2026-11-13-tc-cli-host-matrix-selftest-201a83
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+    holds: accept
+    drives: review
+    opened: 2026-11-13T05:07:45Z
 run_consents: []
-next: Continue build
+next: Present PR 1 to Leif through t370; on his review, chough change ship with his relayed words
 ---
 # Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-test in hosted CI on macOS and Linux (#218, first PR)
 
@@ -35,6 +40,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 
 - Red: TC-cli-host-matrix-selftest fails before the harness exists (selftest.sh cannot find run.sh)
 - Green: TC-cli-host-matrix-selftest passed on macOS arm64 with GIT_CONFIG_GLOBAL=/dev/null (8 harness runs, all as expected)
+- Green at 6b7376cf (after merging main): TC-cli-host-matrix-selftest passed on macOS arm64; fledge verify passed toolchain, fmt, lint, test, intent and spec
 
 ## Decisions and why
 
@@ -43,11 +49,13 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - decided: each host turn runs with the driver's agent and hc environment cleared and CHOUGH_ACTOR set to the host because chough reads the actor from CLAUDECODE and HC_TERMINAL_ID, which named the harness's own terminal on the stand-in's records
 - Leif decided "Approve the intent: the host-matrix harness and its local-agent leg as Leif chose them (LIFE-27 to LIFE-30, under LIFE-21 item 4, LIFE-22 and LIFE-24)": "Plain runs, Herdr optional (Recommended); Docker on the Mac (Recommended); Not sure: keep it generic (Recommended); Next weekly release (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:32Z, his four answers to the design questions for #218 and #220 (run mode, Linux legs, local agent, when a leg blocks a release), relayed by claude-code-t370, who said to quote them at this change's intent and scope gates); recorded by claude-code-t38q; a relayed claim, not authenticated
 - Leif decided "Scope approval of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:53Z, answering: 'Chough 1.0 harness, PR 1 of 5 (#218): add the test harness that runs one Chough cycle per agent and judges it from the files it leaves. It comes with a fake, no-model agent that tests the harness itself on Mac and Linux CI; no real agents run yet. It lives in tools/host-matrix/, with per-agent adapters next to the #219 templates. Approve this scope?' (option text: 't38q builds it. Its self-test already catches skipped gates, self-approval, wrong resumes and hung turns.'); per t370 his yes also covers REQ-cli-066 as aligned with his four 03:32Z answers and claude-code-t38q's engineering choices (a) to (c) in this change's context.md; relayed by claude-code-t370); recorded by claude-code-t38q; a relayed claim, not authenticated; ran specsync change approve host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in as 0xLeif
+- decided: no open session is read from chough next's null stage, or its failure before 0.6.1, because main's #248 made next exit 0 with no open session
 
 ## What was verified
 
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: failed (exit 1).](evidence/2026-11-13-tc-cli-host-matrix-selftest.md)
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-5e18df.md)
+- [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-201a83.md)
 
 ## Open threads
 
@@ -96,4 +104,20 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
   - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
   - gate: native:approved
   - revision: 7bcdbc8f34bbfcfdc50a34f3797faffa76ef4715
+  - by: claude-code (claude-opus-5-5, hc t38q)
+- 2026-11-13T05:07:44Z · advance · build → test · native:verifying ^t-8e48fb
+  - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+  - gate: native:verifying
+  - revision: 6b7376cf61b3b7431180580c989661393f26ff44
+  - by: claude-code (claude-opus-5-5, hc t38q)
+- 2026-11-13T05:07:45Z · advance · test → accept · native:verifying ^t-d3f596
+  - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+  - gate: native:verifying
+  - revision: 6b7376cf61b3b7431180580c989661393f26ff44
+  - by: claude-code (claude-opus-5-5, hc t38q)
+- 2026-11-13T05:07:45Z · gate-opened · accept → accept · Implementation review of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in ^t-eb4251
+  - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+  - revision: 6b7376cf61b3b7431180580c989661393f26ff44
+  - holds: accept
+  - drives: review
   - by: claude-code (claude-opus-5-5, hc t38q)
