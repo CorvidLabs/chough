@@ -531,7 +531,9 @@ whose SpecSync actor comes from the identity file (REQ-records-008, see
 Each step also passes the relay to SpecSync 6.3.0's own fields, `--words`, `--where`
 and `--recorded-by`, so SpecSync's approval or review records the relayed decision
 (#249). Chough bounds the whole decision at 4,096 bytes, so no field exceeds
-SpecSync's 4,096-byte bound for each.
+SpecSync's 4,096-byte bound for each. Every value it passes to SpecSync's approval and
+review goes in `--flag=value` form, so words or a place that start with `-` reach
+SpecSync intact and are never read as a flag.
 SpecSync 6.3.0 records a change approved or reviewed this way at workflow version 3,
 which SpecSync 6.2.x refuses, so every checkout and CI job of the project needs
 SpecSync 6.3.0.

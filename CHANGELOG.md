@@ -6,6 +6,7 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- Every value Chough passes to `specsync change approve` and `change review` (the actor or reviewer, the note, the verdict and the relay's words, place and recording agent) goes in `--flag=value` form, so a value that starts with `-` reaches SpecSync intact instead of being refused as an unexpected argument; `chough change ship`'s own `--close-gate`, `--decided-by`, `--words`, `--where` and `--recorded-by` take such a value, as `checkpoint`'s do (#261, REQ-records-008).
 - A relayed gate close's native approval or review, including the review `chough change
   ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
   `--recorded-by`, so SpecSync's approval and review records hold the relayed decision

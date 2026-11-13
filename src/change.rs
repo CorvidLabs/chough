@@ -67,8 +67,10 @@ pub(super) enum ChangeCommand {
 #[derive(clap::Args)]
 pub(super) struct ShipArgs {
     id: String,
-    /// The open gate the relay closes after the ship, by its exact text.
-    #[arg(long, conflicts_with = "list")]
+    /// The open gate the relay closes after the ship, by its exact text. Each relay
+    /// value may start with `-` and reaches the record as given, as on `checkpoint`
+    /// (#261).
+    #[arg(long, conflicts_with = "list", allow_hyphen_values = true)]
     close_gate: Option<String>,
     /// A `chough gate list` list holding the gate, in place of --close-gate
     /// (REQ-cli-061); the relay then keeps that gate's summary digest.
@@ -78,16 +80,16 @@ pub(super) struct ShipArgs {
     #[arg(long, requires = "list")]
     gate: Option<usize>,
     /// Who decided the gate.
-    #[arg(long)]
+    #[arg(long, allow_hyphen_values = true)]
     decided_by: Option<String>,
     /// Their exact words.
-    #[arg(long)]
+    #[arg(long, allow_hyphen_values = true)]
     words: Option<String>,
     /// Where and when they said them, and who relayed them.
-    #[arg(long = "where")]
+    #[arg(long = "where", allow_hyphen_values = true)]
     place: Option<String>,
     /// The agent recording the decision.
-    #[arg(long)]
+    #[arg(long, allow_hyphen_values = true)]
     recorded_by: Option<String>,
     /// Print each step's full report after SpecSync's output, in place of the short
     /// text summary (REQ-cli-059).

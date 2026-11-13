@@ -184,18 +184,19 @@ pub(crate) enum Step {
 impl Step {
     /// The arguments after `specsync`: the step, then the relay as `--words`, `--where`
     /// and `--recorded-by`, so SpecSync's approval or review records the relayed
-    /// decision (REQ-records-008). Chough's relay bound keeps each within SpecSync's.
+    /// decision (REQ-records-008). Each value goes in `--flag=value` form, so one that
+    /// starts with `-` is never read as a flag (#261). Chough's relay bound keeps each
+    /// within SpecSync's.
     pub(crate) fn arguments(&self, change: &str, human: &Human) -> Vec<String> {
+        let flag = |name: &str, value: &str| format!("--{name}={value}");
         let (mut arguments, relay) = match self {
             Step::Approve { note, relay } => (
                 vec![
                     "change".into(),
                     "approve".into(),
                     change.into(),
-                    "--actor".into(),
-                    human.specsync_actor.clone(),
-                    "--note".into(),
-                    note.clone(),
+                    flag("actor", &human.specsync_actor),
+                    flag("note", note),
                 ],
                 relay,
             ),
@@ -204,21 +205,16 @@ impl Step {
                     "change".into(),
                     "review".into(),
                     change.into(),
-                    "--reviewer".into(),
-                    human.specsync_actor.clone(),
-                    "--verdict".into(),
-                    verdict.clone(),
+                    flag("reviewer", &human.specsync_actor),
+                    flag("verdict", verdict),
                 ],
                 relay,
             ),
         };
         arguments.extend([
-            "--words".into(),
-            relay.words.clone(),
-            "--where".into(),
-            relay.place.clone(),
-            "--recorded-by".into(),
-            relay.recorded_by.clone(),
+            flag("words", &relay.words),
+            flag("where", &relay.place),
+            flag("recorded-by", &relay.recorded_by),
         ]);
         arguments
     }
