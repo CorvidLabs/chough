@@ -2175,16 +2175,23 @@ fn unlinked_failure_in(
 
 /// Each case the checkpoint references, once, with its latest executed observation by
 /// recorded time, then ID, or None when it has none; a not-run attempt executed nothing.
+/// Only an entry the checkpoint references, by its ID or an alias, counts: one a refused
+/// write left in the folder is no run of the session's (REQ-cli-032).
 fn latest_runs<'a>(
     session: &'a Checkpoint,
     observations: &'a [evidence::Evidence],
 ) -> Vec<(&'a String, Option<&'a evidence::Evidence>)> {
     let referenced: BTreeSet<&String> = session.references.cases.iter().collect();
+    let held: BTreeSet<&String> = session.observations.iter().collect();
     referenced
         .into_iter()
         .map(|case| {
             let latest = observations
                 .iter()
+                .filter(|record| {
+                    held.contains(&record.id)
+                        || record.aliases.iter().any(|alias| held.contains(alias))
+                })
                 .filter(|record| record.cases.iter().any(|link| &link.id == case))
                 .filter(|record| record.outcome != evidence::Outcome::NotRun)
                 .max_by(|a, b| {
