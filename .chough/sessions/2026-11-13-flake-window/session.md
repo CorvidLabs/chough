@@ -44,6 +44,11 @@ observations:
   - 2026-11-13-the-full-test-suite-passed-735-of-735-across-48-targets-cargo
   - 2026-11-13-tc-cli-flake-window-restarts-ec7983
   - 2026-11-13-tc-cli-flake-window-fails-closed-cbf9e4
+  - 2026-11-13-tc-cli-flake-window-clean-5effb3
+  - 2026-11-13-tc-cli-flake-window-restarts-a60440
+  - 2026-11-13-tc-cli-flake-window-blocked-7a226e
+  - 2026-11-13-tc-cli-flake-window-fails-closed-fe148d
+  - 2026-11-13-tc-cli-flake-window-wiring-816737
 bugs: [2026-11-13-flake-window-counts-a-day-covered-when-its-product-jobs-passed]
 blockers: []
 waiting_on_human: []
@@ -84,6 +89,11 @@ next: "Fix t384's must-fix on #252 red first, then re-verify and reopen the revi
 - [The full test suite passed 735 of 735 across 48 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at 383e1ea3, #217's head with main (#248) merged and REQ-cli-062 materialized; the flake-window fixtures passed 24 of 24 and rustfmt --check was clean. No Rust file changed, so clippy was not rerun](evidence/2026-11-13-the-full-test-suite-passed-735-of-735-across-48-targets-cargo.md)
 - [Ran python3 .github/scripts/test-flake-window.py RestartTests for TC-cli-flake-window-restarts: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-restarts-ec7983.md)
 - [Ran python3 .github/scripts/test-flake-window.py FailClosedTests for TC-cli-flake-window-fails-closed: failed (exit 1).](evidence/2026-11-13-tc-cli-flake-window-fails-closed-cbf9e4.md)
+- [Ran python3 .github/scripts/test-flake-window.py CleanWindowTests for TC-cli-flake-window-clean: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-clean-5effb3.md)
+- [Ran python3 .github/scripts/test-flake-window.py RestartTests for TC-cli-flake-window-restarts: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-restarts-a60440.md)
+- [Ran python3 .github/scripts/test-flake-window.py BlockedTests for TC-cli-flake-window-blocked: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-blocked-7a226e.md)
+- [Ran python3 .github/scripts/test-flake-window.py FailClosedTests for TC-cli-flake-window-fails-closed: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-fails-closed-fe148d.md)
+- [Ran python3 .github/scripts/test-flake-window.py WiringTests for TC-cli-flake-window-wiring: passed (exit 0).](evidence/2026-11-13-tc-cli-flake-window-wiring-816737.md)
 
 ## Open threads
 
