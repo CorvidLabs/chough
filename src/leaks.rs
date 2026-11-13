@@ -776,4 +776,88 @@ mod tests {
         let short = Local::new(None, Some("mb"));
         assert!(find(&short, "mb of memory").is_empty());
     }
+
+    /// REQ-records-006, TC-records-a-short-host-name-is-a-word-outside-a-path-a-url-or-user-at-host:
+    /// a short all-letter host name, which may be an ordinary word, is a leak only inside
+    /// a path or a URL or as `<user>@<host>`, in the write guard and in doctor's scan
+    /// alike; a host name of 8 or more characters, or one holding a digit, a hyphen or a
+    /// dot, is a leak anywhere. Every host name here is synthetic, never this machine's.
+    #[test]
+    fn a_short_all_letter_host_name_is_a_leak_only_in_a_path_a_url_or_user_at_host() {
+        let short = Local::new(Some("SYNTHETICuser"), Some("pebble.local"));
+        let kinds = |local: &Local, value: &str| -> Vec<&'static str> {
+            find(local, value)
+                .iter()
+                .map(|found| found.kind.name())
+                .collect()
+        };
+
+        for word in [
+            "a pebble in the shoe",
+            "Pebble, then gravel.",
+            "Leif: \"keep the pebble\" (coordinator chat, 2026-11-12)",
+        ] {
+            // The write guard: a value and a whole record are written.
+            check(&short, "lessons", word).unwrap();
+            let mut record = crate::markdown::Record::new(&format!("## Lessons\n\n- {word}\n"));
+            record
+                .set(
+                    "relay",
+                    crate::markdown::Value::Maps(vec![vec![("where".into(), word.into())]]),
+                )
+                .unwrap();
+            record.check_leaks(&short).unwrap();
+            // Doctor's scan: no finding in a record line or a case definition line.
+            assert_eq!(kinds(&short, word), Vec::<&str>::new(), "{word:?}");
+            assert!(
+                find_in_case_definition(&short, &format!("title = {word:?}")).is_empty(),
+                "{word:?}"
+            );
+        }
+
+        for placed in [
+            "mount /srv/pebble/data",
+            "notes in pebble/notes.md",
+            r"share \\pebble\docs",
+            "open https://pebble:8080/status",
+            "see https://example.com/search?q=pebble",
+            "ssh bob@pebble",
+            "built on pebble.local today",
+        ] {
+            assert_eq!(kinds(&short, placed), ["host-name"], "{placed:?}");
+            let error = check(&short, "lessons", placed).unwrap_err().to_string();
+            assert!(
+                error.starts_with("refused:leak: lessons holds host-name"),
+                "{error}"
+            );
+            assert_eq!(
+                find_in_case_definition(&short, placed).len(),
+                1,
+                "{placed:?}"
+            );
+        }
+        assert_eq!(
+            redact(&short, "ssh bob@pebble").0,
+            "ssh bob@<redacted:host-name>"
+        );
+        // A given name becomes a committed path, so it still may not hold the name.
+        assert!(check_name(&short, "key", "synthetic-pebble-key").is_err());
+
+        // Seven letters is short; eight letters, a digit, a hyphen or a dot is not.
+        let seven = Local::new(None, Some("pebbles"));
+        assert_eq!(kinds(&seven, "two pebbles"), Vec::<&str>::new());
+        assert_eq!(kinds(&seven, "in /srv/pebbles/x"), ["host-name"]);
+        for (host, value) in [
+            ("goldfish", "a goldfish bowl"),
+            ("pebble2", "built on pebble2 today"),
+            ("pebble-box", "built on pebble-box today"),
+            ("pebble.lan", "built on pebble.lan today"),
+        ] {
+            let local = Local::new(None, Some(host));
+            assert_eq!(kinds(&local, value), ["host-name"], "{host}");
+            assert!(check(&local, "lessons", value).is_err(), "{host}");
+        }
+        let dotted = Local::new(None, Some("pebble.lan"));
+        assert_eq!(kinds(&dotted, "a pebble"), Vec::<&str>::new());
+    }
 }

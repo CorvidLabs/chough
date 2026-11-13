@@ -23,3 +23,25 @@ adapter = "command"
 argv = ["cargo", "test", "--locked", "--test", "sessions", "--test", "bugs", "--test", "leaks", "--", "a_leak_in_a_session_value_is_refused_or_redacted", "bug_writes_refuse_or_redact_leaks", "no_write_leaks_and_doctor_finds_old_leaks"]
 expect_output = ["test a_leak_in_a_session_value_is_refused_or_redacted ... ok", "test bug_writes_refuse_or_redact_leaks ... ok", "test no_write_leaks_and_doctor_finds_old_leaks ... ok"]
 timeout_seconds = 600
+
+# 0.6.1: a short all-letter host name, which may be an ordinary word, is a leak
+# only inside a path or a URL or as <user>@<host>; the host names are synthetic.
+
+[[case]]
+id = "TC-records-a-short-host-name-is-a-word-outside-a-path-a-url-or-user-at-host"
+title = "A short all-letter host name used as an ordinary word passes the write guard and doctor's scan, while inside a path, a URL or as <user>@<host> it is refused; a host name of 8 or more characters, or holding a digit, hyphen or dot, is refused anywhere"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-17", "FLOW-22"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the short host name leak test passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "leaks::tests::a_short_all_letter_host_name_is_a_leak_only_in_a_path_a_url_or_user_at_host"]
+expect_output = ["test leaks::tests::a_short_all_letter_host_name_is_a_leak_only_in_a_path_a_url_or_user_at_host ... ok"]
+timeout_seconds = 600
