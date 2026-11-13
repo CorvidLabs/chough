@@ -39,7 +39,7 @@ test = "the_manifest_versions_every_template_with_its_digest"
 
 [[case]]
 id = "TC-cli-integrations-digest-detects-change"
-title = "A changed template byte no longer matches its listed digest"
+title = "A changed template fails until a new version lists its digest, and a new digest at the same version or a repeated digest fails"
 status = "active"
 track = "functional"
 method = "automated"
@@ -48,12 +48,12 @@ requirements = ["REQ-cli-065"]
 paths = ["integrations/README.md", "integrations/templates.toml", "integrations/claude-code/hc-template.md", "integrations/codex/hc-template.md", "integrations/kimi/hc-template.md", "integrations/grok/hc-template.md", "integrations/local/hc-template.md", "tests/integrations.rs"]
 environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["the integrations test a_changed_template_byte_no_longer_matches_its_listed_digest passes"]
+expected = ["the integrations test a_changed_template_fails_until_a_new_version_lists_its_digest passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "integrations"
-test = "a_changed_template_byte_no_longer_matches_its_listed_digest"
+test = "a_changed_template_fails_until_a_new_version_lists_its_digest"
 
 [[case]]
 id = "TC-cli-integrations-no-runtime-dependency"
@@ -90,3 +90,21 @@ expected = ["the integrations test the_readme_names_every_template_and_says_chou
 adapter = "cargo-test"
 test_target = "integrations"
 test = "the_readme_names_every_template_and_says_chough_has_no_runtime_dependency"
+
+[[case]]
+id = "TC-cli-integrations-skill-file-exists-after-init"
+title = "Each template's skill file exists after its own chough init --host"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-22", "LIFE-24"]
+requirements = ["REQ-cli-065"]
+paths = ["integrations/README.md", "integrations/templates.toml", "integrations/claude-code/hc-template.md", "integrations/codex/hc-template.md", "integrations/kimi/hc-template.md", "integrations/grok/hc-template.md", "integrations/local/hc-template.md", "tests/integrations.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the integrations test each_templates_skill_file_exists_after_its_own_chough_init passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "integrations"
+test = "each_templates_skill_file_exists_after_its_own_chough_init"

@@ -5,7 +5,7 @@ aliases: [integrations-templates]
 objective: "#219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)"
 intent_scope: LIFE
 modules: [cli]
-stage: accept
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -19,6 +19,7 @@ cases:
   - TC-cli-integrations-digest-detects-change
   - TC-cli-integrations-no-runtime-dependency
   - TC-cli-integrations-readme
+  - TC-cli-integrations-skill-file-exists-after-init
 design: []
 files:
   - tests/integrations.rs
@@ -49,15 +50,13 @@ observations:
   - 2026-11-13-tc-cli-integrations-no-runtime-dependency-30a5bd
   - 2026-11-13-tc-cli-integrations-readme-3d43b8
   - 2026-11-13-the-full-test-suite-passed-740-of-740-across-49-targets-cargo
-bugs: []
+bugs:
+  - 2026-11-13-the-grok-template-opens-a-skill-file-its-own-chough-init-does
+  - 2026-11-13-a-changed-integrations-template-passes-with-its-version
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
-    holds: accept
-    drives: review
-    opened: 2026-11-13T05:03:50Z
+waiting_on_human: []
 run_consents: []
-next: Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay; merge after hosted CI is green
+next: "Fix t384's two must-fixes on #253 red first, then re-verify and reopen the review gate"
 ---
 # #219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)
 
@@ -172,4 +171,14 @@ next: Leif's implementation review (relayed by t370), then chough change ship wi
   - revision: c56dd78a35fbd42d94da891f30b0f016a890c6f8
   - holds: accept
   - drives: review
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:34:34Z · gate-closed · accept → accept · Implementation review of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a ^t-3896da
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - revision: 81eccae15ccf4aac8ba89692cabb5aa59740b782
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:34:36Z · back · accept → build · t384's independent review of #253 at 81eccae1: the Grok template names a skill file its own chough init does not create, and the tests do not make a changed template raise its version ^t-0a67a5
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - gate: native:verifying
+  - revision: 81eccae15ccf4aac8ba89692cabb5aa59740b782
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 5 case(s) and 16 observation(s) to re-check with `chough status`
   - by: claude-code (hc t38r)

@@ -158,6 +158,56 @@ fn each_template_has_hcs_front_matter_resumes_with_chough_next_and_holds_no_loca
     }
 }
 
+/// What is wrong with a template's `versions` list for a file with these bytes: the
+/// versions must run 1, 2, 3 and so on in order, no digest may appear twice, and the
+/// newest entry must be the file's SHA-256, so a changed template fails until a new
+/// version with its digest is appended (REQ-cli-065).
+fn version_problems(host: &str, versions: &[(i64, String)], bytes: &[u8]) -> Vec<String> {
+    let mut problems = Vec::new();
+    if versions.is_empty() {
+        return vec![format!("{host} lists no versions")];
+    }
+    for (index, (version, _)) in versions.iter().enumerate() {
+        if *version != index as i64 + 1 {
+            problems.push(format!(
+                "{host}'s versions must run 1, 2, 3 in order: entry {} is version {version}",
+                index + 1
+            ));
+        }
+    }
+    let digests: BTreeSet<&str> = versions.iter().map(|(_, digest)| digest.as_str()).collect();
+    if digests.len() != versions.len() {
+        problems.push(format!("{host} lists the same digest at two versions"));
+    }
+    let actual = format!("{:x}", Sha256::digest(bytes));
+    let (newest, listed) = versions.last().expect("not empty");
+    if *listed != actual {
+        problems.push(format!(
+            "{host}'s template changed since version {newest}: append {{ version = {}, sha256 = \"{actual}\" }} to its versions in integrations/templates.toml",
+            newest + 1
+        ));
+    }
+    problems
+}
+
+fn listed_versions(entry: &toml::Table) -> Vec<(i64, String)> {
+    entry
+        .get("versions")
+        .and_then(toml::Value::as_array)
+        .unwrap_or_else(|| panic!("template entry {entry:?} has no versions list"))
+        .iter()
+        .map(|item| {
+            let item = item.as_table().expect("a version is a table");
+            (
+                item.get("version")
+                    .and_then(toml::Value::as_integer)
+                    .expect("a version number"),
+                text(item, "sha256"),
+            )
+        })
+        .collect()
+}
+
 #[test]
 fn the_manifest_versions_every_template_with_its_digest() {
     let table = manifest();
@@ -173,11 +223,6 @@ fn the_manifest_versions_every_template_with_its_digest() {
         assert_eq!(text(entry, "file"), template_path(host));
         assert_eq!(text(entry, "name"), *name);
         assert_eq!(text(entry, "init_host"), *init_host);
-        let version = entry.get("version").and_then(toml::Value::as_integer);
-        assert!(
-            version.is_some_and(|version| version >= 1),
-            "{host} has a version"
-        );
         let status = if *host == "local" {
             "unqualified"
         } else {
@@ -185,24 +230,90 @@ fn the_manifest_versions_every_template_with_its_digest() {
         };
         assert_eq!(text(entry, "status"), status, "{host}");
         let bytes = fs::read(manifest_dir().join(template_path(host))).unwrap();
-        assert_eq!(
-            text(entry, "sha256"),
-            format!("{:x}", Sha256::digest(&bytes)),
-            "{host}'s template changed: bump its version and update its sha256 in integrations/templates.toml"
-        );
+        let problems = version_problems(host, &listed_versions(entry), &bytes);
+        assert!(problems.is_empty(), "{problems:#?}");
     }
 }
 
 #[test]
-fn a_changed_template_byte_no_longer_matches_its_listed_digest() {
-    let entries = manifest_entries();
-    let entry = &entries[0];
-    let mut bytes = fs::read(manifest_dir().join(text(entry, "file"))).unwrap();
-    bytes.push(b'\n');
-    assert_ne!(
-        text(entry, "sha256"),
-        format!("{:x}", Sha256::digest(&bytes))
+fn a_changed_template_fails_until_a_new_version_lists_its_digest() {
+    let old = b"---\nname: chough-kimi\n---\nbody\n".as_slice();
+    let new = b"---\nname: chough-kimi\n---\nbody, changed\n".as_slice();
+    let digest = |bytes: &[u8]| format!("{:x}", Sha256::digest(bytes));
+    let one = vec![(1, digest(old))];
+    assert!(version_problems("kimi", &one, old).is_empty());
+    let unchanged_list = version_problems("kimi", &one, new);
+    assert_eq!(unchanged_list.len(), 1, "{unchanged_list:#?}");
+    assert!(
+        unchanged_list[0].contains("append { version = 2"),
+        "{unchanged_list:#?}"
     );
+    let raised = vec![(1, digest(old)), (2, digest(new))];
+    assert!(version_problems("kimi", &raised, new).is_empty());
+    let not_raised = vec![(1, digest(old)), (1, digest(new))];
+    assert!(
+        version_problems("kimi", &not_raised, new)
+            .iter()
+            .any(|problem| problem.contains("must run 1, 2, 3")),
+        "a new digest at the same version fails"
+    );
+    let repeated = vec![(1, digest(new)), (2, digest(new))];
+    assert!(
+        version_problems("kimi", &repeated, new)
+            .iter()
+            .any(|problem| problem.contains("same digest")),
+        "a version that changes nothing fails"
+    );
+}
+
+/// The skill file a template's body tells the agent to load.
+fn named_skill_file(body: &str) -> String {
+    body.split_whitespace()
+        .find(|token| token.ends_with("SKILL.md") || token.ends_with("SKILL.md."))
+        .map(|token| token.trim_end_matches('.').trim_matches('`').to_string())
+        .expect("the body names the skill file to load")
+}
+
+fn git(root: &Path, args: &[&str]) {
+    let output = Command::new("git")
+        .current_dir(root)
+        .args(args)
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "git {args:?}: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
+fn each_templates_skill_file_exists_after_its_own_chough_init() {
+    for (host, _, init_host) in HOSTS {
+        let (_, body) = split_template(&read(&template_path(host)));
+        let skill = named_skill_file(&body);
+        let project = tempfile::tempdir().unwrap();
+        let root = project.path();
+        git(root, &["init", "-q"]);
+        git(root, &["config", "user.name", "Test"]);
+        git(root, &["config", "user.email", "test@example.invalid"]);
+        git(root, &["config", "commit.gpgsign", "false"]);
+        git(root, &["commit", "-q", "--allow-empty", "-m", "start"]);
+        let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .current_dir(root)
+            .args(["init", "--objective", "Probe", "--host", init_host])
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{host}: chough init --host {init_host}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(
+            root.join(&skill).is_file(),
+            "{host}'s template loads {skill}, which chough init --host {init_host} does not create"
+        );
+    }
 }
 
 #[test]
