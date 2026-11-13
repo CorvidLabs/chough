@@ -26,6 +26,7 @@ observations:
   - 2026-11-13-tc-cli-host-matrix-selftest-282f87
   - 2026-11-13-tc-cli-host-matrix-selftest-349558
   - 2026-11-13-tc-cli-host-matrix-selftest-b12eb5
+  - 2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-in-one-pass-at
 bugs: [2026-11-13-the-host-matrix-turn-deadline-does-not-end-a-hung-turn-under]
 blockers: []
 waiting_on_human:
@@ -34,7 +35,7 @@ waiting_on_human:
     drives: review
     opened: 2026-11-13T05:07:45Z
 run_consents: []
-next: Present PR 1 to Leif through t370; on his review, chough change ship with his relayed words
+next: Leif's implementation review through t370; then chough change ship with his relayed words, commit the story, doctor --fix, push the archive tip and watch hosted CI
 ---
 # Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-test in hosted CI on macOS and Linux (#218, first PR)
 
@@ -50,6 +51,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - Verify lane passed in two passes (6b7376cf, fdf6561e); draft PR #254 opened and pushed
 - Full suite at 2bce65a2: 735 passed in 48 targets (Rust 1.96.0), clippy and fmt clean
 - Fixed the dash deadline bug (91b227be); self-test green under dash and bash
+- Verify lane passed in one pass at bf753857 (735 tests); t384 passed the review at 96%
 
 ## Decisions and why
 
@@ -72,6 +74,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - [Red at 6457d8a8 under dash: HOST_MATRIX_FAULT=hang HOST_TURN_TIMEOUT=3 sh tools/host-matrix/run.sh stand-in, with sh as /bin/dash and stdin not a terminal, judged the run PASS after 1540 s: no turn was ended at its 3 s limit, so each stand-in turn's 300 s hang ran out.](evidence/2026-11-13-tc-cli-host-matrix-selftest-282f87.md)
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-349558.md)
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-b12eb5.md)
+- [fledge lanes run verify (Fledge 1.8.0, the CI pin) in one pass at bf753857 with a clean tree under the heavy-tests lock: toolchain, fmt, lint, test (735 passed in 48 targets, 0 failed), intent, spec, audit, cases, knowledge, leaks, exercise and build all passed.](evidence/2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-in-one-pass-at.md)
 
 ## Open threads
 
