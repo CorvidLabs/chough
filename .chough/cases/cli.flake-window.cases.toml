@@ -36,7 +36,7 @@ expected = ["the RestartTests fixtures in .github/scripts/test-flake-window.py p
 [case.bind]
 adapter = "command"
 argv = ["python3", ".github/scripts/test-flake-window.py", "RestartTests"]
-expect_output = ["Ran 7 tests", "OK"]
+expect_output = ["Ran 8 tests", "OK"]
 timeout_seconds = 120
 
 [[case]]
@@ -74,7 +74,7 @@ expected = ["the FailClosedTests fixtures in .github/scripts/test-flake-window.p
 [case.bind]
 adapter = "command"
 argv = ["python3", ".github/scripts/test-flake-window.py", "FailClosedTests"]
-expect_output = ["Ran 6 tests", "OK"]
+expect_output = ["Ran 8 tests", "OK"]
 timeout_seconds = 120
 
 [[case]]

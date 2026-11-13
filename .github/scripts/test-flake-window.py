@@ -205,6 +205,15 @@ class RestartTests(WindowCase):
         self.assertIn("macos-latest", receipt["latest_restart"]["detail"])
         self.assertNotIn("ubuntu-latest", receipt["latest_restart"]["detail"])
 
+    def test_two_runs_that_each_pass_only_one_product_job_do_not_cover_their_day(self):
+        # t384's probe on #252: a day counts only when one run passed both jobs.
+        self.world.green_days(15, skip=(3,))
+        self.world.main_run(morning(3), conclusion="failure", macos="failure")
+        self.world.main_run(morning(3) + timedelta(hours=2), conclusion="failure", linux="failure")
+        end_of_gap = morning(3).replace(hour=0) + DAY
+        receipt = self.compute()
+        self.assert_running(receipt, "no-green-run", end_of_gap)
+
 
 class BlockedTests(WindowCase):
     def setUp(self):
@@ -394,6 +403,26 @@ class FailClosedTests(WindowCase):
         self.assertEqual(code, 0)
         self.assertEqual(json.loads(stdout)["inputs"]["bug_records"], 1)
         self.assertEqual(tree_digest(self.root), before)
+
+    def test_an_unreadable_bug_record_exits_2_with_no_verdict(self):
+        self.world.green_days(15)
+        (self.root / ".chough" / "bugs" / "2026-11-01-not-utf-8.md").write_bytes(
+            b"---\nkind: bug\nid: x\nstatus: open\n---\n\xff\xfe not UTF-8\n")
+        code, stdout, stderr = self.run_main("--input", str(self.saved_input()))
+        self.assertEqual(code, 2, stderr)
+        self.assertNotIn('"verdict"', stdout)
+        self.assertIn("2026-11-01-not-utf-8.md", stderr)
+
+    def test_the_receipt_names_a_digest_of_the_bug_records_it_read(self):
+        self.world.green_days(15)
+        code, stdout, _ = self.run_main("--input", str(self.saved_input()))
+        self.assertEqual(code, 0)
+        first = json.loads(stdout)["inputs"]["bug_records_sha256"]
+        self.assertRegex(first, r"^[0-9a-f]{64}$")
+        record = self.root / ".chough" / "bugs" / "2026-10-11-fd-inheritance.md"
+        record.write_text(record.read_text() + "- note: another line\n")
+        code, stdout, _ = self.run_main("--input", str(self.saved_input()))
+        self.assertNotEqual(json.loads(stdout)["inputs"]["bug_records_sha256"], first)
 
 
 class WiringTests(unittest.TestCase):

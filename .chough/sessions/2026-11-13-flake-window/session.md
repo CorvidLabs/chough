@@ -5,7 +5,7 @@ aliases: [flake-window]
 objective: "#217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)"
 intent_scope: LIFE
 modules: [cli]
-stage: accept
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -42,15 +42,11 @@ observations:
   - 2026-11-13-tc-cli-flake-window-wiring-b968fa
   - 2026-11-13-the-check-read-live-ci-history-for-corvidlabs-chough-in-27-6-s
   - 2026-11-13-the-full-test-suite-passed-735-of-735-across-48-targets-cargo
-bugs: []
+bugs: [2026-11-13-flake-window-counts-a-day-covered-when-its-product-jobs-passed]
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
-    holds: accept
-    drives: review
-    opened: 2026-11-13T04:55:12Z
+waiting_on_human: []
 run_consents: []
-next: Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay; merge after hosted CI is green
+next: "Fix t384's must-fix on #252 red first, then re-verify and reopen the review gate"
 ---
 # #217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)
 
@@ -148,4 +144,14 @@ next: Leif's implementation review (relayed by t370), then chough change ship wi
   - revision: 0327bbdde1ec2e8be391c7f81bdf4f3d010c07ac
   - holds: accept
   - drives: review
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:00:38Z · gate-closed · accept → accept · Implementation review of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read ^t-957a7a
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - revision: 3287c91f35c7d024b21e7ba423ab15e68d85b0c8
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:00:40Z · back · accept → build · t384's independent review of #252 at 3287c91f found a mismatch with REQ-cli-062: a day counted as covered when its two Product jobs passed only in different main runs ^t-db2398
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - gate: native:verifying
+  - revision: 3287c91f35c7d024b21e7ba423ab15e68d85b0c8
+  - refresh: build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 5 case(s) and 12 observation(s) to re-check with `chough status`
   - by: claude-code (hc t38r)
