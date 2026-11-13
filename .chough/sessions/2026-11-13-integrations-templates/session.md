@@ -5,7 +5,7 @@ aliases: [integrations-templates]
 objective: "#219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)"
 intent_scope: LIFE
 modules: [cli]
-stage: plan
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -60,13 +60,20 @@ observations:
   - 2026-11-13-tc-cli-integrations-readme-0e6fc0
   - 2026-11-13-tc-cli-integrations-skill-file-exists-after-init-bda2c8
   - 2026-11-13-the-full-test-suite-passed-741-of-741-across-49-targets-cargo
+  - 2026-11-13-tc-cli-integrations-templates-a34ade
+  - 2026-11-13-tc-cli-integrations-manifest-1fbb4b
+  - 2026-11-13-tc-cli-integrations-digest-detects-change-0d3a56
+  - 2026-11-13-tc-cli-integrations-no-runtime-dependency-c74660
+  - 2026-11-13-tc-cli-integrations-readme-c629fa
+  - 2026-11-13-tc-cli-integrations-skill-file-exists-after-init-fd8cfb
+  - 2026-11-13-the-full-test-suite-passed-743-of-743-across-49-targets-cargo
 bugs:
   - 2026-11-13-the-grok-template-opens-a-skill-file-its-own-chough-init-does
   - 2026-11-13-a-changed-integrations-template-passes-with-its-version
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Approve the narrowed scope of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
 ---
 # #219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)
 
@@ -120,6 +127,13 @@ next: "Gate \"Approve the narrowed scope of 219-life-24-integrations-ships-versi
 - [Ran cargo test --locked --test integrations -- --exact the_readme_names_every_template_and_says_chough_has_no_runtime_dependency for TC-cli-integrations-readme: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-readme-0e6fc0.md)
 - [Ran cargo test --locked --test integrations -- --exact each_templates_skill_file_exists_after_its_own_chough_init for TC-cli-integrations-skill-file-exists-after-init: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-skill-file-exists-after-init-bda2c8.md)
 - [The full test suite passed 741 of 741 across 49 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at dbe09d42, #253's head after t384's two must-fixes; clippy -D warnings on the integrations test and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-741-of-741-across-49-targets-cargo.md)
+- [Ran cargo test --locked --test integrations -- --exact each_template_has_hcs_front_matter_resumes_with_chough_next_and_holds_no_local_path for TC-cli-integrations-templates: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-templates-a34ade.md)
+- [Ran cargo test --locked --test integrations -- --exact the_manifest_versions_every_template_with_its_digest for TC-cli-integrations-manifest: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-manifest-1fbb4b.md)
+- [Ran cargo test --locked --test integrations -- --exact a_changed_template_fails_until_a_new_version_lists_its_digest for TC-cli-integrations-digest-detects-change: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-digest-detects-change-0d3a56.md)
+- [Ran cargo test --locked --test integrations -- --exact chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them for TC-cli-integrations-no-runtime-dependency: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-no-runtime-dependency-c74660.md)
+- [Ran cargo test --locked --test integrations -- --exact the_readme_names_every_template_and_says_chough_has_no_runtime_dependency for TC-cli-integrations-readme: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-readme-c629fa.md)
+- [Ran cargo test --locked --test integrations -- --exact each_templates_skill_file_exists_after_its_own_chough_init for TC-cli-integrations-skill-file-exists-after-init: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-skill-file-exists-after-init-fd8cfb.md)
+- [The full test suite passed 743 of 743 across 49 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at 5219fe8d, #253's head with main (#242) merged and the narrowed REQ-cli-065 materialized as cli version 90; the six integrations cases passed at the same content](evidence/2026-11-13-the-full-test-suite-passed-743-of-743-across-49-targets-cargo.md)
 
 ## Open threads
 
@@ -259,4 +273,19 @@ next: "Gate \"Approve the narrowed scope of 219-life-24-integrations-ships-versi
     - recorded_by: claude-code-t38r
     - native: specsync change approve 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
     - actor: 0xLeif
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:21:19Z · advance · plan → build · native:approved ^t-99a06a
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - gate: native:approved
+  - revision: 5219fe8daacaa2baeb870782955b1f06090c072f
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:21:19Z · advance · build → test · native:approved ^t-2b5040
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - gate: native:approved
+  - revision: 5219fe8daacaa2baeb870782955b1f06090c072f
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:21:20Z · advance · test → accept · native:approved ^t-73a726
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - gate: native:approved
+  - revision: 5219fe8daacaa2baeb870782955b1f06090c072f
   - by: claude-code (hc t38r)
