@@ -131,12 +131,15 @@ The verdict is one of three:
   DRIVE-19 bug record is still open, a closed flake has had no fully green main run
   since it closed, or a flake issue has no bug record naming it as `GitHub #<n>`.
 
-If GitHub cannot be read in full, the check exits 2 and gives no verdict.
-`--require-clean` exits 1 unless the verdict is `clean`.
+If GitHub cannot be read in full, or a bug record cannot be read, the check exits 2
+and gives no verdict. `--require-clean` exits 1 unless the verdict is `clean`. A day
+counts only when one main run passed both Product jobs. Until CI also runs once a day
+on main (REQ-cli-064), a day with no merge to main restarts the window.
 
 To keep proof of a run, save the input as well. Running the script directly prints
 only the receipt, while `fledge run` adds its own lines around it. A saved input
-recomputes the same receipt:
+recomputes the same receipt at the same bug records. The receipt's `inputs.sha256`
+covers the GitHub data, and `inputs.bug_records_sha256` covers the bug records:
 
 ```sh
 python3 .github/scripts/flake-window.py --save-input flake-input.json > flake-receipt.json

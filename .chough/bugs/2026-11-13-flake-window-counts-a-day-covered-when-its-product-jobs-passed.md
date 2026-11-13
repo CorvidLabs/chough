@@ -10,7 +10,7 @@ impact: The 1.0 flake window could read clean a day early; found before merge
 criteria: [LIFE-21]
 requirements: [REQ-cli-062]
 cases: []
-evidence: []
+evidence: [2026-11-13-flake-window/2026-11-13-tc-cli-flake-window-restarts-ec7983]
 receipts: []
 environment: local-macos-arm64
 revision: 3287c91f35c7d024b21e7ba423ab15e68d85b0c8
@@ -20,7 +20,7 @@ actor:
     terminal: t38r
 related: []
 created: 2026-11-13T05:00:40Z
-updated: 2026-11-13T05:00:40Z
+updated: 2026-11-13T05:01:40Z
 ---
 # flake window counts a day covered when its Product jobs passed only in different runs
 
@@ -40,3 +40,4 @@ Actual: With 20 green days except 2026-11-17's two split runs and --now 2026-12-
 ## Log
 
 - 2026-11-13T05:00:40Z · Reported (manual report) · by claude-code (hc t38r)
+- 2026-11-13T05:01:40Z · evidence: 2026-11-13-flake-window/2026-11-13-tc-cli-flake-window-restarts-ec7983 · by claude-code (hc t38r)

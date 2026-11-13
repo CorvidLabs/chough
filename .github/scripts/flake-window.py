@@ -226,7 +226,10 @@ def read_bugs(root):
     if not folder.is_dir():
         return records
     for path in sorted(folder.glob("*.md")):
-        text = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+        try:
+            text = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+        except (OSError, UnicodeDecodeError) as error:
+            raise Unavailable(f"cannot read bug record {path}: {error}") from error
         match = FRONT_MATTER.match(text)
         if not match:
             continue
@@ -303,20 +306,28 @@ def compute(inputs, bugs, now, days=REQUIRED_DAYS):
             restart("flake-filed", parse_time(bug["created"]),
                     f"bug record {bug.get('id')} names {FLAKE_CRITERION}")
 
-    covered = {}
+    # A day counts only when one main run passed both Product jobs (REQ-cli-062);
+    # two runs that each pass one job do not cover it.
+    covered, seen = set(), {}
     for run in main:
         if run.get("status") != "completed":
             continue
         day = start_of_day(parse_time(run["created_at"]))
-        for os_key in PRODUCT_JOBS:
-            if green(run, jobs.get(str(run.get("id"))), os_key):
-                covered.setdefault(day, set()).add(os_key)
+        passed = {key for key in PRODUCT_JOBS if green(run, jobs.get(str(run.get("id"))), key)}
+        seen.setdefault(day, set()).update(passed)
+        if passed == set(PRODUCT_JOBS):
+            covered.add(day)
     for offset in range(1, days + 1):
         day = today - offset * DAY
-        missing = [PRODUCT_JOBS[key].split(" / ")[1] for key in PRODUCT_JOBS if key not in covered.get(day, set())]
+        if day in covered:
+            continue
+        missing = [PRODUCT_JOBS[key].split(" / ")[1] for key in PRODUCT_JOBS if key not in seen.get(day, set())]
         if missing:
-            restart("no-green-run", day + DAY,
-                    f"no green main run on {day:%Y-%m-%d} for {' and '.join(missing)}")
+            detail = f"no green main run on {day:%Y-%m-%d} for {' and '.join(missing)}"
+        else:
+            detail = (f"no main run on {day:%Y-%m-%d} passed both Product jobs;"
+                      " each passed only in a different run")
+        restart("no-green-run", day + DAY, detail)
 
     blocked = []
     open_flakes, closed_flakes = [], []
@@ -357,6 +368,10 @@ def compute(inputs, bugs, now, days=REQUIRED_DAYS):
         days_clean = round((now - parse_time(latest["at"])) / DAY, 2)
     canonical = json.dumps({"runs": runs, "jobs": jobs, "issues": issues}, sort_keys=True,
                            separators=(",", ":")).encode()
+    # --input recomputes from saved GitHub data but reads .chough/bugs/ again, so the
+    # receipt names both digests: it reproduces only at the same bug records.
+    bug_canonical = json.dumps(sorted(bugs, key=lambda bug: str(bug.get("id"))), sort_keys=True,
+                               separators=(",", ":")).encode()
     return {
         "schema": "chough-flake-window/1",
         "repository": inputs.get("repository"),
@@ -380,6 +395,7 @@ def compute(inputs, bugs, now, days=REQUIRED_DAYS):
             "flake_bug_records": len(flake_bugs),
             "lookback_days": inputs.get("lookback_days"),
             "sha256": hashlib.sha256(canonical).hexdigest(),
+            "bug_records_sha256": hashlib.sha256(bug_canonical).hexdigest(),
         },
     }
 
