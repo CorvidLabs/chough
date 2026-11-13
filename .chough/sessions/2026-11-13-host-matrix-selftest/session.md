@@ -5,7 +5,7 @@ aliases: [host-matrix-selftest]
 objective: "Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-test in hosted CI on macOS and Linux (#218, first PR)"
 intent_scope: LIFE
 modules: [cli]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -32,13 +32,9 @@ observations:
   - 2026-11-13-after-merging-main-242-at-30d6405e-clean-tree-fledge-lanes-run
 bugs: [2026-11-13-the-host-matrix-turn-deadline-does-not-end-a-hung-turn-under]
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
-    holds: accept
-    drives: review
-    opened: 2026-11-13T05:07:45Z
+waiting_on_human: []
 run_consents: []
-next: Leif's implementation review through t370; then chough change ship with his relayed words, commit the story, doctor --fix, push the archive tip and watch hosted CI
+next: Continue done
 ---
 # Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-test in hosted CI on macOS and Linux (#218, first PR)
 
@@ -66,6 +62,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - Leif decided "Scope approval of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:53Z, answering: 'Chough 1.0 harness, PR 1 of 5 (#218): add the test harness that runs one Chough cycle per agent and judges it from the files it leaves. It comes with a fake, no-model agent that tests the harness itself on Mac and Linux CI; no real agents run yet. It lives in tools/host-matrix/, with per-agent adapters next to the #219 templates. Approve this scope?' (option text: 't38q builds it. Its self-test already catches skipped gates, self-approval, wrong resumes and hung turns.'); per t370 his yes also covers REQ-cli-066 as aligned with his four 03:32Z answers and claude-code-t38q's engineering choices (a) to (c) in this change's context.md; relayed by claude-code-t370); recorded by claude-code-t38q; a relayed claim, not authenticated; ran specsync change approve host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in as 0xLeif
 - decided: no open session is read from chough next's null stage, or its failure before 0.6.1, because main's #248 made next exit 0 with no open session
 - decided: each turn and its timer start as process groups through perl's setpgrp because dash, sh on Ubuntu, turns job control off without a terminal (t384's review); rejected: requiring bash because the harness and its callers are POSIX sh like the rest of tools/
+- Leif decided "Implementation review of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:03Z, answering: 'Chough 1.0, harness PR 1 (#254): built. A fake agent runs the whole Chough cycle through it on Mac and Linux shells, and the harness catches every planted mistake: skipped gate, self-approval, extra file, wrong resume and a hung agent. The reviewer passed it. Approve the implementation?' (option text: 't38q ships it. Then CI runs on Mac and Linux, then merge it.'); asked at head 079a8388; main (#242) was merged afterwards at b5e984bd, changing only the spec change-log row (90) and main's own files, re-verified at 30d6405e and re-checked by t384; relayed by claude-code-t370); recorded by claude-code-t38q; a relayed claim, not authenticated; ran specsync change review host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -162,4 +159,20 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
   - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
   - gate: native:verifying
   - revision: 91b227be06a40a5fea5950bcf92c8a812820491b
+  - by: claude-code (claude-opus-5-5, hc t38q)
+- 2026-11-13T14:19:17Z · gate-closed · accept → accept · Implementation review of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in ^t-147acb
+  - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+  - revision: 30530fa36cc040eaa193f90e362bb1200201d154
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T14:03Z, answering: 'Chough 1.0, harness PR 1 (#254): built. A fake agent runs the whole Chough cycle through it on Mac and Linux shells, and the harness catches every planted mistake: skipped gate, self-approval, extra file, wrong resume and a hung agent. The reviewer passed it. Approve the implementation?' (option text: 't38q ships it. Then CI runs on Mac and Linux, then merge it.'); asked at head 079a8388; main (#242) was merged afterwards at b5e984bd, changing only the spec change-log row (90) and main's own files, re-verified at 30d6405e and re-checked by t384; relayed by claude-code-t370
+    - recorded_by: claude-code-t38q
+    - native: specsync change review host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+    - actor: 0xLeif
+  - by: claude-code (claude-opus-5-5, hc t38q)
+- 2026-11-13T14:19:19Z · advance · accept → done · native:archived ^t-071ffe
+  - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+  - gate: native:archived
+  - revision: 30530fa36cc040eaa193f90e362bb1200201d154
   - by: claude-code (claude-opus-5-5, hc t38q)
