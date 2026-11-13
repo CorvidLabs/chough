@@ -9,19 +9,23 @@ stage: plan
 stage_status: active
 iteration: 1
 callers: []
-native_change: ""
+native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
 pr: ""
 criteria: [LIFE-21, LIFE-22, LIFE-24, LIFE-27, LIFE-28, LIFE-29, LIFE-30, FLOW-10, FLOW-16, FLOW-21]
-requirements: []
+requirements: [REQ-cli-066]
 cases: []
 design: []
 files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Scope approval of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+    holds: plan
+    drives: approve
+    opened: 2026-11-13T03:52:59Z
 run_consents: []
-next: Continue plan
+next: "Wait for Leif's scope approval through t370; then build red first: the case and selftest.sh, the failing run recorded, then the harness"
 ---
 # Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-test in hosted CI on macOS and Linux (#218, first PR)
 
@@ -65,4 +69,10 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
   - by: claude-code (claude-opus-5-5, hc t38q)
 - 2026-11-13T03:50:00Z · skip · design → plan · Scripts, prompts and CI only; no visuals or interactions change ^t-9012bf
   - revision: 4a7a273b3ff6d617ef7475b8a19f28ff8ac22e4c
+  - by: claude-code (claude-opus-5-5, hc t38q)
+- 2026-11-13T03:52:59Z · gate-opened · plan → plan · Scope approval of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in ^t-c01633
+  - native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in
+  - revision: 598c4bc527007f9bebe53f7291e31130b2891561
+  - holds: plan
+  - drives: approve
   - by: claude-code (claude-opus-5-5, hc t38q)
