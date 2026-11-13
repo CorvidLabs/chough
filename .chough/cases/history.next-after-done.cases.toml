@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "history"
+
+# 0.6.1 (t38n's fourth fresh-eyes round, F10): after the move into done archived the
+# session, chough next printed "Error: no open session" and exited 1.
+
+[[case]]
+id = "TC-history-next-after-done-exits-0-and-status-refuses"
+title = "After the move into done archives the session, chough next exits 0 naming chough session new <key> and writes nothing, chough status refuses with the same message, and the named command opens the next session"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-13", "LIFE-3"]
+requirements = ["REQ-history-006"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::after_the_move_into_done_next_exits_0_and_status_refuses passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "after_the_move_into_done_next_exits_0_and_status_refuses"
