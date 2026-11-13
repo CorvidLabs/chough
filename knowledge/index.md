@@ -46,12 +46,9 @@ Newest posts:
 
 ## Open bugs
 
-4 open bugs, blocking first, then newest.
+1 open bug, blocking first, then newest.
 
 - [2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their](../.chough/bugs/2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their.md) The intent gate summary names criterion IDs without their sentences and says the diff is unknown (deferred)
-- [2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from](../.chough/bugs/2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from.md) A fresh project's records README names artifacts as kept from 0.5.x, and the README init paragraph is long (deferred)
-- [2026-11-12-migrated-records-keep-old-observation-ids-in-their-front](../.chough/bugs/2026-11-12-migrated-records-keep-old-observation-ids-in-their-front.md) Migrated records keep old observation IDs in their front matter (deferred)
-- [2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one](../.chough/bugs/2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one.md) A bug body runs its symptom and its Actual line into one paragraph (deferred)
 
 ## Rules, skills and decisions
 
