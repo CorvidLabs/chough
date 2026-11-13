@@ -1,0 +1,54 @@
+# The host-matrix harness's real agent hosts (REQ-cli-067, #218 PR 2).
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-host-matrix-unavailable-turn"
+title = "A host turn that exits 75 (no login, a usage limit) ends the leg as UNAVAILABLE, naming the reason"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21", "LIFE-27"]
+requirements = ["REQ-cli-067"]
+paths = ["tools/host-matrix/run.sh", "tools/host-matrix/selftest.sh"]
+environments = ["local-macos-arm64", "ci-linux", "ci-macos"]
+artifacts = ["test-log"]
+setup = ["chough built from this checkout (CHOUGH), with hi, specsync, cargo, git, jq and perl on PATH"]
+steps = ["Run sh tools/host-matrix/selftest.sh"]
+expected = ["The usage-limit run reads UNAVAILABLE naming the turn and the reason, and the whole self-test passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["sh", "tools/host-matrix/selftest.sh"]
+expect_output = ["ok: usage-limit -> UNAVAILABLE", "HOST MATRIX SELFTEST PASSED"]
+timeout_seconds = 1200
+
+[[case]]
+id = "TC-cli-host-matrix-claude-code"
+title = "One real host-matrix leg of Claude Code on macOS"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["LIFE-21", "LIFE-22", "LIFE-27"]
+requirements = ["REQ-cli-067"]
+paths = ["integrations/claude-code/adapter.sh", "tools/host-matrix/run.sh", "tools/host-matrix/prompts/common.md"]
+environments = ["local-macos-arm64"]
+artifacts = ["result-json", "turn-logs"]
+setup = ["Claude Code installed and logged in; chough built from the commit under test (CHOUGH); hi, specsync, cargo, git, jq and perl on PATH"]
+steps = ["Run sh tools/host-matrix/run.sh claude-code, keeping --logs", "Record the result JSON as the receipt"]
+expected = ["run.sh prints verdict PASS: every check after each turn, the acceptance test, the leak check and the records' shape hold"]
+
+[[case]]
+id = "TC-cli-host-matrix-codex"
+title = "One real host-matrix leg of Codex on macOS"
+status = "active"
+track = "functional"
+method = "agent-assisted"
+criteria = ["LIFE-21", "LIFE-22", "LIFE-27"]
+requirements = ["REQ-cli-067"]
+paths = ["integrations/codex/adapter.sh", "tools/host-matrix/run.sh", "tools/host-matrix/prompts/common.md"]
+environments = ["local-macos-arm64"]
+artifacts = ["result-json", "turn-logs"]
+setup = ["Codex CLI installed and logged in; chough built from the commit under test (CHOUGH); hi, specsync, cargo, git, jq and perl on PATH"]
+steps = ["Run sh tools/host-matrix/run.sh codex, keeping --logs", "Record the result JSON as the receipt"]
+expected = ["run.sh prints verdict PASS: every check after each turn, the acceptance test, the leak check and the records' shape hold"]

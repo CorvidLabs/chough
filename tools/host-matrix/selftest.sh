@@ -63,4 +63,15 @@ host_version() { :; }
 host_turn() { return 1; }
 EOF
 expect missing-host UNAVAILABLE "the host cannot run here" "" "$scratch/missing-host.sh"
+# A host that runs but cannot work now (no login, a usage limit) exits 75 from its turn:
+# the leg is UNAVAILABLE, not a product failure (REQ-cli-067).
+cat >"$scratch/usage-limit-host.sh" <<'EOF'
+host_check() { :; }
+host_version() { echo "usage-limited stand-in"; }
+host_turn() {
+    echo "ERROR: You've hit your usage limit. Try again later." >"$2"
+    return 75
+}
+EOF
+expect usage-limit UNAVAILABLE "turn 1: the host cannot run now" "" "$scratch/usage-limit-host.sh"
 printf 'HOST MATRIX SELFTEST PASSED\n'
