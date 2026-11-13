@@ -1324,3 +1324,88 @@ fn a_migrated_storys_verified_lines_are_receipt_lines() {
         "{expected:?} in {lines:#?}"
     );
 }
+
+/// t38n's round-4 F9 (REQ-records-009, REQ-records-003): a migrated open session's
+/// `observations` and a migrated bug's `evidence` name the carried entries and receipts,
+/// each keeping its 0.5.x ID as its alias, so a reader finds the file by the name the
+/// front matter gives; `chough status` references them and `chough next` lists them by
+/// those names.
+#[test]
+fn migrated_front_matter_names_the_carried_entries() {
+    let fixture = project("releases/v0.5.0");
+    let bug_only = "OBS-product-test-00000000000000000000b001";
+    let observed = legacy(&fixture, PRODUCT)["observed_at_unix_seconds"]
+        .as_u64()
+        .unwrap();
+    observation_like(
+        &fixture,
+        PRODUCT,
+        bug_only,
+        "SYNTHETIC bug-only proof",
+        observed + 60,
+    );
+    reference(
+        &fixture,
+        ".chough/sessions/fixture-first.json",
+        &[CASE_RUN, PRODUCT],
+    );
+    let bug = link_bug(&fixture, &[PRODUCT, bug_only]);
+    fixture.commit("a 0.5.x project whose session and bug reference observations");
+    let before = tree(fixture.root());
+    let (plan, _) = migrate(&fixture);
+
+    // Each entry keeps its 0.5.x ID as its alias; its name is its file's.
+    let entry_name = |old: &str| -> String {
+        let path = alias(&plan, old);
+        let text = fixture.read(&path);
+        assert_eq!(items(&front(&text)["aliases"]), [old.to_string()], "{text}");
+        path.rsplit('/')
+            .next()
+            .unwrap()
+            .trim_end_matches(".md")
+            .to_string()
+    };
+    let (case_run, product) = (entry_name(CASE_RUN), entry_name(PRODUCT));
+    let open = session_folder(&plan, "fixture-first");
+    let session = fixture.read(&format!(".chough/sessions/{open}/session.md"));
+    assert_eq!(
+        items(&front(&session)["observations"]),
+        [case_run.clone(), product.clone()],
+        "{session}"
+    );
+
+    // The bug names the entry, and the receipt it holds by the receipt's ID.
+    let bug_text = fixture.read(&alias(&plan, &legacy_bug_id(&before, &bug)));
+    let receipt = maps(&bug_text, "receipts")
+        .into_iter()
+        .find(|map| map.get("aliases").map(String::as_str) == Some(bug_only))
+        .unwrap_or_else(|| panic!("no receipt for {bug_only}: {bug_text}"));
+    let receipt_id = receipt["id"].clone();
+    assert_eq!(
+        items(&front(&bug_text)["evidence"]),
+        [product.clone(), receipt_id.clone()],
+        "{bug_text}"
+    );
+
+    let status = fixture.ok(&["status", "--environment", "fixture"]);
+    for name in [&case_run, &product, &receipt_id] {
+        assert_ne!(
+            reference_label(&status, name),
+            "unavailable",
+            "{name}: {status:#}"
+        );
+    }
+    let next = fixture.ok(&["next", "--json"]);
+    let listed: Vec<&str> = next["observations"]["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter_map(|item| item["id"].as_str())
+        .collect();
+    for name in [&case_run, &product] {
+        assert!(listed.contains(&name.as_str()), "{name}: {next:#}");
+    }
+    for old in [CASE_RUN, PRODUCT, bug_only] {
+        assert!(!listed.contains(&old), "{old}: {next:#}");
+    }
+}
