@@ -47,8 +47,11 @@ and `command`. The body is the agent's instructions, and hc adds your task after
 [templates.toml](templates.toml) lists each template with its `chough init --host`
 value, its status and an ordered list of its versions, each with the SHA-256 of the file
 at that version. When you change a template, append the next version with the new
-digest, and never edit an earlier entry. `tests/integrations.rs` fails until the newest
-entry is the file's digest, so a changed template never ships under an old version.
+digest, and never edit a listed entry. `tests/integrations.rs` fails while a template's
+newest listed digest is not its file's digest, while its versions don't run 1, 2, 3 in
+order, or while a digest repeats. A changed template therefore needs the next version
+appended. The tests can't tell whether a listed entry was edited in place, so that
+edit is for review to catch in the diff.
 
 ## Host-matrix runs
 

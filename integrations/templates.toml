@@ -1,8 +1,9 @@
 # Versioned example hc templates (REQ-cli-065). One entry per integrations/<host>/hc-template.md.
 # Each template keeps an ordered list of its versions. When you change a template, append
 # { version = <next>, sha256 = "<the new file's SHA-256>" } to its versions (shasum -a 256
-# <file>) and never edit an earlier entry. tests/integrations.rs fails until the newest
-# entry is the file's digest, the versions run 1, 2, 3 in order, and no digest repeats.
+# <file>) and never edit a listed entry. tests/integrations.rs fails until the newest
+# entry is the file's digest, the versions run 1, 2, 3 in order, and no digest repeats;
+# it cannot see an in-place edit of a listed entry, which review checks in the diff.
 schema = "chough-integrations/1"
 
 [[template]]

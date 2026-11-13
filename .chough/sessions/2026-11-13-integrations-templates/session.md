@@ -126,6 +126,8 @@ next: t384's re-review, then Leif's implementation review (relayed by t370), the
 
 ## Open threads
 
+- REQ-cli-065 rewording (t384 re-review of #253, wording only): is the delta in the coordinator's queue judged aligned? Pending t370; the README already says what the tests enforce
+
 ## Timeline
 
 - 2026-11-13T03:53:10Z · start · intent → intent · #219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065) ^t-07efc9
