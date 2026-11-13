@@ -1113,7 +1113,8 @@ pub(super) fn run_case(
     environment: &str,
     requested_id: Option<String>,
 ) -> Result<RunResult> {
-    checkpoint::read_session(root)?;
+    // At the observation bound the run is refused before it runs (REQ-cli-032).
+    checkpoint::observation_room(root)?;
     ensure!(
         !environment.trim().is_empty(),
         "environment must not be blank"
@@ -1328,7 +1329,7 @@ fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
         observation_id: requested_id,
     } = args;
     let id = id.as_str();
-    checkpoint::read_session(root)?;
+    checkpoint::observation_room(root)?;
     let located = find_checked(root, id)?;
     let case = &located.case;
     ensure!(
