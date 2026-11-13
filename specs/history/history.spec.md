@@ -1,6 +1,6 @@
 ---
 module: history
-version: 22
+version: 23
 status: active
 files:
   - src/history.rs
@@ -105,3 +105,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 20 | 2026-11-10 | keep-finished-sessions-with-open-human-gates-open-on-session-use-new-naming-doctor-s-decision-fix-181: Keep finished sessions with open human gates open on session use/new, naming doctor's decision fix (#181) |
 | 21 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
 | 22 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
+| 23 | 2026-11-13 | 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once: 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once |

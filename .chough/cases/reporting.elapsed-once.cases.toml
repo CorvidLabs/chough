@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "reporting"
+
+# 0.6.1 (t38n's fourth fresh-eyes round, F5): chough timing repeated "(elapsed
+# wall-clock)" on the human-gate line, and a note said "read read-only".
+
+[[case]]
+id = "TC-reporting-timing-says-elapsed-wall-clock-once-on-every-line"
+title = "chough timing's text says elapsed wall-clock once, in its header, with no gate-wait, case run or fix-time line repeating it, the JSON keeps the label on every value, and the native note has no doubled word"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-10"]
+requirements = ["REQ-reporting-001"]
+paths = ["src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::timing_says_elapsed_wall_clock_once_on_gate_run_and_fix_lines passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "timing_says_elapsed_wall_clock_once_on_gate_run_and_fix_lines"
