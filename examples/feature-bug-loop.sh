@@ -35,6 +35,7 @@ cleanup() {
 }
 trap cleanup EXIT
 # work-dir setup: end
+# helpers: begin
 chough=${CHOUGH:-chough}
 env_name=${CHOUGH_ENVIRONMENT:-exercise-local}
 last_observation=""
@@ -58,6 +59,7 @@ run_case() {
     [ "$outcome" = "$2" ] || fail "$1 expected $2 but was $outcome: $out"
     printf '%s: %s, observation %s\n' "$1" "$outcome" "$last_observation"
 }
+# helpers: end
 commit() {
     git add -A
     git -c user.name="Chough exercise" -c user.email=exercise@example.invalid \
@@ -246,12 +248,14 @@ cp patches/lib.v2.rs src/lib.rs
 commit "Ship free at exactly the threshold ($bug)"
 specsync change check "$id" --commit >/dev/null
 $chough stage advance >/dev/null
+# rerun after the fix: begin
 run_case TC-shipping-0001 passed
 fixed_observation=$last_observation
 run_case TC-shipping-0002 passed
 run_case TC-shipping-0003 passed
 $chough bug update "$bug" --status verified --observation "$fixed_observation" \
     --note "Boundary fixed; TC-shipping-0001 passes" | jq -r '"\(.bug.id): \(.bug.status), \(.verification)"'
+# rerun after the fix: end
 
 step "Accept: only a human review and native archive can close this"
 $chough stage advance >/dev/null
