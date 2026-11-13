@@ -13,10 +13,10 @@ native_change: host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judg
 pr: ""
 criteria: [LIFE-21, LIFE-22, LIFE-24, LIFE-27, LIFE-28, LIFE-29, LIFE-30, FLOW-10, FLOW-16, FLOW-21]
 requirements: [REQ-cli-066]
-cases: []
+cases: [TC-cli-host-matrix-selftest]
 design: []
 files: []
-observations: []
+observations: [2026-11-13-tc-cli-host-matrix-selftest]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -31,6 +31,8 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 
 ## Where it stands
 
+- Red: TC-cli-host-matrix-selftest fails before the harness exists (selftest.sh cannot find run.sh)
+
 ## Decisions and why
 
 - decided: the harness lives in tools/host-matrix/ with adapters at integrations/<host>/adapter.sh beside #219's hc-template.md because t38r's #219 layout and the test plan's bar 4 both put per-host files there
@@ -40,6 +42,8 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - Leif decided "Scope approval of host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:53Z, answering: 'Chough 1.0 harness, PR 1 of 5 (#218): add the test harness that runs one Chough cycle per agent and judges it from the files it leaves. It comes with a fake, no-model agent that tests the harness itself on Mac and Linux CI; no real agents run yet. It lives in tools/host-matrix/, with per-agent adapters next to the #219 templates. Approve this scope?' (option text: 't38q builds it. Its self-test already catches skipped gates, self-approval, wrong resumes and hung turns.'); per t370 his yes also covers REQ-cli-066 as aligned with his four 03:32Z answers and claude-code-t38q's engineering choices (a) to (c) in this change's context.md; relayed by claude-code-t370); recorded by claude-code-t38q; a relayed claim, not authenticated; ran specsync change approve host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in as 0xLeif
 
 ## What was verified
+
+- [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: failed (exit 1).](evidence/2026-11-13-tc-cli-host-matrix-selftest.md)
 
 ## Open threads
 
