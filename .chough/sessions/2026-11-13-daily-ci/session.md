@@ -5,7 +5,7 @@ aliases: [daily-ci]
 objective: "#217: CI also runs once a day on main, so the flake window sees a macOS and Linux run every day; the SpecSync Archive jobs take the run's own commit as their base when the event has none (REQ-cli-064)"
 intent_scope: LIFE
 modules: [cli]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -25,13 +25,9 @@ observations:
   - 2026-11-13-the-full-test-suite-passed-738-of-738-across-48-targets-cargo
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
-    holds: accept
-    drives: review
-    opened: 2026-11-13T06:19:07Z
+waiting_on_human: []
 run_consents: []
-next: Review, then Leif's implementation review (relayed by t370); after merge, observe the first scheduled run on GitHub
+next: Continue done
 ---
 # #217: CI also runs once a day on main, so the flake window sees a macOS and Linux run every day; the SpecSync Archive jobs take the run's own commit as their base when the event has none (REQ-cli-064)
 
@@ -50,6 +46,7 @@ next: Review, then Leif's implementation review (relayed by t370); after merge, 
 - Requirement ID REQ-cli-064 (t382, records owner, 2026-11-13)
 - Leif decided "Approve the intent: CI runs once a day on main on macOS and Linux for the flake window (#217, REQ-cli-064)": "Yes, macOS + Linux (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q3 'Run CI once a day on main so a quiet week still counts?' for #217; relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated
 - Leif decided "Approve the scope of 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs": "Yes, macOS + Linux (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q3 'Run CI once a day on main so a quiet week still counts?' for #217; this change's scope is that daily run plus the Archive base fallback a scheduled run needs, REQ-cli-064; relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change approve 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs as 0xLeif
+- Leif decided "Implementation review of 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs": "#257 daily CI on main" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering 'Chough 1.0 flake tracker PRs, passed by the reviewer: approve the implementation?' (multiple choice; he selected '#255 seed flake tracker' and '#257 daily CI on main', not #252); relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change review 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -123,4 +120,20 @@ next: Review, then Leif's implementation review (relayed by t370); after merge, 
   - revision: b3c4a010f8a25eae366bf53d48ba7123d0ce681d
   - holds: accept
   - drives: review
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:51:12Z · gate-closed · accept → accept · Implementation review of 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs ^t-4fc809
+  - native_change: 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
+  - revision: 2692e8d46c61dabc01918b40c5175ab6f11efb63
+  - relayed_by:
+    - decided_by: Leif
+    - words: #257 daily CI on main
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering 'Chough 1.0 flake tracker PRs, passed by the reviewer: approve the implementation?' (multiple choice; he selected '#255 seed flake tracker' and '#257 daily CI on main', not #252); relayed by claude-code-t370
+    - recorded_by: claude-code-t38r
+    - native: specsync change review 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
+    - actor: 0xLeif
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:51:29Z · advance · accept → done · native:archived ^t-1c0bb3
+  - native_change: 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
+  - gate: native:archived
+  - revision: 2692e8d46c61dabc01918b40c5175ab6f11efb63
   - by: claude-code (hc t38r)
