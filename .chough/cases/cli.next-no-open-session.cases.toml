@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# 0.6.1 (t38n's fourth fresh-eyes round, F10): with no open session, the normal state
+# after done, chough next printed "Error: no open session" and exited 1.
+
+[[case]]
+id = "TC-cli-next-with-no-open-session-says-so-and-exits-0"
+title = "With no open session, chough next says there is no open session and names chough session new <key>, in text and JSON, and exits 0, and the command it names opens a session next then reads"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_with_no_open_session_says_so_and_exits_0 passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_with_no_open_session_says_so_and_exits_0"
