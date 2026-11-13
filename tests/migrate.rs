@@ -776,6 +776,55 @@ fn an_existing_target_with_other_bytes_refuses_and_writes_nothing_more() {
     );
 }
 
+/// Whether the file system holding `root` tells two names apart by case alone.
+fn case_sensitive(root: &Path) -> bool {
+    let probe = root.join(".case-probe");
+    std::fs::write(&probe, "").unwrap();
+    let sensitive = !root.join(".CASE-PROBE").exists();
+    std::fs::remove_file(probe).unwrap();
+    sensitive
+}
+
+/// REQ-records-009 (#263): a planned file that differs only in case from a planned
+/// removal, knowledge/index.md for knowledge/INDEX.md, is written after the removals. On
+/// a case-sensitive file system it can already exist as its own file with other bytes;
+/// the apply then refuses before writing anything, as for any other existing target,
+/// rather than writing the receipt, removing the 0.5.x files and failing on that write.
+#[test]
+fn an_existing_case_twin_target_with_other_bytes_refuses_and_writes_nothing() {
+    let fixture = migrate_project("adopted", &[]);
+    if !case_sensitive(fixture.root()) {
+        // Here knowledge/index.md and knowledge/INDEX.md are one file, so the case
+        // cannot arise; the Linux CI lane runs it.
+        eprintln!("skipped: the temporary directory's file system ignores case");
+        return;
+    }
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert!(
+        plan["sources"]["knowledge/INDEX.md"].is_string(),
+        "{plan:#}"
+    );
+    let target = planned(&plan, "knowledge/index.md");
+    fixture.write(&target, "SYNTHETIC other bytes\n");
+    let before = files(fixture.root());
+    let refused = fixture.fails(&[
+        "migrate",
+        "--apply",
+        plan["plan_digest"].as_str().unwrap(),
+        "--consent",
+        CONSENT,
+    ]);
+    assert!(
+        refused.contains("refused:target-exists") && refused.contains(&target),
+        "{refused}"
+    );
+    assert_eq!(
+        files(fixture.root()),
+        before,
+        "the refused apply changed a file"
+    );
+}
+
 const CASES: &str = "profile = \"chough-testing/1\"\nmodule = \"fixture\"\n\n[[case]]\nid = \"TC-fixture-0001\"\ntitle = \"The fixture's one case\"\nstatus = \"active\"\ntrack = \"functional\"\nmethod = \"automated\"\ncriteria = [\"LIFE-1\"]\nrequirements = [\"REQ-fixture-001\"]\npaths = [\"README.md\"]\nenvironments = [\"fixture\"]\nartifacts = [\"test-log\"]\nexpected = [\"the README prints its heading\"]\n\n[case.bind]\nadapter = \"command\"\nargv = [\"cat\", \"README.md\"]\nexpect_output = [\"# Migration fixture project\"]\n";
 
 /// REQ-records-009: case definitions and `.chough/preferences.json` are byte-identical
