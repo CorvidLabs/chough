@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #246: chough migrate's preview did not name the finished sessions and stale
+# gates chough doctor reports right after the apply.
+
+[[case]]
+id = "TC-records-migrate-preview-names-what-doctor-reports"
+title = "chough migrate's preview and receipt name each session chough doctor reports after the apply: finished_session ones, and stale_gates ones with each gate's text and chough doctor --fix --reason"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "src/doctor.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::the_preview_names_the_sessions_doctor_reports_after_the_apply passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "the_preview_names_the_sessions_doctor_reports_after_the_apply"

@@ -16,8 +16,8 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
-bugs: []
+observations: [2026-11-13-tc-records-migrate-preview-names-what-doctor-reports]
+bugs: [2026-11-13-chough-migrate-s-preview-omits-the-finished-sessions-and-stale]
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -37,6 +37,8 @@ Fix #246: chough migrate's preview and receipt name the sessions chough doctor w
 - Leif decided "Approve the scope of fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply": "Chough #246 migrate preview" (coordinator chat (Claude Code, hc t370), 2026-11-13T04:37Z, answering: 'Approve these two?', he selected 'Chough #246 migrate preview' (option text: 'The migration preview and receipt also list the sessions doctor will flag right after, so one consent round covers both. Small migration wording change, with a failing test ready.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test migrate -- --exact the_preview_names_the_sessions_doctor_reports_after_the_apply for TC-records-migrate-preview-names-what-doctor-reports: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-records-migrate-preview-names-what-doctor-reports.md)
 
 ## Open threads
 
