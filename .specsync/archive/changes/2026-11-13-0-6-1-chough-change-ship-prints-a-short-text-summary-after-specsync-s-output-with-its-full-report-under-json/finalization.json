@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json",
+  "implementation_commit": "595d09309e6644f46c0608e8d91bab5ff9db6e60",
+  "implementation_tree": "c2b521f079ce033c6ff143e2aa11c80d9b47ad1b",
+  "contract_digest": "1852e5c2b60e3ac54e69acfa88ca7a18e01ebb8a6782f1b94a44646cc74edbe4",
+  "workspace_digest": "896c033d02699f09e05bc91b0ab92fe257910643ecb5adbd143b03915cddca20",
+  "closing_digest": "eabf09146c43b7f00c3a4008513a07f0a905639a142232fa9ea81b536e441ba7",
+  "review_digest": "c0e1f767429edf60041070a2105b85add5a8d4dc4e49ff411b66f412b3556bc6",
+  "finalization_digest": "dfb8690f8e6894af7e939e8124dd0ccda6cb38edecb4531e15753275a52701a7",
+  "timestamp": 1794538690
+}
