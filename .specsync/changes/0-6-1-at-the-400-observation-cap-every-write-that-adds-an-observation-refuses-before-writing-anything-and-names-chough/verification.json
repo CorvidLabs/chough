@@ -1,13 +1,13 @@
 {
-  "timestamp": 1794538803,
-  "commit": "c8247d563e4c96a4622eaa5afc56ab2472e481eb",
-  "contract_digest": "8f7ecbdea46c5ccc3b701065815c02cc67752ab9a6771605d674784e6371262a",
-  "execution_digest": "e902e29fc4a4f47d0e45c4d7375c293b686d6f8457f3f3c1c38006a67c58693b",
+  "timestamp": 1794539000,
+  "commit": "9e14f23d911b9d33b3923afc429e225e04a96ddc",
+  "contract_digest": "98853a0a1592f443bc6222be1f7dc00fd1de154b84b437f891ba61067f7f51df",
+  "execution_digest": "fdb9a0b10cbd4cb73343c8cb4b2a25f4e90185ebe221ad66c44cabb39626df3f",
   "workspace_digest": "d82ff992336a61f3ebd46425f0acdacf425d9d8d23ec332b55316cfe928fab2b",
   "passed": true,
   "commands": [
     {
-      "command": "specsync check --spec cli --spec history --spec records --spec reporting",
+      "command": "specsync check --spec cli",
       "success": true,
       "exit_code": 0
     }

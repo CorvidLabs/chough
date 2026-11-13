@@ -11,16 +11,19 @@
   "canonical_applied": true,
   "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
   "created_at": 1794535713,
-  "updated_at": 1794538804,
+  "updated_at": 1794539001,
   "affected_specs": [
     "cli"
   ],
   "affected_paths": [
-    "src/",
-    "tests/",
-    "docs/",
     "CHANGELOG.md",
-    "README.md"
+    "docs/cli.md",
+    "src/cases.rs",
+    "src/checkpoint.rs",
+    "src/evidence.rs",
+    "src/stage.rs",
+    "tests/next.rs",
+    "tests/stages.rs"
   ],
   "no_spec_change": true,
   "no_spec_change_rationale": "A fix within the existing requirements; no contract text changes.",
