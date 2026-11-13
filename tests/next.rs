@@ -821,8 +821,11 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
                 "{released:#}"
             );
             // Archived, the next piece of work starts in a new session.
-            let refused = fixture.fails(&["next", "--json"]);
-            assert!(refused.contains("chough session new <key>"), "{refused}");
+            let next = fixture.ok(&["next", "--json"]);
+            assert_eq!(
+                next["next_valid_action"]["command"], NEXT_SESSION,
+                "{next:#}"
+            );
             let created = run_suggested(&fixture, NEXT_SESSION);
             assert_eq!(
                 fixture.session()["objective"],
@@ -3089,4 +3092,46 @@ fn at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_g
         );
         assert!(!action.contains(&rerun), "{state}: {action}");
     }
+}
+
+/// 0.6.1 (t38n's fourth fresh-eyes round, F10; REQ-cli-021): with no open session, as
+/// after the move into done or `chough session close`, `chough next` printed "Error: no
+/// open session" and exited 1. It says there is no open session and names `chough
+/// session new <key>`, in text and JSON, and exits 0; the command it names opens a
+/// session that `next` then reads.
+#[test]
+fn next_with_no_open_session_says_so_and_exits_0() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = fixture.active_id();
+    fixture.ok(&["session", "close", &id, "--reason", "SYNTHETIC set aside"]);
+    let shown = fixture.run(&["next"]);
+    let text = String::from_utf8_lossy(&shown.stdout);
+    assert!(
+        shown.status.success(),
+        "{}",
+        String::from_utf8_lossy(&shown.stderr)
+    );
+    assert!(
+        shown.stderr.is_empty(),
+        "{}",
+        String::from_utf8_lossy(&shown.stderr)
+    );
+    assert!(text.contains("no open session"), "{text}");
+    assert!(text.contains(&format!("Run: {NEXT_SESSION}\n")), "{text}");
+    let view = fixture.ok(&["next", "--json"]);
+    assert_eq!(view["session"], Value::Null, "{view:#}");
+    assert_eq!(
+        view["next_valid_action"]["command"], NEXT_SESSION,
+        "{view:#}"
+    );
+    assert!(
+        view["next_valid_action"]["reason"]
+            .as_str()
+            .is_some_and(|reason| reason.contains("no open session")),
+        "{view:#}"
+    );
+    run_suggested(&fixture, NEXT_SESSION);
+    let view = fixture.ok(&["next", "--json"]);
+    assert_eq!(view["objective"], "The next piece of work", "{view:#}");
 }
