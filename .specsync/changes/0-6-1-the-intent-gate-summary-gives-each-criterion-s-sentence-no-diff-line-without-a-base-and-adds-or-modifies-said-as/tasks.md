@@ -5,6 +5,6 @@ artifact: tasks
 
 # Tasks
 
-- [ ] A failing test: the intent gate summary gives criterion IDs without sentences and a diff line, and an ADDED-only delta says adds or modifies.
-- [ ] The fix in `src/gates.rs`, with the docs and the CHANGELOG.
-- [ ] Red then green recorded through Chough, and the full local suite.
+- [x] A failing test: the intent gate summary gives criterion IDs without sentences and a diff line, and an ADDED-only delta says adds or modifies.
+- [x] The fix in `src/gates.rs`, with the docs and the CHANGELOG.
+- [x] Red then green recorded through Chough, and the full local suite.
