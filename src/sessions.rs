@@ -488,7 +488,9 @@ pub(super) fn lock_project(root: &Path) -> Result<()> {
 }
 
 /// `.chough/README.md`, the records tree's reading guide (REQ-records-002), written
-/// create-only by `chough init` and `chough migrate --apply`; an existing one is kept.
+/// create-only by `chough init`; an existing one is kept. A fresh project has no folder
+/// kept from Chough 0.5.x, so this guide names none (t38n's round-4 F11); `chough
+/// migrate --apply` writes [`migrated_readme`].
 pub(super) const README: &str = "# Chough records
 
 This folder holds Chough's records for this project. Each record is one Markdown file:
@@ -505,13 +507,23 @@ people read its body, agents parse its front matter.
 - `bugs/<id>.md`: one bug each, kept for good; its Log only grows.
 - `cases/*.cases.toml`: test-case definitions, which a person edits.
 - `preferences.json`: the project's standing preferences, which a person edits.
-- `artifacts/`: kept from Chough 0.5.x only for files an open bug names as its fixture.
 - `local/`: this machine's state (the active session, the writer lock, gate lists,
   logs). It is never committed.
 
 Intent lives in [hi/](../hi/), contracts in [specs/](../specs/) and change history in
 [.specsync/archive/](../.specsync/archive/). Chough links them and copies nothing.
 ";
+
+/// The reading guide `chough migrate --apply` writes create-only (REQ-records-002):
+/// [`README`] with the `artifacts/` line, since a migrated project may keep files there
+/// for an open bug (REQ-records-009).
+pub(super) fn migrated_readme() -> String {
+    README.replacen(
+        "- `local/`:",
+        "- `artifacts/`: kept from Chough 0.5.x only for files an open bug names as its fixture.\n- `local/`:",
+        1,
+    )
+}
 
 /// Whether `name` is a write temp: `.<name>.<pid>.tmp`.
 fn is_write_temp(name: &str) -> bool {
@@ -1615,5 +1627,23 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             let ids: Vec<_> = entries.iter().map(|(_, entry)| entry.id.clone()).collect();
             print_json(&json!({"schema_version":1,"session":key,"folded":ids}))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    /// t38n's round-4 F11 (REQ-records-002): a fresh project's guide names no folder kept
+    /// from Chough 0.5.x, and a migrated project's guide is the same with the
+    /// `artifacts/` line before `local/`.
+    #[test]
+    fn only_a_migrated_guide_names_artifacts() {
+        assert!(!super::README.contains("artifacts/"));
+        let migrated = super::migrated_readme();
+        let line = "- `artifacts/`: kept from Chough 0.5.x only for files an open bug names as its fixture.\n";
+        assert_eq!(migrated.replacen(line, "", 1), super::README);
+        assert!(
+            migrated.contains(&format!("{line}- `local/`:")),
+            "{migrated}"
+        );
     }
 }
