@@ -3,7 +3,7 @@ kind: bug
 id: 2026-11-13-the-grok-template-opens-a-skill-file-its-own-chough-init-does
 aliases: []
 title: the Grok template opens a skill file its own chough init does not create
-status: open
+status: verified
 classification: product-defect
 scope: blocking
 impact: A Grok agent in a new project is pointed at a missing file; found before merge
@@ -12,6 +12,7 @@ requirements: [REQ-cli-065]
 cases: []
 evidence:
   - 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-skill-file-exists-after-init
+  - 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-skill-file-exists-after-init-bda2c8
 receipts: []
 environment: local-macos-arm64
 revision: 81eccae15ccf4aac8ba89692cabb5aa59740b782
@@ -21,7 +22,7 @@ actor:
     terminal: t38r
 related: []
 created: 2026-11-13T05:34:36Z
-updated: 2026-11-13T06:07:38Z
+updated: 2026-11-13T06:20:02Z
 ---
 # the Grok template opens a skill file its own chough init does not create
 
@@ -36,9 +37,10 @@ Actual: --host grok writes only .grok/skills; the named .agents path is missing 
 
 **Why it matters:** A Grok agent in a new project is pointed at a missing file; found before merge
 
-**Fix:** Not fixed yet.
+**Fix:** Verified: 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-skill-file-exists-after-init-bda2c8 passed at c0e3c340ae4fce048f37442831d242d42eeeef28.
 
 ## Log
 
 - 2026-11-13T05:34:36Z · Reported (manual report) · by claude-code (hc t38r)
 - 2026-11-13T06:07:38Z · evidence: 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-skill-file-exists-after-init · by claude-code (hc t38r)
+- 2026-11-13T06:20:02Z · status: open -> verified; evidence: 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-skill-file-exists-after-init-bda2c8. Fixed at c0e3c340: the Grok template uses --host openai, whose .agents/skills copy it loads; TC-cli-integrations-skill-file-exists-after-init red at 2cf5facb, green at c0e3c340 with a real chough init per template · by claude-code (hc t38r)

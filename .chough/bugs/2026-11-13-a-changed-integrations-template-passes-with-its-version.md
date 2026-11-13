@@ -3,14 +3,16 @@ kind: bug
 id: 2026-11-13-a-changed-integrations-template-passes-with-its-version
 aliases: []
 title: a changed integrations template passes with its version unchanged
-status: open
+status: verified
 classification: product-defect
 scope: blocking
 impact: A changed template could ship under an old version; found before merge
 criteria: [LIFE-24]
 requirements: [REQ-cli-065]
 cases: []
-evidence: [2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-manifest-1e9fe6]
+evidence:
+  - 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-manifest-1e9fe6
+  - 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-manifest-51d9b1
 receipts: []
 environment: local-macos-arm64
 revision: 81eccae15ccf4aac8ba89692cabb5aa59740b782
@@ -20,7 +22,7 @@ actor:
     terminal: t38r
 related: []
 created: 2026-11-13T05:34:36Z
-updated: 2026-11-13T06:07:38Z
+updated: 2026-11-13T06:20:02Z
 ---
 # a changed integrations template passes with its version unchanged
 
@@ -35,9 +37,10 @@ Actual: The tests pass with the version left at 1 (t384)
 
 **Why it matters:** A changed template could ship under an old version; found before merge
 
-**Fix:** Not fixed yet.
+**Fix:** Verified: 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-manifest-51d9b1 passed at c0e3c340ae4fce048f37442831d242d42eeeef28.
 
 ## Log
 
 - 2026-11-13T05:34:36Z · Reported (manual report) · by claude-code (hc t38r)
 - 2026-11-13T06:07:38Z · evidence: 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-manifest-1e9fe6 · by claude-code (hc t38r)
+- 2026-11-13T06:20:02Z · status: open -> verified; evidence: 2026-11-13-integrations-templates/2026-11-13-tc-cli-integrations-manifest-51d9b1. Fixed at c0e3c340: templates.toml keeps an ordered versions list per template; the newest entry must be the file's digest, versions run 1, 2, 3 and no digest repeats. TC-cli-integrations-manifest red at 2cf5facb, green at c0e3c340; appending a byte to the Kimi template made it fail asking to append version 2 (manual mutation, restored). An in-place edit of the newest entry is not detectable without Git history, which the Product job's shallow checkout lacks · by claude-code (hc t38r)

@@ -53,6 +53,12 @@ observations:
   - 2026-11-13-tc-cli-integrations-manifest-1e9fe6
   - 2026-11-13-tc-cli-integrations-digest-detects-change-401e9b
   - 2026-11-13-tc-cli-integrations-skill-file-exists-after-init
+  - 2026-11-13-tc-cli-integrations-templates-ed769d
+  - 2026-11-13-tc-cli-integrations-manifest-51d9b1
+  - 2026-11-13-tc-cli-integrations-digest-detects-change-a1771f
+  - 2026-11-13-tc-cli-integrations-no-runtime-dependency-f79cdd
+  - 2026-11-13-tc-cli-integrations-readme-0e6fc0
+  - 2026-11-13-tc-cli-integrations-skill-file-exists-after-init-bda2c8
 bugs:
   - 2026-11-13-the-grok-template-opens-a-skill-file-its-own-chough-init-does
   - 2026-11-13-a-changed-integrations-template-passes-with-its-version
@@ -105,6 +111,12 @@ next: "Fix t384's two must-fixes on #253 red first, then re-verify and reopen th
 - [Ran cargo test --locked --test integrations -- --exact the_manifest_versions_every_template_with_its_digest for TC-cli-integrations-manifest: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-integrations-manifest-1e9fe6.md)
 - [Ran cargo test --locked --test integrations -- --exact a_changed_template_fails_until_a_new_version_lists_its_digest for TC-cli-integrations-digest-detects-change: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-digest-detects-change-401e9b.md)
 - [Ran cargo test --locked --test integrations -- --exact each_templates_skill_file_exists_after_its_own_chough_init for TC-cli-integrations-skill-file-exists-after-init: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-integrations-skill-file-exists-after-init.md)
+- [Ran cargo test --locked --test integrations -- --exact each_template_has_hcs_front_matter_resumes_with_chough_next_and_holds_no_local_path for TC-cli-integrations-templates: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-templates-ed769d.md)
+- [Ran cargo test --locked --test integrations -- --exact the_manifest_versions_every_template_with_its_digest for TC-cli-integrations-manifest: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-manifest-51d9b1.md)
+- [Ran cargo test --locked --test integrations -- --exact a_changed_template_fails_until_a_new_version_lists_its_digest for TC-cli-integrations-digest-detects-change: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-digest-detects-change-a1771f.md)
+- [Ran cargo test --locked --test integrations -- --exact chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them for TC-cli-integrations-no-runtime-dependency: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-no-runtime-dependency-f79cdd.md)
+- [Ran cargo test --locked --test integrations -- --exact the_readme_names_every_template_and_says_chough_has_no_runtime_dependency for TC-cli-integrations-readme: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-readme-0e6fc0.md)
+- [Ran cargo test --locked --test integrations -- --exact each_templates_skill_file_exists_after_its_own_chough_init for TC-cli-integrations-skill-file-exists-after-init: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-integrations-skill-file-exists-after-init-bda2c8.md)
 
 ## Open threads
 
