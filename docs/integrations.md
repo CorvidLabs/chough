@@ -78,6 +78,13 @@ Read and follow `.agents/skills/chough-workflow/SKILL.md` for the Chough workflo
 A directory name is a convention, not proof of support. `chough skill status` shows
 whether an installed copy is current, edited or outdated.
 
+### Example hc templates
+
+[integrations/](../integrations/README.md) holds optional, versioned example hc
+templates for Claude Code, Codex, Kimi, Grok and a local agent (REQ-cli-065, LIFE-24).
+The local agent's template is unqualified until #220 qualifies a setup. Chough has no
+runtime dependency on hc, Herdr or Rune.
+
 ## Native tools
 
 | Tool | Native ownership | Chough boundary |

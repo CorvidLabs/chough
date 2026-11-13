@@ -220,9 +220,11 @@ fn chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them() {
             assert!(!names_word(&source, tool), "{} names {tool}", path.display());
         }
     }
+    // The skill may name hc: an actor's `by` line carries its hc terminal, read from
+    // HC_TERMINAL_ID (REQ-history-002). It never names Herdr or Rune.
     for path in files_under(&manifest_dir().join("skills")) {
         let text = fs::read_to_string(&path).unwrap();
-        for tool in ["hc", "herdr", "rune"] {
+        for tool in ["herdr", "rune"] {
             assert!(!names_word(&text, tool), "{} names {tool}", path.display());
         }
     }

@@ -20,13 +20,29 @@ cases:
   - TC-cli-integrations-no-runtime-dependency
   - TC-cli-integrations-readme
 design: []
-files: [tests/integrations.rs, specs/cli/cli.spec.md]
-observations: []
+files:
+  - tests/integrations.rs
+  - specs/cli/cli.spec.md
+  - integrations/README.md
+  - integrations/templates.toml
+  - integrations/claude-code/hc-template.md
+  - integrations/codex/hc-template.md
+  - integrations/kimi/hc-template.md
+  - integrations/grok/hc-template.md
+  - integrations/local/hc-template.md
+  - docs/integrations.md
+  - CHANGELOG.md
+observations:
+  - 2026-11-13-tc-cli-integrations-templates
+  - 2026-11-13-tc-cli-integrations-manifest
+  - 2026-11-13-tc-cli-integrations-digest-detects-change
+  - 2026-11-13-tc-cli-integrations-no-runtime-dependency
+  - 2026-11-13-tc-cli-integrations-readme
 bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Record the red run, then add integrations/
+next: "Record green, then accept: materialize, full suite, check --commit, review"
 ---
 # #219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)
 
@@ -35,6 +51,8 @@ next: Record the red run, then add integrations/
 #219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)
 
 ## Where it stands
+
+- REQ-cli-065: integrations/ with five templates, templates.toml and the README; 5 of 5 integrations tests and 19 of 19 docs tests pass locally
 
 ## Decisions and why
 
@@ -45,8 +63,15 @@ next: Record the red run, then add integrations/
 - Leif decided "Approve the intent: integrations/ ships versioned example hc templates for five hosts (#219, LIFE-24)": "Claude, Codex, Kimi, Grok + local (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q4 'Which hosts get an example template?' for #219 (local marked unqualified until #220); relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated
 - Local template command stays the placeholder chough-local-agent, status unqualified; t38q sets the real command and bumps its version and digest in #220 (t38q, 2026-11-13; Leif chose a generic local setup, LIFE-29). The harness reads only adapter.sh and hc-template.md, so templates.toml is this lane's
 - Leif decided "Approve the scope of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a": "Claude, Codex, Kimi, Grok + local (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q4 'Which hosts get an example template?' for #219 (local marked unqualified until #220); this change's scope is that design's first #219 PR: the folder, five templates, the manifest and the README, REQ-cli-065; relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change approve 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a as 0xLeif
+- TC-cli-integrations-no-runtime-dependency's red run at ced59395 failed on a defect in the test itself: it banned the word hc in skills/, stricter than REQ-cli-065, while the skill rightly names an actor's hc terminal (REQ-history-002). The fix narrows the skill check to Herdr and Rune. That case is a guard on existing code, so it has no red-then-green; the other four went red then green
 
 ## What was verified
+
+- [Ran cargo test --locked --test integrations -- --exact each_template_has_hcs_front_matter_resumes_with_chough_next_and_holds_no_local_path for TC-cli-integrations-templates: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-integrations-templates.md)
+- [Ran cargo test --locked --test integrations -- --exact the_manifest_versions_every_template_with_its_digest for TC-cli-integrations-manifest: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-integrations-manifest.md)
+- [Ran cargo test --locked --test integrations -- --exact a_changed_template_byte_no_longer_matches_its_listed_digest for TC-cli-integrations-digest-detects-change: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-integrations-digest-detects-change.md)
+- [Ran cargo test --locked --test integrations -- --exact chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them for TC-cli-integrations-no-runtime-dependency: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-integrations-no-runtime-dependency.md)
+- [Ran cargo test --locked --test integrations -- --exact the_readme_names_every_template_and_says_chough_has_no_runtime_dependency for TC-cli-integrations-readme: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-integrations-readme.md)
 
 ## Open threads
 
