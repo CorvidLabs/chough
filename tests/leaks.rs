@@ -550,3 +550,32 @@ fn a_given_name_holding_the_host_name_is_refused() {
     let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
     refused(&fixture, &arguments, "id", "host-name", &words);
 }
+
+/// #268 (REQ-records-006): `chough checkpoint --file` had no write-time leak check, so a
+/// file path holding a token was committed to the session record's `files:` list, while
+/// `evidence add --artifact` refuses the same path. A `--file` or `--design` path holding
+/// a leak is refused as `refused:leak: <field> holds <kind>`, never echoed and with every
+/// file unchanged; with `--redact` it is stored as `<redacted:<kind>>`.
+#[test]
+fn a_checkpoint_file_or_design_path_holding_a_leak_is_refused() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("fixture");
+    let token = concat!("ghp_", "abcdefghij0123456789abcdefghij0123");
+    let path = format!("src/{token}.txt");
+    for (flag, field) in [("--file", "file"), ("--design", "design")] {
+        refused(
+            &fixture,
+            &["checkpoint", flag, &path],
+            field,
+            "token",
+            token,
+        );
+    }
+    redacted(&fixture, &["checkpoint", "--file", &path]);
+    let session = fixture.read(&fixture.session_file());
+    assert!(
+        session.contains("src/<redacted:token>.txt") && !session.contains(token),
+        "{session}"
+    );
+}
