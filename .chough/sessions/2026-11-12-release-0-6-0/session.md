@@ -336,6 +336,7 @@ observations:
   - 2026-11-12-tc-cli-accept-reference-lessons-before-case-runs
   - 2026-11-12-tc-cli-accept-next-reruns-cases-not-current-d49346
   - 2026-11-12-tc-cli-accept-reference-lessons-before-case-runs-bf5029
+  - 2026-11-13-the-full-test-suite-passed-727-of-727-across-48-targets-cargo
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -374,11 +375,11 @@ blockers: []
 waiting_on_human: []
 run_consents: []
 next: "Gate \"Approve the 0.6.0 release prep re-scoped for the fourth round's 4 real findings\" closed (approved); run `chough stage advance` to move on."
-title: "Chough 0.6.0 release prep: the dogfood cycle and three fresh-eyes rounds"
+title: "Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds"
 summary:
   - "Chough 0.6.0 was prepared as its own dogfood cycle, driven only with the 0.6.0 build: Cargo 0.6.0 and the dated CHANGELOG, the dogfood's fixes, journal posts with short titles and real summaries for every archived story, the first cross-project lessons, and the flaky-test bugs settled."
-  - Three fresh-eyes rounds by new testers found 12, 16 and 12 problems; each was fixed with a failing test first, helpers t37f, t38b and t38c sharing the work. Every gate decision now names a configured human, no agent is routed to approve or review its own work, and stage moves print a short summary.
-  - "Verified: the full suite passed 722 of 722 locally on Rust 1.96.0, with clippy and rustfmt clean and no open bug. Next: the 0.6.0 tag and release, which Leif decides."
+  - Four fresh-eyes rounds by new testers found 12, 16, 12 and then 4 real problems, each fixed with a failing test first, helpers t37f, t38b and t38c sharing the work; the fourth round's polish is deferred to 0.6.1 by Leif. Every gate decision names a configured human, no agent is routed to approve or review its own work, and a gate's next step never outlives the move it named.
+  - "Verified: the full suite passed 727 of 727 locally on Rust 1.96.0, with clippy and rustfmt clean and no open bug. Next: the 0.6.0 tag and release, which Leif decides."
 ---
 # Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs
 
@@ -691,6 +692,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test docs -- --exact the_accept_reference_writes_lessons_before_the_case_runs for TC-cli-accept-reference-lessons-before-case-runs: failed (exit 101, tests run 1).](evidence/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs.md)
 - [Ran cargo test --locked --test next -- --exact at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate for TC-cli-accept-next-reruns-cases-not-current: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-accept-next-reruns-cases-not-current-d49346.md)
 - [Ran cargo test --locked --test docs -- --exact the_accept_reference_writes_lessons_before_the_case_runs for TC-cli-accept-reference-lessons-before-case-runs: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs-bf5029.md)
+- [The full test suite passed 727 of 727 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at a467c61e, the head with the fourth round's four fixes integrated; clippy --all-targets -D warnings and rustfmt --check were clean there](evidence/2026-11-13-the-full-test-suite-passed-727-of-727-across-48-targets-cargo.md)
 
 ## Open threads
 
