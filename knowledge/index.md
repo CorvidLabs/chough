@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [0.6.1: chough change ship prints a short summary](journal/2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md) (2026-11-13, shipped)
 - [0.6.1: src/stage.rs recorded for PR 4](journal/2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md) (2026-11-13, shipped)
 - [0.6.1: the intent gate summary shows what is approved](journal/2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md) (2026-11-13, shipped)
 - [0.6.1: a short host name in an ordinary word is not a leak](journal/2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md) (2026-11-13, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [Turn the MVP interview into intent and a 1.0 roadmap](journal/2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md) (2026-11-12, shipped) (no time)
 - [Return observation and case IDs from cases record and evidence add](journal/2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md) (2026-11-10, shipped)
 - [Keep gated finished sessions open on session use and new (#181)](journal/2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md) (2026-11-10, shipped)
-- [Keep observations current across knowledge index rebuilds (#136)](journal/2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md) (2026-11-10, shipped)
 
 ## Where things live
 
@@ -46,14 +46,13 @@ Newest posts:
 
 ## Open bugs
 
-7 open bugs, blocking first, then newest.
+6 open bugs, blocking first, then newest.
 
 - [2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry](../.chough/bugs/2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry.md) At the 400-observation cap, cases run writes its evidence entry and then refuses, leaving it unreferenced (deferred)
 - [2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open](../.chough/bugs/2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open.md) chough next with no open session exits 1 with Error: no open session (deferred)
 - [2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from](../.chough/bugs/2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from.md) A fresh project's records README names artifacts as kept from 0.5.x, and the README init paragraph is long (deferred)
 - [2026-11-12-migrated-records-keep-old-observation-ids-in-their-front](../.chough/bugs/2026-11-12-migrated-records-keep-old-observation-ids-in-their-front.md) Migrated records keep old observation IDs in their front matter (deferred)
 - [2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one](../.chough/bugs/2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one.md) A bug body runs its symptom and its Actual line into one paragraph (deferred)
-- [2026-11-12-chough-change-ship-prints-specsync-s-text-a-long-json](../.chough/bugs/2026-11-12-chough-change-ship-prints-specsync-s-text-a-long-json.md) chough change ship prints SpecSync's text, a long JSON checkpoint and the move summary together (deferred)
 - [2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate](../.chough/bugs/2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate.md) chough timing still says elapsed wall-clock on the human-gate line, and its notes say read read-only (deferred)
 
 ## Rules, skills and decisions
@@ -88,9 +87,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json](../.specsync/archive/changes/2026-11-13-0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json/lesson-bundle.md), 0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json
 - [0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed](../.specsync/archive/changes/2026-11-13-0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed/lesson-bundle.md), 0.6.1: declare src/stage.rs, which PR 4's intent gate summary fix changed
 - [0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as](../.specsync/archive/changes/2026-11-13-0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as/lesson-bundle.md), 0.6.1: the intent gate summary gives each criterion's sentence, no diff line without a base, and adds or modifies said as such
-- [0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak](../.specsync/archive/changes/2026-11-13-0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak/lesson-bundle.md), 0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak
 
 ## Snapshots and briefs
 
