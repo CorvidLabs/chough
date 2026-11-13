@@ -6,6 +6,7 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
 - At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).
 - `chough change ship` prints SpecSync's output, then a short text summary of at most 12
   lines naming the review, the ship, the gate close and the move into done, in place of
