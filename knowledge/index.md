@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Fix #249: the relay reaches SpecSync's approval and review](journal/2026-11-13-fix-249-the-relay-reaches-specsync-s-approval-and-review.md) (2026-11-13, shipped)
 - [0.6.1: next with no open session exits 0, and timing says elapsed once](journal/2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says.md) (2026-11-13, shipped)
 - [0.6.1: at the observation cap, writes refuse before writing](journal/2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md) (2026-11-13, shipped)
 - [0.6.1: chough change ship prints a short summary](journal/2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md) (2026-11-13, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [Chough 0.6.0: human-first records](journal/2026-11-12-chough-0-6-0-human-first-records.md) (2026-11-12, shipped)
 - [Turn the MVP interview into intent and a 1.0 roadmap](journal/2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md) (2026-11-12, shipped) (no time)
 - [Return observation and case IDs from cases record and evidence add](journal/2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md) (2026-11-10, shipped)
-- [Keep gated finished sessions open on session use and new (#181)](journal/2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md) (2026-11-10, shipped)
 
 ## Where things live
 
@@ -85,9 +85,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve](../.specsync/archive/changes/2026-11-13-fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve/lesson-bundle.md), Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve
 - [0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once](../.specsync/archive/changes/2026-11-13-0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once/lesson-bundle.md), 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once
 - [0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough](../.specsync/archive/changes/2026-11-13-0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough/lesson-bundle.md), 0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve
-- [0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json](../.specsync/archive/changes/2026-11-13-0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json/lesson-bundle.md), 0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json
 
 ## Snapshots and briefs
 

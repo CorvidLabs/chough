@@ -5,7 +5,7 @@ aliases: [review-relay]
 objective: "Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -26,13 +26,9 @@ observations:
   - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo-a7ed99
 bugs: [2026-11-13-chough-change-ship-s-native-review-drops-the-relay-review-json]
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
-    holds: accept
-    drives: review
-    opened: 2026-11-13T08:04:33Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: "Fix #249: the relay reaches SpecSync's approval and review"
 summary:
   - A relayed gate decision that drives a native step passes the human's words, place and recording agent to specsync change approve and change review as --words, --where and --recorded-by, so SpecSync's own records carry the relay; chough change ship's review does too (REQ-records-008, REQ-cli-059).
@@ -50,6 +46,7 @@ Fix #249: chough passes a relayed decision's words, place and recording agent to
 
 - Leif decided "Approve fixing #249: SpecSync's review and approval records carry the relay's words, place and recording agent": "Reviews and approvals (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough relay fix: when you approve in chat, SpecSync's review record gets the details of who decided, where and who relayed it. Today only a free-text note has them. It's a small requirement wording change. Do it for approvals too, not just reviews?' (option text: 'Both records carry your words, where you said them and who relayed them. t38b builds it, and an issue gets filed.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
 - Leif decided "Approve the scope of fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve": "Reviews and approvals (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough relay fix: when you approve in chat, SpecSync's review record gets the details of who decided, where and who relayed it. Today only a free-text note has them. It's a small requirement wording change. Do it for approvals too, not just reviews?' (option text: 'Both records carry your words, where you said them and who relayed them. t38b builds it, and an issue gets filed.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve as 0xLeif
+- Leif decided "Implementation review of fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve": "#261 relay details (#249)" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering: 'Chough PRs passed by the reviewer, part 1: approve the implementation? Each ships after your yes, then you'll get a merge it.', he selected '#256 record polish (0.6.1)', '#258 CI flake fix (#247)', '#259 migrate preview (#246)' and '#261 relay details (#249)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -124,4 +121,20 @@ Fix #249: chough passes a relayed decision's words, place and recording agent to
   - revision: aed5bb1c539b53587477dea6dd4d6a5bdf2fdff4
   - holds: accept
   - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T14:18:11Z · gate-closed · accept → accept · Implementation review of fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve ^t-31c771
+  - native_change: fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
+  - revision: 9df43f35f018e88c202335b831b31080fdc0f3e6
+  - relayed_by:
+    - decided_by: Leif
+    - words: #261 relay details (#249)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering: 'Chough PRs passed by the reviewer, part 1: approve the implementation? Each ships after your yes, then you'll get a merge it.', he selected '#256 record polish (0.6.1)', '#258 CI flake fix (#247)', '#259 migrate preview (#246)' and '#261 relay details (#249)'; relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T14:18:13Z · advance · accept → done · native:archived ^t-527e89
+  - native_change: fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
+  - gate: native:archived
+  - revision: 9df43f35f018e88c202335b831b31080fdc0f3e6
   - by: claude-code (hc t382)
