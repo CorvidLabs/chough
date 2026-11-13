@@ -5,6 +5,6 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Failing tests: next with no open session exits 1; timing's gate line repeats the label, and a note says read read-only.
-- [ ] The fixes, with the docs and the CHANGELOG.
-- [ ] Red then green recorded through Chough, and the full local suite.
+- [x] Failing tests: next with no open session exits 1; timing's gate line repeats the label, and a note says read read-only.
+- [x] The fixes, with the docs and the CHANGELOG.
+- [x] Red then green recorded through Chough, and the full local suite.
