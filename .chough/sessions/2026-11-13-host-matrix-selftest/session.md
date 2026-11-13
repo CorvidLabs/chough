@@ -27,6 +27,9 @@ observations:
   - 2026-11-13-tc-cli-host-matrix-selftest-349558
   - 2026-11-13-tc-cli-host-matrix-selftest-b12eb5
   - 2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-in-one-pass-at
+  - 2026-11-13-tc-cli-host-matrix-selftest-2b475a
+  - 2026-11-13-tc-cli-host-matrix-selftest-33ae9c
+  - 2026-11-13-after-merging-main-242-at-30d6405e-clean-tree-fledge-lanes-run
 bugs: [2026-11-13-the-host-matrix-turn-deadline-does-not-end-a-hung-turn-under]
 blockers: []
 waiting_on_human:
@@ -52,6 +55,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - Full suite at 2bce65a2: 735 passed in 48 targets (Rust 1.96.0), clippy and fmt clean
 - Fixed the dash deadline bug (91b227be); self-test green under dash and bash
 - Verify lane passed in one pass at bf753857 (735 tests); t384 passed the review at 96%
+- Re-verified after merging main (#242): verify lane 737 tests, self-test green under dash and bash at 30d6405e; t384 re-check PASS
 
 ## Decisions and why
 
@@ -75,6 +79,9 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-349558.md)
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-b12eb5.md)
 - [fledge lanes run verify (Fledge 1.8.0, the CI pin) in one pass at bf753857 with a clean tree under the heavy-tests lock: toolchain, fmt, lint, test (735 passed in 48 targets, 0 failed), intent, spec, audit, cases, knowledge, leaks, exercise and build all passed.](evidence/2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-in-one-pass-at.md)
+- [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-2b475a.md)
+- [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-33ae9c.md)
+- [After merging main (#242) at 30d6405e, clean tree: fledge lanes run verify (Fledge 1.8.0) passed all 12 steps, 737 tests in 48 targets, 0 failed; TC-cli-host-matrix-selftest passed with sh as dash (2b475a) and as bash (33ae9c).](evidence/2026-11-13-after-merging-main-242-at-30d6405e-clean-tree-fledge-lanes-run.md)
 
 ## Open threads
 
