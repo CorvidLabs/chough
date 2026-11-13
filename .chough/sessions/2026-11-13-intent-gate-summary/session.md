@@ -16,8 +16,10 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
-bugs: []
+observations:
+  - 2026-11-13-tc-cli-intent-gate-summary-gives-each-criterions-sentence
+  - 2026-11-13-tc-cli-scope-gate-summary-says-adds-and-modifies
+bugs: [2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their]
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -37,6 +39,9 @@ next: Continue build
 - Leif decided "Approve the scope of 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'The intent gate summary gives each criterion's sentence, no 'Diff: unknown' line, and 'adds' for an ADDED-only delta'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test gates -- --exact an_intent_gate_summary_gives_each_criterions_sentence_and_no_diff_line for TC-cli-intent-gate-summary-gives-each-criterions-sentence: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-intent-gate-summary-gives-each-criterions-sentence.md)
+- [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_says_what_each_delta_adds_and_what_it_modifies for TC-cli-scope-gate-summary-says-adds-and-modifies: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-scope-gate-summary-says-adds-and-modifies.md)
 
 ## Open threads
 
