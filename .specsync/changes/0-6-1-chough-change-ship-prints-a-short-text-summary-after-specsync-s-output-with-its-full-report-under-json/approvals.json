@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794536179,
+      "digest": "1852e5c2b60e3ac54e69acfa88ca7a18e01ebb8a6782f1b94a44646cc74edbe4",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json\": \"Yes, start (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'chough change ship prints a short text summary, with its full JSON under --json, as stage moves already do'; relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T02:16:18Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json",
+        "title": "0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json",
+        "description": "0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/change.rs",
+          "tests/change.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough change ship prints SpecSync output, then a short text summary of the review, the ship, the gate close and the move into done, at most 12 lines; with --json it prints every step full report as before (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved 0.6.1 at 02:03Z (relayed by t370) as six small PRs, one fix each, him merging each; this PR is change ship's output, with REQ-cli-059 text. Code stays in src/change.rs (cli); a failing test first; the full local suite before review.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "be6b7ef993a65213de803eeefaf1eb6ccbe40fa34b6d7cabb73d2a231023cd50"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-059": "dc635430bf844431abc7dead50071176de3cebf56cdf250a08448340d12914c7"
+      }
+    }
+  ],
+  "reopenings": []
+}
