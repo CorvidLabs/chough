@@ -5,7 +5,7 @@ aliases: [flake-seed]
 objective: "#217: seed the flake tracker: create the GitHub flake label, label the known flake issues, and note DRIVE-19 and each GitHub issue in the flake bug records"
 intent_scope: DRIVE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,6 +19,7 @@ files: [docs/test-plan-1.0.md]
 observations:
   - 2026-11-13-before-the-notes-the-flake-window-is-blocked-132-169-187-and
   - 2026-11-13-after-the-notes-132-169-and-187-each-match-their-bug-record
+  - 2026-11-13-the-full-test-suite-passed-735-of-735-across-48-targets-cargo
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -47,6 +48,7 @@ next: "Accept: change check, full suite, review"
 
 - [Before the notes, the flake window is blocked: #132, #169, #187 and #247 are labelled flake but no bug record names them as GitHub #<n>, and #247 is open (4 flake issues, 205 bug records, 3 naming DRIVE-19; input sha256 a4634e4dea37a09b)](evidence/2026-11-13-before-the-notes-the-flake-window-is-blocked-132-169-187-and.md)
 - [After the notes, #132, #169 and #187 each match their bug record and 6 records name DRIVE-19. The only blockers left are #247: open, and its record (on t37f's fix branch leif/fix-247-example-race) is not on main yet. Same GitHub input as the red run (sha256 a4634e4dea37a09b), so only the records changed](evidence/2026-11-13-after-the-notes-132-169-and-187-each-match-their-bug-record.md)
+- [The full test suite passed 735 of 735 across 48 targets (cargo test --locked --no-fail-fast, under the heavy-tests lock) at 8a5c0f42, the seed's head on main 38fe24c0](evidence/2026-11-13-the-full-test-suite-passed-735-of-735-across-48-targets-cargo.md)
 
 ## Open threads
 
@@ -95,4 +97,14 @@ next: "Accept: change check, full suite, review"
   - native_change: 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
   - gate: native:approved
   - revision: 38fe24c063e3afde49a5be5093cd69791bd06126
+  - by: claude-code (hc t38r)
+- 2026-11-13T04:34:23Z · advance · build → test · native:approved ^t-37d006
+  - native_change: 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
+  - gate: native:approved
+  - revision: 8a5c0f4211ca6613910c4612fbd826f7874ef4a2
+  - by: claude-code (hc t38r)
+- 2026-11-13T04:34:24Z · advance · test → accept · native:approved ^t-a99d0a
+  - native_change: 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
+  - gate: native:approved
+  - revision: 8a5c0f4211ca6613910c4612fbd826f7874ef4a2
   - by: claude-code (hc t38r)
