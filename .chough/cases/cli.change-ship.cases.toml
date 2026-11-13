@@ -108,3 +108,21 @@ expected = ["the change test the_walkthrough_and_closeout_run_chough_change pass
 adapter = "cargo-test"
 test_target = "change"
 test = "the_walkthrough_and_closeout_run_chough_change"
+
+[[case]]
+id = "TC-cli-change-ship-prints-a-short-summary-and-its-reports-under-json"
+title = "chough change ship prints SpecSync's output, then at most 12 lines naming the review, the ship, the gate close and the move into done, and every step's full report under --json"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "FLOW-16"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs", "docs/cli.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test ship_prints_a_short_summary_after_specsync_and_every_report_under_json passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_prints_a_short_summary_after_specsync_and_every_report_under_json"

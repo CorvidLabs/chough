@@ -89,7 +89,14 @@ pub(super) struct ShipArgs {
     /// The agent recording the decision.
     #[arg(long)]
     recorded_by: Option<String>,
+    /// Print each step's full report after SpecSync's output, in place of the short
+    /// text summary (REQ-cli-059).
+    #[arg(long)]
+    json: bool,
 }
+
+/// The most lines the short summary after SpecSync's output takes (REQ-cli-059).
+const SUMMARY_LINES: usize = 12;
 
 /// Run one step and return the exit code to end with.
 pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
@@ -391,6 +398,29 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         return Ok(code);
     }
 
+    // REQ-cli-059 (0.6.1): after SpecSync's output, a short text summary of the review,
+    // the ship, the gate close and the move into done; each step's full report under
+    // --json instead.
+    let review = match (&relayed, &native_ran) {
+        (None, _) => "none ran; no gate was named to close".to_string(),
+        (Some((gate, _, _)), None) => format!("none ran; gate \"{gate}\" drives no native step"),
+        (Some(_), Some(ran)) => ran.clone(),
+    };
+    let mut summary = vec![
+        format!("Review: {review}"),
+        format!("Ship: specsync change ship {id} succeeded; its output is above"),
+    ];
+    let gate_closed = match &relayed {
+        Some((gate, relay, _)) => format!(
+            "Gate: \"{gate}\" closed with {}'s decision, recorded by {} as a relayed claim",
+            relay.decided_by, relay.recorded_by
+        ),
+        None => "Gate: none was named, so none closed".to_string(),
+    };
+    if relayed.is_none() {
+        summary.push(gate_closed.clone());
+    }
+
     // After a successful ship: Chough's own commands, so their checks and records are
     // exactly those of `chough checkpoint --close-gate` and `chough stage advance`.
     let mut steps: Vec<(String, Vec<String>)> = vec![];
@@ -439,12 +469,15 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
             .collect(),
         ));
     }
-    steps.push((
-        "chough stage advance --to done".into(),
-        ["stage", "advance", "--to", "done"]
-            .map(String::from)
-            .to_vec(),
-    ));
+    // The move prints its full report under --json, and its short text summary, which
+    // ends this one, otherwise.
+    let mut advance = ["stage", "advance", "--to", "done"]
+        .map(String::from)
+        .to_vec();
+    if args.json {
+        advance.push("--json".into());
+    }
+    steps.push(("chough stage advance --to done".into(), advance));
     let chough = std::env::current_exe()?;
     for (index, (shown, arguments)) in steps.iter().enumerate() {
         let mut command = Command::new(&chough);
@@ -454,8 +487,11 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
             .args(arguments)
             .current_dir(root);
         let output = records::run_owned(&mut command, None)?;
-        pass_through(&output.stdout, &output.stderr)?;
         if !output.status.success() {
+            if !args.json {
+                print_summary(&summary)?;
+            }
+            pass_through(&output.stdout, &output.stderr)?;
             let remaining: Vec<&str> = steps[index..]
                 .iter()
                 .map(|(shown, _)| shown.as_str())
@@ -465,8 +501,35 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 remaining.join("`, then `")
             );
         }
+        if args.json {
+            pass_through(&output.stdout, &output.stderr)?;
+            continue;
+        }
+        pass_through(&[], &output.stderr)?;
+        if index + 1 < steps.len() {
+            summary.push(gate_closed.clone());
+        } else {
+            summary.extend(
+                String::from_utf8_lossy(&output.stdout)
+                    .lines()
+                    .map(String::from),
+            );
+        }
+    }
+    if !args.json {
+        print_summary(&summary)?;
     }
     Ok(0)
+}
+
+/// Print the short summary, at most [`SUMMARY_LINES`] lines (REQ-cli-059).
+fn print_summary(lines: &[String]) -> Result<()> {
+    let mut stdout = io::stdout().lock();
+    for line in lines.iter().take(SUMMARY_LINES) {
+        writeln!(stdout, "{line}")?;
+    }
+    stdout.flush()?;
+    Ok(())
 }
 
 /// The flags closing `gate` needs beyond the relay: a gate that drives review takes

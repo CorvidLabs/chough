@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough change ship` prints SpecSync's output, then a short text summary of at most 12
+  lines naming the review, the ship, the gate close and the move into done, in place of
+  the gate close's long JSON report and the move's summary; `--json` prints every step's
+  full report (REQ-cli-059).
 - The leak check no longer refuses an ordinary word that equals a short all-letter host
   name: such a name is a leak only inside a path or a URL or as `<user>@<host>`, while a
   host name of 8 or more characters, or holding a digit, a hyphen or a dot, is still

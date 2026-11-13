@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 86
+version: 87
 status: active
 files:
   - src/main.rs
@@ -365,3 +365,4 @@ provider, runtime or hosted service.
 | 84 | 2026-11-10 | return-the-observation-id-from-cases-record-and-evidence-add-issue-60: Return the observation ID from cases record and evidence add (issue 60) |
 | 85 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
 | 86 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
+| 87 | 2026-11-13 | 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json: 0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json |
