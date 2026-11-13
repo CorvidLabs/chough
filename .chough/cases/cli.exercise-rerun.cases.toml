@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #247: the verify lane's exercise (examples/feature-bug-loop.sh) flaked when the
+# failing run of TC-shipping-0001 and its fixed rerun landed in the same second, and
+# REQ-cli-012 rightly refused verified (CI run 43357893936).
+
+[[case]]
+id = "TC-cli-exercise-rerun-waits-past-the-failing-runs-second"
+title = "The example's rerun lands after the failing run's recorded second, so bug update --status verified succeeds, with REQ-cli-012's same-second refusal unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-19"]
+requirements = ["REQ-cli-012"]
+paths = ["examples/feature-bug-loop.sh", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::exercise_rerun_waits_past_the_failing_runs_second_before_verifying passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "exercise_rerun_waits_past_the_failing_runs_second_before_verifying"

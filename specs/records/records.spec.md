@@ -1,6 +1,6 @@
 ---
 module: records
-version: 5
+version: 6
 status: active
 files:
   - src/markdown.rs
@@ -136,6 +136,7 @@ or redacting every value before it is written.
 | `SessionHome` | Where a 0.5.x session went, by its 0.5.x key: its open session folder or its archived story. |
 | `Receipt` | The receipt map of one carried observation, as a story's or a bug's `receipts:` list holds it (REQ-history-006). |
 | `ObservationHomes` | Where each 0.5.x observation went: an open session's evidence entry or a receipt; one in neither was removed. |
+| `names` | Each of a list of 0.5.x observation IDs by the name of the entry or receipt it became, once each and in order; a removed one keeps its ID. |
 | `legacy_paths` | Every 0.5.x record path in the project, sorted; any one makes the tree unmigrated (REQ-records-010). |
 | `receipt_path` | The migration receipt's path under `.chough/archive/migrations/`, fixed when the plan is built. |
 | `LOGS` | `.chough/local/logs`, where an executed case's raw log stays machine-local (REQ-records-005). |
@@ -207,4 +208,5 @@ use this one for every record they write.
 | 2 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
 | 3 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
 | 4 | 2026-11-13 | 0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak: 0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak |
-| 5 | 2026-11-13 | fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve: Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve |
+| 5 | 2026-11-13 | fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply: Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply |
+| 6 | 2026-11-13 | fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve: Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve |

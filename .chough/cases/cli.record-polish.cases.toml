@@ -1,0 +1,42 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# 0.6.1 record polish (t38n's round-4 F8): a bug's Actual line is its own paragraph.
+
+[[case]]
+id = "TC-cli-a-bug-body-gives-its-actual-line-its-own-paragraph"
+title = "A bug body gives its Actual line its own paragraph under What happened, and a bug written with Actual on the symptom's next line still reads back"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2", "LIFE-7", "KNOW-30"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the bugs test a_bug_body_gives_its_actual_line_its_own_paragraph passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_bug_body_gives_its_actual_line_its_own_paragraph"
+
+# t38n's round-4 F11: the README's init paragraph has no long parenthetical about hosts.
+
+[[case]]
+id = "TC-cli-the-readme-init-paragraph-names-the-host-directories-briefly"
+title = "The README's init paragraph names each host's skill directory without a long parenthetical, keeping the hosts, their directories and the CLAUDE.md line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-1", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["README.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the docs test the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthetical passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_readme_init_paragraph_names_the_host_directories_without_a_long_parenthetical"
