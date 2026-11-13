@@ -20,7 +20,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-13T03:40:50Z
-updated: 2026-11-13T03:40:50Z
+updated: 2026-11-13T03:46:38Z
 ---
 # chough change ship's native review drops the relay: review.json names the reviewer with no words, place or recorder
 
@@ -42,3 +42,4 @@ Actual: src/humans.rs Step::Review runs only specsync change review <id> --revie
 
 - 2026-11-13T03:40:50Z · Reported (t370 (coordinator), from t384's review of chough#242 and #244) · by claude-code (hc t382)
 - 2026-11-13T03:40:50Z · Added despite similar reports: The verified 2026-11-12 ship bugs fixed Chough's own close report and gate-closed relay; this one is the relay missing from SpecSync's review.json, which Chough's native call never passes · by claude-code (hc t382)
+- 2026-11-13T03:46:38Z · Tracked as GitHub #249; Leif chose reviews and approvals at 2026-11-13T03:44Z (relayed by t370) · by claude-code (hc t382)
