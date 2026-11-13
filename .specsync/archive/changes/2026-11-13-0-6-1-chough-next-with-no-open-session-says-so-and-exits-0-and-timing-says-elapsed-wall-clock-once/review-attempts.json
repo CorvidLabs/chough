@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "7363d8139c697930a4f05c4c9fc47983c07400fe",
+      "contract_digest": "b67cf76c78f0b43817ab3e475d98faa2646cef71191c23c19b4dbfe20bf45a5a",
+      "execution_digest": "fb1cddbff983e756a7410325c29dcef7c8aa7112f42f77037c36403c45bc79ed",
+      "workspace_digest": "8c5460ef0b356e10d1570bb0feb6e541d9b9438fa67e013528718c657b07c768",
+      "timestamp": 1794541274
+    }
+  ]
+}

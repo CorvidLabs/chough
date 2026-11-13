@@ -1394,7 +1394,7 @@ fn native_section(
         partial.push(json!({"source": ARCHIVE_DIR, "reason": format!("archived native history not read: excluded by {}", excluded.join(", "))}));
         return Ok(json!({
             "state": "observed",
-            "detail": "Times from `specsync change status --json` (created, updated) and native record files read read-only (gate and timestamp only); approval validity only from native status.",
+            "detail": "Times from `specsync change status --json` (created, updated) and native record files, opened read-only (gate and timestamp only); approval validity only from native status.",
             "current": current,
             "history": null,
             "history_selection": {"state": "skipped-by-filter", "filters": excluded, "reason": HISTORY_RULE},
@@ -1437,7 +1437,7 @@ fn native_section(
     }
     Ok(json!({
         "state": "observed",
-        "detail": "Times from `specsync change status --json` (created, updated) and native record files read read-only (gate and timestamp only); approval validity only from native status.",
+        "detail": "Times from `specsync change status --json` (created, updated) and native record files, opened read-only (gate and timestamp only); approval validity only from native status.",
         "current": current,
         "history": history,
         "history_selection": {
@@ -1906,6 +1906,10 @@ fn time_text(value: &Value) -> String {
 
 fn span_text(value: &Value) -> String {
     match (value["seconds"].as_u64(), value["label"].as_str()) {
+        // The header says once that every duration is elapsed wall-clock time, so no
+        // gate-wait, run or fix-time line repeats it; only the other labels follow a
+        // number, as `Span::text` gives them (REQ-reporting-001).
+        (Some(seconds), Some(ELAPSED)) => clock(seconds),
         (Some(seconds), Some(label)) => format!("{} ({label})", clock(seconds)),
         _ => format!(
             "unknown ({})",

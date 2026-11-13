@@ -185,6 +185,17 @@ impl Fixture {
         String::from_utf8_lossy(&output.stderr).into_owned()
     }
 
+    /// Run a command that must succeed; returns its standard output as text.
+    pub(super) fn ok_text(&self, args: &[&str]) -> String {
+        let output = self.run(args);
+        assert!(
+            output.status.success(),
+            "{args:?} failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8_lossy(&output.stdout).into_owned()
+    }
+
     pub(super) fn init(&self) {
         self.ok(&[
             "init",

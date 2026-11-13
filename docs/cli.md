@@ -787,6 +787,10 @@ finished session and a folder whose story exists do not count toward several ope
 sessions. With none open, several and no pointer, or a pointer to a missing or archived
 session, every command that needs a session refuses with nothing written and names the
 command to run: `no open session; run chough session new <key>` when none is open.
+`chough next` is the exception for none open with no pointer, the normal state after
+the move into done archives the session: it says there is no open session, names
+`chough session new <key> --objective "<outcome>"` and exits 0, while `chough status`
+still refuses.
 Each command resolves its session once, so a `session use` in another process partway
 through a command does not redirect its save. `chough init --objective <text>` creates
 the first session as `session new` would, keyed by `--session <key>` or the
@@ -903,9 +907,10 @@ done and its save succeeds, the same command goes on, with no further native rea
    --check` passes right after done (KNOW-4).
 
 None of these undoes the move into done. Nothing is trimmed and no other session or
-story is read, moved or rewritten. Then `chough next` and `chough status` refuse with
-"no open session" and name `chough session new <key>` until a session is opened
-(DRIVE-13).
+story is read, moved or rewritten. Then, until a session is opened, `chough next` says
+there is no open session, names `chough session new <key>` and exits 0, since that is the
+normal state after done, while `chough status` refuses with "no open session" and names
+the same command (DRIVE-13).
 
 The finish takes two commits. First commit the story, the journal post and the
 regenerated index and feed. The session's own `session.md` changed in the move, so its
@@ -1419,6 +1424,10 @@ cache or metadata-only freshness shortcut.
 ## The next view
 
 `chough next` is what a resuming agent reads first; `chough status` is the full view.
+With no open session and no pointer, as after the move into done, `next` reads nothing
+and shows only `Session: none open` and a next valid action naming `chough session new
+<key> --objective "<outcome>"` (in JSON, `session` is `null` beside
+`next_valid_action`), and exits 0.
 It makes at most one `specsync change status` read, or reuses an authenticated archived
 response as above, and evaluates the gate for the next main
 stage on that response, and shows:
@@ -1562,7 +1571,8 @@ The next valid action follows these rules in order:
    [Approved-delta guard](#approved-delta-guard) describes.
 7. In stage done, an archived change whose terminal evidence authenticates, or no
    recorded native change, closes the cycle. The move into done archives the session,
-   so `next` then refuses with "no open session" and names `chough session new <key>`
+   so `next` then says there is no open session, names `chough session new <key>` and
+   exits 0
    (see [Moving into done](#moving-into-done)). For a session the move kept open, the
    action names what closes it:
    - while an authorized release is still ahead, even with inbox entries unfolded,
@@ -1977,7 +1987,8 @@ reads (above).
 | Estimates | Per stage (stage time per completed cycle, except a stage with time a backfilled move bounds), per bug fix and per closed gate: sample count with minimum, median and maximum, labelled `estimate from N recorded <items>; not a target`. Fewer than 3 samples are `too few to estimate`. Idle time, unknown and same-second values and a current cycle that has not reached `done` are never samples; a current cycle that has reached `done` is complete and is a sample. |
 
 Labels: `elapsed wall-clock`, which the text says once, in its header, rather than
-after every number, while the JSON keeps it on each duration; `recorded together` when
+after every number, so no gate-wait, segment, run, fix-time or estimate line repeats it,
+while the JSON keeps it on each duration; `recorded together` when
 start and end share a second (records written together, not instant work); `ongoing`;
 and `unknown` with its reason
 (missing timestamp, end before start, no transition before the first entry, a gate
