@@ -1249,6 +1249,13 @@ fn plan(root: &Path) -> Result<Plan> {
     // while it is not current, as `chough skill status` reports it, the plan names
     // `chough skill update`; the copy still names 0.5.x commands and paths until then.
     follow_ups.extend(crate::skill::update_advice(root)?);
+    // REQ-records-009, REQ-cli-055 (#246): doctor's own session check, run on the session
+    // records this plan writes, names what `chough doctor` reports right after the apply,
+    // so the stale gates' decisions are asked in the same round as the consent.
+    follow_ups.extend(crate::doctor::session_follow_ups(
+        root,
+        &planned_sessions(&carried)?,
+    )?);
     Ok(Plan {
         sources,
         legacy,
@@ -1258,6 +1265,46 @@ fn plan(root: &Path) -> Result<Plan> {
         redactions,
         follow_ups,
     })
+}
+
+/// Each open session record the plan writes, `.chough/sessions/<key>/session.md` as
+/// redacted, parsed, with the number of inbox entries it writes directly under that
+/// session's `agent/inbox/`, counted as `chough doctor` counts unfolded entries there.
+fn planned_sessions(
+    carried: &Carried,
+) -> Result<Vec<(String, crate::checkpoint::Checkpoint, usize)>> {
+    let dir = format!("{}/", crate::sessions::DIR);
+    let mut found = vec![];
+    for written in &carried.written {
+        let Some(key) = written
+            .path
+            .strip_prefix(&dir)
+            .and_then(|rest| rest.strip_suffix("/session.md"))
+            .filter(|key| !key.contains('/'))
+        else {
+            continue;
+        };
+        let crate::checkpoint::Session::V2(session) =
+            crate::checkpoint::parse(&written.path, &written.bytes)?;
+        let inbox = format!("{dir}{key}/agent/inbox/");
+        let unfolded = carried
+            .written
+            .iter()
+            .filter(|entry| {
+                entry
+                    .path
+                    .strip_prefix(&inbox)
+                    .and_then(|name| name.strip_suffix(".md"))
+                    .is_some_and(|name| {
+                        !name.contains('/')
+                            && !name.starts_with('.')
+                            && crate::records::valid_change_id(name)
+                    })
+            })
+            .count();
+        found.push((key.to_string(), *session, unfolded));
+    }
+    Ok(found)
 }
 
 /// Redact every leak in a written file (REQ-records-006), returning each redaction by

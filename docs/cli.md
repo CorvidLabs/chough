@@ -1053,8 +1053,15 @@ receipt also list the `records_in_verification` advice as a follow-up, and, whil
 installed skill copy is not current as `chough skill status` reports it, one naming
 `chough skill update` with each such copy's directory and how many files are
 known-outdated, missing or edited: the migration does not touch the skill copy, which
-still names 0.5.x commands and paths until it is updated. The receipt holds every
-follow-up under one `## Follow-up` heading, one paragraph each.
+still names 0.5.x commands and paths until it is updated. They also name what
+`chough doctor` will report on the migrated tree, found by doctor's own session check
+run on the records the plan writes, so on a tree just migrated doctor reports exactly
+those sessions (REQ-cli-055): the sessions that are finished (`finished_session`),
+which `chough doctor --fix` archives, and each session whose open human gates are on an
+archived native change (`stale_gates`), with each gate's text and the decision it
+needs, `chough doctor --fix --reason "<their decision>"`, so the human answers those
+gates in the same round as the consent. The receipt holds every follow-up under one
+`## Follow-up` heading, one paragraph each.
 
 ## SpecSync change steps
 
