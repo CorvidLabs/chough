@@ -1,0 +1,296 @@
+---
+kind: session
+id: 2026-11-13-observation-cap
+aliases: [observation-cap]
+objective: "0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve"
+stage: done
+stage_status: archived
+iteration: 1
+native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+cases: [TC-cli-observation-cap-refuses-before-writing]
+observations:
+  - 2026-11-13-tc-cli-observation-cap-refuses-before-writing
+  - 2026-11-13-tc-cli-observation-cap-refuses-before-writing-578f54
+  - 2026-11-13-tc-cli-observation-cap-refuses-before-writing-ffac2d
+  - 2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo
+  - 2026-11-13-tc-cli-observation-cap-refuses-before-writing-b9a4e8
+bugs: [2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry]
+title: "0.6.1: at the observation cap, writes refuse before writing"
+summary:
+  - At REQ-cli-032's 400-observation cap, every write that adds an observation refuses before running or writing anything, naming chough session shelve <id>; next and the leave-test gate read a case's latest run only from the observations the checkpoint references.
+  - "Verified: the case red then green, the bug verified, and the full suite 731 of 731. Next: Leif's review and merge."
+closed: 2026-11-13
+outcome: done
+---
+# 0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve
+
+## Goal
+
+0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve
+
+## Where it stands
+
+- PR 2: at the 400 cap every observation write refuses before writing, naming shelve; next and the leave-test gate read only referenced runs (REQ-cli-032, REQ-cli-021); red at c7bf6347, green at 3df0102c, bug verified
+
+## Decisions and why
+
+- Leif decided "Approve the intent: at the observation cap, writes refuse before writing and name the recovery": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
+- Leif decided "Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough as 0xLeif
+- Leif decided "Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough with its corrected file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough as 0xLeif
+- Leif decided "Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough with its exact file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough as 0xLeif
+- Leif decided "Implementation review of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:01Z, answering: 'Approve 0.6.1 PR #244 (the 400-run limit refuses before writing and says what to do; next and the test gate only count linked runs)?' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough as 0xLeif with verdict pass
+
+## What was verified
+
+- 3 earlier runs of the cases below are kept in this story's receipts, not listed here.
+- The full test suite passed 731 of 731 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 31f85795, PR 2 with main merged in; clippy --all-targets -D warnings and rustfmt --check were clean ^2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo
+- Ran cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs for TC-cli-observation-cap-refuses-before-writing: passed (exit 0, tests run 1). — a3e7d179bdce ^2026-11-13-tc-cli-observation-cap-refuses-before-writing-b9a4e8
+
+## Bugs
+
+- [At the 400-observation cap, cases run writes its evidence entry and then refuses, leaving it unreferenced](../../bugs/2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry.md): verified
+
+## Open threads
+
+## Timeline
+
+- 2026-11-13T02:08:33Z · start · intent → intent · 0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve ^t-e5d776
+  - revision: 9d53604071df50b537adccad0ccf5cac9a2fc32b
+  - by: claude-code (hc t382)
+- 2026-11-13T02:08:33Z · gate-opened · intent → intent · Approve the intent: at the observation cap, writes refuse before writing and name the recovery ^t-e293d7
+  - revision: 9d53604071df50b537adccad0ccf5cac9a2fc32b
+  - holds: intent
+  - drives: none
+  - by: claude-code (hc t382)
+- 2026-11-13T02:08:33Z · gate-closed · intent → intent · Approve the intent: at the observation cap, writes refuse before writing and name the recovery ^t-6752fa
+  - revision: 9d53604071df50b537adccad0ccf5cac9a2fc32b
+  - relayed_by:
+    - decided_by: Leif
+    - words: Yes, start (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+  - by: claude-code (hc t382)
+- 2026-11-13T02:08:33Z · advance · intent → design · Leif approved 0.6.1's PRs (02:03Z, relayed by t370) ^t-fc8207
+  - revision: 9d53604071df50b537adccad0ccf5cac9a2fc32b
+  - by: claude-code (hc t382)
+- 2026-11-13T02:08:33Z · skip · design → plan · No visuals or interactions change ^t-64f1ed
+  - revision: 9d53604071df50b537adccad0ccf5cac9a2fc32b
+  - by: claude-code (hc t382)
+- 2026-11-13T02:09:08Z · gate-opened · plan → plan · Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough ^t-9b7c49
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 9d53604071df50b537adccad0ccf5cac9a2fc32b
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-13T02:09:08Z · gate-closed · plan → plan · Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough ^t-f963d4
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 9d53604071df50b537adccad0ccf5cac9a2fc32b
+  - relayed_by:
+    - decided_by: Leif
+    - words: Yes, start (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T02:09:10Z · advance · plan → build · Leif approved the scope (02:03Z, relayed by t370) ^t-7ddb33
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:approved
+  - revision: 9d53604071df50b537adccad0ccf5cac9a2fc32b
+  - by: claude-code (hc t382)
+- 2026-11-13T02:43:27Z · advance · build → test · The fix is green ^t-99314b
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:approved
+  - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - by: claude-code (hc t382)
+- 2026-11-13T02:43:27Z · advance · test → accept · The fix is green ^t-e17582
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:approved
+  - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - by: claude-code (hc t382)
+- 2026-11-13T02:59:08Z · direct-native-write · accept → accept · 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-778ef6
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - direct_write:
+    - change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: claude-code (hc t382)
+- 2026-11-13T02:59:08Z · back · accept → plan · Leif chose to fix the file list and keep his approvals (02:53Z, relayed by t370) ^t-6d39e3
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 1 case(s) and 2 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t382)
+- 2026-11-13T02:59:09Z · gate-opened · plan → plan · Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough with its corrected file list ^t-337edb
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-13T02:59:10Z · gate-closed · plan → plan · Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough with its corrected file list ^t-2eda29
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - relayed_by:
+    - decided_by: Leif
+    - words: Yes, start (Recommended) / Yes, fix and keep (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T02:59:11Z · advance · plan → build · Leif kept his approval with the corrected file list (02:53Z, relayed by t370) ^t-8f60c4
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:approved
+  - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - by: claude-code (hc t382)
+- 2026-11-13T02:59:11Z · advance · build → test · Leif kept his approval with the corrected file list (02:53Z, relayed by t370) ^t-29fdca
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:approved
+  - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - by: claude-code (hc t382)
+- 2026-11-13T02:59:11Z · advance · test → accept · Leif kept his approval with the corrected file list (02:53Z, relayed by t370) ^t-ef7053
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:approved
+  - revision: 31f85795b0f2fb2c89a8ffc4bc0dee8728ca1178
+  - by: claude-code (hc t382)
+- 2026-11-13T03:00:00Z · gate-opened · accept → accept · Implementation review of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough ^t-eb3355
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: d247ac6b17a0a48cfa00ece86730ed758d212389
+  - holds: accept
+  - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T03:03:16Z · direct-native-write · accept → accept · 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-708ef8
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 9e14f23d911b9d33b3923afc429e225e04a96ddc
+  - direct_write:
+    - change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: claude-code (hc t382)
+- 2026-11-13T03:03:16Z · back · accept → plan · The file list names exactly the changed files (Leif, 02:53Z, relayed by t370) ^t-a235f8
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 9e14f23d911b9d33b3923afc429e225e04a96ddc
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 1 case(s) and 4 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t382)
+- 2026-11-13T03:03:17Z · gate-opened · plan → plan · Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough with its exact file list ^t-e4678b
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 9e14f23d911b9d33b3923afc429e225e04a96ddc
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-13T03:03:17Z · gate-closed · plan → plan · Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough with its exact file list ^t-72200f
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: 9e14f23d911b9d33b3923afc429e225e04a96ddc
+  - relayed_by:
+    - decided_by: Leif
+    - words: Yes, start (Recommended) / Yes, fix and keep (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T03:03:19Z · advance · plan → build · Leif kept his approval with the exact file list (02:53Z, relayed by t370) ^t-bf5ede
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:approved
+  - revision: 9e14f23d911b9d33b3923afc429e225e04a96ddc
+  - by: claude-code (hc t382)
+- 2026-11-13T03:03:19Z · advance · build → test · Leif kept his approval with the exact file list (02:53Z, relayed by t370) ^t-1d91ac
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:approved
+  - revision: 9e14f23d911b9d33b3923afc429e225e04a96ddc
+  - by: claude-code (hc t382)
+- 2026-11-13T03:03:19Z · advance · test → accept · Leif kept his approval with the exact file list (02:53Z, relayed by t370) ^t-0837eb
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:approved
+  - revision: 9e14f23d911b9d33b3923afc429e225e04a96ddc
+  - by: claude-code (hc t382)
+- 2026-11-13T03:08:29Z · gate-closed · accept → accept · Implementation review of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough ^t-96c7f4
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - revision: f46911da772edc3318d14e7bdb48dde547525120
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T03:01Z, answering: 'Approve 0.6.1 PR #244 (the 400-run limit refuses before writing and says what to do; next and the test gate only count linked runs)?' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T03:08:30Z · advance · accept → done · native:archived ^t-ab1bf1
+  - native_change: 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough
+  - gate: native:archived
+  - revision: f46911da772edc3318d14e7bdb48dde547525120
+  - by: claude-code (hc t382)
+
+Closed 2026-11-13: done.
+
+## Receipts
+
+```yaml
+receipts:
+  - id: 2026-11-13-tc-cli-observation-cap-refuses-before-writing
+    claim: "Ran cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs for TC-cli-observation-cap-refuses-before-writing: failed (exit 101, tests run 1)."
+    result: failed
+    command: cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs
+    revision: c7bf6347e3ba43cc30275a34d08fb175604c31ee
+    environment: local-macos-arm64
+    content: f0563e466a515e7e5afa6291a5cd5b388b6dd82f916b71024efd7f953f4476a4
+    fingerprint: sha256:89fb33e7a5553732e49f484d1bc3b33cb034e0a19c90db73592cdb3d9b8e384a
+    case: TC-cli-observation-cap-refuses-before-writing
+    case_digest: 922a8c1ea9a4708af23602a00ee5e79158af7a0df3cdb98152c5da944e2b5f33
+    observed: 2026-11-13T02:39:56Z
+    duration_seconds: 2
+    actor: claude-code (hc t382)
+  - id: 2026-11-13-tc-cli-observation-cap-refuses-before-writing-578f54
+    claim: "Ran cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs for TC-cli-observation-cap-refuses-before-writing: passed (exit 0, tests run 1)."
+    result: passed
+    command: cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs
+    revision: 3df0102c1be7e9ea9e55af5aea6039b1562c1a3b
+    environment: local-macos-arm64
+    content: 08f9767107c068c9ef20761ffab965cbf0c69f2f26fe50f576742e92619c9082
+    fingerprint: sha256:20cef9eb058216430a0cb56fc597cb2db524e8c87697f35799be0f70771cb4e4
+    case: TC-cli-observation-cap-refuses-before-writing
+    case_digest: 922a8c1ea9a4708af23602a00ee5e79158af7a0df3cdb98152c5da944e2b5f33
+    observed: 2026-11-13T02:41:18Z
+    duration_seconds: 3
+    actor: claude-code (hc t382)
+  - id: 2026-11-13-tc-cli-observation-cap-refuses-before-writing-ffac2d
+    claim: "Ran cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs for TC-cli-observation-cap-refuses-before-writing: passed (exit 0, tests run 1)."
+    result: passed
+    command: cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs
+    revision: d247ac6b17a0a48cfa00ece86730ed758d212389
+    environment: local-macos-arm64
+    content: f1693f112aee648629016053eeb1da4f43148a8d7945c6bee3912127fc705702
+    fingerprint: sha256:61141cd0e00a22a3797451bb23f85e8f3c21edf387bfd051b6bad3d9eac990f7
+    case: TC-cli-observation-cap-refuses-before-writing
+    case_digest: 922a8c1ea9a4708af23602a00ee5e79158af7a0df3cdb98152c5da944e2b5f33
+    observed: 2026-11-13T02:59:54Z
+    duration_seconds: 2
+    actor: claude-code (hc t382)
+  - id: 2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo
+    claim: The full test suite passed 731 of 731 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 31f85795, PR 2 with main merged in; clippy --all-targets -D warnings and rustfmt --check were clean
+    result: passed
+    revision: d247ac6b17a0a48cfa00ece86730ed758d212389
+    environment: local-macos-arm64
+    content: f1693f112aee648629016053eeb1da4f43148a8d7945c6bee3912127fc705702
+    observed: 2026-11-13T02:59:54Z
+    actor: claude-code (hc t382)
+  - id: 2026-11-13-tc-cli-observation-cap-refuses-before-writing-b9a4e8
+    claim: "Ran cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs for TC-cli-observation-cap-refuses-before-writing: passed (exit 0, tests run 1)."
+    result: passed
+    command: cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs
+    revision: 9e14f23d911b9d33b3923afc429e225e04a96ddc
+    environment: local-macos-arm64
+    content: f1693f112aee648629016053eeb1da4f43148a8d7945c6bee3912127fc705702
+    fingerprint: sha256:a3e7d179bdcebbe3bb70f58926ec4681b6653ea9fea831a96ae7aba1167f7ea8
+    case: TC-cli-observation-cap-refuses-before-writing
+    case_digest: 922a8c1ea9a4708af23602a00ee5e79158af7a0df3cdb98152c5da944e2b5f33
+    observed: 2026-11-13T03:07:27Z
+    duration_seconds: 2
+    actor: claude-code (hc t382)
+```

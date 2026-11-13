@@ -49,7 +49,9 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
         // by chough-0-6-0-human-first-records-...: it reads timelines and receipts, and
         // duration_seconds; then by prepare-the-chough-0-6-0-release-...: the start entry
         // starts Cycle 1, and the wall-clock label is said once in the text header.
-        "4333865f85607e54f5e1c1628b0fe887d89463acd2ec00ba67840946b977ce7b",
+        // then by 0-6-1-chough-next-with-no-open-session-...: no gate-wait, segment or
+        // estimate line repeats the elapsed wall-clock label.
+        "7f663a875714902132cc652098cb17920c34ca85ada5edcbd2f4839ec507de19",
     ),
     (
         "REQ-cli-024",

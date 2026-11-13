@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 88
+version: 89
 status: active
 files:
   - src/main.rs
@@ -366,4 +366,5 @@ provider, runtime or hosted service.
 | 85 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
 | 86 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
 | 87 | 2026-11-13 | 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json: 0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json |
-| 88 | 2026-11-13 | 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as: 0.6.1: the intent gate summary gives each criterion's sentence, no diff line without a base, and adds or modifies said as such |
+| 88 | 2026-11-13 | 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once: 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once |
+| 89 | 2026-11-13 | 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as: 0.6.1: the intent gate summary gives each criterion's sentence, no diff line without a base, and adds or modifies said as such |
