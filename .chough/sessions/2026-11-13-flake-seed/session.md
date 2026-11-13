@@ -22,9 +22,13 @@ observations:
   - 2026-11-13-the-full-test-suite-passed-735-of-735-across-48-targets-cargo
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
+    holds: accept
+    drives: review
+    opened: 2026-11-13T05:46:49Z
 run_consents: []
-next: "Accept: change check, full suite, review"
+next: Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay; merge after hosted CI is green
 ---
 # #217: seed the flake tracker: create the GitHub flake label, label the known flake issues, and note DRIVE-19 and each GitHub issue in the flake bug records
 
@@ -107,4 +111,10 @@ next: "Accept: change check, full suite, review"
   - native_change: 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
   - gate: native:approved
   - revision: 8a5c0f4211ca6613910c4612fbd826f7874ef4a2
+  - by: claude-code (hc t38r)
+- 2026-11-13T05:46:49Z · gate-opened · accept → accept · Implementation review of 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each ^t-798db8
+  - native_change: 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
+  - revision: 7e1551ec31c357545514ecb7eb798894b05990aa
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t38r)
