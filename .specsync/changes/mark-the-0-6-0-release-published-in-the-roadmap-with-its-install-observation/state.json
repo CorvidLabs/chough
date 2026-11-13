@@ -7,10 +7,11 @@
   "title": "Mark the 0.6.0 release published in the roadmap with its install observation",
   "description": "Mark the 0.6.0 release published in the roadmap with its install observation",
   "kind": "documentation",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "443c63ab65b747f47248ad2166f8fb299da94a41",
   "created_at": 1794534303,
-  "updated_at": 1794534404,
+  "updated_at": 1794534962,
   "affected_specs": [
     "cli"
   ],

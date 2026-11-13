@@ -1,6 +1,6 @@
 ---
 id: mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation
-state: approved
+state: implementing
 type: documentation
 base_commit: 443c63ab65b747f47248ad2166f8fb299da94a41
 ---
