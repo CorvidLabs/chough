@@ -5,7 +5,7 @@ aliases: [mark-0-6-0-published]
 objective: Mark the 0.6.0 release published in the roadmap with its install observation (releasing.md step 9)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -30,13 +30,9 @@ observations:
   - 2026-11-13-tc-cli-roadmap-claims-no-cold-start-pass
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation
-    holds: accept
-    drives: review
-    opened: 2026-11-13T01:56:00Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: Chough 0.6.0 marked published in the roadmap
 summary:
   - "releasing.md step 9 for Chough 0.6.0: the roadmap's delivered table now lists the 0.6.0 release, tag v0.6.0 at 443c63ab, crates.io chough 0.6.0 and the GitHub release, with the clean install that printed chough 0.6.0."
@@ -56,6 +52,7 @@ Mark the 0.6.0 release published in the roadmap with its install observation (re
 
 - Leif decided "Approve the intent: mark 0.6.0 published in the roadmap with its install observation": "Yes (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T01:43Z, answering: 'Last release step: mark 0.6.0 as published in Chough's roadmap, plus the install check result, as one small docs PR with no requirement change. OK?' (option text: 't382 opens it. Your merge of it counts as the review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
 - Leif decided "Approve the scope of mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation": "Yes (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T01:43Z, answering: 'Last release step: mark 0.6.0 as published in Chough's roadmap, plus the install check result, as one small docs PR with no requirement change. OK?' (option text: 't382 opens it. Your merge of it counts as the review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation as 0xLeif
+- Leif decided "Implementation review of mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T01:57Z, answering: 'Approve PR #240, the roadmap row marking 0.6.0 published? After that, t382 ships it, CI goes green, and you say merge it.' (option text: 't382 records your review through Chough and ships. Then CI runs, then merge it.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -129,4 +126,20 @@ Mark the 0.6.0 release published in the roadmap with its install observation (re
   - revision: 443c63ab65b747f47248ad2166f8fb299da94a41
   - holds: accept
   - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T01:58:38Z · gate-closed · accept → accept · Implementation review of mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation ^t-e492b7
+  - native_change: mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation
+  - revision: 25cacc8bfaea9578b8d616eeeb093cd73d53ada0
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T01:57Z, answering: 'Approve PR #240, the roadmap row marking 0.6.0 published? After that, t382 ships it, CI goes green, and you say merge it.' (option text: 't382 records your review through Chough and ships. Then CI runs, then merge it.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T01:58:40Z · advance · accept → done · native:archived ^t-d400a4
+  - native_change: mark-the-0-6-0-release-published-in-the-roadmap-with-its-install-observation
+  - gate: native:archived
+  - revision: 25cacc8bfaea9578b8d616eeeb093cd73d53ada0
   - by: claude-code (hc t382)
