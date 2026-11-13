@@ -7,11 +7,11 @@
   "title": "0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once",
   "description": "0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
   "created_at": 1794536958,
-  "updated_at": 1794541126,
+  "updated_at": 1794541288,
   "affected_specs": [
     "cli",
     "history",
