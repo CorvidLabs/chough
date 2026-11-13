@@ -338,6 +338,27 @@ pub(super) fn read_session(root: &Path) -> Result<Session> {
         .with_context(|| crate::sessions::shelve_hint(&relative))
 }
 
+/// Refuse a write that adds an observation reference while the active session's
+/// `observations` list is at its bound, before the write runs or writes anything
+/// (REQ-cli-032): `cases run`, `cases record` and `evidence add` call it first.
+pub(super) fn observation_room(root: &Path) -> Result<()> {
+    let Session::V2(session) = read_session(root)?;
+    if session.observations.len() >= MAX_OBSERVATIONS {
+        bail!(observations_full(root, session.observations.len(), 1)?);
+    }
+    Ok(())
+}
+
+/// The refusal at the observation bound, naming the bound and the recovery
+/// `chough session shelve <id>` (REQ-cli-032).
+fn observations_full(root: &Path, held: usize, adding: usize) -> Result<String> {
+    let relative = crate::sessions::checkpoint_path(root)?;
+    let id = crate::sessions::id_of(&relative).unwrap_or_else(|| "<id>".into());
+    Ok(format!(
+        "refused: the session {id} references {held} observations and this would add {adding}, past its bound (limit {MAX_OBSERVATIONS}); nothing was run or written. Set the session aside with `chough session shelve {id}`, then start the next with `chough session new <key>`"
+    ))
+}
+
 /// The project's checkpoint writer lock (issues 62 and 83, DRIVE-11): the
 /// never-replaced file `.chough/local/checkpoint.lock`, which names the process that
 /// holds it (REQ-cli-040, #132). `.chough/local/` holds a
@@ -1236,6 +1257,20 @@ fn closed_gate_next_action(gate: &str, closed: Closed, change: Option<&str>) -> 
 
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
     let mut session = read_checkpoint(root)?;
+    // REQ-cli-032: references the list would gain past its bound are refused before
+    // anything runs or is written; one it already holds adds nothing.
+    let gained: std::collections::BTreeSet<&String> = args
+        .observations
+        .iter()
+        .filter(|id| !session.observations.contains(id))
+        .collect();
+    if session.observations.len() + gained.len() > MAX_OBSERVATIONS {
+        bail!(observations_full(
+            root,
+            session.observations.len(),
+            gained.len()
+        )?);
+    }
     let mut relayed = relayed_decision(&session, &args)?;
     if let Some((_, relay, _)) = relayed.as_mut() {
         relay.summary_digest = args.summary_digest.clone();
