@@ -1,6 +1,6 @@
 ---
 id: fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 25af1398b2627c339a5ce0a0b3f3cd78a79e261c
 ---

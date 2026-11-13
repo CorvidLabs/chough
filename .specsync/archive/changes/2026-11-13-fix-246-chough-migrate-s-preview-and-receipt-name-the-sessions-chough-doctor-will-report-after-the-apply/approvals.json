@@ -44,6 +44,13 @@
         "cli: REQUIREMENT REQ-cli-055": "b7ab6b9029b81fcc1c2f4e1f2620a2beb4664df277399355f1b707b53f68fcbe",
         "records: REQUIREMENT REQ-records-009": "62d2604daf79a4fb562d2df1989fc615d3943c4710b06760ac3183452acd07c2"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794579400,
+      "digest": "6791dc5c45d19a08ba40449b209b33e02e45ebb2af1fd4835e6921063d793c84",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
