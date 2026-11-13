@@ -1,6 +1,6 @@
 ---
 id: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
-state: approved
+state: implementing
 type: feature
 base_commit: 63200149608d01550722a2033cadc83103c69c9a
 ---

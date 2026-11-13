@@ -7,10 +7,11 @@
   "title": "#219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune",
   "description": "#219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "63200149608d01550722a2033cadc83103c69c9a",
   "created_at": 1794542024,
-  "updated_at": 1794579646,
+  "updated_at": 1794581765,
   "affected_specs": [
     "cli"
   ],
