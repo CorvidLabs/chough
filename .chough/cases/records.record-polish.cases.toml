@@ -21,3 +21,21 @@ expected = ["the migrate_evidence test migrated_front_matter_names_the_carried_e
 adapter = "cargo-test"
 test_target = "migrate_evidence"
 test = "migrated_front_matter_names_the_carried_entries"
+
+[[case]]
+id = "TC-records-a-fresh-projects-reading-guide-names-no-folder-kept-from-0-5"
+title = "chough init writes a reading guide that names no folder kept from Chough 0.5.x"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24", "KNOW-32"]
+requirements = ["REQ-records-002"]
+paths = ["src/sessions.rs", "src/migrate.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the records test a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5 passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5"
