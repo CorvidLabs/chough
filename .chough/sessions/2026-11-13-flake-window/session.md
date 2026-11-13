@@ -44,9 +44,13 @@ observations:
   - 2026-11-13-the-full-test-suite-passed-735-of-735-across-48-targets-cargo
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+    holds: accept
+    drives: review
+    opened: 2026-11-13T04:55:12Z
 run_consents: []
-next: Record the green case runs, merge main, run the full suite, then change check --commit and review
+next: Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay; merge after hosted CI is green
 ---
 # #217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)
 
@@ -138,4 +142,10 @@ next: Record the green case runs, merge main, run the full suite, then change ch
   - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
   - gate: native:approved
   - revision: 0ecf6166900c69420695dd46cfb20fff012e1d1d
+  - by: claude-code (hc t38r)
+- 2026-11-13T04:55:11Z · gate-opened · accept → accept · Implementation review of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read ^t-9b3ce6
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - revision: 0327bbdde1ec2e8be391c7f81bdf4f3d010c07ac
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t38r)
