@@ -12,7 +12,9 @@ sh tools/host-matrix/run.sh <host> --adapter <file>   # any CLI agent, from your
 ```
 
 `CHOUGH` names the chough under test; the Fledge tasks build this checkout's and use
-it. The harness also needs `hi`, `specsync`, `cargo`, `git` and `jq` on `PATH`.
+it. The harness also needs `hi`, `specsync`, `cargo`, `git`, `jq` and `perl` on `PATH`.
+It is POSIX `sh` throughout and runs the same under dash, which is `sh` on Ubuntu, and
+under bash, which is `sh` on macOS.
 
 ## The cycle
 
@@ -39,8 +41,9 @@ into a clone of the sample as `tests/host_matrix_acceptance.rs` and runs it ther
 
 ## The verdict
 
-The verdict comes only from the sample's files, Git and native status, never from what
-the host says it did. After turn 5, `shape.sh` reduces the records to a shape that leaves
+The verdict rests on the sample's files, Git and native status. The host's own log and
+reply are read only to fail a run: its log must show that it read the skill, and its
+`STAGE:` line must match the records. They never make a run pass. After turn 5, `shape.sh` reduces the records to a shape that leaves
 out IDs, times, digests, agent names and wording: the stages reached in order, the gates
 opened and closed, decisions in a person's name, the native state with who approved and
 reviewed it, the cases passed and the product files changed. `run.sh` compares that shape
@@ -56,8 +59,11 @@ with `expected-shape.json`, so every host must leave the same records. It also r
 Exit 3 is a harness error, such as a missing tool or a bad argument. The result is the
 receipt: the host and its version, the platform, the chough version and commit, the
 command, the SHA-256 of the turn logs and the key failing lines. The raw logs stay in
-`--logs` (by default a new temporary directory), never in the repository. A turn that
-runs past its time limit fails, and its whole process group is ended.
+`--logs`, and the sample in `--work`, never in the repository; both are kept for
+inspection, in new temporary directories unless given. Each turn runs as its own process
+group, started with `perl`'s `setpgrp` because dash has no job control without a
+terminal. A turn that runs past its time limit fails, and its whole process group is
+ended.
 
 Each turn runs without the starting agent's or terminal's identity in its environment
 (`CLAUDECODE`, the `CLAUDE_CODE_*` session variables, `HC_*`). `CHOUGH_ACTOR` names the
@@ -65,8 +71,10 @@ host, so the sample's records say which host wrote them.
 
 ## Adapters
 
-An adapter is a shell file that `run.sh` sources. The real hosts' adapters will live in
-`integrations/<host>/adapter.sh`, beside each host's `hc-template.md`. It defines:
+An adapter is a POSIX shell file. `run.sh` sources it, and sources it again in a fresh
+`sh` for each turn, so `host_turn` runs in that turn's process group. The real hosts'
+adapters will live in `integrations/<host>/adapter.sh`, beside each host's
+`hc-template.md`. An adapter defines:
 
 | Name | Meaning |
 |---|---|

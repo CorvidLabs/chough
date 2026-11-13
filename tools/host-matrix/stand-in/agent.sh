@@ -136,7 +136,7 @@ EOF
     case "$fault" in
     skip-gate) ;;
     approve-itself)
-        quiet specsync change approve "$id" --actor "0xLeif"
+        quiet specsync change approve "$id" --actor "stand-in"
         ;;
     *)
         quiet chough checkpoint --awaiting-human "Scope approval of $id"

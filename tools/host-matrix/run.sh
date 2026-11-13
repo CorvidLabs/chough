@@ -5,8 +5,8 @@
 # cold resume) in a throwaway copy of examples/shipping through one agent host, one
 # fresh host run per turn. Between turns it stands in for every human gate as
 # SIMULATED-host-matrix-not-a-human, labelled SIMULATED; it never records a decision
-# in a person's name. The verdict comes only from the sample's files and native
-# status, never from what the agent says it did.
+# in a person's name. The verdict rests on the sample's files, Git and native status;
+# the host's own log and reply are read only to fail a run, never to pass it.
 #
 # Usage: tools/host-matrix/run.sh <host> [--adapter <file>] [--work <empty-dir>] [--logs <dir>]
 #   <host>       a folder under integrations/ holding adapter.sh, or `stand-in`, the
@@ -61,7 +61,7 @@ fi
 [ -f "$adapter" ] || die "no adapter for $host: $adapter"
 adapter=$(cd "$(dirname "$adapter")" && pwd)/$(basename "$adapter")
 
-for tool in git jq cargo hi specsync; do
+for tool in git jq cargo hi specsync perl; do
     command -v "$tool" >/dev/null 2>&1 || die "missing required tool: $tool"
 done
 chough_bin=${CHOUGH:-$(command -v chough || true)}
@@ -163,17 +163,24 @@ stop_if_failed() {
     fi
 }
 
-# with_deadline <seconds> <command...>: run it in its own process group and end the
-# whole group when time runs out.
+# in_new_group <command...>: replace this shell with the command, as the leader of a new
+# process group. Call it in the background. perl's setpgrp needs no job control, which
+# dash, sh on Ubuntu, turns off without a terminal.
+in_new_group() {
+    exec perl -e 'setpgrp(0, 0) or die "setpgrp: $!\n"; exec { $ARGV[0] } @ARGV or die "exec $ARGV[0]: $!\n"' "$@"
+}
+
+# with_deadline <seconds> <command...>: run it as its own process group and end the
+# whole group when time runs out. The timer is a process group too, so it ends with
+# the run.
 with_deadline() {
     seconds=$1
     shift
-    set -m
-    "$@" &
+    in_new_group "$@" &
     job=$!
-    (sleep "$seconds" && kill -TERM -"$job" 2>/dev/null && sleep 10 && kill -KILL -"$job" 2>/dev/null) &
+    in_new_group sh -c 'sleep "$1"; kill -TERM -"$2" 2>/dev/null; sleep 10; kill -KILL -"$2" 2>/dev/null' \
+        deadline "$seconds" "$job" &
     watcher=$!
-    set +m
     set +e
     wait "$job"
     job_status=$?
@@ -212,7 +219,9 @@ run_turn() {
     } | sed "s|{{ENVIRONMENT}}|$environment|g; s|{{INIT_ARGS}}|$HOST_INIT_ARGS|g" >"$prompt"
     : >"$logs/turn-$n.reply"
     as_host
-    if ! with_deadline "$HOST_TURN_TIMEOUT" host_turn "$prompt" "$logs/turn-$n.log" "$logs/turn-$n.reply"; then
+    # A fresh sh sources the adapter again, so host_turn runs in the turn's process group.
+    if ! with_deadline "$HOST_TURN_TIMEOUT" sh -c '. "$1" && shift && host_turn "$@"' host-turn \
+        "$adapter" "$prompt" "$logs/turn-$n.log" "$logs/turn-$n.reply"; then
         printf 'turn %s: the host run ended without an error within %ss\n' "$n" "$HOST_TURN_TIMEOUT" >>"$failures"
     fi
     as_harness
@@ -263,7 +272,7 @@ check "turn 1: an intent gate is open" jq_true "$n1" '[.gates[]? | select(.holds
 check "turn 1: the reply states stage intent" test "$(reported STAGE 1)" = intent
 stop_if_failed 1
 chough checkpoint --clear-awaiting-human \
-    --decision "SIMULATED: the host-matrix harness stands in for the intent approval; no human decided" >/dev/null
+    --decision "SIMULATED: $simulated stands in for the intent approval; no human decided" >/dev/null
 commit_stand_in "intent approved (SIMULATED)"
 
 # --- Turn 2: plan -------------------------------------------------------------
