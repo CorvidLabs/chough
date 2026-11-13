@@ -5,7 +5,7 @@ aliases: [release-0-6-0]
 objective: "Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 build only: Cargo 0.6.0 and the dated CHANGELOG [0.6.0] with the dogfood results; fix what the dogfood found (D1, the pointer naming a migrated key); clear the CodeQL false positive; close the KNOW gaps (#216) and #148 through Chough; settle the four flaky-test bugs"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -66,6 +66,7 @@ cases:
   - TC-records-migration-names-skill-update-for-an-outdated-copy
   - TC-cli-accept-next-reruns-cases-not-current
   - TC-cli-accept-reference-lessons-before-case-runs
+  - TC-cli-a-batched-advance-continues-in-the-stage-reached
 design: []
 files: []
 observations:
@@ -337,6 +338,8 @@ observations:
   - 2026-11-12-tc-cli-accept-next-reruns-cases-not-current-d49346
   - 2026-11-12-tc-cli-accept-reference-lessons-before-case-runs-bf5029
   - 2026-11-13-the-full-test-suite-passed-727-of-727-across-48-targets-cargo
+  - 2026-11-13-tc-cli-a-batched-advance-continues-in-the-stage-reached
+  - 2026-11-13-tc-cli-a-batched-advance-continues-in-the-stage-reached-b5f4d8
 bugs:
   - 2026-11-12-a-gate-that-drives-no-native-step-or-a-no-native-close-records
   - 2026-11-12-a-gate-close-that-runs-no-native-step-reports-native-step-with
@@ -371,10 +374,11 @@ bugs:
   - 2026-11-12-the-scope-gate-summary-ignores-uncommitted-change-files
   - 2026-11-12-after-a-migration-nothing-says-the-project-s-skill-copy-is
   - 2026-11-12-at-accept-next-routes-to-the-review-gate-past-stale-cases-and
+  - 2026-11-13-a-batched-advance-after-a-gate-close-leaves-continue-for-a
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Approve the 0.6.0 release prep re-scoped for the fourth round's 4 real findings\" closed (approved); run `chough stage advance` to move on."
+next: "Prepare Leif's review: rerun the referenced cases on the materialized tree, open the review gate, commit and run chough change check"
 title: "Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds"
 summary:
   - "Chough 0.6.0 was prepared as its own dogfood cycle, driven only with the 0.6.0 build: Cargo 0.6.0 and the dated CHANGELOG, the dogfood's fixes, journal posts with short titles and real summaries for every archived story, the first cross-project lessons, and the flaky-test bugs settled."
@@ -408,6 +412,7 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - Round-4 F1: a stage move replaces a gate close's next action (REQ-cli-021); red at 00f8f8d8, green at 3f28a915, bug verified
 - Round-4 F2 (t37f) and F3 (t38c): the scope summary counts the working tree; the migration names chough skill update; red at 730aba9f, green at f618819b, both bugs verified
 - Round-4 F4 (t38b): next reruns stale cases before the review gate; accept.md writes lessons before the case runs; red at 0c44e742, green at 648ebb94, bug verified; all four of Leif's real findings fixed
+- A batched advance carries the next-action replacement on (round-4 F1's fix, found preparing the review): red at 11a54de9, green at e1ada30f, bug verified
 
 ## Decisions and why
 
@@ -693,6 +698,8 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
 - [Ran cargo test --locked --test next -- --exact at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate for TC-cli-accept-next-reruns-cases-not-current: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-accept-next-reruns-cases-not-current-d49346.md)
 - [Ran cargo test --locked --test docs -- --exact the_accept_reference_writes_lessons_before_the_case_runs for TC-cli-accept-reference-lessons-before-case-runs: passed (exit 0, tests run 1).](evidence/2026-11-12-tc-cli-accept-reference-lessons-before-case-runs-bf5029.md)
 - [The full test suite passed 727 of 727 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at a467c61e, the head with the fourth round's four fixes integrated; clippy --all-targets -D warnings and rustfmt --check were clean there](evidence/2026-11-13-the-full-test-suite-passed-727-of-727-across-48-targets-cargo.md)
+- [Ran cargo test --locked --test humans -- --exact a_batched_advance_leaves_continue_for_the_stage_it_reaches for TC-cli-a-batched-advance-continues-in-the-stage-reached: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-a-batched-advance-continues-in-the-stage-reached.md)
+- [Ran cargo test --locked --test humans -- --exact a_batched_advance_leaves_continue_for_the_stage_it_reaches for TC-cli-a-batched-advance-continues-in-the-stage-reached: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-a-batched-advance-continues-in-the-stage-reached-b5f4d8.md)
 
 ## Open threads
 
@@ -999,5 +1006,15 @@ Prepare the Chough 0.6.0 release as the dogfood cycle, driven with the 0.6.0 bui
   - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
   - gate: native:approved
   - revision: 2d9d01707ef93244d8bfe5972848c3a2eaca4fa9
+  - by: claude-code (hc t382)
+- 2026-11-13T00:03:26Z · advance · build → test · The fourth round's four real findings fixed and verified; the counting full run passed; preparing Leif's review ^t-c66e6a
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - gate: native:approved
+  - revision: 82bd095ead4bef89120881bfeb17116543985449
+  - by: claude-code (hc t382)
+- 2026-11-13T00:03:26Z · advance · test → accept · The fourth round's four real findings fixed and verified; the counting full run passed; preparing Leif's review ^t-a04f2d
+  - native_change: prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood
+  - gate: native:approved
+  - revision: 82bd095ead4bef89120881bfeb17116543985449
   - by: claude-code (hc t382)
 
