@@ -6,6 +6,7 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough checkpoint --file` and `--design` check each path for leaks before writing, as every other value is checked: a path holding a token, a home path or another leak is refused as `refused:leak: file holds <kind>` (or `design`), or stored redacted under `--redact` (#268, REQ-records-006).
 - The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
 - Record polish: a bug's actual behaviour is its own `Actual:` paragraph under What
   happened; `chough migrate` names each carried entry or receipt in front matter, its

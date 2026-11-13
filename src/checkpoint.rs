@@ -542,12 +542,15 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
     count += guard(local, "objective", &mut session.objective)?;
     count += guard(local, "intent_scope", &mut session.intent_scope)?;
     count += guard(local, "next", &mut session.next_action)?;
+    // #268: the paths `--file` and `--design` name are values the record writes too.
     for (name, list) in [
         ("decision", &mut session.decisions),
         ("completed", &mut session.completed),
         ("question", &mut session.open_questions),
         ("blocker", &mut session.blockers),
         ("gate", &mut session.awaiting_human),
+        ("file", &mut session.references.files),
+        ("design", &mut session.references.design),
     ] {
         for value in list.iter_mut() {
             count += guard(local, name, value)?;
