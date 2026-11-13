@@ -5,7 +5,7 @@ aliases: [fix-245-index-ignored]
 objective: "Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,11 +19,20 @@ files: []
 observations:
   - 2026-11-13-tc-cli-index-links-no-source-git-ignores
   - 2026-11-13-tc-cli-index-links-no-source-git-ignores-dca64a
+  - 2026-11-13-the-full-test-suite-passed-744-of-744-across-48-targets-cargo
 bugs: [2026-11-13-the-knowledge-index-links-a-skill-copy-git-ignores-so-library]
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
+    holds: accept
+    drives: review
+    opened: 2026-11-13T15:15:36Z
 run_consents: []
-next: Continue test
+next: Continue accept
+title: "Fix #245: the index links no source Git ignores"
+summary:
+  - chough library index links only the rule, skill, decision and policy files that exist and Git does not ignore, so an index committed in a working tree with a gitignored skill copy (.grok/skills) passes library index --check in a fresh clone and in CI (REQ-cli-043).
+  - "Verified: the case red then green, the bug verified, and the full suite 744 of 744. Next: Leif's review and merge."
 ---
 # Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes
 
@@ -42,6 +51,7 @@ Fix #245: chough library index links no source Git ignores, so a fresh clone's i
 
 - [Ran cargo test --locked --test vault -- --exact the_index_links_no_source_git_ignores_so_a_fresh_clone_checks_clean for TC-cli-index-links-no-source-git-ignores: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-index-links-no-source-git-ignores.md)
 - [Ran cargo test --locked --test vault -- --exact the_index_links_no_source_git_ignores_so_a_fresh_clone_checks_clean for TC-cli-index-links-no-source-git-ignores: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-index-links-no-source-git-ignores-dca64a.md)
+- [The full test suite passed 744 of 744 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 722a7502, #245's final head; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-744-of-744-across-48-targets-cargo.md)
 
 ## Open threads
 
@@ -95,4 +105,15 @@ Fix #245: chough library index links no source Git ignores, so a fresh clone's i
   - native_change: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
   - gate: native:approved
   - revision: f50a25cb2399fb57bf8074046d2662fb73e7d7ae
+  - by: claude-code (hc t382)
+- 2026-11-13T15:15:36Z · advance · test → accept · Tested: the cases green and the full suite 744/744 ^t-36b426
+  - native_change: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
+  - gate: native:verifying
+  - revision: 722a7502ed4ce56819174c5b5fa7d604043cb885
+  - by: claude-code (hc t382)
+- 2026-11-13T15:15:36Z · gate-opened · accept → accept · Implementation review of fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes ^t-668fc1
+  - native_change: fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes
+  - revision: 722a7502ed4ce56819174c5b5fa7d604043cb885
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t382)
