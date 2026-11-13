@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as",
+  "implementation_commit": "a5202ffec0de488819b78ee79037bbdb8b363498",
+  "implementation_tree": "cf3f0655af6a0d412e1e6447cebacafb7a825927",
+  "contract_digest": "2f93795386088c1bdf9e666c58ddebdbb9c99bad1f27e07049b63b43e3377476",
+  "workspace_digest": "95ba1e651db43c069dbac0a27a8c59650f495847075e063aae2790f38819fef2",
+  "closing_digest": "77b7202c078a2b8a3267ee306a9b887e45977dc8c210a9346ff6669508cc3f98",
+  "review_digest": "aaeb9688b09604a2c349da36329fd7a5eebabdaed5c6492f6306dc44dd9e5615",
+  "finalization_digest": "334aa50833f95f0ef7dd0ef41fe202561654904f320594427f5dc13002dd3d29",
+  "timestamp": 1794537722
+}
