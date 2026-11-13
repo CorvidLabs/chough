@@ -1,0 +1,97 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-flake-window-clean"
+title = "Fourteen green days on macOS and Linux with no rerun and no open flake read clean"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21", "DRIVE-19"]
+requirements = ["REQ-cli-062"]
+paths = [".github/scripts/flake-window.py", ".github/scripts/test-flake-window.py", "fledge.toml", ".github/workflows/ci.yml"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the CleanWindowTests fixtures in .github/scripts/test-flake-window.py pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["python3", ".github/scripts/test-flake-window.py", "CleanWindowTests"]
+expect_output = ["Ran 3 tests", "OK"]
+timeout_seconds = 120
+
+[[case]]
+id = "TC-cli-flake-window-restarts"
+title = "A red or skipped main run, a rerun on any branch, a filed flake and a day without a green main run each restart the window"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21", "DRIVE-19"]
+requirements = ["REQ-cli-062"]
+paths = [".github/scripts/flake-window.py", ".github/scripts/test-flake-window.py", "fledge.toml", ".github/workflows/ci.yml"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the RestartTests fixtures in .github/scripts/test-flake-window.py pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["python3", ".github/scripts/test-flake-window.py", "RestartTests"]
+expect_output = ["Ran 7 tests", "OK"]
+timeout_seconds = 120
+
+[[case]]
+id = "TC-cli-flake-window-blocked"
+title = "An open flake issue or DRIVE-19 bug, a closed flake with no green main run since and a flake issue without its bug record each block the window"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21", "DRIVE-19"]
+requirements = ["REQ-cli-062"]
+paths = [".github/scripts/flake-window.py", ".github/scripts/test-flake-window.py", "fledge.toml", ".github/workflows/ci.yml"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the BlockedTests fixtures in .github/scripts/test-flake-window.py pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["python3", ".github/scripts/test-flake-window.py", "BlockedTests"]
+expect_output = ["Ran 5 tests", "OK"]
+timeout_seconds = 120
+
+[[case]]
+id = "TC-cli-flake-window-fails-closed"
+title = "Unreadable or incomplete GitHub data exits 2 with no verdict, --require-clean exits 1 unless clean, the fetch reads every page and day, and nothing is written"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21", "DRIVE-19"]
+requirements = ["REQ-cli-062"]
+paths = [".github/scripts/flake-window.py", ".github/scripts/test-flake-window.py", "fledge.toml", ".github/workflows/ci.yml"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the FailClosedTests fixtures in .github/scripts/test-flake-window.py pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["python3", ".github/scripts/test-flake-window.py", "FailClosedTests"]
+expect_output = ["Ran 6 tests", "OK"]
+timeout_seconds = 120
+
+[[case]]
+id = "TC-cli-flake-window-wiring"
+title = "fledge runs the check and its fixtures, the CI gate fixtures job runs them, and bug records are read with status, creation time and text"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21", "DRIVE-19"]
+requirements = ["REQ-cli-062"]
+paths = [".github/scripts/flake-window.py", ".github/scripts/test-flake-window.py", "fledge.toml", ".github/workflows/ci.yml"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the WiringTests fixtures in .github/scripts/test-flake-window.py pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["python3", ".github/scripts/test-flake-window.py", "WiringTests"]
+expect_output = ["Ran 3 tests", "OK"]
+timeout_seconds = 120
