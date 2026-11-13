@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794535749,
+      "digest": "a10c1f640207f4b17cceeb919f0f4be125de38bf81fcdee9eb205ad33aae05e0",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough\": \"Yes, start (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T02:09:08Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough",
+        "title": "0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve",
+        "description": "0.6.1: at the 400-observation cap, every write that adds an observation refuses before writing anything and names chough session shelve",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/cases.rs",
+          "src/checkpoint.rs",
+          "src/evidence.rs",
+          "src/stage.rs",
+          "tests/cases.rs",
+          "tests/next.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A fix within the existing requirements; no contract text changes.",
+        "acceptance_criteria": [
+          "At the 400-observation cap, chough cases run, cases record, evidence add and checkpoint --observation each refuse before running or writing anything, naming the bound and chough session shelve <id>, with every file unchanged; and at accept next takes a case latest run only from the observations the checkpoint references, so an unreferenced newer entry does not hide a stale run (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved 0.6.1 at 02:03Z (relayed by t370) as six small PRs, one fix each, him merging each; this PR is the observation cap, a fix within REQ-cli-032 and REQ-cli-021 as written, with no contract text. Code stays in cli files; a failing test first; the full local suite before review.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}
