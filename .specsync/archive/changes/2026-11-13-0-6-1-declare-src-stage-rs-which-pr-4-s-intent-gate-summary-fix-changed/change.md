@@ -1,6 +1,6 @@
 ---
 id: 0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed
-state: implementing
+state: archived
 type: refactor
 base_commit: 30b770aafc0b5ecce8185df9de30cd2594a0519f
 ---
