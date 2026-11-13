@@ -5,7 +5,7 @@ aliases: [flake-seed]
 objective: "#217: seed the flake tracker: create the GitHub flake label, label the known flake issues, and note DRIVE-19 and each GitHub issue in the flake bug records"
 intent_scope: DRIVE
 modules: [cli]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -23,13 +23,9 @@ observations:
   - 2026-11-13-the-full-test-suite-passed-737-of-737-across-48-targets-cargo
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
-    holds: accept
-    drives: review
-    opened: 2026-11-13T05:46:49Z
+waiting_on_human: []
 run_consents: []
-next: Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay; merge after hosted CI is green
+next: Continue done
 ---
 # #217: seed the flake tracker: create the GitHub flake label, label the known flake issues, and note DRIVE-19 and each GitHub issue in the flake bug records
 
@@ -48,6 +44,7 @@ next: Leif's implementation review (relayed by t370), then chough change ship wi
 - Labelled: #187, #132 and #169 (closed flakes with records) and #247 (open, t37f's fix). Three local-only flakes (HUP survivor, timing budget, checkpoint lock timeout) get a note that no issue was filed; no issue is filed after the fact
 - Leif decided "Approve the intent: seed the flake tracker with the flake label, the known flake issues and DRIVE-19 notes on their bug records (#217)": "Repo script + fledge task (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q1 'Where should the two-week check live?' for #217, whose design's first PR is this seed: the flake label and one bug record per flake (same answer set: Q2 'Any red, rerun or new flake (Recommended)'); relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated
 - Leif decided "Approve the scope of 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each": "Repo script + fledge task (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q1 'Where should the two-week check live?' for #217; this change's scope is that design's seed step: the flake label on #187, #132, #169 and #247, DRIVE-19 notes on their bug records, and one docs line, with no contract text; relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change approve 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each as 0xLeif
+- Leif decided "Implementation review of 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each": "#255 seed flake tracker" (coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering 'Chough 1.0 flake tracker PRs, passed by the reviewer: approve the implementation?' (multiple choice; he selected '#255 seed flake tracker' and '#257 daily CI on main', not #252); relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change review 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -119,4 +116,20 @@ next: Leif's implementation review (relayed by t370), then chough change ship wi
   - revision: 7e1551ec31c357545514ecb7eb798894b05990aa
   - holds: accept
   - drives: review
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:43:40Z · gate-closed · accept → accept · Implementation review of 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each ^t-8371f7
+  - native_change: 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
+  - revision: e78613ae2a105cdd27b25c04304faa806c556699
+  - relayed_by:
+    - decided_by: Leif
+    - words: #255 seed flake tracker
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T14:14Z, answering 'Chough 1.0 flake tracker PRs, passed by the reviewer: approve the implementation?' (multiple choice; he selected '#255 seed flake tracker' and '#257 daily CI on main', not #252); relayed by claude-code-t370
+    - recorded_by: claude-code-t38r
+    - native: specsync change review 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
+    - actor: 0xLeif
+  - by: claude-code (hc t38r)
+- 2026-11-13T14:43:42Z · advance · accept → done · native:archived ^t-b4753e
+  - native_change: 217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each
+  - gate: native:archived
+  - revision: e78613ae2a105cdd27b25c04304faa806c556699
   - by: claude-code (hc t38r)
