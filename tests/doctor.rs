@@ -552,6 +552,72 @@ fn doctor_reports_a_committed_leak_and_redacts_it_only_with_redact() {
     assert!(of_kind(&again, "leak").is_empty(), "{again:#}");
 }
 
+/// REQ-records-006, TC-records-doctor-case-temp-paths-are-not-leaks: a path under `/tmp/`
+/// or `/private/tmp/` in a case definition is a deliberate test setting, such as a case's
+/// own `XDG_DATA_HOME`, so doctor reports no leak for it and offers no `--redact`; a home
+/// path in the same file is still a finding, and so is a temporary path in a story.
+#[test]
+fn a_temporary_path_in_a_case_definition_is_not_a_leak() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let cases = ".chough/cases/cli.temp-data.cases.toml";
+    let text = r#"profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-temp-data"
+title = "A case with its own data folder"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1"]
+requirements = ["REQ-cli-001"]
+paths = ["src/"]
+environments = ["local"]
+artifacts = ["test-log"]
+expected = ["passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["env", "SCRATCH=/private/tmp/SYNTHETIC-scratch", "true"]
+env = { XDG_DATA_HOME = "/tmp/SYNTHETIC-case-data" }
+expect_output = []
+"#;
+    fixture.write(cases, text);
+    fixture.commit("a case with temporary folders");
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(of_kind(&report, "leak").is_empty(), "{report:#}");
+
+    fixture.write(
+        cases,
+        &text.replace(
+            "expect_output = []",
+            "expect_output = []\n# from /Users/SYNTHETIC-person/app",
+        ),
+    );
+    let story = ".chough/archive/sessions/2026-01-01-old.md";
+    fixture.write(
+        story,
+        "---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\nWrote /tmp/SYNTHETIC-out.\n",
+    );
+    fixture.commit("a home path in the case file and a temporary path in a story");
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let leaks = of_kind(&report, "leak");
+    assert_eq!(leaks.len(), 2, "{report:#}");
+    let case_leak = leaks
+        .iter()
+        .find(|leak| leak["target"] == cases)
+        .expect("the case file");
+    assert_eq!(case_leak["match"], "home-path", "{report:#}");
+    assert_eq!(case_leak["line"], 22, "{report:#}");
+    let story_leak = leaks
+        .iter()
+        .find(|leak| leak["target"] == story)
+        .expect("the story");
+    assert_eq!(story_leak["match"], "system-path", "{report:#}");
+}
+
 /// REQ-history-012 `timeline_rewritten`: a hand-edited earlier Timeline entry is a
 /// finding naming that entry; it has no fix, so `--fix` leaves the session unchanged.
 #[test]
@@ -561,18 +627,20 @@ fn doctor_reports_a_rewritten_timeline_entry_and_fixes_nothing() {
     fixture.ok(&[
         "stage",
         "enter",
+        "--json",
         "librarian",
         "--reason",
         "SYNTHETIC side trip",
     ]);
-    fixture.ok(&["stage", "return"]);
-    fixture.commit("two timeline entries");
+    fixture.ok(&["stage", "return", "--json"]);
+    fixture.commit("the side trip's entries");
     let file = fixture.session_file();
     let text = fixture.read(&file);
+    // The side trip's entry, after the session's start entry (REQ-history-002).
     let first = common::timeline(&text)
         .into_iter()
-        .next()
-        .unwrap_or_else(|| panic!("no timeline entry: {text}"));
+        .find(|entry| entry.contains("SYNTHETIC side trip"))
+        .unwrap_or_else(|| panic!("no side trip entry: {text}"));
     let id = first
         .rsplit_once('^')
         .map(|(_, anchor)| anchor.trim().to_string())
@@ -595,7 +663,14 @@ fn doctor_reports_a_rewritten_timeline_entry_and_fixes_nothing() {
 
     // Appending is not rewriting.
     fixture.write(&file, &text);
-    fixture.ok(&["stage", "enter", "librarian", "--reason", "SYNTHETIC again"]);
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "librarian",
+        "--reason",
+        "SYNTHETIC again",
+    ]);
     let (_, report) = doctor(&fixture, &[]);
     assert!(
         of_kind(&report, "timeline_rewritten").is_empty(),
@@ -871,7 +946,7 @@ fn a_session_archived_since_head_is_not_a_rewritten_timeline() {
     // then committed, and `doctor --fix` removes the folder, leaving the story to compare
     // with HEAD's session.md, whose Timeline holds the same entries.
     while !fixture.is_archived("alpha") {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     fixture.commit("the story and the kept folder");
     doctor(&fixture, &["--fix"]);
@@ -881,4 +956,63 @@ fn a_session_archived_since_head_is_not_a_rewritten_timeline() {
         of_kind(&report, "timeline_rewritten").is_empty(),
         "{report:#}"
     );
+}
+
+/// REQ-history-012, F13 of the second fresh-eyes round: with both merge drivers set and a
+/// `chough` first on `PATH` that reports an older version, doctor reports one
+/// `merge_driver_outdated` finding naming both versions and the install command, has no
+/// fix for it, and exits 1; with the same version, or with no driver set, it reports none.
+#[cfg(unix)]
+#[test]
+fn doctor_reports_merge_drivers_that_would_run_an_older_chough() {
+    let fixture = Fixture::new();
+    fixture.git(&["init"]);
+    fixture.init();
+    fixture.commit("init");
+    let running = env!("CARGO_PKG_VERSION");
+    let on_path = |version: &str| {
+        fixture.write(
+            "bin/chough",
+            &format!("#!/bin/sh\necho 'chough {version}'\n"),
+        );
+        fixture.executable("bin/chough");
+    };
+    let outdated = |report: &Value| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "merge_driver_outdated")
+            .cloned()
+            .collect()
+    };
+    on_path("0.5.0");
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let found = outdated(&report);
+    assert_eq!(found.len(), 1, "{report:#}");
+    let named = found[0].to_string();
+    for part in ["0.5.0", running, "cargo install chough --locked"] {
+        assert!(named.contains(part), "{part:?} is not named: {report:#}");
+    }
+    let (code, report) = doctor(&fixture, &["--fix"]);
+    assert_eq!(code, 1, "{report:#}");
+    assert_eq!(outdated(&report)[0]["status"], "skipped", "{report:#}");
+
+    on_path(running);
+    let (code, report) = doctor(&fixture, &[]);
+    assert!(outdated(&report).is_empty(), "{report:#}");
+    assert_eq!(code, 0, "{report:#}");
+
+    on_path("0.5.0");
+    for name in ["chough-bug", "chough-generated"] {
+        fixture.git(&[
+            "config",
+            "--local",
+            "--unset",
+            &format!("merge.{name}.driver"),
+        ]);
+    }
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(outdated(&report).is_empty(), "{report:#}");
 }

@@ -5,9 +5,148 @@ use crate::records::{NativeJson, Section, file_section, local_path, native, nati
 use crate::{bugs, prefs, stage};
 use anyhow::{Result, ensure};
 use std::collections::BTreeSet;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 const CONTEXT_LIMIT: usize = 131_072;
+
+/// The session as Markdown, for `chough context` without `--json` (REQ-cli-002, F10d):
+/// one line per field, then the gates waiting on a human with the stage each holds and
+/// the step it drives, and the decisions, where it stands, open threads and blockers,
+/// each under the heading its `session.md` section has. An empty list says `none`.
+pub(super) fn session_markdown(session: &Session) -> String {
+    use crate::session_md::{DECISIONS, STANDS, THREADS};
+    let Session::V2(checkpoint) = session;
+    let one_line = |text: &str| text.split_whitespace().collect::<Vec<_>>().join(" ");
+    let listed = |items: &[String]| {
+        if items.is_empty() {
+            "none".to_string()
+        } else {
+            items
+                .iter()
+                .map(|item| one_line(item))
+                .collect::<Vec<_>>()
+                .join(", ")
+        }
+    };
+    let stage = &checkpoint.stage;
+    let callers: Vec<String> = stage
+        .callers
+        .iter()
+        .map(|caller| format!("{} ({})", caller.stage, one_line(&caller.reason)))
+        .collect();
+    let consents: Vec<String> = checkpoint
+        .run_consents
+        .iter()
+        .map(|consent| format!("{}: {}", consent.key, one_line(&consent.source)))
+        .collect();
+    let references = &checkpoint.references;
+    let fields = [
+        ("Objective", one_line(&checkpoint.objective)),
+        (
+            "Stage",
+            format!(
+                "{} ({}, iteration {})",
+                stage.current, stage.status, stage.iteration
+            ),
+        ),
+        ("Side-stage callers", listed(&callers)),
+        (
+            "Native change",
+            checkpoint
+                .native_change
+                .clone()
+                .unwrap_or_else(|| "none recorded".into()),
+        ),
+        (
+            "Intent scope",
+            if checkpoint.intent_scope.trim().is_empty() {
+                "none".into()
+            } else {
+                one_line(&checkpoint.intent_scope)
+            },
+        ),
+        ("Modules", listed(&checkpoint.modules)),
+        ("Next action", one_line(&checkpoint.next_action)),
+        ("Criteria", listed(&references.criteria)),
+        ("Requirements", listed(&references.requirements)),
+        ("Cases", listed(&references.cases)),
+        ("Design", listed(&references.design)),
+        ("Files", listed(&references.files)),
+        ("Observations", listed(&checkpoint.observations)),
+        ("Bugs", listed(&checkpoint.bugs)),
+        ("Run consents", listed(&consents)),
+    ];
+    let mut out: String = fields
+        .iter()
+        .map(|(label, value)| format!("- {label}: {value}\n"))
+        .collect();
+    let gates: Vec<String> = checkpoint
+        .awaiting_human
+        .iter()
+        .map(|gate| {
+            let meta = crate::session_md::gate(checkpoint, gate);
+            format!(
+                "{} (holds {}; drives {})",
+                one_line(gate),
+                meta.holds,
+                meta.drives().name()
+            )
+        })
+        .collect();
+    for (heading, items) in [
+        ("Waiting on a human", &gates),
+        (DECISIONS, &checkpoint.decisions),
+        (STANDS, &checkpoint.completed),
+        (THREADS, &checkpoint.open_questions),
+        ("Blockers", &checkpoint.blockers),
+    ] {
+        out.push_str(&format!("\n### {heading}\n\n"));
+        if items.is_empty() {
+            out.push_str("none\n");
+        }
+        for item in items {
+            out.push_str(&format!("- {}\n", one_line(item)));
+        }
+    }
+    out
+}
+
+/// The folders whose AGENTS.md the packet reads, outermost first, each with the name the
+/// packet gives it: from the project's Git root down to the project root, named relative
+/// to the project (`../AGENTS.md`, then `AGENTS.md`). Nothing above the repository is
+/// read, so a home folder's AGENTS.md never enters the packet, and no absolute path is
+/// printed. Outside a Git work tree, only the project root.
+fn instruction_folders(root: &Path) -> Vec<(PathBuf, String)> {
+    let project = root.canonicalize().unwrap_or_else(|_| root.to_path_buf());
+    let top = crate::records::run_owned(
+        std::process::Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(["rev-parse", "--show-toplevel"]),
+        None,
+    )
+    .ok()
+    .filter(|output| output.status.success())
+    .and_then(|output| String::from_utf8(output.stdout).ok())
+    .and_then(|top| {
+        PathBuf::from(top.trim_end_matches(['\r', '\n']))
+            .canonicalize()
+            .ok()
+    })
+    .filter(|top| project.starts_with(top));
+    let mut folders = vec![];
+    for (depth, folder) in project.ancestors().enumerate() {
+        folders.push((
+            folder.to_path_buf(),
+            format!("{}AGENTS.md", "../".repeat(depth)),
+        ));
+        if top.as_deref().is_none_or(|top| folder == top) {
+            break;
+        }
+    }
+    folders.reverse();
+    folders
+}
 
 /// The HI export shown in `chough context`: a display section within 16 KiB.
 pub(super) fn hi_export(root: &Path, scope: &str) -> Section {
@@ -29,14 +168,14 @@ pub(super) fn hi_export_json(root: &Path, scope: &str) -> NativeJson {
     }
 }
 
-pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
+/// The context packet's sections; `as_json` keeps the Timeline and the open backlog as
+/// JSON, and without it they are Markdown (REQ-cli-002, F10d).
+pub(super) fn context(root: &Path, session: &Session, as_json: bool) -> Result<Vec<Section>> {
     let mut sections = vec![];
-    let mut ancestors: Vec<_> = root.ancestors().collect();
-    ancestors.reverse();
-    for ancestor in ancestors {
-        if ancestor.join("AGENTS.md").exists() {
-            let mut section = file_section(ancestor, "AGENTS.md")?;
-            section.source = ancestor.join("AGENTS.md").display().to_string();
+    for (folder, name) in instruction_folders(root) {
+        if folder.join("AGENTS.md").exists() {
+            let mut section = file_section(&folder, "AGENTS.md")?;
+            section.source = name;
             sections.push(section);
         }
     }
@@ -81,6 +220,22 @@ pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
     {
         let Session::V2(checkpoint) = session;
         let (transitions, partial) = stage::recent_transitions(root, 20)?;
+        // Markdown: the same recent entries, as `session.md` writes them.
+        let content = if as_json {
+            serde_json::to_string_pretty(&transitions)?
+        } else {
+            let entries = match checkpoint.source.as_ref() {
+                Some(record) => crate::session_md::timeline(record)?,
+                None => vec![],
+            };
+            let start = entries.len().saturating_sub(transitions.len());
+            entries[start..]
+                .iter()
+                .map(crate::session_md::entry_markdown)
+                .collect::<String>()
+                .trim_end()
+                .to_string()
+        };
         sections.push(Section {
             source: format!(
                 "{} (Timeline)",
@@ -93,7 +248,7 @@ pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
             } else {
                 "present".into()
             },
-            content: serde_json::to_string_pretty(&transitions)?,
+            content,
         });
         sections.push(Section {
             source: "chough stage show".into(),
@@ -104,7 +259,7 @@ pub(super) fn context(root: &Path, session: &Session) -> Result<Vec<Section>> {
     if local_path(root, prefs::PREFERENCES)?.is_file() {
         sections.push(file_section(root, prefs::PREFERENCES)?);
     }
-    sections.push(bugs::open_backlog_section(root)?);
+    sections.push(bugs::open_backlog_section(root, as_json)?);
     let mut remaining = CONTEXT_LIMIT;
     for section in &mut sections {
         if remaining == 0 {

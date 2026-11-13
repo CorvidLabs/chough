@@ -1,0 +1,920 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# t38j's fresh-eyes report on 0.6.0 (2026-11-12): the release notes and the CLI reference
+# describe 0.6.0 as it ships.
+
+[[case]]
+id = "TC-cli-changelog-0-6-0-names-only-what-ships"
+title = "The CHANGELOG's Also in 0.6.0 list names no command or record 0.6.0 removed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["CHANGELOG.md", "tests/changelog.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/changelog.rs::the_0_6_0_also_list_names_nothing_0_6_0_removed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "changelog"
+test = "the_0_6_0_also_list_names_nothing_0_6_0_removed"
+
+[[case]]
+id = "TC-cli-docs-name-what-cases-run-returns"
+title = "docs/cli.md names every key chough cases run prints and does not say it returns recorded"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["docs/cli.md", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::the_cli_reference_names_what_cases_run_returns passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "the_cli_reference_names_what_cases_run_returns"
+
+[[case]]
+id = "TC-cli-next-at-plan-names-the-scope-gate"
+title = "At plan, while the change waits for approval, next and status name the human scope gate and never pass on SpecSync's own specsync change approve with an actor"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_plan_next_names_the_scope_gate_and_never_specsyncs_approve passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_plan_next_names_the_scope_gate_and_never_specsyncs_approve"
+
+[[case]]
+id = "TC-cli-gate-summary-shows-the-scope"
+title = "At a scope gate the summary counts and names the change's own deltas, plan and change.md first, and leaves out its state.json and approvals.json"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_scope_gate_summary_names_the_changes_delta_and_plan_first passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_scope_gate_summary_names_the_changes_delta_and_plan_first"
+
+[[case]]
+id = "TC-cli-docs-show-a-new-project-and-a-delta"
+title = "README, docs/cli.md and the workflow skill give a new project's path with specsync change adopt and show the delta format"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "docs/cli.md", "skills/chough-workflow/references/plan.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::a_new_project_path_and_the_delta_format_are_documented passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "a_new_project_path_and_the_delta_format_are_documented"
+
+[[case]]
+id = "TC-cli-gate-record-reports-the-approval-it-ran"
+title = "gate record on a gate that drives approval reports the native step each close ran, and the approval note names chough gate record"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/humans.rs", "src/gates.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record"
+
+[[case]]
+id = "TC-cli-stage-move-authority-line-says-when-chough-runs-native-steps"
+title = "Every stage move's authority line says Chough runs a native approval or review only when a human's decision closes a gate that drives one"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::every_stage_move_says_when_chough_runs_native_approval_or_review passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "every_stage_move_says_when_chough_runs_native_approval_or_review"
+
+[[case]]
+id = "TC-cli-cases-check-a-module-without-requirements-md"
+title = "cases check accepts a link to a requirement only the approved delta adds when the module has no requirements.md yet, and refuses one the delta does not add"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-009"]
+paths = ["src/evidence.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::a_module_without_requirements_md_links_what_its_approved_delta_adds passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_module_without_requirements_md_links_what_its_approved_delta_adds"
+
+[[case]]
+id = "TC-cli-context-reads-agents-md-from-the-git-root"
+title = "chough context reads AGENTS.md from the Git root down to the project only, named relative to the project, with no absolute path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["src/context.rs", "tests/subdirectory.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/subdirectory.rs::context_reads_agents_md_from_the_git_root_down_only passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "subdirectory"
+test = "context_reads_agents_md_from_the_git_root_down_only"
+
+[[case]]
+id = "TC-cli-status-gives-the-next-action-whole"
+title = "chough status's summary gives the next valid action whole, while next keeps its bounded view"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::status_gives_the_next_valid_action_whole passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "status_gives_the_next_valid_action_whole"
+
+[[case]]
+id = "TC-cli-gate-close-replaces-a-stale-next-action"
+title = "Closing the last gate holding the stage, with no --next-action in the same call, replaces the stale next action with the gate's outcome and chough next; another gate holding the stage changes nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-23"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["both humans tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "humans", "--", "approving_the_scope_gate_replaces_the_next_action_it_left_stale", "a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage"]
+expect_output = ["test result: ok. 2 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-bug-trigger-and-fix"
+title = "A new bug's Steps start with the labelled Trigger, bug update --fix sets and logs the Fix, and verifying a bug with no Fix names the passing observation and its revision"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the three bug tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "bugs", "--", "a_new_bugs_steps_start_with_the_labelled_trigger", "bug_update_fix_sets_the_fix_paragraph_and_logs_each_set", "verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision"]
+expect_output = ["test result: ok. 3 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-close-running-no-native-step-says-why"
+title = "A gate close that runs no native step says why in its native_step, for a gate that drives none and for --no-native, through checkpoint --close-gate and gate record alike"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_close_that_runs_no_native_step_says_why passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_close_that_runs_no_native_step_says_why"
+
+# The second fresh-eyes round on 0.6.0 (2026-11-12), Leif's yes at 19:43Z.
+
+[[case]]
+id = "TC-cli-migrate-preview-with-nothing-to-migrate"
+title = "On a tree with no 0.5.x record, chough migrate says there is nothing to migrate, gives no plan digest and writes nothing, and the apply still reports nothing to do"
+status = "retired"
+notes = "Retired: it links REQ-records-009, which the cli companion does not hold; TC-records-migrate-preview-with-nothing-to-migrate replaces it."
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest"
+
+[[case]]
+id = "TC-cli-migration-receipt-has-one-follow-up-heading"
+title = "A migration receipt with two follow-ups has one Follow-up heading holding both"
+status = "retired"
+notes = "Retired: it links REQ-records-009, which the cli companion does not hold; TC-records-migration-receipt-has-one-follow-up-heading replaces it."
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_receipt_has_one_follow_up_heading_for_every_follow_up passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_receipt_has_one_follow_up_heading_for_every_follow_up"
+
+[[case]]
+id = "TC-cli-executed-case-run-provenance"
+title = "A case run Chough executed says it is not proof of human approval or deployment, in its output and its status row, and a manual entry keeps the full sentence"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-7"]
+requirements = ["REQ-cli-011", "REQ-cli-005"]
+paths = ["src/evidence.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::an_executed_case_runs_provenance_does_not_deny_the_execution passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "an_executed_case_runs_provenance_does_not_deny_the_execution"
+
+[[case]]
+id = "TC-cli-docs-show-the-requirement-evidence-table"
+title = "docs/cli.md's new-project section and the skill's testing reference show SpecSync's Requirement evidence table in a change's testing.md"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["docs/cli.md", "skills/chough-workflow/references/testing.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_requirement_evidence_table_in_a_changes_testing_md_is_documented passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_requirement_evidence_table_in_a_changes_testing_md_is_documented"
+
+[[case]]
+id = "TC-cli-docs-show-a-minimal-hi-file-and-requirements-md"
+title = "docs/cli.md's new-project section shows a minimal HI file and a baseline specs/<module>/requirements.md, and README's new-project path points at them"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-019"]
+paths = ["README.md", "docs/cli.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_new_project_section_shows_a_minimal_hi_file_and_requirements_md passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_new_project_section_shows_a_minimal_hi_file_and_requirements_md"
+
+[[case]]
+id = "TC-cli-evidence-add-needs-a-criterion-and-reads-the-delta"
+title = "evidence add needs only a criterion, records a requirement only the session's approved delta adds, and refuses one in neither naming the companion and the delta"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5", "FLOW-7"]
+requirements = ["REQ-cli-005"]
+paths = ["src/evidence.rs", "src/cases.rs", "docs/cli.md", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements"
+
+[[case]]
+id = "TC-cli-bug-observation-joins-the-session"
+title = "bug add and bug update with an observation of the active session add the bug to its checkpoint and story, and another session's entry leaves the active checkpoint unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story"
+
+# The second fresh-eyes round (2026-11-12), fixed on leif/0.6.0-r3-t37f.
+
+[[case]]
+id = "TC-cli-a-close-that-runs-no-native-step-says-closed-once"
+title = "A gate close that drives no native step, or runs none with --no-native, leaves a next action that says closed once, never closed (closed)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-23"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_close_that_runs_no_native_step_says_closed_once passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_close_that_runs_no_native_step_says_closed_once"
+
+[[case]]
+id = "TC-cli-next-with-no-native-change-says-only-none-recorded"
+title = "With no native change recorded, next's native line says only that none is recorded, with no read state, and SpecSync's own next step keeps its line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_with_no_native_change_says_only_that_none_is_recorded passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_with_no_native_change_says_only_that_none_is_recorded"
+
+[[case]]
+id = "TC-cli-next-and-status-reasons-name-no-trace-id"
+title = "The reasons next and status give for the next valid action name no internal trace ID such as FLOW-23, at plan, at accept or anywhere the source writes one"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_and_status_reasons_name_no_trace_id passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_and_status_reasons_name_no_trace_id"
+
+[[case]]
+id = "TC-cli-stage-skip-docs-say-it-skips-the-current-stage"
+title = "docs/cli.md and the stage contract say chough stage skip skips the current stage and that design is skipped at design, after advancing into it, as the Timeline records"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["docs/cli.md", "skills/chough-workflow/references/stages.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design"
+
+[[case]]
+id = "TC-cli-a-gate-close-names-the-step-its-decision-allows"
+title = "A gate close that leaves no gate holding the stage sets the next action to the step its decision allows (advance, ship, back to build or record the next action), and next never names itself"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "FLOW-23"]
+requirements = ["REQ-cli-021"]
+paths = ["src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_gate_close_names_the_step_its_decision_allows_never_chough_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_gate_close_names_the_step_its_decision_allows_never_chough_next"
+
+[[case]]
+id = "TC-cli-next-at-accept-while-approved-names-the-review-preparation"
+title = "At accept while the native change is approved or implementing, next names the accept step's review preparation in order, never a refused gate or a bare native status read"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_accept_while_approved_next_names_the_review_preparation_in_order passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_accept_while_approved_next_names_the_review_preparation_in_order"
+
+[[case]]
+id = "TC-cli-next-and-status-show-every-command-whole"
+title = "With a 120-character change ID, every command next and status show in the next valid action and the gate appears whole, in text and JSON, and next's bound cuts only the text around them"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the three next tests pass"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--test", "next", "--", "next_and_status_show_every_command_whole_for_a_long_change_id", "status_gives_the_next_valid_action_whole", "both_forms_stay_within_the_cap_with_totals_for_large_records"]
+expect_output = ["test result: ok. 3 passed"]
+timeout_seconds = 600
+
+[[case]]
+id = "TC-cli-gate-list-names-the-ship-for-a-verifying-gate"
+title = "The gate list ends with gate record for the gates whose change is not verifying and change ship with the list and gate for each verifying one, and gate record's refusal says such a gate closes through the ship"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why"
+
+[[case]]
+id = "TC-cli-change-check-no-commit"
+title = "chough change check <id> --no-commit runs specsync change check <id> without --commit and passes its output through, the next stage move records no direct write for it, and chough change check <id> still commits"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20", "DRIVE-21"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/direct_writes.rs::change_check_no_commit_runs_the_plain_check_and_is_never_flagged passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "change_check_no_commit_runs_the_plain_check_and_is_never_flagged"
+
+[[case]]
+id = "TC-cli-gate-close-records-direct-writes-first"
+title = "A lifecycle record changed outside Chough before a gate closes is recorded before that gate's gate-closed entry, through checkpoint --close-gate and gate record, and the next stage move records nothing more"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-cli-060"]
+paths = ["src/stage.rs", "src/checkpoint.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/direct_writes.rs::a_direct_write_before_a_gate_close_is_recorded_before_its_entry passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "a_direct_write_before_a_gate_close_is_recorded_before_its_entry"
+
+[[case]]
+id = "TC-cli-accept-step-checks-through-chough"
+title = "The accept reference's first check, in the skill and its .agents copy, runs chough change check <id> --no-commit, never the plain SpecSync check, and docs/cli.md names the flag"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18", "DRIVE-20"]
+requirements = ["REQ-cli-057"]
+paths = ["skills/chough-workflow/references/accept.md", ".agents/skills/chough-workflow/references/accept.md", "docs/cli.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_accept_steps_first_check_runs_through_chough passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_accept_steps_first_check_runs_through_chough"
+
+[[case]]
+id = "TC-cli-next-at-accept-never-passes-on-the-review-command"
+title = "At accept with the change verifying and the review gate open, no field of next or status, text or JSON, names SpecSync's specsync change review command"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "FLOW-23"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_at_accept_never_passes_on_specsyncs_review_command passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_at_accept_never_passes_on_specsyncs_review_command"
+
+# The third fresh-eyes round on 0.6.0 (2026-11-12), Leif's yes at 21:47Z.
+
+[[case]]
+id = "TC-cli-docs-show-a-lessons-dated-form"
+title = "Every page that describes a lesson's format says it starts with its YYYY-MM-DD date, and the skill's and the CLI reference's Lessons examples each count as one lesson in the knowledge index"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-12"]
+requirements = ["REQ-cli-015"]
+paths = ["skills/chough-workflow/references/accept.md", "skills/chough-workflow/references/librarian.md", "docs/cli.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::a_lessons_dated_form_is_documented_and_its_example_counts passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "a_lessons_dated_form_is_documented_and_its_example_counts"
+
+[[case]]
+id = "TC-cli-init-claude-host-prints-the-claude-md-line"
+title = "init --host claude prints the line to add to CLAUDE.md and writes nothing to CLAUDE.md, and init without the claude host prints no such line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-12", "LIFE-4"]
+requirements = ["REQ-cli-016"]
+paths = ["src/main.rs", "src/skill.rs", "tests/optional.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/optional.rs::init_with_the_claude_host_prints_the_claude_md_line_and_writes_none passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "optional"
+test = "init_with_the_claude_host_prints_the_claude_md_line_and_writes_none"
+
+[[case]]
+id = "TC-cli-stage-move-prints-a-short-summary"
+title = "A stage move prints by default at most 10 lines of text naming the move, the stage reached and the next action, and its full JSON report, with every field it gave before, under --json"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2"]
+requirements = ["REQ-cli-008"]
+paths = ["src/stage.rs", "src/main.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_stage_move_prints_a_short_summary_and_its_full_report_under_json passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_stage_move_prints_a_short_summary_and_its_full_report_under_json"
+
+# The third fresh-eyes round (t38m, 2026-11-12), fixed on leif/0.6.0-r4-t37f.
+
+[[case]]
+id = "TC-cli-next-shows-specsyncs-step-for-reference-only"
+title = "At plan after the scope approval, next's text shows SpecSync's own next step labelled for reference, so Next alone is the step to take now, and the JSON keeps the native read fields"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_plan_after_approval_next_shows_specsyncs_step_for_reference_only passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_plan_after_approval_next_shows_specsyncs_step_for_reference_only"
+
+[[case]]
+id = "TC-cli-duplicate-bug-add-lists-each-similar-bug-as-a-line"
+title = "A duplicate bug add lists each similar bug as a line with its ID, title and status, never a raw JSON array, and keeps both ways forward"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-8"]
+requirements = ["REQ-cli-054"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_duplicate_bug_add_lists_each_similar_bug_as_a_line passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_duplicate_bug_add_lists_each_similar_bug_as_a_line"
+
+[[case]]
+id = "TC-cli-near-miss-gate-close-names-the-closest-open-gate"
+title = "Closing a gate by a near-miss text is refused as gate-not-open naming the closest open gate when one is close, and none when none is, with nothing saved"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-cli-050"]
+paths = ["src/checkpoint.rs", "tests/relay.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/relay.rs::a_near_miss_gate_close_names_the_closest_open_gate passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "relay"
+test = "a_near_miss_gate_close_names_the_closest_open_gate"
+
+[[case]]
+id = "TC-cli-next-at-test-after-every-case-passed-names-stage-advance"
+title = "At test once every referenced case's latest run passed and no blocking bug is open, next names chough stage advance with the checkpoint's next action a sentence of its own, counts a superseded run apart and lists no observation twice"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-3"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/evidence.rs", "src/main.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run"
+
+[[case]]
+id = "TC-cli-scope-gate-summary-names-each-delta-first"
+title = "At a scope gate the summary names the change's deltas first, before its other files, each with the requirement IDs it adds or modifies, within 24 lines and 4,096 bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_scope_gate_summary_names_each_delta_first_with_its_requirements passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_scope_gate_summary_names_each_delta_first_with_its_requirements"
+
+[[case]]
+id = "TC-cli-intent-gate-summary-names-the-criteria-and-hi-files"
+title = "At a gate held at intent with no native change, the summary names the criterion IDs the session references and the HI files that hold them in place of what changed"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::an_intent_gate_summary_names_the_criteria_and_their_hi_files passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "an_intent_gate_summary_names_the_criteria_and_their_hi_files"
+
+[[case]]
+id = "TC-cli-context-gives-the-session-as-markdown"
+title = "chough context, Markdown by default, gives the session as Markdown (objective, stage, next action, modules, gates with what they hold and drive, decisions, where it stands, open threads), never a JSON block, and --json keeps the session object"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["src/context.rs", "src/main.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::context_gives_the_session_as_markdown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "context_gives_the_session_as_markdown"
+
+[[case]]
+id = "TC-cli-failed-run-body-says-why"
+title = "A failed case run's evidence body says why when Chough knows it, such as an expected output that was missing with the expected text quoted, before its key failing lines"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-cli-017"]
+paths = ["src/evidence.rs", "src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines"
+
+[[case]]
+id = "TC-cli-context-gives-the-timeline-and-bugs-as-markdown"
+title = "chough context, Markdown by default, gives the recent Timeline entries as session.md writes them and the open bug backlog as a Markdown list, never a JSON block, and --json keeps both as JSON"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["src/context.rs", "src/session_md.rs", "src/bugs.rs", "src/main.rs", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::context_gives_the_timeline_and_open_bugs_as_markdown passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "context_gives_the_timeline_and_open_bugs_as_markdown"
+
+[[case]]
+id = "TC-cli-a-stage-move-replaces-a-gate-close-next-action"
+title = "After a gate close's next action names a move, the move replaces it with Continue <stage>, so next in build never says to advance with nothing built; a next action the agent wrote is kept"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "FLOW-2"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/checkpoint.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_stage_move_replaces_the_next_action_a_gate_close_left passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_stage_move_replaces_the_next_action_a_gate_close_left"
+
+# The fourth fresh-eyes round (t38n, 2026-11-12), fixed on leif/0.6.0-r5-t37f.
+
+[[case]]
+id = "TC-cli-scope-gate-summary-counts-uncommitted-change-files"
+title = "With a change's delta and plan written but not committed, the scope gate's summary counts them in the working tree, untracked files too, names the delta first as after the commit, and gives the same digest for the same tree"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_scope_gate_summary_counts_uncommitted_and_untracked_change_files passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_scope_gate_summary_counts_uncommitted_and_untracked_change_files"
+
+[[case]]
+id = "TC-cli-accept-next-reruns-cases-not-current"
+title = "At accept, approved or verifying, while a referenced case's latest run is not current, next names rerunning it with chough cases run before opening the review gate, and names the review gate once the rerun passes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-2", "LIFE-7"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "src/evidence.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate"
+
+[[case]]
+id = "TC-cli-accept-reference-lessons-before-case-runs"
+title = "The accept reference, in the skill and its .agents copy, has any lesson written before step 2's case runs, so one rerun covers it, and never says to write lessons during closeout"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18", "LIFE-3"]
+requirements = ["REQ-cli-002"]
+paths = ["skills/chough-workflow/references/accept.md", ".agents/skills/chough-workflow/references/accept.md", "tests/docs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/docs.rs::the_accept_reference_writes_lessons_before_the_case_runs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "the_accept_reference_writes_lessons_before_the_case_runs"
+
+[[case]]
+id = "TC-cli-a-batched-advance-continues-in-the-stage-reached"
+title = "After a gate close, a batched advance through several stages leaves Continue <stage> for the stage it reaches, never a stage it passed through"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "FLOW-2"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_batched_advance_leaves_continue_for_the_stage_it_reaches passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_batched_advance_leaves_continue_for_the_stage_it_reaches"
+
+[[case]]
+id = "TC-cli-accept-next-reruns-no-retired-case"
+title = "At accept, a referenced case retired after its run is not named for a rerun, since chough cases run refuses a retired case"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "FLOW-23"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::at_accept_next_names_no_rerun_of_a_retired_case passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "at_accept_next_names_no_rerun_of_a_retired_case"

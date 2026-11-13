@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "records"
+
+# The third fresh-eyes round on 0.6.0 (2026-11-12), Leif's yes at 21:47Z.
+
+[[case]]
+id = "TC-records-migrate-preview-is-text-with-json-behind-a-flag"
+title = "chough migrate prints the plan as text naming each file with its SHA-256, target, write, redaction and removal and the digest with the apply command, writes nothing, and chough migrate --json prints the same plan and digest"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-27", "LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::the_preview_prints_the_plan_as_text_and_the_same_plan_as_json passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "the_preview_prints_the_plan_as_text_and_the_same_plan_as_json"

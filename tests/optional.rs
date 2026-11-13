@@ -292,7 +292,7 @@ fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
 
     // A paused checkpoint is checked before the first attempt; resuming the run after
     // the stage resumes continues with its stored limits.
-    fixture.ok(&["stage", "pause", "--reason", "Human stepped away"]);
+    fixture.ok(&["stage", "pause", "--json", "--reason", "Human stepped away"]);
     let paused = fixture.ok(&repeat("2", "0"));
     assert_eq!(paused["run"]["state"], "paused");
     assert_eq!(paused["run"]["completed"], 0);
@@ -301,7 +301,7 @@ fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
         fixture.ok(&["validate", "resume", &id])["run"]["state"],
         "paused"
     );
-    fixture.ok(&["stage", "resume"]);
+    fixture.ok(&["stage", "resume", "--json"]);
     let resumed = fixture.ok(&["validate", "resume", &id]);
     assert_eq!(resumed["run"]["state"], "complete");
     assert_eq!(resumed["run"]["completed"], 2);
@@ -325,7 +325,13 @@ fn repeated_runs_halt_promptly_for_a_stop_or_pause_during_the_interval() {
     // A pause during the interval is honored the same way.
     let child = spawn(&fixture, &repeat("3", "30"));
     first_attempt_recorded(&fixture);
-    fixture.ok(&["stage", "pause", "--reason", "Human asked to pause"]);
+    fixture.ok(&[
+        "stage",
+        "pause",
+        "--json",
+        "--reason",
+        "Human asked to pause",
+    ]);
     let (paused, after_pause) = finish(child, std::time::Instant::now());
     assert_eq!(paused["run"]["state"], "paused");
     assert_eq!(paused["run"]["completed"], 1, "{paused}");
@@ -549,11 +555,15 @@ fn librarian_snapshots_originals_and_indexes_the_open_backlog() {
     fixture.ok(&[
         "stage",
         "enter",
+        "--json",
         "librarian",
         "--reason",
         "Snapshot the design",
     ]);
-    assert_eq!(fixture.ok(&["stage", "return"])["applied"]["to"], "intent");
+    assert_eq!(
+        fixture.ok(&["stage", "return", "--json"])["applied"]["to"],
+        "intent"
+    );
 }
 
 fn bundle_files() -> Vec<String> {
@@ -1081,4 +1091,44 @@ fn the_retired_retention_preference_and_consent_refuse() {
     );
     let shown = fixture.ok(&["pref", "show"]);
     assert!(shown.to_string().contains("retention"), "{shown:#}");
+}
+
+/// REQ-cli-016, F12a of the third fresh-eyes round: Claude Code 2.1.316 does not discover
+/// `.agents/skills` alone, so `init --host claude` prints the line to add to CLAUDE.md,
+/// the one docs/integrations.md gives, and writes nothing to CLAUDE.md, whether or not
+/// the project has one; `init` without the claude host prints no such line.
+#[test]
+fn init_with_the_claude_host_prints_the_claude_md_line_and_writes_none() {
+    const LINE: &str =
+        "Read and follow `.agents/skills/chough-workflow/SKILL.md` for the Chough workflow.";
+    let integrations =
+        fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/integrations.md"))
+            .unwrap();
+    assert!(integrations.contains(LINE), "docs/integrations.md changed");
+    let fresh = Fixture::new();
+    let output = fresh.ok(&[
+        "init",
+        "--objective",
+        "A Claude project",
+        "--host",
+        "claude",
+    ]);
+    assert_eq!(output["claude_md"]["line"], LINE, "{output:#}");
+    assert!(!fresh.exists("CLAUDE.md"), "init wrote CLAUDE.md");
+
+    let existing = Fixture::new();
+    existing.write("CLAUDE.md", "SYNTHETIC project notes\n");
+    let output = existing.ok(&[
+        "init",
+        "--objective",
+        "A Claude project",
+        "--host",
+        "claude",
+    ]);
+    assert_eq!(output["claude_md"]["line"], LINE, "{output:#}");
+    assert_eq!(existing.read("CLAUDE.md"), "SYNTHETIC project notes\n");
+
+    let openai = Fixture::new();
+    let output = openai.ok(&["init", "--objective", "An openai project"]);
+    assert!(output["claude_md"].is_null(), "{output:#}");
 }

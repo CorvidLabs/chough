@@ -229,7 +229,7 @@ fn legacy(fixture: &Fixture, id: &str) -> Value {
 
 /// Preview, then apply with the preview's digest and consent; returns both.
 fn migrate(fixture: &Fixture) -> (Value, Value) {
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert_eq!(plan["unaccounted"], json!([]), "{plan:#}");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
@@ -246,7 +246,7 @@ fn alias(plan: &Value, old: &str) -> String {
 }
 
 /// The new session ID a 0.5.x session key migrates to, from the plan's aliases.
-fn session_id(plan: &Value, key: &str) -> String {
+fn session_folder(plan: &Value, key: &str) -> String {
     let path = alias(plan, key);
     path.trim_start_matches(".chough/sessions/")
         .trim_start_matches(".chough/archive/sessions/")
@@ -327,8 +327,8 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
     let before = tree(fixture.root());
 
     let (plan, applied) = migrate(&fixture);
-    let open = session_id(&plan, "fixture-first");
-    let story = session_id(&plan, "fixture-second");
+    let open = session_folder(&plan, "fixture-first");
+    let story = session_folder(&plan, "fixture-second");
     let date = utc_date(case_run["observed_at_unix_seconds"].as_u64().unwrap());
     let case_entry = format!(".chough/sessions/{open}/evidence/{date}-tc-fixture-0001.md");
     let product_entry = format!(
@@ -567,8 +567,8 @@ fn one_observation_two_open_sessions_reference_is_one_entry_in_the_first() {
     reference(&fixture, ".chough/sessions/open-two.json", &[PRODUCT]);
     fixture.commit("two open sessions reference one observation");
     let (plan, _) = migrate(&fixture);
-    let first = session_id(&plan, "open-one");
-    let second = session_id(&plan, "open-two");
+    let first = session_folder(&plan, "open-one");
+    let second = session_folder(&plan, "open-two");
     assert!(first < second);
     let path = alias(&plan, PRODUCT);
     assert!(
@@ -699,8 +699,8 @@ fn key_screenshots_are_stripped_bounded_and_kept_beside_their_session_or_story()
     fixture.commit("observations with key screenshots");
 
     let (plan, _) = migrate(&fixture);
-    let open = session_id(&plan, "fixture-first");
-    let story = session_id(&plan, "fixture-second");
+    let open = session_folder(&plan, "fixture-first");
+    let story = session_folder(&plan, "fixture-second");
     let kept: Vec<bool> = open_ids
         .iter()
         .map(|id| {
@@ -820,7 +820,7 @@ fn validation_runs_carry_like_observations() {
     fixture.commit("validation runs");
 
     let (plan, _) = migrate(&fixture);
-    let open = session_id(&plan, "fixture-first");
+    let open = session_folder(&plan, "fixture-first");
     let path = alias(&plan, referenced);
     assert_eq!(
         path,
@@ -897,8 +897,11 @@ fn names_are_deterministic_and_an_interrupted_apply_resumes() {
         &[PRODUCT, twin],
     );
     fixture.commit("two observations that would take one name");
-    let plan = fixture.ok(&["migrate"]);
-    assert_eq!(fixture.ok(&["migrate"])["plan_digest"], plan["plan_digest"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        fixture.ok(&["migrate", "--json"])["plan_digest"],
+        plan["plan_digest"]
+    );
     // Named in observed-then-old-ID order: the twin's ID sorts first and keeps the
     // name; the other takes the suffix of its own old ID.
     let first = alias(&plan, twin);
@@ -925,7 +928,7 @@ fn names_are_deterministic_and_an_interrupted_apply_resumes() {
     let interrupted = fixture.root().join(&first);
     fs::create_dir_all(interrupted.parent().unwrap()).unwrap();
     fs::write(&interrupted, &planned).unwrap();
-    let resumed = fixture.ok(&["migrate"]);
+    let resumed = fixture.ok(&["migrate", "--json"]);
     assert_eq!(resumed["plan_digest"], plan["plan_digest"], "{resumed:#}");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
@@ -985,7 +988,7 @@ fn rolled_observations_in_the_vault_become_receipts_of_their_story() {
     fixture.commit("rolled observations in the vault");
 
     let (plan, _) = migrate(&fixture);
-    let story = session_id(&plan, "archived-1");
+    let story = session_folder(&plan, "archived-1");
     assert_eq!(
         alias(&plan, rolled),
         format!(".chough/archive/sessions/{story}.md")
@@ -1201,5 +1204,123 @@ fn uppercase_digests_migrate_lowercased_and_read() {
             lower(&product["artifact_fingerprints"]["artifact.txt"])
         ),
         "{story}"
+    );
+}
+
+/// The item lines of a record's What was verified section.
+fn verified_lines(text: &str) -> Vec<String> {
+    let start = text
+        .find("\n## What was verified\n")
+        .unwrap_or_else(|| panic!("no What was verified: {text}"));
+    let section = &text[start + 1..];
+    let section = &section[..section[3..]
+        .find("\n## ")
+        .map_or(section.len(), |at| at + 3)];
+    section
+        .lines()
+        .filter(|line| line.starts_with("- "))
+        .map(String::from)
+        .collect()
+}
+
+/// Fresh-eyes finding F10e (REQ-records-009): a migrated open session's What was
+/// verified links each carried entry, `[<claim>](evidence/<entry>.md)`, as a 0.6.0 save
+/// writes it, never the bare 0.5.x ID, which stays the entry's alias; a later save keeps
+/// one linked line per entry and adds no bare one.
+#[test]
+fn a_migrated_sessions_verified_lines_link_the_carried_entries() {
+    let fixture = project("releases/v0.5.0");
+    reference(
+        &fixture,
+        ".chough/sessions/fixture-first.json",
+        &[CASE_RUN, PRODUCT],
+    );
+    fixture.commit("a 0.5.x project whose open session references two observations");
+    let claims = [
+        (CASE_RUN, legacy(&fixture, CASE_RUN)),
+        (PRODUCT, legacy(&fixture, PRODUCT)),
+    ];
+    let (plan, _) = migrate(&fixture);
+    let open = session_folder(&plan, "fixture-first");
+    let file = format!(".chough/sessions/{open}/session.md");
+    let check = |when: &str| {
+        let lines = verified_lines(&fixture.read(&file));
+        for (old, record) in &claims {
+            let entry = alias(&plan, old);
+            let name = entry.rsplit('/').next().unwrap();
+            let link = format!("](evidence/{name})");
+            let linked: Vec<&String> = lines.iter().filter(|line| line.ends_with(&link)).collect();
+            assert_eq!(linked.len(), 1, "{when}: {old} {lines:#?}");
+            assert!(
+                linked[0].starts_with("- [")
+                    && linked[0].contains(record["summary"].as_str().unwrap()),
+                "{when}: {}",
+                linked[0]
+            );
+            assert!(
+                !lines.iter().any(|line| line.contains(old)),
+                "{when}: the bare {old} is still listed: {lines:#?}"
+            );
+            assert_eq!(
+                items(&front(&fixture.read(&entry))["aliases"]),
+                [old.to_string()],
+                "{when}"
+            );
+        }
+    };
+    check("after the apply");
+    fixture.ok(&[
+        "checkpoint",
+        "--decision",
+        "SYNTHETIC: a decision after migrating",
+    ]);
+    check("after a save");
+}
+
+/// Fresh-eyes finding F10e, the rest of it (REQ-records-009, REQ-history-006): a migrated
+/// archived story's What was verified gives an observation carried as its receipt as a
+/// 0.6.0 story writes it, `<claim> — <first 12 fingerprint digits> ^<receipt id>`, never
+/// the bare 0.5.x ID.
+#[test]
+fn a_migrated_storys_verified_lines_are_receipt_lines() {
+    let fixture = project("releases/v0.5.0");
+    let archived_id = "OBS-product-test-00000000000000000000a001";
+    let observed = legacy(&fixture, PRODUCT)["observed_at_unix_seconds"]
+        .as_u64()
+        .unwrap();
+    observation_like(
+        &fixture,
+        PRODUCT,
+        archived_id,
+        "SYNTHETIC archived proof",
+        observed + 60,
+    );
+    reference(
+        &fixture,
+        ".chough/sessions/archive/fixture-second.json",
+        &[archived_id],
+    );
+    fixture.commit("a 0.5.x project whose archived session references an observation");
+    let (plan, _) = migrate(&fixture);
+    let story = fixture.read(&alias(&plan, archived_id));
+    let receipt = maps(&story, "receipts")
+        .into_iter()
+        .find(|receipt| receipt["aliases"] == archived_id)
+        .unwrap_or_else(|| panic!("no receipt for {archived_id}: {story}"));
+    let digits: String = receipt["fingerprint"]
+        .trim_start_matches("sha256:")
+        .chars()
+        .take(12)
+        .collect();
+    let lines = verified_lines(&story);
+    assert!(
+        !lines.iter().any(|line| line.contains(archived_id)),
+        "the bare {archived_id} is still listed: {lines:#?}"
+    );
+    let expected = format!("- SYNTHETIC archived proof — {digits} ^{}", receipt["id"]);
+    assert_eq!(
+        lines.iter().filter(|line| **line == expected).count(),
+        1,
+        "{expected:?} in {lines:#?}"
     );
 }

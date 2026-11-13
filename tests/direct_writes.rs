@@ -19,7 +19,8 @@ const DIR: &str = ".specsync/changes/d1";
 /// A stand-in `specsync`. `change status` reports the change with the state in
 /// `state.json`; `change answer` rewrites `state.json`; `change check` writes
 /// `verification.json` and moves the state to verifying; `change ship` records its
-/// call and exits 0. Anything else exits 0 with `{}`.
+/// call and exits 0; each `change check` call's arguments are kept in
+/// `.stub-check-calls`. Anything else exits 0 with `{}`.
 const STUB: &str = r#"#!/bin/sh
 dir=.specsync/changes/d1
 state=$(sed -n 's/.*"state": *"\([a-z_]*\)".*/\1/p' "$dir/state.json" 2>/dev/null)
@@ -34,6 +35,7 @@ answer)
     echo '{}'
     ;;
 check)
+    echo "$*" >>.stub-check-calls
     printf '{"passed": true}\n' >"$dir/verification.json"
     printf '{"state": "verifying"}\n' >"$dir/state.json"
     echo 'verified'
@@ -80,7 +82,7 @@ fn direct_writes(fixture: &Fixture) -> Vec<Value> {
 }
 
 fn iterate(fixture: &Fixture, note: &str) {
-    fixture.ok(&["stage", "iterate", "--note", note]);
+    fixture.ok(&["stage", "iterate", "--json", "--note", note]);
 }
 
 /// Every file under `.chough/` with its bytes.
@@ -156,6 +158,34 @@ fn chough_change_steps_are_not_flagged_but_an_earlier_direct_write_is() {
         json!([{"path": "review.json", "change": "added"}])
     );
     assert_eq!(found[0]["direct_write"]["before_state"], "verifying");
+}
+
+/// The fresh-eyes finding on plain `specsync change check`: run directly, not as
+/// `chough change check <id> --no-commit`, the direct write it leaves is recorded with
+/// text that says what changed, never as an empty Timeline entry.
+#[test]
+fn a_direct_write_entry_says_what_changed_outside_chough() {
+    let fixture = project();
+    iterate(&fixture, "first sight");
+    // The plain check, run with `specsync` directly, not through Chough.
+    let checked = std::process::Command::new(fixture.root().join("bin/specsync"))
+        .args(["change", "check", ID])
+        .current_dir(fixture.root())
+        .output()
+        .unwrap();
+    assert!(checked.status.success());
+    iterate(&fixture, "after a plain check");
+    let found = direct_writes(&fixture);
+    assert_eq!(found.len(), 1, "{found:#?}");
+    let text = "d1's lifecycle records changed outside Chough: state.json changed, verification.json added; state approved → verifying";
+    assert_eq!(found[0]["reason"], text, "{found:#?}");
+    let session = fixture.read(&fixture.session_file());
+    assert!(
+        session.contains(&format!(
+            " · direct-native-write · intent → intent · {text} ^"
+        )),
+        "{session}"
+    );
 }
 
 #[test]
@@ -236,6 +266,7 @@ fn a_direct_write_before_ship_is_recorded_at_the_done_move() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "accept",
         "--reason",
@@ -352,4 +383,155 @@ fn timing_skips_direct_write_events_without_marking_the_report_partial() {
         "timing reports no unrecognised_kinds count: {report:#}"
     );
     assert!(found.iter().all(|count| **count == json!(0)), "{found:?}");
+}
+
+/// REQ-history-002, TC-history-direct-write-fields-are-labelled-lines (t38j's fresh-eyes
+/// report): a direct write's `direct_write` is written as labelled lines, its files one
+/// level further as `<path>: <change>`, never a JSON object, and reads back whole.
+#[test]
+fn a_direct_write_is_written_as_labelled_lines() {
+    let fixture = project();
+    iterate(&fixture, "first sight");
+    fixture.write(
+        &format!("{DIR}/approvals.json"),
+        "{\"approvals\":[{\"gate\":\"definition\",\"actor\":\"SYNTHETIC-direct\",\"approved_delta_digests\":{}}],\"reopenings\":[]}\n",
+    );
+    iterate(&fixture, "after a direct approval");
+    let text = fixture.read(&fixture.session_file());
+    assert!(!text.contains("direct_write: {"), "{text}");
+    assert!(
+        text.contains(&format!(
+            "  - direct_write:\n    - change: {ID}\n    - files:\n      - approvals.json: changed\n    - before_state: approved\n    - after_state: approved\n"
+        )),
+        "{text}"
+    );
+    let found = direct_writes(&fixture);
+    assert_eq!(
+        found[0]["direct_write"],
+        json!({
+            "change": ID,
+            "files": [{"path": "approvals.json", "change": "changed"}],
+            "before_state": "approved",
+            "after_state": "approved",
+        })
+    );
+}
+
+/// Fresh-eyes finding F9 (REQ-cli-057, REQ-cli-060): `chough change check <id>
+/// --no-commit` runs `specsync change check <id>` without `--commit`, the check the
+/// workflow's accept step runs first, passes its output through, and the next stage move
+/// records no direct write for what it wrote; `chough change check <id>` still commits.
+#[test]
+fn change_check_no_commit_runs_the_plain_check_and_is_never_flagged() {
+    let fixture = project();
+    iterate(&fixture, "first sight");
+    let checked = fixture.run(&["change", "check", ID, "--no-commit"]);
+    assert!(
+        checked.status.success(),
+        "{}",
+        String::from_utf8_lossy(&checked.stderr)
+    );
+    assert_eq!(String::from_utf8_lossy(&checked.stdout), "verified\n");
+    assert_eq!(
+        fixture.read(".stub-check-calls"),
+        format!("change check {ID}\n")
+    );
+    iterate(&fixture, "after the plain check through chough");
+    assert!(
+        direct_writes(&fixture).is_empty(),
+        "chough's own plain check was flagged: {:#?}",
+        direct_writes(&fixture)
+    );
+    let committed = fixture.run(&["change", "check", ID]);
+    assert!(committed.status.success());
+    assert_eq!(
+        fixture.read(".stub-check-calls"),
+        format!("change check {ID}\nchange check {ID} --commit\n")
+    );
+}
+
+/// Fresh-eyes finding F9 (REQ-cli-060): a lifecycle record changed outside Chough
+/// before a gate closes is recorded before that gate's `gate-closed` entry, through
+/// `checkpoint --close-gate` on a gate that drives the approval and through `gate
+/// record`, so the story reads in the order the writes happened; the next stage move
+/// records nothing more.
+#[test]
+fn a_direct_write_before_a_gate_close_is_recorded_before_its_entry() {
+    const FIRST: &str = "SYNTHETIC scope of d1";
+    const SECOND: &str = "SYNTHETIC go-ahead";
+    let fixture = project();
+    fixture.configure_human();
+    iterate(&fixture, "first sight");
+    let relay = [
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "yes, go",
+        "--where",
+        "SYNTHETIC chat, 2026-11-12",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ];
+
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        FIRST,
+        "--holds",
+        "plan",
+        "--drives",
+        "approve",
+    ]);
+    fixture.write(&format!("{DIR}/review.json"), "{\"verdict\": \"pass\"}\n");
+    let mut close = vec!["checkpoint", "--close-gate", FIRST];
+    close.extend(relay);
+    fixture.ok(&close);
+
+    fixture.ok(&["checkpoint", "--awaiting-human", SECOND, "--drives", "none"]);
+    fixture.write(&format!("{DIR}/review.json"), "{\"verdict\": \"block\"}\n");
+    let listed = fixture.ok(&["gate", "list", "--json"]);
+    assert_eq!(listed["gates"][0]["gate"], SECOND, "{listed:#}");
+    let list = listed["list"].as_str().unwrap().to_string();
+    let mut record = vec!["gate", "record", list.as_str(), "--gates", "1"];
+    record.extend(relay);
+    fixture.ok(&record);
+
+    iterate(&fixture, "after both closes");
+    let entries = transitions(&fixture);
+    let kinds: Vec<String> = entries
+        .iter()
+        .map(|entry| {
+            let kind = entry["kind"].as_str().unwrap_or_default();
+            match kind {
+                "gate-opened" | "gate-closed" => {
+                    format!("{kind} {}", entry["reason"].as_str().unwrap_or_default())
+                }
+                "direct-native-write" => format!(
+                    "{kind} {}",
+                    entry["direct_write"]["files"][0]["change"]
+                        .as_str()
+                        .unwrap_or_default()
+                ),
+                _ => kind.to_string(),
+            }
+        })
+        .collect();
+    let tail: Vec<&str> = kinds
+        .iter()
+        .map(String::as_str)
+        .skip_while(|kind| *kind != format!("gate-opened {FIRST}"))
+        .collect();
+    assert_eq!(
+        tail,
+        [
+            format!("gate-opened {FIRST}").as_str(),
+            "direct-native-write added",
+            format!("gate-closed {FIRST}").as_str(),
+            format!("gate-opened {SECOND}").as_str(),
+            "direct-native-write changed",
+            format!("gate-closed {SECOND}").as_str(),
+            "iterate",
+        ],
+        "{kinds:#?}"
+    );
 }

@@ -13,13 +13,14 @@ use std::process::{Command, Output, Stdio};
 use std::time::{Duration, Instant};
 
 /// A `specsync` stand-in that records each argument on its own line in `.stub-argv`
-/// and its working directory in `.stub-cwd`, writes its PID to `.stub-pid`, sleeps
-/// `.stub-sleep` seconds when that file exists, then prints `.stub-out` to stdout and
-/// `.stub-err` to stderr byte for byte and exits with `.stub-exit` (0 when absent).
+/// and its working directory in `.stub-cwd`, publishes its PID in `.stub-pid` whole (a
+/// complete file renamed into place, so a test polling for it never reads it empty),
+/// sleeps `.stub-sleep` seconds when that file exists, then prints `.stub-out` to stdout
+/// and `.stub-err` to stderr byte for byte and exits with `.stub-exit` (0 when absent).
 const STUB: &str = r#"#!/bin/sh
 for argument in "$@"; do printf '%s\n' "$argument"; done >.stub-argv
 pwd -P >.stub-cwd
-echo $$ >.stub-pid
+echo $$ >.stub-pid.tmp && mv .stub-pid.tmp .stub-pid
 if [ -f .stub-sleep ]; then sleep "$(cat .stub-sleep)"; fi
 if [ -f .stub-out ]; then cat .stub-out; fi
 if [ -f .stub-err ]; then cat .stub-err >&2; fi
@@ -412,15 +413,15 @@ const SHIP_KEY: &str = "ship-a5";
 const REVIEW_GATE: &str = "Implementation review of a5";
 
 /// A stand-in for `specsync change ship` and `change status`. Ship records each
-/// argument on its own line in `.stub-ship-calls` (appending), writes its PID to
-/// `.stub-pid`, sleeps `.stub-ship-sleep` seconds when that file exists, prints
-/// `.stub-ship-out` and `.stub-ship-err`, and exits with `.stub-ship-exit` (0 when
-/// absent). Status reports an archived change, or exits 2 while `.stub-status-fail`
-/// exists.
+/// argument on its own line in `.stub-ship-calls` (appending), publishes its PID in
+/// `.stub-pid` whole (renamed into place), sleeps `.stub-ship-sleep` seconds when that
+/// file exists, prints `.stub-ship-out` and `.stub-ship-err`, and exits with
+/// `.stub-ship-exit` (0 when absent). Status reports an archived change, or exits 2
+/// while `.stub-status-fail` exists.
 const SHIP_STUB: &str = r#"#!/bin/sh
 if [ "$2" = ship ]; then
     for argument in "$@"; do printf '%s\n' "$argument"; done >>.stub-ship-calls
-    echo $$ >.stub-pid
+    echo $$ >.stub-pid.tmp && mv .stub-pid.tmp .stub-pid
     if [ -f .stub-ship-sleep ]; then sleep "$(cat .stub-ship-sleep)"; fi
     if [ -f .stub-ship-out ]; then cat .stub-ship-out; fi
     if [ -f .stub-ship-err ]; then cat .stub-ship-err >&2; fi
@@ -481,7 +482,15 @@ fn shipping_session(stage: &str, native: bool, gates: &[&str]) -> Fixture {
         "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-reviewer\"\n",
     );
     fixture.ok(&["checkpoint", "--native-change", SHIP_ID]);
-    fixture.ok(&["stage", "reset", "--to", stage, "--reason", "Ready to ship"]);
+    fixture.ok(&[
+        "stage",
+        "reset",
+        "--json",
+        "--to",
+        stage,
+        "--reason",
+        "Ready to ship",
+    ]);
     for gate in gates {
         fixture.ok(&["checkpoint", "--awaiting-human", gate]);
     }
@@ -555,23 +564,43 @@ fn gate_closed_with_relay(fixture: &Fixture) -> bool {
     } else {
         fixture.session_file_of(SHIP_KEY)
     };
-    let story = fixture.read(&file);
+    relays(&fixture.read(&file)).iter().any(|relay| {
+        let four = serde_json::json!({
+            "decided_by": relay["decided_by"], "words": relay["words"],
+            "where": relay["where"], "recorded_by": relay["recorded_by"]
+        });
+        four == expected
+    })
+}
+
+/// The `relayed_by` of each gate-closed Timeline entry in `story`, in order, read from
+/// its labelled lines (REQ-history-002), as JSON.
+fn relays(story: &str) -> Vec<serde_json::Value> {
+    let mut found = vec![];
     let mut gate_closed = false;
+    let mut in_relay = false;
     for line in story.lines() {
         if line.starts_with("- ") {
             gate_closed = line.contains("· gate-closed ·");
-        } else if gate_closed && let Some(payload) = line.strip_prefix("  - relayed_by: ") {
-            let relay: serde_json::Value = serde_json::from_str(payload).unwrap();
-            let four = serde_json::json!({
-                "decided_by": relay["decided_by"], "words": relay["words"],
-                "where": relay["where"], "recorded_by": relay["recorded_by"]
-            });
-            if four == expected {
-                return true;
+            in_relay = false;
+        } else if gate_closed && line == "  - relayed_by:" {
+            found.push(serde_json::json!({}));
+            in_relay = true;
+        } else if in_relay && let Some(part) = line.strip_prefix("    - ") {
+            let (key, value) = part.split_once(": ").expect("a relay part is `key: value`");
+            let value = if value.starts_with('"') {
+                serde_json::from_str(value).unwrap()
+            } else {
+                serde_json::Value::from(value)
+            };
+            if let Some(relay) = found.last_mut() {
+                relay[key] = value;
             }
+        } else if line.starts_with("  - ") {
+            in_relay = false;
         }
     }
-    false
+    found
 }
 
 #[test]
@@ -631,6 +660,37 @@ fn ship_refuses_an_unknown_human_and_stops_on_a_refused_review() {
         ship_calls(&fixture).is_empty(),
         "the ship ran after a refused review"
     );
+    assert_eq!(records(fixture.root()), before);
+}
+
+/// F1 of the second fresh-eyes round (REQ-records-008): a ship that closes a gate
+/// driving nothing still names a configured human, refused before SpecSync ships.
+#[test]
+fn ship_refuses_an_unknown_human_at_a_gate_that_drives_nothing() {
+    const NOTES: &str = "Approve the release notes";
+    let fixture = shipping_session("accept", true, &[]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        NOTES,
+        "--holds",
+        "accept",
+        "--drives",
+        "none",
+    ]);
+    let before = records(fixture.root());
+    let mut relay = review_relay();
+    relay[1] = NOTES;
+    relay[3] = "nobody";
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &relay), &[]);
+    assert!(!output.status.success(), "the ship took any name");
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("refused:human-identity-unknown"),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(ship_calls(&fixture).is_empty(), "SpecSync shipped");
+    assert!(!fixture.exists(".stub-native-calls"));
     assert_eq!(records(fixture.root()), before);
 }
 
@@ -774,7 +834,7 @@ fn ship_refuses_before_running_without_the_relay_or_outside_accept() {
             native: true,
             gates: vec![],
             names: "chough stage advance --to accept`".into(),
-            recover: vec![vec!["stage", "advance", "--to", "accept"]],
+            recover: vec![vec!["stage", "advance", "--json", "--to", "accept"]],
             then: without_relay.clone(),
         },
         Case {
@@ -846,7 +906,7 @@ fn a_refused_done_move_after_ship_names_the_remaining_step() {
     assert_eq!(ship_session(&fixture)["stage"]["current"], "accept");
     // The step it names succeeds once native status answers.
     fs::remove_file(fixture.root().join(".stub-status-fail")).unwrap();
-    fixture.ok(&["stage", "advance", "--to", "done"]);
+    fixture.ok(&["stage", "advance", "--json", "--to", "done"]);
     assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
 }
 
@@ -990,15 +1050,7 @@ fn a_ship_that_runs_the_review_records_it_on_the_gate_closed_relay() {
         fixture.session_file_of(SHIP_KEY)
     };
     let story = fixture.read(&file);
-    let mut gate_closed = false;
-    let mut relay = serde_json::Value::Null;
-    for line in story.lines() {
-        if line.starts_with("- ") {
-            gate_closed = line.contains("· gate-closed ·");
-        } else if gate_closed && let Some(payload) = line.strip_prefix("  - relayed_by: ") {
-            relay = serde_json::from_str(payload).unwrap();
-        }
-    }
+    let relay = relays(&story).pop().unwrap_or(serde_json::Value::Null);
     assert_eq!(
         relay["native"],
         format!("specsync change review {SHIP_ID}"),

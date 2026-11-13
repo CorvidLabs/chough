@@ -50,6 +50,7 @@ enum Kind {
     Unreadable,
     RecordsInVerification,
     MergeDrivers,
+    MergeDriverOutdated,
 }
 
 impl Kind {
@@ -68,6 +69,7 @@ impl Kind {
             Self::Unreadable => "unreadable",
             Self::RecordsInVerification => "records_in_verification",
             Self::MergeDrivers => "merge_drivers",
+            Self::MergeDriverOutdated => "merge_driver_outdated",
         }
     }
 }
@@ -204,11 +206,16 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
         let Some(text) = tracked_text(root, path) else {
             continue;
         };
+        // REQ-records-006: a temporary path in a case definition is a deliberate test
+        // setting, not a leak; everything else in it is checked as anywhere else.
+        let case_definition = path.starts_with(".chough/cases/") && path.ends_with(".cases.toml");
         for (number, line) in text.lines().enumerate() {
-            let mut kinds: Vec<&str> = crate::leaks::find(local, line)
-                .iter()
-                .map(|matched| matched.kind.name())
-                .collect();
+            let matches = if case_definition {
+                crate::leaks::find_in_case_definition(local, line)
+            } else {
+                crate::leaks::find(local, line)
+            };
+            let mut kinds: Vec<&str> = matches.iter().map(|matched| matched.kind.name()).collect();
             kinds.sort_unstable();
             kinds.dedup();
             for kind in kinds {
@@ -283,11 +290,11 @@ fn timeline_findings(root: &Path) -> Vec<Finding> {
         let story = path
             .strip_prefix(&format!("{}/", STORIES))
             .is_some_and(|name| !name.contains('/') && name.ends_with(".md"));
-        let session_id = sessions::id_of(&path);
-        if !story && session_id.is_none() {
+        let folder_id = sessions::id_of(&path);
+        if !story && folder_id.is_none() {
             continue;
         }
-        let working = match &session_id {
+        let working = match &folder_id {
             Some(id) if !local_path(root, &path).is_ok_and(|full| full.is_file()) => {
                 sessions::archive_file(id)
             }
@@ -514,7 +521,11 @@ fn unreadable_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
             continue;
         }
         let parts: Vec<&str> = path.split('/').collect();
-        let mut refused = crate::markdown::parse(path, &text).err();
+        let parsed = crate::markdown::parse(path, &text);
+        let mut refused = parsed
+            .as_ref()
+            .err()
+            .map(|error| anyhow::anyhow!("{error:#}"));
         if refused.is_none()
             && matches!(
                 parts.as_slice(),
@@ -522,6 +533,14 @@ fn unreadable_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
             )
         {
             refused = sessions::read_at(root, path).err();
+        }
+        // An archived story's receipts, in its `## Receipts` section or an older story's
+        // front matter, are read too (REQ-history-006).
+        if refused.is_none()
+            && matches!(parts.as_slice(), [".chough", "archive", "sessions", _])
+            && let Ok(record) = &parsed
+        {
+            refused = record.story_receipts(path).err();
         }
         let Some(error) = refused else {
             continue;
@@ -755,6 +774,63 @@ fn merge_drivers(root: &Path) -> Result<Option<Finding>> {
     Ok(Some(finding))
 }
 
+/// The command the README's Install section gives for Chough itself, which its
+/// toolchain section points to.
+const INSTALL_CHOUGH: &str = "cargo install chough --locked";
+
+/// The outdated-driver finding (REQ-history-012, F13): the merge drivers are set, and the
+/// `chough` they run, found through `PATH` as Git finds it, is missing or reports a
+/// version older than the running Chough, so a merge would run older code on these
+/// records. It has no fix, since Chough never installs itself; it names both versions
+/// and the install command.
+fn merge_driver_outdated(root: &Path) -> Option<Finding> {
+    if !crate::library::in_git_work_tree(root) {
+        return None;
+    }
+    let running = env!("CARGO_PKG_VERSION");
+    let current = crate::library::version_triple(running)?;
+    let mut programs: Vec<(String, Vec<&str>)> = vec![];
+    for (driver, program) in crate::library::chough_driver_programs(root) {
+        match programs.iter_mut().find(|(known, _)| *known == program) {
+            Some((_, drivers)) => drivers.push(driver),
+            None => programs.push((program, vec![driver])),
+        }
+    }
+    for (program, drivers) in programs {
+        let found = crate::library::version_as_git_runs(root, &program);
+        if found
+            .as_deref()
+            .and_then(crate::library::version_triple)
+            .is_some_and(|version| version >= current)
+        {
+            continue;
+        }
+        let says = match &found {
+            Some(version) => format!("reports {version}"),
+            None => "is not found or reports no version".to_string(),
+        };
+        let mut finding = Finding::new(
+            Kind::MergeDriverOutdated,
+            &program,
+            format!(
+                "install Chough {running} where Git finds `{program}` on PATH: {INSTALL_CHOUGH}"
+            ),
+            false,
+        );
+        finding.blocked = Some(format!(
+            "Chough never installs itself; the `{program}` the merge drivers run {says}, older than Chough {running}, so install Chough {running} ({INSTALL_CHOUGH}) and run chough doctor again"
+        ));
+        finding.detail = Some(json!({
+            "drivers": drivers,
+            "running_version": running,
+            "path_version": found,
+            "install": INSTALL_CHOUGH,
+        }));
+        return Some(finding);
+    }
+    None
+}
+
 /// The findings the verify lane's `leaks` step fails on: `leak` and `oversize`.
 fn leak_and_oversize(root: &Path) -> Result<Vec<Finding>> {
     let files = tracked(root)?;
@@ -783,6 +859,7 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     }
     found.extend(records_in_verification(root));
     found.extend(merge_drivers(root)?);
+    found.extend(merge_driver_outdated(root));
     Ok(found)
 }
 
@@ -790,7 +867,7 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
 /// archives, stale gates and the sessions named with `--close`.
 fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     let mut found = vec![];
-    let pointer = sessions::pointer(root);
+    let pointer = sessions::pointed(root);
     let open = sessions::open_ids(root)?;
     match &pointer {
         Ok(Some(key)) if !open.contains(key) => found.push(Finding::new(
@@ -908,7 +985,11 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
                 lines.join(", ")
             );
         }
-        Kind::TimelineRewritten | Kind::AliasConflict | Kind::Oversize | Kind::Unreadable => {
+        Kind::TimelineRewritten
+        | Kind::AliasConflict
+        | Kind::Oversize
+        | Kind::Unreadable
+        | Kind::MergeDriverOutdated => {
             bail!("{} has no fix", finding.kind.name())
         }
         Kind::Leak => {

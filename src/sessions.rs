@@ -72,10 +72,7 @@ pub(super) enum SessionCommand {
     /// session is touched.
     New {
         key: String,
-        #[arg(
-            long,
-            default_value = "Describe the current objective before beginning work."
-        )]
+        #[arg(long, default_value = DEFAULT_OBJECTIVE)]
         objective: String,
         #[arg(long, default_value = "")]
         intent_scope: String,
@@ -165,6 +162,24 @@ pub(super) fn session_file(id: &str) -> String {
 /// The story of archived session `id`.
 pub(super) fn archive_file(id: &str) -> String {
     format!("{ARCHIVE}/{id}.md")
+}
+
+/// The objective `chough session new` records when none is given.
+const DEFAULT_OBJECTIVE: &str = "Describe the current objective before beginning work.";
+
+/// The section of an archived story that names its session's bugs (REQ-history-006).
+const STORY_BUGS: &str = "Bugs";
+
+/// The stage status an archived story's front matter gives (REQ-history-006).
+pub(super) const ARCHIVED_STATUS: &str = "archived";
+
+/// Whether `relative` is an archived story, `.chough/archive/sessions/<id>.md`, whose
+/// stage status may be [`ARCHIVED_STATUS`].
+pub(super) fn is_story(relative: &str) -> bool {
+    relative
+        .strip_prefix(&format!("{ARCHIVE}/"))
+        .and_then(|rest| rest.strip_suffix(".md"))
+        .is_some_and(|id| !id.is_empty() && !id.contains('/'))
 }
 
 fn inbox_dir(id: &str) -> String {
@@ -361,9 +376,25 @@ pub(super) fn pointer(root: &Path) -> Result<Option<String>> {
     Ok(Some(id))
 }
 
+/// The pointer's session: its own ID when a session folder or story has that ID,
+/// otherwise the session that holds it as an alias or bare key, which a 0.5.x pointer
+/// that an in-place migration keeps, or `session use <alias>`, may leave
+/// (REQ-records-009, REQ-records-003). A pointer that names nothing stays as it is.
+pub(super) fn pointed(root: &Path) -> Result<Option<String>> {
+    let Some(id) = pointer(root)? else {
+        return Ok(None);
+    };
+    if local_path(root, &session_file(&id))?.is_file()
+        || local_path(root, &archive_file(&id))?.is_file()
+    {
+        return Ok(Some(id));
+    }
+    Ok(Some(resolve_open(root, &id).unwrap_or(id)))
+}
+
 /// The active session's ID, or a refusal naming the next command.
 fn active(root: &Path) -> Result<String> {
-    if let Some(id) = pointer(root)? {
+    if let Some(id) = pointed(root)? {
         if local_path(root, &archive_file(&id))?.is_file() {
             bail!(
                 "the active session {id} is archived; run `chough session use <id>` or `chough session new <key>`"
@@ -653,8 +684,16 @@ pub(super) fn create(
     }
     let date = crate::identity::utc_date(now()?);
     let name = crate::identity::dated_name(&date, key, "session");
+    // REQ-history-002 (F11): the session's first entry starts its first stage segment,
+    // with its objective, or its key when none was given.
+    let start = if objective == DEFAULT_OBJECTIVE {
+        key.to_string()
+    } else {
+        objective.clone()
+    };
     let mut session = checkpoint::new_checkpoint(objective, intent_scope, modules);
     session.meta.aliases = vec![key.to_string()];
+    crate::stage::log_start(root, &mut session, &start)?;
     let render = |id: &str| -> Result<String> {
         let mut draft = session.clone();
         draft.meta.id = id.to_string();
@@ -753,7 +792,9 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
                         "status": if archived { "archived" } else { session.stage.status.as_str() },
                         "active": !archived && current.as_deref() == Some(id.as_str()),
                         "archived": archived,
-                        "finished": finished_open,
+                        // An archived story is finished; only a finished open session
+                        // still has a fix to run (F12c).
+                        "finished": archived || finished_open,
                         "fix": finished_open.then_some("chough doctor --fix"),
                         "inbox_unfolded": if archived { 0 } else { unfolded(root, &id)? },
                     }));
@@ -822,17 +863,52 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     let mut linked = session.clone();
     linked.evidence_links = checkpoint::evidence_links(root, &linked);
     let mut record = checkpoint::render_checkpoint(&linked)?;
+    // REQ-history-006 (Kimi 6): the story is archived, and the session's next action no
+    // longer applies.
+    record.set_scalar("stage_status", ARCHIVED_STATUS)?;
+    record.remove("next");
     let date = crate::identity::utc_date(now()?);
     record.set_scalar("closed", &date)?;
     record.set_scalar("outcome", outcome)?;
     let receipts = crate::evidence::receipts_of(root, id)?;
     story_verified_lines(root, &mut record, id, &receipts)?;
-    record.set("receipts", Value::Maps(receipts))?;
+    // REQ-history-006 (F10b): the bugs the session's checkpoint holds, after What was
+    // verified, each with its title and status, linked to its record.
+    let bugs = crate::bugs::story_lines(root, &session.bugs);
+    let bugs = if bugs.is_empty() {
+        "None.\n".to_string()
+    } else {
+        bugs.iter().map(|line| format!("- {line}\n")).collect()
+    };
+    record.insert_section_before(
+        STORY_BUGS,
+        &[crate::session_md::THREADS, crate::session_md::TIMELINE],
+        &bugs,
+    )?;
+    // REQ-history-006 (F10a): no receipts in the front matter, so the story comes first;
+    // it ends with the Timeline and its closing line, then `## Receipts`. The front
+    // matter also leaves out each empty value, which a reader takes as empty.
+    record.remove("receipts");
+    let empty: Vec<String> = record
+        .keys()
+        .into_iter()
+        .filter(|key| match record.get(key) {
+            Some(Value::Scalar(text)) => text.is_empty(),
+            Some(Value::List(items)) => items.is_empty(),
+            Some(Value::Maps(maps)) => maps.is_empty(),
+            None => false,
+        })
+        .map(str::to_string)
+        .collect();
+    for key in empty {
+        record.remove(&key);
+    }
     let mut text = record.render_within(RecordKind::Story)?;
     if !text.ends_with('\n') {
         text.push('\n');
     }
     text.push_str(&format!("\nClosed {date}: {outcome}.\n"));
+    text.push_str(&crate::markdown::receipts_section(receipts)?);
     ensure!(
         write_new_bounded(root, &story, &text, RecordKind::Story.bound())?,
         "{story} already exists; archiving never replaces a file"
@@ -849,7 +925,7 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
             kept.push(file);
         }
     }
-    if pointer(root).ok().flatten().as_deref() == Some(id) {
+    if pointed(root).ok().flatten().as_deref() == Some(id) {
         let _ = fs::remove_file(local_path(root, POINTER)?);
     }
     unpin(root);
@@ -857,11 +933,14 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
 }
 
 /// The story's What was verified lines (REQ-history-006, REQ-records-013): one per
-/// receipt, its claim, its command and the first 12 digits of its fingerprint, a link
-/// to its key screenshot beside the story when it has one, ending `^<evidence id>`. A
-/// line Chough wrote while the session was open links `evidence/<id>.md`, a folder that
-/// leaves with the session, so it becomes that receipt line; a line a person wrote is
-/// kept, and an entry it already names gets no second line.
+/// receipt of the latest run of each case and per receipt bound to no case, its claim,
+/// its command unless the claim already holds it, and the first 12 digits of its
+/// fingerprint, a link to its key screenshot beside the story when it has one, ending
+/// `^<evidence id>`; then, first in the section, one line counting the cases' earlier
+/// runs, which stay in `receipts` (F8). A line Chough wrote while the session was open
+/// links `evidence/<id>.md`, a folder that leaves with the session, so it becomes that
+/// receipt line, or goes for an earlier run; a line a person wrote is kept, and an entry
+/// it already names gets no second line.
 fn story_verified_lines(
     root: &Path,
     record: &mut crate::markdown::Record,
@@ -881,39 +960,26 @@ fn story_verified_lines(
             }
         }
     }
+    let get = |receipt: &[(String, String)], key: &str| {
+        receipt
+            .iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.clone())
+            .filter(|value| !value.is_empty())
+    };
+    // Each case's latest run: the last of its receipts, which are in observation-time
+    // order, oldest first.
+    let mut latest = std::collections::BTreeMap::new();
     for receipt in receipts {
-        let get = |key: &str| {
-            receipt
-                .iter()
-                .find(|(name, _)| name == key)
-                .map(|(_, value)| value.clone())
-                .filter(|value| !value.is_empty())
-        };
-        let Some(entry) = get("id") else {
+        if let (Some(case), Some(entry)) = (get(receipt, "case"), get(receipt, "id")) {
+            latest.insert(case, entry);
+        }
+    }
+    let mut earlier = 0_usize;
+    for receipt in receipts {
+        let Some(entry) = get(receipt, "id") else {
             continue;
         };
-        let mut line = get("claim").unwrap_or_else(|| entry.clone());
-        // The receipt follows one ` — `, with or without a command.
-        let mut receipt = vec![];
-        if let Some(command) = get("command") {
-            receipt.push(format!("`{command}`"));
-        }
-        if let Some(fingerprint) = get("fingerprint") {
-            receipt.push(
-                fingerprint
-                    .trim_start_matches("sha256:")
-                    .chars()
-                    .take(12)
-                    .collect(),
-            );
-        }
-        if !receipt.is_empty() {
-            line.push_str(&format!(" — {}", receipt.join(" ")));
-        }
-        if let Some(name) = screenshots.get(&entry) {
-            line.push_str(&format!(" [screenshot]({id}/{name})"));
-        }
-        line.push_str(&format!(" ^{entry}"));
         let present: Vec<String> = record
             .section(VERIFIED)
             .unwrap_or_default()
@@ -922,13 +988,26 @@ fn story_verified_lines(
             .map(str::to_string)
             .collect();
         // The open session's line for this entry, a link to `evidence/<id>.md` or, when
-        // the checkpoint was rendered without its links, the bare ID, becomes the
-        // receipt line, so each entry is listed once.
+        // the checkpoint was rendered without its links, the bare ID.
         let linked = format!("(evidence/{entry}.md)");
-        if let Some(open) = present
+        let open = present
             .iter()
-            .find(|line| line.ends_with(&linked) || **line == entry)
-        {
+            .find(|line| line.ends_with(&linked) || **line == entry);
+        if get(receipt, "case").is_some_and(|case| latest.get(&case) != Some(&entry)) {
+            // An earlier run of a case: counted, and its open line goes with the file
+            // it links.
+            earlier += 1;
+            if let Some(open) = open {
+                record.remove_item(VERIFIED, open)?;
+            }
+            continue;
+        }
+        let screenshot = screenshots.get(&entry).map(|name| format!("{id}/{name}"));
+        let Some(line) = receipt_line(receipt, screenshot.as_deref()) else {
+            continue;
+        };
+        // The open line becomes the receipt line, so each entry is listed once.
+        if let Some(open) = open {
             record.replace_item(VERIFIED, open, &line)?;
         } else if !present
             .iter()
@@ -937,7 +1016,66 @@ fn story_verified_lines(
             record.append_to_section(VERIFIED, &format!("- {line}\n"))?;
         }
     }
+    if earlier > 0 {
+        record.insert_first_item(VERIFIED, &earlier_runs(earlier))?;
+    }
     Ok(())
+}
+
+/// A receipt's What was verified line (REQ-history-006): its claim, or its ID without
+/// one; after one ` — `, its command unless the claim already holds it and the first 12
+/// digits of its fingerprint, when it has them; a link to `screenshot`, its key
+/// screenshot beside the story, when given; ending `^<evidence id>`. A story at
+/// archiving and the migration write the same line (REQ-records-009). None for a
+/// receipt with no ID.
+pub(super) fn receipt_line(
+    receipt: &[(String, String)],
+    screenshot: Option<&str>,
+) -> Option<String> {
+    let get = |key: &str| {
+        receipt
+            .iter()
+            .find(|(name, _)| name == key)
+            .map(|(_, value)| value.clone())
+            .filter(|value| !value.is_empty())
+    };
+    let entry = get("id")?;
+    let claim = get("claim").unwrap_or_else(|| entry.clone());
+    let mut parts = vec![];
+    if let Some(command) = get("command").filter(|command| !claim.contains(command)) {
+        parts.push(format!("`{command}`"));
+    }
+    if let Some(fingerprint) = get("fingerprint") {
+        parts.push(
+            fingerprint
+                .trim_start_matches("sha256:")
+                .chars()
+                .take(12)
+                .collect(),
+        );
+    }
+    let mut line = claim;
+    if !parts.is_empty() {
+        line.push_str(&format!(" — {}", parts.join(" ")));
+    }
+    if let Some(link) = screenshot {
+        line.push_str(&format!(" [screenshot]({link})"));
+    }
+    line.push_str(&format!(" ^{entry}"));
+    Some(line)
+}
+
+/// The story line counting the earlier runs of its cases, which only its `receipts`
+/// keep (REQ-history-006).
+fn earlier_runs(count: usize) -> String {
+    if count == 1 {
+        "1 earlier run of the cases below is kept in this story's receipts, not listed here."
+            .to_string()
+    } else {
+        format!(
+            "{count} earlier runs of the cases below are kept in this story's receipts, not listed here."
+        )
+    }
 }
 
 /// The newest archived story's checkpoint, by its `closed` date and then its ID.
@@ -1094,6 +1232,21 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
     let mut session = read_at(root, &session_file(&id))?;
     let decision = format!("Closed without done: {}", reason.trim());
     ensure_text("reason", &decision)?;
+    // REQ-history-006 (t38m F2): an open human gate is withdrawn as
+    // `chough checkpoint --clear-awaiting-human` does, one gate-closed entry each with no
+    // relayed decision, and named in the report, never dropped silently.
+    let withdrawn = std::mem::take(&mut session.awaiting_human);
+    let current_stage = session.stage.current.clone();
+    for gate in &withdrawn {
+        crate::stage::log_gate(
+            root,
+            &mut session,
+            crate::stage::GATE_CLOSED,
+            &current_stage,
+            gate,
+            None,
+        )?;
+    }
     session.decisions.push(decision);
     checkpoint::validate_v2(&session)?;
     let report = archive(root, &id, &session, "closed-without-done")?;
@@ -1106,6 +1259,7 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
         "archived": report.story,
         "kept": report.kept,
         "reason": reason.trim(),
+        "withdrawn_gates": withdrawn,
         "journal_post": post,
         "librarian_index": index,
     }))

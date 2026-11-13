@@ -25,7 +25,8 @@ links, so it reads in Obsidian and on GitHub alike. A link to a folder, such as
 
 `chough init` creates the folder. Every `chough stage advance` into done writes the
 session's `shipped` post, and `chough session close` a `closed` post, then regenerates
-`index.md` and the feed (`applied.journal_post`, `applied.librarian_index`). Commit
+`index.md` and the feed (`applied.journal_post` and `applied.librarian_index` under
+`chough stage advance --json`; the default text names them on its `Closeout:` line). Commit
 them with the work. Chough never rewrites a post, so a person's edit is kept, and
 nothing is trimmed or moved out of `.chough/` at done.
 
@@ -64,8 +65,9 @@ change check <id> --commit` and finalize. It is a skill step, not a command or a
 and it works whether the librarian is on or off (REQ-cli-015):
 
 1. Write the supported lessons from this change into the module lesson source, each
-   with its certainty label (`observation`, `hypothesis` or `verified`), source and
-   limits (see [accept.md](accept.md)).
+   starting with its date, `YYYY-MM-DD`, so the knowledge index counts it, with its
+   certainty label (`observation`, `hypothesis` or `verified`), source and limits (see
+   [accept.md](accept.md)).
 2. Check that new checkpoint decisions carry a reason and that verified bugs link
    their failed and passed observations.
 3. Add one `completed` checkpoint entry for the closeout.

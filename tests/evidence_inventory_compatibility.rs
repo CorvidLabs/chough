@@ -260,7 +260,7 @@ fn prepare(p: &Project, records: &[(&str, &[u8])]) {
 
 /// Preview and apply the migration; returns the plan.
 fn migrate(f: &Fixture) -> Value {
-    let plan = f.ok(&["migrate"]);
+    let plan = f.ok(&["migrate", "--json"]);
     assert_eq!(plan["unaccounted"], json!([]), "{plan:#}");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     let applied = f.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);

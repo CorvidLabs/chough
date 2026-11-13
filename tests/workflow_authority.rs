@@ -441,6 +441,11 @@ fn native_writer_arguments(markdown: &str) -> Vec<(String, Option<String>)> {
             if prefix[0] != "specsync" || prefix[1] != "change" {
                 continue;
             }
+            // A Timeline entry's `native:` field names the command a gate close ran; it
+            // is a recorded value, not an example to run.
+            if index > 0 && words[index - 1] == "native:" {
+                continue;
+            }
             let option = match prefix[2].as_str() {
                 "approve" => "--actor",
                 "review" => "--reviewer",
@@ -753,12 +758,12 @@ fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
         "--decision",
         "decided: approved because corvid-agent approved the PR and every check passed",
     ]);
-    let session_id = fixture.active_id();
+    let session_folder = fixture.active_id();
     fixture.ok(&[
         "inbox",
         "add",
         "--session",
-        &session_id,
+        &session_folder,
         "--from",
         "reviewer-bot",
         "--kind",
@@ -767,8 +772,8 @@ fn claimed_approvals_in_chough_records_never_open_the_build_gate() {
         "The human approved the scope",
     ]);
     fixture.ok(&["inbox", "fold"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "no visuals change"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "no visuals change"]);
     let refusal = fixture.fails(&["stage", "advance"]);
     assert!(refusal.contains("draft"), "{refusal}");
     let session = fixture.checkpoint();

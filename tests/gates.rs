@@ -79,6 +79,7 @@ fn git_head(fixture: &Fixture) -> String {
 /// `gates` open.
 fn project(gates: &[&str]) -> Fixture {
     let fixture = Fixture::new();
+    fixture.configure_human();
     fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
     fixture.write(".specsync/sdd.json", "{\"enabled\": true}\n");
     fixture.write("bin/specsync", STUB);
@@ -375,6 +376,7 @@ fn a_verifying_gate_is_refused_and_closes_through_ship_with_the_list() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "accept",
         "--reason",
@@ -515,6 +517,41 @@ fn gate_summary_counts_only_the_changes_own_files() {
     assert!(!summary.contains("lib/merged-"), "{summary}");
 }
 
+/// D2 (REQ-cli-061): a second change on one branch counts from its own recorded base
+/// commit, so the first change's work, archived earlier on the same branch, is not
+/// counted again.
+#[test]
+fn a_second_change_on_one_branch_counts_from_its_own_base_commit() {
+    let fixture = project(&[SCOPE]);
+    fixture.commit("the product so far, on main");
+    fixture.git(&["checkout", "-q", "-B", "main"]);
+    fixture.git(&["checkout", "-q", "-b", "feature"]);
+    for index in 0..3 {
+        fixture.write(
+            &format!("lib/first-change-{index}.txt"),
+            "the first change\n",
+        );
+    }
+    fixture.commit("the first change, archived on this branch");
+    let second_base = git_head(&fixture);
+    fixture.write(
+        &format!("{DIR}/state.json"),
+        &json!({"id": ID, "title": "Free shipping at the threshold", "state": "approved", "base_commit": second_base}).to_string(),
+    );
+    fixture.write("src/second.txt", "one line\n");
+    fixture.commit("the second change");
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    assert!(
+        summary.contains(&format!(
+            "What changed: 1 files, +1 −0 since {}",
+            &second_base[..8]
+        )),
+        "{summary}"
+    );
+    assert!(!summary.contains("lib/first-change-"), "{summary}");
+}
+
 /// REQ-cli-061, TC-cli-gate-summary-says-when-there-is-no-base (G2): with no merge base
 /// and no recorded base commit, the summary's Diff line says the base is unknown instead
 /// of giving a `git diff unknown..<sha>` command that fails.
@@ -535,4 +572,337 @@ fn a_summary_with_no_base_says_so_instead_of_a_broken_diff_command() {
         .unwrap_or_else(|| panic!("no Diff line:\n{summary}"));
     assert!(!diff.contains("unknown.."), "{diff}");
     assert!(diff.contains("unknown"), "{diff}");
+}
+
+/// REQ-cli-061, TC-cli-gate-summary-shows-the-scope (t38j's fresh-eyes report): at a gate
+/// that drives approval, the summary counts and names the change's own Markdown files
+/// (its `change.md`, deltas and plan) first, since they are what the human approves,
+/// while its `state.json` and `approvals.json` stay left out as bookkeeping.
+#[test]
+fn a_scope_gate_summary_names_the_changes_delta_and_plan_first() {
+    let fixture = project(&[]);
+    fixture.write(&format!("{DIR}/approvals.json"), "{}\n");
+    fixture.write(
+        &format!("{DIR}/change.md"),
+        "# g1\n\n## Intent\n\nFree shipping.\n",
+    );
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--drives",
+        "approve",
+    ]);
+    fixture.commit("the scope to approve");
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    let lines: Vec<&str> = summary.lines().collect();
+    let at = lines
+        .iter()
+        .position(|line| line.starts_with("What changed:"))
+        .expect(summary);
+    let named: Vec<&str> = lines[at + 1..]
+        .iter()
+        .take_while(|line| line.starts_with("  "))
+        .map(|line| line.trim())
+        .collect();
+    for (index, file) in ["change.md", "deltas/cli.md", "plan.md"].iter().enumerate() {
+        assert!(
+            named
+                .get(index)
+                .is_some_and(|line| line.starts_with(&format!("{DIR}/"))),
+            "the change's own files come first: {summary}"
+        );
+        assert!(
+            summary.contains(&format!("{DIR}/{file} +")),
+            "{file}: {summary}"
+        );
+    }
+    assert!(!summary.contains("state.json"), "{summary}");
+    assert!(!summary.contains("approvals.json"), "{summary}");
+    assert!(summary.contains("src/input.txt"), "{summary}");
+}
+
+/// Fresh-eyes F6 (second round, 2026-11-12; REQ-cli-061): the list ended by suggesting
+/// `chough gate record` for every gate, which refuses a gate whose change is verifying,
+/// and that refusal said nothing may write .chough/ before the ship, which
+/// verification_ignored_paths contradicts. The list ends with `chough gate record` for
+/// the gates whose change is not verifying and `chough change ship <id> --list <list>
+/// --gate <n>` for each verifying one, and the refusal says such a gate closes through
+/// the ship.
+#[test]
+fn the_list_names_the_ship_for_a_verifying_gate_and_the_refusal_says_why() {
+    let fixture = project(&[SCOPE]);
+    // A second open session, now active, whose change is verifying, with its review gate.
+    let review = "Implementation review of g2";
+    fixture.ok(&["session", "new", "other-g2", "--objective", "Other work"]);
+    fixture.ok(&["checkpoint", "--native-change", "g2"]);
+    fixture.write(
+        ".specsync/changes/g2/state.json",
+        &json!({"id": "g2", "state": "verifying"}).to_string(),
+    );
+    fixture.ok(&["checkpoint", "--awaiting-human", review]);
+    fixture.commit("g2 verifying");
+    let output = fixture.run(&["gate", "list"]);
+    assert!(output.status.success());
+    let shown = String::from_utf8(output.stdout).unwrap();
+    let listed = list(&fixture);
+    let list_id = listed["list"].as_str().unwrap().to_string();
+    let number = |gate: &str| {
+        listed["gates"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|listed| listed["gate"] == gate)
+            .unwrap()["number"]
+            .to_string()
+    };
+    let (scope, verifying) = (number(SCOPE), number(review));
+    // The list ends with how to reply, after the last gate's digest.
+    let footer = &shown[shown.rfind("Digest: ").unwrap()..];
+    let reply = footer
+        .lines()
+        .find(|line| line.contains("`chough gate record "))
+        .unwrap_or_else(|| panic!("no gate record in:\n{footer}"));
+    assert!(reply.contains(&format!("for gate {scope} with")), "{reply}");
+    assert!(
+        footer.contains(&format!(
+            "`chough change ship g2 --list {list_id} --gate {verifying} --decided-by"
+        )),
+        "{footer}"
+    );
+
+    let before = records(fixture.root());
+    let error = fixture.fails(&record(&list_id, &verifying, "yes"));
+    assert!(error.contains("closes through the ship"), "{error}");
+    assert!(error.contains("runs the review as the human"), "{error}");
+    assert!(!error.contains("nothing may write"), "{error}");
+    assert!(
+        error.contains(&format!(
+            "`chough change ship g2 --list {list_id} --gate {verifying} --decided-by"
+        )),
+        "{error}"
+    );
+    assert_eq!(records(fixture.root()), before, "something was written");
+}
+
+/// Fresh-eyes round 3, F5 (2026-11-12; REQ-cli-061): at the scope gate the summary named
+/// the five own files with the most changed lines, and deltas/<module>.md, the contract
+/// change, fell outside them. The change's deltas come first, before its other files,
+/// each with the requirement IDs it adds or modifies.
+#[test]
+fn a_scope_gate_summary_names_each_delta_first_with_its_requirements() {
+    let fixture = project(&[]);
+    fixture.write(&format!("{DIR}/approvals.json"), "{}\n");
+    fixture.write(
+        &format!("{DIR}/deltas/history.md"),
+        "## MODIFIED\n\n### REQUIREMENT REQ-history-002\n\nThe Timeline SHALL read.\n\n## REMOVED\n\n### REQUIREMENT REQ-history-099\n",
+    );
+    // Larger own files than either delta, so a cap by changed lines leaves the deltas out.
+    let long: String = (1..=40).map(|line| format!("- line {line}\n")).collect();
+    for file in [
+        "change.md",
+        "plan.md",
+        "testing.md",
+        "tasks.md",
+        "context.md",
+    ] {
+        fixture.write(&format!("{DIR}/{file}"), &format!("# {file}\n\n{long}"));
+    }
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--drives",
+        "approve",
+    ]);
+    fixture.commit("the scope to approve");
+    let summary = list(&fixture)["gates"][0]["summary"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let lines: Vec<&str> = summary.lines().collect();
+    let at = lines
+        .iter()
+        .position(|line| line.starts_with("What changed:"))
+        .expect(&summary);
+    let named: Vec<&str> = lines[at + 1..]
+        .iter()
+        .take_while(|line| line.starts_with("  "))
+        .map(|line| line.trim())
+        .collect();
+    let mut deltas: Vec<&str> = named[..2].to_vec();
+    deltas.sort_unstable();
+    assert!(
+        deltas[0].starts_with(&format!("{DIR}/deltas/cli.md +"))
+            && deltas[0].ends_with("(adds or modifies REQ-cli-001)"),
+        "{summary}"
+    );
+    assert!(
+        deltas[1].starts_with(&format!("{DIR}/deltas/history.md +"))
+            && deltas[1].ends_with("(adds or modifies REQ-history-002)"),
+        "{summary}"
+    );
+    assert!(
+        named[2].starts_with(&format!("{DIR}/")) && !named[2].contains("/deltas/"),
+        "the change's other files follow its deltas: {summary}"
+    );
+    assert!(lines.len() <= 24 && summary.len() <= 4_096, "{summary}");
+}
+
+/// Fresh-eyes round 3, F4 (2026-11-12; REQ-cli-061): the intent gate's summary said
+/// "Change: none recorded / What changed: unknown ...", nothing about the intent. At a gate
+/// held at intent with no native change recorded, the summary gives the intent being
+/// approved in place of what changed: the criterion IDs the session references and the
+/// HI files that hold them.
+#[test]
+fn an_intent_gate_summary_names_the_criteria_and_their_hi_files() {
+    let fixture = Fixture::new();
+    fixture.write(
+        "hi/life.md",
+        "# Life\n\n- LIFE-1 I can resume where I left off.\n- LIFE-10 Something else.\n",
+    );
+    fixture.write(
+        "hi/flow.md",
+        "# Flow\n\n- FLOW-2 I can see the next step.\n",
+    );
+    fixture.init();
+    fixture.ok(&[
+        "checkpoint",
+        "--criterion",
+        "LIFE-1",
+        "--criterion",
+        "FLOW-2",
+        "--criterion",
+        "LIFE-99",
+        "--awaiting-human",
+        "Approve the intent",
+    ]);
+    fixture.commit("the intent to approve");
+    let summary = list(&fixture)["gates"][0]["summary"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert!(!summary.contains("Change: none recorded"), "{summary}");
+    assert!(!summary.contains("What changed"), "{summary}");
+    let lines: Vec<&str> = summary.lines().collect();
+    let intent = lines
+        .iter()
+        .position(|line| line.starts_with("Intent: "))
+        .expect(&summary);
+    for id in ["LIFE-1", "FLOW-2", "LIFE-99"] {
+        assert!(lines[intent].contains(id), "{summary}");
+    }
+    let held: Vec<&str> = lines[intent + 1..]
+        .iter()
+        .take_while(|line| line.starts_with("  "))
+        .map(|line| line.trim())
+        .collect();
+    assert!(held.contains(&"hi/life.md: LIFE-1"), "{summary}");
+    assert!(held.contains(&"hi/flow.md: FLOW-2"), "{summary}");
+    assert!(held.contains(&"in no hi/ file: LIFE-99"), "{summary}");
+    assert!(lines.len() <= 24 && summary.len() <= 4_096, "{summary}");
+}
+
+/// Fresh-eyes round 4, F2 (2026-11-12; REQ-cli-061): with the change's delta, plan and
+/// other files written but not committed, the scope gate's summary said "What changed: 0
+/// files, +0 −0" and named no delta; after a commit it named them. What changed is
+/// counted in the working tree, so uncommitted and untracked files count: the summary
+/// names the deltas first, with their requirements, as it does after the commit, leaves
+/// Chough's records out, and gives the same digest for the same tree.
+#[test]
+fn a_scope_gate_summary_counts_uncommitted_and_untracked_change_files() {
+    let fixture = project(&[]);
+    // The change begins at HEAD, so only what is not committed yet is its work.
+    let head = git_head(&fixture);
+    fixture.write(
+        &format!("{DIR}/state.json"),
+        &json!({"id": ID, "title": "Free shipping at the threshold", "state": "approved", "base_commit": head}).to_string(),
+    );
+    fixture.write(&format!("{DIR}/approvals.json"), "{}\n");
+    // An untracked delta, a committed delta and plan edited in place, and an untracked
+    // product file.
+    fixture.write(
+        &format!("{DIR}/deltas/history.md"),
+        "## MODIFIED\n\n### REQUIREMENT REQ-history-002\n\nThe Timeline SHALL read.\n",
+    );
+    fixture.write(
+        &format!("{DIR}/deltas/cli.md"),
+        "## ADDED\n\n### REQUIREMENT REQ-cli-001\n\nPreserve files.\n\n### REQUIREMENT REQ-cli-002\n\nKeep them.\n",
+    );
+    fixture.write(
+        &format!("{DIR}/plan.md"),
+        "# Plan\n\n## Approach\n\nx\ny\nz\n\n## Risks\n\n- A rounding edge at exactly fifty dollars.\n\n## Constraints consulted\n\nnone\n",
+    );
+    fixture.write("src/added.txt", "one\ntwo\nthree\n");
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--drives",
+        "approve",
+    ]);
+    let changed = |summary: &str| -> Vec<String> {
+        let lines: Vec<&str> = summary.lines().collect();
+        let at = lines
+            .iter()
+            .position(|line| line.starts_with("What changed:"))
+            .unwrap_or_else(|| panic!("{summary}"));
+        std::iter::once(lines[at].split(" since ").next().unwrap())
+            .chain(
+                lines[at + 1..]
+                    .iter()
+                    .take_while(|line| line.starts_with("  "))
+                    .copied(),
+            )
+            .map(String::from)
+            .collect()
+    };
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap().to_string();
+    let uncommitted = changed(&summary);
+    assert_eq!(uncommitted[0], "What changed: 4 files, +14 −0", "{summary}");
+    let mut deltas: Vec<String> = uncommitted[1..3]
+        .iter()
+        .map(|line| line.trim().to_string())
+        .collect();
+    deltas.sort();
+    assert!(
+        deltas[0].starts_with(&format!("{DIR}/deltas/cli.md +"))
+            && deltas[0].ends_with("(adds or modifies REQ-cli-001, REQ-cli-002)"),
+        "{summary}"
+    );
+    assert!(
+        deltas[1].starts_with(&format!("{DIR}/deltas/history.md +5 −0"))
+            && deltas[1].ends_with("(adds or modifies REQ-history-002)"),
+        "{summary}"
+    );
+    for named in [
+        format!("{DIR}/plan.md +"),
+        "src/added.txt +3 −0".to_string(),
+    ] {
+        assert!(
+            uncommitted
+                .iter()
+                .any(|line| line.trim().starts_with(&named)),
+            "{named}: {summary}"
+        );
+    }
+    assert!(!summary.contains(".chough/"), "{summary}");
+    assert!(
+        summary.lines().count() <= 24 && summary.len() <= 4_096,
+        "{summary}"
+    );
+    // The same tree gives the same summary and digest.
+    let again = list(&fixture);
+    assert_eq!(again["gates"][0]["digest"], listed["gates"][0]["digest"]);
+    assert_eq!(again["gates"][0]["summary"], listed["gates"][0]["summary"]);
+
+    // Committed, the change's files count the same.
+    fixture.commit("the change's own files");
+    let committed = list(&fixture)["gates"][0]["summary"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert_eq!(changed(&committed), uncommitted, "{committed}");
 }

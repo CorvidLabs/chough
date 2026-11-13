@@ -246,6 +246,12 @@ fn ensure_paths(label: &str, values: &[String]) -> Result<()> {
 }
 
 pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
+    validate_as(session, false)
+}
+
+/// As [`validate_v2`]; `story` also accepts the stage status `archived` that an archived
+/// story's front matter gives (REQ-history-006). A session is never saved with it.
+fn validate_as(session: &Checkpoint, story: bool) -> Result<()> {
     ensure!(
         session.schema_version == 2,
         "unsupported session schema_version"
@@ -257,7 +263,8 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
         session.stage.current
     );
     ensure!(
-        matches!(session.stage.status.as_str(), "active" | "paused"),
+        matches!(session.stage.status.as_str(), "active" | "paused")
+            || (story && session.stage.status == crate::sessions::ARCHIVED_STATUS),
         "stage status must be active or paused"
     );
     ensure!(session.stage.iteration >= 1, "stage iteration starts at 1");
@@ -315,7 +322,7 @@ pub(super) fn validate_v2(session: &Checkpoint) -> Result<()> {
 /// Read the session record at `relative` from `content`.
 pub(super) fn parse(relative: &str, content: &str) -> Result<Session> {
     let session = crate::session_md::read(relative, content)?;
-    validate_v2(&session)?;
+    validate_as(&session, crate::sessions::is_story(relative))?;
     Ok(Session::V2(Box::new(session)))
 }
 
@@ -533,6 +540,10 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         count += guard(local, "alias", alias)?;
     }
     count += guard(local, "pr", &mut session.meta.pr)?;
+    count += guard(local, "title", &mut session.meta.title)?;
+    for line in &mut session.meta.summary {
+        count += guard(local, "summary", line)?;
+    }
     for transition in &mut session.pending {
         if let Some(reason) = transition.reason.as_mut() {
             count += guard(local, "reason", reason)?;
@@ -630,6 +641,16 @@ pub(super) struct CheckpointArgs {
     objective: Option<String>,
     #[arg(long)]
     next_action: Option<String>,
+    /// The short human title of the journal post the move into done writes, one line of
+    /// at most 72 bytes, such as "Chough 0.6.0: human-first records" (REQ-records-011);
+    /// an empty value removes it.
+    #[arg(long, allow_hyphen_values = true)]
+    title: Option<String>,
+    /// The journal post's summary, at most 900 bytes, one paragraph per line: what
+    /// changed and why, what was verified with its final numbers, and what is next
+    /// (REQ-records-011); an empty value removes it.
+    #[arg(long, allow_hyphen_values = true)]
+    summary: Option<String>,
     #[arg(long)]
     native_change: Option<String>,
     #[arg(long = "decision")]
@@ -791,10 +812,49 @@ pub(super) enum RelayProblem {
     WithoutGate(Vec<&'static str>),
     /// The gate, and the flags that are missing or blank.
     Incomplete(String, Vec<&'static str>),
-    /// No open gate has this exact text.
-    NotOpen(String),
+    /// No open gate has this exact text: the text, and the closest open gate when one
+    /// is close.
+    NotOpen(String, Option<String>),
     /// The gate, and the length in bytes the decision would have.
     TooLong(String, usize),
+}
+
+/// The open gate closest to `gate`, when one is close (F6): the fewest one-character
+/// edits once case and runs of whitespace are folded, at most a quarter of the longer
+/// text and at least one; the first open gate wins a tie.
+fn closest_gate(open: &[String], gate: &str) -> Option<String> {
+    let fold = |text: &str| -> Vec<char> {
+        text.split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+            .to_lowercase()
+            .chars()
+            .collect()
+    };
+    let given = fold(gate);
+    open.iter()
+        .filter_map(|candidate| {
+            let other = fold(candidate);
+            let edits = edit_distance(&given, &other);
+            (edits <= (given.len().max(other.len()) / 4).max(1)).then_some((edits, candidate))
+        })
+        .min_by_key(|(edits, _)| *edits)
+        .map(|(_, candidate)| candidate.clone())
+}
+
+/// The fewest single-character insertions, deletions and substitutions that turn
+/// `from` into `to`.
+fn edit_distance(from: &[char], to: &[char]) -> usize {
+    let mut previous: Vec<usize> = (0..=to.len()).collect();
+    for (row, left) in from.iter().enumerate() {
+        let mut current = vec![row + 1];
+        for (column, right) in to.iter().enumerate() {
+            let cost = previous[column] + usize::from(left != right);
+            current.push(cost.min(previous[column + 1] + 1).min(current[column] + 1));
+        }
+        previous = current;
+    }
+    previous[to.len()]
 }
 
 /// A relayed decision: the gate it closes, the relay and the decision text.
@@ -829,7 +889,7 @@ pub(super) fn check_relay(
         return Err(RelayProblem::Incomplete(gate.into(), missing));
     }
     if !open.iter().any(|open| open == gate) {
-        return Err(RelayProblem::NotOpen(gate.into()));
+        return Err(RelayProblem::NotOpen(gate.into(), closest_gate(open, gate)));
     }
     let text = |index: usize| values[index].1.unwrap_or_default().to_string();
     let relay = stage::RelayedBy {
@@ -881,9 +941,14 @@ pub(super) struct NativeStep {
     pub(super) step: crate::humans::Step,
 }
 
+/// Why the close of a gate that drives no native step ran none: its report's
+/// `native_step` says so, while its decision names no step (REQ-records-008).
+const DRIVES_NONE: &str = "no native step ran (the gate drives none)";
+
 /// What closing `gate` with `relay` runs, checked before anything runs: the step the
 /// gate drives as the configured human, or nothing for a gate that drives nothing or a
-/// close with `--no-native`. Returns the step and the text the decision names it by.
+/// close with `--no-native`. Returns the step and the text the decision names it by;
+/// only a gate that drives nothing has no text, and its report gives [`DRIVES_NONE`].
 pub(super) fn native_step_for(
     root: &Path,
     session: &Checkpoint,
@@ -908,6 +973,9 @@ pub(super) fn native_step_for(
         ),
         _ => {}
     }
+    // REQ-records-008: every close names one configured human, whatever the gate drives
+    // and with or without --no-native, before anything runs or is written.
+    let human = crate::humans::resolve(root, &relay.decided_by)?;
     if drives == Drives::None {
         return Ok((None, None));
     }
@@ -930,7 +998,6 @@ pub(super) fn native_step_for(
             drives.name()
         );
     };
-    let human = crate::humans::resolve(root, &relay.decided_by)?;
     let step = match drives {
         Drives::Approve => Step::Approve {
             note: crate::humans::approval_note(
@@ -1000,8 +1067,11 @@ fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Optio
                 missing.join(", "),
                 if missing.len() == 1 { "is" } else { "are" }
             ),
-            RelayProblem::NotOpen(gate) => anyhow::anyhow!(
-                "refused:gate-not-open: no open gate has the exact text \"{gate}\", so nothing was saved.\nRun `chough next` to list the open gates, then close one by its exact text."
+            RelayProblem::NotOpen(gate, closest) => anyhow::anyhow!(
+                "refused:gate-not-open: no open gate has the exact text \"{gate}\", so nothing was saved.{}\nRun `chough next` to list the open gates, then close one by its exact text.",
+                closest
+                    .map(|closest| format!(" Did you mean \"{closest}\"?"))
+                    .unwrap_or_default()
             ),
             RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
                 "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
@@ -1065,6 +1135,103 @@ pub(super) fn withdraw_gates(root: &Path) -> Result<Vec<String>> {
     let current_stage = session.stage.current.clone();
     save_with_gate_events(root, &mut session, &current_stage, &cleared, &[], |_| None)?;
     Ok(cleared)
+}
+
+/// What a gate close decided, which the next action it leaves names with the step that
+/// decision allows (F3, REQ-cli-021).
+#[derive(Clone, Copy)]
+enum Closed {
+    /// The native approval ran: the stage can move on.
+    Approved,
+    /// The gate drives no native step: the close is the decision, and the stage can move
+    /// on. It decided nothing more, so "closed" is said once (F12a).
+    Nothing,
+    /// The native review recorded pass: the change ships next.
+    ReviewPass,
+    /// The native review recorded block: the work goes back to build.
+    ReviewBlock,
+    /// `chough change ship` shipped before this close, with the review it ran or found
+    /// current (`reviewed`), or none for a gate that drives approval: the move into done.
+    Shipped { reviewed: bool },
+    /// `--no-native`: a decision that is neither an approval nor a review, so the agent
+    /// records the next action it calls for.
+    NoNative,
+}
+
+fn close_decision(
+    drives: crate::humans::Drives,
+    verdict: Option<&str>,
+    no_native: bool,
+    native_ran: bool,
+) -> Closed {
+    use crate::humans::Drives;
+    match drives {
+        Drives::None => Closed::Nothing,
+        _ if no_native => Closed::NoNative,
+        _ if native_ran => Closed::Shipped {
+            reviewed: drives == Drives::Review,
+        },
+        Drives::Approve => Closed::Approved,
+        Drives::Review if verdict == Some("block") => Closed::ReviewBlock,
+        Drives::Review => Closed::ReviewPass,
+    }
+}
+
+/// The start and the decision mark of the next action a gate close leaves.
+const CLOSED_GATE_HEAD: &str = "Gate \"";
+const CLOSED_GATE_MARK: &str = "\" closed";
+
+/// Whether `next_action` is one a gate close left (REQ-cli-021, t38n F1), which the move
+/// it names replaces.
+pub(super) fn is_gate_close_next_action(next_action: &str) -> bool {
+    next_action.starts_with(CLOSED_GATE_HEAD) && next_action.contains(CLOSED_GATE_MARK)
+}
+
+/// The next action a close of the last gate holding the current stage leaves: the gate,
+/// on one line and cut so the next action stays within 4096 bytes, the decision when it
+/// made one beyond closing, and the step it allows, never `chough next` (F3). `change`
+/// is the session's native change, which a review pass ships.
+fn closed_gate_next_action(gate: &str, closed: Closed, change: Option<&str>) -> String {
+    let advance = "run `chough stage advance` to move on".to_string();
+    let (decided, step) = match closed {
+        Closed::Approved => (" (approved)", advance),
+        Closed::Nothing => ("", advance),
+        Closed::ReviewPass => (
+            " (review pass)",
+            format!(
+                "run `chough change ship {}` to ship",
+                change.unwrap_or("<id>")
+            ),
+        ),
+        Closed::ReviewBlock => (
+            " (review block)",
+            "run `chough stage back --to build --reason \"<why>\"` to address the review".into(),
+        ),
+        Closed::Shipped { reviewed } => (
+            if reviewed { " (review pass)" } else { "" },
+            "the change shipped, so run `chough stage advance --to done`".into(),
+        ),
+        Closed::NoNative => (
+            "",
+            "record the next action the decision calls for with `chough checkpoint --next-action \"<action>\"`".into(),
+        ),
+    };
+    let head = CLOSED_GATE_HEAD;
+    let tail = format!("{CLOSED_GATE_MARK}{decided}; {step}.");
+    let room = 4_096 - head.len() - tail.len();
+    let mut name = String::new();
+    for character in gate
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .chars()
+    {
+        if name.len() + character.len_utf8() > room {
+            break;
+        }
+        name.push(character);
+    }
+    format!("{head}{name}{tail}")
 }
 
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
@@ -1145,6 +1312,19 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             );
         }
     }
+    // Fresh-eyes finding 12: what a close decided and the stage its gate holds, read
+    // before the gate leaves the session, and whether this call gives its own next action.
+    let closing = relayed.as_ref().map(|(gate, _, _)| {
+        let meta = crate::session_md::gate(&session, gate);
+        let decision = close_decision(
+            meta.drives(),
+            args.verdict.as_deref(),
+            args.no_native,
+            args.native_ran.is_some(),
+        );
+        (gate.clone(), meta.holds, decision)
+    });
+    let next_given = args.next_action.is_some();
     if let Some(holds) = &args.holds {
         ensure!(
             stage::is_stage(holds),
@@ -1163,6 +1343,14 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     if let Some(next_action) = args.next_action {
         ensure_text("next action", &next_action)?;
         session.next_action = next_action;
+        changed = true;
+    }
+    if let Some(title) = args.title {
+        session.meta.title = crate::journal::checked_title(&title)?;
+        changed = true;
+    }
+    if let Some(summary) = args.summary {
+        session.meta.summary = crate::journal::checked_summary(&summary)?;
         changed = true;
     }
     if let Some(change) = args.native_change {
@@ -1280,6 +1468,22 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         changed |= !values.is_empty();
         push_unique(list, values);
     }
+    // Fresh-eyes finding 12 (t382's rule): a next action set while a gate held the stage
+    // describes waiting on it, so once the last open gate holding the current stage
+    // closes it is stale. Unless this call gives its own, it names the gate and the
+    // decision and sends the reader to `chough next`; the Timeline keeps the decision.
+    if let Some((gate, holds, decision)) = &closing
+        && !next_given
+        && *holds == session.stage.current
+        && !session
+            .awaiting_human
+            .iter()
+            .any(|open| crate::session_md::gate(&session, open).holds == session.stage.current)
+    {
+        session.next_action =
+            closed_gate_next_action(gate, *decision, session.native_change.as_deref());
+        changed = true;
+    }
     if changed {
         let current_stage = session.stage.current.clone();
         let opened: Vec<String> = session
@@ -1304,13 +1508,25 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         }
         save_checkpoint(root, &mut session)?;
     }
+    // REQ-cli-060 (F9): a gate close recorded the direct writes before its entry, so
+    // the baseline is the records now, the close's own native step included. A failed
+    // baseline write is reported and never undoes the close.
+    let settled = (changed && relayed.is_some())
+        .then(|| crate::direct_writes::settle(root, session.native_change.as_deref()).err())
+        .flatten();
     let mut output = json!({"schema_version": 1, "saved": changed, "checkpoint": session});
+    if let Some(error) = settled {
+        output["direct_writes"] = json!({"unknown": error.to_string()});
+    }
     if let Some((gate, relay, _)) = &relayed {
+        // A close that ran nothing says why: the step `--no-native` skipped, or that
+        // the gate drives none (F12b).
+        let why = native_text.as_deref().unwrap_or(DRIVES_NONE);
         output["relayed_decision"] = json!({
             "gate": gate,
             "relayed_by": relay,
             "provenance": RELAY_PROVENANCE,
-            "native_step": native_report.clone().unwrap_or_else(|| json!({"ran": null, "why": native_text})),
+            "native_step": native_report.clone().unwrap_or_else(|| json!({"ran": null, "why": why})),
         });
     }
     print_json(&output)

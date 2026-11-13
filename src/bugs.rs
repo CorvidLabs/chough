@@ -57,6 +57,8 @@ const WHY: &str = "Why it matters";
 const FIX: &str = "Fix";
 /// The second line of What happened, when the actual behaviour differs from the symptom.
 const ACTUAL: &str = "Actual: ";
+/// The label of Steps' first line, the trigger, before the numbered steps (REQ-cli-012).
+const TRIGGER: &str = "Trigger: ";
 /// The append-only section: one dated entry per report, note, evidence link and status
 /// change.
 const LOG: &str = "Log";
@@ -133,11 +135,13 @@ impl Stored {
             .map_or_else(|| self.symptom(), str::to_string)
     }
 
-    /// The trigger: Steps without its numbered lines.
+    /// The trigger: Steps without its numbered lines and its `Trigger:` label, which a
+    /// bug written before the label has not got.
     fn trigger(&self) -> String {
         self.paragraph(STEPS)
             .lines()
             .filter(|line| numbered(line).is_none())
+            .map(|line| line.strip_prefix(TRIGGER).unwrap_or(line))
             .collect::<Vec<_>>()
             .join(" ")
     }
@@ -213,6 +217,46 @@ fn paragraph(body: &str, label: &str) -> Option<String> {
 /// matter value each keep one value on its lines.
 fn one_line(text: &str) -> String {
     text.replace("\r\n", " ").replace(['\n', '\r'], " ")
+}
+
+/// `record` with the write-up paragraph that starts `**<label>:**` replaced by `text` on
+/// one line, every other byte kept; a record without that paragraph above `## Log` is
+/// refused, naming `file`.
+fn with_paragraph(file: &str, record: &Record, label: &str, text: &str) -> Result<Record> {
+    let rendered = record.render();
+    let body = record.body();
+    let front = &rendered[..rendered.len() - body.len()];
+    let marker = format!("**{label}:**");
+    let mut span = None;
+    let mut offset = 0;
+    for line in body.split_inclusive('\n') {
+        let content = line.trim_end_matches('\n');
+        match span {
+            None if content.trim_end() == format!("## {LOG}") => break,
+            None if content.starts_with(&marker) => span = Some((offset, body.len())),
+            Some((start, _)) if content.trim().is_empty() || content.starts_with('#') => {
+                span = Some((start, offset));
+                break;
+            }
+            _ => {}
+        }
+        offset += line.len();
+    }
+    let Some((start, end)) = span else {
+        bail!("{file}: no **{label}:** paragraph above ## {LOG} to replace");
+    };
+    let newline = if body[start..end].ends_with('\n') {
+        "\n"
+    } else {
+        ""
+    };
+    let replaced = format!(
+        "{front}{}{marker} {}{newline}{}",
+        &body[..start],
+        one_line(text),
+        &body[end..]
+    );
+    markdown::parse(file, &replaced)
 }
 
 /// A hint for a value that belongs to the other of `--scope` and `--classification`.
@@ -329,6 +373,34 @@ fn read_all(root: &Path) -> Result<Vec<Stored>> {
         bugs.push(stored);
     }
     Ok(bugs)
+}
+
+/// The items of an archived story's `## Bugs` section (REQ-history-006, F10b): each bug
+/// of the session's checkpoint, once, as `[<title>](../../bugs/<file>): <status>`,
+/// linked from the story to its record; an ID no one bug record holds is named as such.
+pub(super) fn story_lines(root: &Path, ids: &[String]) -> Vec<String> {
+    let bugs = read_all(root).unwrap_or_default();
+    let mut seen = BTreeSet::new();
+    let mut lines = vec![];
+    for id in ids {
+        let Ok(bug) = find(&bugs, id) else {
+            lines.push(format!("{id}: no one bug record holds this ID"));
+            continue;
+        };
+        if !seen.insert(bug.id().to_string()) {
+            continue;
+        }
+        let title = bug
+            .text("title")
+            .split_whitespace()
+            .collect::<Vec<_>>()
+            .join(" ")
+            .replace('[', "\\[")
+            .replace(']', "\\]");
+        let file = bug.path.trim_start_matches(".chough/");
+        lines.push(format!("[{title}](../../{file}): {}", bug.status()));
+    }
+    lines
 }
 
 /// The ID of the bug whose name or alias is `id`, refusing an unknown ID or an alias
@@ -459,7 +531,8 @@ impl<'a> Evidence<'a> {
             }
             for (name, record) in records_in(self.root, STORIES_DIR, Kind::Story.bound()) {
                 let story = name.trim_end_matches(".md");
-                for map in record.maps("receipts") {
+                // REQ-history-006: from `## Receipts`, or an older story's front matter.
+                for map in record.story_receipts(&name).unwrap_or_default() {
                     let names = receipt_names(&map);
                     let Some(id) = names.first() else {
                         continue;
@@ -564,6 +637,28 @@ impl<'a> Evidence<'a> {
             linked.is("passed") && linked.observed.is_some_and(|observed| observed > latest)
         });
         Ok(Some((id.clone(), Some(latest), passed_after)))
+    }
+
+    /// The pass that verifies the bug: the latest present linked pass observed strictly
+    /// after the latest linked failure, as the bug links it, with its revision.
+    fn verifying_pass(&self, bug: &Stored) -> Result<Option<(String, Option<String>)>> {
+        let present = self.present(bug)?;
+        let Some(latest) = present
+            .iter()
+            .filter(|(_, linked)| linked.is("failed"))
+            .filter_map(|(_, linked)| linked.observed)
+            .max()
+        else {
+            return Ok(None);
+        };
+        Ok(present
+            .iter()
+            .filter_map(|(id, linked)| {
+                let observed = linked.observed?;
+                (linked.is("passed") && observed > latest).then_some((observed, id, linked))
+            })
+            .max_by(|left, right| left.0.cmp(&right.0).then(left.1.cmp(right.1)))
+            .map(|(_, id, linked)| (id.clone(), linked.revision.clone())))
     }
 
     /// Unverified until a failure is linked; reproduced and later passed only when a
@@ -714,6 +809,32 @@ fn stored_form(id: &str, linked: &Linked) -> String {
     }
 }
 
+/// REQ-cli-012: a bug written with `--observation` naming an entry of the active session,
+/// which [`stored_form`] stores as `<session>/<id>`, joins that session's checkpoint as
+/// `checkpoint --bug` adds it (REQ-records-004), once, so the session's story names the
+/// bugs found in it. An entry of another session, a receipt or no active session leaves
+/// every checkpoint unchanged.
+fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
+    let Some(active) = crate::sessions::checkpoint_path(root)
+        .ok()
+        .and_then(|relative| crate::sessions::id_of(&relative))
+    else {
+        return Ok(());
+    };
+    let prefix = format!("{active}/");
+    if !links.iter().any(|link| link.starts_with(&prefix)) {
+        return Ok(());
+    }
+    let mut session = match crate::checkpoint::read_session(root)? {
+        crate::checkpoint::Session::V2(session) => *session,
+    };
+    if session.bugs.iter().any(|held| held == bug) {
+        return Ok(());
+    }
+    session.bugs.push(bug.to_string());
+    crate::checkpoint::save_checkpoint(root, &mut session)
+}
+
 fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Result<()> {
     if bug.text("classification") != "regression" {
         return Ok(());
@@ -858,7 +979,7 @@ fn write_up(draft: &Draft, fix: &str) -> String {
     if draft.actual.trim() != draft.symptom.trim() {
         what.push_str(&format!("\n{ACTUAL}{}", one_line(&draft.actual)));
     }
-    let mut steps = format!("**{STEPS}:** {}", one_line(&draft.trigger));
+    let mut steps = format!("**{STEPS}:** {TRIGGER}{}", one_line(&draft.trigger));
     for (index, step) in draft.steps.iter().enumerate() {
         steps.push_str(&format!("\n{}. {}", index + 1, one_line(step)));
     }
@@ -1098,6 +1219,10 @@ pub(super) struct UpdateArgs {
     /// A related bug (repeatable).
     #[arg(long = "related")]
     related: Vec<String>,
+    /// The fix, replacing the bug's Fix paragraph (`Not fixed yet.` until set); each
+    /// set is logged.
+    #[arg(long, allow_hyphen_values = true)]
+    fix: Option<String>,
 }
 
 #[derive(Subcommand)]
@@ -1232,9 +1357,22 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         .filter(|candidate| candidate["score"].as_f64().unwrap_or(0.0) >= DUPLICATE_THRESHOLD)
         .collect();
     if !likely.is_empty() && args.distinct.is_none() {
+        // F6: each similar bug as a line a person reads, most similar first.
+        let similar: Vec<String> = likely
+            .iter()
+            .map(|bug| {
+                let field = |key: &str| bug[key].as_str().unwrap_or_default().to_string();
+                format!(
+                    "  {}: {} ({})",
+                    field("id"),
+                    field("title"),
+                    field("status")
+                )
+            })
+            .collect();
         bail!(
-            "similar bugs exist: {}. Append evidence with `chough bug update <id> --observation <id> --note <text>`, or add with --distinct <why this is a different defect>",
-            serde_json::to_string(&likely)?
+            "similar bugs exist, most similar first, so nothing was written:\n{}\nAppend evidence to one of them with `chough bug update <id> --observation <id> --note <text>`, or add this bug with --distinct <why this is a different defect>.",
+            similar.join("\n")
         );
     }
     for (label, value) in [
@@ -1294,6 +1432,7 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         notes,
     };
     let (stored, redacted) = create(root, draft, false)?;
+    join_active_session(root, stored.id(), &stored.list("evidence"))?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
@@ -1335,6 +1474,10 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     if let Some(note) = &args.note {
         ensure_text("note", note)?;
     }
+    if let Some(fix) = &args.fix {
+        ensure_text("fix", fix)?;
+    }
+    let was_verified = stored.status() == "verified";
     let evidence = Evidence::new(root);
     let links = check_evidence(&evidence, &stored, &args.observations)?;
     for (field, value) in [
@@ -1403,6 +1546,10 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     if !added.is_empty() {
         changes.push(format!("evidence: {}", added.join(", ")));
     }
+    if let Some(fix) = &args.fix {
+        stored.record = with_paragraph(&stored.path, &stored.record, FIX, fix)?;
+        changes.push(format!("fix: {}", one_line(fix)));
+    }
     if stored.status() == "verified" {
         match evidence.order(&stored)? {
             None => bail!(
@@ -1415,7 +1562,19 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
                 "verified needs a linked passed observation after the fix, observed after the latest linked failure {failure} (observed {}): link a later pass with `chough bug update {id} --observation <id>`",
                 iso_time(observed)
             ),
-            Some((_, _, true)) => {}
+            Some((_, _, true)) => {
+                // A bug marked verified with no Fix set names what verified it.
+                if !was_verified
+                    && stored.paragraph(FIX) == NOT_FIXED
+                    && let Some((pass, revision)) = evidence.verifying_pass(&stored)?
+                {
+                    let line = match revision {
+                        Some(revision) => format!("Verified: {pass} passed at {revision}."),
+                        None => format!("Verified: {pass} passed; it records no revision."),
+                    };
+                    stored.record = with_paragraph(&stored.path, &stored.record, FIX, &line)?;
+                }
+            }
         }
     }
     check_regression(&evidence, root, &stored)?;
@@ -1437,6 +1596,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     validate(&stored)?;
     let redacted = guard(&mut stored.record, Local::current())?;
     markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
+    join_active_session(root, &id, &links)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
@@ -1636,8 +1796,34 @@ pub(super) fn open_blocking(root: &Path) -> Result<Vec<String>> {
         .collect())
 }
 
-pub(super) fn open_backlog_section(root: &Path) -> Result<Section> {
+pub(super) fn open_backlog_section(root: &Path, as_json: bool) -> Result<Section> {
     let open = open_backlog(root)?;
+    // REQ-cli-002 (F10d): as JSON for `--json`, otherwise one Markdown item per bug.
+    let content = if as_json {
+        serde_json::to_string_pretty(&open)?
+    } else if open.is_empty() {
+        "none".to_string()
+    } else {
+        let text = |value: &Value| {
+            value
+                .as_str()
+                .map_or_else(|| value.to_string(), str::to_string)
+        };
+        open.iter()
+            .map(|bug| {
+                format!(
+                    "- {}: {} ({}; {}; {}; verification {})",
+                    text(&bug["id"]),
+                    text(&bug["title"]),
+                    text(&bug["status"]),
+                    text(&bug["scope"]),
+                    text(&bug["classification"]),
+                    text(&bug["verification"])
+                )
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    };
     Ok(Section {
         source: format!("{BUGS_DIR} (open backlog)"),
         state: if open.is_empty() {
@@ -1645,7 +1831,7 @@ pub(super) fn open_backlog_section(root: &Path) -> Result<Section> {
         } else {
             "present".into()
         },
-        content: serde_json::to_string_pretty(&open)?,
+        content,
     })
 }
 

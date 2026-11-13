@@ -168,6 +168,7 @@ const CASES: &str = "profile = \"chough-testing/1\"\nmodule = \"cli\"\n\n[[case]
 #[test]
 fn no_write_leaks_and_doctor_finds_old_leaks() {
     let fixture = Fixture::new();
+    fixture.configure_human();
     fixture.write(".chough/cases/cli.cases.toml", CASES);
     fixture.init();
     fixture.commit("fixture");

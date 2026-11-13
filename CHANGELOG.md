@@ -6,7 +6,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
-### 0.6.0: human-first records (breaking)
+## [0.6.0] - 2026-11-12
+
+### Human-first records (breaking)
 
 Chough 0.6.0 changes the record format. Chough 0.5.x cannot read 0.6.0 records, and
 0.5.0 already cannot read main's evidence inventory field, so upgrade Chough for every
@@ -15,8 +17,30 @@ change open, run `chough migrate` to preview the conversion and, with the human'
 consent, `chough migrate --apply <digest> --consent "<who, their words, where>"` to
 apply it once. Run both on the same machine and account: the plan's redactions depend
 on the host and user name, so a plan previewed in CI or by another user has another
-digest and does not apply. The release date and the dogfood results are added when
-0.6.0 ships.
+digest and does not apply.
+
+Dogfood: this repository migrated itself with the 0.6.0 build on 2026-11-12, with no
+native change open and the human's consent (3,238 files carried or removed with why,
+215 written, 10 values redacted). Every digest in the receipt matched the commits
+before and after, and CI's archive authentication passed over the migrated tree. The
+release preparation then ran as one native change on the 0.6.0 build only: its scope
+approval and its review ran through Chough's gates as the human, the move into done
+wrote the story, the journal post and the index while every earlier story stayed
+byte-identical, and `chough doctor` was clean after the two-step closeout. The
+dogfood found three bugs, each fixed before the tag with a red then green case: an
+in-place migration kept the machine-local active-session pointer holding a 0.5.x
+session key, which now resolves through the session's alias (REQ-history-006); a gate
+summary's "What changed" counted a second change on one branch from the merge base
+with main, including the first change's work, and now counts from the change's own
+`base_commit`, using the merge base only when default-branch work came in after that
+base or no base is recorded (REQ-cli-061); and `chough migrate`'s preview, tried on a
+project with open native changes, printed a digest without saying the apply would
+refuse, and now names each open change under `apply_refused`, outside the digest
+(REQ-records-009).
+A 0.5.x build on a migrated tree sees no open session and refuses `bug list` at the
+first Markdown bug; a 0.5.x write, such as `session new`, adds a 0.5.x file, after
+which 0.6.0 refuses the tree as `refused:unmigrated` naming that file. So upgrade every
+agent before a project migrates.
 
 - **Every record is one Markdown file** with YAML front matter, and the file is the
   record: no JSON twin, cache or index is read in its place (REQ-records-001). Chough
@@ -50,8 +74,10 @@ digest and does not apply. The release date and the dogfood results are added wh
   `.chough/local/identity.toml`.
   - A review gate needs `--verdict pass|block`.
   - `--no-native` records a decision that is neither an approval nor a review.
-  - An unknown `--decided-by` is refused as `refused:human-identity-unknown` before
-    anything runs.
+  - Every gate close names a configured human, whatever the gate drives and with or
+    without `--no-native`, so an intent or design approval is in a configured name
+    too: an unknown `--decided-by` is refused as `refused:human-identity-unknown`
+    before anything runs, through `--close-gate`, `gate record` and `change ship`.
   - On authority given in advance, the agent records the step as
     `<agent>-<terminal>` and quotes the human (FLOW-24).
 - **No leaks in committed records** (#234, REQ-records-006). A local path, user or host
@@ -87,7 +113,8 @@ digest and does not apply. The release date and the dogfood results are added wh
   scripts and the CI, CLI and integration docs name 6.3.0, on Leif's decision.
 - **Evidence lives in its session** (REQ-cli-017, REQ-records-005, REQ-records-013). Each
   observation is one entry in `.chough/sessions/<id>/evidence/` with the exact command,
-  a SHA-256 fingerprint and, for a failure, at most 20 key failing lines. A repeated
+  a SHA-256 fingerprint and, for a failure, why when Chough knows it, such as an
+  expected output that was missing, then at most 20 key failing lines. A repeated
   validation run is one entry that holds every attempt. Raw logs stay in
   `.chough/local/logs/` and in CI and are never committed. External artifacts are
   fingerprinted in place, and up to 5 small key screenshots per session are committed
@@ -107,43 +134,144 @@ New: `chough migrate` (preview, `--apply`, `--consent`), `chough correct`,
 the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
 `chough evidence add`, and the human identity file.
 
-### Also unreleased
+### Also in 0.6.0
 
+- A journal post has a short human title and a real summary (REQ-records-011). Before
+  the move into done the agent sets them with `chough checkpoint --title "<title>"
+  --summary "<what changed and why; what was verified; what is next>"`; without them,
+  Chough derives a title from the objective's first clause and a body from the story's
+  Goal, first decision, newest verified entry and first open thread. `chough journal
+  add --record <story> --title T --body B` writes the post of an archived story that has
+  none, dated by the story's close, for a backfill. This repository's 69 archived
+  stories each got one.
+- At plan, while the change waits for its approval, `chough next` names the human scope
+  gate and never passes on SpecSync's own `specsync change approve <id> --actor
+  <name>`, so no agent is routed to approve its own scope (REQ-cli-021). At a scope
+  gate, `chough gate list`'s summary counts and names the change's own deltas first,
+  each with the requirement IDs it adds or modifies, then its plan and other Markdown
+  files, since they are what the human approves; at a gate held at intent with no
+  native change, it names the criteria the session references and the HI files that
+  hold them (REQ-cli-061).
+- Timeline fields with parts, such as a relayed decision's `relayed_by` and a direct
+  write's `direct_write`, are labelled lines instead of JSON; entries written with JSON
+  still read (REQ-history-002). A story's receipts are in observation-time order, its
+  What was verified gives each case's latest run once, with its command once, and one
+  line counting the earlier runs, which stay in its receipts, and its front matter says
+  `stage_status: archived` with no stale `next` (REQ-history-006). The story comes
+  first: its receipts sit last, in a `## Receipts` section, a `## Bugs` section names
+  each bug of the session with its title and status, and a story written with its
+  receipts in the front matter still reads.
+- `chough init` and `chough session new` each write a `start` entry first, from and to
+  the stage the session starts in, with its objective or key, so `chough timing` right
+  after reports when the first stage started, in Cycle 1, which starts at that entry,
+  instead of an unknown start before the first record; a timeline without one still
+  reads (REQ-history-002). The timing text says "elapsed wall-clock" once, in its
+  header, rather than after every number.
+- `chough change check <id> --no-commit` runs SpecSync's check without `--commit`, the
+  check the accept step runs first to materialize requirement text, so following the
+  workflow records no direct lifecycle write; and a gate close with a human's decision
+  records any direct lifecycle write before its own entry, so the story reads in the
+  order the writes happened (REQ-cli-057, REQ-cli-060).
+- `chough doctor` no longer reports a path under `/tmp/` or `/private/tmp/` in a case
+  definition as a leak, since a case may set its own temporary data folder; a home path,
+  user or host name, email or credential there still counts (REQ-records-006).
+- `knowledge/lessons/` holds the first cross-project lessons, each from recorded
+  evidence.
+- From a fresh-eyes test of 0.6.0: `chough cases check` accepts a link to a
+  requirement only the approved delta adds when the module has no `requirements.md`
+  yet, instead of a raw file error (REQ-cli-009); `chough context` reads `AGENTS.md`
+  from the Git root down only, named relative to the project; `chough gate record`
+  reports the native step each close ran, and the approval note names the command the
+  decision came through; a stage move's authority line says when Chough runs a native
+  approval or review; a direct lifecycle write's Timeline entry says which files
+  changed and how the state moved; `chough status` gives its next action whole, and
+  closing the last gate holding a stage replaces a next action left stale by it; a
+  bug's Steps start with `Trigger:`, `chough bug update --fix` sets its Fix, and
+  verifying a bug with no Fix names the passing run (REQ-cli-012); a migration receipt
+  says `none` under an empty section (REQ-records-009); and every `session.md` ends
+  with exactly one newline, so `git diff --check` passes on a migration commit.
+- From a second fresh-eyes round: closing a gate sets the next action to the step its
+  decision allows, `chough stage advance`, `chough change ship <id>`, `chough stage back
+  --to build` or, after `--no-native`, `chough checkpoint --next-action`, so `chough
+  next` never names itself; at accept while the change is approved, `next` names the
+  review preparation in order; and `next` and `status` keep every command whole,
+  cutting only the text around it (REQ-cli-021). `chough gate list` names `chough
+  change ship <id> --list <list> --gate <n>` for a gate whose change is verifying, and
+  `gate record`'s refusal there says why (REQ-cli-061). `chough evidence add` needs only
+  `--criterion`, takes `--requirement` and `--contract` as optional, and accepts a
+  requirement the session's change adds in its delta (REQ-cli-005). `chough doctor`
+  reports `merge_driver_outdated` when the `chough` the merge drivers run through
+  `PATH` is missing or older than the running one (REQ-history-012). `chough migrate`
+  on a migrated tree says there is nothing to migrate and gives no digest, and a
+  receipt has one Follow-up heading (REQ-records-009). A close that runs no native step
+  says why in its `native_step` and names its decision once; `session list` shows an
+  archived story as finished; an executed case run's provenance no longer denies that
+  the test ran; and without a native change `next` says only that none is recorded,
+  with no trace IDs in its reasons. `docs/cli.md` shows a minimal HI file, a baseline
+  `requirements.md` and SpecSync's Requirement evidence table for a new project, and
+  says that `chough stage skip` skips the current stage.
+- From a third fresh-eyes round: the workflow skill and `docs/cli.md` say that a lesson
+  in `context.md` starts with its `YYYY-MM-DD` date, the only form the knowledge index
+  counts, with an example (REQ-cli-015); `chough init --host claude` prints the line
+  to add to `CLAUDE.md` as `claude_md`, writing nothing to it (REQ-cli-016); every
+  `chough stage` move prints a short text summary, at most 10 lines naming what it
+  applied, the move, the stage reached and the next action, with its full JSON report,
+  every field as before, under `--json` (REQ-cli-008); and `chough migrate` previews the
+  plan as text, since a person consents to it, with the same plan and digest as JSON
+  under `--json` (REQ-records-009). At accept, `chough next` and `status` show
+  SpecSync's review command as the human's review at the review gate, never as a step
+  for the agent; at test, once every case's latest run passed, `next` names `chough
+  stage advance` and counts superseded runs apart; and SpecSync's own next step is
+  labelled for reference (REQ-cli-021). `chough session close` withdraws each open human
+  gate with a `gate-closed` entry and names it under `withdrawn_gates`, never dropping
+  it silently (REQ-history-006). A scope gate's summary names every delta first with its
+  requirement IDs, and an intent gate's names the criteria and their HI files
+  (REQ-cli-061). A duplicate `bug add` lists each similar bug as a line, and a near-miss
+  `--close-gate` names the closest open gate. A failed run's body says why it failed
+  before its key lines (REQ-cli-017); `chough context` gives the session, its Timeline
+  and its open bugs as Markdown; a migrated session's verified lines link their entries
+  and a migrated story's are receipt lines; and `chough timing` starts Cycle 1 at the
+  start entry.
+- From a fourth fresh-eyes round: a move to another stage replaces a gate close's next
+  action with `Continue <stage>`, so build never says to run `chough stage advance` with
+  nothing built (REQ-cli-021); `chough gate list` counts what changed in the working
+  tree, so a change's delta, plan and other files count, the delta named first, before
+  they are committed, and an untracked file counts its lines as insertions
+  (REQ-cli-061); and while the project's installed skill copy is not current, as
+  `chough skill status` reports it, the `chough migrate` plan's and receipt's follow-ups
+  name `chough skill update`, since migration leaves a 0.5.x copy that still names
+  removed commands and paths (REQ-records-009). At accept, while the latest run of a
+  case the checkpoint references is not current, as after the first check materializes
+  the requirement text, `chough next` names rerunning it with `chough cases run` before
+  the review gate, and the review gate once it passed (REQ-cli-021); the workflow's
+  accept reference has any lesson written before the case runs, so one rerun covers it.
+- README, `docs/cli.md` and the workflow skill give a new project's path, with
+  `specsync change adopt` and the format of a change's delta.
+- Stopping a command on macOS no longer leaves behind a child the command forked as the
+  stop arrived: Chough signals the command's process group until no live member is
+  left, for at most 500 ms, where one kill could miss a member the group gained while
+  it was signalled (FLOW-14). The test stand-ins are also warmed at setup, since macOS
+  checks each newly written executable on its first run, which takes seconds under
+  load; three flaky tests are fixed by these two changes and #172.
 - `chough cases record` returns `case` and `observation`, and `chough evidence add` returns
   `observation`, beside their existing keys, so automation no longer parses the ID out
   of `recorded` (#60, REQ-cli-011, REQ-cli-017).
-
 - `chough session new` and `session use` keep a finished session that still holds an open
   human gate open, reporting it under `kept_open` with its gate count and recovery,
   instead of archiving the gate silently (#181, REQ-history-006).
-
-- Rebuilding the knowledge index no longer makes the observations it lists stale: the
-  working content identity leaves out the generated knowledge directory (#136, REQ-cli-004).
-
-- Read strict bounded optional v1 diagnostic input inventories while preserving
-  aggregate freshness and original observations; reject noncanonical inventory paths.
-
-- `chough skill update` recognizes the exact pinned 0.1.0 through 0.5.0 released
-  bundle files (#102, REQ-cli-016). Six missing filename/SHA256 pairs restore pristine
-  updates while keeping edited bytes/modes and host/legacy rules unchanged.
-- A new session refuses to write events when its adopted frozen legacy log is missing
-  (#113, REQ-history-002/006), including when an earlier independent session has no
-  anchor. Existing open/archive/shelved/vault holders remain supported; a project
-  that never adopted a legacy log still writes with an independent cursor.
-
-- `chough evidence prune --apply` now rechecks protections immediately before each
-  byte-checked removal and restores earlier removals when a later check or removal
-  fails (#65, REQ-history-004). Rollback preserves recreated files and original
-  permissions, keeps uncommitted bytes in named recovery holds, and appends the
-  existing `restored` ledger event without changing successful output or retention
-  eligibility.
-
-- `chough timing` no longer marks its report partial for `direct-native-write` events
-  (#189, REQ-history-013, REQ-reporting-001). Since #183 it counted that valid kind as
-  unrecognised. It is now skipped as part of no stage segment, as gate records are.
-  Kinds that really are unknown still mark the report partial. Builds before 0.5.0
-  still refuse a history holding the event;
-  the oldest Chough that reads such a history is still 0.5.0.
+- Rebuilding the knowledge index no longer makes current evidence stale: the content a
+  run is checked against leaves out the generated knowledge directory (#136, REQ-cli-004).
+- An evidence entry may list the inputs its run read (its input inventory). Chough reads
+  that list strictly and within its bounds and refuses a path in it that is not a plain
+  project path; freshness is still decided from the whole working content, never from
+  the list.
+- `chough skill update` recognizes the unedited skill files of every release from 0.1.0
+  to 0.5.0, so it updates them, while a file a person edited is kept as it is (#102,
+  REQ-cli-016).
+- `chough timing` skips a direct lifecycle write in the Timeline (a SpecSync file
+  changed outside SpecSync's commands) as part of no stage, as it skips gate records,
+  instead of marking the report partial (#189, REQ-history-013, REQ-reporting-001). An
+  entry of a kind it really does not know still marks the report partial.
 - `chough change new` takes `--no-spec-change` and `--rationale` and passes them to
   `specsync change new` (#189, REQ-cli-057). `--no-spec-change` without `--rationale`
   is refused before SpecSync runs.
@@ -152,29 +280,24 @@ the global `--redact`, `--failing-lines`, `--screenshot` and `--raw-log` on
   !important; }`, so a rule such as `.surface section { display: grid }` no longer shows
   every state at once. An unedited `styles.css` from 0.1.0 to 0.4.0 updates as
   known-outdated.
-- Right after `chough stage advance` into done, `chough library index --check` passes with
-  no command in between (#191, KNOW-4, REQ-cli-043, REQ-cli-051). A session rolled into
-  the vault now links its change's archive note even when the same move builds that note,
-  so a first build and a rebuild give the same bytes. When the change's archive lists the
-  session file that archives itself at done, the move regenerates the directory once more
-  after that self-archive, so the entry places the file in Git. Before, `done` reported
-  `librarian_index: refreshed` and the check then failed until `chough library index` ran.
+- Right after `chough stage advance` into done, `chough library index --check` passes
+  with no command in between (#191, KNOW-4, REQ-cli-043): the move writes the story, the
+  journal post, the index and the feed in one step.
 - `chough gate list` and `chough gate record` show the human what each gate decides
   and take one reply for listed gates only (#184, FLOW-19, FLOW-20, REQ-cli-061,
   REQ-history-014). `gate list` numbers every open human gate, each with a one-screen
   summary and the SHA-256 digest of that summary. The summary covers what changed since
-  the change's base commit, the tests, the plan's risks and a diff link. The tests are
-  the latest observation of each case that links a requirement the change's deltas add
-  or modify. It reads files and Git only, and saves the list untracked in
+  the change's own base commit, the tests, the plan's risks and a diff link; the tests
+  are the latest observation of each case that links a requirement the change's deltas
+  add or modify. It reads files and Git only, and saves the list untracked in
   `.chough/local/gate-lists/`. `gate record <list> --gates 1,3` with the four relay
   values closes exactly those gates, each relay keeping the same words, its own
-  `summary_digest` and the `list`. It closes all of them or none. It refuses an unknown
+  `summary_digest` and the `list`; it closes all of them or none. It refuses an unknown
   list, an unlisted number, a gate no longer open, a summary changed since listing, a
-  gate of another open session, or a change that is verifying; each refusal names its
-  recovery. `chough change ship` takes `--list` and `--gate` in place of `--close-gate`.
-  Older builds refuse a relay holding `summary_digest` (unknown field), so
-  the oldest Chough that reads such a history is 0.6.0, the first release with this
-  change. 0.5.0 does not read it.
+  gate of another open session, or a change that is verifying, and each refusal names
+  its recovery. `chough change ship` takes `--list` and `--gate` in place of
+  `--close-gate`.
+
 ## [0.5.0] - 2026-11-06
 
 - Direct SpecSync lifecycle writes are noted in history (#183, DRIVE-21, REQ-cli-060,
@@ -904,6 +1027,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.6.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.0
 [0.5.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.5.0
 [0.4.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.4.0
 [0.3.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.3.0

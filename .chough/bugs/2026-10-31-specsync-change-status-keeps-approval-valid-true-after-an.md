@@ -3,7 +3,7 @@ kind: bug
 id: 2026-10-31-specsync-change-status-keeps-approval-valid-true-after-an
 aliases: [BUG-0002]
 title: SpecSync change status keeps approval_valid true after an approved delta is edited
-status: open
+status: fixed-upstream
 classification: environment
 scope: out-of-scope
 impact: An agent trusting status could believe an edited contract is still approved; Chough relies on change check and records the lesson
@@ -17,7 +17,7 @@ revision: 12c8d4009995e13a42a354e4bc59f641ad9d0dfb
 found_by: SpecSync rehearsal in a disposable clone, 2026-10-31
 related: [BUG-0006]
 created: 2026-10-31T18:59:24Z
-updated: 2026-11-01T16:55:54Z
+updated: 2026-11-12T14:36:24Z
 ---
 # SpecSync change status keeps approval_valid true after an approved delta is edited
 
@@ -41,3 +41,4 @@ Actual: approval_valid stays true; only change check reports the changed delta
 - 2026-10-31T20:45:16Z · 2026-10-31 independent reproduction (specsync 6.1.1, disposable examples/shipping): after a synthetic approval, editing the delta (uncommitted or committed) or plan.md left status approved with approval_valid true while change check refused the delta. Cause in spec-sync f240d37: status computes approval_valid from ensure_definition_approval_valid (scope digest), and approved_delta_digests are compared only by ensure_approved_delta_bodies_unchanged during check. Status does recompute the scope digest on each call: changing affected_paths made approval_valid false. Distinct from BUG-0006, where Chough ignored an explicit false.
 - 2026-10-31T21:32:30Z · Fix proposed upstream in spec-sync PR #823 (draft, awaiting scope approval): status reports approval_valid false and names changed_approved_deltas when an approved delta body changes.
 - 2026-11-01T16:55:54Z · 2026-11-01: Chough now guards this upstream defect: moves to build, test and accept compare SpecSync 6.1.1's approved-delta digests with the current deltas and refuse as refused:native-delta-changed or refused:native-delta-unverifiable (REQ-cli-022). Rehearsed with real SpecSync 6.1.1 in a disposable examples/shipping copy: status kept approval_valid true after the delta edit and chough stage advance refused. Stays open until CI pins a SpecSync release that reports an edited approved delta (spec-sync #823).
+- 2026-11-12T14:36:24Z · status: open -> fixed-upstream. Fixed upstream in SpecSync (CorvidLabs/spec-sync#823): re-checked by t37b on spec-sync main 46f55652 (SpecSync 6.2.0), and on the released SpecSync 6.3.0, which this repository now pins, by t37j and t38b in the 0.6.0 test stage: after an approved delta is edited, change status reports approval_valid false, so Chough refuses as refused:native-approval-invalid. · by claude-code (hc t382)

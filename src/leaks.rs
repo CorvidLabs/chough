@@ -227,6 +227,27 @@ pub(crate) fn find(local: &Local, value: &str) -> Vec<Match> {
     kept
 }
 
+/// The temporary roots a case definition may name on purpose (REQ-records-006).
+const CASE_TEMP_ROOTS: [&str; 2] = ["/private/tmp/", "/tmp/"];
+
+/// As [`find`], for a line of a case definition (`.chough/cases/*.cases.toml`): a path
+/// under `/tmp/` or `/private/tmp/` is a deliberate test setting, such as a case's own
+/// `XDG_DATA_HOME`, so it is not a leak, while a home path, the local user or host name,
+/// an email or a credential in it still is (REQ-records-006). Each such root is read as
+/// slashes, so the rest of its path is still checked as a path.
+pub(crate) fn find_in_case_definition(local: &Local, value: &str) -> Vec<Match> {
+    let bytes = value.as_bytes();
+    let mut neutral = value.to_string();
+    for root in CASE_TEMP_ROOTS {
+        for (start, _) in value.match_indices(root) {
+            if starts_word(bytes, start) {
+                neutral.replace_range(start..start + root.len(), &"/".repeat(root.len()));
+            }
+        }
+    }
+    find(local, &neutral)
+}
+
 fn name_byte(byte: u8) -> bool {
     byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-')
 }
@@ -616,6 +637,25 @@ mod tests {
             .iter()
             .map(|found| found.kind.name())
             .collect()
+    }
+
+    /// REQ-records-006: in a case definition a temporary path is not a leak, but a user
+    /// name inside it, a home path and a credential still are.
+    #[test]
+    fn a_case_definition_may_name_a_temporary_folder() {
+        let local = Local::new(Some("alice"), Some("alice-mbp"));
+        let kinds = |line: &str| -> Vec<&str> {
+            find_in_case_definition(&local, line)
+                .iter()
+                .map(|found| found.kind.name())
+                .collect()
+        };
+        assert!(kinds(r#"env = { XDG_DATA_HOME = "/tmp/case-data" }"#).is_empty());
+        assert!(kinds(r#"argv = ["env", "X=/private/tmp/case", "true"]"#).is_empty());
+        assert_eq!(kinds("X=/tmp/alice/data"), ["user-name"]);
+        assert_eq!(kinds("X=/Users/bob/data"), ["home-path"]);
+        assert_eq!(kinds("X=/var/folders/ab/T/x"), ["system-path"]);
+        assert_eq!(find(&local, "X=/tmp/case-data").len(), 1);
     }
 
     #[test]

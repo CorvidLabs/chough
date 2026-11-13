@@ -20,3 +20,23 @@ expected = ["tests/gates.rs::gate_summary_counts_only_the_changes_own_files pass
 adapter = "cargo-test"
 test_target = "gates"
 test = "gate_summary_counts_only_the_changes_own_files"
+
+# D2 (dogfood, 0.6.0): a second change on one branch counted the first change's work.
+
+[[case]]
+id = "TC-cli-gate-summary-counts-from-the-changes-own-base"
+title = "A gate summary counts from the change's own recorded base commit, so a second change on one branch leaves out the first change's work"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-16", "FLOW-23"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_second_change_on_one_branch_counts_from_its_own_base_commit passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_second_change_on_one_branch_counts_from_its_own_base_commit"

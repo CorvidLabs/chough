@@ -505,14 +505,27 @@ enum Consulted {
     Approved(String),
 }
 
-struct DeltaLinks<'a> {
+/// What the checkpoint's native change says of one requirement for one module's delta.
+pub(super) enum InDelta {
+    /// No native change is recorded, or SpecSync gates nothing here: nothing was read.
+    NoChange,
+    /// The change's approved delta for the module adds or modifies it.
+    Held(String),
+    /// The change was consulted and did not resolve it, with why.
+    Not(String, String),
+}
+
+/// The checkpoint's native change, read at most once per command, resolving requirement
+/// links its approved deltas add or modify: for cases (REQ-cli-009) and for `evidence
+/// add` (REQ-cli-005).
+pub(super) struct DeltaLinks<'a> {
     root: &'a Path,
     consulted: OnceCell<Consulted>,
     links: RefCell<Vec<Value>>,
 }
 
 impl<'a> DeltaLinks<'a> {
-    fn new(root: &'a Path) -> Self {
+    pub(super) fn new(root: &'a Path) -> Self {
         Self {
             root,
             consulted: OnceCell::new(),
@@ -560,32 +573,42 @@ impl<'a> DeltaLinks<'a> {
         miss: evidence::RequirementMiss,
     ) -> Result<()> {
         let module = &located.module;
-        let (change, reason) = match self.consult()? {
-            Consulted::Nothing => return Err(miss.for_cases()),
-            Consulted::Refused(change, reason) => (change, reason.clone()),
-            Consulted::Approved(change) => {
-                match stage::delta_requirements(self.root, change, module) {
-                    Ok(ids) if ids.contains(requirement) => {
-                        self.links.borrow_mut().push(json!({
-                            "case": located.case.id,
-                            "requirement": requirement,
-                            "change": change,
-                            "module": module,
-                        }));
-                        return Ok(());
-                    }
-                    Ok(_) => (
-                        change,
-                        format!("its {module} delta does not add or modify {requirement}"),
-                    ),
-                    Err(reason) => (change, reason),
-                }
+        let (change, reason) = match self.in_delta(module, requirement)? {
+            InDelta::NoChange => return Err(miss.for_cases()),
+            InDelta::Held(change) => {
+                self.links.borrow_mut().push(json!({
+                    "case": located.case.id,
+                    "requirement": requirement,
+                    "change": change,
+                    "module": module,
+                }));
+                return Ok(());
             }
+            InDelta::Not(change, reason) => (change, reason),
         };
         Err(anyhow::anyhow!(
             "{}; the checkpoint's native change {change} was consulted and did not resolve it: {reason}",
             miss.for_cases()
         ))
+    }
+
+    /// Whether the checkpoint's native change adds or modifies `requirement` in its
+    /// approved delta for `module`, after the same native checks as the move to build.
+    pub(super) fn in_delta(&self, module: &str, requirement: &str) -> Result<InDelta> {
+        Ok(match self.consult()? {
+            Consulted::Nothing => InDelta::NoChange,
+            Consulted::Refused(change, reason) => InDelta::Not(change.clone(), reason.clone()),
+            Consulted::Approved(change) => {
+                match stage::delta_requirements(self.root, change, module) {
+                    Ok(ids) if ids.contains(requirement) => InDelta::Held(change.clone()),
+                    Ok(_) => InDelta::Not(
+                        change.clone(),
+                        format!("its {module} delta does not add or modify {requirement}"),
+                    ),
+                    Err(reason) => InDelta::Not(change.clone(), reason),
+                }
+            }
+        })
     }
 }
 
@@ -1188,7 +1211,8 @@ pub(super) fn run_case(
     }
     if !missing.is_empty() {
         limitations.push(format!(
-            "expected output missing: {}",
+            "{}{}",
+            evidence::MISSING_OUTPUT,
             missing
                 .iter()
                 .map(|fragment| format!("{fragment:?}"))
@@ -1456,7 +1480,8 @@ pub(super) fn run(root: &Path, command: CasesCommand) -> Result<Option<i32>> {
                 "observation": result.observation,
                 "outcome": result.outcome,
                 "summary": result.summary,
-                "provenance": PROVENANCE,
+                // The binding ran: an executed case run (F12g).
+                "provenance": evidence::EXECUTED_PROVENANCE,
             }))?;
             Ok((result.outcome != Outcome::Passed).then_some(NOT_PASSED_EXIT))
         }

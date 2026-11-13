@@ -93,13 +93,19 @@ pub(super) fn run(root: &Path, command: GateCommand) -> Result<()> {
 }
 
 fn git(root: &Path, args: &[&str]) -> Option<String> {
+    git_untrimmed(root, args).map(|text| text.trim().to_string())
+}
+
+/// [`git`]'s output as Git printed it, for a NUL-separated list whose first path may
+/// start with a space.
+fn git_untrimmed(root: &Path, args: &[&str]) -> Option<String> {
     let mut command = Command::new("git");
     command.args(args).current_dir(root);
     let output = records::run_owned(&mut command, None).ok()?;
     output
         .status
         .success()
-        .then(|| String::from_utf8_lossy(&output.stdout).trim().to_string())
+        .then(|| String::from_utf8_lossy(&output.stdout).into_owned())
 }
 
 fn sha256(text: &str) -> String {
@@ -334,6 +340,170 @@ fn left_out_of_summary(root: &Path) -> Vec<String> {
     ]
 }
 
+/// Each untracked file Git does not ignore, in the whole work tree, with its lines as
+/// insertions and no deletions, its path from the work tree's top as `git diff` gives
+/// it (F2).
+fn untracked(root: &Path) -> Vec<(u64, u64, String)> {
+    let Some(top) = git(root, &["rev-parse", "--show-toplevel"]) else {
+        return vec![];
+    };
+    let top = Path::new(&top);
+    let listed = git_untrimmed(
+        top,
+        &[
+            "ls-files",
+            "--others",
+            "--exclude-standard",
+            "--full-name",
+            "-z",
+        ],
+    )
+    .unwrap_or_default();
+    let mut found: Vec<(u64, u64, String)> = listed
+        .split('\0')
+        .filter(|path| !path.is_empty())
+        .map(|path| (added_lines(&top.join(path)), 0, path.to_string()))
+        .collect();
+    found.sort_by(|left, right| left.2.cmp(&right.2));
+    found
+}
+
+/// The lines an added file inserts, as Git counts them: every newline, plus a last line
+/// without one; none for a binary file (a NUL byte in its first 8,000 bytes, Git's test),
+/// a file that cannot be read or anything that is not a regular file.
+fn added_lines(path: &Path) -> u64 {
+    use std::io::Read;
+    if !fs::symlink_metadata(path).is_ok_and(|meta| meta.is_file()) {
+        return 0;
+    }
+    let Ok(mut file) = fs::File::open(path) else {
+        return 0;
+    };
+    let mut buffer = vec![0; 65_536];
+    let (mut lines, mut read, mut last) = (0u64, 0usize, None);
+    loop {
+        let count = match file.read(&mut buffer) {
+            Ok(0) => break,
+            Ok(count) => count,
+            Err(_) => return 0,
+        };
+        let chunk = &buffer[..count];
+        if read < 8_000 && chunk[..count.min(8_000 - read)].contains(&0) {
+            return 0;
+        }
+        read += count;
+        lines += chunk.iter().filter(|byte| **byte == b'\n').count() as u64;
+        last = chunk.last().copied();
+    }
+    lines + u64::from(last.is_some_and(|byte| byte != b'\n'))
+}
+
+/// The requirement IDs the delta at `path` adds or modifies, as " (adds or modifies
+/// <IDs>)", or nothing when it adds or modifies none or cannot be read (F5).
+fn delta_adds(root: &Path, path: &str) -> String {
+    let ids = local_path(root, path)
+        .ok()
+        .and_then(|file| records::read_native_record(&file, records::NATIVE_RECORD_LIMIT).ok())
+        .flatten()
+        .and_then(|bytes| String::from_utf8(bytes).ok())
+        .map(|text| crate::stage::added_or_modified(&text))
+        .unwrap_or_default();
+    if ids.is_empty() {
+        String::new()
+    } else {
+        format!(
+            " (adds or modifies {})",
+            ids.into_iter().collect::<Vec<_>>().join(", ")
+        )
+    }
+}
+
+/// The intent a gate held at intent approves when the session records no native change
+/// (F4, REQ-cli-061): the criterion IDs the session references, and each `hi/` file that
+/// holds one as a whole token, read as files (the instruction files left out), with no
+/// native tool run.
+fn intent_lines(root: &Path, session: &Value) -> Vec<String> {
+    const SHOWN: usize = 12;
+    let criteria: Vec<String> = session["references"]["criteria"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|id| id.as_str().map(String::from))
+        .collect();
+    if criteria.is_empty() {
+        return vec![
+            "Intent: no criteria referenced yet; reference them with `chough checkpoint --criterion <id>`".into(),
+        ];
+    }
+    let more = criteria.len().saturating_sub(SHOWN);
+    let mut lines = vec![format!(
+        "Intent: {}{} (the criteria the session references)",
+        criteria
+            .iter()
+            .take(SHOWN)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join(", "),
+        if more > 0 {
+            format!(" and {more} more")
+        } else {
+            String::new()
+        }
+    )];
+    let mut names: Vec<String> = local_path(root, "hi")
+        .ok()
+        .and_then(|dir| fs::read_dir(dir).ok())
+        .into_iter()
+        .flatten()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .filter(|name| name.ends_with(".md") && name != "AGENTS.md" && name != "CLAUDE.md")
+        .collect();
+    names.sort();
+    let mut holding: Vec<(String, Vec<&String>)> = vec![];
+    for name in names {
+        let relative = format!("hi/{name}");
+        let Some(text) = local_path(root, &relative)
+            .ok()
+            .and_then(|file| records::read_native_record(&file, records::NATIVE_RECORD_LIMIT).ok())
+            .flatten()
+            .and_then(|bytes| String::from_utf8(bytes).ok())
+        else {
+            continue;
+        };
+        let held: Vec<&String> = criteria
+            .iter()
+            .filter(|id| crate::evidence::holds_token(&text, id))
+            .collect();
+        if !held.is_empty() {
+            holding.push((relative, held));
+        }
+    }
+    let ids = |ids: &[&String]| {
+        ids.iter()
+            .map(|id| id.as_str())
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+    for (file, held) in holding.iter().take(TOP_FILES) {
+        lines.push(format!("  {file}: {}", ids(held)));
+    }
+    if holding.len() > TOP_FILES {
+        lines.push(format!(
+            "  and {} more hi/ files",
+            holding.len() - TOP_FILES
+        ));
+    }
+    let missing: Vec<&String> = criteria
+        .iter()
+        .filter(|id| !holding.iter().any(|(_, held)| held.contains(id)))
+        .collect();
+    if !missing.is_empty() {
+        lines.push(format!("  in no hi/ file: {}", ids(&missing)));
+    }
+    lines
+}
+
 /// The one-screen summary of `gate` in `session`: what changed, the tests, the risks
 /// and a diff link, within 24 lines and 4,096 bytes.
 pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
@@ -341,39 +511,79 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
     let head = git(root, &["rev-parse", "HEAD"]).unwrap_or_else(|| "unknown".into());
     let mut lines = vec![format!("Gate: {gate}")];
     let state = change.and_then(|change| change_state(root, change));
-    match change {
-        Some(change) => {
-            let title = state
-                .as_ref()
-                .and_then(|state| state["title"].as_str())
-                .unwrap_or("untitled");
-            let current = state
-                .as_ref()
-                .and_then(|state| state["state"].as_str())
-                .unwrap_or("unknown");
-            lines.push(format!("Change: {change} — {title} ({current})"));
+    let meta = &session["gate_meta"][gate];
+    // F4 (REQ-cli-061): a gate held at intent with no native change approves the intent,
+    // which the summary gives in place of what changed.
+    let at_intent = change.is_none() && meta["holds"] == "intent";
+    if at_intent {
+        lines.extend(intent_lines(root, session));
+    } else {
+        match change {
+            Some(change) => {
+                let title = state
+                    .as_ref()
+                    .and_then(|state| state["title"].as_str())
+                    .unwrap_or("untitled");
+                let current = state
+                    .as_ref()
+                    .and_then(|state| state["state"].as_str())
+                    .unwrap_or("unknown");
+                lines.push(format!("Change: {change} — {title} ({current})"));
+            }
+            None => lines.push("Change: none recorded".into()),
         }
-        None => lines.push("Change: none recorded".into()),
     }
-    // #190 (REQ-cli-061): count from the merge base with the default branch, so work
-    // merged from main is not this change's, and from the change's base commit only
-    // when there is no merge base.
-    // Work on the default branch itself has HEAD as its merge base, so the change's
-    // base commit decides there.
+    // REQ-cli-061: count from the change's own base commit, so an earlier change on
+    // the same branch is not counted again (D2). Count from the merge base with the
+    // default branch instead when default-branch work came in after that base, so the
+    // merge base is not one of its ancestors (#190), or when the change records no base.
+    // Work on the default branch itself has HEAD as its merge base, which is ignored.
     let base_commit = state
         .as_ref()
         .and_then(|state| state["base_commit"].as_str())
         .map(String::from);
-    let base = ["origin/HEAD", "main"]
+    let merge_base = ["origin/HEAD", "main"]
         .iter()
         .find_map(|branch| git(root, &["merge-base", "HEAD", branch]))
-        .filter(|merge_base| *merge_base != head)
-        .or(base_commit);
+        .filter(|merge_base| *merge_base != head);
+    let base = match (base_commit, merge_base) {
+        (Some(own), Some(merge_base))
+            if git(root, &["merge-base", "--is-ancestor", &merge_base, &own]).is_none() =>
+        {
+            Some(merge_base)
+        }
+        (Some(own), _) => Some(own),
+        (None, merge_base) => merge_base,
+    };
     let left_out = left_out_of_summary(root);
+    // REQ-cli-061 (t38j): at a gate that drives approval, the change's own definition is
+    // what the human approves, so its Markdown files count and come first, its deltas
+    // before its other files, each with the requirements it adds or modifies (F5).
+    let drives = crate::humans::Drives::parse(meta["drives"].as_str().unwrap_or_default())
+        .unwrap_or_else(|| {
+            crate::humans::Drives::default_for(meta["holds"].as_str().unwrap_or_default())
+        });
+    let definition = change
+        .filter(|_| drives == crate::humans::Drives::Approve)
+        .map(|change| format!(".specsync/changes/{change}/"));
+    let is_definition = |path: &str| {
+        definition
+            .as_ref()
+            .is_some_and(|own| path.starts_with(own.as_str()) && path.ends_with(".md"))
+    };
+    let is_delta = |path: &str| {
+        is_definition(path)
+            && definition
+                .as_ref()
+                .is_some_and(|own| path[own.len()..].starts_with("deltas/"))
+    };
     match &base {
+        _ if at_intent => {}
         Some(base) => {
-            let numstat =
-                git(root, &["diff", "--numstat", &format!("{base}..HEAD")]).unwrap_or_default();
+            // F2 (REQ-cli-061): counted in the working tree, so a change's own files count
+            // before they are committed: tracked files against the base, and each untracked
+            // file, not ignored, as all insertions.
+            let numstat = git(root, &["diff", "--numstat", base]).unwrap_or_default();
             let mut files: Vec<(u64, u64, String)> = numstat
                 .lines()
                 .filter_map(|line| {
@@ -382,10 +592,12 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                     let deleted = parts.next()?.parse().unwrap_or(0);
                     Some((added, deleted, parts.next()?.to_string()))
                 })
+                .chain(untracked(root))
                 .filter(|(_, _, path)| {
-                    !left_out
-                        .iter()
-                        .any(|prefix| path.starts_with(prefix.as_str()))
+                    is_definition(path)
+                        || !left_out
+                            .iter()
+                            .any(|prefix| path.starts_with(prefix.as_str()))
                 })
                 .collect();
             let insertions: u64 = files.iter().map(|file| file.0).sum();
@@ -396,12 +608,21 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                 &base[..base.len().min(8)]
             ));
             files.sort_by(|left, right| {
-                (right.0 + right.1)
-                    .cmp(&(left.0 + left.1))
+                is_delta(&right.2)
+                    .cmp(&is_delta(&left.2))
+                    .then(is_definition(&right.2).cmp(&is_definition(&left.2)))
+                    .then((right.0 + right.1).cmp(&(left.0 + left.1)))
                     .then(left.2.cmp(&right.2))
             });
-            for (added, deleted, path) in files.iter().take(TOP_FILES) {
-                lines.push(format!("  {path} +{added} −{deleted}"));
+            // Every delta is named, however many; other files fill the rest of the cap.
+            let deltas = files.iter().filter(|file| is_delta(&file.2)).count();
+            for (added, deleted, path) in files.iter().take(TOP_FILES.max(deltas)) {
+                let adds = if is_delta(path) {
+                    delta_adds(root, path)
+                } else {
+                    String::new()
+                };
+                lines.push(format!("  {path} +{added} −{deleted}{adds}"));
             }
         }
         None => lines.push("What changed: unknown (no base commit recorded)".into()),
@@ -512,10 +733,51 @@ fn list(root: &Path, as_json: bool) -> Result<()> {
             gate.number, gate.session, gate.holds, gate.drives, gate.summary, gate.digest
         );
     }
-    println!(
-        "List {id}. Record one reply for listed gates with `chough gate record {id} --gates <n>[,<n>…] --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`."
-    );
+    // F6 (REQ-cli-061): the list ends with how to reply, `gate record` for the gates
+    // whose change is not verifying and the ship for each verifying one, which
+    // `gate record` refuses.
+    let (ships, records): (Vec<&Listed>, Vec<&Listed>) = saved
+        .gates
+        .iter()
+        .partition(|gate| verifying(root, gate).is_some());
+    let mut footer = format!("List {id}.");
+    if !records.is_empty() {
+        let numbers: Vec<String> = records.iter().map(|gate| gate.number.to_string()).collect();
+        footer.push_str(&format!(
+            " Record one reply for {} {} with `chough gate record {id} --gates <n>[,<n>…] {RELAY}`.",
+            if numbers.len() == 1 { "gate" } else { "gates" },
+            spoken_list(&numbers)
+        ));
+    }
+    for gate in ships {
+        let change = verifying(root, gate).unwrap_or_default();
+        footer.push_str(&format!(
+            "\nGate {}'s change {change} is verifying, so it closes through the ship, which runs the review as the human and closes the gate after the native ship: `chough change ship {change} --list {id} --gate {} {RELAY}`.",
+            gate.number, gate.number
+        ));
+    }
+    println!("{footer}");
     Ok(())
+}
+
+/// The relay placeholders a reply names.
+const RELAY: &str = "--decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
+
+/// The change of listed `gate` when its `state.json` says it is verifying.
+fn verifying<'a>(root: &Path, gate: &'a Listed) -> Option<&'a str> {
+    let change = gate.change.as_deref()?;
+    change_state(root, change)
+        .is_some_and(|state| state["state"] == "verifying")
+        .then_some(change)
+}
+
+/// `items` read aloud: "1", "1 and 2", "1, 2 and 3".
+fn spoken_list(items: &[String]) -> String {
+    match items {
+        [] => String::new(),
+        [only] => only.clone(),
+        [head @ .., last] => format!("{} and {last}", head.join(", ")),
+    }
 }
 
 /// The active session's key, when one is clear.
@@ -590,15 +852,11 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
     let mut checked: Vec<Listed> = vec![];
     for number in &numbers {
         let listed = check_listed(root, &args.list, *number)?;
-        let verifying = listed
-            .change
-            .as_deref()
-            .and_then(|change| change_state(root, change))
-            .is_some_and(|state| state["state"] == "verifying");
-        if verifying {
-            let change = listed.change.as_deref().unwrap_or_default();
+        // F6: the reason is how such a gate closes, never that Chough's records may not
+        // be written, which verification_ignored_paths allows.
+        if let Some(change) = verifying(root, &listed) {
             bail!(
-                "refused:verifying: gate {number} (\"{}\") belongs to {change}, which is verifying, and nothing may write .chough/ before it ships, so nothing was written.\nRun `chough change ship {change} --list {} --gate {number} --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+                "refused:verifying: gate {number} (\"{}\") belongs to {change}, which is verifying, so it closes through the ship, which runs the review as the human and closes the gate after the native ship; nothing was written.\nRun `chough change ship {change} --list {} --gate {number} {RELAY}`.",
                 listed.gate,
                 args.list
             );
@@ -621,6 +879,9 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
             )
         })?;
     }
+    // REQ-records-008: every reply names one configured human, whatever its gates
+    // drive, before anything runs or is written.
+    crate::humans::resolve(root, args.decided_by.as_deref().unwrap_or_default())?;
     // REQ-cli-061: at most one named gate may drive a native step, and it runs first,
     // as the decided human, before any gate is closed.
     let drives = |listed: &Listed| {
@@ -705,9 +966,18 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
                 remaining.join(",")
             );
         }
-        closed.push(
-            json!({"number": listed.number, "gate": listed.gate, "summary_digest": listed.digest}),
-        );
+        // The close's own report names the native step it ran, or why none did
+        // (REQ-records-008); the reply passes it on for each gate.
+        let native_step = serde_json::from_slice::<Value>(&output.stdout)
+            .ok()
+            .and_then(|report| report.pointer("/relayed_decision/native_step").cloned())
+            .unwrap_or(Value::Null);
+        closed.push(json!({
+            "number": listed.number,
+            "gate": listed.gate,
+            "summary_digest": listed.digest,
+            "native_step": native_step,
+        }));
     }
     print_json(&json!({"schema_version": 1, "list": args.list, "closed": closed}))
 }

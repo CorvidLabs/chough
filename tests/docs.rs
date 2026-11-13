@@ -1595,3 +1595,314 @@ fn the_knowledge_table_names_the_repository_root_library() {
         rows[0]
     );
 }
+
+/// TC-cli-docs-show-a-new-project-and-a-delta (t38j's fresh-eyes report): README,
+/// docs/cli.md and the workflow skill give a new project's path, with `specsync change
+/// adopt` to turn SpecSync's change gates on, and show what a delta looks like.
+#[test]
+fn a_new_project_path_and_the_delta_format_are_documented() {
+    let readme = read("README.md");
+    for part in [
+        "specsync change adopt",
+        "docs/cli.md#a-new-project-and-its-first-change",
+    ] {
+        assert!(readme.contains(part), "README.md does not name {part:?}");
+    }
+    let cli = read("docs/cli.md");
+    let start = cli
+        .find("### A new project and its first change")
+        .expect("docs/cli.md has no new-project section");
+    // The section runs to the next `## ` heading outside a fenced block, since its own
+    // delta example holds `## ADDED` and `## MODIFIED` lines.
+    let mut in_fence = false;
+    let mut section = String::new();
+    for line in cli[start..].lines() {
+        if line.starts_with("```") {
+            in_fence = !in_fence;
+        } else if !in_fence && line.starts_with("## ") {
+            break;
+        }
+        section.push_str(line);
+        section.push('\n');
+    }
+    for part in [
+        "specsync change adopt",
+        "deltas/<module>.md",
+        "## ADDED",
+        "## MODIFIED",
+        "### REQUIREMENT",
+        "Acceptance Criteria",
+    ] {
+        assert!(
+            section.contains(part),
+            "the new-project section does not show {part:?}"
+        );
+    }
+    let plan = read("skills/chough-workflow/references/plan.md");
+    for part in ["specsync change adopt", "## ADDED", "### REQUIREMENT"] {
+        assert!(
+            plan.contains(part),
+            "the skill's plan reference does not name {part:?}"
+        );
+    }
+}
+
+/// docs/cli.md's "A new project and its first change", to the next `## ` heading outside a
+/// fenced block, since its own examples hold `## ` lines.
+fn new_project_section() -> String {
+    let cli = read("docs/cli.md");
+    let start = cli
+        .find("### A new project and its first change")
+        .expect("docs/cli.md has no new-project section");
+    let mut in_fence = false;
+    let mut section = String::new();
+    for line in cli[start..].lines() {
+        if line.trim_start().starts_with("```") {
+            in_fence = !in_fence;
+        } else if !in_fence && line.starts_with("## ") {
+            break;
+        }
+        section.push_str(line);
+        section.push('\n');
+    }
+    section
+}
+
+/// REQ-cli-019, F2 of the second fresh-eyes round: SpecSync's required `## Requirement
+/// evidence` table in a change's testing.md is documented where the new-project path and
+/// the skill's testing reference describe testing.md, in SpecSync 6.3.0's format: a row
+/// naming each requirement the deltas add or modify.
+#[test]
+fn the_requirement_evidence_table_in_a_changes_testing_md_is_documented() {
+    let section = new_project_section();
+    let skill = read("skills/chough-workflow/references/testing.md");
+    for (page, text) in [
+        ("the new-project section of docs/cli.md", section.as_str()),
+        (
+            "skills/chough-workflow/references/testing.md",
+            skill.as_str(),
+        ),
+    ] {
+        for part in [
+            ".specsync/changes/<id>/testing.md",
+            "## Requirement evidence",
+            "| Requirement |",
+            "specsync change check",
+        ] {
+            assert!(text.contains(part), "{page} does not show {part:?}");
+        }
+    }
+}
+
+/// REQ-cli-019, F7 of the second fresh-eyes round: the minimal HI file and the baseline
+/// `specs/<module>/requirements.md` are in docs/cli.md's new-project section, not only in
+/// the walkthrough, and README's new-project path points at them.
+#[test]
+fn the_new_project_section_shows_a_minimal_hi_file_and_requirements_md() {
+    let section = new_project_section();
+    for part in [
+        "hi: 1",
+        "families: [",
+        "## Intent",
+        "## Criteria",
+        "specs/<module>/requirements.md",
+        "### REQ-",
+        " SHALL ",
+    ] {
+        assert!(
+            section.contains(part),
+            "the new-project section does not show {part:?}"
+        );
+    }
+    let readme = read("README.md");
+    let path = readme
+        .split("\n\n")
+        .find(|paragraph| paragraph.contains("docs/cli.md#a-new-project-and-its-first-change"))
+        .expect("README's new-project path links the new-project section");
+    for part in ["minimal HI file", "requirements.md"] {
+        assert!(
+            path.contains(part),
+            "README's new-project path does not point at the {part:?}: {path}"
+        );
+    }
+}
+
+/// Kimi's fresh-eyes finding (1), second round (2026-11-12): asked to skip design while
+/// at intent, an agent ran `chough stage skip` there, and the Timeline recorded `skip ·
+/// intent → design`. `skip` skips the current stage. docs/cli.md and both copies of the
+/// stage contract say so and say how to skip design, in the Timeline form the helper
+/// writes, which this test has the helper record first.
+#[test]
+fn stage_skip_docs_say_it_skips_the_current_stage_and_how_to_skip_design() {
+    let project = initialized_project();
+    let root = project.path();
+    chough(Some(root), &["stage", "advance", "--json"]);
+    chough(
+        Some(root),
+        &[
+            "stage",
+            "skip",
+            "--json",
+            "--reason",
+            "SYNTHETIC: no visuals",
+        ],
+    );
+    let mut timeline = String::new();
+    for entry in fs::read_dir(root.join(".chough/sessions"))
+        .unwrap()
+        .flatten()
+    {
+        let session = entry.path().join("session.md");
+        if session.is_file() {
+            timeline.push_str(&fs::read_to_string(session).unwrap());
+        }
+    }
+    assert!(
+        timeline.contains(" · skip · design → plan · SYNTHETIC: no visuals "),
+        "{timeline}"
+    );
+    for file in [
+        "docs/cli.md",
+        "skills/chough-workflow/references/stages.md",
+        ".agents/skills/chough-workflow/references/stages.md",
+    ] {
+        let text = read(file).split_whitespace().collect::<Vec<_>>().join(" ");
+        for part in [
+            "skips the current stage",
+            "`skip · <current> → <next>`",
+            "advance from intent into design with `chough stage advance`, then run `chough stage skip --reason \"<why>\"` at design",
+            "`skip · design → plan`",
+            "`skip · intent → design`",
+        ] {
+            assert!(text.contains(part), "{file} does not say {part:?}");
+        }
+    }
+}
+
+/// Fresh-eyes finding F9 (REQ-cli-057): the accept step's first check, which
+/// materializes requirement text, runs through Chough as `chough change check <id>
+/// --no-commit`, in the skill and in its `.agents` copy, so the steps run as written
+/// record no direct lifecycle write; docs/cli.md names the flag.
+#[test]
+fn the_accept_steps_first_check_runs_through_chough() {
+    for copy in [
+        "skills/chough-workflow/references/accept.md",
+        ".agents/skills/chough-workflow/references/accept.md",
+    ] {
+        let accept = read(copy);
+        let step = accept
+            .lines()
+            .skip_while(|line| !line.starts_with("1. "))
+            .take_while(|line| !line.starts_with("2. "))
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert!(
+            step.contains("`chough change check <id> --no-commit`"),
+            "{copy} step 1 does not run the check through Chough: {step}"
+        );
+        assert!(
+            !step.contains("`specsync change check <id>`"),
+            "{copy} step 1 names the plain SpecSync check: {step}"
+        );
+    }
+    assert!(
+        read("docs/cli.md").contains("chough change check <id> --no-commit"),
+        "docs/cli.md does not name chough change check <id> --no-commit"
+    );
+}
+
+/// The fenced Markdown example in `text` that holds `## Lessons`, without its fence.
+fn lessons_example(page: &str, text: &str) -> String {
+    let mut block: Option<String> = None;
+    for line in text.lines() {
+        let fence = line.trim_start().starts_with("```");
+        match &mut block {
+            None if fence => block = Some(String::new()),
+            Some(found) if fence => {
+                if found.contains("## Lessons") {
+                    return found.clone();
+                }
+                block = None;
+            }
+            Some(found) => {
+                found.push_str(line.trim_start());
+                found.push('\n');
+            }
+            None => {}
+        }
+    }
+    panic!("{page} has no fenced `## Lessons` example")
+}
+
+/// REQ-cli-015, F3 of the third fresh-eyes round: the knowledge index counts a lesson in
+/// `context.md`'s `## Lessons` only when it starts with its `YYYY-MM-DD` date, so every
+/// page that describes a lesson's format gives the date, and the skill's and the CLI
+/// reference's examples each count as one lesson in a real index.
+#[test]
+fn a_lessons_dated_form_is_documented_and_its_example_counts() {
+    for page in [
+        "skills/chough-workflow/references/accept.md",
+        "skills/chough-workflow/references/librarian.md",
+        "docs/cli.md",
+    ] {
+        assert!(
+            read(page).contains("YYYY-MM-DD"),
+            "{page} does not say a lesson starts with its YYYY-MM-DD date"
+        );
+    }
+    for page in ["skills/chough-workflow/references/accept.md", "docs/cli.md"] {
+        let example = lessons_example(page, &read(page));
+        let project = initialized_project();
+        let root = project.path();
+        fs::create_dir_all(root.join("specs/shipping")).unwrap();
+        fs::write(
+            root.join("specs/shipping/context.md"),
+            format!("# Shipping context\n\n{example}"),
+        )
+        .unwrap();
+        chough(Some(root), &["library", "index"]);
+        let index = fs::read_to_string(root.join("knowledge/index.md")).unwrap();
+        let line = index
+            .lines()
+            .find(|line| line.contains("shipping: "))
+            .unwrap_or_else(|| panic!("no shipping lesson source in\n{index}"));
+        assert!(
+            line.ends_with(", 1 lesson"),
+            "{page}'s example does not count as one lesson: {line}"
+        );
+    }
+}
+
+/// Fresh-eyes round 4, F4 (REQ-cli-002): writing a lesson under `specs/` makes the case
+/// runs not current, so the accept reference, in the skill and its `.agents` copy, has
+/// any lesson written before step 2's case runs, so one rerun covers it, and no longer
+/// says to write lessons during closeout.
+#[test]
+fn the_accept_reference_writes_lessons_before_the_case_runs() {
+    for copy in [
+        "skills/chough-workflow/references/accept.md",
+        ".agents/skills/chough-workflow/references/accept.md",
+    ] {
+        let accept = read(copy);
+        let step = accept
+            .lines()
+            .skip_while(|line| !line.starts_with("2. "))
+            .take_while(|line| !line.starts_with("3. "))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let lesson = step
+            .find("lesson")
+            .unwrap_or_else(|| panic!("{copy} step 2 does not place the lesson: {step}"));
+        let runs = step
+            .find("chough cases run")
+            .unwrap_or_else(|| panic!("{copy} step 2 runs no case: {step}"));
+        assert!(
+            lesson < runs,
+            "{copy} step 2 runs the cases before the lesson: {step}"
+        );
+        assert!(
+            !accept.contains("during closeout"),
+            "{copy} still says to write lessons during closeout"
+        );
+    }
+}

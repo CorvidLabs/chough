@@ -120,8 +120,9 @@ fn configured(root: &Path) -> Result<Vec<Human>> {
 }
 
 /// The one configured human `decided_by` names, by name or alias, ignoring case and
-/// surrounding space. None, or two, is refused before anything runs; there is no
-/// guess and no fallback to an agent account.
+/// surrounding space. Every gate close resolves it, whatever the gate drives. None, or
+/// two, is refused before anything runs; there is no guess and no fallback to an agent
+/// account.
 pub(crate) fn resolve(root: &Path, decided_by: &str) -> Result<Human> {
     let wanted = decided_by.trim();
     let humans = configured(root)?;
@@ -136,7 +137,7 @@ pub(crate) fn resolve(root: &Path, decided_by: &str) -> Result<Human> {
     match matches.as_slice() {
         [human] => Ok((*human).clone()),
         [] => bail!(
-            "refused:human-identity-unknown: --decided-by \"{wanted}\" names no configured human, so no native step ran and nothing was written.\nAdd them to {LOCAL_FILE} or to {USER_FILE_SHOWN} as:\n[[human]]\nname = \"<display name>\"\naliases = [\"{wanted}\"]\nspecsync_actor = \"<their SpecSync actor>\"\nThen close the gate again. A decision that is neither an approval nor a review closes with --no-native."
+            "refused:human-identity-unknown: --decided-by \"{wanted}\" names no configured human, so no native step ran and nothing was written.\nAdd them to {LOCAL_FILE} or to {USER_FILE_SHOWN} as:\n[[human]]\nname = \"<display name>\"\naliases = [\"{wanted}\"]\nspecsync_actor = \"<their SpecSync actor>\"\nThen close the gate again."
         ),
         several => bail!(
             "refused:human-identity-unknown: --decided-by \"{wanted}\" names {} configured humans ({}), so no native step ran and nothing was written.\nMake the name or alias unique in {LOCAL_FILE} or {USER_FILE_SHOWN}, then close the gate again.",
@@ -199,16 +200,22 @@ impl Step {
     }
 }
 
-/// The note an approval records: the human's words, where and when, and the agent
-/// that relayed them (REQ-records-008).
+/// The note an approval records: the human's words, where and when, the agent that
+/// relayed them (REQ-records-008) and the command the decision came through:
+/// `chough gate record <list>` when the relay names its gate list (REQ-cli-061),
+/// otherwise `chough checkpoint --close-gate`.
 pub(crate) fn approval_note(
     human: &Human,
     gate: &str,
     relay: &crate::stage::RelayedBy,
     at: &str,
 ) -> String {
+    let through = match &relay.list {
+        Some(list) => format!("chough gate record {list}"),
+        None => "chough checkpoint --close-gate".to_string(),
+    };
     format!(
-        "Approved by {} at the Chough gate \"{gate}\": \"{}\" ({}). Relayed and recorded by {} at {at} through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+        "Approved by {} at the Chough gate \"{gate}\": \"{}\" ({}). Relayed and recorded by {} at {at} through {through}; a relayed claim, not authenticated.",
         human.name, relay.words, relay.place, relay.recorded_by
     )
 }

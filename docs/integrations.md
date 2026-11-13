@@ -67,8 +67,9 @@ deletes it. `chough skill remove-legacy --host claude` removes only files that a
 byte-identical to the current or a known earlier bundle, keeps edited and unknown
 files, and refuses, removing nothing, while the shared copy is missing.
 
-`chough init` does not write or edit `CLAUDE.md`. In a project you use with Claude
-Code, add this line to `CLAUDE.md` yourself (create the file if it has none):
+`chough init` does not write or edit `CLAUDE.md`; with `--host claude` it prints this
+line as `claude_md.line`. In a project you use with Claude Code, add it to `CLAUDE.md`
+yourself (create the file if it has none):
 
 ```markdown
 Read and follow `.agents/skills/chough-workflow/SKILL.md` for the Chough workflow.

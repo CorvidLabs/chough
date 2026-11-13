@@ -74,6 +74,7 @@ fn events(fixture: &Fixture) -> Vec<Value> {
 
 fn new_history_project() -> Fixture {
     let fixture = Fixture::new();
+    fixture.configure_human();
     fixture.ok(&["init", "--objective", "Relay decisions", "--module", "cli"]);
     assert!(!fixture.session_file().is_empty());
     fixture
@@ -235,11 +236,12 @@ fn relay_refusals_save_nothing_and_their_recovery_succeeds() {
 #[test]
 fn a_relayed_decision_never_touches_native_state_or_its_gate() {
     let fixture = Fixture::new();
+    fixture.configure_human();
     fixture.stubs();
     fixture.native("draft");
     fixture.init();
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     fixture.ok(&["checkpoint", "--native-change", "x"]);
     fixture.write(
         ".specsync/changes/x/state.json",
@@ -309,6 +311,7 @@ fn a_relayed_decision_never_touches_native_state_or_its_gate() {
 #[test]
 fn clearing_records_no_relay_and_a_relayed_close_lets_advance_apply() {
     let fixture = Fixture::new();
+    fixture.configure_human();
     fixture.init();
     fixture.ok(&[
         "checkpoint",
@@ -345,7 +348,7 @@ fn clearing_records_no_relay_and_a_relayed_close_lets_advance_apply() {
         last["relayed_by"],
         json!({"decided_by": "SYNTHETIC-human", "words": "Approved", "where": "chat", "recorded_by": "SYNTHETIC-agent"})
     );
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.session()["stage"]["current"], "design");
     // Records without a relay carry none: one relayed entry in all.
     let all = events(&fixture);
@@ -407,5 +410,104 @@ fn invalid_relays_are_refused_as_invalid_payloads() {
             error.contains("invalid transition"),
             "{kind} {relay}: {error}"
         );
+    }
+}
+
+/// REQ-history-002, TC-history-relay-fields-are-labelled-lines (t38j's fresh-eyes
+/// report): a relayed decision's `relayed_by` is written as labelled lines under its
+/// field, never a JSON object, with a value that starts with `"` written as a JSON
+/// string; `history show` reads both that entry and an earlier one whose value is JSON.
+#[test]
+fn a_relayed_decision_is_written_as_labelled_lines_and_reads_back() {
+    let fixture = new_history_project();
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Pick a colour",
+        "--awaiting-human",
+        "Pick a size",
+    ]);
+    fixture.ok(&close(
+        "Pick a colour",
+        &relay(
+            "SYNTHETIC-human",
+            "Blue: the calm one",
+            "a test, 2026-11-12",
+            "SYNTHETIC-agent",
+        ),
+    ));
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    assert!(!text.contains("relayed_by: {"), "{text}");
+    assert!(
+        text.contains(
+            "  - relayed_by:\n    - decided_by: SYNTHETIC-human\n    - words: Blue: the calm one\n    - where: a test, 2026-11-12\n    - recorded_by: SYNTHETIC-agent\n"
+        ),
+        "{text}"
+    );
+    fixture.ok(&close(
+        "Pick a size",
+        &relay(
+            "SYNTHETIC-human",
+            "\"Large\" please",
+            "a test",
+            "SYNTHETIC-agent",
+        ),
+    ));
+    let text = fixture.read(&file);
+    assert!(
+        text.contains("    - words: \"\\\"Large\\\" please\"\n"),
+        "{text}"
+    );
+    // An entry written before this rule, with a JSON value, still reads.
+    fixture.write(
+        &file,
+        &format!(
+            "{}- 2026-11-01T00:00:00Z · gate-closed · intent → intent · An old gate ^t-0abc00\n  - relayed_by: {{\"decided_by\":\"SYNTHETIC-human\",\"words\":\"ok\",\"where\":\"old\",\"recorded_by\":\"SYNTHETIC-agent\"}}\n",
+            text
+        ),
+    );
+    let closed: Vec<Value> = events(&fixture)
+        .into_iter()
+        .filter(|event| event["kind"] == "gate-closed")
+        .collect();
+    let words: Vec<&str> = closed
+        .iter()
+        .map(|event| event["relayed_by"]["words"].as_str().unwrap_or_default())
+        .collect();
+    assert_eq!(
+        words,
+        ["Blue: the calm one", "\"Large\" please", "ok"],
+        "{closed:#?}"
+    );
+    assert_eq!(closed[0]["relayed_by"]["where"], "a test, 2026-11-12");
+}
+
+/// Fresh-eyes round 3, F6 (2026-11-12; REQ-cli-050): closing a gate by a near-miss text
+/// gave refused:gate-not-open with no "did you mean". The refusal names the closest open
+/// gate when one is close, and none when no open gate is; nothing is saved either way.
+#[test]
+fn a_near_miss_gate_close_names_the_closest_open_gate() {
+    let fixture = new_history_project();
+    let full = relay("SYNTHETIC-human", "Approve", "orc tab", "SYNTHETIC-agent");
+    fixture.ok(&["checkpoint", "--awaiting-human", "Release approval"]);
+    fixture.ok(&["checkpoint", "--awaiting-human", "Scope approval"]);
+    for (given, suggested) in [
+        ("Release aproval", Some("Release approval")),
+        ("release approval", Some("Release approval")),
+        ("Scope  approvl", Some("Scope approval")),
+        ("Ship it to production now", None),
+    ] {
+        let before = snapshot(fixture.root());
+        let error = fixture.fails(&close(given, &full));
+        assert!(error.contains("refused:gate-not-open"), "{given}: {error}");
+        match suggested {
+            Some(gate) => assert!(
+                error.contains(&format!("Did you mean \"{gate}\"?")),
+                "{given}: {error}"
+            ),
+            None => assert!(!error.contains("Did you mean"), "{given}: {error}"),
+        }
+        assert!(before == snapshot(fixture.root()), "{given} wrote records");
     }
 }

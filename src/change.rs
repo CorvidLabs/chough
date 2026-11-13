@@ -46,8 +46,15 @@ pub(super) enum ChangeCommand {
         question: String,
         answer: String,
     },
-    /// Run `specsync change check <id> --commit`.
-    Check { id: String },
+    /// Run `specsync change check <id> --commit`, or without `--commit` under
+    /// `--no-commit`.
+    Check {
+        id: String,
+        /// Run the check without `--commit`, as the accept step does first to
+        /// materialize requirement text (REQ-cli-057).
+        #[arg(long)]
+        no_commit: bool,
+    },
     /// Run `specsync change status [<id>] --json` within the native read bound.
     Status { id: Option<String> },
     /// Check first, run `specsync change ship <id>`, then close the review gate with its
@@ -130,11 +137,13 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
             ],
             false,
         ),
-        ChangeCommand::Check { id } => (
-            "check",
-            vec!["change".into(), "check".into(), id, "--commit".into()],
-            false,
-        ),
+        ChangeCommand::Check { id, no_commit } => {
+            let mut arguments = vec!["change".to_string(), "check".into(), id];
+            if !no_commit {
+                arguments.push("--commit".into());
+            }
+            ("check", arguments, false)
+        }
         ChangeCommand::Ship(args) => return ship(root, *args),
         ChangeCommand::Status { id } => {
             let mut arguments = vec!["change".to_string(), "status".into()];
@@ -315,7 +324,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 if missing.len() == 1 { "is" } else { "are" },
                 relay_command(&gate)
             ),
-            RelayProblem::NotOpen(gate) => anyhow::anyhow!(
+            RelayProblem::NotOpen(gate, _) => anyhow::anyhow!(
                 "refused:gate-not-open: no gate is open, so there is no gate \"{gate}\" to close, and nothing ran.\nRun `chough change ship {id}` without --close-gate and the relay."
             ),
             RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
@@ -336,8 +345,10 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         crate::checkpoint::guard_relay(relay)?;
         let checkpoint = crate::checkpoint::read_checkpoint_unlocked(root)?;
         let drives = crate::session_md::gate(&checkpoint, gate).drives();
+        // REQ-records-008: every close names one configured human, whatever the gate
+        // drives, before SpecSync runs.
+        let human = crate::humans::resolve(root, &relay.decided_by)?;
         if drives != crate::humans::Drives::None {
-            let human = crate::humans::resolve(root, &relay.decided_by)?;
             native_ran = Some(if drives != crate::humans::Drives::Review {
                 format!(
                     "no native {} ran: change ship records only a review",

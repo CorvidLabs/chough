@@ -17,7 +17,7 @@ if [ "$1" = --version ]; then printf 'specsync 6.3.0\n'; exit 0; fi
 if [ -f .stub-count ]; then echo "$*" >>.stub-calls; fi
 if [ -f .stub-fail ]; then echo 'status failed' >&2; exit 2; fi
 if [ -f .stub-sleep ]; then
-    echo $$ >.stub-native-pid
+    echo $$ >.stub-native-pid.tmp && mv .stub-native-pid.tmp .stub-native-pid
     sleep "$(cat .stub-sleep)"
 fi
 state=$(cat .stub-state 2>/dev/null || echo draft)
@@ -116,13 +116,14 @@ fn warm_reports_reuse_but_every_lifecycle_read_stays_live() {
     fixture.ok(&[
         "stage",
         "reset",
+        "--json",
         "--to",
         "test",
         "--reason",
         "Exercise the live gate",
     ]);
     assert_eq!(fixture.native_calls(), 1, "stage reset reused the report");
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.native_calls(), 1, "stage advance reused the report");
 
     fixture.ok(&["timing", "--cycle", "current", "--json"]);

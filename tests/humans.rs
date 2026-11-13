@@ -189,7 +189,7 @@ fn no_native_closes_a_driving_gate_and_runs_nothing() {
         "accept",
     ]);
     let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
-    let mut changes = relay(REVIEW, "someone not configured");
+    let mut changes = relay(REVIEW, "SYNTHETIC-human");
     changes.push("--no-native".into());
     fixture.ok(&args(&changes));
     assert!(calls(&fixture).is_empty());
@@ -198,14 +198,94 @@ fn no_native_closes_a_driving_gate_and_runs_nothing() {
         decision.ends_with("; no native review ran (--no-native)"),
         "{decision}"
     );
-    // A gate that drives nothing closes with no native call and records no human.
+    // A gate that drives nothing closes with no native call, still in a configured
+    // human's name (REQ-records-008).
     fixture.ok(&["checkpoint", "--awaiting-human", "Name the release"]);
-    fixture.ok(&args(&relay("Name the release", "someone not configured")));
+    fixture.ok(&args(&relay("Name the release", "SYNTHETIC-human")));
     assert!(calls(&fixture).is_empty());
     let decision = decisions(&fixture).pop().unwrap();
     assert!(
         decision.ends_with("a relayed claim, not authenticated"),
         "{decision}"
+    );
+}
+
+/// F1 of the second fresh-eyes round (REQ-records-008): every gate close names a
+/// configured human, whatever the gate drives and with or without `--no-native`, so an
+/// intent or design approval cannot be recorded in any name.
+#[cfg(unix)]
+#[test]
+fn every_gate_close_names_a_configured_human() {
+    const INTENT: &str = "Approve the intent";
+    let fixture = project();
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        INTENT,
+        "--holds",
+        "intent",
+    ]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        REVIEW,
+        "--holds",
+        "accept",
+    ]);
+    let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+    let before = records(fixture.root());
+    let stranger = "someone not configured";
+    let refused = fixture.fails(&args(&relay(INTENT, stranger)));
+    assert!(
+        refused.contains("refused:human-identity-unknown"),
+        "a gate that drives nothing took any name: {refused}"
+    );
+    let mut no_native = relay(REVIEW, stranger);
+    no_native.push("--no-native".into());
+    let refused = fixture.fails(&args(&no_native));
+    assert!(
+        refused.contains("refused:human-identity-unknown"),
+        "--no-native took any name: {refused}"
+    );
+    let listed = fixture.ok(&["gate", "list", "--json"]);
+    let list = listed["list"].as_str().unwrap().to_string();
+    let number = listed["gates"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|listed| listed["gate"] == INTENT)
+        .unwrap()["number"]
+        .to_string();
+    let refused = fixture.fails(&[
+        "gate",
+        "record",
+        &list,
+        "--gates",
+        &number,
+        "--decided-by",
+        stranger,
+        "--words",
+        "yes",
+        "--where",
+        "SYNTHETIC chat",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ]);
+    assert!(
+        refused.contains("refused:human-identity-unknown"),
+        "gate record took any name: {refused}"
+    );
+    assert!(calls(&fixture).is_empty(), "a SpecSync process started");
+    assert_eq!(records(fixture.root()), before, "something was written");
+    // A configured human closes both, and still nothing native runs.
+    fixture.ok(&args(&relay(INTENT, "SYNTHETIC-human")));
+    let mut no_native = relay(REVIEW, "SYNTHETIC-human");
+    no_native.push("--no-native".into());
+    fixture.ok(&args(&no_native));
+    assert!(calls(&fixture).is_empty());
+    assert_eq!(
+        fixture.checkpoint()["awaiting_human"],
+        serde_json::json!([])
     );
 }
 
@@ -344,6 +424,124 @@ fn one_gate_record_runs_at_most_one_native_step() {
     );
 }
 
+/// The fresh-eyes finding on gate record: a reply that closes a gate driving approval
+/// reports the step it ran, and the approval note names the command the reply came
+/// through, `chough gate record <list>`, not `chough checkpoint --close-gate`.
+#[cfg(unix)]
+#[test]
+fn gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record() {
+    let fixture = project();
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    let listed = fixture.ok(&["gate", "list", "--json"]);
+    let list = listed["list"].as_str().unwrap().to_string();
+    assert_eq!(listed["gates"][0]["drives"], "approve");
+    let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+    let reply = fixture.ok(&[
+        "gate",
+        "record",
+        &list,
+        "--gates",
+        "1",
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "yes, go",
+        "--where",
+        "SYNTHETIC chat, 2026-11-11",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ]);
+    let closed = &reply["closed"][0];
+    assert_eq!(closed["gate"], SCOPE, "{reply:#}");
+    assert_eq!(
+        closed["native_step"]["ran"],
+        format!("ran specsync change approve {ID} as SYNTHETIC-actor"),
+        "{reply:#}"
+    );
+    assert_eq!(
+        closed["native_step"]["specsync_actor"], "SYNTHETIC-actor",
+        "{reply:#}"
+    );
+    let calls = calls(&fixture);
+    assert_eq!(calls.len(), 1, "{calls:?}");
+    assert!(
+        calls[0].contains("Relayed and recorded by SYNTHETIC-agent at ")
+            && calls[0].ends_with(&format!(
+                " through chough gate record {list}; a relayed claim, not authenticated."
+            )),
+        "{calls:?}"
+    );
+}
+
+/// Fresh-eyes finding F12b (REQ-cli-050, REQ-records-008): a close that runs no native
+/// step says why in its `native_step`, for a gate that drives none and for a close with
+/// `--no-native`, through `checkpoint --close-gate` and `gate record` alike, and nothing
+/// runs.
+#[cfg(unix)]
+#[test]
+fn a_close_that_runs_no_native_step_says_why() {
+    const GO: &str = "SYNTHETIC go-ahead";
+    let fixture = project();
+    let drives_none =
+        serde_json::json!({"ran": null, "why": "no native step ran (the gate drives none)"});
+    let no_native = serde_json::json!({"ran": null, "why": "no native approval ran (--no-native)"});
+    let open = || {
+        fixture.ok(&["checkpoint", "--awaiting-human", GO, "--drives", "none"]);
+        fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    };
+    let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+
+    // checkpoint --close-gate, one gate at a time.
+    open();
+    let closed = fixture.ok(&args(&relay(GO, "SYNTHETIC-human")));
+    assert_eq!(
+        closed["relayed_decision"]["native_step"], drives_none,
+        "{closed:#}"
+    );
+    let mut list = relay(SCOPE, "SYNTHETIC-human");
+    list.push("--no-native".into());
+    let closed = fixture.ok(&args(&list));
+    assert_eq!(
+        closed["relayed_decision"]["native_step"], no_native,
+        "{closed:#}"
+    );
+
+    // gate record, both gates in one reply.
+    open();
+    let listed = fixture.ok(&["gate", "list", "--json"]);
+    assert_eq!(listed["gates"][0]["gate"], GO, "{listed:#}");
+    assert_eq!(listed["gates"][1]["gate"], SCOPE, "{listed:#}");
+    let list = listed["list"].as_str().unwrap().to_string();
+    let reply = fixture.ok(&[
+        "gate",
+        "record",
+        &list,
+        "--gates",
+        "1,2",
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        "yes, go",
+        "--where",
+        "SYNTHETIC chat, 2026-11-11",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+        "--no-native",
+    ]);
+    let step = |gate: &str| {
+        reply["closed"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|closed| closed["gate"] == gate)
+            .unwrap_or_else(|| panic!("{gate} was not closed: {reply:#}"))["native_step"]
+            .clone()
+    };
+    assert_eq!(step(GO), drives_none, "{reply:#}");
+    assert_eq!(step(SCOPE), no_native, "{reply:#}");
+    assert!(calls(&fixture).is_empty(), "{:?}", calls(&fixture));
+}
+
 /// #237: a gate that holds a later stage does not stop moves out of earlier ones; it
 /// holds the stage it names.
 #[test]
@@ -351,7 +549,7 @@ fn a_gate_holds_only_the_stage_it_names() {
     let fixture = Fixture::new();
     fixture.init();
     while fixture.checkpoint()["stage"]["current"] != "build" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     fixture.ok(&[
         "checkpoint",
@@ -360,8 +558,8 @@ fn a_gate_holds_only_the_stage_it_names() {
         "--holds",
         "release",
     ]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.checkpoint()["stage"]["current"], "accept");
     let next = fixture.ok(&["next", "--json"]);
     assert_eq!(
@@ -375,7 +573,9 @@ fn a_gate_holds_only_the_stage_it_names() {
     );
     assert!(!text.contains("Waiting for a human decision"), "{text}");
     // A gate holding build stops `advance --to` from plan, which leaves build.
-    fixture.ok(&["stage", "reset", "--to", "plan", "--reason", "Rework"]);
+    fixture.ok(&[
+        "stage", "reset", "--json", "--to", "plan", "--reason", "Rework",
+    ]);
     fixture.ok(&[
         "checkpoint",
         "--awaiting-human",
@@ -389,7 +589,7 @@ fn a_gate_holds_only_the_stage_it_names() {
     assert!(refused.contains("Build go"), "{refused}");
     assert!(!refused.contains("Publish the release"), "{refused}");
     assert_eq!(fixture.read(&fixture.session_file()), before);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.checkpoint()["stage"]["current"], "build");
     let waiting = fixture.ok(&["next", "--json"]);
     let action: &Value = &waiting["next_valid_action"]["action"];
@@ -467,4 +667,321 @@ fn no_source_names_a_person_as_the_default_human() {
         problems.is_empty(),
         "a person or account named as an identity: {problems:#?}"
     );
+}
+
+/// The checkpoint's next action.
+#[cfg(unix)]
+fn next_action(fixture: &Fixture) -> String {
+    fixture.checkpoint()["next_action"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string()
+}
+
+/// The next action a close leaves (fresh-eyes finding 12, t382's rule): the gate, the
+/// decision, said once (F12a), and the step that decision allows, never `chough next`
+/// (F3): `closed` is a gate that drives nothing and `no-native` a close with
+/// --no-native.
+fn closed_next(gate: &str, decision: &str) -> String {
+    let (said, step) = match decision {
+        "approved" => (" (approved)", "run `chough stage advance` to move on".to_string()),
+        "closed" => ("", "run `chough stage advance` to move on".into()),
+        "review pass" => (
+            " (review pass)",
+            format!("run `chough change ship {ID}` to ship"),
+        ),
+        "review block" => (
+            " (review block)",
+            "run `chough stage back --to build --reason \"<why>\"` to address the review".into(),
+        ),
+        "no-native" => (
+            "",
+            "record the next action the decision calls for with `chough checkpoint --next-action \"<action>\"`".into(),
+        ),
+        other => panic!("no next action for {other}"),
+    };
+    format!("Gate \"{gate}\" closed{said}; {step}.")
+}
+
+/// A project at plan, as the fresh-eyes tester was when the scope gate opened.
+#[cfg(unix)]
+fn at_plan() -> Fixture {
+    let fixture = project();
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&[
+        "stage",
+        "skip",
+        "--json",
+        "--reason",
+        "SYNTHETIC: no visuals",
+    ]);
+    assert_eq!(fixture.checkpoint()["stage"]["current"], "plan");
+    fixture
+}
+
+/// Fresh-eyes finding 12 (t38j, 2026-11-12): a next action set while the scope gate was
+/// open ("Present the scope to tester...") went stale once the human approved, and build
+/// still showed it. Closing the last open gate holding the current stage, with no
+/// --next-action in the same call, replaces it, naming the gate and the decision.
+#[cfg(unix)]
+#[test]
+fn approving_the_scope_gate_replaces_the_next_action_it_left_stale() {
+    let fixture = at_plan();
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        SCOPE,
+        "--holds",
+        "plan",
+        "--next-action",
+        "Present the scope to SYNTHETIC-human and wait for the decision.",
+    ]);
+    fixture.ok(&args(&relay(SCOPE, "SYNTHETIC-human")));
+    assert_eq!(next_action(&fixture), closed_next(SCOPE, "approved"));
+    // The Timeline keeps the decision itself.
+    assert!(decisions(&fixture).pop().unwrap().ends_with(&format!(
+        "; ran specsync change approve {ID} as SYNTHETIC-actor"
+    )));
+}
+
+/// F1 of the fourth fresh-eyes round (REQ-cli-021): a gate close's next action names the
+/// move its decision allows; once that move is made it is replaced with
+/// `Continue <stage>` for the stage reached, so `chough next` in build never says to run
+/// `chough stage advance` with nothing built. The same at intent, then design.
+#[cfg(unix)]
+#[test]
+fn a_stage_move_replaces_the_next_action_a_gate_close_left() {
+    let fixture = at_plan();
+    fixture.no_spec_approval(ID);
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    fixture.ok(&args(&relay(SCOPE, "SYNTHETIC-human")));
+    assert_eq!(next_action(&fixture), closed_next(SCOPE, "approved"));
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(fixture.checkpoint()["stage"]["current"], "build");
+    assert_eq!(next_action(&fixture), "Continue build");
+    let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert!(
+        !action.contains("chough stage advance")
+            && !action.contains("Continue build: Continue build"),
+        "next in build: {action}"
+    );
+
+    // At intent: a gate that drives nothing, then the move to design.
+    let fixture = project();
+    fixture.ok(&["checkpoint", "--awaiting-human", "Approve the intent"]);
+    fixture.ok(&args(&relay("Approve the intent", "SYNTHETIC-human")));
+    assert_eq!(
+        next_action(&fixture),
+        closed_next("Approve the intent", "closed")
+    );
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(next_action(&fixture), "Continue design");
+    // A next action the agent wrote is the agent's, and a move leaves it.
+    fixture.ok(&[
+        "checkpoint",
+        "--next-action",
+        "SYNTHETIC: sketch the screen",
+    ]);
+    fixture.ok(&[
+        "stage",
+        "skip",
+        "--json",
+        "--reason",
+        "SYNTHETIC: no visuals",
+    ]);
+    assert_eq!(next_action(&fixture), "SYNTHETIC: sketch the screen");
+}
+
+/// F1 of the fourth round, continued (REQ-cli-021): a batched advance makes several moves
+/// on one read, and each carries the replacement on, so the next action names the stage
+/// reached, never a stage it passed through.
+#[cfg(unix)]
+#[test]
+fn a_batched_advance_leaves_continue_for_the_stage_it_reaches() {
+    let fixture = at_plan();
+    fixture.no_spec_approval(ID);
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    fixture.ok(&args(&relay(SCOPE, "SYNTHETIC-human")));
+    fixture.ok(&["stage", "advance", "--to", "test", "--json"]);
+    assert_eq!(fixture.checkpoint()["stage"]["current"], "test");
+    assert_eq!(next_action(&fixture), "Continue test");
+}
+
+/// The rest of t382's rule: a review gate names its verdict, a gate that drives no native
+/// step or is closed with --no-native says "closed"; a next action given in the same call
+/// is kept; and a close that leaves another gate holding the stage, or of a gate that
+/// holds another stage, leaves the next action as it is.
+#[cfg(unix)]
+#[test]
+fn a_gate_close_replaces_the_next_action_only_when_no_gate_holds_the_stage() {
+    let fixture = at_plan();
+    let stale = "SYNTHETIC: wait for the human.";
+    let close = |gate: &str, extra: &[&str]| {
+        let mut list = relay(gate, "SYNTHETIC-human");
+        list.extend(extra.iter().map(|value| value.to_string()));
+        fixture.ok(&args(&list));
+    };
+    let open = |gate: &str, holds: &str, drives: &str| {
+        fixture.ok(&[
+            "checkpoint",
+            "--awaiting-human",
+            gate,
+            "--holds",
+            holds,
+            "--drives",
+            drives,
+            "--next-action",
+            stale,
+        ]);
+    };
+    for (gate, drives, extra, decision) in [
+        (
+            "SYNTHETIC review to pass",
+            "review",
+            &["--verdict", "pass"][..],
+            "review pass",
+        ),
+        (
+            "SYNTHETIC review to block",
+            "review",
+            &["--verdict", "block"][..],
+            "review block",
+        ),
+        ("SYNTHETIC go-ahead", "none", &[][..], "closed"),
+        (
+            "SYNTHETIC changes requested",
+            "approve",
+            &["--no-native"][..],
+            "no-native",
+        ),
+    ] {
+        open(gate, "plan", drives);
+        close(gate, extra);
+        assert_eq!(next_action(&fixture), closed_next(gate, decision), "{gate}");
+    }
+
+    // A next action given with the close is the one kept.
+    open("SYNTHETIC own next", "plan", "none");
+    close(
+        "SYNTHETIC own next",
+        &["--next-action", "SYNTHETIC: the agent's own next"],
+    );
+    assert_eq!(next_action(&fixture), "SYNTHETIC: the agent's own next");
+
+    // Another gate still holds plan: nothing changes until the last one closes.
+    open("SYNTHETIC first", "plan", "none");
+    open("SYNTHETIC second", "plan", "none");
+    close("SYNTHETIC first", &[]);
+    assert_eq!(next_action(&fixture), stale);
+    close("SYNTHETIC second", &[]);
+    assert_eq!(
+        next_action(&fixture),
+        closed_next("SYNTHETIC second", "closed")
+    );
+
+    // A gate that holds another stage does not describe the current one.
+    open("SYNTHETIC later", "accept", "none");
+    close("SYNTHETIC later", &[]);
+    assert_eq!(next_action(&fixture), stale);
+}
+
+/// Fresh-eyes F12a (second round, 2026-11-12): a gate that drives no native step, or a
+/// close with --no-native, decides nothing beyond the close, and its next action read
+/// "Gate ... closed (closed)". It says "closed" once.
+#[cfg(unix)]
+#[test]
+fn a_close_that_runs_no_native_step_says_closed_once() {
+    let fixture = at_plan();
+    for (gate, drives, extra) in [
+        ("SYNTHETIC go-ahead", "none", &[][..]),
+        (
+            "SYNTHETIC changes requested",
+            "approve",
+            &["--no-native"][..],
+        ),
+    ] {
+        fixture.ok(&[
+            "checkpoint",
+            "--awaiting-human",
+            gate,
+            "--holds",
+            "plan",
+            "--drives",
+            drives,
+            "--next-action",
+            "SYNTHETIC: wait for the human.",
+        ]);
+        let mut list = relay(gate, "SYNTHETIC-human");
+        list.extend(extra.iter().map(|value| value.to_string()));
+        fixture.ok(&args(&list));
+        let next = next_action(&fixture);
+        assert!(
+            next.starts_with(&format!("Gate \"{gate}\" closed")),
+            "{next}"
+        );
+        assert_eq!(next.matches("closed").count(), 1, "{next}");
+    }
+}
+
+/// Fresh-eyes F3 (second round, 2026-11-12; REQ-cli-021): after a gate closed, the next
+/// action said to run `chough next`, which showed that same next action again. A close
+/// that leaves no gate holding the stage names the step its decision allows: `chough
+/// stage advance` after an approval or a gate that drives nothing, `chough change ship
+/// <id>` after a review pass, `chough stage back --to build` after a review block, and
+/// `chough checkpoint --next-action` after a --no-native close; next never names itself.
+#[cfg(unix)]
+#[test]
+fn a_gate_close_names_the_step_its_decision_allows_never_chough_next() {
+    let fixture = at_plan();
+    for (gate, drives, extra, step) in [
+        (SCOPE, "approve", &[][..], "`chough stage advance`"),
+        (
+            "SYNTHETIC go-ahead",
+            "none",
+            &[][..],
+            "`chough stage advance`",
+        ),
+        (
+            "SYNTHETIC review to pass",
+            "review",
+            &["--verdict", "pass"][..],
+            "`chough change ship human-change`",
+        ),
+        (
+            "SYNTHETIC review to block",
+            "review",
+            &["--verdict", "block"][..],
+            "`chough stage back --to build",
+        ),
+        (
+            "SYNTHETIC changes requested",
+            "approve",
+            &["--no-native"][..],
+            "`chough checkpoint --next-action",
+        ),
+    ] {
+        fixture.ok(&[
+            "checkpoint",
+            "--awaiting-human",
+            gate,
+            "--holds",
+            "plan",
+            "--drives",
+            drives,
+            "--next-action",
+            "SYNTHETIC: wait for the human.",
+        ]);
+        let mut list = relay(gate, "SYNTHETIC-human");
+        list.extend(extra.iter().map(|value| value.to_string()));
+        fixture.ok(&args(&list));
+        let next = next_action(&fixture);
+        assert!(next.contains(step), "{gate}: {next}");
+        let shown = fixture.ok(&["next", "--json"])["next_valid_action"].clone();
+        for text in [next.as_str(), shown["action"].as_str().unwrap()] {
+            assert!(!text.contains("`chough next`"), "{gate}: {text}");
+        }
+    }
 }

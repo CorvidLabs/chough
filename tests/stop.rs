@@ -453,8 +453,8 @@ fn stop_backfills() {
         fixture.stubs();
         fixture.native("approved");
         fixture.init();
-        fixture.ok(&["stage", "advance"]);
-        fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+        fixture.ok(&["stage", "advance", "--json"]);
+        fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
         fixture.ok(&["checkpoint", "--native-change", "add-thing"]);
         fixture.no_spec_approval("add-thing");
         // Move the Timeline into the past so a backfill at now minus 5,000 s fits
@@ -500,6 +500,7 @@ fn stop_backfills() {
             &[
                 "stage",
                 "backfill",
+                "--json",
                 "--at",
                 &at,
                 "--commit",
@@ -772,7 +773,7 @@ fn a_failed_head_revision_is_reported() {
         ),
     );
     fixture.executable("bin/git");
-    let output = fixture.run(&["stage", "advance"]);
+    let output = fixture.run(&["stage", "advance", "--json"]);
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(output.status.success(), "{stderr}");
     assert!(
@@ -783,7 +784,7 @@ fn a_failed_head_revision_is_reported() {
     let plain = Fixture::new();
     plain.hi_stand_in();
     plain.init();
-    let output = plain.run(&["stage", "advance"]);
+    let output = plain.run(&["stage", "advance", "--json"]);
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(output.status.success(), "{stderr}");
     assert!(!stderr.contains("Git revision"), "no repository: {stderr}");

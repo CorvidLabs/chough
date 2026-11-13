@@ -32,10 +32,10 @@ fn at_test(policy: Option<&str>, effective: Option<&str>) -> Fixture {
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "verify-change"]);
     fixture.no_spec_approval("verify-change");
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         fixture.ok(&["stage", "show"])["stage"]["current"],
         "test",
@@ -176,7 +176,7 @@ fn the_warning_changes_no_gate_and_adds_no_native_read() {
             effective == ONLY_SPECSYNC,
             "{next:#}"
         );
-        let moved = fixture.ok(&["stage", "advance"]);
+        let moved = fixture.ok(&["stage", "advance", "--json"]);
         let advance_calls = fixture.native_calls();
         assert_eq!(moved["applied"]["to"], "accept", "{moved:#}");
         calls.push((next_calls, advance_calls));

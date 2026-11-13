@@ -480,6 +480,27 @@ pub(super) const HOSTS: &[(&str, &str)] = &[
     ("grok", ".grok/skills"),
 ];
 
+/// The skill file Claude Code reaches through `CLAUDE.md`, and the line docs/integrations.md
+/// says to add there; `init --host claude` prints it and never writes `CLAUDE.md`.
+const CLAUDE_SKILL: &str = ".agents/skills/chough-workflow/SKILL.md";
+const CLAUDE_MD_LINE: &str =
+    "Read and follow `.agents/skills/chough-workflow/SKILL.md` for the Chough workflow.";
+
+/// What `init` prints for the claude host (REQ-cli-016, F12a): the line to add to
+/// `CLAUDE.md`, whether the file already names the skill, and why. It reads `CLAUDE.md`
+/// at most and writes nothing to it.
+pub(super) fn claude_md_hint(root: &Path) -> Value {
+    let present = local_path(root, "CLAUDE.md")
+        .ok()
+        .and_then(|path| fs::read_to_string(path).ok())
+        .is_some_and(|text| text.contains(CLAUDE_SKILL));
+    json!({
+        "line": CLAUDE_MD_LINE,
+        "present": present,
+        "note": "Claude Code 2.1.316 did not discover .agents/skills alone: add this line to CLAUDE.md, creating the file if the project has none. init writes nothing to CLAUDE.md.",
+    })
+}
+
 /// Host directories that earlier helpers wrote and this one no longer installs. A copy
 /// found there is reported as legacy and removed only by `skill remove-legacy` (LIFE-13).
 const LEGACY: &[(&str, &str)] = &[("claude", ".claude/skills")];
@@ -735,6 +756,43 @@ fn installed_hosts(root: &Path, requested: Vec<String>) -> Result<Vec<String>> {
         }
     }
     distinct(&hosts)
+}
+
+/// The follow-up a migration names while an installed skill copy is not current, as
+/// `chough skill status` reports it (REQ-records-009, REQ-cli-016): each installed copy's
+/// directory, once however many hosts share it, with how many of its files are not
+/// current and in what state, and `chough skill update`. None when every installed copy
+/// is current or none is installed.
+pub(super) fn update_advice(root: &Path) -> Result<Option<String>> {
+    let mut stale = vec![];
+    let mut seen = std::collections::BTreeSet::new();
+    for host in installed_hosts(root, vec![])? {
+        let base = directory(&host)?;
+        if !seen.insert(base.clone()) {
+            continue;
+        }
+        let mut states: std::collections::BTreeMap<&str, usize> = Default::default();
+        for (name, content) in BUNDLE {
+            let state = file_state(root, &base, name, content)?;
+            if state != "current" {
+                *states.entry(state).or_default() += 1;
+            }
+        }
+        if !states.is_empty() {
+            let counts: Vec<String> = states
+                .iter()
+                .map(|(state, count)| format!("{count} {state}"))
+                .collect();
+            stale.push(format!("`{base}` ({})", counts.join(", ")));
+        }
+    }
+    if stale.is_empty() {
+        return Ok(None);
+    }
+    Ok(Some(format!(
+        "Update the installed skill copy, which is not current and may still name 0.5.x commands and paths: {}. Run `chough skill update`, which replaces known-outdated files and adds missing ones and keeps edited ones, then `chough skill status` to check it (REQ-cli-016).",
+        stale.join("; ")
+    )))
 }
 
 fn report(root: &Path, hosts: &[String], update: bool) -> Result<Value> {

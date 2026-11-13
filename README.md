@@ -95,8 +95,15 @@ different version (`--force` reinstalls). The binaries are `hi`, `fledge` and
 
 ## Start here
 
-For a new project without them, start with [New project](docs/walkthrough.md#new-project).
-In a Git project with HI criteria and SpecSync module contracts:
+For a new project without them, the order is: write the intent as an HI file and run
+`hi check`; create each module's contract with `specsync init` and `specsync scaffold
+<module>`; turn SpecSync's change gates on with `specsync change adopt` (`specsync init`
+leaves them off, and until then stage moves pass ungated); then run `chough init` as
+below. [New project](docs/walkthrough.md#new-project) walks through each step, and
+[A new project and its first change](docs/cli.md#a-new-project-and-its-first-change)
+shows a minimal HI file, a baseline `specs/<module>/requirements.md` and what a
+change's delta looks like. In a Git project with HI criteria and SpecSync
+module contracts:
 
 ```sh
 chough init --objective "Free shipping from fifty dollars" \
@@ -110,8 +117,9 @@ checkpoint; it writes the reading guide `.chough/README.md`, creates the librari
 `knowledge/` directory (on by default) and copies the skill bundle into each requested host's project skill directory
 (`openai`, the default, → `.agents/skills`, a shared skills directory, which `claude`
 shares (Claude Code 2.1.316 did not discover `.agents/skills` alone, so add a
-`CLAUDE.md` line pointing at `.agents/skills/chough-workflow/SKILL.md`; `init` does not
-write it, see [integrations](docs/integrations.md)); `gemini` → `.gemini/skills`, which
+`CLAUDE.md` line pointing at `.agents/skills/chough-workflow/SKILL.md`; `init --host
+claude` prints that line as `claude_md` and does not write it, see
+[integrations](docs/integrations.md)); `gemini` → `.gemini/skills`, which
 no run has exercised; also `codex` → `.codex/skills`, `cursor` → `.cursor/skills` and
 `grok` → `.grok/skills`). Start each later change with
 `chough session new <change-id>`. Kimi Code CLI uses the existing `openai`
@@ -131,8 +139,10 @@ that authorization without asking you to repeat permission for each internal too
 step. It asks when a consequential decision or permission is still missing. Native
 checks and your separate implementation acceptance and merge decision remain.
 
-For a gate you decide to record SpecSync's approval or review in your name, Chough
-needs to know who you are. Add yourself once, in `chough/identity.toml` under your
+Every gate you decide is recorded in your name, whatever it drives: your intent and
+design approvals as much as the scope and review gates, where Chough also records
+SpecSync's approval or review as you. So Chough needs to know who you are before the
+first gate. Add yourself once, in `chough/identity.toml` under your
 configuration directory (`$XDG_CONFIG_HOME`, by default `~/.config`), or for one
 project in `.chough/local/identity.toml`, which is never committed:
 
@@ -144,7 +154,8 @@ specsync_actor = "<the actor SpecSync records for you>"
 ```
 
 Chough refuses a decision by someone it cannot find there
-(`refused:human-identity-unknown`); it never guesses or falls back to an agent.
+(`refused:human-identity-unknown`) at every gate, with or without `--no-native`; it
+never guesses or falls back to an agent.
 
 To resume, either run `chough next --environment local` yourself and paste its
 output to the agent, or tell the agent: "Read AGENTS.md, run
@@ -187,11 +198,14 @@ in `.specsync/archive/`; Chough links them and never copies them.
 
 To upgrade a project from Chough 0.5.x, upgrade every agent's Chough first, because
 Chough 0.5.x cannot read 0.6.0 records. Then, with no native change open, run
-`chough migrate` to preview the plan, and with the human's consent run the
+`chough migrate` to preview the plan (as text; `--json` prints it as JSON), and with
+the human's consent run the
 `chough migrate --apply <digest> --consent "<who, their words, where>"` command it
 prints. It applies exactly the previewed plan, writes a receipt in
-`.chough/archive/migrations/` and keeps every old ID as an alias. Until a project
-migrates, every other command refuses with `refused:unmigrated`.
+`.chough/archive/migrations/` and keeps every old ID as an alias. It leaves the
+installed skill copy as it is, so when its follow-ups name `chough skill update`, run
+that next. Until a project migrates, every other command refuses with
+`refused:unmigrated`.
 
 ## The loop
 

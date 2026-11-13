@@ -105,6 +105,10 @@ enum Commands {
     Checkpoint(Box<checkpoint::CheckpointArgs>),
     /// Route between stages within native lifecycle gates.
     Stage {
+        /// Print a move's full JSON report instead of its short text summary
+        /// (REQ-cli-008); `stage show` prints JSON either way.
+        #[arg(long, global = true)]
+        json: bool,
         #[command(subcommand)]
         command: stage::StageCommand,
     },
@@ -229,16 +233,18 @@ fn main() -> Result<()> {
         } => init(&root, objective, session, intent_scope, modules, hosts)?,
         Commands::Context { json: as_json } => {
             let session = read_session(&root)?;
-            let sections = context::context(&root, &session)?;
-            let session_value = session.to_value()?;
+            let sections = context::context(&root, &session, as_json)?;
             if as_json {
+                let session_value = session.to_value()?;
                 print_json(
                     &json!({"schema_version": 1, "session": session_value, "sections": sections}),
                 )?;
             } else {
-                println!(
+                // F10d: the Markdown packet gives the session as Markdown; `--json`
+                // keeps the session object.
+                print!(
                     "# Chough context\n\n## Session\n\n{}",
-                    serde_json::to_string_pretty(&session_value)?
+                    context::session_markdown(&session)
                 );
                 for section in sections {
                     println!(
@@ -260,7 +266,7 @@ fn main() -> Result<()> {
         } => print!("{}", next(&root, environment.as_deref(), as_json)?),
         Commands::Migrate(args) => migrate::run(&root, args)?,
         Commands::Checkpoint(args) => checkpoint::checkpoint_command(&root, *args)?,
-        Commands::Stage { command } => stage::run(&root, command)?,
+        Commands::Stage { json, command } => stage::run(&root, command, json)?,
         Commands::History { command } => history::run(&root, command)?,
         Commands::Correct(args) => history::correct(&root, args)?,
         Commands::Cases { command } => {
@@ -350,7 +356,7 @@ fn init(
     let library = library::create_at_init(root);
     // REQ-cli-047: the merge attributes and drivers, so two branches merge clean.
     let merge = library::merge_at_init(root);
-    print_json(&json!({
+    let mut output = json!({
         "schema_version": 1,
         "created": created,
         "preserved": preserved,
@@ -359,7 +365,13 @@ fn init(
         "merge": merge,
         // REQ-records-014: the same advice `chough doctor` gives, or null.
         "records_in_verification": doctor::exclusions(root).advice(),
-    }))
+    });
+    // REQ-cli-016: Claude Code reaches the shared copy through CLAUDE.md, which init
+    // never writes, so it prints the line to add.
+    if hosts.iter().any(|host| host == "claude") {
+        output["claude_md"] = skill::claude_md_hint(root);
+    }
+    print_json(&output)
 }
 
 /// The one native status read of a report, made whenever SpecSync is configured.
@@ -494,7 +506,13 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
                 .as_ref()
                 .and_then(|value| value.get("summary"))
                 .map_or(Value::Null, |summary| {
-                    json!({"state": summary.get("state"), "next_action": summary.get("next_action")})
+                    json!({
+                        "state": summary.get("state"),
+                        "next_action": summary.get("next_action").map(|next| match next.as_str() {
+                            Some(text) => Value::from(stage::shown_native_next(text)),
+                            None => next.clone(),
+                        }),
+                    })
                 }),
         ),
     };
@@ -504,6 +522,8 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
     };
     // BUG-0023: status leads with the short summary `next` gives, so the first screen
     // holds the stage, the next action and its command, the open gates and blockers.
+    // Status is the full report, so the next valid action is whole, never cut
+    // mid-command as `next`'s bounded view cuts it (fresh-eyes finding 12).
     let summary = match session {
         Session::V2(checkpoint) => json!({
             "stage": {
@@ -513,9 +533,9 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             },
             "native_change": checkpoint.native_change,
             "next_valid_action": {
-                "action": cut(&corrections.apply(&assessment.action.action)),
-                "reason": cut(&assessment.action.reason),
-                "command": assessment.action.command.as_deref().map(cut),
+                "action": corrections.apply(&assessment.action.action),
+                "reason": assessment.action.reason,
+                "command": assessment.action.command,
             },
             "gates": open_gates(checkpoint, LIST_LIMIT),
             "blockers": listed(checkpoint.blockers.iter()),
@@ -539,7 +559,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "last_actor": match session {
             Session::V2(checkpoint) => history::last_actor(checkpoint),
         },
-        "native_next_action_authority": "Read native_specsync output and follow its actual next action before changing lifecycle state.",
+        "native_next_action_authority": "Read native_specsync output for the native state and its next action before changing lifecycle state; an approval or review it names is the human's decision, recorded at a human gate, never run by the agent.",
         "native_specsync": native_status,
         "native_summary": native_summary,
         "native_verification_warning": verification_warning,
@@ -609,6 +629,57 @@ fn cut(text: &str) -> String {
         end = index + character.len_utf8();
     }
     format!("{}{CUT}", &text[..end])
+}
+
+/// Cut text as [`cut`] does, but never inside a command (F5, REQ-cli-021): each
+/// backticked span stays whole wherever it falls, only the text around the spans counts
+/// toward the bound and is cut, and the spans after the cut follow the marker in order,
+/// each after one space the bound also counts.
+fn cut_around_commands(text: &str) -> String {
+    if text.chars().map(escaped_width).sum::<usize>() <= STRING_LIMIT {
+        return text.to_string();
+    }
+    let commands = text.matches('`').count() / 2;
+    let mut budget = STRING_LIMIT.saturating_sub(CUT.len() + commands);
+    let mut kept = String::new();
+    let mut was_cut = false;
+    let mut rest = text;
+    while !rest.is_empty() {
+        // The text up to the next command, a backtick through the next backtick; an
+        // unpaired backtick is text.
+        let (prose, command, after) = match rest.find('`').and_then(|open| {
+            rest[open + 1..]
+                .find('`')
+                .map(|close| (open, open + close + 2))
+        }) {
+            Some((open, end)) => (&rest[..open], &rest[open..end], &rest[end..]),
+            None => (rest, "", ""),
+        };
+        if !was_cut {
+            let mut end = 0;
+            for (index, character) in prose.char_indices() {
+                let width = escaped_width(character);
+                if width > budget {
+                    was_cut = true;
+                    break;
+                }
+                budget -= width;
+                end = index + character.len_utf8();
+            }
+            kept.push_str(&prose[..end]);
+            if was_cut {
+                kept.push_str(CUT);
+            }
+        }
+        if !command.is_empty() {
+            if was_cut {
+                kept.push(' ');
+            }
+            kept.push_str(command);
+        }
+        rest = after;
+    }
+    kept
 }
 
 /// Print a report as pretty JSON with its `summary` first (BUG-0023), the rest in the
@@ -699,12 +770,19 @@ fn last_failure(root: &Path) -> Result<Value> {
             .iter()
             .filter_map(|(_, map)| receipt(map)),
     );
-    for (_, story) in bugs::records_in(
+    for (name, story) in bugs::records_in(
         root,
         ".chough/archive/sessions",
         markdown::Kind::Story.bound(),
     ) {
-        failed.extend(story.maps("receipts").iter().filter_map(|map| receipt(map)));
+        // REQ-history-006: `## Receipts`, or an older story's front matter.
+        failed.extend(
+            story
+                .story_receipts(&name)
+                .unwrap_or_default()
+                .iter()
+                .filter_map(|map| receipt(map)),
+        );
     }
     let Some((observed, id, claim)) = failed
         .into_iter()
@@ -860,7 +938,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "approval_valid": field("/approval_valid").and_then(Value::as_bool),
         "correction_valid": field("/correction_valid").and_then(Value::as_bool),
         "terminal_evidence": field("/terminal_evidence/validity").and_then(Value::as_str).map(cut),
-        "next_action": field("/next_action").and_then(Value::as_str).map(cut),
+        "next_action": field("/next_action").and_then(Value::as_str).map(|next| cut(&stage::shown_native_next(next))),
         "approved_deltas": assessment.deltas.as_deref().map(cut),
     });
 
@@ -876,11 +954,13 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     // The open sessions' entries that nothing references, by ID or alias, from the
     // index the references were labelled with.
     let unreferenced = reads.unreferenced_entries(&referenced)?;
-    let attention: Vec<&Value> = references
-        .iter()
-        .filter(|entry| entry["label"] != "current")
-        .collect();
+    // F7: each entry once, a superseded run counted apart.
+    let attention = reads.needing_attention(
+        &references,
+        checkpoint.map_or(&[][..], |checkpoint| checkpoint.observations.as_slice()),
+    )?;
     let items: Vec<Value> = attention
+        .rows
         .iter()
         .take(LIST_LIMIT)
         .map(|entry| {
@@ -931,12 +1011,14 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,
         "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
+        // F5: a command shown here is whole, whatever its length; the bound cuts the
+        // text around it, and the command field is never cut.
         "next_valid_action": {
-            "action": cut(&corrections.apply(&assessment.action.action)),
-            "reason": cut(&assessment.action.reason),
-            "command": assessment.action.command.as_deref().map(cut),
+            "action": cut_around_commands(&corrections.apply(&assessment.action.action)),
+            "reason": cut_around_commands(&assessment.action.reason),
+            "command": assessment.action.command,
         },
-        "gate": assessment.gate.as_ref().map(|(to, gate)| json!({"to": to, "allowed": gate.allowed, "label": cut(&gate.label), "detail": cut(&gate.detail)})),
+        "gate": assessment.gate.as_ref().map(|(to, gate)| json!({"to": to, "allowed": gate.allowed, "label": cut_around_commands(&gate.label), "detail": cut_around_commands(&gate.detail)})),
         "awaiting_human": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.awaiting_human).iter()),
         "gates": checkpoint.map_or_else(Vec::new, |checkpoint| open_gates(checkpoint, LIST_LIMIT)),
         "blockers": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.blockers).iter()),
@@ -944,9 +1026,10 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "blocking_bugs": listed(assessment.blocking.iter()),
         "other_open_bugs": assessment.open_bugs.len().saturating_sub(assessment.blocking.len()),
         "observations": {
-            "needs_attention_total": attention.len(),
+            "needs_attention_total": attention.rows.len(),
             "items": items,
-            "referenced_current": references.len() - attention.len(),
+            "referenced_current": attention.current,
+            "superseded": attention.superseded,
             "unreferenced": unreferenced,
         },
         "decisions": decisions(
@@ -1034,10 +1117,9 @@ fn next_text(view: &Value) -> String {
     }
     let native = &view["native"];
     if native["change"].is_null() {
-        lines.push(format!(
-            "Native change: none recorded (read {})",
-            text(&native["read"])
-        ));
+        // F12e: with no change recorded there is no read of it to report; SpecSync's own
+        // next step, when it gives one, follows on its line.
+        lines.push("Native change: none recorded".into());
     } else {
         lines.push(format!(
             "Native change: {}: {} (read {}; approval_valid {}, correction_valid {}, terminal evidence {})",
@@ -1052,9 +1134,11 @@ fn next_text(view: &Value) -> String {
     if let Some(warning) = view["native_verification_warning"].as_str() {
         lines.push(format!("Warning: {warning}"));
     }
+    // F8: SpecSync's next step is its own lifecycle's, often a later step than the one
+    // to take now, so it is shown for reference and Next alone is the step.
     if native["next_action"].is_string() {
         lines.push(format!(
-            "  Native next action: {}",
+            "  SpecSync's own next step, for reference (the step to take now is Next): {}",
             text(&native["next_action"])
         ));
     }
@@ -1179,14 +1263,20 @@ fn next_text(view: &Value) -> String {
         ));
     }
     let more = total.saturating_sub(items.len() as u64);
+    let superseded = observations["superseded"].as_u64().unwrap_or(0);
     lines.push(format!(
-        "  {}{} referenced current, {} unreferenced.",
+        "  {}{} referenced current, {}{} unreferenced.",
         if more > 0 {
             format!("{more} more; ")
         } else {
             String::new()
         },
         text(&observations["referenced_current"]),
+        if superseded > 0 {
+            format!("{superseded} superseded, ")
+        } else {
+            String::new()
+        },
         text(&observations["unreferenced"])
     ));
     lines.extend(handoff_lines(view, &text));

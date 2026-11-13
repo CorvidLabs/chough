@@ -4,6 +4,8 @@ SpecSync drives this stage with its own adaptive artifacts. Read source
 instructions, existing architecture and the native lessons first; `specsync change
 new` prints the lessons of the modules you declare.
 
+0. In a project whose `specsync init` left SpecSync's change workflow off, run
+   `specsync change adopt` first; until then no native gate checks the stages.
 1. Create the change with installed help as the authority, for example
    `chough change new "<one outcome>" --spec <module> --path <path>`.
    Declare every path you expect to touch: scope freezes at approval.
@@ -11,7 +13,12 @@ new` prints the lessons of the modules you declare.
    "<answer>"`.
 3. Complete the selected artifacts: requirements, research, design, plan (approach,
    out of scope, steps, risks, constraints consulted), tasks, testing, docs, and a
-   semantic delta per affected module.
+   semantic delta per affected module: `.specsync/changes/<id>/deltas/<module>.md`,
+   with each requirement it adds under `## ADDED` and each one it changes, with its
+   whole new text, under `## MODIFIED`, each as `### REQUIREMENT <id>`, the text and
+   its `Acceptance Criteria` list (docs/cli.md, "A new project and its first change").
+   The deltas name exactly the specs the change affects; check they exist before the
+   scope approval, since SpecSync can call a draft ready without one.
 4. Estimate meaningful increments with relative size and the main uncertainty. Do not
    invent precise hours. Run `chough timing` and use its history ranges (per stage, bug
    fix and human gate) as the basis: they are elapsed wall-clock time, not effort, and

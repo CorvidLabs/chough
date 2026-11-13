@@ -230,3 +230,99 @@ fn a_project_has_the_same_snapshot_at_the_root_and_in_a_subdirectory() {
     );
     assert_eq!(in_app["dirty"], at_root["dirty"]);
 }
+
+/// Fresh-eyes finding 5 (t38j, 2026-11-12): `chough context` reads each AGENTS.md from the
+/// project's Git root down to the project, and none above the repository (a home folder's,
+/// say), naming each relative to the project, so the packet never prints an absolute path.
+#[cfg(unix)]
+#[test]
+fn context_reads_agents_md_from_the_git_root_down_only() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.write("AGENTS.md", "SYNTHETIC-ABOVE-THE-REPOSITORY\n");
+    fixture.write("repo/AGENTS.md", "SYNTHETIC-REPOSITORY-ROOT\n");
+    for (name, content) in [
+        ("AGENTS.md", "SYNTHETIC-PROJECT\n"),
+        ("INTENT.md", "A user wants a reliable product.\n"),
+        ("specs/cli/cli.spec.md", "# CLI contract\n"),
+        (
+            "specs/cli/requirements.md",
+            "### REQ-cli-001\nPreserve files.\n",
+        ),
+    ] {
+        fixture.write(&format!("repo/app/{name}"), content);
+    }
+    let repo = fixture.root().join("repo");
+    assert!(
+        Command::new("git")
+            .arg("-C")
+            .arg(&repo)
+            .args(["init", "-q"])
+            .status()
+            .unwrap()
+            .success()
+    );
+    let app = repo.join("app");
+    let chough = |args: &[&str]| {
+        let mut paths = vec![fixture.root().join("bin")];
+        paths.extend(std::env::split_paths(
+            &std::env::var_os("PATH").unwrap_or_default(),
+        ));
+        let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(&app)
+            .args(args)
+            .current_dir(&app)
+            .env("PATH", std::env::join_paths(paths).unwrap())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{args:?} failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        String::from_utf8(output.stdout).unwrap()
+    };
+    chough(&[
+        "init",
+        "--objective",
+        "Ship a focused change",
+        "--module",
+        "cli",
+    ]);
+
+    let packet: Value = serde_json::from_str(&chough(&["context", "--json"])).unwrap();
+    let sections = packet["sections"].as_array().unwrap();
+    let agents: Vec<(&str, &str)> = sections
+        .iter()
+        .filter(|section| {
+            section["source"]
+                .as_str()
+                .is_some_and(|source| source.ends_with("AGENTS.md"))
+        })
+        .map(|section| {
+            (
+                section["source"].as_str().unwrap(),
+                section["content"].as_str().unwrap_or_default(),
+            )
+        })
+        .collect();
+    assert_eq!(
+        agents,
+        vec![
+            ("../AGENTS.md", "SYNTHETIC-REPOSITORY-ROOT\n"),
+            ("AGENTS.md", "SYNTHETIC-PROJECT\n"),
+        ],
+        "{packet:#}"
+    );
+    let text = chough(&["context"]);
+    let root = fixture.root().canonicalize().unwrap();
+    for shown in [packet.to_string(), text] {
+        assert!(!shown.contains("SYNTHETIC-ABOVE-THE-REPOSITORY"), "{shown}");
+        assert!(!shown.contains(&*root.to_string_lossy()), "{shown}");
+        assert!(
+            !shown.contains(&*fixture.root().to_string_lossy()),
+            "{shown}"
+        );
+    }
+}

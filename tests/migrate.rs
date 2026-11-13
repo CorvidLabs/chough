@@ -74,7 +74,7 @@ fn sha256(bytes: &[u8]) -> String {
 fn migrate_previews_applies_and_keeps_every_byte_in_git() {
     let fixture = sessions_project("v0.5.0");
     let before = files(fixture.root());
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert_eq!(files(fixture.root()), before, "the preview wrote something");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     assert_eq!(plan["unaccounted"], serde_json::json!([]), "{plan:#}");
@@ -128,7 +128,7 @@ fn migrate_previews_applies_and_keeps_every_byte_in_git() {
     let session = ".chough/sessions/fixture-first.json";
     let committed = fixture.read(session);
     fixture.write(session, &committed.replace("\"plan\"", "\"plan\" "));
-    let replanned = fixture.ok(&["migrate"])["plan_digest"]
+    let replanned = fixture.ok(&["migrate", "--json"])["plan_digest"]
         .as_str()
         .unwrap()
         .to_string();
@@ -140,7 +140,7 @@ fn migrate_previews_applies_and_keeps_every_byte_in_git() {
     fixture.write(session, &committed);
     assert_eq!(files(fixture.root()), before);
 
-    let replanned = fixture.ok(&["migrate"]);
+    let replanned = fixture.ok(&["migrate", "--json"]);
     for key in plan.as_object().unwrap().keys() {
         assert_eq!(
             replanned[key], plan[key],
@@ -203,7 +203,7 @@ fn every_release_fixture_previews_with_nothing_unaccounted_for_sessions() {
     for tag in ["v0.1.0", "v0.2.0", "v0.3.0", "v0.4.0", "v0.5.0"] {
         let fixture = sessions_project(tag);
         let before = files(fixture.root());
-        let plan = fixture.ok(&["migrate"]);
+        let plan = fixture.ok(&["migrate", "--json"]);
         assert_eq!(
             plan["unaccounted"],
             serde_json::json!([]),
@@ -215,7 +215,7 @@ fn every_release_fixture_previews_with_nothing_unaccounted_for_sessions() {
             before,
             "{tag}: the preview wrote something"
         );
-        let again = fixture.ok(&["migrate"]);
+        let again = fixture.ok(&["migrate", "--json"]);
         assert_eq!(
             again["plan_digest"], plan["plan_digest"],
             "{tag}: the plan is not stable"
@@ -260,7 +260,7 @@ fn fixture_dir(name: &str) -> std::path::PathBuf {
 
 /// Preview, then apply the previewed digest with `consent`.
 fn migrate(fixture: &Fixture, consent: Option<&str>) -> (Value, Value) {
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert_eq!(plan["unaccounted"], serde_json::json!([]), "{plan:#}");
     let digest = plan["plan_digest"].as_str().unwrap().to_string();
     let mut args = vec!["migrate", "--apply", digest.as_str()];
@@ -542,6 +542,8 @@ fn a_vaulted_adopter_migrates_and_writes_work() {
     assert!(!fixture.exists("knowledge/attachments/adopter"));
 
     fixture.ok(&["checkpoint", "--awaiting-human", "Review"]);
+    // Every gate close names a configured human (REQ-records-008).
+    fixture.configure_human();
     fixture.ok(&[
         "checkpoint",
         "--close-gate",
@@ -557,7 +559,7 @@ fn a_vaulted_adopter_migrates_and_writes_work() {
         "--no-native",
     ]);
     let before = fixture.checkpoint()["stage"]["current"].clone();
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     assert_ne!(fixture.checkpoint()["stage"]["current"], before);
 }
 
@@ -605,7 +607,7 @@ fn a_weakened_archive_restores_every_removed_file_and_refuses() {
         &fixture.root().join("bin/specsync"),
         VALIDITY_STUB.as_bytes(),
     );
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     let digest = plan["plan_digest"].as_str().unwrap();
     let refused = fixture.fails(&["migrate", "--apply", digest, "--consent", CONSENT]);
     assert!(refused.contains("refused:archive-weakened"), "{refused}");
@@ -675,7 +677,7 @@ fn an_interrupted_apply_completes_to_the_uninterrupted_result() {
     );
 
     let stopped = migrate_project("adopted", &extra);
-    let first = stopped.ok(&["migrate"]);
+    let first = stopped.ok(&["migrate", "--json"]);
     assert_eq!(first["plan_digest"], plan["plan_digest"]);
     // The stop: every planned file but the last written, with its planned bytes. A
     // file that differs only in case from a planned removal (knowledge/index.md for
@@ -701,7 +703,7 @@ fn an_interrupted_apply_completes_to_the_uninterrupted_result() {
         }
         stopped.write(path, &whole.read(path));
     }
-    let again = stopped.ok(&["migrate"]);
+    let again = stopped.ok(&["migrate", "--json"]);
     assert_eq!(
         again["plan_digest"], plan["plan_digest"],
         "the files an interrupted apply wrote changed the plan"
@@ -752,7 +754,7 @@ fn an_interrupted_apply_completes_to_the_uninterrupted_result() {
 #[test]
 fn an_existing_target_with_other_bytes_refuses_and_writes_nothing_more() {
     let fixture = migrate_project("adopted", &[]);
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     let target = planned(&plan, "-adopter.md");
     fixture.write(&target, "SYNTHETIC other bytes\n");
     let before = files(fixture.root());
@@ -842,7 +844,7 @@ fn every_legacy_file_and_artifact_is_accounted_for() {
             (run, "{\"schema_version\": 1}\n"),
         ],
     );
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     for path in [
         ".chough/session.v1.json",
         ".chough/pruned.jsonl",
@@ -949,7 +951,7 @@ fn an_unmigrated_tree_is_refused_with_the_migrate_command() {
     let refused: [&[&str]; 8] = [
         &["next"],
         &["status"],
-        &["stage", "advance"],
+        &["stage", "advance", "--json"],
         &["checkpoint", "--decision", "SYNTHETIC decision"],
         &[
             "evidence",
@@ -1009,7 +1011,7 @@ fn an_unmigrated_tree_is_refused_with_the_migrate_command() {
     }
 
     // migrate, doctor and skill run on the same tree; clap answers --help and --version.
-    let plan = fixture.ok(&["migrate"]);
+    let plan = fixture.ok(&["migrate", "--json"]);
     assert!(
         plan["apply"]
             .as_str()
@@ -1255,15 +1257,11 @@ fn a_second_migrate_keeps_an_open_bugs_fixture_and_has_nothing_to_remove() {
         "{plan:#}"
     );
     fixture.commit("migrated");
-    let again = fixture.ok(&["migrate"]);
-    assert_eq!(again["sources"], serde_json::json!({}), "{again:#}");
-    assert!(
-        !again["removed"]
-            .as_object()
-            .unwrap()
-            .contains_key(fixture_path),
-        "{again:#}"
-    );
+    // No 0.5.x record is left, so the preview carries and removes nothing: it says
+    // there is nothing to migrate and gives no plan digest.
+    let again = fixture.ok(&["migrate", "--json"]);
+    assert!(again["nothing_to_do"].is_string(), "{again:#}");
+    assert!(again["plan_digest"].is_null(), "{again:#}");
     assert!(fixture.exists(fixture_path));
 }
 
@@ -1344,4 +1342,345 @@ fn the_migration_follow_ups_name_the_merge_lines_and_drivers() {
         receipt.contains("knowledge/journal/feed.xml merge=chough-generated"),
         "{receipt}"
     );
+}
+
+/// REQ-records-009, REQ-records-003, TC-records-a-0-5-pointer-still-names-its-session
+/// (D1): migrating in place keeps the machine-local active-session pointer, which a
+/// 0.5.x project wrote as the session's key; that key is now the session's alias, so
+/// `status` reads the session it names and doctor reports no stale pointer.
+#[test]
+fn a_pointer_naming_a_migrated_key_still_names_its_session() {
+    let fixture = migrate_project("adopted", &[]);
+    fixture.write(".chough/local/active-session", "open-one\n");
+    migrate(&fixture, Some(CONSENT));
+    let status = fixture.ok(&["status", "--json"]);
+    assert_eq!(
+        status["objective"], "Open work one",
+        "status does not read open-one: {status:#}"
+    );
+    let output = fixture.run(&["doctor"]);
+    let report = String::from_utf8_lossy(&output.stdout);
+    assert!(!report.contains("stale_pointer"), "{report}");
+}
+
+/// REQ-records-009, TC-records-the-migrate-preview-warns-of-open-changes: while a native
+/// change is open, the preview says up front that `--apply` will refuse, naming it, and
+/// writes nothing; the apply then refuses with `refused:change-open`. With no open change
+/// the preview carries no such warning.
+#[test]
+fn the_preview_names_open_native_changes_that_make_apply_refuse() {
+    let extra = [(
+        ".specsync/changes/open-work/state.json",
+        "{\"id\": \"open-work\", \"state\": \"draft\"}\n",
+    )];
+    let fixture = migrate_project("adopted", &extra);
+    let before = files(fixture.root());
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(
+        plan["apply_refused"]["refusal"], "refused:change-open",
+        "{plan:#}"
+    );
+    assert_eq!(
+        plan["apply_refused"]["changes"],
+        serde_json::json!(["open-work"]),
+        "{plan:#}"
+    );
+    assert_eq!(files(fixture.root()), before, "the preview wrote");
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert!(refused.contains("refused:change-open"), "{refused}");
+    std::fs::remove_dir_all(fixture.root().join(".specsync/changes/open-work")).unwrap();
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert!(plan["apply_refused"].is_null(), "{plan:#}");
+}
+
+/// TC-records-migration-docs-name-every-key (t38j's fresh-eyes report): the Migration
+/// section of docs/cli.md names every key the preview and the apply print, so `becomes`
+/// and `unstaged` are no longer undocumented.
+#[test]
+fn the_migration_docs_name_every_key_the_preview_and_apply_print() {
+    let fixture = migrate_project("adopted", &[]);
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    let docs =
+        std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/cli.md")).unwrap();
+    let section = docs
+        .split("\n## Migration\n")
+        .nth(1)
+        .expect("a Migration section");
+    let section = &section[..section.find("\n## ").unwrap_or(section.len())];
+    for (output, value) in [("preview", &plan), ("apply", &applied)] {
+        for key in value.as_object().unwrap().keys() {
+            if key == "schema_version" {
+                continue;
+            }
+            assert!(
+                section.contains(&format!("`{key}`")),
+                "the Migration section does not name the {output}'s `{key}`"
+            );
+        }
+    }
+}
+
+/// REQ-records-009: the receipt lists everything as before, with `none` under any of its
+/// sections that has nothing to list. A migration with no redaction, no kept leak and
+/// nothing left uncarried writes `none` under Redactions, Kept with leaks and Not
+/// carried, and a section that lists something lists it as before.
+#[test]
+fn a_receipt_section_with_nothing_to_list_says_none() {
+    let fixture = sessions_project("v0.5.0");
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    for key in ["redactions", "kept_with_leaks", "gaps"] {
+        let empty = plan[key].as_array().is_some_and(Vec::is_empty)
+            || plan[key].as_object().is_some_and(|map| map.is_empty());
+        assert!(empty, "{key} is not empty: {plan:#}");
+    }
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    let first_line = |heading: &str| {
+        receipt
+            .split_once(&format!("\n## {heading}\n\n"))
+            .unwrap_or_else(|| panic!("no ## {heading} in\n{receipt}"))
+            .1
+            .lines()
+            .next()
+            .unwrap_or_default()
+            .to_string()
+    };
+    for heading in ["Redactions", "Kept with leaks", "Not carried"] {
+        assert_eq!(first_line(heading), "none", "## {heading} in\n{receipt}");
+    }
+    assert!(first_line("After").starts_with("- `"), "{receipt}");
+}
+
+/// jackdaw's migration (no contract text): every `session.md` that `chough migrate
+/// --apply` writes ends with exactly one newline, so `git diff --check` passes on the
+/// migration commit. Each open session's Timeline is its last section, and it closed
+/// with a blank line: "new blank line at EOF".
+#[test]
+fn every_migrated_session_md_ends_with_exactly_one_newline() {
+    let fixture = migrate_project("adopted", &[]);
+    let (plan, _) = migrate(&fixture, Some(CONSENT));
+    let sessions: Vec<String> = written(&plan)
+        .into_iter()
+        .filter(|path| path.ends_with("/session.md"))
+        .collect();
+    assert!(!sessions.is_empty(), "{plan:#}");
+    for path in &sessions {
+        let text = fixture.read(path);
+        assert!(
+            text.ends_with('\n') && !text.ends_with("\n\n"),
+            "{path} does not end with exactly one newline:\n{text}"
+        );
+    }
+    fixture.git(&["add", "-A"]);
+    let check = std::process::Command::new("git")
+        .args(["diff", "--cached", "--check"])
+        .current_dir(fixture.root())
+        .output()
+        .unwrap();
+    assert!(
+        check.status.success(),
+        "git diff --check:\n{}",
+        String::from_utf8_lossy(&check.stdout)
+    );
+}
+
+/// REQ-records-009, F10 of the second fresh-eyes round: on a tree with no 0.5.x record the
+/// preview says there is nothing to migrate, gives no plan digest and writes nothing, both
+/// on a tree already migrated and on a project that never held a 0.5.x record. The apply's
+/// nothing-to-do answer stays.
+#[test]
+fn a_preview_with_no_0_5_x_record_says_nothing_to_migrate_and_gives_no_digest() {
+    let migrated = migrate_project("adopted", &[]);
+    let (plan, _) = migrate(&migrated, Some(CONSENT));
+    migrated.commit("migrated");
+    let never = Fixture::new();
+    never.stubs();
+    never.init();
+    never.commit("a 0.6.0 project");
+    for (label, project) in [("migrated", &migrated), ("never 0.5.x", &never)] {
+        let before = files(project.root());
+        let preview = project.ok(&["migrate", "--json"]);
+        assert!(
+            files(project.root()) == before,
+            "{label}: the preview wrote"
+        );
+        for key in ["plan_digest", "apply"] {
+            assert!(
+                preview[key].is_null(),
+                "{label}: gives `{key}`: {preview:#}"
+            );
+        }
+        let says = preview["nothing_to_do"]
+            .as_str()
+            .unwrap_or_else(|| panic!("{label}: no `nothing_to_do`: {preview:#}"));
+        assert!(says.contains("nothing to migrate"), "{label}: {says}");
+    }
+    let applied = migrated.ok(&[
+        "migrate",
+        "--apply",
+        plan["plan_digest"].as_str().unwrap(),
+        "--consent",
+        CONSENT,
+    ]);
+    assert_eq!(applied["applied"], false, "{applied:#}");
+    assert!(applied["nothing_to_do"].is_string(), "{applied:#}");
+}
+
+/// REQ-records-009, F12d of the second fresh-eyes round: a receipt with two follow-ups,
+/// the verification exclusions and the merge lines, has one `## Follow-up` heading
+/// holding both.
+#[test]
+fn a_receipt_has_one_follow_up_heading_for_every_follow_up() {
+    let policy =
+        "{\n  \"version\": 2,\n  \"enabled\": true,\n  \"verification_ignored_paths\": []\n}\n";
+    let fixture = migrate_project("adopted", &[(".specsync/sdd.json", policy)]);
+    let (plan, applied) = migrate(&fixture, Some(CONSENT));
+    let follow_ups: Vec<&str> = plan["follow_ups"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|follow_up| follow_up.as_str().unwrap())
+        .collect();
+    assert_eq!(follow_ups.len(), 2, "{plan:#}");
+    let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+    assert_eq!(receipt.matches("\n## Follow-up\n").count(), 1, "{receipt}");
+    let section = receipt.split_once("\n## Follow-up\n").unwrap().1;
+    for follow_up in follow_ups {
+        assert!(
+            section.contains(follow_up),
+            "{follow_up} missing from\n{section}"
+        );
+    }
+}
+
+/// REQ-records-009, F12b of the third fresh-eyes round: a person consents to the plan, so
+/// `chough migrate` prints it as text, naming each 0.5.x file with its SHA-256 and what it
+/// becomes, each file it writes, each redaction by file, field and kind, each removal and
+/// the digest with the apply command, and writes nothing; `chough migrate --json` prints
+/// the same plan and digest as JSON.
+#[test]
+fn the_preview_prints_the_plan_as_text_and_the_same_plan_as_json() {
+    let fixture = migrate_project("adopted", &[]);
+    let before = files(fixture.root());
+    let output = fixture.run(&["migrate"]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(
+        serde_json::from_str::<Value>(&text).is_err(),
+        "the preview is JSON:\n{text}"
+    );
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert!(files(fixture.root()) == before, "the preview wrote");
+    let digest = plan["plan_digest"].as_str().unwrap();
+    assert!(
+        text.contains(&format!("chough migrate --apply {digest}")),
+        "{text}"
+    );
+    let mut named: Vec<String> = vec![];
+    for (path, sha) in plan["sources"].as_object().unwrap() {
+        named.push(format!("`{path}` {}", sha.as_str().unwrap()));
+    }
+    for targets in plan["becomes"].as_object().unwrap().values() {
+        for target in targets.as_array().unwrap() {
+            named.push(format!("`{}`", target.as_str().unwrap()));
+        }
+    }
+    for write in written(&plan) {
+        named.push(format!("`{write}`"));
+    }
+    let redactions = plan["redactions"].as_array().unwrap();
+    assert!(!redactions.is_empty(), "{plan:#}");
+    for redaction in redactions {
+        named.push(format!(
+            "`{}` {}: {}",
+            redaction["file"].as_str().unwrap(),
+            redaction["field"].as_str().unwrap(),
+            redaction["kind"].as_str().unwrap()
+        ));
+    }
+    let removed = plan["removed"].as_object().unwrap();
+    assert!(!removed.is_empty(), "{plan:#}");
+    for path in removed.keys() {
+        named.push(format!("`{path}`"));
+    }
+    for part in named {
+        assert!(text.contains(&part), "{part} is not named in\n{text}");
+    }
+}
+
+/// Install a skill bundle as the project's shared copy, `.agents/skills/chough-workflow/`:
+/// release `tag`'s files from tests/fixtures/skill-releases, or the current bundle.
+fn install_skill(fixture: &Fixture, tag: Option<&str>) {
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/skill-releases");
+    let manifest: Value =
+        serde_json::from_str(&std::fs::read_to_string(fixtures.join("manifest.json")).unwrap())
+            .unwrap();
+    let files: Vec<(String, Vec<u8>)> = match tag {
+        Some(tag) => manifest["releases"][tag]["files"]
+            .as_object()
+            .unwrap()
+            .iter()
+            .map(|(file, entry)| {
+                let blob = format!("blobs/{}.txt", entry["sha256"].as_str().unwrap());
+                (file.clone(), std::fs::read(fixtures.join(blob)).unwrap())
+            })
+            .collect(),
+        None => manifest["current_bundle_sha256"]
+            .as_object()
+            .unwrap()
+            .keys()
+            .map(|file| {
+                let source = Path::new(env!("CARGO_MANIFEST_DIR"))
+                    .join("skills/chough-workflow")
+                    .join(file);
+                (file.clone(), std::fs::read(source).unwrap())
+            })
+            .collect(),
+    };
+    assert!(!files.is_empty());
+    for (file, bytes) in files {
+        let target = fixture
+            .root()
+            .join(".agents/skills/chough-workflow")
+            .join(file);
+        std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+        std::fs::write(target, bytes).unwrap();
+    }
+}
+
+/// REQ-records-009, F3 of the fourth fresh-eyes round: a migrated project's installed
+/// skill copy is still the 0.5.x one, naming removed commands and paths, so while it is
+/// not current, as `chough skill status` reports it, the preview's and the receipt's
+/// follow-ups name `chough skill update`; with a current copy they do not.
+#[test]
+fn the_migration_follow_ups_name_skill_update_while_the_skill_copy_is_not_current() {
+    for (tag, named) in [(Some("v0.5.0"), true), (None, false)] {
+        let fixture = migrate_project("adopted", &[]);
+        install_skill(&fixture, tag);
+        fixture.commit("the installed skill copy");
+        let status = fixture.ok(&["skill", "status"]);
+        let states = status["hosts"].to_string();
+        assert_eq!(
+            states.contains("known-outdated"),
+            named,
+            "{tag:?}: {status:#}"
+        );
+        let (plan, applied) = migrate(&fixture, Some(CONSENT));
+        let follow_ups = plan["follow_ups"].to_string();
+        assert_eq!(
+            follow_ups.contains("chough skill update"),
+            named,
+            "{tag:?}: {follow_ups}"
+        );
+        let receipt = fixture.read(applied["receipt"].as_str().unwrap());
+        assert_eq!(
+            receipt.contains("chough skill update"),
+            named,
+            "{tag:?}: {receipt}"
+        );
+    }
 }

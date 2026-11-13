@@ -24,7 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
-- [Ship human-first Chough records as one change, Chough 0.6.0: readable one-file Markdown records, date+slug session folders with agent/ working files, one-file archived stories, journal and feed, one source of truth, no leaks, gate approvals as the approving human; dogfooded on the chough repo only](journal/2026-11-12-ship-human-first-chough-records-as-one-change-chough-0-6-0.md) (2026-11-12, shipped)
+- [Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds](journal/2026-11-13-chough-0-6-0-release-prep-the-dogfood-cycle-and-four-fresh.md) (2026-11-13, shipped)
+- [Chough 0.6.0: human-first records](journal/2026-11-12-chough-0-6-0-human-first-records.md) (2026-11-12, shipped)
+- [Turn the MVP interview into intent and a 1.0 roadmap](journal/2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md) (2026-11-12, shipped) (no time)
+- [Return observation and case IDs from cases record and evidence add](journal/2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md) (2026-11-10, shipped)
+- [Keep gated finished sessions open on session use and new (#181)](journal/2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md) (2026-11-10, shipped)
+- [Keep observations current across knowledge index rebuilds (#136)](journal/2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md) (2026-11-10, shipped)
+- [Refuse new sessions when the adopted legacy log is missing (#113)](journal/2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113.md) (2026-11-10, shipped)
+- [Move two #192 test cases into their own files (#196)](journal/2026-11-10-move-two-192-test-cases-into-their-own-files-196.md) (2026-11-10, shipped)
+- [Read diagnostic input inventories without touching freshness](journal/2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md) (2026-11-09, closed)
+- [Recognize pristine skill files from released bundles (#102)](journal/2026-11-09-recognize-pristine-skill-files-from-released-bundles-102.md) (2026-11-09, closed)
 
 ## Where things live
 
@@ -37,15 +46,17 @@ Newest posts:
 
 ## Open bugs
 
-7 open bugs, blocking first, then newest.
+9 open bugs, blocking first, then newest.
 
-- [2026-11-11-verify-lane-test-step-fails-intermittently-under-load-green-on](../.chough/bugs/2026-11-11-verify-lane-test-step-fails-intermittently-under-load-green-on.md) Verify lane test step fails intermittently under load, green on isolated rerun (open)
-- [2026-11-07-full-macos-lane-checkpoint-writer-lock-timeout](../.chough/bugs/2026-11-07-full-macos-lane-checkpoint-writer-lock-timeout.md) Full macOS lane checkpoint writer lock timeout (open)
-- [2026-11-06-an-empty-change-directory-left-by-a-branch-switch-counts-as-an](../.chough/bugs/2026-11-06-an-empty-change-directory-left-by-a-branch-switch-counts-as-an.md) An empty change directory left by a branch switch counts as an open native change (open)
-- [2026-11-06-timing-trace-test-flakes-under-load-when-paired-runs-cross-a](../.chough/bugs/2026-11-06-timing-trace-test-flakes-under-load-when-paired-runs-cross-a.md) timing trace test flakes under load when paired runs cross a second (open)
-- [2026-11-02-timing-native-budget-regression-sometimes-records-no-initial](../.chough/bugs/2026-11-02-timing-native-budget-regression-sometimes-records-no-initial.md) Timing native-budget regression sometimes records no initial stub call on MSRV (open)
-- [2026-10-31-a-failing-specsync-change-check-may-still-record-passed](../.chough/bugs/2026-10-31-a-failing-specsync-change-check-may-still-record-passed.md) A failing SpecSync change check may still record passed verification (open)
-- [2026-10-31-specsync-change-status-keeps-approval-valid-true-after-an](../.chough/bugs/2026-10-31-specsync-change-status-keeps-approval-valid-true-after-an.md) SpecSync change status keeps approval_valid true after an approved delta is edited (open)
+- [2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry](../.chough/bugs/2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry.md) At the 400-observation cap, cases run writes its evidence entry and then refuses, leaving it unreferenced (deferred)
+- [2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open](../.chough/bugs/2026-11-12-chough-next-with-no-open-session-exits-1-with-error-no-open.md) chough next with no open session exits 1 with Error: no open session (deferred)
+- [2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their](../.chough/bugs/2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their.md) The intent gate summary names criterion IDs without their sentences and says the diff is unknown (deferred)
+- [2026-11-12-the-leak-check-reads-an-ordinary-word-equal-to-a-short-host](../.chough/bugs/2026-11-12-the-leak-check-reads-an-ordinary-word-equal-to-a-short-host.md) The leak check reads an ordinary word equal to a short host name as a host-name leak (deferred)
+- [2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from](../.chough/bugs/2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from.md) A fresh project's records README names artifacts as kept from 0.5.x, and the README init paragraph is long (deferred)
+- [2026-11-12-migrated-records-keep-old-observation-ids-in-their-front](../.chough/bugs/2026-11-12-migrated-records-keep-old-observation-ids-in-their-front.md) Migrated records keep old observation IDs in their front matter (deferred)
+- [2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one](../.chough/bugs/2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one.md) A bug body runs its symptom and its Actual line into one paragraph (deferred)
+- [2026-11-12-chough-change-ship-prints-specsync-s-text-a-long-json](../.chough/bugs/2026-11-12-chough-change-ship-prints-specsync-s-text-a-long-json.md) chough change ship prints SpecSync's text, a long JSON checkpoint and the move summary together (deferred)
+- [2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate](../.chough/bugs/2026-11-12-chough-timing-still-says-elapsed-wall-clock-on-the-human-gate.md) chough timing still says elapsed wall-clock on the human-gate line, and its notes say read read-only (deferred)
 
 ## Rules, skills and decisions
 
@@ -72,13 +83,16 @@ Each module's lessons stay in its lesson source:
 
 Lessons that span projects:
 
-- none
+- [lessons/2026-11-12-build-test-targets-before-a-recorded-run.md](lessons/2026-11-12-build-test-targets-before-a-recorded-run.md)
+- [lessons/2026-11-12-macos-checks-a-new-executable-on-its-first-run.md](lessons/2026-11-12-macos-checks-a-new-executable-on-its-first-run.md)
+- [lessons/2026-11-12-merge-main-back-with-ours-only-when-the-trees-match.md](lessons/2026-11-12-merge-main-back-with-ours-only-when-the-trees-match.md)
+- [lessons/2026-11-12-re-scoping-a-specsync-change.md](lessons/2026-11-12-re-scoping-a-specsync-change.md)
 
 Lesson bundles of the newest 3 archived changes:
 
+- [prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood](../.specsync/archive/changes/2026-11-13-prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood/lesson-bundle.md), Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found
 - [chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an](../.specsync/archive/changes/2026-11-12-chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an/lesson-bundle.md), Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt
 - [capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping](../.specsync/archive/changes/2026-11-11-capture-the-2026-11-10-mvp-interview-as-hi-criteria-and-add-the-1-0-roadmap-test-plan-and-draft-issue-mapping/lesson-bundle.md), Capture the 2026-11-10 MVP interview as hi criteria and add the 1.0 roadmap, test plan and draft issue mapping
-- [return-the-observation-id-from-cases-record-and-evidence-add-issue-60](../.specsync/archive/changes/2026-11-10-return-the-observation-id-from-cases-record-and-evidence-add-issue-60/lesson-bundle.md), Return the observation ID from cases record and evidence add (issue 60)
 
 ## Snapshots and briefs
 

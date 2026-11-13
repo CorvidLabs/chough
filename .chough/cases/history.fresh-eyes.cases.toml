@@ -1,0 +1,205 @@
+profile = "chough-testing/1"
+module = "history"
+
+# t38j's fresh-eyes report on 0.6.0 (2026-11-12): labelled Timeline fields and receipts in
+# time order.
+
+[[case]]
+id = "TC-history-relay-fields-are-labelled-lines"
+title = "A relayed decision's relayed_by is written as labelled lines, never JSON, and history show reads it and an earlier JSON entry"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2"]
+requirements = ["REQ-history-002"]
+paths = ["src/session_md.rs", "tests/relay.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/relay.rs::a_relayed_decision_is_written_as_labelled_lines_and_reads_back passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "relay"
+test = "a_relayed_decision_is_written_as_labelled_lines_and_reads_back"
+
+[[case]]
+id = "TC-history-direct-write-fields-are-labelled-lines"
+title = "A direct write's direct_write is written as labelled lines with its files one level further, never JSON, and reads back whole"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-2"]
+requirements = ["REQ-history-002"]
+paths = ["src/session_md.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/direct_writes.rs::a_direct_write_is_written_as_labelled_lines passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "a_direct_write_is_written_as_labelled_lines"
+
+[[case]]
+id = "TC-history-story-receipts-in-time-order"
+title = "A story's receipts are in observation-time order, oldest first, whatever order their names sort in"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-history-006"]
+paths = ["src/evidence.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::a_storys_receipts_are_in_observation_time_order passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "a_storys_receipts_are_in_observation_time_order"
+
+[[case]]
+id = "TC-history-direct-write-entry-says-what-changed"
+title = "A direct-native-write Timeline entry says which lifecycle files changed outside Chough and how the state moved"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-21"]
+requirements = ["REQ-history-013"]
+paths = ["src/direct_writes.rs", "src/stage.rs", "tests/direct_writes.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/direct_writes.rs::a_direct_write_entry_says_what_changed_outside_chough passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "direct_writes"
+test = "a_direct_write_entry_says_what_changed_outside_chough"
+
+[[case]]
+id = "TC-history-session-list-archived-story-is-finished"
+title = "session list reports an archived story finished, closed at done or without done, with no fix, and an open session short of done unfinished"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_list_reports_an_archived_story_as_finished passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_list_reports_an_archived_story_as_finished"
+
+# The second fresh-eyes round on 0.6.0 (2026-11-12), Leif's yes at 19:43Z.
+
+[[case]]
+id = "TC-history-doctor-names-an-outdated-merge-driver-chough"
+title = "With the merge drivers set and an older chough first on PATH, doctor reports merge_driver_outdated naming both versions and the install command and exits 1; the same version or no driver set reports none"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/library.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_reports_merge_drivers_that_would_run_an_older_chough passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_reports_merge_drivers_that_would_run_an_older_chough"
+
+[[case]]
+id = "TC-history-story-lists-each-cases-latest-run"
+title = "A story's What was verified gives each case's latest run and every entry bound to no case, one line each with a command once, and one line counting the earlier runs, which stay in receipts"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_lists_each_cases_latest_run_once_and_counts_the_earlier_ones"
+
+[[case]]
+id = "TC-history-archived-story-says-archived"
+title = "An archived story's front matter gives stage_status archived and no next, at done and closed without done, and session list, history show, timing and doctor still read it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-13", "LIFE-3"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "src/checkpoint.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_archived_story_says_archived_and_keeps_no_next passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_archived_story_says_archived_and_keeps_no_next"
+
+[[case]]
+id = "TC-history-start-entry-starts-the-first-segment"
+title = "chough init and chough session new each write one start entry with the starting stage and the objective or key, timing reads it as the start of the first segment, and a timeline without one still reads"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "DRIVE-3"]
+requirements = ["REQ-history-002"]
+paths = ["src/stage.rs", "src/sessions.rs", "src/timing.rs", "tests/timing.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/timing.rs::init_and_session_new_write_a_start_entry_that_timing_reads passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "timing"
+test = "init_and_session_new_write_a_start_entry_that_timing_reads"
+
+[[case]]
+id = "TC-history-session-close-records-withdrawn-gates"
+title = "chough session close on a session with an open human gate withdraws it with one gate-closed entry and no decision, names it under withdrawn_gates, and the story lists no gate as awaiting"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16", "FLOW-13"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "src/checkpoint.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_close_records_the_gates_it_withdraws passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_close_records_the_gates_it_withdraws"
+
+[[case]]
+id = "TC-history-story-receipts-last-and-bugs-named"
+title = "An archived story's front matter carries no receipts so its body starts within 20 lines, it names each bug of its checkpoint under Bugs with title, status and link, it ends with the Timeline and closing line, then Receipts as one fenced YAML block, and bug verification and timing read those receipts"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-7", "LIFE-3"]
+requirements = ["REQ-history-006"]
+paths = ["src/sessions.rs", "src/markdown.rs", "src/bugs.rs", "src/evidence.rs", "src/timing.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_story_puts_its_receipts_last_and_names_its_bugs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_puts_its_receipts_last_and_names_its_bugs"

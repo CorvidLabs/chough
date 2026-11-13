@@ -16,7 +16,7 @@ const ARCHIVE: &str = ".specsync/archive/changes/2026-05-01-c1";
 
 /// One archived native change, c1, a stub `specsync` reporting it archived and
 /// authenticated, and the checkpoint at accept on c1 with a PR, so `stage advance` moves
-/// into done. Where it stands holds a paragraph longer than a post may carry.
+/// into done. The Goal holds a paragraph longer than a post may carry.
 fn at_accept() -> Fixture {
     let fixture = Fixture::new();
     fixture.write(".specsync/config.toml", "specs_dir = \"specs\"\n");
@@ -60,16 +60,51 @@ fn at_accept() -> Fixture {
     let text = fixture.read(&file);
     let long =
         "The SYNTHETIC change shipped and every case passed on the recorded revision. ".repeat(30);
-    let stands = format!("## Where it stands\n\n{}\n\n", long.trim_end());
-    let (head, rest) = text
-        .split_once("## Where it stands\n")
-        .expect("a Where it stands section");
+    let goal = format!("## Goal\n\n{}\n\n", long.trim_end());
+    let (head, rest) = text.split_once("## Goal\n").expect("a Goal section");
     let rest = rest
         .find("\n## ")
         .map_or(String::new(), |at| rest[at + 1..].to_string());
-    fixture.write(&file, &format!("{head}{stands}{rest}"));
+    fixture.write(&file, &format!("{head}{goal}{rest}"));
     fixture.commit("fixture");
     fixture
+}
+
+/// Add `lines` to the end of section `heading` of the session file, as a person would.
+fn add_to_section(fixture: &Fixture, heading: &str, lines: &str) {
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let start = text
+        .find(&format!("## {heading}\n"))
+        .unwrap_or_else(|| panic!("no {heading} section"));
+    let end = text[start + 3..]
+        .find("\n## ")
+        .map_or(text.len(), |at| start + 3 + at + 1);
+    let section = text[start..end].trim_end();
+    fixture.write(
+        &file,
+        &format!("{}{section}\n{lines}\n{}", &text[..start], &text[end..]),
+    );
+}
+
+/// The move into done, returning the post's path and text and the story's text.
+fn advance_to_done(fixture: &Fixture) -> (String, String, String) {
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(
+        moved["applied"]["journal_post"]["status"], "written",
+        "{moved:#}"
+    );
+    let post = moved["applied"]["journal_post"]["post"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    let id = moved["applied"]["session_archive"]["id"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    let story = fixture.read(&format!(".chough/archive/sessions/{id}.md"));
+    let text = fixture.read(&post);
+    (post, text, story)
 }
 
 /// Every file under `relative`, with its bytes.
@@ -203,7 +238,7 @@ fn well_formed(xml: &str) -> Result<(), String> {
 #[test]
 fn done_writes_a_short_post_and_the_feed_lists_it() {
     let fixture = at_accept();
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
     let id = moved["applied"]["session_archive"]["id"]
         .as_str()
@@ -303,7 +338,7 @@ fn done_changes_no_knowledge_file_but_its_own_post_and_the_feed() {
     fixture.ok(&["library", "index"]);
     fixture.commit("vault");
     let before = tree(&fixture, "knowledge");
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
     let post = moved["applied"]["journal_post"]["post"]
         .as_str()
@@ -538,7 +573,7 @@ fn the_librarian_off_writes_no_post() {
         "Human: SYNTHETIC no librarian here",
     ]);
     let _ = std::fs::remove_dir_all(fixture.root().join("knowledge"));
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(
         moved["applied"]["journal_post"]["status"], "skipped",
         "{moved:#}"
@@ -1105,4 +1140,254 @@ fn journal_links_take_a_dot_slash_path_and_keep_a_fragment() {
             "{link} wrote something"
         );
     }
+}
+
+/// REQ-records-011, TC-records-journal-post-uses-the-title-and-summary: the agent sets the
+/// post's short title and summary with `chough checkpoint --title` and `--summary` before
+/// the move into done; the post uses them, one paragraph per summary line, and the story
+/// keeps both. A title over 72 bytes or holding a line break, and a summary over 900
+/// bytes, are refused with nothing written, and an empty value removes the field.
+#[test]
+fn the_post_uses_the_title_and_summary_the_agent_set() {
+    let fixture = at_accept();
+    let file = fixture.session_file();
+    let before = fixture.read(&file);
+    let long_title = "t".repeat(73);
+    let long_summary = "s".repeat(901);
+    for (args, why) in [
+        (vec!["checkpoint", "--title", long_title.as_str()], "72"),
+        (vec!["checkpoint", "--title", "two\nlines"], "one line"),
+        (
+            vec!["checkpoint", "--summary", long_summary.as_str()],
+            "900",
+        ),
+    ] {
+        let refused = fixture.fails(&args);
+        assert!(refused.contains(why), "{args:?}: {refused}");
+        assert_eq!(fixture.read(&file), before, "{args:?} wrote");
+    }
+    let title = "Chough 0.6.0: human-first records";
+    let lines = [
+        "Records became one Markdown file each, because people read them first.",
+        "The full suite passed: 641 tests on the final commit.",
+        "Next: the tag, once Leif says go.",
+    ];
+    fixture.ok(&["checkpoint", "--title", "A first try"]);
+    fixture.ok(&["checkpoint", "--title", ""]);
+    let current = fixture.read(&file);
+    let (front, _) = split(&current);
+    assert_eq!(field(front, "title"), "", "an empty --title removes it");
+    let summary = format!("{}\n\n{}\n{}\n", lines[0], lines[1], lines[2]);
+    fixture.ok(&["checkpoint", "--title", title, "--summary", &summary]);
+    let (_, text, story) = advance_to_done(&fixture);
+    let (front, body) = split(&text);
+    assert_eq!(field(front, "title"), title, "{text}");
+    assert!(body.starts_with(&format!("# {title}\n\n")), "{body}");
+    assert!(
+        body.contains(&format!(
+            "{}\n\n{}\n\n{}\n\nRead more:",
+            lines[0], lines[1], lines[2]
+        )),
+        "{body}"
+    );
+    assert!(!body.contains("The SYNTHETIC change"), "{body}");
+    let (story_front, _) = split(&story);
+    assert_eq!(field(story_front, "title"), title, "{story}");
+    assert_eq!(items(story_front, "summary"), lines, "{story}");
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// REQ-records-011, TC-records-journal-post-derives-a-title-and-body: without a title or
+/// summary, the post's title is the objective's first clause and its body holds the Goal,
+/// `Why:` with the first decision, `Verified:` with the newest verified entry and `Next:`
+/// with the first open thread, cut at sentence ends within 1,200 bytes with its links.
+#[test]
+fn without_a_title_or_summary_the_post_derives_both_from_the_story() {
+    let fixture = at_accept();
+    fixture.ok(&[
+        "checkpoint",
+        "--objective",
+        "Ship human-first records as one change, readable Markdown files and one story per session: dogfooded here",
+        "--decision",
+        "Records are Markdown, because people read them first",
+        "--decision",
+        "A later decision that is not the why",
+        "--question",
+        "Tag the release once Leif says go",
+    ]);
+    add_to_section(
+        &fixture,
+        "What was verified",
+        "- The suite passed: 600 tests\n- The final run passed: 641 tests on the last commit",
+    );
+    let (_, text, _) = advance_to_done(&fixture);
+    let (front, body) = split(&text);
+    assert_eq!(
+        field(front, "title"),
+        "Ship human-first records as one change",
+        "{text}"
+    );
+    assert!(body.len() <= 1_200, "{} bytes: {body}", body.len());
+    let goal = body
+        .lines()
+        .find(|line| line.starts_with("The SYNTHETIC change"))
+        .unwrap_or_else(|| panic!("no Goal paragraph: {body}"));
+    assert!(goal.ends_with("revision."), "{goal}");
+    for part in [
+        "Why: Records are Markdown, because people read them first",
+        "Verified: The final run passed: 641 tests on the last commit",
+        "Next: Tag the release once Leif says go",
+    ] {
+        assert!(body.contains(&format!("\n\n{part}")), "{part}: {body}");
+    }
+    assert!(!body.contains("A later decision"), "{body}");
+    assert!(!body.contains("600 tests"), "{body}");
+}
+
+/// REQ-records-011, TC-records-journal-add-record-backfills-a-story: `chough journal add
+/// --record <story>` writes the post of an archived story that has none, dated by the
+/// story's `closed` with its latest Timeline time on that date, of kind `shipped` for a
+/// done story, with the story's links and `record`; a second post for the same story, and
+/// one for a story that does not exist, are refused with nothing written. A story whose
+/// Timeline ends on another date than `closed` gets a post with no `time`.
+#[test]
+fn journal_add_record_backfills_an_archived_story() {
+    let fixture = at_accept();
+    let (post, _, story_text) = advance_to_done(&fixture);
+    let (story_front, story_body) = split(&story_text);
+    let id = field(story_front, "id");
+    let story = format!(".chough/archive/sessions/{id}.md");
+    let closed = field(story_front, "closed");
+    let latest = story_body
+        .lines()
+        .filter_map(|line| line.strip_prefix("- "))
+        .filter_map(|line| line.get(..20))
+        .filter(|time| time.len() == 20 && time.ends_with('Z') && time.as_bytes()[10] == b'T')
+        .max()
+        .expect("a timed Timeline entry")
+        .to_string();
+    assert!(latest.starts_with(&closed), "{latest} {closed}");
+    std::fs::remove_file(fixture.root().join(&post)).unwrap();
+    fixture.commit("the story, without its post");
+    let missing = fixture.fails(&[
+        "journal",
+        "add",
+        "--record",
+        "2001-01-01-no-such-story",
+        "--title",
+        "T",
+        "--body",
+        "B",
+    ]);
+    assert!(missing.contains("2001-01-01-no-such-story"), "{missing}");
+    let added = fixture.ok(&[
+        "journal",
+        "add",
+        "--record",
+        &id,
+        "--title",
+        "A focused change shipped",
+        "--body",
+        "It shipped, and its cases passed.",
+    ]);
+    let path = added["post"].as_str().unwrap_or_default().to_string();
+    assert!(
+        path.starts_with(&format!("knowledge/journal/{closed}-")),
+        "{added:#}"
+    );
+    let text = fixture.read(&path);
+    let (front, body) = split(&text);
+    assert_eq!(field(front, "kind"), "shipped", "{text}");
+    assert_eq!(field(front, "date"), closed, "{text}");
+    assert_eq!(field(front, "time"), latest, "{text}");
+    assert_eq!(field(front, "record"), story, "{text}");
+    assert_eq!(field(front, "title"), "A focused change shipped", "{text}");
+    assert_eq!(
+        items(front, "links"),
+        [PR.to_string(), story.clone(), format!("{ARCHIVE}/")],
+        "{text}"
+    );
+    assert!(
+        body.contains("It shipped, and its cases passed.\n\nRead more:"),
+        "{body}"
+    );
+    let journal = tree(&fixture, "knowledge/journal");
+    let again = fixture.fails(&[
+        "journal", "add", "--record", &id, "--title", "Again", "--body", "Again.",
+    ]);
+    assert!(again.contains(&path), "{again}");
+    assert_eq!(
+        tree(&fixture, "knowledge/journal"),
+        journal,
+        "a refusal wrote"
+    );
+    // A story closed on a later date than its last Timeline entry: no time.
+    std::fs::remove_file(fixture.root().join(&path)).unwrap();
+    let edited = story_text.replace(&format!("closed: {closed}"), "closed: 2099-12-31");
+    fixture.write(&story, &edited);
+    fixture.commit("a story closed later");
+    let added = fixture.ok(&[
+        "journal",
+        "add",
+        "--record",
+        &id,
+        "--title",
+        "Closed later",
+        "--body",
+        "Later.",
+    ]);
+    let text = fixture.read(added["post"].as_str().unwrap_or_default());
+    let (front, _) = split(&text);
+    assert_eq!(field(front, "date"), "2099-12-31", "{text}");
+    assert_eq!(field(front, "time"), "", "{text}");
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// REQ-history-006, TC-history-story-receipts-in-time-order (t38j's fresh-eyes report): a
+/// story's receipts are in observation-time order, oldest first, whatever order their
+/// names sort in.
+#[test]
+fn a_storys_receipts_are_in_observation_time_order() {
+    let fixture = at_accept();
+    let add = |summary: &str| -> String {
+        fixture.ok(&[
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            summary,
+        ])["observation"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string()
+    };
+    let zeta = add("Zeta, the first run");
+    std::thread::sleep(std::time::Duration::from_millis(1_100));
+    let alpha = add("Alpha, the second run");
+    assert!(
+        alpha < zeta,
+        "the names must sort against time: {alpha} {zeta}"
+    );
+    let (_, _, story) = advance_to_done(&fixture);
+    let first = story
+        .find(&format!("  - id: {zeta}"))
+        .unwrap_or_else(|| panic!("no receipt for {zeta}: {story}"));
+    let second = story
+        .find(&format!("  - id: {alpha}"))
+        .unwrap_or_else(|| panic!("no receipt for {alpha}: {story}"));
+    assert!(
+        first < second,
+        "receipts are not in observation-time order: {story}"
+    );
 }

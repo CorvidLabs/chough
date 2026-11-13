@@ -283,6 +283,10 @@ pub(super) fn validate_direct_write(transition: &Transition) -> Result<()> {
 
 /// Every check of a transition's optional records.
 pub(super) fn validate_records(transition: &Transition) -> Result<()> {
+    ensure!(
+        transition.kind != START || transition.from == transition.to,
+        "invalid transition payload: a start entry stays in the stage the session starts in"
+    );
     validate_relay(transition)?;
     validate_direct_write(transition)?;
     validate_gate_and_correction(transition)
@@ -370,10 +374,31 @@ pub(super) struct Transition {
 /// no stage segment.
 pub(super) const CORRECTION: &str = "correction";
 
+/// The first entry of a session, which `chough init` and `chough session new` write
+/// (REQ-history-002, F11): it starts the first stage segment and ends none.
+pub(super) const START: &str = "start";
+
 /// Whether `kind` is a Timeline entry kind (REQ-history-002).
 pub(super) fn is_kind(kind: &str) -> bool {
     STAGE_KINDS.contains(&kind)
-        || [GATE_OPENED, GATE_CLOSED, DIRECT_WRITE, CORRECTION].contains(&kind)
+        || [START, GATE_OPENED, GATE_CLOSED, DIRECT_WRITE, CORRECTION].contains(&kind)
+}
+
+/// Queue a new session's `start` entry, from and to the stage it starts in, with
+/// `text`, its objective or key (REQ-history-002).
+pub(super) fn log_start(root: &Path, session: &mut Checkpoint, text: &str) -> Result<()> {
+    let stage = session.stage.current.clone();
+    log_transition_at(
+        root,
+        session,
+        START,
+        (&stage, &stage),
+        Some(text),
+        None,
+        vec![],
+        None,
+        None,
+    )
 }
 
 /// What native lifecycle state allows, without inventing any of it.
@@ -587,10 +612,12 @@ fn native_gate(
     value: &Value,
     status: &str,
 ) -> Gate {
-    let next = value
-        .pointer("/summary/next_action")
-        .and_then(Value::as_str)
-        .unwrap_or("unknown");
+    let next = shown_native_next(
+        value
+            .pointer("/summary/next_action")
+            .and_then(Value::as_str)
+            .unwrap_or("unknown"),
+    );
     let archived = state == "archived";
     if need == Prerequisite::Archived || (need == Prerequisite::ApprovedOrArchived && archived) {
         if !archived {
@@ -598,7 +625,7 @@ fn native_gate(
                 format!("refused:native-{state}"),
                 format!(
                     "{purpose} needs native state archived; it is {state}. {}",
-                    native_hint(next, status)
+                    native_hint(&next, status)
                 ),
             );
         }
@@ -616,7 +643,7 @@ fn native_gate(
                 format!(
                     "{purpose} needs an archive whose terminal evidence authenticates; summary.terminal_evidence.validity is {}. {}",
                     other.unwrap_or("not reported"),
-                    native_hint(next, status)
+                    native_hint(&next, status)
                 ),
             ),
         };
@@ -631,7 +658,7 @@ fn native_gate(
             format!("refused:native-{state}"),
             format!(
                 "{purpose} needs native state {wanted}; it is {state}. {}",
-                native_hint(next, status)
+                native_hint(&next, status)
             ),
         );
     }
@@ -644,7 +671,7 @@ fn native_gate(
             format!(
                 "{purpose} needs a valid definition approval; native status reports approval_valid {}. {}",
                 approval.map_or("missing".to_string(), |valid| valid.to_string()),
-                native_hint(next, status)
+                native_hint(&next, status)
             ),
         );
     }
@@ -657,7 +684,7 @@ fn native_gate(
             "refused:native-correction-invalid".into(),
             format!(
                 "{purpose} needs valid native corrections; native status reports correction_valid false. {}",
-                native_hint(next, status)
+                native_hint(&next, status)
             ),
         );
     }
@@ -947,6 +974,11 @@ pub(super) fn delta_requirements(
         return Err(format!("refused:native-delta-changed: {relative} (edited)"));
     }
     let text = String::from_utf8(bytes).map_err(|_| format!("{relative} is not UTF-8"))?;
+    Ok(added_or_modified(&text))
+}
+
+/// The requirement IDs a delta's `ADDED` and `MODIFIED` sections hold.
+pub(super) fn added_or_modified(text: &str) -> BTreeSet<String> {
     let mut section = "";
     let mut ids = BTreeSet::new();
     for line in text.lines().map(str::trim_end) {
@@ -959,7 +991,30 @@ pub(super) fn delta_requirements(
             ids.insert(id.to_string());
         }
     }
-    Ok(ids)
+    ids
+}
+
+/// Whether a delta of `change` in its workspace adds or modifies a requirement, so the
+/// accept step materializes the requirement text before the cases that link it run
+/// (F4). A delta that cannot be read counts as one that does, so the materializing check
+/// is named rather than skipped.
+fn deltas_add_or_modify(root: &Path, change: &str) -> bool {
+    let relative = format!(".specsync/changes/{change}/deltas");
+    let Ok(entries) = local_path(root, &relative).and_then(|dir| Ok(std::fs::read_dir(dir)?))
+    else {
+        return false;
+    };
+    entries.flatten().any(|entry| {
+        let name = entry.file_name().to_string_lossy().into_owned();
+        name.ends_with(".md")
+            && match native_file(root, &format!("{relative}/{name}")) {
+                Ok(Some(bytes)) => {
+                    !String::from_utf8(bytes).is_ok_and(|text| added_or_modified(&text).is_empty())
+                }
+                Ok(None) => false,
+                Err(_) => true,
+            }
+    })
 }
 
 /// The build gate's native checks for `change`, which a case link to a requirement only
@@ -1196,6 +1251,16 @@ pub(super) fn assess(
             })
             .clone()
     };
+    // Read once, and only at test, where the unlinked-failure refusal and the check that
+    // every referenced case's latest run passed both need the open sessions' entries,
+    // and at accept, where a referenced case's latest run that is not current is rerun
+    // before the review gate (F4).
+    let observations = std::cell::OnceCell::new();
+    let observations = || {
+        observations
+            .get_or_init(|| evidence::load_all(root).ok())
+            .as_deref()
+    };
     let action = if session.stage.status == "paused" {
         Action {
             action: format!(
@@ -1242,12 +1307,16 @@ pub(super) fn assess(
             command: Some("chough stage back --to build --reason \"<why>\"".into()),
         }
     } else if let Some(refusal) = (current == "test")
-        .then(|| unlinked_failure(root, session).ok().flatten())
+        .then(|| {
+            observations().and_then(|all| unlinked_failure_in(root, session, all).ok().flatten())
+        })
         .flatten()
     {
         Action {
             action: format!("Leaving test is refused (refused:unlinked-failure): {refusal}"),
-            reason: "A failing case stays failed until it passes or a bug records the failure (FLOW-7, LIFE-5).".into(),
+            // FLOW-7, LIFE-5.
+            reason: "A failing case stays failed until it passes or a bug records the failure."
+                .into(),
             command: Some("chough bug add ... --observation <id>".into()),
         }
     } else if current == "done" {
@@ -1283,9 +1352,24 @@ pub(super) fn assess(
         // gate is committed and the change checked again before the ship.
         let exclusions = crate::doctor::exclusions(root);
         let commit_first = !exclusions.no_policy && !exclusions.in_force();
+        // REQ-cli-021 (F4): the review is never opened on runs that are not current, as
+        // the runs are after the first check materializes the requirement text.
+        let reruns = if open_review.is_some() {
+            vec![]
+        } else {
+            rerun_commands(root, session, observations())
+        };
+        let rerun_first = if reruns.is_empty() {
+            String::new()
+        } else {
+            format!(
+                " First rerun each referenced case whose latest run is not current: {}.",
+                quoted_list(&reruns)
+            )
+        };
         Action {
             action: format!(
-                "The human reviews next.{} Show them `chough gate list`. Not to ship: `chough checkpoint --close-gate \"<gate>\"`, the relay and `--verdict block`. To ship: {}.",
+                "The human reviews next.{rerun_first}{} Show them `chough gate list`. Not to ship: `chough checkpoint --close-gate \"<gate>\"`, the relay and `--verdict block`. To ship: {}.",
                 if open_review.is_some() {
                     String::new()
                 } else if commit_first {
@@ -1299,20 +1383,90 @@ pub(super) fn assess(
                 },
                 ship_command(id)
             ),
-            reason: "Native change is verifying: only the human's review and the ship remain, and an agent's review never stands in for theirs (FLOW-10).".into(),
-            command: Some(match open_review {
-                Some(_) => "chough gate list".into(),
-                None => format!(
+            // FLOW-10.
+            reason: "Native change is verifying: only the human's review and the ship remain, and an agent's review never stands in for theirs.".into(),
+            command: Some(match (open_review, reruns.first()) {
+                (Some(_), _) => "chough gate list".into(),
+                (None, Some(rerun)) => rerun.clone(),
+                (None, None) => format!(
                     "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
                 ),
             }),
+        }
+    } else if current == "accept"
+        && let NativeState::State(name, _) = state
+        && matches!(name.as_str(), "approved" | "implementing")
+    {
+        // F4: before the human's review, the accept step's preparation, in its order;
+        // never the refused move into done or a bare native status read.
+        let id = session.native_change.as_deref().unwrap_or("<id>");
+        let materialize = deltas_add_or_modify(root, id);
+        let cases = "chough cases run <case-id> --environment <env>";
+        let gate = format!(
+            "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
+        );
+        // REQ-cli-021 (F4): a referenced case whose latest run is not current is rerun
+        // by name before the review gate; once every referenced case's latest run passed
+        // and is current, the review gate is next.
+        let reruns = rerun_commands(root, session, observations());
+        let cases_ready =
+            reruns.is_empty() && observations().is_some_and(|all| every_case_passed(session, all));
+        let cases_step = if !reruns.is_empty() {
+            format!(
+                "rerun each referenced case whose latest run is not current, {}",
+                quoted_list(&reruns)
+            )
+        } else if cases_ready {
+            "the referenced cases' latest runs passed and are current".to_string()
+        } else {
+            format!("run the affected cases with `{cases}`")
+        };
+        Action {
+            action: format!(
+                "Prepare the human's review, in order: {}{cases_step}; open the review gate with `{gate}`; commit the source with Chough's records; then run `chough change check {id}`. The human reviews after that.",
+                if materialize {
+                    format!(
+                        "run `chough change check {id} --no-commit` first, so the requirement text the cases link is materialized; "
+                    )
+                } else {
+                    String::new()
+                }
+            ),
+            reason: format!(
+                "Native change is {name}: the human's review comes next, once the cases ran, the review gate is open and the committed work is checked."
+            ),
+            command: Some(if materialize {
+                format!("chough change check {id} --no-commit")
+            } else if let Some(rerun) = reruns.first() {
+                rerun.clone()
+            } else if cases_ready {
+                gate.clone()
+            } else {
+                cases.into()
+            }),
+        }
+    } else if current == "plan" && native_next.is_some_and(names_native_approval) {
+        // REQ-cli-021 (t38j): the definition waits for its approval, which is the human's
+        // decision at the scope gate; SpecSync's own `specsync change approve <id>
+        // --actor <name>` is never passed on, so no agent approves its own scope.
+        let id = session.native_change.as_deref().unwrap_or("<id>");
+        let open = format!(
+            "chough checkpoint --awaiting-human \"Approve the scope of {id}\" --drives approve"
+        );
+        Action {
+            action: format!(
+                "The human approves the scope next. Open the scope gate: `{open}`, and show them `chough gate list`. When they decide, record their words with `{CLOSE_GATE_COMMAND}`, which runs the approval as them. Do not approve it yourself."
+            ),
+            // FLOW-23.
+            reason: "Native change is a complete draft waiting for its definition approval, which only the human gives.".into(),
+            command: Some(open),
         }
     } else if let Some((to, gate)) = gate.as_ref().filter(|(_, gate)| !gate.allowed) {
         if archived_cycle() == Some(Ok(true)) {
             // The archive is the previous cycle's: keep the reset's guidance and name
             // the new native change, not the archived refusal or another reset.
             Action {
-                action: format!("Continue {current}: {}", session.next_action),
+                action: continue_action(current, &session.next_action),
                 reason: format!(
                     "Native change {} is archived from before the latest reset, so it belongs to the previous cycle; reaching {to} needs this cycle's new native change ({}).",
                     session
@@ -1339,19 +1493,38 @@ pub(super) fn assess(
             }
         }
     } else if current == "test" {
-        // REQ-cli-038 (FLOW-15): native verification alone is not test evidence.
-        // #76: name how to select and run the cases, and record a failure as a bug.
-        Action {
-            action: format!(
-                "Continue test: {} Select the cases this change affects with `chough cases select --requirement <id>` (or --criterion, --path), run each with `chough cases run <case-id> --environment <env>`, and record a failed run with `chough bug add`.",
-                session.next_action.trim_end()
-            ),
-            reason: "Recorded test evidence is needed before accept: run the affected cases or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
-            command: Some("chough cases run <case-id> --environment <env>".into()),
+        // F7: the checkpoint's own next action is a sentence of its own.
+        // t38n F1: `Continue test`, which a move leaves in place of a gate close's next
+        // action, adds nothing to the action's own `Continue test`.
+        let next = if session.next_action.trim() == "Continue test" {
+            String::new()
+        } else {
+            sentence(&session.next_action)
+        };
+        if observations().is_some_and(|all| every_case_passed(session, all)) {
+            // F7 (REQ-cli-021): blocking bugs were handled above, so with every referenced
+            // case's latest run passed, test is done.
+            Action {
+                action: format!(
+                    "Continue test: {next}Every referenced case's latest run passed and no blocking bug is open, so move to accept with `chough stage advance`."
+                ),
+                reason: "Each case the checkpoint references passed on its latest run, and no acceptance-blocking bug is open.".into(),
+                command: Some("chough stage advance".into()),
+            }
+        } else {
+            // REQ-cli-038 (FLOW-15): native verification alone is not test evidence.
+            // #76: name how to select and run the cases, and record a failure as a bug.
+            Action {
+                action: format!(
+                    "Continue test: {next}Select the cases this change affects with `chough cases select --requirement <id>` (or --criterion, --path), run each with `chough cases run <case-id> --environment <env>`, and record a failed run with `chough bug add`."
+                ),
+                reason: "Recorded test evidence is needed before accept: run the affected cases or record a manual result with `chough evidence add`; native verification is not product proof.".into(),
+                command: Some("chough cases run <case-id> --environment <env>".into()),
+            }
         }
     } else {
         Action {
-            action: format!("Continue {current}: {}", session.next_action),
+            action: continue_action(current, &session.next_action),
             reason: "No gate, human decision or blocking bug stops the current stage; this is the checkpoint's next action.".into(),
             command: None,
         }
@@ -1411,7 +1584,7 @@ fn done_action(
             command: Some(status_command(session.native_change.as_deref())),
         },
         (_, None) => Action {
-            action: format!("Continue done: {}", session.next_action),
+            action: continue_action("done", &session.next_action),
             reason: "Stage done has no native prerequisite here.".into(),
             command: None,
         },
@@ -1523,9 +1696,11 @@ fn log_transition_at(
         corrects: None,
     };
     validate_records(&transition)?;
-    // REQ-cli-060 (DRIVE-21): a stage move first records the direct lifecycle writes
-    // found since the baseline, in the stage it leaves.
-    if STAGE_KINDS.contains(&kind) {
+    // REQ-cli-060 (DRIVE-21): a stage move, and a gate close with a relayed decision
+    // (REQ-cli-050, REQ-cli-059, REQ-cli-061), first records the direct lifecycle
+    // writes found since the baseline, in the stage it leaves or holds, so the story
+    // reads in the order the writes happened (F9). A withdrawn gate records none.
+    if STAGE_KINDS.contains(&kind) || (kind == GATE_CLOSED && transition.relayed_by.is_some()) {
         for write in crate::direct_writes::to_record(root, session.native_change.as_deref()) {
             let event = Transition {
                 schema_version: 1,
@@ -1533,7 +1708,7 @@ fn log_transition_at(
                 kind: DIRECT_WRITE.into(),
                 from: from.into(),
                 to: from.into(),
-                reason: None,
+                reason: Some(crate::direct_writes::text(&write)),
                 gate: None,
                 revision: transition.revision.clone(),
                 refresh: vec![],
@@ -1548,6 +1723,18 @@ fn log_transition_at(
             validate_records(&event)?;
             append_transition(root, session, event)?;
         }
+    }
+    // REQ-cli-021 (t38n F1): a gate close's next action names the move its decision
+    // allows; a move to another stage carries it out, so it is replaced with
+    // `Continue <stage>` for the stage reached, as a reset replaces its own; so is the
+    // `Continue <stage>` an earlier step of a batched advance left for the stage it
+    // leaves. A next action the agent wrote is the agent's, and stays.
+    if STAGE_KINDS.contains(&kind)
+        && from != to
+        && (crate::checkpoint::is_gate_close_next_action(&session.next_action)
+            || session.next_action == format!("Continue {from}"))
+    {
+        session.next_action = format!("Continue {to}");
     }
     append_transition(root, session, transition)
 }
@@ -1679,7 +1866,13 @@ pub(super) fn valid_transitions(session: &Checkpoint) -> Vec<String> {
     commands
 }
 
-fn report(root: &Path, session: &Checkpoint, applied: Option<Value>) -> Result<()> {
+/// A stage command's report (REQ-cli-008): a move prints its short text summary by
+/// default and this full JSON under `--json`; `stage show` prints the JSON either way.
+fn report(root: &Path, session: &Checkpoint, applied: Option<Value>, as_json: bool) -> Result<()> {
+    if let Some(applied) = applied.as_ref().filter(|_| !as_json) {
+        println!("{}", move_summary(session, applied));
+        return Ok(());
+    }
     let (transitions, partial) = recent_transitions(root, 10)?;
     print_json(&json!({
         "schema_version": 1,
@@ -1691,8 +1884,83 @@ fn report(root: &Path, session: &Checkpoint, applied: Option<Value>) -> Result<(
         "stages": STAGES.iter().map(|(name, kind)| json!({"name": name, "kind": kind})).collect::<Vec<_>>(),
         "recent_transitions": transitions,
         "transitions_partial": partial,
-        "authority": "Native SpecSync status decides lifecycle gates; Chough never writes native approval or review, and a relayed decision it keeps is a claim, not authenticated.",
+        "authority": "Native SpecSync status decides lifecycle gates. Chough runs a native approval or review only when a human's decision closes a gate that drives one, as that configured human; the relayed decision it keeps is a claim, not authenticated.",
     }))
+}
+
+/// A move's short text summary (REQ-cli-008, F9): what it applied, the move, the stage
+/// it reached and the checkpoint's next action, one line each, with a back or reset's
+/// refresh notes and the move into done's closeout, at most 8 lines; the full report is
+/// behind `--json`.
+fn move_summary(session: &Checkpoint, applied: &Value) -> String {
+    let one_line = |text: &str| text.split_whitespace().collect::<Vec<_>>().join(" ");
+    let kind = applied["kind"].as_str().unwrap_or("move");
+    let mut what = format!("Applied: {kind}");
+    if let Some(gate) = applied["gate"].as_str() {
+        what.push_str(&format!(", gate {gate}"));
+    }
+    if let Some(steps) = applied["steps"].as_array().filter(|steps| steps.len() > 1) {
+        what.push_str(&format!(", {} steps on one native read", steps.len()));
+    }
+    if let Some(commit) = applied["backfill"]["commit"].as_str() {
+        what.push_str(&format!(", backfilled on commit {commit}"));
+    }
+    if let Some(authority) = applied["authority"].as_str() {
+        what.push_str(&format!(", authority: {}", one_line(authority)));
+    }
+    let mut lines = vec![what];
+    lines.push(match (applied["from"].as_str(), applied["to"].as_str()) {
+        (Some(from), Some(to)) => format!("Move: {from} -> {to}"),
+        _ => match kind {
+            "iterate" => format!(
+                "Move: none; {} iteration {}",
+                session.stage.current, session.stage.iteration
+            ),
+            "pause" => format!("Move: none; {} paused", session.stage.current),
+            _ => format!("Move: none; {} resumed", session.stage.current),
+        },
+    });
+    lines.push(format!(
+        "Stage: {} (iteration {}, {})",
+        session.stage.current, session.stage.iteration, session.stage.status
+    ));
+    if let Some(refresh) = applied["refresh"]
+        .as_array()
+        .filter(|refresh| !refresh.is_empty())
+    {
+        let notes: Vec<&str> = refresh.iter().filter_map(Value::as_str).collect();
+        lines.push(format!("Refresh: {}", one_line(&notes.join(". "))));
+    }
+    if applied["session_archive"].is_object() {
+        let status = |key: &str| {
+            applied[key]["status"]
+                .as_str()
+                .unwrap_or("not run")
+                .to_string()
+        };
+        lines.push(format!(
+            "Closeout: session archive {}, journal post {}, knowledge index {}",
+            status("session_archive"),
+            status("journal_post"),
+            status("librarian_index")
+        ));
+    }
+    if let Some(unknown) = applied["direct_writes"]["unknown"].as_str() {
+        lines.push(format!("Direct writes: unknown, {}", one_line(unknown)));
+    }
+    let next = one_line(&session.next_action);
+    lines.push(format!(
+        "Next action: {}",
+        if next.is_empty() {
+            "none is set"
+        } else {
+            &next
+        }
+    ));
+    lines.push(
+        "Run `chough next` for the next valid action, or add --json for the full report.".into(),
+    );
+    lines.join("\n")
 }
 
 fn ensure_active(session: &Checkpoint) -> Result<()> {
@@ -1713,6 +1981,17 @@ fn ensure_main(session: &Checkpoint, verb: &str) -> Result<()> {
 }
 
 /// How to record a human's decision on a gate on their behalf (REQ-cli-050).
+/// `Continue <stage>` with the checkpoint's own next action, or alone when that action is
+/// just `Continue <stage>`, as a stage move leaves it in place of a gate close's (t38n F1).
+fn continue_action(stage: &str, next_action: &str) -> String {
+    let plain = format!("Continue {stage}");
+    if next_action.trim().is_empty() || next_action.trim() == plain {
+        format!("{plain}.")
+    } else {
+        format!("{plain}: {next_action}")
+    }
+}
+
 /// The human's decision to ship at accept, as `chough change ship` records it: the review
 /// as them, then the native ship, and the gate closed only after it (REQ-cli-059), so
 /// nothing under `.chough/` changes between `change check --commit` and finalize.
@@ -1720,6 +1999,31 @@ fn ship_command(id: &str) -> String {
     format!(
         "`chough change ship {id} --close-gate \"<gate>\"` and the relay, which reviews as them, ships, then closes the gate"
     )
+}
+
+/// Whether SpecSync's next action names its definition approval, which is the human's
+/// decision at the scope gate (REQ-cli-021).
+pub(super) fn names_native_approval(next: &str) -> bool {
+    next.contains("specsync change approve")
+}
+
+/// Whether SpecSync's next action names its review, which is the human's decision at
+/// the review gate (REQ-cli-021, t38m F1).
+pub(super) fn names_native_review(next: &str) -> bool {
+    next.contains("specsync change review")
+}
+
+/// SpecSync's next action as Chough shows it (REQ-cli-021, t38j, t38m F1): an approval
+/// it names for an actor is shown as the human's scope gate, and a review it names for
+/// a reviewer as the human's review gate, never as a command for the agent.
+pub(super) fn shown_native_next(next: &str) -> String {
+    if names_native_approval(next) {
+        "the human's scope approval: open the scope gate with `chough checkpoint --awaiting-human \"<gate>\" --drives approve` and record their decision with `chough checkpoint --close-gate`; never approve it yourself".into()
+    } else if names_native_review(next) {
+        "the human's review: open the review gate with `chough checkpoint --awaiting-human \"<gate>\" --holds accept --drives review` and record their decision to ship with `chough change ship <id> --close-gate \"<gate>\"`, or not to ship with `chough checkpoint --close-gate \"<gate>\"` and `--verdict block`; never review it yourself".into()
+    } else {
+        next.to_string()
+    }
 }
 
 pub(super) const CLOSE_GATE_COMMAND: &str = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
@@ -1753,7 +2057,8 @@ fn kept_open_action(root: &Path, session: &Checkpoint) -> Option<Action> {
     {
         return Some(Action {
             action: "Release is authorized for this cycle: enter it. The session stays open for the release and archives itself at the move from release into done.".into(),
-            reason: "The move into done kept this session open because release is authorized (REQ-history-006).".into(),
+            // REQ-history-006.
+            reason: "The move into done kept this session open because release is authorized.".into(),
             command: Some("chough stage enter release --reason \"<request>\"".into()),
         });
     }
@@ -1765,7 +2070,9 @@ fn kept_open_action(root: &Path, session: &Checkpoint) -> Option<Action> {
             "This session stays open: {count} unfolded inbox {}. Fold them with `chough inbox fold`, then run `chough doctor --fix` to archive the session, and start the next piece of work in a new session after that.",
             if count == 1 { "entry" } else { "entries" }
         ),
-        reason: "The move into done keeps a session open while its inbox holds unfolded entries (REQ-history-006).".into(),
+        // REQ-history-006.
+        reason: "The move into done keeps a session open while its inbox holds unfolded entries."
+            .into(),
         command: Some("chough inbox fold".into()),
     })
 }
@@ -1827,23 +2134,26 @@ fn unlinked_failure(root: &Path, session: &Checkpoint) -> Result<Option<String>>
     if session.references.cases.is_empty() {
         return Ok(None);
     }
-    let observations = evidence::load_all(root)?;
+    unlinked_failure_in(root, session, &evidence::load_all(root)?)
+}
+
+/// [`unlinked_failure`] on entries already read.
+fn unlinked_failure_in(
+    root: &Path,
+    session: &Checkpoint,
+    observations: &[evidence::Evidence],
+) -> Result<Option<String>> {
+    if session.references.cases.is_empty() {
+        return Ok(None);
+    }
     let linked: BTreeSet<String> = bugs::observation_references(root)?
         .into_iter()
         .flat_map(|(_, ids)| ids)
         .collect();
-    let referenced: BTreeSet<&String> = session.references.cases.iter().collect();
-    let failures: Vec<(&String, &String)> = referenced
+    let failures: Vec<(&String, &String)> = latest_runs(session, observations)
         .into_iter()
-        .filter_map(|case| {
-            observations
-                .iter()
-                .filter(|record| record.cases.iter().any(|link| &link.id == case))
-                // A not-run attempt executed nothing; the latest executed result decides.
-                .filter(|record| record.outcome != evidence::Outcome::NotRun)
-                .max_by(|a, b| {
-                    (a.observed_at_unix_seconds, &a.id).cmp(&(b.observed_at_unix_seconds, &b.id))
-                })
+        .filter_map(|(case, latest)| {
+            latest
                 .filter(|latest| {
                     latest.outcome == evidence::Outcome::Failed && !linked.contains(&latest.id)
                 })
@@ -1861,6 +2171,93 @@ fn unlinked_failure(root: &Path, session: &Checkpoint) -> Result<Option<String>>
     Ok(Some(format!(
         "case {case} latest observation {observation} failed and no bug links it{others}; rerun the case until it passes, or link the failure with `chough bug add ... --observation {observation}` or `chough bug update <bug> --observation {observation}`"
     )))
+}
+
+/// Each case the checkpoint references, once, with its latest executed observation by
+/// recorded time, then ID, or None when it has none; a not-run attempt executed nothing.
+fn latest_runs<'a>(
+    session: &'a Checkpoint,
+    observations: &'a [evidence::Evidence],
+) -> Vec<(&'a String, Option<&'a evidence::Evidence>)> {
+    let referenced: BTreeSet<&String> = session.references.cases.iter().collect();
+    referenced
+        .into_iter()
+        .map(|case| {
+            let latest = observations
+                .iter()
+                .filter(|record| record.cases.iter().any(|link| &link.id == case))
+                .filter(|record| record.outcome != evidence::Outcome::NotRun)
+                .max_by(|a, b| {
+                    (a.observed_at_unix_seconds, &a.id).cmp(&(b.observed_at_unix_seconds, &b.id))
+                });
+            (case, latest)
+        })
+        .collect()
+}
+
+/// The `chough cases run` command for each case the checkpoint references whose latest
+/// executed run is not current, in the environment that run recorded (REQ-cli-021, F4),
+/// as after the accept step's first check materializes the requirement text. None when
+/// the entries cannot be read; a run whose freshness cannot be read is not rerun.
+fn rerun_commands(
+    root: &Path,
+    session: &Checkpoint,
+    observations: Option<&[evidence::Evidence]>,
+) -> Vec<String> {
+    let Some(all) = observations else {
+        return vec![];
+    };
+    let reads = evidence::Reads::new(root);
+    let current = evidence::snapshot(root);
+    // A case that is retired or no longer defined cannot be run again (`chough cases run`
+    // refuses it), so it is never named for a rerun; the suite is read once.
+    let digests = crate::cases::Digests::new(root);
+    latest_runs(session, all)
+        .into_iter()
+        .filter_map(|(case, latest)| {
+            let run = latest?;
+            if matches!(digests.current(case), Ok(None)) {
+                return None;
+            }
+            (!reads.is_current(run, &current).unwrap_or(true))
+                .then(|| format!("chough cases run {case} --environment {}", run.environment))
+        })
+        .collect()
+}
+
+/// Each command in backticks, joined with commas and a final `and`.
+fn quoted_list(commands: &[String]) -> String {
+    let quoted: Vec<String> = commands
+        .iter()
+        .map(|command| format!("`{command}`"))
+        .collect();
+    match quoted.as_slice() {
+        [] => String::new(),
+        [one] => one.clone(),
+        [rest @ .., last] => format!("{} and {last}", rest.join(", ")),
+    }
+}
+
+/// Whether every case the checkpoint references passed on its latest executed run (F7);
+/// false when it references none.
+fn every_case_passed(session: &Checkpoint, observations: &[evidence::Evidence]) -> bool {
+    !session.references.cases.is_empty()
+        && latest_runs(session, observations)
+            .iter()
+            .all(|(_, latest)| latest.is_some_and(|run| run.outcome == evidence::Outcome::Passed))
+}
+
+/// The checkpoint's next action as a sentence of its own, ended and followed by a space,
+/// so the guidance after it never runs on (F7); empty when there is none.
+fn sentence(text: &str) -> String {
+    let text = text.trim();
+    if text.is_empty() {
+        String::new()
+    } else if text.ends_with(['.', '!', '?']) {
+        format!("{text} ")
+    } else {
+        format!("{text}. ")
+    }
 }
 
 /// Apply a move to the next stage, checking the gates that apply to it.
@@ -2249,7 +2646,7 @@ fn move_back(
     Ok(json!({"kind": kind, "from": from, "to": target, "refresh": refresh}))
 }
 
-pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
+pub(super) fn run(root: &Path, command: StageCommand, as_json: bool) -> Result<()> {
     let mut session = read_checkpoint(root)?;
     let mut applied = match command {
         StageCommand::Show => None,
@@ -2473,7 +2870,7 @@ pub(super) fn run(root: &Path, command: StageCommand) -> Result<()> {
         }
         applied["librarian_index"] = crate::library::refresh_at_done(root);
     }
-    report(root, &session, applied)
+    report(root, &session, applied, as_json)
 }
 
 #[cfg(test)]

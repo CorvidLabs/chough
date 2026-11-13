@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "0c4cf1845ce013d0e86dd099f272023188a11d05",
+      "contract_digest": "db5a1bceb60edcda36a29d245645d26d43026bc859d50bccbd656f4f18f4cd4a",
+      "execution_digest": "58765b1fd6b898d54c9498a7e3d246ac006daa39141afba4de32dada1defdee3",
+      "workspace_digest": "d79b61fcde659aa97a92b6e239212ffafbf67602a124e7039d3190b84a4f1fce",
+      "timestamp": 1794533220
+    }
+  ]
+}

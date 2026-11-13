@@ -121,7 +121,7 @@ fn delivery_observations_are_kept_as_proof_while_a_superseded_dry_run_is_not() {
         );
     }
     fixture.commit("receipts");
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     assert!(
         moved["applied"].get("librarian_trim").is_none(),
@@ -204,7 +204,7 @@ fn the_move_into_done_archives_the_session_and_clears_the_pointer() {
     let fixture = project();
     fixture.commit("session at accept");
     let id = fixture.active_id();
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(moved["applied"]["to"], "done", "{moved:#}");
     let archive = &moved["applied"]["session_archive"];
     assert_eq!(archive["status"], "archived", "{moved:#}");
@@ -240,7 +240,7 @@ fn the_move_into_done_keeps_a_session_with_unfolded_inbox_entries_open() {
         "--text",
         "Fold me first",
     ]);
-    let moved = fixture.ok(&["stage", "advance"]);
+    let moved = fixture.ok(&["stage", "advance", "--json"]);
     let archive = &moved["applied"]["session_archive"];
     assert_eq!(archive["status"], "kept_open", "{moved:#}");
     assert_eq!(archive["inbox_unfolded"], 1, "{moved:#}");
@@ -266,12 +266,19 @@ fn a_session_with_release_authorized_archives_itself_after_release() {
         "--source",
         "Human: release it",
     ]);
-    let done = fixture.ok(&["stage", "advance"]);
+    let done = fixture.ok(&["stage", "advance", "--json"]);
     let archive = &done["applied"]["session_archive"];
     assert_eq!(archive["status"], "kept_open", "{done:#}");
     assert!(fixture.exists(&format!(".chough/sessions/{id}/session.md")));
-    fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
-    let released = fixture.ok(&["stage", "advance"]);
+    fixture.ok(&[
+        "stage",
+        "enter",
+        "--json",
+        "release",
+        "--reason",
+        "Requested",
+    ]);
+    let released = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(released["applied"]["to"], "done", "{released:#}");
     assert_eq!(
         released["applied"]["session_archive"]["status"], "archived",
@@ -301,7 +308,7 @@ fn next_at_done_names_what_keeps_the_session_open() {
         "--text",
         "Fold me first",
     ]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     assert_eq!(action["command"], "chough inbox fold", "{next:#}");
@@ -321,7 +328,7 @@ fn next_at_done_names_what_keeps_the_session_open() {
         "--source",
         "Human: release it",
     ]);
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     let next = fixture.ok(&["next", "--json"]);
     let action = &next["next_valid_action"];
     assert_eq!(
@@ -335,7 +342,7 @@ fn next_at_done_names_what_keeps_the_session_open() {
 
     // Neither: the session archived itself, and next names a new session.
     let fixture = project();
-    fixture.ok(&["stage", "advance"]);
+    fixture.ok(&["stage", "advance", "--json"]);
     let refused = fixture.fails(&["next", "--json"]);
     assert!(refused.contains("chough session new <key>"), "{refused}");
 }

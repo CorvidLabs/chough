@@ -148,8 +148,30 @@ fn full_history(with_gates: bool) -> Vec<String> {
 fn fixture_with(lines: &[String]) -> Fixture {
     let fixture = Fixture::new();
     fixture.init();
+    // A 0.5.x-shaped history has no start entry (REQ-history-002).
+    without_start(&fixture);
     write_transitions(&fixture, lines);
     fixture
+}
+
+/// Remove the active session's `start` entry, with its field lines, as an older or
+/// migrated timeline has none.
+fn without_start(fixture: &Fixture) {
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let mut kept = String::new();
+    let mut skipping = false;
+    for line in text.split_inclusive('\n') {
+        if line.starts_with("- ") {
+            skipping = line.contains(" · start · ");
+        } else if !line.starts_with("  ") {
+            skipping = false;
+        }
+        if !skipping {
+            kept.push_str(line);
+        }
+    }
+    fixture.write(&file, &kept);
 }
 
 fn timing(fixture: &Fixture, extra: &[&str]) -> Value {
@@ -282,7 +304,8 @@ fn every_transition_kind_yields_the_expected_segments_and_cycles() {
     let report = timing(&fixture, &[]);
     assert_eq!(report["schema_version"], 1);
 
-    // init and migrate write no transition, so the first segment's start is unknown.
+    // A 0.5.x-shaped history has no start entry, so the first segment's start is
+    // unknown.
     let first = &report["before_first_record"];
     assert_eq!(first["stage"], "intent");
     assert_eq!(first["start"]["unix_seconds"], Value::Null);
@@ -440,7 +463,14 @@ fn gate_records_start_or_end_no_segment_and_give_waiting_time() {
 fn checkpoint_gates_append_one_record_when_opened_and_one_when_cleared() {
     let fixture = Fixture::new();
     fixture.init();
-    let records = |fixture: &Fixture| -> Vec<Value> { timeline_entries(fixture) };
+    // Every entry after the session's start entry (REQ-history-002).
+    assert_eq!(timeline_entries(&fixture)[0]["kind"], "start");
+    let records = |fixture: &Fixture| -> Vec<Value> {
+        timeline_entries(fixture)
+            .into_iter()
+            .filter(|record| record["kind"] != "start")
+            .collect()
+    };
     fixture.ok(&["checkpoint", "--awaiting-human", "Scope approval of x"]);
     let after_open = records(&fixture);
     assert_eq!(after_open.len(), 1, "{after_open:#?}");
@@ -541,7 +571,8 @@ fn checkpoint_gates_append_one_record_when_opened_and_one_when_cleared() {
     assert!(context["sections"].to_string().contains("gate-opened"));
     fixture.ok(&["next", "--json"]);
     let shown = fixture.ok(&["stage", "show"]);
-    assert_eq!(shown["recent_transitions"].as_array().unwrap().len(), 7);
+    // The seven gate entries and the session's start entry.
+    assert_eq!(shown["recent_transitions"].as_array().unwrap().len(), 8);
 }
 
 #[test]
@@ -1478,6 +1509,22 @@ fn transitions_beyond_the_bound_are_partial_and_every_record_stays_byte_identica
     assert!(!fixture.exists(".chough/artifacts"));
 }
 
+/// Run the stand-in at `name` once, outside any timed read, and clear the call it logged
+/// (see `native_fixture`).
+#[cfg(unix)]
+fn warm_stand_in(fixture: &Fixture, name: &str) {
+    let status = std::process::Command::new(fixture.root().join(name))
+        .args(["change", "status", "warm-up", "--json"])
+        .current_dir(fixture.root())
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .unwrap();
+    assert!(status.success(), "warming {name}");
+    stub_calls(fixture);
+}
+
 /// A SpecSync stand-in: status per change from `.stub-status-<id>`, a default otherwise.
 /// Every call appends its change ID to `.stub-calls`. `.stub-malformed-<id>` prints
 /// output that is not JSON; `.stub-hang-<id>` waits on a background child that holds
@@ -1501,6 +1548,15 @@ printf '{"change":{"id":"%s","created_at":100,"updated_at":200},"summary":{"stat
 "#,
     );
     fixture.executable("bin/specsync");
+    // macOS assesses a newly written executable on its first exec, and under load
+    // (concurrent builds and test suites writing and running new executables) that can
+    // take seconds after the spawn returns: a budgeted read that is the stand-in's first
+    // exec can time out before its first line logs the call, which is the empty call list
+    // of BUG 2026-11-02-timing-native-budget-regression-sometimes-records-no-initial.
+    // An installed SpecSync is never a file written a moment before, so run the stand-in
+    // once here, outside every budget and deadline a test sets. `checkpoint
+    // --native-change` below also runs it (issue 63), but this must not depend on that.
+    warm_stand_in(&fixture, "bin/specsync");
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "cur-change"]);
     fixture.write(
@@ -2123,8 +2179,8 @@ fn next_status_and_stage_moves_keep_one_authoritative_native_read_outside_the_re
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", "gate-change"]);
     fixture.no_spec_approval("gate-change");
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture.native_calls();
     // The report budget does not apply here: even a value timing refuses leaves next,
     // status and stage moves to their one native read.
@@ -2144,7 +2200,7 @@ fn next_status_and_stage_moves_keep_one_authoritative_native_read_outside_the_re
             assert_eq!(native_lines, 1, "{args:?}");
         }
         fixture.write(".stub-fail", "");
-        let refused = run_env(&fixture, &["stage", "advance"], &env);
+        let refused = run_env(&fixture, &["stage", "advance", "--json"], &env);
         assert!(
             !refused.status.success(),
             "a failed native read opened a gate"
@@ -2383,5 +2439,131 @@ fn an_unknown_timeline_kind_is_named_by_its_session_file() {
             .any(|partial| partial["source"] == file.as_str()
                 && partial["reason"].as_str().unwrap().contains("unrecognised")),
         "{report:#}"
+    );
+}
+
+/// Fresh-eyes finding F11 (REQ-history-002): `chough init` and `chough session new`
+/// each write one `start` entry, from and to the stage the session starts in, whose text
+/// is its objective, or its key when none was given, and `chough timing` right after
+/// reports the intent segment as started at that entry's time, not unknown, in the
+/// first cycle, which starts there (round 3's F11). A timeline without one, as an older
+/// or migrated one is, still reads with that start unknown, before the first record.
+#[test]
+fn init_and_session_new_write_a_start_entry_that_timing_reads() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let started = |objective: &str| {
+        let entries = timeline_entries(&fixture);
+        assert_eq!(entries.len(), 1, "{entries:#?}");
+        let start = &entries[0];
+        assert_eq!(start["kind"], "start", "{start:#}");
+        assert_eq!(start["from"], "intent", "{start:#}");
+        assert_eq!(start["to"], "intent", "{start:#}");
+        assert_eq!(start["reason"], objective, "{start:#}");
+        let report = timing(&fixture, &[]);
+        assert_eq!(report["before_first_record"], Value::Null, "{report:#}");
+        assert_eq!(
+            report["cycles"][0]["start"]["unix_seconds"], start["at_unix_seconds"],
+            "{report:#}"
+        );
+        let first = &segments(&report, 0)[0];
+        assert_eq!(first["stage"], "intent", "{report:#}");
+        assert_eq!(
+            first["start"]["unix_seconds"], start["at_unix_seconds"],
+            "{report:#}"
+        );
+        assert_eq!(first["start"]["unknown"], Value::Null, "{report:#}");
+    };
+    started("Ship a focused change");
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    started("Ship beta");
+    fixture.ok(&["session", "new", "gamma"]);
+    started("gamma");
+
+    // An older timeline, with no start entry, still reads: the start stays unknown.
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    // The entry's line and the indented field lines under it.
+    let mut without = String::new();
+    let mut skipping = false;
+    for line in text.split_inclusive('\n') {
+        if line.starts_with("- ") {
+            skipping = line.contains(" · start · ");
+        } else if !line.starts_with("  ") {
+            skipping = false;
+        }
+        if !skipping {
+            without.push_str(line);
+        }
+    }
+    assert_ne!(without, text, "no start entry to remove: {text}");
+    fixture.write(&file, &without);
+    assert!(timeline_entries(&fixture).is_empty());
+    let report = timing(&fixture, &[]);
+    assert_eq!(
+        report["before_first_record"]["start"]["unknown"], "no transition before the first record",
+        "{report:#}"
+    );
+}
+
+/// Fresh-eyes round 3, F11 (2026-11-12; REQ-reporting-001): with the session's `start`
+/// entry, the report put intent under "Before the first record", outside Cycle 1, though
+/// that entry is a record, and "(elapsed wall-clock)" followed every number. With a start
+/// entry the first cycle starts at it and holds intent; the text says elapsed wall-clock
+/// once, in its header, while the JSON keeps each duration's label.
+#[test]
+fn timing_starts_cycle_1_at_the_start_entry_and_says_elapsed_wall_clock_once() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let start = timeline_entries(&fixture)[0]["at_unix_seconds"]
+        .as_u64()
+        .unwrap();
+    fixture.ok(&["stage", "advance", "--json"]);
+    let report = timing(&fixture, &[]);
+    assert_eq!(report["before_first_record"], Value::Null, "{report:#}");
+    assert_eq!(report["cycles"][0]["number"], 1, "{report:#}");
+    assert_eq!(at(&report["cycles"][0]["start"]), Some(start), "{report:#}");
+    let stages: Vec<Value> = segments(&report, 0)
+        .iter()
+        .map(|segment| segment["stage"].clone())
+        .collect();
+    assert_eq!(stages, ["intent", "design"], "{report:#}");
+    assert_eq!(at(&segments(&report, 0)[0]["start"]), Some(start));
+    let rendered = text(&fixture, &[]);
+    assert!(!rendered.contains("Before the first record"), "{rendered}");
+    let cycle = rendered.find("### Cycle 1 (started ").expect(&rendered);
+    let intent = rendered.find("- intent").expect(&rendered);
+    assert!(cycle < intent, "intent is outside Cycle 1:\n{rendered}");
+
+    // Said once, with durations, totals and history estimates in the report.
+    let mut lines = vec![];
+    let mut at = T;
+    for plan in [100, 400, 200] {
+        lines.push(transition(Some(at), "advance", "intent", "plan", "go"));
+        at += plan;
+        lines.push(transition(Some(at), "advance", "plan", "build", "go"));
+        at += 50;
+        lines.push(transition(Some(at), "advance", "build", "done", "go"));
+        at += 10_000;
+        lines.push(transition(Some(at), "reset", "done", "intent", "next"));
+        at += 5;
+    }
+    let history = fixture_with(&lines);
+    let rendered = text(&history, &[]);
+    assert_eq!(
+        rendered.matches("elapsed wall-clock").count(),
+        1,
+        "{rendered}"
+    );
+    assert!(
+        rendered.contains(
+            "estimate from 3 recorded plan stage times; not a target: min 1m 40s, median 3m 20s, max 6m 40s\n"
+        ),
+        "{rendered}"
+    );
+    let report = timing(&history, &[]);
+    assert_eq!(
+        segments(&report, 0)[0]["elapsed"]["label"],
+        "elapsed wall-clock"
     );
 }

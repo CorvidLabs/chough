@@ -21,8 +21,9 @@ const MOVED: [(&str, &str, &str); 4] = [
         "REQ-history-002",
         // Modified by native change keep-one-session-per-objective (#77): per-session
         // cursor; then by chough-0-6-0-human-first-records-...: the append-only Timeline
-        // of session.md.
-        "c1f64664020694fd1a24c4e7ed2e792860b9c4fbd2f6ed36399b72baea297a63",
+        // of session.md; then by prepare-the-chough-0-6-0-release-...: labelled lines for
+        // fields with parts, and the start entry.
+        "336e87bfe0fe9d03609babc4f1bc68ed79b36243151b5a950f0c8a7ccf4f2347",
     ),
     (
         "REQ-cli-026",
@@ -46,8 +47,9 @@ const MOVED_REPORTING: [(&str, &str, &str); 3] = [
         // marking-its-report-partial-189-drive-21 (#189): direct-native-write events
         // (REQ-history-013) start or end no segment and are not an unrecognised kind; then
         // by chough-0-6-0-human-first-records-...: it reads timelines and receipts, and
-        // duration_seconds.
-        "20739bcd2e5d588a134d188c11eaf31bd213b06ad0c80ddaec983bdd882b02c6",
+        // duration_seconds; then by prepare-the-chough-0-6-0-release-...: the start entry
+        // starts Cycle 1, and the wall-clock label is said once in the text header.
+        "4333865f85607e54f5e1c1628b0fe887d89463acd2ec00ba67840946b977ce7b",
     ),
     (
         "REQ-cli-024",

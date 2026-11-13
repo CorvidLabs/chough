@@ -116,6 +116,16 @@ impl Fixture {
         fs::write(path, content).unwrap();
     }
 
+    /// Configure `SYNTHETIC-human` in the user identity file under [`USER_CONFIG`]:
+    /// every gate close names a configured human (REQ-records-008), and a project
+    /// file a test writes still overrides it.
+    pub(super) fn configure_human(&self) {
+        self.write(
+            &format!("{USER_CONFIG}/chough/identity.toml"),
+            "[[human]]\nname = \"SYNTHETIC Human\"\naliases = [\"SYNTHETIC-human\"]\nspecsync_actor = \"SYNTHETIC-actor\"\n",
+        );
+    }
+
     pub(super) fn read(&self, name: &str) -> String {
         fs::read_to_string(self.root().join(name)).unwrap()
     }
@@ -132,6 +142,11 @@ impl Fixture {
         let mut command = Command::new(env!("CARGO_BIN_EXE_chough"));
         command.arg("--root").arg(self.root()).args(args);
         let mut paths = vec![self.root().join("bin")];
+        // The `chough` a merge driver runs, which doctor finds through PATH
+        // (REQ-history-012), is this build unless a test puts another in `bin/`.
+        if let Some(build) = Path::new(env!("CARGO_BIN_EXE_chough")).parent() {
+            paths.push(build.to_path_buf());
+        }
         paths.extend(std::env::split_paths(
             &std::env::var_os("PATH").unwrap_or_default(),
         ));
@@ -454,14 +469,45 @@ printf '{"summary":{"id":"%s","state":"%s","next_action":"%s"%s}%s}\n' "$3" "$st
     }
 }
 
+/// The variable that makes an installed stand-in exit at once, for its warm-up run.
+#[cfg(unix)]
+const WARM_UP: &str = "CHOUGH_TEST_WARM_UP";
+
+/// The line `install_executable` puts after a `#!/bin/sh` line: with [`WARM_UP`] set,
+/// the stand-in exits before its body runs, so the warm-up run has no effect.
+#[cfg(unix)]
+const WARM_UP_GUARD: &str = "[ -z \"${CHOUGH_TEST_WARM_UP:-}\" ] || exit 0\n";
+
+/// `content` with [`WARM_UP_GUARD`] after its `#!/bin/sh` line, once; other content
+/// unchanged.
+#[cfg(unix)]
+fn with_warm_up_guard(content: &[u8]) -> Vec<u8> {
+    let Some(rest) = content.strip_prefix(b"#!/bin/sh\n") else {
+        return content.to_vec();
+    };
+    if rest.starts_with(WARM_UP_GUARD.as_bytes()) {
+        return content.to_vec();
+    }
+    [b"#!/bin/sh\n".as_slice(), WARM_UP_GUARD.as_bytes(), rest].concat()
+}
+
 /// Install an executable script at `path` as a fresh file (#132). A child `sh` writes it
 /// to a temporary name, makes it executable and renames it into place. No handle in the
 /// test process ever opens the new file for writing, so a child that another test
 /// thread forked, still holding an old write handle until it execs, cannot make the
 /// script "Text file busy" (ETXTBSY), the pattern of CorvidLabs/spec-sync#888.
+///
+/// Then it runs the script once with [`WARM_UP`] set, which the guard line makes exit
+/// before its body (#132). macOS checks a newly written executable on its first exec,
+/// one at a time across the machine, and keeps the result for that file: under load
+/// that first exec took 4 s at the median, and a test's own first call of a stand-in
+/// then stalled past its time bound (`the command never started`, a case run past its
+/// deadline). The second exec of the same file took 12 ms. Running it here pays the
+/// one-time check during setup, outside every timed wait.
 #[cfg(unix)]
 pub(super) fn install_executable(path: &Path, content: &[u8]) {
     use std::io::Write;
+    let content = with_warm_up_guard(content);
     let mut child = std::process::Command::new("sh")
         .args([
             "-c",
@@ -472,12 +518,22 @@ pub(super) fn install_executable(path: &Path, content: &[u8]) {
         .stdin(std::process::Stdio::piped())
         .spawn()
         .unwrap();
-    child.stdin.take().unwrap().write_all(content).unwrap();
+    child.stdin.take().unwrap().write_all(&content).unwrap();
     assert!(
         child.wait().unwrap().success(),
         "installing {}",
         path.display()
     );
+    if content.starts_with(b"#!/bin/sh\n") {
+        let warmed = std::process::Command::new(path)
+            .env(WARM_UP, "1")
+            .stdin(std::process::Stdio::null())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .unwrap();
+        assert!(warmed.success(), "warming up {}", path.display());
+    }
 }
 
 /// The `hi export` response the stand-ins report.

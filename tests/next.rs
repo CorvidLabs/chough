@@ -19,6 +19,22 @@ fn text(fixture: &Fixture, args: &[&str]) -> String {
     String::from_utf8(output.stdout).unwrap()
 }
 
+/// `text` without its commands, each backticked span: the bound of a string the next
+/// view shows counts only this text, since a command is never cut (F5).
+fn outside_commands(text: &str) -> String {
+    let mut outside = String::new();
+    let mut rest = text;
+    while let Some(open) = rest.find('`') {
+        let Some(close) = rest[open + 1..].find('`') else {
+            break;
+        };
+        outside.push_str(&rest[..open]);
+        rest = &rest[open + close + 2..];
+    }
+    outside.push_str(rest);
+    outside
+}
+
 /// Every string anywhere in a JSON value.
 fn strings(value: &Value, found: &mut Vec<String>) {
     match value {
@@ -38,8 +54,8 @@ fn approved_at_plan(id: &str) -> Fixture {
     fixture.init();
     fixture.ok(&["checkpoint", "--native-change", id]);
     fixture.no_spec_approval(id);
-    fixture.ok(&["stage", "advance"]);
-    fixture.ok(&["stage", "skip", "--reason", "No visuals"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
     fixture
 }
 
@@ -150,7 +166,7 @@ fn next_and_status_each_read_native_status_once_and_agree_on_the_action() {
     let mut seen = vec![];
     for stage in ["plan", "build", "test", "accept"] {
         if stage != "plan" {
-            fixture.ok(&["stage", "advance"]);
+            fixture.ok(&["stage", "advance", "--json"]);
         }
         fixture.native_calls();
         let next = fixture.ok(&["next", "--json"]);
@@ -338,7 +354,8 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     let mut found = vec![];
     strings(&next, &mut found);
     for value in &found {
-        assert!(value.len() <= 512, "{} bytes: {value:.80}", value.len());
+        let outside = outside_commands(value);
+        assert!(outside.len() <= 512, "{} bytes: {value:.80}", outside.len());
     }
     assert!(next["objective"].as_str().unwrap().ends_with(" [cut]"));
     assert!(
@@ -389,15 +406,22 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
         40
     );
     assert_eq!(status["observations"].as_array().unwrap().len(), 508);
-    // The view cuts the shared action; status shows it whole.
+    // The view cuts the shared action around its commands, which follow the cut whole
+    // (F5); status shows it whole.
     let action = next["next_valid_action"]["action"].as_str().unwrap();
-    assert!(action.ends_with(" [cut]"), "{action}");
+    let (kept, commands) = action.split_once(" [cut]").expect(action);
+    let whole = status["next_valid_action"].as_str().unwrap();
+    assert!(whole.starts_with(kept), "{action}");
     assert!(
-        status["next_valid_action"]
-            .as_str()
-            .unwrap()
-            .starts_with(action.trim_end_matches(" [cut]"))
+        commands.trim_start().starts_with('`') && commands.ends_with('`'),
+        "{action}"
     );
+    for command in commands.split("` `") {
+        assert!(
+            whole.contains(command.trim_matches([' ', '`'])),
+            "{command}"
+        );
+    }
 
     // Strings that JSON escapes to six bytes per character stay within the cap too:
     // each string is bounded by its escaped length, not its raw length.
@@ -443,7 +467,10 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     let mut found = vec![];
     strings(&next, &mut found);
     for value in &found {
-        let width = serde_json::to_string(value).unwrap().len() - 2;
+        let width = serde_json::to_string(&outside_commands(value))
+            .unwrap()
+            .len()
+            - 2;
         assert!(width <= 512, "{width} escaped bytes: {value:?}");
     }
     assert!(next["objective"].as_str().unwrap().ends_with(" [cut]"));
@@ -498,7 +525,11 @@ fn run_suggested(fixture: &Fixture, command: &str) -> Value {
         .replace("<outcome>", "The next piece of work");
     let arguments = words(&command);
     assert_eq!(arguments[0], "chough", "{command}");
-    let arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
+    let mut arguments: Vec<&str> = arguments[1..].iter().map(String::as_str).collect();
+    // A suggested stage move prints its full report under --json (REQ-cli-008).
+    if arguments.first() == Some(&"stage") {
+        arguments.push("--json");
+    }
     fixture.ok(&arguments)
 }
 
@@ -524,6 +555,7 @@ fn archived_change_at(stage: &str, change: &str) -> Fixture {
         fixture.ok(&[
             "stage",
             "advance",
+            "--json",
             "--note",
             "Reached with the change approved",
         ]);
@@ -775,8 +807,15 @@ fn an_archived_change_before_done_names_a_new_cycle_not_continue() {
                 "chough stage enter release --reason \"<request>\"",
                 "{done:#}"
             );
-            fixture.ok(&["stage", "enter", "release", "--reason", "Requested"]);
-            let released = fixture.ok(&["stage", "advance"]);
+            fixture.ok(&[
+                "stage",
+                "enter",
+                "--json",
+                "release",
+                "--reason",
+                "Requested",
+            ]);
+            let released = fixture.ok(&["stage", "advance", "--json"]);
             assert_eq!(
                 released["applied"]["session_archive"]["status"], "archived",
                 "{released:#}"
@@ -841,11 +880,11 @@ fn keeps_todays_action_when_something_else_applies() {
     let archived = "is archived while the checkpoint";
     // Paused.
     let fixture = archived_at("plan");
-    fixture.ok(&["stage", "pause", "--reason", "Lunch"]);
+    fixture.ok(&["stage", "pause", "--json", "--reason", "Lunch"]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(action.as_str().unwrap().contains("is paused"), "{action}");
     // Awaiting a human.
-    fixture.ok(&["stage", "resume"]);
+    fixture.ok(&["stage", "resume", "--json"]);
     fixture.ok(&["checkpoint", "--awaiting-human", "Scope decision"]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(
@@ -878,7 +917,7 @@ fn keeps_todays_action_when_something_else_applies() {
     }
     // A side stage returns to its caller first.
     let fixture = archived_at("plan");
-    fixture.ok(&["stage", "enter", "bugs", "--reason", "Triage"]);
+    fixture.ok(&["stage", "enter", "--json", "bugs", "--reason", "Triage"]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(
         action.as_str().unwrap().starts_with("Continue bugs"),
@@ -1703,7 +1742,8 @@ fn handoff_blocks_stay_within_the_cap_and_are_byte_identical() {
     let mut found = vec![];
     strings(&next, &mut found);
     for value in &found {
-        assert!(value.len() <= 512, "{} bytes: {value:.80}", value.len());
+        let outside = outside_commands(value);
+        assert!(outside.len() <= 512, "{} bytes: {value:.80}", outside.len());
     }
     for total in [
         "Decisions (",
@@ -2161,6 +2201,48 @@ fn a_checkpoint_at_the_cap_stays_fast_and_one_byte_more_is_refused() {
     assert!(String::from_utf8_lossy(&output.stderr).contains("1048576"));
 }
 
+/// F1 of the third fresh-eyes round (REQ-cli-021): at accept, with the change verifying
+/// and the review gate open, SpecSync's own next action names its review for a
+/// reviewer; no field of `next` or `status`, text or JSON, passes that command on, so
+/// no agent is routed to review its own work.
+#[cfg(unix)]
+#[test]
+fn next_at_accept_never_passes_on_specsyncs_review_command() {
+    let fixture = approved_at_plan("review-change");
+    while fixture.checkpoint()["stage"]["current"] != "accept" {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.write(".stub-state", "verifying\n");
+    fixture.write(
+        ".stub-next",
+        "run `specsync change review review-change --reviewer <human>` after the PR's scoped review passes\n",
+    );
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Implementation review of review-change",
+    ]);
+    let mut found = vec![];
+    strings(&fixture.ok(&["next", "--json"]), &mut found);
+    // `native_specsync` carries SpecSync's own report verbatim (REQ-cli-003), beside
+    // `native_next_action_authority`, which says a review it names is the human's
+    // decision; every field Chough derives from it is checked.
+    let mut status = fixture.ok(&["status", "--json"]);
+    status["native_specsync"] = Value::Null;
+    strings(&status, &mut found);
+    let output = fixture.run(&["next", "--environment", "local"]);
+    assert!(output.status.success(), "next failed");
+    found.push(String::from_utf8_lossy(&output.stdout).into_owned());
+    let passed_on: Vec<&String> = found
+        .iter()
+        .filter(|text| text.contains("specsync change review"))
+        .collect();
+    assert!(
+        passed_on.is_empty(),
+        "SpecSync's review command is passed on at accept: {passed_on:?}"
+    );
+}
+
 /// #76 (REQ-cli-021): `chough next` guides a fresh agent through the stages: right after
 /// init it names `hi check` and then `chough context`; at test, `chough cases select`,
 /// `chough cases run` and `chough bug add`; at accept while the change is verifying, the
@@ -2180,7 +2262,7 @@ fn next_guides_a_fresh_agent_from_init_to_accept() {
 
     // At test, with no native lifecycle gating the move.
     while fixture.checkpoint()["stage"]["current"] != "test" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     let action = &fixture.ok(&["next", "--json"])["next_valid_action"];
     let text = action["action"].as_str().unwrap();
@@ -2199,7 +2281,7 @@ fn next_guides_a_fresh_agent_from_init_to_accept() {
     // At accept while the native change is verifying.
     let fixture = approved_at_plan("verify-change");
     while fixture.checkpoint()["stage"]["current"] != "accept" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     fixture.write(".stub-state", "verifying\n");
     let next = fixture.ok(&["next", "--json"]);
@@ -2249,7 +2331,7 @@ fn next_guides_a_fresh_agent_from_init_to_accept() {
 fn at_accept_the_decision_ships_through_change_ship_and_commit_first_commits_the_gate() {
     let fixture = approved_at_plan("ship-change");
     while fixture.checkpoint()["stage"]["current"] != "accept" {
-        fixture.ok(&["stage", "advance"]);
+        fixture.ok(&["stage", "advance", "--json"]);
     }
     fixture.write(".stub-state", "verifying\n");
     let action = |fixture: &Fixture| -> String {
@@ -2338,6 +2420,49 @@ fn status_leads_with_the_same_summary_as_next() {
     );
 }
 
+/// Fresh-eyes finding 12 (t38j, 2026-11-12): `chough status` is the full report, so its
+/// summary gives the next valid action whole, never cut mid-command as
+/// "`chough stage  [cut]"; `chough next`, the bounded view, keeps its per-string bound and
+/// marks the cut, cutting the text around a command and never the command (F5).
+#[test]
+fn status_gives_the_next_valid_action_whole() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let next_action = format!(
+        "{}Then run `chough stage advance` to move on.",
+        "Check each SYNTHETIC part of the plan against the scope before moving on. ".repeat(9)
+    );
+    assert!(next_action.len() > 600);
+    fixture.ok(&["checkpoint", "--next-action", &next_action]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&[
+        "stage",
+        "skip",
+        "--json",
+        "--reason",
+        "SYNTHETIC: no visuals",
+    ]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    let whole = format!("Continue build: {next_action}");
+
+    let status: Value = serde_json::from_str(&text(&fixture, &["status"])).unwrap();
+    assert_eq!(status["summary"]["stage"]["current"], "build", "{status:#}");
+    assert_eq!(
+        status["summary"]["next_valid_action"]["action"], whole,
+        "{:#}",
+        status["summary"]
+    );
+    assert_eq!(status["next_valid_action"], whole);
+
+    let next = fixture.ok(&["next", "--json"]);
+    let shown = next["next_valid_action"]["action"].as_str().unwrap();
+    let command = " `chough stage advance`";
+    assert!(
+        shown.ends_with(&format!(" [cut]{command}")) && shown.len() <= 512 + command.len(),
+        "{shown}"
+    );
+}
+
 /// t37f's seed capture: after a migration, or once a session has finished, the latest
 /// failure may be a receipt that a bug or an archived story holds; next still names
 /// it, with the bug that links it (REQ-cli-021).
@@ -2374,4 +2499,594 @@ fn next_names_the_latest_failure_held_only_as_a_receipt() {
 fn text_of(fixture: &Fixture) -> String {
     let output = fixture.run(&["next"]);
     String::from_utf8_lossy(&output.stdout).to_string()
+}
+
+/// REQ-cli-021, TC-cli-next-at-plan-names-the-scope-gate (t38j's fresh-eyes report): at
+/// plan, while the native change waits for approval, `next` and `status` name the human
+/// scope gate, opening it and closing it with the human's decision, and pass on none of
+/// SpecSync's own `specsync change approve <id> --actor <name>`, so no agent is routed to
+/// approve its own scope; once the gate is open, `next` waits for the human.
+#[cfg(unix)]
+#[test]
+fn at_plan_next_names_the_scope_gate_and_never_specsyncs_approve() {
+    let fixture = approved_at_plan("scope-change");
+    fixture.write(".stub-state", "draft\n");
+    let approve = "run `specsync change approve scope-change --actor <name>`";
+    fixture.write(".stub-next", &format!("{approve}\n"));
+    let next = fixture.ok(&["next", "--json"]);
+    let text = next["next_valid_action"]["action"].as_str().unwrap();
+    for part in [
+        "chough checkpoint --awaiting-human",
+        "--drives approve",
+        "chough checkpoint --close-gate",
+    ] {
+        assert!(text.contains(part), "missing {part}: {text}");
+    }
+    let mut found = vec![];
+    strings(&next, &mut found);
+    // Status keeps SpecSync's raw output as SpecSync printed it; Chough passes none of it
+    // on as an action.
+    let mut status = fixture.ok(&["status", "--json"]);
+    status["native_specsync"] = Value::Null;
+    strings(&status, &mut found);
+    let text_view = String::from_utf8_lossy(&fixture.run(&["next"]).stdout).into_owned();
+    found.push(text_view);
+    for text in &found {
+        assert!(
+            !text.contains("specsync change approve scope-change --actor"),
+            "SpecSync's approve is passed on at plan: {text}"
+        );
+    }
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Approve the scope of scope-change",
+        "--drives",
+        "approve",
+    ]);
+    let next = fixture.ok(&["next", "--json"]);
+    let text = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(
+        text.starts_with("Waiting for a human decision: Approve the scope of scope-change."),
+        "{text}"
+    );
+    let mut found = vec![];
+    strings(&next, &mut found);
+    assert!(
+        found
+            .iter()
+            .all(|text| !text.contains("specsync change approve scope-change --actor")),
+        "SpecSync's approve is passed on while the gate waits"
+    );
+}
+
+/// Fresh-eyes F12e (second round, 2026-11-12): with no native change recorded, next's
+/// native line said "Native change: none recorded (read observed)", a read state of no
+/// change. It says only that none is recorded, configured or not; SpecSync's own next
+/// step, when it gives one, keeps its line.
+#[cfg(unix)]
+#[test]
+fn next_with_no_native_change_says_only_that_none_is_recorded() {
+    let unconfigured = Fixture::new();
+    unconfigured.init();
+    let configured = Fixture::new();
+    configured.stubs();
+    configured.native("draft");
+    configured.init();
+    for (fixture, native_next) in [(&unconfigured, false), (&configured, true)] {
+        let shown = text(fixture, &["next"]);
+        let native: Vec<&str> = shown
+            .lines()
+            .filter(|line| line.starts_with("Native change"))
+            .collect();
+        assert_eq!(native, ["Native change: none recorded"], "{shown}");
+        assert!(!shown.contains("(read "), "{shown}");
+        assert_eq!(
+            shown.contains(
+                "  SpecSync's own next step, for reference (the step to take now is Next): stub next action for draft"
+            ),
+            native_next,
+            "{shown}"
+        );
+    }
+}
+
+/// Whether `text` names an internal trace ID: `FLOW-`, `LIFE-`, `DRIVE-`, `KNOW-` or
+/// `REQ-` followed by a letter or digit.
+fn names_trace_id(text: &str) -> bool {
+    ["FLOW-", "LIFE-", "DRIVE-", "KNOW-", "REQ-"]
+        .iter()
+        .any(|prefix| {
+            text.match_indices(prefix).any(|(at, _)| {
+                text[at + prefix.len()..]
+                    .chars()
+                    .next()
+                    .is_some_and(|next| next.is_ascii_alphanumeric())
+            })
+        })
+}
+
+/// Fresh-eyes F12f (second round, 2026-11-12): next's Why line named FLOW-23 ("...which
+/// only the human gives (FLOW-23)."). The reasons next and status give a human carry no
+/// internal trace ID; the IDs stay in code comments and the docs. The scope gate at plan,
+/// as reported, and the review at accept are read from next and status; every other
+/// reason the next valid action can give is read where it is written.
+#[cfg(unix)]
+#[test]
+fn next_and_status_reasons_name_no_trace_id() {
+    let plan = approved_at_plan("trace-scope");
+    plan.write(".stub-state", "draft\n");
+    plan.write(
+        ".stub-next",
+        "run `specsync change approve trace-scope --actor <name>`\n",
+    );
+    let accept = approved_at_plan("trace-review");
+    while accept.checkpoint()["stage"]["current"] != "accept" {
+        accept.ok(&["stage", "advance", "--json"]);
+    }
+    accept.write(".stub-state", "verifying\n");
+    for fixture in [&plan, &accept] {
+        let shown = text(fixture, &["next"]);
+        let why = shown
+            .lines()
+            .find(|line| line.starts_with("  Why: "))
+            .unwrap_or_else(|| panic!("no Why line in:\n{shown}"));
+        assert!(!names_trace_id(why), "{why}");
+        let next = fixture.ok(&["next", "--json"]);
+        let reason = next["next_valid_action"]["reason"].as_str().unwrap();
+        assert!(!names_trace_id(reason), "{reason}");
+        let status = fixture.ok(&["status", "--json"]);
+        let reason = status["summary"]["next_valid_action"]["reason"]
+            .as_str()
+            .unwrap();
+        assert!(!names_trace_id(reason), "{reason}");
+    }
+
+    // Each `reason:` field and the lines its value continues on, comments aside.
+    let mut named = vec![];
+    for file in ["src/stage.rs", "src/main.rs"] {
+        let source =
+            std::fs::read_to_string(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(file))
+                .unwrap();
+        let lines: Vec<&str> = source.lines().collect();
+        let indent = |line: &str| line.len() - line.trim_start().len();
+        for (index, line) in lines.iter().enumerate() {
+            if !line.trim_start().starts_with("reason:") {
+                continue;
+            }
+            let value: Vec<&str> = std::iter::once(*line)
+                .chain(
+                    lines[index + 1..]
+                        .iter()
+                        .copied()
+                        .take_while(|next| indent(next) > indent(line)),
+                )
+                .filter(|part| !part.trim_start().starts_with("//"))
+                .collect();
+            if value.iter().any(|part| names_trace_id(part)) {
+                named.push(format!("{file}:{}: {}", index + 1, line.trim()));
+            }
+        }
+    }
+    assert!(named.is_empty(), "{named:#?}");
+}
+
+/// Fresh-eyes F4 (second round, 2026-11-12; REQ-cli-021): at accept with the native
+/// change approved, next's action was "Gate not open (refused:native-approved)" with a
+/// bare `specsync change status`. While the change is approved or implementing, it names
+/// the review preparation of the accept step in order: `chough change check <id>
+/// --no-commit` first when the deltas add or modify requirements, then the affected
+/// cases, the review gate, the commit and `chough change check <id>`; status agrees.
+#[cfg(unix)]
+#[test]
+fn at_accept_while_approved_next_names_the_review_preparation_in_order() {
+    for (state, adds) in [("approved", false), ("implementing", true)] {
+        let id = format!("prep-{state}");
+        let fixture = approved_at_plan(&id);
+        while fixture.checkpoint()["stage"]["current"] != "accept" {
+            fixture.ok(&["stage", "advance", "--json"]);
+        }
+        fixture.write(".stub-state", &format!("{state}\n"));
+        if adds {
+            fixture.write(
+                &format!(".specsync/changes/{id}/deltas/cli.md"),
+                "## ADDED\n\n### REQUIREMENT REQ-cli-900\n\nThe helper SHALL do it.\n",
+            );
+        }
+        let next = fixture.ok(&["next", "--json"]);
+        let action = next["next_valid_action"]["action"].as_str().unwrap();
+        for refused in ["Gate not open", "refused:", "specsync change status"] {
+            assert!(!action.contains(refused), "{state}: {action}");
+        }
+        let command = next["next_valid_action"]["command"].as_str().unwrap();
+        assert!(!command.starts_with("specsync"), "{state}: {command}");
+        let materialize = format!("`chough change check {id} --no-commit`");
+        let mut steps = vec![
+            "`chough cases run <case-id> --environment <env>`".to_string(),
+            format!(
+                "`chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review`"
+            ),
+            "commit the source".to_string(),
+            format!("`chough change check {id}`"),
+        ];
+        if adds {
+            steps.insert(0, materialize);
+            assert_eq!(command, format!("chough change check {id} --no-commit"));
+        } else {
+            assert!(!action.contains("--no-commit"), "{action}");
+            assert_eq!(command, "chough cases run <case-id> --environment <env>");
+        }
+        let mut from = 0;
+        for step in &steps {
+            let at = action[from..]
+                .find(step.as_str())
+                .unwrap_or_else(|| panic!("{state}: {step} missing or out of order in {action}"));
+            from += at + step.len();
+        }
+        let status = fixture.ok(&["status", "--json"]);
+        assert_eq!(
+            status["summary"]["next_valid_action"]["action"], action,
+            "{state}"
+        );
+    }
+}
+
+/// Whether every line of `text` has its backticks in pairs, so no command in it is cut
+/// open.
+fn commands_closed(text: &str) -> bool {
+    text.lines().all(|line| line.matches('`').count() % 2 == 0)
+}
+
+/// Fresh-eyes F5 (second round, 2026-11-12; REQ-cli-021): with a long change ID, next
+/// cut the ship command to keep its 512-byte string bound. A command that next or status
+/// shows, in the next valid action, a gate or a refusal, appears whole whatever its
+/// length; the bound cuts the other text. A 120-character ID, at plan while the scope
+/// waits for approval and at accept while verifying, in text and JSON.
+#[cfg(unix)]
+#[test]
+fn next_and_status_show_every_command_whole_for_a_long_change_id() {
+    let id = format!("long-{}", "x".repeat(115));
+    assert_eq!(id.len(), 120);
+    let plan = approved_at_plan(&id);
+    plan.write(".stub-state", "draft\n");
+    plan.write(
+        ".stub-next",
+        &format!("run `specsync change approve {id} --actor <name>`\n"),
+    );
+    let accept = approved_at_plan(&id);
+    while accept.checkpoint()["stage"]["current"] != "accept" {
+        accept.ok(&["stage", "advance", "--json"]);
+    }
+    accept.write(".stub-state", "verifying\n");
+    let scope = format!(
+        "chough checkpoint --awaiting-human \"Approve the scope of {id}\" --drives approve"
+    );
+    let review = format!(
+        "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
+    );
+    let close = "chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"";
+    let ship = format!("chough change ship {id} --close-gate \"<gate>\"");
+    for (fixture, command, shown) in [
+        (&plan, &scope, vec![scope.as_str(), close]),
+        (&accept, &review, vec![review.as_str(), ship.as_str()]),
+    ] {
+        let next = fixture.ok(&["next", "--json"]);
+        let action = &next["next_valid_action"];
+        assert_eq!(action["command"], command.as_str(), "{action:#}");
+        let status = fixture.ok(&["status", "--json"]);
+        let text_view = text(fixture, &["next"]);
+        for whole in &shown {
+            let quoted = format!("`{whole}`");
+            for (form, text) in [
+                ("next --json", action["action"].as_str().unwrap()),
+                (
+                    "status --json",
+                    status["summary"]["next_valid_action"]["action"]
+                        .as_str()
+                        .unwrap(),
+                ),
+                ("next", text_view.as_str()),
+            ] {
+                assert!(text.contains(&quoted), "{form} cuts {quoted}:\n{text}");
+            }
+        }
+        assert!(
+            text_view.contains(&format!("  Run: {command}\n")),
+            "{text_view}"
+        );
+        for text in [
+            action["action"].as_str().unwrap(),
+            action["reason"].as_str().unwrap(),
+            next["gate"]["label"].as_str().unwrap_or_default(),
+            next["gate"]["detail"].as_str().unwrap_or_default(),
+            text_view.as_str(),
+        ] {
+            assert!(commands_closed(text), "a command is cut open:\n{text}");
+        }
+    }
+}
+
+/// Fresh-eyes round 3, F8 (2026-11-12; REQ-cli-021): at plan after the scope approval,
+/// next printed SpecSync's "Native next action: run `specsync change check <id>
+/// --commit`" beside Chough's own Next, two next actions that disagree. The text view
+/// shows SpecSync's step as its own, for reference, so Next alone is the step to take
+/// now; the JSON keeps the native read fields.
+#[cfg(unix)]
+#[test]
+fn at_plan_after_approval_next_shows_specsyncs_step_for_reference_only() {
+    let fixture = approved_at_plan("after-approval");
+    let native = "run `specsync change check after-approval --commit`";
+    fixture.write(".stub-next", &format!("{native}\n"));
+    let shown = text(&fixture, &["next"]);
+    let line = shown
+        .lines()
+        .find(|line| line.contains(native))
+        .unwrap_or_else(|| panic!("SpecSync's step is not shown:\n{shown}"));
+    assert_eq!(
+        line,
+        format!(
+            "  SpecSync's own next step, for reference (the step to take now is Next): {native}"
+        )
+    );
+    assert!(!shown.contains("Native next action"), "{shown}");
+    let next = shown
+        .lines()
+        .find(|line| line.starts_with("Next: "))
+        .unwrap();
+    assert!(!next.contains("specsync"), "{next}");
+    let view = fixture.ok(&["next", "--json"]);
+    assert_eq!(view["native"]["next_action"], native, "{view:#}");
+    assert_eq!(view["native"]["state"], "approved", "{view:#}");
+}
+
+/// A manual case for the F7 test, linking a requirement the fixture does not need to hold.
+const F7_CASE: &str = r#"profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-f7-run"
+title = "The F7 case"
+status = "active"
+track = "functional"
+method = "manual"
+criteria = ["LIFE-1"]
+requirements = ["REQ-cli-001"]
+environments = ["local"]
+artifacts = ["reviewer-note"]
+setup = ["Fixture"]
+steps = ["Look"]
+expected = ["it passes"]
+"#;
+
+/// Fresh-eyes round 3, F7 (2026-11-12; REQ-cli-021): at test after every case passed,
+/// next ran the checkpoint's next action into its own guidance with no separator, still
+/// said recorded test evidence was needed, and listed only superseded runs as needing
+/// attention, one of them twice (a bare ID and session-qualified through a bug). Once
+/// every referenced case's latest run passed and no blocking bug is open, next names
+/// `chough stage advance`, the checkpoint's own next action a sentence of its own; a
+/// superseded run is counted apart and never listed, and no observation is listed twice.
+#[test]
+fn at_test_after_every_case_passed_next_names_stage_advance_and_no_superseded_run() {
+    let fixture = Fixture::new();
+    fixture.hi_stand_in();
+    fixture.init();
+    fixture.write(".chough/cases/cli.f7.cases.toml", F7_CASE);
+    fixture.commit("the F7 fixture");
+    fixture.ok(&["stage", "advance", "--to", "test", "--json"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--case",
+        "TC-cli-f7-run",
+        "--next-action",
+        "Run the selected cases at test",
+    ]);
+    // The case's earlier run failed, at a revision long gone; a bug links it,
+    // session-qualified, and the checkpoint links it bare.
+    let failed = "2026-11-10-f7-failed";
+    let mut entry = observation(failed, "failed", 1_000);
+    entry["cases"] = json!([{"id": "TC-cli-f7-run", "digest": "0".repeat(64)}]);
+    write_entry(&fixture, &entry);
+    fixture.ok(&["checkpoint", "--observation", failed]);
+    fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC the F7 case failed once",
+        "--symptom",
+        "SYNTHETIC wrong count",
+        "--trigger",
+        "SYNTHETIC running the case",
+        "--expected",
+        "SYNTHETIC three",
+        "--actual",
+        "SYNTHETIC two",
+        "--environment",
+        "local",
+        "--observation",
+        failed,
+    ]);
+    // Its later run passed.
+    fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--kind",
+        "product-test",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC the F7 case passed",
+        "--case",
+        "TC-cli-f7-run",
+    ]);
+
+    let next = fixture.ok(&["next", "--json"]);
+    let action = &next["next_valid_action"];
+    assert_eq!(action["command"], "chough stage advance", "{action:#}");
+    let said = action["action"].as_str().unwrap();
+    assert!(said.contains("`chough stage advance`"), "{said}");
+    assert!(
+        said.contains("Run the selected cases at test. "),
+        "the checkpoint's next action runs on: {said}"
+    );
+    assert!(!said.contains("chough cases select"), "{said}");
+    let reason = action["reason"].as_str().unwrap();
+    assert!(
+        !reason.contains("Recorded test evidence is needed"),
+        "{reason}"
+    );
+
+    let observations = &next["observations"];
+    let listed: Vec<String> = observations["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|item| item["id"].as_str().unwrap().to_string())
+        .collect();
+    assert!(
+        listed.iter().all(|id| !id.ends_with(failed)),
+        "a superseded run is listed: {observations:#}"
+    );
+    let mut unique = listed.clone();
+    unique.sort();
+    unique.dedup();
+    assert_eq!(unique.len(), listed.len(), "{observations:#}");
+    assert_eq!(observations["superseded"], 1, "{observations:#}");
+
+    let shown = text(&fixture, &["next"]);
+    let section: Vec<&str> = shown
+        .lines()
+        .skip_while(|line| !line.starts_with("Observations needing attention"))
+        .take_while(|line| line.starts_with("Observations") || line.starts_with("  "))
+        .collect();
+    assert!(!section.is_empty(), "{shown}");
+    assert!(section.iter().all(|line| !line.contains(failed)), "{shown}");
+    assert!(
+        section.iter().any(|line| line.contains(" 1 superseded, ")),
+        "{shown}"
+    );
+}
+
+/// A command case that prints ok, for a rerun at accept.
+const F4_CASE: &str = r#"profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-f4-rerun"
+title = "The F4 case"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1"]
+requirements = ["REQ-cli-001"]
+paths = ["src/"]
+environments = ["local"]
+artifacts = ["test-log"]
+expected = ["it prints ok"]
+
+[case.bind]
+adapter = "command"
+argv = ["sh", "-c", "echo ok"]
+expect_output = ["ok"]
+"#;
+
+/// F4's rerun list, continued (REQ-cli-021): a referenced case that was retired after its
+/// run cannot be run again (`chough cases run` refuses it), so next names no rerun of it
+/// and goes on to the review gate.
+#[cfg(unix)]
+#[test]
+fn at_accept_next_names_no_rerun_of_a_retired_case() {
+    let case = "TC-cli-f4-rerun";
+    let id = "f4-retired";
+    let fixture = approved_at_plan(id);
+    for counter in [".stub-count", ".stub-calls"] {
+        let _ = std::fs::remove_file(fixture.root().join(counter));
+    }
+    fixture.write(
+        ".chough/cases/cli.f4.cases.toml",
+        &F4_CASE.replace("status = \"active\"", "status = \"retired\""),
+    );
+    fixture.commit("the F4 case, retired");
+    while fixture.checkpoint()["stage"]["current"] != "accept" {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let stale = "2026-11-12-f4-retired-stale";
+    let mut entry = observation(stale, "passed", 1_000);
+    entry["cases"] = json!([{"id": case, "digest": "0".repeat(64)}]);
+    write_entry(&fixture, &entry);
+    fixture.ok(&["checkpoint", "--case", case, "--observation", stale]);
+    let next = fixture.ok(&["next", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(
+        !action.contains(&format!("chough cases run {case}")),
+        "a retired case is named for a rerun: {action}"
+    );
+}
+
+/// Fresh-eyes round 4, F4 (2026-11-12; REQ-cli-021): right after the accept step's first
+/// check materialized the requirement text, next routed straight to opening the review
+/// gate while it listed the referenced runs as not current. At accept, while the latest
+/// run of a case the checkpoint references is not current, next names rerunning that
+/// case with `chough cases run` before it names opening the review gate, with the change
+/// approved and once the check left it verifying; once the rerun passes, it names the
+/// review gate.
+#[cfg(unix)]
+#[test]
+fn at_accept_next_names_rerunning_a_case_that_is_not_current_before_the_review_gate() {
+    let case = "TC-cli-f4-rerun";
+    let rerun = format!("chough cases run {case} --environment local");
+    for state in ["approved", "verifying"] {
+        let id = format!("f4-{state}");
+        let fixture = approved_at_plan(&id);
+        // The stub stops counting its calls, so no native read changes the working tree
+        // a run's content identity binds.
+        for counter in [".stub-count", ".stub-calls"] {
+            let _ = std::fs::remove_file(fixture.root().join(counter));
+        }
+        fixture.write(".chough/cases/cli.f4.cases.toml", F4_CASE);
+        fixture.commit("the F4 case");
+        while fixture.checkpoint()["stage"]["current"] != "accept" {
+            fixture.ok(&["stage", "advance", "--json"]);
+        }
+        fixture.write(".stub-state", &format!("{state}\n"));
+        // The case's latest run passed at a revision long gone, so it is not current.
+        let stale = format!("2026-11-12-f4-{state}-stale");
+        let mut entry = observation(&stale, "passed", 1_000);
+        entry["cases"] = json!([{"id": case, "digest": "0".repeat(64)}]);
+        write_entry(&fixture, &entry);
+        fixture.ok(&["checkpoint", "--case", case, "--observation", &stale]);
+        let gate = format!(
+            "chough checkpoint --awaiting-human \"Implementation review of {id}\" --holds accept --drives review"
+        );
+
+        let next = fixture.ok(&["next", "--json"]);
+        let action = next["next_valid_action"]["action"].as_str().unwrap();
+        assert_eq!(
+            next["next_valid_action"]["command"], rerun,
+            "{state}: {action}"
+        );
+        let named = action
+            .find(&format!("`{rerun}`"))
+            .unwrap_or_else(|| panic!("{state}: no rerun of {case} in {action}"));
+        if let Some(at) = action.find(&format!("`{gate}`")) {
+            assert!(
+                named < at,
+                "{state}: the review gate comes first in {action}"
+            );
+        }
+
+        // Once its rerun passes, next names the review gate.
+        let ran = fixture.ok(&["cases", "run", case, "--environment", "local"]);
+        assert_eq!(ran["outcome"], "passed", "{ran:#}");
+        let next = fixture.ok(&["next", "--json"]);
+        let action = next["next_valid_action"]["action"].as_str().unwrap();
+        assert_eq!(
+            next["next_valid_action"]["command"], gate,
+            "{state}: {action}"
+        );
+        assert!(!action.contains(&rerun), "{state}: {action}");
+    }
 }

@@ -1,0 +1,44 @@
+---
+kind: bug
+id: 2026-11-12-the-changelog-0-6-0-also-in-0-6-0-list-describes-features-0-6
+aliases: []
+title: The CHANGELOG 0.6.0 Also in 0.6.0 list describes features 0.6.0 removed
+status: verified
+classification: product-defect
+scope: blocking
+impact: Release notes mislead upgraders
+criteria: []
+requirements: []
+cases: []
+evidence:
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships
+  - 2026-11-12-release-0-6-0/2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships-81b73a
+receipts: []
+environment: local-macos-arm64
+revision: ee9cae4eeee05e65d7c25f66e3af4b6489636bdc
+found_by: claude-code (hc t382) (t38j's fresh-eyes report on 0.6.0 at c208c8a8 (claude-code, hc t38j, a cold full cycle on a scratch Python CLI and a 0.5.0 migration, 2026-11-12), relayed by t370; recorded by t382, not yet reproduced)
+actor:
+  - agent: claude-code
+    terminal: t382
+related: []
+created: 2026-11-12T16:21:39Z
+updated: 2026-11-12T16:36:47Z
+---
+# The CHANGELOG 0.6.0 Also in 0.6.0 list describes features 0.6.0 removed
+
+**What happened:** Lines about evidence prune --apply, event writes with a frozen legacy log, direct-native-write events before 0.5.0 and a session rolled into the vault contradict the breaking section and the binary; the diagnostic-inventory line is unreadable to a user
+Actual: Entries carried from the 0.5.x cycle describe removed features
+
+**Steps:** Reading CHANGELOG.md [0.6.0]
+
+**Expected:** Every line under [0.6.0] describes 0.6.0 as shipped, in plain words
+
+**Why it matters:** Release notes mislead upgraders
+
+**Fix:** Not fixed yet.
+
+## Log
+
+- 2026-11-12T16:21:39Z · Reported (t38j's fresh-eyes report on 0.6.0 at c208c8a8 (claude-code, hc t38j, a cold full cycle on a scratch Python CLI and a 0.5.0 migration, 2026-11-12), relayed by t370; recorded by t382, not yet reproduced) · by claude-code (hc t382)
+- 2026-11-12T16:34:55Z · status: open -> investigating; scope: in-scope -> blocking; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships. Reproduced: red at e005da2e, TC-cli-changelog-0-6-0-names-only-what-ships failed: Also in 0.6.0 still describes evidence prune. In scope (Leif, 16:26Z, relayed by t370) · by claude-code (hc t382)
+- 2026-11-12T16:36:47Z · status: investigating -> verified; evidence: 2026-11-12-release-0-6-0/2026-11-12-tc-cli-changelog-0-6-0-names-only-what-ships-81b73a. Green at 5f1c57c8: the Also in 0.6.0 list rewritten to what ships (removed: #113 event writes, #65 evidence prune, the vault roll-up details); TC-cli-changelog-0-6-0-names-only-what-ships passed · by claude-code (hc t382)

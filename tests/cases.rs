@@ -441,6 +441,82 @@ fn run_case(fixture: &Fixture, id: &str) -> (Option<i32>, Value) {
     )
 }
 
+/// TC-cli-docs-name-what-cases-run-returns (t38j's fresh-eyes report): the cases row of
+/// docs/cli.md names every key `cases run` prints but `schema_version` and `provenance`,
+/// and does not say `run` returns `recorded`, which only `record` returns.
+#[cfg(unix)]
+#[test]
+fn the_cli_reference_names_what_cases_run_returns() {
+    let fixture = execution_fixture();
+    let (_, passed) = run_case(&fixture, "TC-cli-0001");
+    let docs = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/cli.md"),
+    )
+    .unwrap();
+    let row = docs
+        .lines()
+        .find(|line| line.starts_with("| `cases check"))
+        .expect("the cases row of docs/cli.md");
+    let returns = row
+        .split("`run` returns")
+        .nth(1)
+        .unwrap_or_else(|| panic!("the cases row does not say what `run` returns: {row}"));
+    let returns = returns.split(['.', ';']).next().unwrap_or_default();
+    for key in passed
+        .as_object()
+        .unwrap()
+        .keys()
+        .filter(|key| !matches!(key.as_str(), "schema_version" | "provenance"))
+    {
+        assert!(
+            returns.contains(&format!("`{key}`")),
+            "`{key}` is not named: {row}"
+        );
+    }
+    assert!(!returns.contains("`recorded`"), "{row}");
+}
+
+/// REQ-cli-011, REQ-cli-005, F12g of the second fresh-eyes round: a case run Chough
+/// executed, passed or failed, says it is not proof of human approval or deployment, in
+/// what `cases run` prints and in its status row; a manual entry keeps the full sentence,
+/// which also says it is not proof of test execution.
+#[cfg(unix)]
+#[test]
+fn an_executed_case_runs_provenance_does_not_deny_the_execution() {
+    const EXECUTED: &str = "unauthenticated observation; not proof of human approval or deployment";
+    const MANUAL: &str =
+        "unauthenticated observation; not proof of human approval, test execution, or deployment";
+    let fixture = execution_fixture();
+    let mut expected = vec![];
+    for case in ["TC-cli-0001", "TC-cli-0002"] {
+        let (_, run) = run_case(&fixture, case);
+        assert_eq!(run["provenance"], EXECUTED, "{case}: {run:#}");
+        expected.push((run["observation"].as_str().unwrap().to_string(), EXECUTED));
+    }
+    let manual = add_evidence(&fixture, None, "product-test", None, "Looked by hand");
+    assert!(
+        manual.status.success(),
+        "{}",
+        String::from_utf8_lossy(&manual.stderr)
+    );
+    let manual: Value = serde_json::from_slice(&manual.stdout).unwrap();
+    assert_eq!(manual["provenance"], MANUAL, "{manual:#}");
+    expected.push((manual["observation"].as_str().unwrap().to_string(), MANUAL));
+    let status = fixture.ok(&["status", "--environment", "test-local", "--json"]);
+    for (observation, provenance) in expected {
+        let row = status["observations"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["record"]["id"] == observation.as_str())
+            .unwrap_or_else(|| panic!("no status row for {observation}: {status:#}"));
+        assert_eq!(
+            row["record"]["provenance"], provenance,
+            "{observation}: {row:#}"
+        );
+    }
+}
+
 #[cfg(unix)]
 #[test]
 fn execution_records_failures_and_vacuous_runs_honestly() {
@@ -2000,8 +2076,10 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
         assert_eq!(own["label"], "current", "{own:#}");
     }
     // next lists the references that need attention: the ambiguous one names its
-    // places, and once the entries are stale each session's own item names the form it
-    // resolved through (REQ-cli-021).
+    // places, and once the entries are stale each session's own row in status names the
+    // form it resolved through, while next leaves out a's earlier run, superseded by the
+    // later run of the same case its checkpoint references, and lists no entry twice
+    // (REQ-cli-021, F7).
     let item = |next: &Value, check: &dyn Fn(&Value) -> bool| -> Value {
         next["observations"]["items"]
             .as_array()
@@ -2025,12 +2103,43 @@ fn independently_added_records_merge_without_conflict_or_replacement() {
     assert_eq!(named, expected, "{ambiguous:#}");
     assert_eq!(ambiguous["places_total"], 2, "{ambiguous:#}");
     a.write("src/stale.txt", "SYNTHETIC edit after the merge\n");
-    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    let status = a.ok(&["status", "--environment", "local", "--json"]);
     for run in &runs {
-        let own = item(&next, &|item| item["resolved"] == run.as_str());
+        let own = status["observation_references"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["resolved"] == run.as_str())
+            .unwrap_or_else(|| panic!("no row resolved through {run}: {status:#}"));
         assert_eq!(own["id"], bare.as_str(), "{own:#}");
         assert_eq!(own["label"], "historical", "{own:#}");
     }
+    let next = a.ok(&["next", "--environment", "local", "--json"]);
+    let items = next["observations"]["items"].as_array().unwrap();
+    assert!(
+        items
+            .iter()
+            .all(|item| item["resolved"] != runs[0].as_str()),
+        "a's superseded run is listed: {next:#}"
+    );
+    assert!(
+        next["observations"]["superseded"].as_u64() >= Some(1),
+        "{next:#}"
+    );
+    let mut listed: Vec<String> = items
+        .iter()
+        .map(|item| {
+            item["resolved"]
+                .as_str()
+                .or(item["id"].as_str())
+                .unwrap()
+                .to_string()
+        })
+        .collect();
+    let all = listed.len();
+    listed.sort();
+    listed.dedup();
+    assert_eq!(listed.len(), all, "{next:#}");
     let shown = a.ok(&["bug", "show", legacy]);
     assert_eq!(
         shown["observation_labels"][0]["label"], "ambiguous",
@@ -2181,6 +2290,42 @@ fn a_requirement_the_approved_delta_adds_is_linkable_before_materialization() {
         checked["approved_delta_requirements"],
         serde_json::json!([])
     );
+}
+
+/// Fresh-eyes finding 1 (t38j, 2026-11-12): on a module's first change the module has
+/// only its `.spec.md`, scaffolded without `requirements.md`, and the approved delta adds
+/// the requirement. A missing companion holds no requirement, as an empty one would, so
+/// the link resolves through the approved delta instead of a raw "No such file or
+/// directory"; a link the delta does not add is the ordinary refusal.
+#[cfg(unix)]
+#[test]
+fn a_module_without_requirements_md_links_what_its_approved_delta_adds() {
+    let fixture = delta_fixture(true);
+    fs::remove_file(fixture.root().join("specs/cli/requirements.md")).unwrap();
+    fixture.write(".chough/cases/cli.cases.toml", &delta_cases("REQ-cli-090"));
+
+    let checked = fixture.ok(&["cases", "check"]);
+    let links = checked["approved_delta_requirements"].as_array().unwrap();
+    assert_eq!(links.len(), 2, "{checked}");
+    for (link, case) in links.iter().zip(["TC-cli-0001", "TC-cli-delta-run"]) {
+        assert_eq!(link["case"], case, "{checked}");
+        assert_eq!(link["requirement"], "REQ-cli-090");
+        assert_eq!(link["module"], "cli");
+    }
+    let ran = fixture.ok(&["cases", "run", "TC-cli-delta-run", "--environment", "local"]);
+    assert_eq!(ran["outcome"], "passed", "{ran}");
+
+    fixture.write(".chough/cases/cli.cases.toml", &delta_cases("REQ-cli-091"));
+    let error = fixture.fails(&["cases", "check"]);
+    assert!(
+        error.contains("requirement REQ-cli-091 not found in specs/cli/requirements.md"),
+        "{error}"
+    );
+    assert!(
+        error.contains("its cli delta does not add or modify REQ-cli-091"),
+        "{error}"
+    );
+    assert!(!error.contains("os error"), "{error}");
 }
 
 #[cfg(unix)]
@@ -2707,4 +2852,122 @@ fn evidence_add_returns_its_observation_id() {
     );
     let stored = read_evidence(&fixture, observation);
     assert_eq!(stored["id"], observation);
+}
+
+/// REQ-cli-005, Kimi 2 and F12h of the second fresh-eyes round: `evidence add` needs at
+/// least one `--criterion`, and `--requirement` and `--contract` are optional, each
+/// validated when given. A requirement only the active session's native change adds in
+/// its approved delta records, as it does for a case run; one in neither the companion
+/// nor the delta is refused naming both. docs/cli.md says which flags are required.
+#[cfg(unix)]
+#[test]
+fn evidence_add_needs_a_criterion_and_resolves_the_sessions_delta_requirements() {
+    let fixture = delta_fixture(true);
+    let add = |extra: &[&str]| {
+        let mut args = vec![
+            "evidence",
+            "add",
+            "--kind",
+            "product-test",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            "SYNTHETIC looked",
+        ];
+        args.extend(extra);
+        fixture.run(&args)
+    };
+    for extra in [
+        &["--criterion", "LIFE-1", "--requirement", "REQ-cli-090"][..],
+        &[
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-090",
+            "--contract",
+            "specs/cli/cli.spec.md",
+        ][..],
+        &["--criterion", "LIFE-1"][..],
+    ] {
+        let output = add(extra);
+        assert!(
+            output.status.success(),
+            "{extra:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let refused = add(&["--criterion", "LIFE-1", "--requirement", "REQ-cli-091"]);
+    let error = String::from_utf8_lossy(&refused.stderr);
+    assert_eq!(refused.status.code(), Some(1), "{error}");
+    for part in [
+        "requirement REQ-cli-091 not found in specs/cli/requirements.md",
+        &format!(".specsync/changes/{LINK_CHANGE}/deltas/cli.md"),
+    ] {
+        assert!(error.contains(part), "expected {part:?} in {error}");
+    }
+    let refused = add(&["--requirement", "REQ-cli-090"]);
+    assert!(!refused.status.success());
+    assert!(
+        String::from_utf8_lossy(&refused.stderr).contains("--criterion"),
+        "{}",
+        String::from_utf8_lossy(&refused.stderr)
+    );
+    let docs = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/cli.md"),
+    )
+    .unwrap();
+    let row = docs
+        .lines()
+        .find(|line| line.starts_with("| `evidence add [ID]`"))
+        .expect("the evidence add row of docs/cli.md");
+    for part in [
+        "at least one `--criterion`",
+        "optional `--requirement` and `--contract`",
+    ] {
+        assert!(
+            row.contains(part),
+            "the evidence add row does not say {part:?}: {row}"
+        );
+    }
+}
+
+/// Fresh-eyes finding F10c (REQ-cli-017): a failed case run's evidence body says why
+/// when Chough knows it, here that an expected output was missing, quoting the expected
+/// text, before its key failing lines.
+#[cfg(unix)]
+#[test]
+fn a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines() {
+    let fixture = bounded_fixture(&command_case(
+        "TC-cli-0001",
+        r#"["sh", "-c", "echo 2"]"#,
+        "3",
+        30,
+    ));
+    let run = fixture.run(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
+    let report: Value = serde_json::from_slice(&run.stdout)
+        .unwrap_or_else(|_| panic!("{}", String::from_utf8_lossy(&run.stderr)));
+    assert_eq!(report["outcome"], "failed", "{report:#}");
+    let id = report["observation"].as_str().unwrap();
+    let text = fixture.read(&format!(
+        ".chough/sessions/{}/evidence/{id}.md",
+        fixture.active_id()
+    ));
+    let (_, body) = text
+        .strip_prefix("---\n")
+        .and_then(|rest| rest.split_once("\n---\n"))
+        .unwrap_or_else(|| panic!("no front matter: {text}"));
+    let why = body
+        .find("expected output was missing")
+        .unwrap_or_else(|| panic!("the body does not say why it failed:\n{body}"));
+    let key = body
+        .find("\n## Key failing lines\n")
+        .unwrap_or_else(|| panic!("no key failing lines:\n{body}"));
+    assert!(why < key, "why comes after the key lines:\n{body}");
+    let line = body[why..].lines().next().unwrap();
+    assert!(
+        line.contains("\"3\""),
+        "the expected text is not quoted: {line}"
+    );
 }

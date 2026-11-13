@@ -302,6 +302,9 @@ pub(super) struct MigrateArgs {
     /// as a relayed claim; or a standing `migration` preference gives it.
     #[arg(long, requires = "apply")]
     consent: Option<String>,
+    /// Print the preview's plan as JSON instead of text; the apply prints JSON either way.
+    #[arg(long)]
+    json: bool,
 }
 
 /// One redaction the plan makes: the file, the field and the kind, never the text.
@@ -404,20 +407,202 @@ fn sha256(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
 
+/// What a preview says on a tree with no 0.5.x record (REQ-records-009).
+const NOTHING_TO_MIGRATE: &str =
+    "no 0.5.x record is left, so there is nothing to migrate and no plan digest to apply";
+
 pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
     let plan = plan(root)?;
     let digest = plan.digest();
     match args.apply {
+        // REQ-records-009: on a tree with no 0.5.x record the preview says there is
+        // nothing to migrate and gives no plan digest, as the apply there reports
+        // nothing to do.
+        None if plan.sources.is_empty() => {
+            if args.json {
+                print_json(&json!({
+                    "schema_version": 1,
+                    "nothing_to_do": NOTHING_TO_MIGRATE,
+                }))
+            } else {
+                println!("Nothing to migrate: {NOTHING_TO_MIGRATE}.");
+                Ok(())
+            }
+        }
         None => {
             let mut view = plan.view();
             view["plan_digest"] = json!(digest);
             view["apply"] = json!(format!(
                 "chough migrate --apply {digest} --consent \"<who consented, their words and where>\""
             ));
-            print_json(&view)
+            // REQ-records-009: say up front that the apply will refuse while a native
+            // change is open, naming each. It stays outside the digest, which names only
+            // the conversion.
+            let open = open_native_changes(root)?;
+            if !open.is_empty() {
+                view["apply_refused"] = json!({
+                    "refusal": "refused:change-open",
+                    "changes": open,
+                    "why": format!(
+                        "native change {} is not archived, and `--apply` refuses while a change is open; archive it (or finish it) first, then run `chough migrate` again",
+                        open.join(", ")
+                    ),
+                });
+            }
+            // REQ-records-009 (F12b): a person consents to the plan, so it is text by
+            // default, and the same plan and digest as JSON under --json.
+            if args.json {
+                print_json(&view)
+            } else {
+                print!("{}", preview_text(&view));
+                Ok(())
+            }
         }
         Some(wanted) => apply(root, &plan, &digest, &wanted, args.consent.as_deref()),
     }
+}
+
+/// The preview as text, for the person who consents to it (REQ-records-009, F12b): the
+/// plan the JSON gives, section by section with `none` under an empty one, then any
+/// refusal the apply would give now, the plan's digest and the apply command.
+fn preview_text(view: &Value) -> String {
+    fn section(out: &mut String, heading: &str, items: Vec<String>) {
+        out.push_str(&format!("\n{heading} ({}):\n", items.len()));
+        if items.is_empty() {
+            out.push_str("none\n");
+        }
+        for item in items {
+            out.push_str(&format!("- {item}\n"));
+        }
+    }
+    let text = |value: &Value| value.as_str().unwrap_or_default().to_string();
+    let map = |key: &str| view[key].as_object().cloned().unwrap_or_default();
+    let list = |key: &str| view[key].as_array().cloned().unwrap_or_default();
+    let mut out =
+        String::from("Migration plan from Chough 0.5.x to 0.6.0. This preview writes nothing.\n");
+    let becomes = map("becomes");
+    let removed = map("removed");
+    section(
+        &mut out,
+        "Reads",
+        map("sources")
+            .iter()
+            .map(|(path, sha)| {
+                let targets: Vec<String> = becomes
+                    .get(path)
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .map(|target| format!("`{}`", text(target)))
+                    .collect();
+                let fate = if !targets.is_empty() {
+                    format!("becomes {}", targets.join(", "))
+                } else if removed.contains_key(path) {
+                    "is removed without carrying (below)".to_string()
+                } else {
+                    "becomes no file".to_string()
+                };
+                format!("`{path}` {} {fate}", text(sha))
+            })
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Writes",
+        list("writes")
+            .iter()
+            .map(|write| {
+                format!(
+                    "`{}` {} bytes {}",
+                    text(&write["path"]),
+                    write["bytes"],
+                    text(&write["sha256"])
+                )
+            })
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Redactions",
+        list("redactions")
+            .iter()
+            .map(|redaction| {
+                format!(
+                    "`{}` {}: {}",
+                    text(&redaction["file"]),
+                    text(&redaction["field"]),
+                    text(&redaction["kind"])
+                )
+            })
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Removes without carrying",
+        removed
+            .iter()
+            .map(|(path, why)| format!("`{path}`: {}", text(why)))
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Keeps byte for byte",
+        map("kept")
+            .iter()
+            .map(|(path, why)| format!("`{path}`: {}", text(why)))
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Kept with leaks, to fix by hand",
+        map("kept_with_leaks")
+            .iter()
+            .map(|(path, kinds)| {
+                let kinds: Vec<String> = kinds.as_array().into_iter().flatten().map(text).collect();
+                format!("`{path}`: {}", kinds.join(", "))
+            })
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Not carried",
+        list("gaps").iter().map(text).collect(),
+    );
+    section(
+        &mut out,
+        "Unaccounted, which the apply refuses",
+        list("unaccounted")
+            .iter()
+            .map(|path| format!("`{}`", text(path)))
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Aliases",
+        map("aliases")
+            .iter()
+            .map(|(old, new)| format!("`{old}` -> `{}`", text(new)))
+            .collect(),
+    );
+    section(
+        &mut out,
+        "Follow-ups",
+        list("follow_ups").iter().map(text).collect(),
+    );
+    out.push_str(&format!("\n{}\n", text(&view["git_history"])));
+    if view["apply_refused"].is_object() {
+        out.push_str(&format!(
+            "\nThe apply refuses now ({}): {}\n",
+            text(&view["apply_refused"]["refusal"]),
+            text(&view["apply_refused"]["why"])
+        ));
+    }
+    out.push_str(&format!(
+        "\nPlan digest: {}\nApply this plan with the human's consent:\n  {}\n",
+        text(&view["plan_digest"]),
+        text(&view["apply"])
+    ));
+    out
 }
 
 /// At most this many archive validity reads run at once (REQ-records-009).
@@ -824,9 +1009,12 @@ fn prune_empty_folders(root: &Path) -> Result<()> {
     Ok(())
 }
 
+/// What a receipt section with nothing to list says (REQ-records-009).
+const NOTHING_LISTED: &str = "none\n";
+
 /// The migration receipt: every file before and after with its size and SHA-256, the
 /// redactions, every removed file with why and the commit that holds it, the alias map
-/// and the consent (REQ-records-009).
+/// and the consent (REQ-records-009), with `none` under a section with nothing to list.
 fn receipt_record(
     plan: &Plan,
     digest: &str,
@@ -857,29 +1045,55 @@ fn receipt_record(
     record.set_scalar("consent", consent)?;
     record.set_scalar("removed_at_commit", &head)?;
     let mut body = String::from(
-        "# Migration from Chough 0.5.x\n\nGit history still holds what earlier commits recorded; this migration does not rewrite it.\n\n## Before\n\n",
+        "# Migration from Chough 0.5.x\n\nGit history still holds what earlier commits recorded; this migration does not rewrite it.\n",
     );
-    for (path, sha) in &plan.sources {
-        body.push_str(&format!("- `{path}` {sha}\n"));
-    }
-    body.push_str("\n## After\n\n");
-    for written in &plan.files {
-        body.push_str(&format!(
-            "- `{}` {} bytes {}\n",
-            written.path,
-            written.bytes.len(),
-            sha256(&written.bytes)
-        ));
-    }
-    body.push_str("\n## Redactions\n\n");
-    for redaction in &plan.redactions {
-        body.push_str(&format!(
-            "- `{}` {}: {}\n",
-            redaction.file, redaction.field, redaction.kind
-        ));
-    }
-    body.push_str("\n## Removed\n\n");
+    let section = |body: &mut String, heading: &str, items: Vec<String>| {
+        body.push_str(&format!("\n## {heading}\n\n"));
+        if items.is_empty() {
+            body.push_str(NOTHING_LISTED);
+        }
+        for item in items {
+            body.push_str(&item);
+        }
+    };
+    section(
+        &mut body,
+        "Before",
+        plan.sources
+            .iter()
+            .map(|(path, sha)| format!("- `{path}` {sha}\n"))
+            .collect(),
+    );
+    section(
+        &mut body,
+        "After",
+        plan.files
+            .iter()
+            .map(|written| {
+                format!(
+                    "- `{}` {} bytes {}\n",
+                    written.path,
+                    written.bytes.len(),
+                    sha256(&written.bytes)
+                )
+            })
+            .collect(),
+    );
+    section(
+        &mut body,
+        "Redactions",
+        plan.redactions
+            .iter()
+            .map(|redaction| {
+                format!(
+                    "- `{}` {}: {}\n",
+                    redaction.file, redaction.field, redaction.kind
+                )
+            })
+            .collect(),
+    );
     let becomes = plan.becomes();
+    let mut removed = vec![];
     for path in removals {
         let why = match plan.carried.removed.get(path) {
             Some(why) => why.clone(),
@@ -895,22 +1109,43 @@ fn receipt_record(
                 None => "carried into the 0.6.0 records above".to_string(),
             },
         };
-        body.push_str(&format!("- `{path}`: {why}; held by commit {head}\n"));
+        removed.push(format!("- `{path}`: {why}; held by commit {head}\n"));
     }
-    body.push_str("\n## Kept with leaks\n\n");
-    for (path, kinds) in &plan.carried.kept_with_leaks {
-        body.push_str(&format!("- `{path}`: {} (fix by hand)\n", kinds.join(", ")));
-    }
-    body.push_str("\n## Not carried\n\n");
-    for gap in &plan.carried.gaps {
-        body.push_str(&format!("- {gap}\n"));
-    }
-    body.push_str("\n## Aliases\n\n");
-    for (old, new) in &plan.carried.aliases {
-        body.push_str(&format!("- `{old}` → `{new}`\n"));
-    }
-    for follow_up in &plan.follow_ups {
-        body.push_str(&format!("\n## Follow-up\n\n{follow_up}\n"));
+    section(&mut body, "Removed", removed);
+    section(
+        &mut body,
+        "Kept with leaks",
+        plan.carried
+            .kept_with_leaks
+            .iter()
+            .map(|(path, kinds)| format!("- `{path}`: {} (fix by hand)\n", kinds.join(", ")))
+            .collect(),
+    );
+    section(
+        &mut body,
+        "Not carried",
+        plan.carried
+            .gaps
+            .iter()
+            .map(|gap| format!("- {gap}\n"))
+            .collect(),
+    );
+    section(
+        &mut body,
+        "Aliases",
+        plan.carried
+            .aliases
+            .iter()
+            .map(|(old, new)| format!("- `{old}` → `{new}`\n"))
+            .collect(),
+    );
+    // One Follow-up section holds every follow-up, one paragraph each, so a receipt
+    // never repeats the heading; with none, it has no such section.
+    if !plan.follow_ups.is_empty() {
+        body.push_str(&format!(
+            "\n## Follow-up\n\n{}\n",
+            plan.follow_ups.join("\n\n")
+        ));
     }
     let mut record = crate::markdown::parse("receipt", &format!("{}{body}", record.render()))?;
     record.redact_leaks(Local::current());
@@ -940,6 +1175,7 @@ fn plan(root: &Path) -> Result<Plan> {
     let (evidence, observations) = evidence_0_5(root, &homes, &links)?;
     carried.absorb(evidence)?;
     story_receipts(&mut carried, &homes, &observations)?;
+    session_verified_links(&mut carried, &homes, &observations)?;
     carried.absorb(bugs_0_5(root, &observations)?)?;
     // Knowledge runs last: its index.md is the one the tree has once every other
     // mapper's plan applies.
@@ -1009,6 +1245,10 @@ fn plan(root: &Path) -> Result<Plan> {
                 .join(", ")
         ));
     }
+    // REQ-records-009, REQ-cli-016 (F3): the installed skill copy is not migrated, so
+    // while it is not current, as `chough skill status` reports it, the plan names
+    // `chough skill update`; the copy still names 0.5.x commands and paths until then.
+    follow_ups.extend(crate::skill::update_advice(root)?);
     Ok(Plan {
         sources,
         legacy,
@@ -1258,6 +1498,8 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             },
             pr: String::new(),
             gates: vec![],
+            title: String::new(),
+            summary: vec![],
         };
         session.pending = transitions;
         let record = crate::session_md::render_with(&session, last, &mut |index, attempt| {
@@ -1273,12 +1515,14 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             };
             record.set_scalar("closed", &date)?;
             record.set_scalar("outcome", outcome)?;
-            record.set("receipts", crate::markdown::Value::Maps(vec![]))?;
+            // REQ-history-006 (F10a): the story first, then its closing line, then
+            // `## Receipts`, which the evidence mapper's receipts fill in later.
             let mut text = record.render();
             if !text.ends_with('\n') {
                 text.push('\n');
             }
             text.push_str(&format!("\nClosed {date}: {outcome}.\n"));
+            text.push_str(&crate::markdown::receipts_section(vec![])?);
             (format!(".chough/archive/sessions/{id}.md"), text)
         } else {
             (format!(".chough/sessions/{id}/session.md"), record.render())
@@ -1469,11 +1713,92 @@ fn story_receipts(
         if receipts.is_empty() {
             continue;
         }
+        // F10e: the bare 0.5.x ID line of each observation carried as a receipt becomes
+        // the line a 0.6.0 story writes for it; a line a person wrote is kept.
         let mut record = crate::markdown::parse(&path, &written.bytes)?;
-        record.set("receipts", crate::markdown::Value::Maps(receipts))?;
-        written.bytes = record
-            .render_within(crate::markdown::Kind::Story)
-            .with_context(|| format!("{path} with its receipts"))?;
+        let listed = crate::session_md::items(&record, crate::session_md::VERIFIED);
+        for id in &home.observations {
+            let (Some(map), true) = (homes.receipts.get(id), listed.contains(id)) else {
+                continue;
+            };
+            if let Some(line) = crate::sessions::receipt_line(map, None) {
+                record.replace_item(crate::session_md::VERIFIED, id, &line)?;
+            }
+        }
+        // REQ-history-006 (F10a): the receipts go in the story's last section.
+        let text = crate::markdown::with_receipts_section(&record.render(), receipts)?;
+        let bound = crate::markdown::Kind::Story.bound();
+        ensure!(
+            text.len() as u64 <= bound,
+            "refused: {path} with its receipts would be {} bytes, over its bound of {bound} bytes; nothing was written",
+            text.len()
+        );
+        written.bytes = text;
+    }
+    Ok(())
+}
+
+/// Each open session's What was verified (REQ-records-009, F10e): the sessions mapper
+/// writes an observation's line as its bare 0.5.x ID, since evidence runs after it, so
+/// the line of each observation carried as an evidence entry becomes the line a 0.6.0
+/// save writes, its claim linking the entry's file; the old ID stays the entry's alias.
+/// A line a person wrote, or one for an observation carried as no entry, is kept.
+fn session_verified_links(
+    carried: &mut Carried,
+    sessions: &BTreeMap<String, SessionHome>,
+    homes: &ObservationHomes,
+) -> Result<()> {
+    use crate::session_md::VERIFIED;
+    // Each carried entry's claim, by its path.
+    let mut claims = BTreeMap::new();
+    for written in &carried.written {
+        if homes.entries.values().any(|entry| *entry == written.path) {
+            let record = crate::markdown::parse(&written.path, &written.bytes)?;
+            claims.insert(
+                written.path.clone(),
+                record.scalar("claim").unwrap_or_default().to_string(),
+            );
+        }
+    }
+    for home in sessions.values().filter(|home| !home.archived) {
+        let path = format!(".chough/sessions/{}/session.md", home.id);
+        let Some(written) = carried
+            .written
+            .iter_mut()
+            .find(|written| written.path == path)
+        else {
+            continue;
+        };
+        let mut record = crate::markdown::parse(&path, &written.bytes)?;
+        let listed = crate::session_md::items(&record, VERIFIED);
+        let mut changed = false;
+        for id in &home.observations {
+            let (Some(entry), true) = (homes.entries.get(id), listed.contains(id)) else {
+                continue;
+            };
+            // `.chough/sessions/<owner>/evidence/<name>`, linked from this session.
+            let Some((owner, name)) = entry
+                .strip_prefix(".chough/sessions/")
+                .and_then(|rest| rest.split_once("/evidence/"))
+            else {
+                continue;
+            };
+            let link = if owner == home.id {
+                format!("evidence/{name}")
+            } else {
+                format!("../{owner}/evidence/{name}")
+            };
+            let claim = claims.get(entry).map_or(id.as_str(), String::as_str);
+            record.replace_item(
+                VERIFIED,
+                id,
+                &crate::session_md::verified_link(claim, &link),
+            )?;
+            changed = true;
+        }
+        if changed {
+            written.bytes = record.render();
+        }
     }
     Ok(())
 }
@@ -1669,7 +1994,10 @@ mod tests {
             ("id".to_string(), "OBS-gone".to_string()),
             ("removed".to_string(), receipt_path().unwrap()),
         ];
-        assert_eq!(record.maps("receipts"), vec![carried_map, tombstone]);
+        assert_eq!(
+            record.story_receipts(&story).unwrap(),
+            vec![carried_map, tombstone]
+        );
         assert_eq!(carried.aliases["OBS-gone"], "removed");
         assert!(!carried.aliases.contains_key("OBS-entry"));
         crate::session_md::read(&written.path, &written.bytes).unwrap();

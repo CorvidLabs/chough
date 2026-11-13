@@ -10,13 +10,18 @@ reviewed content, not proof of who reviewed.
 Follow this order, so that one verification covers both the code and Chough's
 records. Follow native status where it names a different next action.
 
-1. When the delta adds or modifies requirements, run `specsync change check <id>`
-   first, so the requirement text that cases link is materialized (cases already
-   link it from the approved delta while the checkpoint records the change). It
-   refuses while `tasks.md` has an unchecked box, so the cases in step 2 are never a
-   box there.
-2. Run the affected cases: `chough cases run <ID> --environment <env>`, plus the
-   project lanes.
+1. When the delta adds or modifies requirements, run
+   `chough change check <id> --no-commit` first, SpecSync's check without `--commit`,
+   so the requirement text that cases link is materialized (cases already link it
+   from the approved delta while the checkpoint records the change). It refuses while
+   `tasks.md` has an unchecked box, so the cases in step 2 are never a box there. Run
+   through Chough, it is never recorded as a direct lifecycle write.
+2. Write any lesson from this change now, in its module's lesson source (see
+   [Compounding](#compounding)): a change under `specs/` makes every run not current,
+   so with the lesson written first, one run covers it. Then run the affected cases:
+   `chough cases run <ID> --environment <env>`, plus the project lanes, and rerun any
+   case whose latest run is not current, as after step 1; `chough next` names each
+   rerun before the review gate.
 3. Record the gate: `chough checkpoint --awaiting-human "Implementation review of <id>"`.
    At accept it holds accept and drives the native review by default.
 4. Commit the source together with Chough's records.
@@ -90,6 +95,12 @@ words, where and the recording agent as a relayed claim, not authenticated. If a
 after the ship is refused, the output says the change is shipped and names the
 command left to run.
 
+Before the move into done, give the journal post a short human title and a real
+summary: `chough checkpoint --title "<title>" --summary "<what changed and why; what
+was verified, with its final numbers; what is next>"`, one paragraph per line, at
+most 72 and 900 bytes. Without them, Chough derives both from the objective and the
+story.
+
 The move into done archives the session into one story,
 `.chough/archive/sessions/<id>.md`, with every evidence entry as a receipt. With the
 librarian on, it also writes a journal post and refreshes `knowledge/index.md` and its
@@ -120,10 +131,27 @@ Each lesson carries a certainty label:
 - `verified`: supported by a test or a repeated observation.
 
 Each lesson names its source (an observation ID, a bug ID or a commit) and its limits
-(where it applies and where it was not checked). A project decision, meaning a
+(where it applies and where it was not checked).
+
+In `context.md`, start each lesson with its date, `YYYY-MM-DD`, then a space, comma or
+colon, as an item of the `## Lessons` section or as a `### YYYY-MM-DD` heading: the
+knowledge index counts only dated lessons, and an undated one counts as none. In
+`<module>.3md`, each plane after the first is one lesson. For example:
+
+```markdown
+## Lessons
+
+- 2026-11-12, verified: an order of exactly fifty dollars ships free, so the
+  threshold check is inclusive. Source: bug 2026-11-12-shipping-charged-at-fifty.
+  Limits: checkout totals only; refunds were not checked.
+```
+
+A project decision, meaning a
 checkpoint decision, a `docs/DECISIONS.md` entry or an approved contract, always
 outranks a lesson. A lesson never changes a decision; if a lesson argues against one,
 raise it with the human. A lesson that changes behavior or policy may need its own
-native change. Write lessons from a change during closeout, inside the open native
-change (see [librarian.md](librarian.md)). Archival does not mean no bug remains;
+native change. Write lessons from a change before its cases run at accept (step 2 of
+[Prepare the review](#prepare-the-review)), inside the open native change (see
+[librarian.md](librarian.md)), since a change under `specs/` makes every run not
+current. Archival does not mean no bug remains;
 open bugs stay in the backlog.

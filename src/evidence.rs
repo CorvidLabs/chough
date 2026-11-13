@@ -27,9 +27,15 @@ use std::path::{Component, Path};
 use std::process::{Command, Output};
 use std::time::{Duration, Instant};
 
-/// What every evidence view says an observation is, and is not.
+/// What every evidence view says an observation is, and is not: a manual entry, which
+/// Chough did not run, and the sentence a 0.5.x record holds.
 pub(super) const PROVENANCE: &str =
     "unauthenticated observation; not proof of human approval, test execution, or deployment";
+
+/// What a case run Chough executed says it is, and is not (F12g): the test did run, so it
+/// does not deny the execution.
+pub(super) const EXECUTED_PROVENANCE: &str =
+    "unauthenticated observation; not proof of human approval or deployment";
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, ValueEnum)]
 #[serde(rename_all = "kebab-case")]
@@ -74,6 +80,16 @@ pub(super) enum Outcome {
     Failed,
     NotRun,
 }
+
+/// The limitation a case run records for each expected output fragment it did not
+/// print, followed by the fragments, quoted (REQ-cli-017).
+pub(super) const MISSING_OUTPUT: &str = "expected output missing: ";
+/// The limitations, by their start, that say why a case run failed (REQ-cli-017).
+const FAILURE_REASONS: [&str; 3] = [
+    MISSING_OUTPUT,
+    "timed out after ",
+    "output capture incomplete",
+];
 
 impl Outcome {
     pub(super) fn name(&self) -> &'static str {
@@ -165,6 +181,31 @@ impl Evidence {
             body.push('\n');
         } else {
             body.push_str(" The raw log stays in the machine-local store.\n");
+        }
+        // REQ-cli-017 (F10c): a failed run says why when Chough knows it, before its key
+        // failing lines; the reason is read from the limitations it recorded.
+        let reasons: Vec<String> = self
+            .limitations
+            .iter()
+            .filter(|limitation| {
+                FAILURE_REASONS
+                    .iter()
+                    .any(|start| limitation.starts_with(start))
+            })
+            .map(|limitation| match limitation.strip_prefix(MISSING_OUTPUT) {
+                Some(fragments) => format!("The expected output was missing: {fragments}."),
+                None => {
+                    let mut chars = limitation.chars();
+                    let first = chars.next().map(|c| c.to_uppercase().to_string());
+                    format!("{}{}.", first.unwrap_or_default(), chars.as_str())
+                }
+            })
+            .collect();
+        if self.outcome == Outcome::Failed && !reasons.is_empty() {
+            body.push_str("\n## Why it failed\n\n");
+            for reason in &reasons {
+                body.push_str(&format!("- {reason}\n"));
+            }
         }
         if !self.key_lines.is_empty() {
             body.push_str("\n## Key failing lines\n\n");
@@ -530,11 +571,15 @@ pub(super) fn recorded_id(path: &str) -> String {
 pub(super) struct EvidenceArgs {
     /// The entry's name; a date and slug not in use. Omit for automatic naming.
     id: Option<String>,
+    /// The HI criteria the observation shows; at least one.
     #[arg(long = "criterion", required = true)]
     criteria: Vec<String>,
-    #[arg(long = "requirement", required = true)]
+    /// A requirement the observation shows, validated when given: held by a companion,
+    /// or added or modified by the active session's native change in its approved delta.
+    #[arg(long = "requirement")]
     requirements: Vec<String>,
-    #[arg(long = "contract", required = true)]
+    /// A native contract, `specs/<module>/<module>.spec.md`, validated when given.
+    #[arg(long = "contract")]
     contracts: Vec<String>,
     #[arg(long)]
     kind: Kind,
@@ -730,8 +775,7 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         "environment and summary must not be blank"
     );
     validate_criteria(root, &args.criteria)?;
-    validate_requirements(root, &args.contracts, &args.requirements)?
-        .map_err(|miss| miss.for_evidence())?;
+    validate_evidence_links(root, &args.contracts, &args.requirements)?;
     let mut case_refs = vec![];
     for id in &args.cases {
         let digest = cases::current_digest(root, id)?
@@ -1083,6 +1127,9 @@ fn evidence_from_receipt(map: &[(String, String)]) -> Result<Evidence> {
 type ReceiptMaps = Vec<(String, Vec<(String, String)>)>;
 
 /// Every `receipts:` map in the Markdown records under a folder, with the record name.
+/// Where archived session stories are (REQ-history-006).
+const STORIES_DIR: &str = ".chough/archive/sessions";
+
 fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     let folder = local_path(root, dir)?;
     let mut found = vec![];
@@ -1098,7 +1145,14 @@ fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     for name in names {
         let text = read_bounded_record(&folder.join(&name), markdown::SESSION_BOUND)?;
         let record = markdown::parse(&name, &text)?;
-        for map in record.maps(key) {
+        // REQ-history-006: an archived story's receipts are its `## Receipts` section's,
+        // or an older story's front matter's.
+        let maps = if dir == STORIES_DIR {
+            record.story_receipts(&name)?
+        } else {
+            record.maps(key)
+        };
+        for map in maps {
             found.push((name.trim_end_matches(".md").to_string(), map));
         }
     }
@@ -1136,6 +1190,13 @@ fn receipt_names(map: &[(String, String)]) -> Vec<String> {
 const MIGRATIONS_DIR: &str = ".chough/archive/migrations";
 
 /// What an evidence ID names (REQ-records-003, REQ-records-009).
+/// What [`Reads::needing_attention`] finds: the rows to list and the counts of the rest.
+pub(super) struct Attention {
+    pub(super) rows: Vec<Value>,
+    pub(super) current: usize,
+    pub(super) superseded: usize,
+}
+
 pub(super) enum Resolved {
     /// An open session's entry, or an archived story's or a bug's receipt read as one.
     Present(Box<Evidence>),
@@ -1221,10 +1282,7 @@ impl Index {
             vec![]
         };
         for (in_bugs, maps) in [
-            (
-                false,
-                receipt_maps(root, ".chough/archive/sessions", "receipts")?,
-            ),
+            (false, receipt_maps(root, STORIES_DIR, "receipts")?),
             (true, bug_maps),
         ] {
             for (place, map) in maps {
@@ -1314,6 +1372,19 @@ impl Index {
     pub(super) fn holds(&self, id: &str) -> bool {
         let (place, name) = split_qualified(id);
         !self.named(name, place, false).is_empty() || !self.named(name, place, true).is_empty()
+    }
+
+    /// The one entry or receipt `id` resolves to, as `<place>/<its first name>`, so a
+    /// bare ID, an alias and a qualified form of one entry are one (F7); None when it
+    /// resolves to no single holder.
+    fn holder_key(&self, id: &str) -> Option<String> {
+        let (place, name) = split_qualified(id);
+        let holder = match self.named(name, place, false).as_slice() {
+            [one] => *one,
+            [] => *self.named(name, place, true).first()?,
+            _ => return None,
+        };
+        Some(format!("{}/{}", holder.place, holder.names.first()?))
     }
 
     /// Resolve an ID (bare, a 0.5.x alias, or qualified as `<place>/<id>`) as bugs.rs
@@ -1428,6 +1499,16 @@ pub(super) fn is_present(root: &Path, id: &str) -> Result<bool> {
 
 /// The JSON view of an entry, as `status` and the case reports show it.
 impl Evidence {
+    /// What the entry is, and is not: an entry that holds the command Chough ran is an
+    /// executed case run; any other is a manual entry.
+    pub(super) fn provenance(&self) -> &'static str {
+        if self.argv.is_empty() {
+            PROVENANCE
+        } else {
+            EXECUTED_PROVENANCE
+        }
+    }
+
     pub(super) fn to_json(&self) -> Value {
         json!({
             "schema_version": 2,
@@ -1462,7 +1543,7 @@ impl Evidence {
                 markdown::Value::Maps(maps) => maps.first().cloned(),
                 _ => None,
             }).map(|map| map.into_iter().collect::<BTreeMap<_, _>>()),
-            "provenance": PROVENANCE,
+            "provenance": self.provenance(),
         })
     }
 }
@@ -1824,9 +1905,37 @@ impl RequirementMiss {
         })
     }
 
-    /// The refusal for `evidence add`, which names its contracts.
-    fn for_evidence(&self) -> anyhow::Error {
-        self.render(|module| format!("add --contract specs/{module}/{module}.spec.md"))
+    /// The refusal for `evidence add`, which names its contracts and, when the active
+    /// session's native change was consulted, that change, its deltas searched and why
+    /// none resolved the link (REQ-cli-005).
+    fn for_evidence(&self, consulted: Option<(&str, &[(String, String)])>) -> anyhow::Error {
+        let fix = |module: &str| format!("add --contract specs/{module}/{module}.spec.md");
+        let Some((change, deltas)) = consulted else {
+            return self.render(fix);
+        };
+        let found = format!(
+            "requirement {} not found in {} or in {}",
+            self.id,
+            self.searched.join(", "),
+            deltas
+                .iter()
+                .map(|(path, _)| path.as_str())
+                .collect::<Vec<_>>()
+                .join(", ")
+        );
+        if let Some(module) = &self.owner {
+            return anyhow::anyhow!(
+                "{found}; {} belongs to module {module} (specs/{module}/requirements.md): {}",
+                self.id,
+                fix(module)
+            );
+        }
+        let mut why: Vec<&str> = deltas.iter().map(|(_, reason)| reason.as_str()).collect();
+        why.dedup();
+        anyhow::anyhow!(
+            "{found}; the active session's native change {change} was consulted and did not resolve it: {}; it may be a typo",
+            why.join("; ")
+        )
     }
 }
 
@@ -1838,8 +1947,14 @@ pub(super) fn validate_requirements(
     contracts: &[String],
     requirements: &[String],
 ) -> Result<std::result::Result<(), RequirementMiss>> {
-    let mut text = String::new();
-    let mut searched = vec![];
+    let companions = contract_companions(root, contracts)?;
+    find_requirements(root, &companions, requirements)
+}
+
+/// Each contract's `requirements.md` companion, named with `/` on every platform, as
+/// contracts and messages spell paths; each contract must be a native spec that exists.
+fn contract_companions(root: &Path, contracts: &[String]) -> Result<Vec<String>> {
+    let mut companions = vec![];
     for contract in contracts {
         ensure!(
             contract.starts_with("specs/") && contract.ends_with(".spec.md"),
@@ -1852,27 +1967,107 @@ pub(super) fn validate_requirements(
             .context("contract parent missing")?
             .join("requirements.md");
         let companion = companion.to_str().context("non-UTF-8 contract companion")?;
-        text.push_str(
-            &crate::records::read_spec_file(&local_path(root, companion)?)
-                .context("contract requires its native requirements.md companion")?,
-        );
-        text.push('\n');
-        // Named with `/` on every platform, as contracts and messages spell paths.
         #[cfg(windows)]
-        searched.push(companion.replace('\\', "/"));
+        companions.push(companion.replace('\\', "/"));
         #[cfg(not(windows))]
-        searched.push(companion.to_string());
+        companions.push(companion.to_string());
+    }
+    Ok(companions)
+}
+
+/// The first of `requirements` that none of `companions` holds, as a miss naming them.
+fn find_requirements(
+    root: &Path,
+    companions: &[String],
+    requirements: &[String],
+) -> Result<std::result::Result<(), RequirementMiss>> {
+    let mut text = String::new();
+    for companion in companions {
+        // On a module's first change, `specsync new` has scaffolded no requirements.md
+        // and the approved delta adds the requirement: a companion that does not exist
+        // yet holds no requirement, as an empty one would, so the link is a miss the
+        // caller decides like any other (cli.md, Approved delta links). One that exists
+        // but cannot be read is still refused.
+        let path = local_path(root, companion)?;
+        if path.exists() {
+            text.push_str(
+                &crate::records::read_spec_file(&path)
+                    .context("contract requires its native requirements.md companion")?,
+            );
+            text.push('\n');
+        }
     }
     for requirement in requirements {
         if !(requirement.starts_with("REQ-") && holds_token(&text, requirement)) {
             return Ok(Err(RequirementMiss {
                 id: requirement.clone(),
-                owner: owning_module(root, requirement, &searched),
-                searched,
+                owner: owning_module(root, requirement, companions),
+                searched: companions.to_vec(),
             }));
         }
     }
     Ok(Ok(()))
+}
+
+/// `evidence add`'s requirement and contract links (REQ-cli-005): each contract given
+/// must be a native spec that exists, and each requirement must be held by a searched
+/// companion, the given contracts' or, with none given, its own module's, or be added or
+/// modified by the active session's native change in that module's approved delta, as a
+/// case link is (REQ-cli-009), so evidence can be recorded before `specsync change
+/// check` materializes it.
+fn validate_evidence_links(
+    root: &Path,
+    contracts: &[String],
+    requirements: &[String],
+) -> Result<()> {
+    let given = contract_companions(root, contracts)?;
+    let deltas = cases::DeltaLinks::new(root);
+    'requirements: for requirement in requirements {
+        let companions = if contracts.is_empty() {
+            let module = requirement
+                .strip_prefix("REQ-")
+                .and_then(|rest| rest.rsplit_once('-'))
+                .map(|(module, _)| module)
+                .filter(|module| crate::records::valid_module_name(module))
+                .with_context(|| {
+                    format!(
+                        "requirement {requirement} is not a REQ-<module>-<number> ID, so no module's requirements.md can hold it"
+                    )
+                })?;
+            vec![format!("specs/{module}/requirements.md")]
+        } else {
+            given.clone()
+        };
+        let Err(miss) = find_requirements(root, &companions, std::slice::from_ref(requirement))?
+        else {
+            continue;
+        };
+        let mut change = None;
+        let mut searched = vec![];
+        for companion in &companions {
+            let module = companion
+                .strip_prefix("specs/")
+                .and_then(|rest| rest.strip_suffix("/requirements.md"))
+                .unwrap_or(companion);
+            match deltas.in_delta(module, requirement)? {
+                cases::InDelta::NoChange => return Err(miss.for_evidence(None)),
+                cases::InDelta::Held(_) => continue 'requirements,
+                cases::InDelta::Not(consulted, reason) => {
+                    searched.push((
+                        format!(".specsync/changes/{consulted}/deltas/{module}.md"),
+                        reason,
+                    ));
+                    change = Some(consulted);
+                }
+            }
+        }
+        return Err(miss.for_evidence(
+            change
+                .as_deref()
+                .map(|change| (change, searched.as_slice())),
+        ));
+    }
+    Ok(())
 }
 
 fn git(root: &Path, arguments: &[&str]) -> Result<Output> {
@@ -2223,6 +2418,17 @@ fn reference_label(state: &str, environment: Option<&str>) -> &'static str {
 }
 
 impl Reads<'_> {
+    /// Whether `evidence` reads current, as `chough next` labels a reference to it
+    /// (REQ-cli-004), with no environment to check: its revision or content, its case
+    /// and its artifacts still match `current` (REQ-cli-021, F4).
+    pub(super) fn is_current(
+        &self,
+        evidence: &Evidence,
+        current: &Result<Snapshot>,
+    ) -> Result<bool> {
+        Ok(reference_label(self.freshness(evidence, current, None)?, None) == "current")
+    }
+
     /// One reference's label: current, historical, removed (naming the receipt),
     /// unavailable, or ambiguous (naming its places), never a refusal of the report.
     fn label_reference(
@@ -2248,6 +2454,95 @@ impl Reads<'_> {
             Ok(Resolved::Removed(receipt)) => label("removed", Some(receipt), vec![]),
             Ok(Resolved::Missing) => label("unavailable", None, vec![]),
             Err(ambiguous) => label("ambiguous", None, ambiguous.places),
+        })
+    }
+
+    /// The referenced observations `chough next` lists as needing attention (F7,
+    /// REQ-cli-021): those `labelled` not current, each entry once however it is
+    /// referenced (bare, by alias or as `<session>/<id>`), leaving out a superseded run,
+    /// an earlier run of a case whose later run `checkpoint` (the active session's
+    /// observation references) also references; with the entries counted current and the
+    /// superseded runs counted apart.
+    pub(super) fn needing_attention(
+        &self,
+        labelled: &[Value],
+        checkpoint: &[String],
+    ) -> Result<Attention> {
+        let index = self.index()?;
+        let present = |id: &str| -> Result<Option<Evidence>> {
+            Ok(match index.lookup(id)? {
+                Ok(Resolved::Present(evidence)) => Some(*evidence),
+                _ => None,
+            })
+        };
+        // The latest run the checkpoint references of each case, by recorded time, then ID.
+        let mut latest: BTreeMap<String, (u64, String)> = BTreeMap::new();
+        for id in checkpoint {
+            let Some(evidence) = present(id)? else {
+                continue;
+            };
+            let run = (evidence.observed_at_unix_seconds, evidence.id.clone());
+            for case in &evidence.cases {
+                let entry = latest.entry(case.id.clone()).or_insert_with(|| run.clone());
+                if run > *entry {
+                    *entry = run.clone();
+                }
+            }
+        }
+        let mut current = BTreeSet::new();
+        let mut superseded = BTreeSet::new();
+        let mut listed: BTreeMap<String, usize> = BTreeMap::new();
+        let mut rows: Vec<Value> = vec![];
+        for row in labelled {
+            let id = row["resolved"]
+                .as_str()
+                .or(row["id"].as_str())
+                .unwrap_or_default();
+            let key = index.holder_key(id).unwrap_or_else(|| id.to_string());
+            if row["label"] == "current" {
+                current.insert(key);
+                continue;
+            }
+            if let Some(evidence) = present(id)? {
+                let run = (evidence.observed_at_unix_seconds, evidence.id.clone());
+                if evidence
+                    .cases
+                    .iter()
+                    .any(|case| latest.get(&case.id).is_some_and(|later| *later > run))
+                {
+                    superseded.insert(key);
+                    continue;
+                }
+            }
+            // One row per entry: the bare reference's row when there is one, naming every
+            // place that references the entry.
+            match listed.get(&key) {
+                None => {
+                    listed.insert(key, rows.len());
+                    rows.push(row.clone());
+                }
+                Some(&at) => {
+                    let mut by = rows[at]["referenced_by"]
+                        .as_array()
+                        .cloned()
+                        .unwrap_or_default();
+                    for source in row["referenced_by"].as_array().into_iter().flatten() {
+                        if !by.contains(source) {
+                            by.push(source.clone());
+                        }
+                    }
+                    let bare = |row: &Value| !row["id"].as_str().unwrap_or_default().contains('/');
+                    if bare(row) && !bare(&rows[at]) {
+                        rows[at] = row.clone();
+                    }
+                    rows[at]["referenced_by"] = Value::Array(by);
+                }
+            }
+        }
+        Ok(Attention {
+            rows,
+            current: current.len(),
+            superseded: superseded.len(),
         })
     }
 
@@ -2369,7 +2664,15 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 /// and the actor. Each field is written only when known. Front-matter-native maps.
 pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(String, String)>>> {
     let mut receipts = vec![];
-    for evidence in load_session(root, session_id)? {
+    // REQ-history-006 (t38j): receipts in observation-time order, oldest first, then by
+    // ID, whatever order the entries' names sort in.
+    let mut entries = load_session(root, session_id)?;
+    entries.sort_by(|left, right| {
+        left.observed_at_unix_seconds
+            .cmp(&right.observed_at_unix_seconds)
+            .then_with(|| left.id.cmp(&right.id))
+    });
+    for evidence in entries {
         let mut map: Vec<(String, String)> = vec![("id".into(), evidence.id.clone())];
         if !evidence.aliases.is_empty() {
             map.push(("aliases".into(), evidence.aliases.join(", ")));
@@ -2501,7 +2804,7 @@ fn find_id(value: &Value, id: &str) -> bool {
 
 /// Whether `text` holds `id` as a whole token of ID characters. A dot belongs to the token
 /// so a dotted module's `REQ-chat.service-1` is one token, except a sentence-ending dot.
-fn holds_token(text: &str, id: &str) -> bool {
+pub(super) fn holds_token(text: &str, id: &str) -> bool {
     text.split(|c: char| !(c.is_ascii_alphanumeric() || c == '-' || c == '.'))
         .any(|part| part == id || part.trim_end_matches('.') == id)
 }
@@ -2720,7 +3023,7 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
         for name in names {
             let text = read_bounded_record(&archive.join(&name), markdown::SESSION_BOUND)?;
             let record = markdown::parse(&name, &text)?;
-            for map in record.maps("receipts") {
+            for map in record.story_receipts(&name)? {
                 if tombstone_of(&map).is_none() {
                     views.push(receipt_view(&map));
                 }
