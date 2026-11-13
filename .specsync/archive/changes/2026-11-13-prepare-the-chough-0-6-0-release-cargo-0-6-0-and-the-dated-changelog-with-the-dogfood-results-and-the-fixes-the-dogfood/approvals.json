@@ -668,6 +668,13 @@
         "records: REQUIREMENT REQ-records-011": "a4ee4e627ed729726b685ff65fbc47dfbd333e923345d584f51c25fe6b27337a",
         "reporting: REQUIREMENT REQ-reporting-001": "a24bd0b6f54fef18b8543020a3903ac9835af40324742f00009e1d274bf70d11"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794533233,
+      "digest": "710e91e2928213b8dca813b0dc945b0b5e90375168317f21d3214eb93b44a1ca",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

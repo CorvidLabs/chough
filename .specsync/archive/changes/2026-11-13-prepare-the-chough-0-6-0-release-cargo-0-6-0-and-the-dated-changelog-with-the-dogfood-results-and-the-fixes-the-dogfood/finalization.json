@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood",
+  "implementation_commit": "0c4cf1845ce013d0e86dd099f272023188a11d05",
+  "implementation_tree": "f8d7aa2e4655fcede7a0ec257ccaa98769efb308",
+  "contract_digest": "db5a1bceb60edcda36a29d245645d26d43026bc859d50bccbd656f4f18f4cd4a",
+  "workspace_digest": "d79b61fcde659aa97a92b6e239212ffafbf67602a124e7039d3190b84a4f1fce",
+  "closing_digest": "710e91e2928213b8dca813b0dc945b0b5e90375168317f21d3214eb93b44a1ca",
+  "review_digest": "4b3b5e776cf1e2189f49480306dc37e1e0d9ccccc54107780aee2bb59a99e5a0",
+  "finalization_digest": "bc736aa52dca09d397cb3d24cc856b39c4c6133ab8518aa8bad2cf9311433f4e",
+  "timestamp": 1794533233
+}
