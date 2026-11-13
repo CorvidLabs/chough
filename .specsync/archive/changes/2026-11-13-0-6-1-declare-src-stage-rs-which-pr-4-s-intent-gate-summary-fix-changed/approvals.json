@@ -1,0 +1,46 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794538549,
+      "digest": "31e599e5a5935e0fca59c25c8a3238703fe4ed51db8037577ba40f6e33b082ec",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of 0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed\": \"Yes, fix and keep (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:53Z, answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs: #242 (already shipped) and PRs 2, 5 and 6. SpecSync caught it. Fix the file lists with no code change: #242 gets a tiny extra record, and PRs 2, 5 and 6 get corrected lists. Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T02:55:48Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed",
+        "title": "0.6.1: declare src/stage.rs, which PR 4's intent gate summary fix changed",
+        "description": "0.6.1: declare src/stage.rs, which PR 4's intent gate summary fix changed",
+        "kind": "refactor",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "src/stage.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A record of a file the archived PR 4 change touched but did not list; no code or contract changes.",
+        "acceptance_criteria": [
+          "src/stage.rs, changed by PR 4 (its added_and_modified helper split for the intent gate summary), is covered by a change, so specsync change audit finds no uncovered path; no code or contract changes"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved this covering record at 02:53Z (relayed by t370): one yes covers its scope and review. No code or contract change; it only covers src/stage.rs, which the archived PR 4 change touched without listing.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794538589,
+      "digest": "21abbaa8cf1c5f3f86cbfd33ecea21063aff82d532ffe2895ae8c700a9840d7a",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

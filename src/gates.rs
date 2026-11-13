@@ -19,6 +19,13 @@ const SUMMARY_LINES: usize = 24;
 const SUMMARY_BYTES: usize = 4_096;
 const RISK_LINES: usize = 8;
 const TOP_FILES: usize = 5;
+/// At an intent gate, the lines its `hi/` files and criteria take, the bytes the whole
+/// intent may take, so the tests and risks still fit, and the IDs a list line names.
+const INTENT_LINES: usize = 16;
+const INTENT_BYTES: usize = 3_072;
+const LISTED_IDS: usize = 12;
+/// What ends a sentence or a summary cut to fit.
+const CUT: &str = "… (cut)";
 
 #[derive(Subcommand)]
 pub(super) enum GateCommand {
@@ -398,32 +405,96 @@ fn added_lines(path: &Path) -> u64 {
     lines + u64::from(last.is_some_and(|byte| byte != b'\n'))
 }
 
-/// The requirement IDs the delta at `path` adds or modifies, as " (adds or modifies
-/// <IDs>)", or nothing when it adds or modifies none or cannot be read (F5).
+/// The requirement IDs the delta at `path` adds and those it modifies, each said as such
+/// (REQ-cli-061), as " (adds <IDs>; modifies <IDs>)" with only the parts that name an ID,
+/// or nothing when it names none or cannot be read.
 fn delta_adds(root: &Path, path: &str) -> String {
-    let ids = local_path(root, path)
+    let (added, modified) = local_path(root, path)
         .ok()
         .and_then(|file| records::read_native_record(&file, records::NATIVE_RECORD_LIMIT).ok())
         .flatten()
         .and_then(|bytes| String::from_utf8(bytes).ok())
-        .map(|text| crate::stage::added_or_modified(&text))
+        .map(|text| crate::stage::added_and_modified(&text))
         .unwrap_or_default();
-    if ids.is_empty() {
+    let said: Vec<String> = [("adds", added), ("modifies", modified)]
+        .into_iter()
+        .filter(|(_, ids)| !ids.is_empty())
+        .map(|(verb, ids)| format!("{verb} {}", ids.into_iter().collect::<Vec<_>>().join(", ")))
+        .collect();
+    if said.is_empty() {
         String::new()
     } else {
-        format!(
-            " (adds or modifies {})",
-            ids.into_iter().collect::<Vec<_>>().join(", ")
-        )
+        format!(" ({})", said.join("; "))
     }
 }
 
+/// The sentence a `hi/` file's `text` gives criterion `id`: the rest of the list item
+/// whose first word, its Markdown emphasis left out, is the ID, as `hi` writes
+/// `- **<ID>**  <sentence>`. A file that only mentions the ID elsewhere gives none.
+fn criterion_sentence(text: &str, id: &str) -> Option<String> {
+    text.lines().find_map(|line| {
+        let item = line.trim_start();
+        let item = item
+            .strip_prefix("- ")
+            .or_else(|| item.strip_prefix("* "))?
+            .trim_start();
+        let (word, rest) = item.split_at(item.find(char::is_whitespace).unwrap_or(item.len()));
+        (word.trim_matches(|c| matches!(c, '*' | '_' | '`' | ':')) == id)
+            .then(|| rest.trim().to_string())
+    })
+}
+
+/// `ids` joined, at most `LISTED_IDS` of them, then how many more.
+fn listed(ids: &[&String]) -> String {
+    let shown = ids
+        .iter()
+        .take(LISTED_IDS)
+        .map(|id| id.as_str())
+        .collect::<Vec<_>>()
+        .join(", ");
+    match ids.len().saturating_sub(LISTED_IDS) {
+        0 => shown,
+        more => format!("{shown} and {more} more"),
+    }
+}
+
+/// The longest a sentence may be so that sentences of `lengths` fit in `available`
+/// bytes: none is cut when they all fit; otherwise the longest are cut to one length.
+fn sentence_cap(lengths: &[usize], available: usize) -> usize {
+    let mut sorted = lengths.to_vec();
+    sorted.sort_unstable();
+    let mut left = available;
+    for (index, length) in sorted.iter().enumerate() {
+        let share = left / (sorted.len() - index);
+        if *length > share {
+            return share;
+        }
+        left -= length;
+    }
+    usize::MAX
+}
+
+/// `text` whole when it is at most `cap` bytes, otherwise cut on a character boundary
+/// to end in `CUT` within `cap` bytes.
+fn cut_to(text: &str, cap: usize) -> String {
+    if text.len() <= cap {
+        return text.to_string();
+    }
+    let mut end = cap.saturating_sub(CUT.len());
+    while !text.is_char_boundary(end) {
+        end -= 1;
+    }
+    format!("{}{CUT}", text[..end].trim_end())
+}
+
 /// The intent a gate held at intent approves when the session records no native change
-/// (F4, REQ-cli-061): the criterion IDs the session references, and each `hi/` file that
-/// holds one as a whole token, read as files (the instruction files left out), with no
-/// native tool run.
+/// (REQ-cli-061): each criterion the session references, by ID with its sentence from the
+/// `hi/` file that holds it, laid out as `hi ls` lays it out, the files in the order the
+/// session first references one of their criteria. The files are read (the instruction
+/// files left out) and no native tool runs. Files and criteria take at most
+/// `INTENT_LINES` lines, the rest named on one line, and the sentences share what is left
+/// of `INTENT_BYTES`, the longest cut to fit, so the tests and risks still show.
 fn intent_lines(root: &Path, session: &Value) -> Vec<String> {
-    const SHOWN: usize = 12;
     let criteria: Vec<String> = session["references"]["criteria"]
         .as_array()
         .into_iter()
@@ -435,21 +506,6 @@ fn intent_lines(root: &Path, session: &Value) -> Vec<String> {
             "Intent: no criteria referenced yet; reference them with `chough checkpoint --criterion <id>`".into(),
         ];
     }
-    let more = criteria.len().saturating_sub(SHOWN);
-    let mut lines = vec![format!(
-        "Intent: {}{} (the criteria the session references)",
-        criteria
-            .iter()
-            .take(SHOWN)
-            .cloned()
-            .collect::<Vec<_>>()
-            .join(", "),
-        if more > 0 {
-            format!(" and {more} more")
-        } else {
-            String::new()
-        }
-    )];
     let mut names: Vec<String> = local_path(root, "hi")
         .ok()
         .and_then(|dir| fs::read_dir(dir).ok())
@@ -460,7 +516,8 @@ fn intent_lines(root: &Path, session: &Value) -> Vec<String> {
         .filter(|name| name.ends_with(".md") && name != "AGENTS.md" && name != "CLAUDE.md")
         .collect();
     names.sort();
-    let mut holding: Vec<(String, Vec<&String>)> = vec![];
+    // Each criterion's file and sentence, from the first file by name that holds it.
+    let mut held: Vec<Option<(String, String)>> = vec![None; criteria.len()];
     for name in names {
         let relative = format!("hi/{name}");
         let Some(text) = local_path(root, &relative)
@@ -471,36 +528,88 @@ fn intent_lines(root: &Path, session: &Value) -> Vec<String> {
         else {
             continue;
         };
-        let held: Vec<&String> = criteria
-            .iter()
-            .filter(|id| crate::evidence::holds_token(&text, id))
-            .collect();
-        if !held.is_empty() {
-            holding.push((relative, held));
+        for (id, found) in criteria.iter().zip(held.iter_mut()) {
+            if found.is_none()
+                && let Some(sentence) = criterion_sentence(&text, id)
+            {
+                *found = Some((relative.clone(), sentence));
+            }
         }
     }
-    let ids = |ids: &[&String]| {
-        ids.iter()
-            .map(|id| id.as_str())
-            .collect::<Vec<_>>()
-            .join(", ")
-    };
-    for (file, held) in holding.iter().take(TOP_FILES) {
-        lines.push(format!("  {file}: {}", ids(held)));
+    let mut files: Vec<(&str, Vec<(&String, &str)>)> = vec![];
+    for (id, found) in criteria.iter().zip(&held) {
+        let Some((file, sentence)) = found else {
+            continue;
+        };
+        match files.iter_mut().find(|(name, _)| name == file) {
+            Some((_, items)) => items.push((id, sentence)),
+            None => files.push((file, vec![(id, sentence)])),
+        }
     }
-    if holding.len() > TOP_FILES {
-        lines.push(format!(
-            "  and {} more hi/ files",
-            holding.len() - TOP_FILES
-        ));
+    // Each file line with as many of its criteria as the lines left allow.
+    let mut room = INTENT_LINES;
+    let mut shown: Vec<(&str, &[(&String, &str)])> = vec![];
+    let mut more: Vec<&String> = vec![];
+    for (file, items) in &files {
+        let take = if room >= 2 {
+            items.len().min(room - 1)
+        } else {
+            0
+        };
+        more.extend(items[take..].iter().map(|(id, _)| *id));
+        if take > 0 {
+            room -= take + 1;
+            shown.push((file, &items[..take]));
+        }
     }
+    more.sort_by_key(|id| criteria.iter().position(|criterion| criterion == *id));
     let missing: Vec<&String> = criteria
         .iter()
-        .filter(|id| !holding.iter().any(|(_, held)| held.contains(id)))
+        .zip(&held)
+        .filter(|(_, found)| found.is_none())
+        .map(|(id, _)| id)
         .collect();
-    if !missing.is_empty() {
-        lines.push(format!("  in no hi/ file: {}", ids(&missing)));
+    let mut tail = vec![];
+    if !more.is_empty() {
+        tail.push(format!("  and {} more: {}", more.len(), listed(&more)));
     }
+    if !missing.is_empty() {
+        tail.push(format!("  in no hi/ file: {}", listed(&missing)));
+    }
+    let header = format!(
+        "Intent: {} the session references, each with its sentence from hi/",
+        match criteria.len() {
+            1 => "1 criterion".to_string(),
+            count => format!("{count} criteria"),
+        }
+    );
+    // The sentences share what the other lines, newlines included, leave.
+    let fixed = header.len()
+        + 1
+        + tail.iter().map(|line| line.len() + 1).sum::<usize>()
+        + shown
+            .iter()
+            .map(|(file, items)| {
+                file.len() + 3 + items.iter().map(|(id, _)| id.len() + 7).sum::<usize>()
+            })
+            .sum::<usize>();
+    let lengths: Vec<usize> = shown
+        .iter()
+        .flat_map(|(_, items)| items.iter().map(|(_, sentence)| sentence.len()))
+        .collect();
+    let cap = sentence_cap(&lengths, INTENT_BYTES.saturating_sub(fixed));
+    let mut lines = vec![header];
+    for (file, items) in shown {
+        lines.push(format!("  {file}"));
+        for (id, sentence) in items {
+            lines.push(
+                format!("    {id}  {}", cut_to(sentence, cap))
+                    .trim_end()
+                    .to_string(),
+            );
+        }
+    }
+    lines.extend(tail);
     lines
 }
 
@@ -558,7 +667,7 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
     let left_out = left_out_of_summary(root);
     // REQ-cli-061 (t38j): at a gate that drives approval, the change's own definition is
     // what the human approves, so its Markdown files count and come first, its deltas
-    // before its other files, each with the requirements it adds or modifies (F5).
+    // before its other files, each with the requirements it adds and those it modifies.
     let drives = crate::humans::Drives::parse(meta["drives"].as_str().unwrap_or_default())
         .unwrap_or_else(|| {
             crate::humans::Drives::default_for(meta["holds"].as_str().unwrap_or_default())
@@ -642,11 +751,13 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
         None => lines.push("Risks: none recorded".into()),
     }
     // With no merge base and no recorded base commit there is no range to show, so the
-    // line says so rather than give a diff command that fails (REQ-cli-061).
-    lines.push(match base.as_deref() {
-        Some(base) => format!("Diff: {}", diff_link(root, base, &head)),
-        None => "Diff: unknown, with no merge base and no recorded base commit".into(),
-    });
+    // line says so rather than give a diff command that fails (REQ-cli-061). A gate held
+    // at intent with no native change approves the intent, so it has no diff line.
+    match base.as_deref() {
+        _ if at_intent => {}
+        Some(base) => lines.push(format!("Diff: {}", diff_link(root, base, &head))),
+        None => lines.push("Diff: unknown, with no merge base and no recorded base commit".into()),
+    }
     if lines.len() > SUMMARY_LINES {
         lines.truncate(SUMMARY_LINES - 1);
         lines.push("… (cut)".into());
