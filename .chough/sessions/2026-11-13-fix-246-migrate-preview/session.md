@@ -5,7 +5,7 @@ aliases: [fix-246-migrate-preview]
 objective: "Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,11 +19,20 @@ files: []
 observations:
   - 2026-11-13-tc-records-migrate-preview-names-what-doctor-reports
   - 2026-11-13-tc-records-migrate-preview-names-what-doctor-reports-9609f3
+  - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
 bugs: [2026-11-13-chough-migrate-s-preview-omits-the-finished-sessions-and-stale]
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
+    holds: accept
+    drives: review
+    opened: 2026-11-13T07:59:29Z
 run_consents: []
-next: Continue test
+next: Continue accept
+title: "Fix #246: migrate's preview names what doctor will report"
+summary:
+  - "chough migrate's preview and receipt name each session chough doctor will report right after the apply: finished sessions to archive with chough doctor --fix, and stale-gated ones with each gate's text and chough doctor --fix --reason, from doctor's own session check (REQ-records-009, REQ-cli-055)."
+  - "Verified: the case red then green, the bug verified, and the full suite 736 of 736. Next: Leif's review and merge."
 ---
 # Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply
 
@@ -42,6 +51,7 @@ Fix #246: chough migrate's preview and receipt name the sessions chough doctor w
 
 - [Ran cargo test --locked --test migrate -- --exact the_preview_names_the_sessions_doctor_reports_after_the_apply for TC-records-migrate-preview-names-what-doctor-reports: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-records-migrate-preview-names-what-doctor-reports.md)
 - [Ran cargo test --locked --test migrate -- --exact the_preview_names_the_sessions_doctor_reports_after_the_apply for TC-records-migrate-preview-names-what-doctor-reports: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-records-migrate-preview-names-what-doctor-reports-9609f3.md)
+- [The full test suite passed 736 of 736 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 9a081e0c, #246's final head; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo.md)
 
 ## Open threads
 
@@ -98,4 +108,15 @@ Fix #246: chough migrate's preview and receipt name the sessions chough doctor w
   - native_change: fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
   - gate: native:approved
   - revision: ca5685cdd311a905b1747b8464b1abf881e62c07
+  - by: claude-code (hc t382)
+- 2026-11-13T07:59:29Z · advance · test → accept · Tested: the cases green and the full suite 736/736 ^t-820b83
+  - native_change: fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
+  - gate: native:verifying
+  - revision: 9a081e0c6317beacb6ea4afa7365d1f0884914e6
+  - by: claude-code (hc t382)
+- 2026-11-13T07:59:29Z · gate-opened · accept → accept · Implementation review of fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply ^t-be33f6
+  - native_change: fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
+  - revision: 9a081e0c6317beacb6ea4afa7365d1f0884914e6
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t382)
