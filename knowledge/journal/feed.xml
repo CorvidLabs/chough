@@ -13,10 +13,24 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>#217: seed the flake tracker</title>
+<id>urn:chough:journal:2026-11-13-217-seed-the-flake-tracker</id>
+<updated>2026-11-13T14:43:42Z</updated>
+<link href="2026-11-13-217-seed-the-flake-tracker.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>0.6.1: record polish: a bug&apos;s Actual line, migrated names, a fresh guide</title>
 <id>urn:chough:journal:2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh</id>
 <updated>2026-11-13T14:19:22Z</updated>
 <link href="2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Host-matrix harness</title>
+<id>urn:chough:journal:2026-11-13-host-matrix-harness</id>
+<updated>2026-11-13T14:19:19Z</updated>
+<link href="2026-11-13-host-matrix-harness.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
@@ -130,19 +144,5 @@
 <updated>2026-11-10T16:06:34Z</updated>
 <link href="2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113.md"/>
 <category term="shipped"/>
-</entry>
-  <entry>
-<title>Move two #192 test cases into their own files (#196)</title>
-<id>urn:chough:journal:2026-11-10-move-two-192-test-cases-into-their-own-files-196</id>
-<updated>2026-11-10T16:03:25Z</updated>
-<link href="2026-11-10-move-two-192-test-cases-into-their-own-files-196.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Read diagnostic input inventories without touching freshness</title>
-<id>urn:chough:journal:2026-11-09-read-diagnostic-input-inventories-without-touching-freshness</id>
-<updated>2026-11-09T07:44:46Z</updated>
-<link href="2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md"/>
-<category term="closed"/>
 </entry>
 </feed>
