@@ -1726,11 +1726,13 @@ fn log_transition_at(
     }
     // REQ-cli-021 (t38n F1): a gate close's next action names the move its decision
     // allows; a move to another stage carries it out, so it is replaced with
-    // `Continue <stage>` for the stage reached, as a reset replaces its own. A next action
-    // the agent wrote is the agent's, and stays.
+    // `Continue <stage>` for the stage reached, as a reset replaces its own; so is the
+    // `Continue <stage>` an earlier step of a batched advance left for the stage it
+    // leaves. A next action the agent wrote is the agent's, and stays.
     if STAGE_KINDS.contains(&kind)
         && from != to
-        && crate::checkpoint::is_gate_close_next_action(&session.next_action)
+        && (crate::checkpoint::is_gate_close_next_action(&session.next_action)
+            || session.next_action == format!("Continue {from}"))
     {
         session.next_action = format!("Continue {to}");
     }
