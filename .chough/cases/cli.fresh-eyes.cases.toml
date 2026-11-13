@@ -882,3 +882,21 @@ expected = ["tests/docs.rs::the_accept_reference_writes_lessons_before_the_case_
 adapter = "cargo-test"
 test_target = "docs"
 test = "the_accept_reference_writes_lessons_before_the_case_runs"
+
+[[case]]
+id = "TC-cli-a-batched-advance-continues-in-the-stage-reached"
+title = "After a gate close, a batched advance through several stages leaves Continue <stage> for the stage it reaches, never a stage it passed through"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-13", "FLOW-2"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_batched_advance_leaves_continue_for_the_stage_it_reaches passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_batched_advance_leaves_continue_for_the_stage_it_reaches"

@@ -795,6 +795,21 @@ fn a_stage_move_replaces_the_next_action_a_gate_close_left() {
     assert_eq!(next_action(&fixture), "SYNTHETIC: sketch the screen");
 }
 
+/// F1 of the fourth round, continued (REQ-cli-021): a batched advance makes several moves
+/// on one read, and each carries the replacement on, so the next action names the stage
+/// reached, never a stage it passed through.
+#[cfg(unix)]
+#[test]
+fn a_batched_advance_leaves_continue_for_the_stage_it_reaches() {
+    let fixture = at_plan();
+    fixture.no_spec_approval(ID);
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    fixture.ok(&args(&relay(SCOPE, "SYNTHETIC-human")));
+    fixture.ok(&["stage", "advance", "--to", "test", "--json"]);
+    assert_eq!(fixture.checkpoint()["stage"]["current"], "test");
+    assert_eq!(next_action(&fixture), "Continue test");
+}
+
 /// The rest of t382's rule: a review gate names its verdict, a gate that drives no native
 /// step or is closed with --no-native says "closed"; a next action given in the same call
 /// is kept; and a close that leaves another gate holding the stage, or of a gate that
