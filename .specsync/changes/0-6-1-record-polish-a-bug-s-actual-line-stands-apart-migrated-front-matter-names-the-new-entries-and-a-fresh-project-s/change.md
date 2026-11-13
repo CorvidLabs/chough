@@ -1,6 +1,6 @@
 ---
 id: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 9d53604071df50b537adccad0ccf5cac9a2fc32b
 ---

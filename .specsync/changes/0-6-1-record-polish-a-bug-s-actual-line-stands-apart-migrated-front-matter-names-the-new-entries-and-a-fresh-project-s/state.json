@@ -7,21 +7,27 @@
   "title": "0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed",
   "description": "0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
   "created_at": 1794536904,
-  "updated_at": 1794538438,
+  "updated_at": 1794539602,
   "affected_specs": [
     "cli",
     "records",
     "history"
   ],
   "affected_paths": [
-    "src/",
-    "tests/",
-    "docs/",
     "CHANGELOG.md",
-    "README.md"
+    "README.md",
+    "docs/cli.md",
+    "src/bugs.rs",
+    "src/migrate.rs",
+    "src/sessions.rs",
+    "tests/bugs.rs",
+    "tests/docs.rs",
+    "tests/migrate_evidence.rs",
+    "tests/records.rs"
   ],
   "no_spec_change": true,
   "no_spec_change_rationale": "A fix within the existing requirements; no contract text changes.",

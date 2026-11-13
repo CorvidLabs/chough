@@ -5,7 +5,7 @@ aliases: [record-polish]
 objective: "0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -36,7 +36,7 @@ bugs:
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # 0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed
 
@@ -53,6 +53,7 @@ next: Continue build
 - Leif decided "Approve the intent: record polish for bugs, migrated front matter and the READMEs": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
 - Leif decided "Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s as 0xLeif
 - Leif decided "Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s with its corrected file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s as 0xLeif
+- Leif decided "Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s with its exact file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s as 0xLeif
 
 ## What was verified
 
@@ -150,4 +151,52 @@ next: Continue build
   - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
   - gate: native:approved
   - revision: dfaf7efcbf3ca72ef6bd5252c7c18b62df6cb9be
+  - by: claude-code (hc t382)
+- 2026-11-13T03:13:17Z · direct-native-write · build → build · 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-6859c8
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 115270871632389104e4590307e5d8065101c95d
+  - direct_write:
+    - change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: claude-code (hc t382)
+- 2026-11-13T03:13:17Z · back · build → plan · The file list names exactly the changed files (Leif, 02:53Z, relayed by t370) ^t-571c21
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 115270871632389104e4590307e5d8065101c95d
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, checkpoint references: 4 case(s) and 8 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t382)
+- 2026-11-13T03:13:18Z · gate-opened · plan → plan · Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s with its exact file list ^t-4915a2
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 115270871632389104e4590307e5d8065101c95d
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-13T03:13:18Z · gate-closed · plan → plan · Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s with its exact file list ^t-cf29e3
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 115270871632389104e4590307e5d8065101c95d
+  - relayed_by:
+    - decided_by: Leif
+    - words: Yes, start (Recommended) / Yes, fix and keep (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T03:13:20Z · advance · plan → build · Leif kept his approval with the exact file list (02:53Z, relayed by t370) ^t-3433c8
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - gate: native:approved
+  - revision: 115270871632389104e4590307e5d8065101c95d
+  - by: claude-code (hc t382)
+- 2026-11-13T03:13:20Z · advance · build → test · Leif kept his approval with the exact file list (02:53Z, relayed by t370) ^t-5118fb
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - gate: native:approved
+  - revision: 115270871632389104e4590307e5d8065101c95d
+  - by: claude-code (hc t382)
+- 2026-11-13T03:13:20Z · advance · test → accept · Leif kept his approval with the exact file list (02:53Z, relayed by t370) ^t-f17d56
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - gate: native:approved
+  - revision: 115270871632389104e4590307e5d8065101c95d
   - by: claude-code (hc t382)
