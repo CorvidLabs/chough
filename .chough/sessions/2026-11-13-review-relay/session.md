@@ -5,7 +5,7 @@ aliases: [review-relay]
 objective: "Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -22,11 +22,20 @@ observations:
   - 2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review-567cea
   - 2026-11-13-tc-records-approval-as-the-human-29ac02
   - 2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review-0b3d7f
+  - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
 bugs: [2026-11-13-chough-change-ship-s-native-review-drops-the-relay-review-json]
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
+    holds: accept
+    drives: review
+    opened: 2026-11-13T08:04:33Z
 run_consents: []
-next: Continue test
+next: Continue accept
+title: "Fix #249: the relay reaches SpecSync's approval and review"
+summary:
+  - A relayed gate decision that drives a native step passes the human's words, place and recording agent to specsync change approve and change review as --words, --where and --recorded-by, so SpecSync's own records carry the relay; chough change ship's review does too (REQ-records-008, REQ-cli-059).
+  - "Verified: the cases red then green, the bug verified, and the full suite 736 of 736. Next: Leif's review and merge."
 ---
 # Fix #249: chough passes a relayed decision's words, place and recording agent to SpecSync's review and approve
 
@@ -48,6 +57,7 @@ Fix #249: chough passes a relayed decision's words, place and recording agent to
 - [Ran cargo test --locked --test change -- --exact ship_passes_the_relay_to_the_native_review for TC-cli-ship-passes-the-relay-to-the-native-review: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review-567cea.md)
 - [Ran cargo test --locked --test humans -- a_scope_gate_runs_the_approval_once_as_the_configured_human a_review_gate_needs_a_verdict_and_runs_the_review_with_it an_unknown_or_ambiguous_human_is_refused_before_anything_runs the_project_file_overrides_the_user_file no_source_names_a_person_as_the_default_human for TC-records-approval-as-the-human: passed (exit 0).](evidence/2026-11-13-tc-records-approval-as-the-human-29ac02.md)
 - [Ran cargo test --locked --test change -- --exact ship_passes_the_relay_to_the_native_review for TC-cli-ship-passes-the-relay-to-the-native-review: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review-0b3d7f.md)
+- [The full test suite passed 736 of 736 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at aed5bb1c, #249's final head; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo.md)
 
 ## Open threads
 
@@ -101,4 +111,15 @@ Fix #249: chough passes a relayed decision's words, place and recording agent to
   - native_change: fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
   - gate: native:approved
   - revision: fd6efe7663471370b9119a34dc4d8f62f86aa487
+  - by: claude-code (hc t382)
+- 2026-11-13T08:04:33Z · advance · test → accept · Tested: the cases green and the full suite 736/736 ^t-846068
+  - native_change: fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
+  - gate: native:verifying
+  - revision: aed5bb1c539b53587477dea6dd4d6a5bdf2fdff4
+  - by: claude-code (hc t382)
+- 2026-11-13T08:04:33Z · gate-opened · accept → accept · Implementation review of fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve ^t-d2c20a
+  - native_change: fix-249-chough-passes-a-relayed-decision-s-words-place-and-recording-agent-to-specsync-s-review-and-approve
+  - revision: aed5bb1c539b53587477dea6dd4d6a5bdf2fdff4
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t382)
