@@ -21,6 +21,7 @@ observations:
   - 2026-11-13-tc-cli-change-ship-prints-a-short-summary-and-its-reports-a90344
   - 2026-11-13-tc-cli-change-ship-prints-a-short-summary-and-its-reports-163898
   - 2026-11-13-the-full-test-suite-passed-730-of-730-across-48-targets-cargo
+  - 2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo
 bugs: [2026-11-12-chough-change-ship-prints-specsync-s-text-a-long-json]
 blockers: []
 waiting_on_human:
@@ -56,6 +57,7 @@ summary:
 - [Ran cargo test --locked --test change -- --exact ship_prints_a_short_summary_after_specsync_and_every_report_under_json for TC-cli-change-ship-prints-a-short-summary-and-its-reports-under-json: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-change-ship-prints-a-short-summary-and-its-reports-a90344.md)
 - [Ran cargo test --locked --test change -- --exact ship_prints_a_short_summary_after_specsync_and_every_report_under_json for TC-cli-change-ship-prints-a-short-summary-and-its-reports-under-json: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-change-ship-prints-a-short-summary-and-its-reports-163898.md)
 - [The full test suite passed 730 of 730 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 22568b99 with REQ-cli-059's new text materialized; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-730-of-730-across-48-targets-cargo.md)
+- [The full test suite passed 731 of 731 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 595d0930, #243's final head with main merged in; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo.md)
 
 ## Open threads
 

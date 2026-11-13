@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "595d09309e6644f46c0608e8d91bab5ff9db6e60",
+  "contract_digest": "1852e5c2b60e3ac54e69acfa88ca7a18e01ebb8a6782f1b94a44646cc74edbe4",
+  "execution_digest": "86af5cc85c950bcbea68a15c8dc7950d86d93bb4120bd972ff7b0c0655a334f5",
+  "workspace_digest": "896c033d02699f09e05bc91b0ab92fe257910643ecb5adbd143b03915cddca20",
+  "timestamp": 1794538680
+}
