@@ -245,6 +245,17 @@ fn alias(plan: &Value, old: &str) -> String {
         .to_string()
 }
 
+/// The name a migrated record's front matter gives an observation carried as an entry:
+/// the entry's file name (t38n's round-4 F9), whose alias is the 0.5.x ID.
+fn entry_name(plan: &Value, old: &str) -> String {
+    alias(plan, old)
+        .rsplit('/')
+        .next()
+        .unwrap()
+        .trim_end_matches(".md")
+        .to_string()
+}
+
 /// The new session ID a 0.5.x session key migrates to, from the plan's aliases.
 fn session_folder(plan: &Value, key: &str) -> String {
     let path = alias(plan, key);
@@ -510,14 +521,16 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
     assert!(gap.contains("3 observations"), "{gap}");
     gap_with(&plan, "artifact paths");
 
-    // Every old ID resolves: the open session's references and the bug's links.
+    // Every carried observation resolves by the name the front matter now gives it,
+    // whose alias is its 0.5.x ID (t38n's round-4 F9): the open session's references
+    // and the bug's links.
     let status = fixture.ok(&["status", "--environment", "fixture"]);
     for id in [CASE_RUN, PRODUCT] {
-        let label = reference_label(&status, id);
+        let label = reference_label(&status, &entry_name(&plan, id));
         assert_ne!(label, "unavailable", "{id}: {status:#}");
         assert_ne!(label, "removed", "{id}: {status:#}");
     }
-    assert_ne!(reference_label(&status, archived_id), "unavailable");
+    assert_ne!(reference_label(&status, &receipt["id"]), "unavailable");
     fixture.ok(&["next", "--json"]);
     assert!(!fixture.exists(".chough/evidence"));
 }
@@ -545,7 +558,11 @@ fn v0_1_0_observation_ids_resolve_after_the_apply() {
     }
     let status = fixture.ok(&["status", "--environment", "fixture"]);
     for id in ids {
-        assert_ne!(reference_label(&status, id), "unavailable", "{status:#}");
+        assert_ne!(
+            reference_label(&status, &entry_name(&plan, id)),
+            "unavailable",
+            "{status:#}"
+        );
     }
 }
 
@@ -589,7 +606,7 @@ fn one_observation_two_open_sessions_reference_is_one_entry_in_the_first() {
     fixture.ok(&["session", "use", &second]);
     let status = fixture.ok(&["status", "--environment", "fixture"]);
     assert_ne!(
-        reference_label(&status, PRODUCT),
+        reference_label(&status, &entry_name(&plan, PRODUCT)),
         "unavailable",
         "{status:#}"
     );
@@ -868,7 +885,7 @@ fn validation_runs_carry_like_observations() {
     assert!(!fixture.exists(".chough/validation"));
     let status = fixture.ok(&["status", "--environment", "fixture"]);
     assert_ne!(
-        reference_label(&status, referenced),
+        reference_label(&status, &entry_name(&plan, referenced)),
         "unavailable",
         "{status:#}"
     );
