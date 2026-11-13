@@ -121,8 +121,12 @@ fn a_scope_gate_runs_the_approval_once_as_the_configured_human() {
         )),
         "{calls:?}"
     );
+    // #249 (REQ-records-008): the relay also goes to SpecSync 6.3.0's own fields, so its
+    // approval record holds the relayed decision.
     assert!(
-        calls[0].ends_with("; a relayed claim, not authenticated."),
+        calls[0].ends_with(
+            "; a relayed claim, not authenticated. --words yes, go --where SYNTHETIC chat, 2026-11-11 --recorded-by SYNTHETIC-agent"
+        ),
         "{calls:?}"
     );
     let step = &closed["relayed_decision"]["native_step"];
@@ -164,10 +168,11 @@ fn a_review_gate_needs_a_verdict_and_runs_the_review_with_it() {
     let mut with = relay(REVIEW, "SYNTHETIC-human");
     with.extend(["--verdict".into(), "block".into()]);
     fixture.ok(&args(&with));
+    // #249 (REQ-records-008): the review carries the relay in SpecSync 6.3.0's fields.
     assert_eq!(
         calls(&fixture),
         [format!(
-            "change review {ID} --reviewer SYNTHETIC-actor --verdict block"
+            "change review {ID} --reviewer SYNTHETIC-actor --verdict block --words yes, go --where SYNTHETIC chat, 2026-11-11 --recorded-by SYNTHETIC-agent"
         )]
     );
     let decision = decisions(&fixture).pop().unwrap();
@@ -464,10 +469,12 @@ fn gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record() {
     );
     let calls = calls(&fixture);
     assert_eq!(calls.len(), 1, "{calls:?}");
+    // #249 (REQ-records-008): the note names gate record, and the relay follows it in
+    // SpecSync 6.3.0's own fields.
     assert!(
         calls[0].contains("Relayed and recorded by SYNTHETIC-agent at ")
             && calls[0].ends_with(&format!(
-                " through chough gate record {list}; a relayed claim, not authenticated."
+                " through chough gate record {list}; a relayed claim, not authenticated. --words yes, go --where SYNTHETIC chat, 2026-11-11 --recorded-by SYNTHETIC-agent"
             )),
         "{calls:?}"
     );
