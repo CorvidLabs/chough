@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once",
+  "slug": "0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once",
+  "title": "0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once",
+  "description": "0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
+  "created_at": 1794536958,
+  "updated_at": 1794537000,
+  "affected_specs": [
+    "cli",
+    "history",
+    "reporting"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "src/sessions.rs",
+    "src/timing.rs",
+    "tests/next.rs",
+    "tests/sessions.rs",
+    "tests/timing.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With no open session, chough next prints that there is no open session and names chough session new <key>, exiting 0, while chough status still refuses with that message; chough timing says elapsed wall-clock once, in its header, on no gate-wait, segment or estimate line, and its notes say read-only once (red then green)"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif approved 0.6.1 at 02:03Z (relayed by t370) as six small PRs, one fix each, him merging each; this PR is two small CLI output fixes, with REQ-cli-021, REQ-history-006 and REQ-reporting-001 text. A failing test first; the full local suite before review.",
+    "public_contract": "yes"
+  }
+}
