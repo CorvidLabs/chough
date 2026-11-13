@@ -24,9 +24,13 @@ observations:
   - 2026-11-13-with-the-base-set-to-the-commit-itself-as-a-scheduled-run-now
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
+    holds: accept
+    drives: review
+    opened: 2026-11-13T06:19:07Z
 run_consents: []
-next: Record the red run, then add the schedule and the base fallback to ci.yml
+next: Review, then Leif's implementation review (relayed by t370); after merge, observe the first scheduled run on GitHub
 ---
 # #217: CI also runs once a day on main, so the flake window sees a macOS and Linux run every day; the SpecSync Archive jobs take the run's own commit as their base when the event has none (REQ-cli-064)
 
@@ -111,4 +115,10 @@ next: Record the red run, then add the schedule and the base fallback to ci.yml
   - native_change: 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
   - gate: native:approved
   - revision: a2d271c9c60126932d4dd03a40ddc5433419eb25
+  - by: claude-code (hc t38r)
+- 2026-11-13T06:19:07Z · gate-opened · accept → accept · Implementation review of 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs ^t-54cc78
+  - native_change: 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
+  - revision: b3c4a010f8a25eae366bf53d48ba7123d0ce681d
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t38r)
