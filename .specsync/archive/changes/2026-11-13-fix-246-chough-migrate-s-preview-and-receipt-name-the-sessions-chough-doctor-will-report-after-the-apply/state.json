@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply",
+  "slug": "fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply",
+  "title": "Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply",
+  "description": "Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "25af1398b2627c339a5ce0a0b3f3cd78a79e261c",
+  "created_at": 1794544744,
+  "updated_at": 1794579402,
+  "affected_specs": [
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/doctor.rs",
+    "src/migrate.rs",
+    "tests/migrate.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough migrate's preview and its receipt's Follow-up name each session chough doctor reports right after the apply: finished_session ones to archive with chough doctor --fix, and stale_gates ones with each open gate's text and chough doctor --fix --reason, computed by doctor's own session check on the planned records (red then green)"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif approved the scope at 2026-11-13T04:37Z (relayed by t370), choosing 'Chough #246 migrate preview': the migration preview and receipt also list the sessions doctor will flag right after, so one consent round covers both; a small migration wording change (REQ-records-009). Doctor's behavior is unchanged: its per-session check becomes one function that doctor and migrate's plan both call. A failing test first; the exact file list; the full local suite before review.",
+    "public_contract": "yes"
+  }
+}

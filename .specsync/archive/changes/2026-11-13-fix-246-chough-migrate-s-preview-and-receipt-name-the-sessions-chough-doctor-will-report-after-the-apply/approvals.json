@@ -1,0 +1,57 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794544820,
+      "digest": "fad3047a117278e3d25d4d7f74e31c43777f303fd16e41daeadabd7c98664ef3",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply\": \"Chough #246 migrate preview\" (coordinator chat (Claude Code, hc t370), 2026-11-13T04:37Z, answering: 'Approve these two?', he selected 'Chough #246 migrate preview' (option text: 'The migration preview and receipt also list the sessions doctor will flag right after, so one consent round covers both. Small migration wording change, with a failing test ready.'); relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T04:40:18Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply",
+        "title": "Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply",
+        "description": "Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "src/migrate.rs",
+          "tests/migrate.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough migrate's preview and its receipt's Follow-up name each session chough doctor reports right after the apply: finished_session ones to archive with chough doctor --fix, and stale_gates ones with each open gate's text and chough doctor --fix --reason, computed by doctor's own session check on the planned records (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved the scope at 2026-11-13T04:37Z (relayed by t370), choosing 'Chough #246 migrate preview': the migration preview and receipt also list the sessions doctor will flag right after, so one consent round covers both; a small migration wording change (REQ-records-009). Doctor's behavior is unchanged: its per-session check becomes one function that doctor and migrate's plan both call. A failing test first; the exact file list; the full local suite before review.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "2b833cdcd38d0778faca36d971f12f1ada0b9402f19a698bf784d99da1f37e44",
+        "records": "a070b35c6837919179547dd2664c0c4c6f12e70d96bda8628319eb0d165bce73"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "b7ab6b9029b81fcc1c2f4e1f2620a2beb4664df277399355f1b707b53f68fcbe",
+        "records: REQUIREMENT REQ-records-009": "62d2604daf79a4fb562d2df1989fc615d3943c4710b06760ac3183452acd07c2"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794579400,
+      "digest": "6791dc5c45d19a08ba40449b209b33e02e45ebb2af1fd4835e6921063d793c84",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
