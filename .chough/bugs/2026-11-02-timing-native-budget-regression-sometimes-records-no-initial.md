@@ -42,7 +42,7 @@ revision: 9c41e95949adcb1009c986f97db50faa593d81b2
 found_by: Observed PR44 final user-docs MSRV qualification
 related: []
 created: 2026-11-02T18:12:20Z
-updated: 2026-11-12T16:54:35Z
+updated: 2026-11-13T04:33:19Z
 ---
 # Timing native-budget regression sometimes records no initial stub call on MSRV
 
@@ -62,3 +62,4 @@ Actual: The test failed at timing.rs1475 with an empty call list.
 - 2026-11-02T18:12:20Z · Reported (Observed PR44 final user-docs MSRV qualification); evidence: OBS-product-test-c640523df825794a3f2f64e3
 - 2026-11-02T18:16:30Z · The isolated unchanged timeout test and full unchanged MSRV suite subsequently passed. No budget or assertion changed. Cause remains unconfirmed; keep this reliability concern open and out of the workflow-docs repair scope.; evidence: OBS-tc-cli-agent-native-workflow-upgrade-c87dc40990d5b05c8f45e17d
 - 2026-11-12T16:54:35Z · status: open -> verified; scope: out-of-scope -> in-scope; evidence: 2026-11-12-release-0-6-0/2026-11-12-red-rerun-of-the-timing-native-budget-flake-tests-timing-rs-a, 2026-11-12-release-0-6-0/2026-11-12-green-rerun-of-the-timing-native-budget-flake-tests-timing-rs. Root cause (t37f, measured): macOS assesses a newly written executable on its first exec, and under load that runs seconds after spawn() returns (median 2,267 ms, 191 of 200 at 2 s or more); at 9c41e959 the 2 s-budget read was the fresh SpecSync stand-in's first exec, so Chough rightly stopped it before its first line logged the call. Fix: the stand-in is warmed outside every budget (t37f 7210d0e7, integrated as b6fcd0e9, and t38b's install-time warm-up 1888f4f5); no budget or assertion changed. Rerun by t382 with t37f's scripts: red at 9c41e959 3/20 passed, green at b6fcd0e9 20/20 · by claude-code (hc t382)
+- 2026-11-13T04:33:19Z · Tracked by the flake window (DRIVE-19); an intermittent MSRV qualification failure, recorded locally, no GitHub issue was filed · by claude-code (hc t38r)
