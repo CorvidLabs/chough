@@ -1,0 +1,42 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# 0.6.1 (t38n's fourth fresh-eyes round, F7): the intent gate summary gave criterion IDs
+# without their sentences and an unknown diff, and a delta that only adds said "adds or
+# modifies".
+
+[[case]]
+id = "TC-cli-intent-gate-summary-gives-each-criterions-sentence"
+title = "At an intent gate with no native change, the gate list summary gives each criterion the session references by ID with its sentence from the HI file that holds it, and no diff line, within 24 lines and 4,096 bytes and with the same digest for the same tree"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::an_intent_gate_summary_gives_each_criterions_sentence_and_no_diff_line passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "an_intent_gate_summary_gives_each_criterions_sentence_and_no_diff_line"
+
+[[case]]
+id = "TC-cli-scope-gate-summary-says-adds-and-modifies"
+title = "At a scope gate, the summary names each delta with the requirement IDs it adds and those it modifies, each said as such: a delta that only adds says adds, and one that adds and modifies names each"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-19", "FLOW-20"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_scope_gate_summary_says_what_each_delta_adds_and_what_it_modifies passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_scope_gate_summary_says_what_each_delta_adds_and_what_it_modifies"

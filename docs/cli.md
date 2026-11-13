@@ -1249,8 +1249,8 @@ Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
   rest (#190). At a gate that drives approval, the change's own Markdown files under
   `.specsync/changes/<id>/` (its `change.md`, deltas, plan and other artifacts) are what
   the human approves, so they count and are named first, its deltas before its other
-  files, each with the requirement IDs it adds or modifies as `(adds or modifies
-  <IDs>)`; every delta is named however many there are, and other files fill the rest of
+  files, each with the requirement IDs it adds and those it modifies, each said as such,
+  as `(adds <IDs>)`, `(modifies <IDs>)` or `(adds <IDs>; modifies <IDs>)`; every delta is named however many there are, and other files fill the rest of
   the five; its `state.json` and `approvals.json` stay left out. It counts from the merge base of HEAD with the default branch
   (`origin/HEAD`, else `main`) instead when that merge base is not an ancestor of the
   `base_commit`, meaning default-branch work came in after the change began, and when
@@ -1258,10 +1258,18 @@ Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
   default branch, is not used; with no usable base, the summary says the base is
   unknown;
 - at a gate held at intent while the session records no native change, the intent being
-  approved in place of the change and what changed: an `Intent:` line with the criterion
-  IDs the session references, then each `hi/` file (its `AGENTS.md` and `CLAUDE.md` left
-  out) that holds one of them as a whole token, with those IDs, and any held by none;
-  Chough reads the files and runs no tool for it;
+  approved in place of the change, what changed and the diff link: an `Intent:` line
+  counting the criteria the session references, then each criterion by ID with its
+  sentence from the `hi/` file that holds it, laid out as `hi ls` lays it out: each file
+  (its `AGENTS.md` and `CLAUDE.md` left out) in the order the session first references
+  one of its criteria, then its criteria in that order. A file holds a criterion when one
+  of its list items starts with the ID, as `hi` writes `- **<ID>**  <sentence>`; a file
+  that only mentions the ID does not. Files and criteria take at most 16 lines, and the
+  criteria left over are named on an `and <n> more:` line; the intent takes at most 3,072
+  bytes, its sentences sharing what the other lines leave, so a long one is cut to fit
+  and ends in `… (cut)`; criteria no file holds are
+  named last, `in no hi/ file:`. There is no diff line, since there is no base. Chough
+  reads the files and runs no tool for it;
 - the tests: how many cases passed, failed and were not run, by the latest observation
   of each case that links a requirement the change's deltas add or modify (or that the
   session's observations name), with the failing case IDs;

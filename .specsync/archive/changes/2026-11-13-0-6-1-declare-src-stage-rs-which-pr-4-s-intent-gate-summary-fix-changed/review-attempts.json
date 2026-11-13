@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "80ead7c3a7d05cf5925cb69d572605e97d903ec2",
+      "contract_digest": "31e599e5a5935e0fca59c25c8a3238703fe4ed51db8037577ba40f6e33b082ec",
+      "execution_digest": "919f6e72bb42ad03a3bf0bfb2bf59726fab15ddb4c38dca60fef134e551c9724",
+      "workspace_digest": "826517d59880853724e79bde1e099f17cca9681ad46402d3f753fc63f71ecf99",
+      "timestamp": 1794538577
+    }
+  ]
+}
