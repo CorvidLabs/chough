@@ -5,10 +5,10 @@ artifact: tasks
 
 # Tasks
 
-- [ ] Add TC-cli-host-matrix-selftest and tools/host-matrix/selftest.sh, and record the failing run.
-- [ ] Add the harness, the stand-in host, the prompts, the acceptance test and expected-shape.json.
-- [ ] Add the host-matrix and host-matrix-selftest Fledge tasks and the hosted CI job.
-- [ ] Update docs/ci.md, docs/test-plan-1.0.md and CHANGELOG.md.
+- [x] Add TC-cli-host-matrix-selftest and tools/host-matrix/selftest.sh, and record the failing run.
+- [x] Add the harness, the stand-in host, the prompts, the acceptance test and expected-shape.json.
+- [x] Add the host-matrix and host-matrix-selftest Fledge tasks and the hosted CI job.
+- [x] Update docs/ci.md, docs/test-plan-1.0.md and CHANGELOG.md.
 
 After verification (plain text, not tasks): change audit, merge main and rebuild the
 knowledge index, the full suite at the final head, the implementation review gate,

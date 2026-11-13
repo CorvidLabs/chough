@@ -7,10 +7,11 @@
   "title": "Host-matrix harness: one scripted Chough cycle per agent host, judged from the files, with a stand-in-host self-test in hosted CI on macOS and Linux",
   "description": "Host-matrix harness: one scripted Chough cycle per agent host, judged from the files, with a stand-in-host self-test in hosted CI on macOS and Linux",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "598c4bc527007f9bebe53f7291e31130b2891561",
   "created_at": 1794541871,
-  "updated_at": 1794542050,
+  "updated_at": 1794543326,
   "affected_specs": [
     "cli"
   ],
