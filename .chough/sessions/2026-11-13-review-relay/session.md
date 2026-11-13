@@ -23,6 +23,7 @@ observations:
   - 2026-11-13-tc-records-approval-as-the-human-29ac02
   - 2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review-0b3d7f
   - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo
+  - 2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo-a7ed99
 bugs: [2026-11-13-chough-change-ship-s-native-review-drops-the-relay-review-json]
 blockers: []
 waiting_on_human:
@@ -58,6 +59,7 @@ Fix #249: chough passes a relayed decision's words, place and recording agent to
 - [Ran cargo test --locked --test humans -- a_scope_gate_runs_the_approval_once_as_the_configured_human a_review_gate_needs_a_verdict_and_runs_the_review_with_it an_unknown_or_ambiguous_human_is_refused_before_anything_runs the_project_file_overrides_the_user_file no_source_names_a_person_as_the_default_human for TC-records-approval-as-the-human: passed (exit 0).](evidence/2026-11-13-tc-records-approval-as-the-human-29ac02.md)
 - [Ran cargo test --locked --test change -- --exact ship_passes_the_relay_to_the_native_review for TC-cli-ship-passes-the-relay-to-the-native-review: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-ship-passes-the-relay-to-the-native-review-0b3d7f.md)
 - [The full test suite passed 736 of 736 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at aed5bb1c, #249's final head; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo.md)
+- [The full test suite passed 736 of 736 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 558befd7, #249's final head after the workflow-v3 docs note; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-736-of-736-across-48-targets-cargo-a7ed99.md)
 
 ## Open threads
 
