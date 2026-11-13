@@ -1,0 +1,42 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794541767,
+      "digest": "29936db067e25f4a9327b9a2aac6358cfc2f7ec325c98545e65e10b0bc634eb0",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun\": \"Approve (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:44Z, answering: 'Chough fix #247: the verify lane's example script now waits past the failing run's second before rerunning, so CI stops flaking on Chough's same-second rule. Approve its scope?' (option text: 't37f builds it with a failing test first.'); relayed by claude-code-t370). Relayed and recorded by claude-code-t382 at 2026-11-13T03:49:25Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun",
+        "title": "Fix #247: the verify lane's example waits past the failing run's second before its rerun",
+        "description": "Fix #247: the verify lane's example waits past the failing run's second before its rerun",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "docs/exercises/feature-bug-loop.md",
+          "examples/feature-bug-loop.sh",
+          "tests/cli.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A fix within the existing requirements; no contract text changes: REQ-cli-012's same-second rule stays as written.",
+        "acceptance_criteria": [
+          "examples/feature-bug-loop.sh waits until the clock is past the failing run's recorded second before its fixed rerun, so bug update --status verified succeeds even when the failing run and the rerun would land in the same second; REQ-cli-012's same-second refusal is unchanged (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif approved the fix at 2026-11-13T03:44Z ('Approve (Recommended)', relayed by t370): the example waits past the failing run's second before rerunning, t37f building it with a failing test first. No contract text; REQ-cli-012 untouched; the exact file list; the full local suite before review.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}
