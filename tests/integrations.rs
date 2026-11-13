@@ -174,7 +174,10 @@ fn the_manifest_versions_every_template_with_its_digest() {
         assert_eq!(text(entry, "name"), *name);
         assert_eq!(text(entry, "init_host"), *init_host);
         let version = entry.get("version").and_then(toml::Value::as_integer);
-        assert!(version.is_some_and(|version| version >= 1), "{host} has a version");
+        assert!(
+            version.is_some_and(|version| version >= 1),
+            "{host} has a version"
+        );
         let status = if *host == "local" {
             "unqualified"
         } else {
@@ -217,7 +220,11 @@ fn chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them() {
             }
         }
         for tool in ["herdr", "rune"] {
-            assert!(!names_word(&source, tool), "{} names {tool}", path.display());
+            assert!(
+                !names_word(&source, tool),
+                "{} names {tool}",
+                path.display()
+            );
         }
     }
     // The skill may name hc: an actor's `by` line carries its hc terminal, read from
