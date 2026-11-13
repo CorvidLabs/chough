@@ -48,11 +48,7 @@ bugs:
   - 2026-11-12-migrated-records-keep-old-observation-ids-in-their-front
   - 2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
-    holds: accept
-    drives: review
-    opened: 2026-11-13T06:08:22Z
+waiting_on_human: []
 run_consents: []
 next: Continue accept
 title: "0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide"
@@ -76,6 +72,7 @@ summary:
 - Leif decided "Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s as 0xLeif
 - Leif decided "Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s with its corrected file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s as 0xLeif
 - Leif decided "Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s with its exact file list": "Yes, start (Recommended) / Yes, fix and keep (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s as 0xLeif
+- Leif decided "Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s with tests/evidence.rs added": "Yes, start (Recommended) / Yes, fix and keep (Recommended) / Yes, standing rule (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); and under his FILE-LIST RULE at 2026-11-13T04:35Z, 'Yes, standing rule (Recommended)', answering: 'Standing rule? Sometimes an approved change turns out to touch a few more files than its list says, for example old tests that pin the printed text. The work itself is unchanged. May agents send it back and re-approve it under your original words, with a note listing the added files, instead of asking you each time?' (option text: 'Only when what the change does stays the same. Anything that changes its meaning still comes to you.'); added: tests/evidence.rs (a test that looked up a migrated observation by its 0.5.x ID now looks it up by the carried entry's name, which this change's F9 fix gives it); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s as 0xLeif
 
 ## What was verified
 
@@ -241,4 +238,56 @@ summary:
   - revision: 3453e6e8a2edd34624c6c89b620ed8b262aa3a2c
   - holds: accept
   - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T06:10:08Z · gate-closed · accept → accept · Implementation review of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s ^t-289cda
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 2a5c63ea2a2e6c4bd14f52b6066749a8496e5a01
+  - by: claude-code (hc t382)
+- 2026-11-13T06:10:08Z · direct-native-write · accept → accept · 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-2faec3
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 2a5c63ea2a2e6c4bd14f52b6066749a8496e5a01
+  - direct_write:
+    - change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: claude-code (hc t382)
+- 2026-11-13T06:10:08Z · back · accept → plan · The file list adds tests/evidence.rs under Leif's FILE-LIST RULE (04:35Z, relayed by t370); what the change does is unchanged ^t-c97de5
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 2a5c63ea2a2e6c4bd14f52b6066749a8496e5a01
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 4 case(s) and 22 observation(s) to re-check with `chough status`
+  - by: claude-code (hc t382)
+- 2026-11-13T06:10:10Z · gate-opened · plan → plan · Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s with tests/evidence.rs added ^t-12dc39
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 2a5c63ea2a2e6c4bd14f52b6066749a8496e5a01
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t382)
+- 2026-11-13T06:10:10Z · gate-closed · plan → plan · Approve the scope of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s with tests/evidence.rs added ^t-2d85b8
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 2a5c63ea2a2e6c4bd14f52b6066749a8496e5a01
+  - relayed_by:
+    - decided_by: Leif
+    - words: Yes, start (Recommended) / Yes, fix and keep (Recommended) / Yes, standing rule (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Record polish: a bug body's Actual line on its own line (F8); migrated front matter names the new entries, keeping old IDs as aliases (F9); a fresh project's .chough/README drops its 0.5.x note, and the README's init paragraph is cut (F11)'; relayed by claude-code-t370; and at 2026-11-13T02:53Z 'Yes, fix and keep (Recommended)', answering: 'Chough's paperwork listed too few files for some 0.6.1 PRs ... Fix the file lists with no code change ... Keep your existing approvals?' (option text: 'One yes covers #242's extra record (its scope and review) and the corrected lists. From now on, t382 checks the lists before every review.'); and under his FILE-LIST RULE at 2026-11-13T04:35Z, 'Yes, standing rule (Recommended)', answering: 'Standing rule? Sometimes an approved change turns out to touch a few more files than its list says, for example old tests that pin the printed text. The work itself is unchanged. May agents send it back and re-approve it under your original words, with a note listing the added files, instead of asking you each time?' (option text: 'Only when what the change does stays the same. Anything that changes its meaning still comes to you.'); added: tests/evidence.rs (a test that looked up a migrated observation by its 0.5.x ID now looks it up by the carried entry's name, which this change's F9 fix gives it); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change approve 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T06:10:11Z · advance · plan → build · Leif's approval kept with tests/evidence.rs added (FILE-LIST RULE, 04:35Z, relayed by t370) ^t-303643
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - gate: native:approved
+  - revision: 2a5c63ea2a2e6c4bd14f52b6066749a8496e5a01
+  - by: claude-code (hc t382)
+- 2026-11-13T06:10:11Z · advance · build → test · Leif's approval kept with tests/evidence.rs added (FILE-LIST RULE, 04:35Z, relayed by t370) ^t-e7c841
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - gate: native:approved
+  - revision: 2a5c63ea2a2e6c4bd14f52b6066749a8496e5a01
+  - by: claude-code (hc t382)
+- 2026-11-13T06:10:11Z · advance · test → accept · Leif's approval kept with tests/evidence.rs added (FILE-LIST RULE, 04:35Z, relayed by t370) ^t-83ed9e
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - gate: native:approved
+  - revision: 2a5c63ea2a2e6c4bd14f52b6066749a8496e5a01
   - by: claude-code (hc t382)

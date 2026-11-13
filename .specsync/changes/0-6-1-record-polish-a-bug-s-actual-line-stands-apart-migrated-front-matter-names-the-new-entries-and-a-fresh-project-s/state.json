@@ -11,7 +11,7 @@
   "canonical_applied": true,
   "base_commit": "9d53604071df50b537adccad0ccf5cac9a2fc32b",
   "created_at": 1794536904,
-  "updated_at": 1794550107,
+  "updated_at": 1794550213,
   "affected_specs": [
     "cli",
     "records",
@@ -26,6 +26,7 @@
     "src/sessions.rs",
     "tests/bugs.rs",
     "tests/docs.rs",
+    "tests/evidence.rs",
     "tests/migrate_evidence.rs",
     "tests/records.rs"
   ],
