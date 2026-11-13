@@ -423,8 +423,9 @@ gives `kind: bug`, `id`, `aliases`, `title`, `status`, `classification`, `scope`
 `impact`, `criteria`, `requirements`, `cases`, `evidence` (the linked evidence IDs),
 `receipts`, `regression_baseline`, `fixture`, `environment`, `revision`, `found_by`
 (the acting agent), `fixed_in`, `duplicate_of`, `related`, `created` and `updated`.
-Its body gives `# <title>` and the paragraphs What happened, Steps (led by
-`Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
+Its body gives `# <title>` and the paragraphs What happened (with the actual
+behaviour as its own `Actual:` paragraph when it differs from the symptom), Steps (led
+by `Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
 `## Log`, an append-only list with one dated entry per report,
 note, evidence link and status change. A person's edits to the paragraphs stay, and
 every earlier Log line stays byte-identical. Fix says `Not fixed yet.` until `bug
