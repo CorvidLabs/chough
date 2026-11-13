@@ -48,7 +48,11 @@ bugs:
   - 2026-11-12-migrated-records-keep-old-observation-ids-in-their-front
   - 2026-11-12-a-fresh-project-s-records-readme-names-artifacts-as-kept-from
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+    holds: accept
+    drives: review
+    opened: 2026-11-13T06:10:31Z
 run_consents: []
 next: Continue accept
 title: "0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide"
@@ -290,4 +294,10 @@ summary:
   - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
   - gate: native:approved
   - revision: 2a5c63ea2a2e6c4bd14f52b6066749a8496e5a01
+  - by: claude-code (hc t382)
+- 2026-11-13T06:10:31Z · gate-opened · accept → accept · Implementation review of 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s ^t-dde431
+  - native_change: 0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s
+  - revision: 5a29b6c6155cadf34aa90e4e42b30b937c43524f
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t382)
