@@ -44,6 +44,7 @@ observations:
   - 2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept-bb3408
   - 2026-11-13-the-full-test-suite-passed-740-of-740-across-48-targets-cargo
   - 2026-11-13-the-full-test-suite-passed-740-of-740-across-48-targets-cargo-1fa770
+  - 2026-11-13-the-full-test-suite-passed-742-of-742-across-48-targets-cargo
 bugs:
   - 2026-11-12-a-bug-body-runs-its-symptom-and-its-actual-line-into-one
   - 2026-11-12-migrated-records-keep-old-observation-ids-in-their-front
@@ -104,6 +105,7 @@ summary:
 - [Ran cargo test --locked --test records -- --exact a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5 for TC-records-a-fresh-projects-reading-guide-names-no-folder-kept-from-0-5: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-records-a-fresh-projects-reading-guide-names-no-folder-kept-bb3408.md)
 - [The full test suite passed 740 of 740 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 3453e6e8, PR 5 with main merged in (#244, #248); clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-740-of-740-across-48-targets-cargo.md)
 - [The full test suite passed 740 of 740 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at c2ad25a5, PR 5's final head after records.spec.md's Public API row for names; clippy --all-targets -D warnings, rustfmt --check and specsync check --strict were clean](evidence/2026-11-13-the-full-test-suite-passed-740-of-740-across-48-targets-cargo-1fa770.md)
+- [The full test suite passed 742 of 742 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at a079976d, PR 5 with main merged in (#242); clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-742-of-742-across-48-targets-cargo.md)
 
 ## Open threads
 
