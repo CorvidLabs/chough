@@ -20,6 +20,7 @@ observations:
   - 2026-11-13-tc-cli-host-matrix-selftest
   - 2026-11-13-tc-cli-host-matrix-selftest-5e18df
   - 2026-11-13-tc-cli-host-matrix-selftest-201a83
+  - 2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-at-6b7376cf
 bugs: []
 blockers: []
 waiting_on_human:
@@ -41,6 +42,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - Red: TC-cli-host-matrix-selftest fails before the harness exists (selftest.sh cannot find run.sh)
 - Green: TC-cli-host-matrix-selftest passed on macOS arm64 with GIT_CONFIG_GLOBAL=/dev/null (8 harness runs, all as expected)
 - Green at 6b7376cf (after merging main): TC-cli-host-matrix-selftest passed on macOS arm64; fledge verify passed toolchain, fmt, lint, test, intent and spec
+- Verify lane passed in two passes (6b7376cf, fdf6561e); draft PR #254 opened and pushed
 
 ## Decisions and why
 
@@ -56,6 +58,7 @@ Host-matrix harness: a scripted Chough cycle with a stand-in host and its self-t
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: failed (exit 1).](evidence/2026-11-13-tc-cli-host-matrix-selftest.md)
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-5e18df.md)
 - [Ran sh tools/host-matrix/selftest.sh for TC-cli-host-matrix-selftest: passed (exit 0).](evidence/2026-11-13-tc-cli-host-matrix-selftest-201a83.md)
+- [fledge lanes run verify (Fledge 1.8.0, the CI pin) at 6b7376cf passed toolchain, fmt, lint, test (48 targets), intent and spec, then stopped at audit because verification predated the last edits; after chough change check --commit, audit, cases, knowledge, leaks, exercise and build passed at fdf6561e. Between the two heads only Chough records and SpecSync lifecycle bookkeeping changed.](evidence/2026-11-13-fledge-lanes-run-verify-fledge-1-8-0-the-ci-pin-at-6b7376cf.md)
 
 ## Open threads
 
