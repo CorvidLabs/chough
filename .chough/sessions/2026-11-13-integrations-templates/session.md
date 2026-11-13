@@ -5,7 +5,7 @@ aliases: [integrations-templates]
 objective: "#219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)"
 intent_scope: LIFE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -140,4 +140,14 @@ next: "Record green, then accept: materialize, full suite, check --commit, revie
   - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
   - gate: native:approved
   - revision: 63200149608d01550722a2033cadc83103c69c9a
+  - by: claude-code (hc t38r)
+- 2026-11-13T04:14:28Z · advance · build → test · native:approved ^t-a4ce06
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - gate: native:approved
+  - revision: f50da0d5b50721e81bcce0bbfd19a046f469027c
+  - by: claude-code (hc t38r)
+- 2026-11-13T04:14:29Z · advance · test → accept · native:approved ^t-9c3178
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - gate: native:approved
+  - revision: f50da0d5b50721e81bcce0bbfd19a046f469027c
   - by: claude-code (hc t38r)
