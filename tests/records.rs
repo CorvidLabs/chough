@@ -1440,4 +1440,18 @@ fn a_session_file_that_is_a_fifo_is_listed_unreadable_with_its_recovery() {
         format!("chough session shelve {wedged}"),
         "{entry}"
     );
+    // The recovery it names works: shelving moves the folder, the FIFO with it, without
+    // opening the FIFO.
+    let (succeeded, _, stderr) = run_within(&fixture, &["session", "shelve", &wedged], 15)
+        .unwrap_or_else(|| panic!("session shelve was still running after 15 seconds"));
+    assert!(succeeded, "session shelve failed: {stderr}");
+    let shelved = fixture
+        .root()
+        .join(format!(".chough/archive/shelved/{wedged}/session.md"));
+    assert!(
+        std::fs::symlink_metadata(&shelved).is_ok(),
+        "{} was not moved",
+        shelved.display()
+    );
+    assert!(!fixture.exists(&format!(".chough/sessions/{wedged}")));
 }
