@@ -633,6 +633,69 @@ fn ship_with_the_review_relay_ships_closes_the_gate_and_moves_to_done() {
     assert_eq!(session["awaiting_human"], serde_json::json!([]));
 }
 
+/// REQ-cli-059 (0.6.1), TC-cli-change-ship-prints-a-short-summary-and-its-reports-under-json:
+/// `chough change ship` prints SpecSync's output, then at most 12 lines of text naming
+/// the review, the ship, the gate close and the move into done; `--json` prints every
+/// step's full report after SpecSync's output instead, so an agent loses nothing.
+#[test]
+fn ship_prints_a_short_summary_after_specsync_and_every_report_under_json() {
+    let fixture = shipping_session_at("accept");
+    fixture.write(".stub-ship-out", "SHIPPED a5\n");
+    let output = run_env(&fixture, &ship_with(SHIP_ID, &review_relay()), &[]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    let summary = stdout
+        .strip_prefix("SHIPPED a5\n")
+        .unwrap_or_else(|| panic!("SpecSync's output does not come first: {stdout}"));
+    assert!(
+        summary.lines().count() <= 12,
+        "the summary is over 12 lines: {summary}"
+    );
+    assert!(!summary.contains('{'), "the summary holds JSON: {summary}");
+    for part in [
+        "Review: ",
+        "specsync change review a5",
+        "Ship: specsync change ship a5",
+        "Gate: ",
+        REVIEW_GATE,
+        "Move: accept -> done",
+    ] {
+        assert!(summary.contains(part), "no {part:?} in {summary}");
+    }
+    assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+
+    let fixture = shipping_session_at("accept");
+    fixture.write(".stub-ship-out", "SHIPPED a5\n");
+    let mut args = ship_with(SHIP_ID, &review_relay());
+    args.push("--json");
+    let output = run_env(&fixture, &args, &[]);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    let reports = stdout
+        .strip_prefix("SHIPPED a5\n")
+        .unwrap_or_else(|| panic!("SpecSync's output does not come first: {stdout}"));
+    let reports: Vec<serde_json::Value> = serde_json::Deserializer::from_str(reports)
+        .into_iter()
+        .collect::<Result<_, _>>()
+        .unwrap_or_else(|error| panic!("{error}: {reports}"));
+    assert_eq!(reports.len(), 2, "{reports:#?}");
+    assert_eq!(reports[0]["relayed_decision"]["gate"], REVIEW_GATE);
+    assert_eq!(
+        reports[0]["checkpoint"]["awaiting_human"],
+        serde_json::json!([])
+    );
+    assert_eq!(reports[1]["applied"]["to"], "done");
+    assert_eq!(reports[1]["stage"]["current"], "done");
+}
+
 /// REQ-cli-059, REQ-records-008: a review gate's relay naming no configured human is
 /// refused before SpecSync runs; a refused review stops the ship with its output and
 /// exit code.
