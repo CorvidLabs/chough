@@ -5,7 +5,7 @@ aliases: [fix-246-migrate-preview]
 objective: "Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply"
 intent_scope: ""
 modules: []
-stage: build
+stage: test
 stage_status: active
 iteration: 1
 callers: []
@@ -16,12 +16,14 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: [2026-11-13-tc-records-migrate-preview-names-what-doctor-reports]
+observations:
+  - 2026-11-13-tc-records-migrate-preview-names-what-doctor-reports
+  - 2026-11-13-tc-records-migrate-preview-names-what-doctor-reports-9609f3
 bugs: [2026-11-13-chough-migrate-s-preview-omits-the-finished-sessions-and-stale]
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue test
 ---
 # Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply
 
@@ -39,6 +41,7 @@ Fix #246: chough migrate's preview and receipt name the sessions chough doctor w
 ## What was verified
 
 - [Ran cargo test --locked --test migrate -- --exact the_preview_names_the_sessions_doctor_reports_after_the_apply for TC-records-migrate-preview-names-what-doctor-reports: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-records-migrate-preview-names-what-doctor-reports.md)
+- [Ran cargo test --locked --test migrate -- --exact the_preview_names_the_sessions_doctor_reports_after_the_apply for TC-records-migrate-preview-names-what-doctor-reports: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-records-migrate-preview-names-what-doctor-reports-9609f3.md)
 
 ## Open threads
 
@@ -90,4 +93,9 @@ Fix #246: chough migrate's preview and receipt name the sessions chough doctor w
   - native_change: fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
   - gate: native:approved
   - revision: 25af1398b2627c339a5ce0a0b3f3cd78a79e261c
+  - by: claude-code (hc t382)
+- 2026-11-13T07:47:29Z · advance · build → test · Built: the red and the fix, the cases red then green, the bug verified ^t-0149db
+  - native_change: fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply
+  - gate: native:approved
+  - revision: ca5685cdd311a905b1747b8464b1abf881e62c07
   - by: claude-code (hc t382)
