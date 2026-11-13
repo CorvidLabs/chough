@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "0-6-1-declare-src-stage-rs-which-pr-4-s-intent-gate-summary-fix-changed",
+  "implementation_commit": "80ead7c3a7d05cf5925cb69d572605e97d903ec2",
+  "implementation_tree": "c1904688067423e2930dafbddd94088b90d824ad",
+  "contract_digest": "31e599e5a5935e0fca59c25c8a3238703fe4ed51db8037577ba40f6e33b082ec",
+  "workspace_digest": "826517d59880853724e79bde1e099f17cca9681ad46402d3f753fc63f71ecf99",
+  "closing_digest": "21abbaa8cf1c5f3f86cbfd33ecea21063aff82d532ffe2895ae8c700a9840d7a",
+  "review_digest": "cc57eccc1d7cf505ed8c2d17d82a8961953fc43d71150dd6d807db40bf85c5c6",
+  "finalization_digest": "fc4ec50b17782a693f5c915d60ad5d8b81874aa3b11d002a3e75ec29d923495f",
+  "timestamp": 1794538589
+}
