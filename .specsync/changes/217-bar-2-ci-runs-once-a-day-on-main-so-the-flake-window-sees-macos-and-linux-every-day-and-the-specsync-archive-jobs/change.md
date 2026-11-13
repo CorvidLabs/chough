@@ -1,6 +1,6 @@
 ---
 id: 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs
-state: approved
+state: implementing
 type: feature
 base_commit: 38fe24c063e3afde49a5be5093cd69791bd06126
 ---

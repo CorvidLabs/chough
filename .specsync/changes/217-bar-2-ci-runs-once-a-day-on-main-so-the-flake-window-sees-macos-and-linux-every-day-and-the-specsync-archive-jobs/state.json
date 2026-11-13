@@ -7,10 +7,11 @@
   "title": "#217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none",
   "description": "#217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "38fe24c063e3afde49a5be5093cd69791bd06126",
   "created_at": 1794545834,
-  "updated_at": 1794545875,
+  "updated_at": 1794550722,
   "affected_specs": [
     "cli"
   ],
