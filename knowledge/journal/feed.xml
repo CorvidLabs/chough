@@ -2,9 +2,16 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-13T02:27:14Z</updated>
+<updated>2026-11-13T02:42:34Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>0.6.1: the intent gate summary shows what is approved</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved</id>
+<updated>2026-11-13T02:42:34Z</updated>
+<link href="2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>0.6.1: a short host name in an ordinary word is not a leak</title>
 <id>urn:chough:journal:2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak</id>
@@ -137,12 +144,5 @@
 <updated>2026-11-07T04:10:52Z</updated>
 <link href="2026-11-07-chough-timing-skips-direct-writes-without-a-partial-report-189.md"/>
 <category term="shipped"/>
-</entry>
-  <entry>
-<title>Zombie-aware native process test probes (#187, #132)</title>
-<id>urn:chough:journal:2026-11-07-zombie-aware-native-process-test-probes-187-132</id>
-<updated>2026-11-07T03:40:39Z</updated>
-<link href="2026-11-07-zombie-aware-native-process-test-probes-187-132.md"/>
-<category term="closed"/>
 </entry>
 </feed>

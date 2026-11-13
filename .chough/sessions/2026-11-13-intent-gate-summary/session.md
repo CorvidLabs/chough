@@ -5,7 +5,7 @@ aliases: [intent-gate-summary]
 objective: "0.6.1: the intent gate summary gives each criterion's sentence, no diff line without a base, and adds or modifies said as such"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -30,13 +30,9 @@ observations:
   - 2026-11-13-tc-cli-scope-gate-summary-says-adds-and-modifies-ae4e21
 bugs: [2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their]
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as
-    holds: accept
-    drives: review
-    opened: 2026-11-13T02:34:21Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: "0.6.1: the intent gate summary shows what is approved"
 summary:
   - At an intent gate with no native change, chough gate list gives each referenced criterion with its sentence from its HI file and no diff line; a delta's summary says what it adds and what it modifies (REQ-cli-061).
@@ -56,6 +52,7 @@ summary:
 
 - Leif decided "Approve the intent: the intent gate summary shows what is approved": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'The intent gate summary gives each criterion's sentence, no 'Diff: unknown' line, and 'adds' for an ADDED-only delta'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated
 - Leif decided "Approve the scope of 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'The intent gate summary gives each criterion's sentence, no 'Diff: unknown' line, and 'adds' for an ADDED-only delta'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as as 0xLeif
+- Leif decided "Implementation review of 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as": "Approve (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:35Z, answering: 'Approve 0.6.1 PR #242? At the intent gate, chough gate list now shows each criterion's actual sentence instead of just its ID (and no empty diff line), and a scope gate says what the change adds versus modifies. 731/731 tests pass.' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change review 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -132,4 +129,20 @@ summary:
   - revision: 8e0feedecb1cbe101c723067a5c300d2cbad07fc
   - holds: accept
   - drives: review
+  - by: claude-code (hc t382)
+- 2026-11-13T02:42:32Z · gate-closed · accept → accept · Implementation review of 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as ^t-f3f540
+  - native_change: 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as
+  - revision: 9578a305746c4eca84a7cbaf13cf9e7ef41d3674
+  - relayed_by:
+    - decided_by: Leif
+    - words: Approve (Recommended)
+    - where: coordinator chat (Claude Code, hc t370), 2026-11-13T02:35Z, answering: 'Approve 0.6.1 PR #242? At the intent gate, chough gate list now shows each criterion's actual sentence instead of just its ID (and no empty diff line), and a scope gate says what the change adds versus modifies. 731/731 tests pass.' (option text: 't382 records your review and ships. Then CI runs, then merge it.'); relayed by claude-code-t370
+    - recorded_by: claude-code-t382
+    - native: specsync change review 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as
+    - actor: 0xLeif
+  - by: claude-code (hc t382)
+- 2026-11-13T02:42:33Z · advance · accept → done · native:archived ^t-47066d
+  - native_change: 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as
+  - gate: native:archived
+  - revision: 9578a305746c4eca84a7cbaf13cf9e7ef41d3674
   - by: claude-code (hc t382)
