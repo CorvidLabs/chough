@@ -26,6 +26,8 @@ observations:
   - 2026-11-13-tc-cli-intent-gate-summary-gives-each-criterions-sentence-8efa5b
   - 2026-11-13-tc-cli-scope-gate-summary-says-adds-and-modifies-52ebfd
   - 2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo
+  - 2026-11-13-tc-cli-intent-gate-summary-gives-each-criterions-sentence-230486
+  - 2026-11-13-tc-cli-scope-gate-summary-says-adds-and-modifies-ae4e21
 bugs: [2026-11-12-the-intent-gate-summary-names-criterion-ids-without-their]
 blockers: []
 waiting_on_human:
@@ -64,6 +66,8 @@ summary:
 - [Ran cargo test --locked --test gates -- --exact an_intent_gate_summary_gives_each_criterions_sentence_and_no_diff_line for TC-cli-intent-gate-summary-gives-each-criterions-sentence: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-intent-gate-summary-gives-each-criterions-sentence-8efa5b.md)
 - [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_says_what_each_delta_adds_and_what_it_modifies for TC-cli-scope-gate-summary-says-adds-and-modifies: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-scope-gate-summary-says-adds-and-modifies-52ebfd.md)
 - [The full test suite passed 731 of 731 across 48 targets (cargo +1.96.0 test --locked --no-fail-fast, under the heavy-tests lock) at 8e0feede with REQ-cli-061's new text materialized; clippy --all-targets -D warnings and rustfmt --check were clean](evidence/2026-11-13-the-full-test-suite-passed-731-of-731-across-48-targets-cargo.md)
+- [Ran cargo test --locked --test gates -- --exact an_intent_gate_summary_gives_each_criterions_sentence_and_no_diff_line for TC-cli-intent-gate-summary-gives-each-criterions-sentence: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-intent-gate-summary-gives-each-criterions-sentence-230486.md)
+- [Ran cargo test --locked --test gates -- --exact a_scope_gate_summary_says_what_each_delta_adds_and_what_it_modifies for TC-cli-scope-gate-summary-says-adds-and-modifies: passed (exit 0, tests run 1).](evidence/2026-11-13-tc-cli-scope-gate-summary-says-adds-and-modifies-ae4e21.md)
 
 ## Open threads
 
