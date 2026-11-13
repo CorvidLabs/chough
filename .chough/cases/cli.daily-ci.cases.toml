@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-ci-runs-daily-with-a-real-archive-base"
+title = "CI runs once a day on main beside pushes and pull requests, and the SpecSync Archive base falls back to the run's own commit"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21", "DRIVE-19"]
+requirements = ["REQ-cli-064"]
+paths = [".github/workflows/ci.yml", "tests/package.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the package test ci_runs_once_a_day_on_main_with_a_real_archive_base passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "ci_runs_once_a_day_on_main_with_a_real_archive_base"

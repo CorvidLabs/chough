@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs",
+  "slug": "217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs",
+  "title": "#217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none",
+  "description": "#217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none",
+  "kind": "feature",
+  "state": "approved",
+  "base_commit": "38fe24c063e3afde49a5be5093cd69791bd06126",
+  "created_at": 1794545834,
+  "updated_at": 1794545875,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".github/workflows/ci.yml",
+    "tests/package.rs",
+    "docs/ci.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "ci.yml runs on a daily schedule as well as on pushes to main and pull requests; the SpecSync Archive base falls back to github.sha, so a scheduled run gives check-specsync-archive.py a real base; tests/package.rs fails naming the missing schedule or fallback (red then green)"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "specs/cli/cli.3md: hosted runners have no Git identity, and a lifted bound must be searched for in tests and CI scripts too; check-specsync-archive.py refuses an empty or all-zero --base; GitHub may delay or drop scheduled runs at busy times, so the cron is set off the hour",
+    "public_contract": "no"
+  }
+}
