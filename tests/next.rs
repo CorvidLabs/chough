@@ -3135,3 +3135,182 @@ fn next_with_no_open_session_says_so_and_exits_0() {
     let view = fixture.ok(&["next", "--json"]);
     assert_eq!(view["objective"], "The next piece of work", "{view:#}");
 }
+
+/// Every file under `.chough/`, by path, with the checkpoint lock compared by presence:
+/// it names whichever writer last took it (REQ-cli-040), so it is lock state, not a record.
+fn chough_bytes(fixture: &Fixture) -> std::collections::BTreeMap<String, Vec<u8>> {
+    fn visit(
+        root: &std::path::Path,
+        directory: &std::path::Path,
+        found: &mut std::collections::BTreeMap<String, Vec<u8>>,
+    ) {
+        for entry in std::fs::read_dir(directory).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                visit(root, &path, found);
+                continue;
+            }
+            let name = path.strip_prefix(root).unwrap().display().to_string();
+            let bytes = if name.ends_with("checkpoint.lock") {
+                vec![]
+            } else {
+                std::fs::read(&path).unwrap()
+            };
+            found.insert(name, bytes);
+        }
+    }
+    let mut found = std::collections::BTreeMap::new();
+    visit(fixture.root(), &fixture.root().join(".chough"), &mut found);
+    found
+}
+
+/// A manual case beside F4's command case, for `chough cases record` at the cap.
+const CAP_MANUAL_CASE: &str = r#"
+[[case]]
+id = "TC-cli-cap-manual"
+title = "A case recorded by hand"
+status = "active"
+track = "functional"
+method = "manual"
+criteria = ["LIFE-1"]
+requirements = ["REQ-cli-001"]
+environments = ["local"]
+artifacts = ["reviewer-note"]
+setup = ["Fixture"]
+steps = ["Look"]
+expected = ["It is right"]
+"#;
+
+/// 0.6.1 (REQ-cli-032; bug 2026-11-13-at-the-400-observation-cap-cases-run-writes-its-
+/// evidence-entry): with the session's observations list at its 400-entry bound,
+/// `chough cases run` ran the case, wrote its evidence entry, then refused with "too many
+/// observation (limit 400)", naming no recovery; the entry stayed unreferenced, and at
+/// accept next read it as the case's latest run, which hid a stale run. Every write that
+/// adds an observation reference (`cases run`, `cases record`, `evidence add`,
+/// `checkpoint --observation`) refuses at the cap before running or writing anything,
+/// naming the bound and `chough session shelve <id>`; next takes a case's latest run only
+/// from the observations the checkpoint references.
+#[cfg(unix)]
+#[test]
+fn at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs() {
+    let case = "TC-cli-f4-rerun";
+    let rerun = format!("chough cases run {case} --environment local");
+    let fixture = approved_at_plan("cap-400");
+    for counter in [".stub-count", ".stub-calls"] {
+        let _ = std::fs::remove_file(fixture.root().join(counter));
+    }
+    // The command case leaves a marker in the project, so a run shows even when nothing
+    // is recorded.
+    fixture.write(
+        ".chough/cases/cli.f4.cases.toml",
+        &format!(
+            "{}{CAP_MANUAL_CASE}",
+            F4_CASE.replace("echo ok", "echo ok; echo ran >> ran.marker")
+        ),
+    );
+    fixture.commit("the F4 case and a manual case");
+    while fixture.checkpoint()["stage"]["current"] != "accept" {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let session = fixture.active_id();
+    // The case's referenced run passed at a revision long gone, so it is not current.
+    let stale = "2026-11-13-cap-400-stale";
+    let mut entry = observation(stale, "passed", 1_000);
+    entry["cases"] = json!([{"id": case, "digest": "0".repeat(64)}]);
+    write_entry(&fixture, &entry);
+    fixture.ok(&["checkpoint", "--case", case, "--observation", stale]);
+    let references = |fillers: usize| {
+        let mut ids = vec![stale.to_string()];
+        ids.extend((1..=fillers).map(|index| format!("2026-11-13-cap-filler-{index:03}")));
+        format!("[{}]", ids.join(", "))
+    };
+    fixture.set_front("observations", &references(399));
+    assert_eq!(
+        fixture.checkpoint()["observations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        400
+    );
+
+    let writes: [&[&str]; 4] = [
+        &["cases", "run", case, "--environment", "local"],
+        &[
+            "cases",
+            "record",
+            "TC-cli-cap-manual",
+            "--environment",
+            "local",
+            "--method",
+            "manual",
+            "--summary",
+            "Looked by hand",
+            "--verdict",
+            "1=pass",
+        ],
+        &[
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--requirement",
+            "REQ-cli-001",
+            "--contract",
+            "specs/cli/cli.spec.md",
+            "--kind",
+            "structural",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            "Looked at the cap",
+        ],
+        &["checkpoint", "--observation", "2026-11-13-cap-one-more"],
+    ];
+    for args in writes {
+        let before = chough_bytes(&fixture);
+        let output = fixture.run(args);
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(!output.status.success(), "{args:?} succeeded at the cap");
+        assert!(stderr.contains("limit 400"), "{args:?}: {stderr}");
+        assert!(
+            stderr.contains(&format!("chough session shelve {session}")),
+            "{args:?} names no recovery: {stderr}"
+        );
+        let after = chough_bytes(&fixture);
+        let changed: Vec<&String> = before
+            .keys()
+            .chain(after.keys())
+            .filter(|path| before.get(*path) != after.get(*path))
+            .collect();
+        assert!(changed.is_empty(), "{args:?} changed {changed:?}: {stderr}");
+        assert!(
+            !fixture.root().join("ran.marker").exists(),
+            "{args:?} ran the case at the cap"
+        );
+    }
+
+    // One under the cap the run is recorded; its entry, newer and current, is then left
+    // unreferenced, as the refused write left it. Next still names rerunning the case,
+    // since the run the checkpoint references is not current.
+    fixture.set_front("observations", &references(398));
+    let ran = fixture.ok(&["cases", "run", case, "--environment", "local"]);
+    assert_eq!(ran["outcome"], "passed", "{ran:#}");
+    let newer = ran["observation"].as_str().unwrap().to_string();
+    assert_eq!(
+        fixture.checkpoint()["observations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        400
+    );
+    fixture.set_front("observations", &references(398));
+    assert!(evidence_dir(&fixture).join(format!("{newer}.md")).exists());
+    let next = fixture.ok(&["next", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    assert_eq!(
+        next["next_valid_action"]["command"], rerun,
+        "the unreferenced run {newer} counted as the latest: {action}"
+    );
+}

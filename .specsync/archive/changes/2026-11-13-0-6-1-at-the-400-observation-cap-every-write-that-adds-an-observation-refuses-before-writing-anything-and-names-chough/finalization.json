@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough",
+  "implementation_commit": "751561b67b4da4995466e91c54734434c8f2c0b2",
+  "implementation_tree": "a6f23800093323c3f1f123e4b67939aecce07eba",
+  "contract_digest": "98853a0a1592f443bc6222be1f7dc00fd1de154b84b437f891ba61067f7f51df",
+  "workspace_digest": "8e7a4d9e4db6fe49b2a7aa7f30c1151794eaca4914c075183c2b2477b9ac597a",
+  "closing_digest": "5802417288f8878c3d1f97786fe4c46393a923b3af594bc8f568902486669f25",
+  "review_digest": "0048b2646a0d081fee0c4c50fbe09e7a202d0cb8bb917412782205b79f7770ec",
+  "finalization_digest": "f710f0b9bf72563b891cc6f71c4f56c9415331efb87ff66cc97aa3afc5084561",
+  "timestamp": 1794539276
+}
