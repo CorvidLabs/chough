@@ -16,8 +16,8 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
-bugs: []
+observations: [2026-11-13-tc-cli-observation-cap-refuses-before-writing]
+bugs: [2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry]
 blockers: []
 waiting_on_human: []
 run_consents: []
@@ -37,6 +37,8 @@ next: Continue build
 - Leif decided "Approve the scope of 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough": "Yes, start (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T02:03Z, answering: 'Start 0.6.1 as those 6 small PRs, one fix each, with you merging each?' (option text: 'The leak check and the 400 limit go first, then the rest.'); this PR's scope is the line shown to him: 'Observation cap: cases run and evidence add refuse at 400 before writing anything, and name chough session shelve; next stops counting unlinked entries as a case's latest run'; relayed by claude-code-t370); recorded by claude-code-t382; a relayed claim, not authenticated; ran specsync change approve 0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test next -- --exact at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_referenced_runs for TC-cli-observation-cap-refuses-before-writing: failed (exit 101, tests run 1).](evidence/2026-11-13-tc-cli-observation-cap-refuses-before-writing.md)
 
 ## Open threads
 

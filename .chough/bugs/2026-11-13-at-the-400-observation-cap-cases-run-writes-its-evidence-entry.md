@@ -3,14 +3,14 @@ kind: bug
 id: 2026-11-13-at-the-400-observation-cap-cases-run-writes-its-evidence-entry
 aliases: []
 title: At the 400-observation cap, cases run writes its evidence entry and then refuses, leaving it unreferenced
-status: deferred
+status: open
 classification: product-defect
 scope: in-scope
 impact: Records change on a refused write, and next can count an unlinked run as current; reached only by a very long session
 criteria: []
 requirements: [REQ-cli-032]
 cases: []
-evidence: []
+evidence: [2026-11-13-observation-cap/2026-11-13-tc-cli-observation-cap-refuses-before-writing]
 receipts: []
 environment: local-macos-arm64
 revision: fd5397bb391b4a98db91f150e3979ebec4844955
@@ -20,7 +20,7 @@ actor:
     terminal: t382
 related: []
 created: 2026-11-13T01:24:58Z
-updated: 2026-11-13T01:26:12Z
+updated: 2026-11-13T02:40:16Z
 ---
 # At the 400-observation cap, cases run writes its evidence entry and then refuses, leaving it unreferenced
 
@@ -42,3 +42,4 @@ Actual: An unreferenced evidence entry written; 'too many observation (limit 400
 
 - 2026-11-13T01:24:58Z · Reported (Found by t382 rerunning the referenced cases for Leif's review, 2026-11-13) · by claude-code (hc t382)
 - 2026-11-13T01:26:12Z · status: open -> deferred. Deferred to 0.6.1 by Leif's decision: 'Defer to 0.6.1, ship (Recommended)', whose option text says 'Recorded as deferred with your words. t382 ships now, then CI, merge it and the release go. It only affects very long sessions, and nothing is lost.' (coordinator chat, Claude Code hc t370, 2026-11-13T01:25Z, relayed by claude-code-t370) · by claude-code (hc t382)
+- 2026-11-13T02:40:16Z · status: deferred -> open; evidence: 2026-11-13-observation-cap/2026-11-13-tc-cli-observation-cap-refuses-before-writing. Taken up in 0.6.1 PR 2 on Leif's 'Yes, start (Recommended)' (02:03Z, relayed by t370); red at c7bf6347 · by claude-code (hc t382)
