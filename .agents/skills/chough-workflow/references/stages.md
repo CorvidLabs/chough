@@ -9,6 +9,31 @@ Each stage below states: purpose; inputs; outputs and their owners; useful roles
 and tools; completion evidence; approval and preference policy; consequential
 questions; what to checkpoint; and transitions.
 
+## Fast path for a routine change
+
+A bug fix or small feature inside one module needs only this section, the stage
+reference `chough next` names, and the code. Local and small-context agents start here.
+
+1. Read: `AGENTS.md`, the issue, the one requirement you change in
+   `specs/<module>/requirements.md`, and the files you edit. Not `docs/` or whole specs.
+2. `chough session new <change-id>`, `chough checkpoint --criterion <id>` for the
+   HI criterion it serves, then `chough next`. When that criterion already holds the
+   intent, `chough stage advance` leaves intent; when nothing visual changes,
+   `chough stage skip --reason "<why>"` skips design.
+3. `chough change new "<outcome>" --kind <kind> --spec <module> --path <path>…`,
+   declaring every path. Answer its questions with `specsync change answer`, and
+   write `deltas/<module>.md` for each affected spec (`## MODIFIED` with each changed
+   requirement's full new text), unless the change is `--no-spec-change`.
+4. Fill the change's artifacts, then stop: scope approval belongs to the human unless
+   standing authorization covers it ([plan.md](plan.md)).
+5. Make the first code edit soon. Search for the names you need; don't survey.
+6. Add a test that fails without the fix and a case in its own
+   `.chough/cases/<module>.<topic>.cases.toml`; update the changelog and docs.
+7. `fledge run fmt`, `fledge run test`, `fledge run lint`, then `chough change check
+   <id>`, commit, and stop for the human's review.
+
+Work only in your own checkout and branch; other branches are not inputs.
+
 ## Transitions shared by every stage
 
 | Intent | Command | Notes |

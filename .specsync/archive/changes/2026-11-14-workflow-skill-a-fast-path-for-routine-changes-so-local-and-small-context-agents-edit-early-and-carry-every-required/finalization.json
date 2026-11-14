@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required",
+  "implementation_commit": "a5e71c300699664c788869db071579d62e984777",
+  "implementation_tree": "10f86a371b1627083dc4b4a1a00a14782cc402cb",
+  "contract_digest": "0aa68098cf68583867697716c9d2dd04da741b9cdb1db12e2800cf8b689fb889",
+  "workspace_digest": "c3398a0acd0816f294853afb10caf752bae0aa91121c4499f667ddddb3af8560",
+  "closing_digest": "645f31aa5ac7158f69cb9a40a177b4eddfefb1155fbedc1b833451b454cd4f3a",
+  "review_digest": "7f54c63f2e83a3ef19bf870011580cd663761875c2ed1670ef35eba476fbece8",
+  "finalization_digest": "fe5c5346f9aabe8a29e655499bc53198986e1223088758b2471a21a43964057f",
+  "timestamp": 1794673114
+}
