@@ -5,7 +5,7 @@ aliases: [249-relay-to-specsync]
 objective: "Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag"
 intent_scope: FLOW
 modules: [records, cli]
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -27,7 +27,7 @@ waiting_on_human:
     drives: review
     opened: 2026-11-14T19:23:31Z
 run_consents: []
-next: Continue test
+next: Continue accept
 ---
 # Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
 
@@ -150,4 +150,9 @@ Fix #249: a relayed decision reaches SpecSync's approval and review records, eac
   - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
   - gate: native:approved
   - revision: bcf921c319f4517914f551449d4d01c1dff2b1d7
+  - by: claude-code
+- 2026-11-14T19:25:40Z · advance · test → accept · Native check passed (24ec069); the hyphen case passed twice. ^t-bfd18e
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - gate: native:verifying
+  - revision: 24ec069a3f4d0d481b9236a0adde9e1ab6fea01b
   - by: claude-code
