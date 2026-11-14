@@ -7,10 +7,10 @@
   "title": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
   "description": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "9b729e908adf30b6511531776f6976b1afd01395",
   "created_at": 1794676491,
-  "updated_at": 1794676502,
+  "updated_at": 1794677791,
   "affected_specs": [
     "records"
   ],
