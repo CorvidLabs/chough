@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275",
   "slug": "the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275",
   "title": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
   "description": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "9b729e908adf30b6511531776f6976b1afd01395",
   "created_at": 1794676491,
-  "updated_at": 1794679387,
+  "updated_at": 1794680297,
   "affected_specs": [
     "records"
   ],

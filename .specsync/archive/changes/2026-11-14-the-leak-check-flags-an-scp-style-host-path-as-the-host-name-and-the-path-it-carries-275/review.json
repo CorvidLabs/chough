@@ -8,9 +8,15 @@
     "required_check": "SpecSync scoped review"
   },
   "verdict": "pass",
-  "implementation_commit": "40db11b291c1ce4e4201589a384269142f040302",
+  "implementation_commit": "3d2530276cf95974aacaeeb5d6259be130042a8c",
   "contract_digest": "e9720ad79e476222b1de41f7d4f7f6b32b03ea10565d674b0421d3bf8338cb81",
   "execution_digest": "bd6239fd59e643c4e8f579b96536182b45aa56c8f290927848bed0e97f3f4ab1",
-  "workspace_digest": "09ef790f919984c585a30ef7478997c6160d5f7d93af77c6d953eab4bf0338c4",
-  "timestamp": 1794678284
+  "workspace_digest": "bbfd37fe8de08cc00e33b1dfaf4cb29533265a7f10f087224c3fba5bf36483d0",
+  "timestamp": 1794680290,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "i approve",
+    "where": "Claude Code desktop chat, 2026-11-14, answering that #287 was re-verified on current main and ready for a fresh review",
+    "recorded_by": "claude-code"
+  }
 }
