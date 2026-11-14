@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag",
+  "slug": "fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag",
+  "title": "Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag",
+  "description": "Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "d3138bed5495be77e66d35502a0891b156ffed8e",
+  "created_at": 1794678484,
+  "updated_at": 1794678519,
+  "affected_specs": [
+    "cli",
+    "records"
+  ],
+  "affected_paths": [
+    "src/humans.rs",
+    "src/checkpoint.rs",
+    "src/change.rs",
+    "tests/change.rs",
+    "tests/humans.rs",
+    "tests/relay.rs",
+    "docs/cli.md",
+    "CHANGELOG.md",
+    "specs/cli/requirements.md",
+    "specs/records/requirements.md",
+    ".chough/cases/cli.ship-relay.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "Closing a gate that drives approval or review with a human's relay, including chough change ship's review, runs SpecSync with the relay's words, place and recording agent as --words, --where and --recorded-by, each value joined to its flag so text starting with - is never read as a flag"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "REQ-records-008 and REQ-cli-059; SpecSync 6.3.0's --words/--where/--recorded-by; FLOW-16 relays are claims",
+    "public_contract": "yes"
+  }
+}
