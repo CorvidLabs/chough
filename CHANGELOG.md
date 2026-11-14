@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- This repository routes `specs/**/*.spec.md` and `specs/**/requirements.md` to SpecSync's
+  ancestor-aware merge driver, so two branches that each bump a module's version and Change
+  Log merge locally without a hand-resolved conflict; `AGENTS.md` names the one-time
+  `specsync merge --install` (#291, DRIVE-12).
 - The workflow skill's stage contract opens with a fast path for a routine change: a
   bounded first read, the session and native-change commands in order, a delta for every
   affected spec, a stop at each human gate, an early first edit and the checks, so a

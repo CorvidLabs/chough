@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "this-repository-routes-spec-files-to-specsync-s-merge-driver-291",
+  "slug": "this-repository-routes-spec-files-to-specsync-s-merge-driver-291",
+  "title": "This repository routes spec files to SpecSync's merge driver (#291)",
+  "description": "This repository routes spec files to SpecSync's merge driver (#291)",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "aa1c5a15815d61f281f45e742b45fadc5bf55828",
+  "created_at": 1794679079,
+  "updated_at": 1794679335,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".gitattributes",
+    "AGENTS.md",
+    "docs/cli.md",
+    "tests/package.rs",
+    "CHANGELOG.md",
+    ".chough/cases/cli.specsync-merge-driver.cases.toml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Repository merge configuration and its setup note; no requirement text or product behavior changes.",
+  "acceptance_criteria": [
+    "This repository's .gitattributes routes specs/**/*.spec.md and specs/**/requirements.md to merge=specsync, AGENTS.md names specsync merge --install, and two branches that each bump one module's version and Change Log merge locally without conflict markers"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "REQ-cli-047 and DRIVE-12; SpecSync 6.3.0's specsync merge --install; GitHub runs no custom drivers",
+    "public_contract": "no"
+  }
+}
