@@ -1,6 +1,6 @@
 ---
 id: fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json
-state: implementing
+state: archived
 type: feature
 base_commit: ddc56e96ff77cb0313d7591bee61d5a4a2950f0e
 ---

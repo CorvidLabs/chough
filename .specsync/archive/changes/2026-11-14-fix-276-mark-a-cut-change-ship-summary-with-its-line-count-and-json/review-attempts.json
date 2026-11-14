@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "b8a0002b3b89465451a0fbbd116b385c99340d38",
+      "contract_digest": "06f0dd003d8f952e09c8270179415d488ddcb7b5564e788308f220f39cf74134",
+      "execution_digest": "3a1d25d4ea71aa8e07796906fbddc1b072d4a415feba2a4b012a1a155c267ee9",
+      "workspace_digest": "c7821cbb79ba31b6bdc5bd29514129d0e923f90eae4bec192bd0ece138ea8a0e",
+      "timestamp": 1794670698,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, record review",
+        "where": "Claude Code desktop chat, 2026-11-14, answering 'Have you reviewed #284's diff and want to record your review?'",
+        "recorded_by": "claude-code"
+      }
+    }
+  ]
+}

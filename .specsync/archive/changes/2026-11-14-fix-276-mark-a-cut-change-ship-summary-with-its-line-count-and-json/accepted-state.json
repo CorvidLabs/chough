@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json",
   "slug": "fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json",
   "title": "Fix #276: mark a cut change ship summary with its line count and --json",
   "description": "Fix #276: mark a cut change ship summary with its line count and --json",
   "kind": "feature",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "ddc56e96ff77cb0313d7591bee61d5a4a2950f0e",
   "created_at": 1794647636,
-  "updated_at": 1794670431,
+  "updated_at": 1794670712,
   "affected_specs": [
     "cli"
   ],
