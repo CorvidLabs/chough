@@ -2,9 +2,58 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-13T03:42:02Z</updated>
+<updated>2026-11-14T16:18:53Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>Give agents, local models included</title>
+<id>urn:chough:journal:2026-11-14-give-agents-local-models-included</id>
+<updated>2026-11-14T16:18:53Z</updated>
+<link href="2026-11-14-give-agents-local-models-included.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>#217: CI also runs once a day on main</title>
+<id>urn:chough:journal:2026-11-13-217-ci-also-runs-once-a-day-on-main</id>
+<updated>2026-11-13T14:51:30Z</updated>
+<link href="2026-11-13-217-ci-also-runs-once-a-day-on-main.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>#217: seed the flake tracker</title>
+<id>urn:chough:journal:2026-11-13-217-seed-the-flake-tracker</id>
+<updated>2026-11-13T14:43:42Z</updated>
+<link href="2026-11-13-217-seed-the-flake-tracker.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>0.6.1: record polish: a bug&apos;s Actual line, migrated names, a fresh guide</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh</id>
+<updated>2026-11-13T14:19:22Z</updated>
+<link href="2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Host-matrix harness</title>
+<id>urn:chough:journal:2026-11-13-host-matrix-harness</id>
+<updated>2026-11-13T14:19:19Z</updated>
+<link href="2026-11-13-host-matrix-harness.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Fix #246: migrate&apos;s preview names what doctor will report</title>
+<id>urn:chough:journal:2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report</id>
+<updated>2026-11-13T14:17:18Z</updated>
+<link href="2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Fix #247: the example waits past the failing run&apos;s second</title>
+<id>urn:chough:journal:2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second</id>
+<updated>2026-11-13T14:15:55Z</updated>
+<link href="2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>0.6.1: next with no open session exits 0, and timing says elapsed once</title>
 <id>urn:chough:journal:2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says</id>
@@ -24,6 +73,20 @@
 <id>urn:chough:journal:2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary</id>
 <updated>2026-11-13T02:58:41Z</updated>
 <link href="2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>0.6.1: src/stage.rs recorded for PR 4</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4</id>
+<updated>2026-11-13T02:57:03Z</updated>
+<link href="2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>0.6.1: the intent gate summary shows what is approved</title>
+<id>urn:chough:journal:2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved</id>
+<updated>2026-11-13T02:42:34Z</updated>
+<link href="2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
@@ -80,69 +143,6 @@
 <id>urn:chough:journal:2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136</id>
 <updated>2026-11-10T22:48:57Z</updated>
 <link href="2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Refuse new sessions when the adopted legacy log is missing (#113)</title>
-<id>urn:chough:journal:2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113</id>
-<updated>2026-11-10T16:06:34Z</updated>
-<link href="2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Move two #192 test cases into their own files (#196)</title>
-<id>urn:chough:journal:2026-11-10-move-two-192-test-cases-into-their-own-files-196</id>
-<updated>2026-11-10T16:03:25Z</updated>
-<link href="2026-11-10-move-two-192-test-cases-into-their-own-files-196.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Read diagnostic input inventories without touching freshness</title>
-<id>urn:chough:journal:2026-11-09-read-diagnostic-input-inventories-without-touching-freshness</id>
-<updated>2026-11-09T07:44:46Z</updated>
-<link href="2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md"/>
-<category term="closed"/>
-</entry>
-  <entry>
-<title>Recognize pristine skill files from released bundles (#102)</title>
-<id>urn:chough:journal:2026-11-09-recognize-pristine-skill-files-from-released-bundles-102</id>
-<updated>2026-11-09T05:14:35Z</updated>
-<link href="2026-11-09-recognize-pristine-skill-files-from-released-bundles-102.md"/>
-<category term="closed"/>
-</entry>
-  <entry>
-<title>Document what Chough automates and what the human decides</title>
-<id>urn:chough:journal:2026-11-08-document-what-chough-automates-and-what-the-human-decides</id>
-<updated>2026-11-08T02:05:46Z</updated>
-<link href="2026-11-08-document-what-chough-automates-and-what-the-human-decides.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Fix PR 197&apos;s prune capture and rollback defects (issue 65)</title>
-<id>urn:chough:journal:2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65</id>
-<updated>2026-11-07T17:31:47Z</updated>
-<link href="2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Evidence prune fails closed and restores partial removals (#65)</title>
-<id>urn:chough:journal:2026-11-07-evidence-prune-fails-closed-and-restores-partial-removals-65</id>
-<updated>2026-11-07T15:51:32Z</updated>
-<link href="2026-11-07-evidence-prune-fails-closed-and-restores-partial-removals-65.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Prototype template keeps hidden state panels hidden (#58)</title>
-<id>urn:chough:journal:2026-11-07-prototype-template-keeps-hidden-state-panels-hidden-58</id>
-<updated>2026-11-07T04:50:06Z</updated>
-<link href="2026-11-07-prototype-template-keeps-hidden-state-panels-hidden-58.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Roadmap marks Chough 0.5.0 as published</title>
-<id>urn:chough:journal:2026-11-07-roadmap-marks-chough-0-5-0-as-published</id>
-<updated>2026-11-07T04:37:00Z</updated>
-<link href="2026-11-07-roadmap-marks-chough-0-5-0-as-published.md"/>
 <category term="shipped"/>
 </entry>
 </feed>

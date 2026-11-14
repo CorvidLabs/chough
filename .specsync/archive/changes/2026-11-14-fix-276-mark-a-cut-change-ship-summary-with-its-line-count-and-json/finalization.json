@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json",
+  "implementation_commit": "084e606e74ef2863351d7117dd6f69972ffc3776",
+  "implementation_tree": "6409eedac6b66499179a93a303ca85ee681d8673",
+  "contract_digest": "06f0dd003d8f952e09c8270179415d488ddcb7b5564e788308f220f39cf74134",
+  "workspace_digest": "525a5394a5d11a8472083eede8bca45e85514db73c48a0a70ca11b05c3861d17",
+  "closing_digest": "be4f909cadd50fd480858264b98ba0fb0514d71910eaa7bd0a769d6693ef4700",
+  "review_digest": "f9b6f9f0ed500d14957b142e8966ff9d4c3fe82eabbb287087d08493635d048e",
+  "finalization_digest": "41b7c33c2d72dde34d037d36ed01ae45fefd52aaceefc1d1be83038a01610726",
+  "timestamp": 1794674797
+}

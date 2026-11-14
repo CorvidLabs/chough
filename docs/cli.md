@@ -430,8 +430,9 @@ gives `kind: bug`, `id`, `aliases`, `title`, `status`, `classification`, `scope`
 `impact`, `criteria`, `requirements`, `cases`, `evidence` (the linked evidence IDs),
 `receipts`, `regression_baseline`, `fixture`, `environment`, `revision`, `found_by`
 (the acting agent), `fixed_in`, `duplicate_of`, `related`, `created` and `updated`.
-Its body gives `# <title>` and the paragraphs What happened, Steps (led by
-`Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
+Its body gives `# <title>` and the paragraphs What happened (with the actual
+behaviour as its own `Actual:` paragraph when it differs from the symptom), Steps (led
+by `Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
 `## Log`, an append-only list with one dated entry per report,
 note, evidence link and status change. A person's edits to the paragraphs stay, and
 every earlier Log line stays byte-identical. Fix says `Not fixed yet.` until `bug
@@ -1034,7 +1035,10 @@ SHA-256 of the old ID, so the preview and the apply name everything alike, and e
 ID is an alias. The session's What was verified item for such an entry links it, as a
 0.6.0 save writes it (see [Sessions](#sessions)), and a story's item for an observation
 it holds as a receipt is that receipt's line, as at archiving (see
-[Moving into done](#moving-into-done)), never the bare old ID. A raw log under
+[Moving into done](#moving-into-done)), never the bare old ID. Front matter names
+them the same way: a session's or story's `observations` and a bug's `evidence` and
+`regression_baseline` give each entry's or receipt's new name, so `chough next` and
+`chough status` list those, and a removed observation keeps its old ID. A raw log under
 `.chough/artifacts/` is removed and its recorded digest becomes the fingerprint. A PNG or JPEG artifact of a carried observation is stripped of
 its metadata and kept beside its session or story within the bounds of
 [key screenshots](#evidence-entries); an artifact elsewhere in the project stays where
@@ -1053,8 +1057,15 @@ receipt also list the `records_in_verification` advice as a follow-up, and, whil
 installed skill copy is not current as `chough skill status` reports it, one naming
 `chough skill update` with each such copy's directory and how many files are
 known-outdated, missing or edited: the migration does not touch the skill copy, which
-still names 0.5.x commands and paths until it is updated. The receipt holds every
-follow-up under one `## Follow-up` heading, one paragraph each.
+still names 0.5.x commands and paths until it is updated. They also name what
+`chough doctor` will report on the migrated tree, found by doctor's own session check
+run on the records the plan writes, so on a tree just migrated doctor reports exactly
+those sessions (REQ-cli-055): the sessions that are finished (`finished_session`),
+which `chough doctor --fix` archives, and each session whose open human gates are on an
+archived native change (`stale_gates`), with each gate's text and the decision it
+needs, `chough doctor --fix --reason "<their decision>"`, so the human answers those
+gates in the same round as the consent. The receipt holds every follow-up under one
+`## Follow-up` heading, one paragraph each.
 
 ## SpecSync change steps
 
@@ -1212,9 +1223,10 @@ review (REQ-cli-059). It runs in these steps:
    names the remaining commands.
 5. After SpecSync's output it prints a short text summary of at most 12 lines: the
    review it ran or why none ran, the ship, the gate close, and the move into done
-   as `chough stage advance` summarizes it, ending with the next action. With
-   `--json` it prints each step's full report instead, the gate close's and the
-   move's, so an agent loses nothing.
+   as `chough stage advance` summarizes it, ending with the next action. When the
+   summary is longer, its last line names how many lines were dropped and points at
+   `--json`. With `--json` it prints each step's full report instead, the gate
+   close's and the move's, so an agent loses nothing.
 
 The gate closes after the ship, so even a project that keeps Chough's records in
 SpecSync's verification writes nothing under `.chough/` between `change check
@@ -1240,8 +1252,8 @@ Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
   rest (#190). At a gate that drives approval, the change's own Markdown files under
   `.specsync/changes/<id>/` (its `change.md`, deltas, plan and other artifacts) are what
   the human approves, so they count and are named first, its deltas before its other
-  files, each with the requirement IDs it adds or modifies as `(adds or modifies
-  <IDs>)`; every delta is named however many there are, and other files fill the rest of
+  files, each with the requirement IDs it adds and those it modifies, each said as such,
+  as `(adds <IDs>)`, `(modifies <IDs>)` or `(adds <IDs>; modifies <IDs>)`; every delta is named however many there are, and other files fill the rest of
   the five; its `state.json` and `approvals.json` stay left out. It counts from the merge base of HEAD with the default branch
   (`origin/HEAD`, else `main`) instead when that merge base is not an ancestor of the
   `base_commit`, meaning default-branch work came in after the change began, and when
@@ -1249,10 +1261,18 @@ Each gate gets a one-screen summary of at most 24 lines and 4,096 bytes, with:
   default branch, is not used; with no usable base, the summary says the base is
   unknown;
 - at a gate held at intent while the session records no native change, the intent being
-  approved in place of the change and what changed: an `Intent:` line with the criterion
-  IDs the session references, then each `hi/` file (its `AGENTS.md` and `CLAUDE.md` left
-  out) that holds one of them as a whole token, with those IDs, and any held by none;
-  Chough reads the files and runs no tool for it;
+  approved in place of the change, what changed and the diff link: an `Intent:` line
+  counting the criteria the session references, then each criterion by ID with its
+  sentence from the `hi/` file that holds it, laid out as `hi ls` lays it out: each file
+  (its `AGENTS.md` and `CLAUDE.md` left out) in the order the session first references
+  one of its criteria, then its criteria in that order. A file holds a criterion when one
+  of its list items starts with the ID, as `hi` writes `- **<ID>**  <sentence>`; a file
+  that only mentions the ID does not. Files and criteria take at most 16 lines, and the
+  criteria left over are named on an `and <n> more:` line; the intent takes at most 3,072
+  bytes, its sentences sharing what the other lines leave, so a long one is cut to fit
+  and ends in `… (cut)`; criteria no file holds are
+  named last, `in no hi/ file:`. There is no diff line, since there is no base. Chough
+  reads the files and runs no tool for it;
 - the tests: how many cases passed, failed and were not run, by the latest observation
   of each case that links a requirement the change's deltas add or modify (or that the
   session's observations name), with the failing case IDs;

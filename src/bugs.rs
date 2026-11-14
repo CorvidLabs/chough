@@ -55,7 +55,8 @@ const STEPS: &str = "Steps";
 const EXPECTED: &str = "Expected";
 const WHY: &str = "Why it matters";
 const FIX: &str = "Fix";
-/// The second line of What happened, when the actual behaviour differs from the symptom.
+/// The label of What happened's own second paragraph, when the actual behaviour differs
+/// from the symptom; a bug written before 0.6.1 has it as the paragraph's second line.
 const ACTUAL: &str = "Actual: ";
 /// The label of Steps' first line, the trigger, before the numbered steps (REQ-cli-012).
 const TRIGGER: &str = "Trigger: ";
@@ -127,12 +128,15 @@ impl Stored {
             .join(" ")
     }
 
-    /// The actual behaviour: What happened's `Actual:` line, or the symptom.
+    /// The actual behaviour: What happened's `Actual:` paragraph, or, in a bug written
+    /// before 0.6.1, its `Actual:` line; otherwise the symptom.
     fn actual(&self) -> String {
         self.paragraph(WHAT_HAPPENED)
             .lines()
             .find_map(|line| line.strip_prefix(ACTUAL))
-            .map_or_else(|| self.symptom(), str::to_string)
+            .map(str::to_string)
+            .or_else(|| actual_paragraph(self.record.body()))
+            .unwrap_or_else(|| self.symptom())
     }
 
     /// The trigger: Steps without its numbered lines and its `Trigger:` label, which a
@@ -182,6 +186,22 @@ impl Stored {
 fn numbered(line: &str) -> Option<&str> {
     let (number, rest) = line.split_once(". ")?;
     (!number.is_empty() && number.bytes().all(|byte| byte.is_ascii_digit())).then_some(rest)
+}
+
+/// The `Actual:` paragraph right after What happened, without its label, its lines
+/// joined (t38n's round-4 F8): a bug written since 0.6.1 gives the actual behaviour its
+/// own paragraph, so Markdown never runs it into the symptom.
+fn actual_paragraph(body: &str) -> Option<String> {
+    let marker = format!("**{WHAT_HAPPENED}:**");
+    let mut lines = body.lines().skip_while(|line| !line.starts_with(&marker));
+    lines.next()?;
+    let mut after = lines
+        .skip_while(|line| !line.trim().is_empty())
+        .skip_while(|line| line.trim().is_empty());
+    let first = after.next()?.strip_prefix(ACTUAL)?;
+    let mut text = vec![first];
+    text.extend(after.take_while(|line| !line.trim().is_empty() && !line.starts_with('#')));
+    Some(text.join(" "))
 }
 
 /// The text of the paragraph that starts `**<label>:**`, without the label, up to the
@@ -977,7 +997,8 @@ struct Draft {
 fn write_up(draft: &Draft, fix: &str) -> String {
     let mut what = format!("**{WHAT_HAPPENED}:** {}", one_line(&draft.symptom));
     if draft.actual.trim() != draft.symptom.trim() {
-        what.push_str(&format!("\n{ACTUAL}{}", one_line(&draft.actual)));
+        // Its own paragraph, so Markdown never runs it into the symptom (t38n's F8).
+        what.push_str(&format!("\n\n{ACTUAL}{}", one_line(&draft.actual)));
     }
     let mut steps = format!("**{STEPS}:** {TRIGGER}{}", one_line(&draft.trigger));
     for (index, step) in draft.steps.iter().enumerate() {
@@ -2223,8 +2244,15 @@ pub(super) fn migrate_0_5(
             criteria: legacy.criteria.clone(),
             requirements: legacy.requirements.clone(),
             cases: legacy.cases.clone(),
+            // The Reported Log line keeps the IDs the report linked, as the notes' lines
+            // do; the front matter `evidence` is set below.
             evidence: reported,
-            regression_baseline: legacy.regression_baseline.clone(),
+            // t38n's round-4 F9: front matter names the carried entry or receipt, whose
+            // alias keeps the 0.5.x ID.
+            regression_baseline: legacy
+                .regression_baseline
+                .as_deref()
+                .map(|id| homes.name(id)),
             fixture: legacy.fixture.clone(),
             environment: legacy.environment.clone(),
             source: legacy.source.clone(),
@@ -2245,19 +2273,16 @@ pub(super) fn migrate_0_5(
         .with_context(|| format!("{source} does not carry into a bug record"))?;
         record.set_scalar("status", &legacy.status)?;
         record.set("aliases", Front::List(vec![legacy.id.clone()]))?;
-        // The evidence it links: its observations, then its notes'; the regression
-        // baseline keeps its own field.
-        let mut evidence: Vec<String> = vec![];
-        for id in legacy
+        // The evidence it links: its observations, then its notes', each by the name of
+        // the entry or receipt it became (t38n's round-4 F9); the regression baseline
+        // keeps its own field.
+        let linked_ids: Vec<String> = legacy
             .observations
             .iter()
             .chain(legacy.notes.iter().flat_map(|note| &note.observations))
-        {
-            if !evidence.contains(id) {
-                evidence.push(id.clone());
-            }
-        }
-        record.set("evidence", Front::List(evidence))?;
+            .cloned()
+            .collect();
+        record.set("evidence", Front::List(homes.names(&linked_ids)))?;
         let mut receipts: Vec<Vec<(String, String)>> = vec![];
         for id in &linked {
             if let Some(map) = homes.receipts.get(id) {
@@ -3105,9 +3130,16 @@ mod tests {
         assert_eq!(bug.list("aliases"), vec!["BUG-0007"]);
         assert_eq!(bug.scalar("status"), Some("investigating"));
         assert_eq!(bug.scalar("scope"), Some("blocking"));
+        // t38n's round-4 F9: by the entry's and the receipt's names; a removed one keeps
+        // its 0.5.x ID, which resolves as removed.
         assert_eq!(
             bug.list("evidence"),
-            vec!["OBS-entry", "OBS-receipt", "OBS-gone", "OBS-later"]
+            vec![
+                "2026-11-01-entry",
+                "2026-11-01-receipt",
+                "OBS-gone",
+                "OBS-later"
+            ]
         );
         let tombstone = |id: &str| {
             vec![
@@ -3159,7 +3191,7 @@ mod tests {
         };
         assert_eq!(label("OBS-gone")["label"], "removed");
         assert_eq!(label("OBS-gone")["receipt"], receipt.as_str());
-        assert_eq!(label("OBS-receipt")["label"], "bug-receipt");
+        assert_eq!(label("2026-11-01-receipt")["label"], "bug-receipt");
         assert_eq!(evidence.verification(&stored).unwrap(), "reproduced");
         let mut gone_only = stored.clone();
         gone_only

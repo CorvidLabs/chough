@@ -3721,6 +3721,60 @@ fn a_skill_md_copy_from_main_118a895_is_known_outdated_and_edited_copies_stay() 
     assert_eq!(fs::read_to_string(&installed).unwrap(), edited);
 }
 
+/// LIFE-22: an agent with a small context, a local model included, finds one short
+/// path for a routine change before the stage-by-stage detail, and that path names
+/// the session, the native change with a delta per spec, the human's gates and the
+/// checks in order.
+#[test]
+fn the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change() {
+    let read = |path: &str| {
+        fs::read_to_string(manifest_dir().join(path))
+            .unwrap()
+            .replace("\r\n", "\n")
+    };
+    let skill = read("skills/chough-workflow/SKILL.md");
+    assert!(
+        skill.contains("[the stage contract](references/stages.md) and its fast path"),
+        "SKILL.md routes to the fast path"
+    );
+    let stages = read("skills/chough-workflow/references/stages.md");
+    let start = stages
+        .find("## Fast path for a routine change\n")
+        .expect("a fast path section");
+    let transitions = stages
+        .find("## Transitions shared by every stage\n")
+        .expect("the transitions section");
+    assert!(start < transitions, "the fast path comes first");
+    let path = &stages[start..transitions];
+    assert!(
+        path.lines().count() <= 32,
+        "the fast path has {} lines",
+        path.lines().count()
+    );
+    let mut at = 0;
+    for step in [
+        "`AGENTS.md`",
+        "`chough session new <change-id>`",
+        "`chough checkpoint --criterion <id>`",
+        "`chough next`",
+        "`chough change new",
+        "`specsync change answer`",
+        "`deltas/<module>.md` for each affected spec",
+        "scope approval belongs to the human",
+        "first code edit",
+        "`.chough/cases/<module>.<topic>.cases.toml`",
+        "`fledge run test`",
+        "`chough change check",
+        "stop for the human's review",
+        "Work only in your own checkout and branch",
+    ] {
+        let found = path[at..]
+            .find(step)
+            .unwrap_or_else(|| panic!("the fast path names {step} in order"));
+        at += found + step.len();
+    }
+}
+
 #[test]
 fn the_skill_asks_a_resuming_agent_to_state_the_handoff_before_its_first_edit() {
     let skill = fs::read_to_string(manifest_dir().join("skills/chough-workflow/SKILL.md"))
@@ -4140,3 +4194,60 @@ a { color: var(--proto-accent); }
   .surface { margin: 0; border-radius: 0; border-left: 0; border-right: 0; }
 }
 "##;
+
+/// REQ-cli-064: CI runs once a day on main as well as on pushes and pull requests, so
+/// the flake window (REQ-cli-062) sees macOS and Linux every day; a scheduled run has
+/// no pull request base and no previous commit, so the SpecSync Archive jobs fall back
+/// to the run's own commit instead of handing the inspector an empty base.
+#[test]
+fn ci_runs_once_a_day_on_main_with_a_real_archive_base() {
+    let workflow = fs::read_to_string(manifest_dir().join(".github/workflows/ci.yml")).unwrap();
+    let triggers: Vec<&str> = workflow
+        .split("\non:\n")
+        .nth(1)
+        .and_then(|rest| rest.split("\n\n").next())
+        .expect("ci.yml has an `on:` block")
+        .lines()
+        .collect();
+    for trigger in ["  push:", "  pull_request:", "  schedule:"] {
+        assert!(
+            triggers.contains(&trigger),
+            "ci.yml's `on:` block lacks `{}`: {triggers:#?}",
+            trigger.trim()
+        );
+    }
+    let crons: Vec<&str> = triggers
+        .iter()
+        .filter_map(|line| line.trim().strip_prefix("- cron: "))
+        .collect();
+    assert_eq!(crons.len(), 1, "one daily cron entry: {triggers:#?}");
+    let fields: Vec<&str> = crons[0].trim_matches('\'').split_whitespace().collect();
+    assert_eq!(fields.len(), 5, "a five-field cron: {}", crons[0]);
+    assert!(
+        fields[0].parse::<u8>().is_ok() && fields[1].parse::<u8>().is_ok(),
+        "the cron names one minute and one hour: {}",
+        crons[0]
+    );
+    assert_eq!(
+        &fields[2..],
+        ["*", "*", "*"],
+        "the cron runs every day: {}",
+        crons[0]
+    );
+    let bases: Vec<&str> = workflow
+        .lines()
+        .filter(|line| line.trim_start().starts_with("ARCHIVE_BASE_SHA:"))
+        .collect();
+    assert!(
+        !bases.is_empty(),
+        "the SpecSync Archive jobs set ARCHIVE_BASE_SHA"
+    );
+    for base in bases {
+        assert!(
+            base.trim_end().ends_with(
+                "github.event.pull_request.base.sha || github.event.before || github.sha }}"
+            ),
+            "the SpecSync Archive base falls back to github.sha: {base}"
+        );
+    }
+}
