@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #245: the knowledge index linked a skill copy Git ignores (.grok/skills/), so
+# chough library index --check failed in every fresh clone and in CI.
+
+[[case]]
+id = "TC-cli-index-links-no-source-git-ignores"
+title = "With .grok gitignored, after chough init --host grok and a commit, the index links nothing under .grok/ and library index --check passes in the working tree, with the copy present or removed, and in a fresh clone"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["KNOW-14"]
+requirements = ["REQ-cli-043", "REQ-cli-044"]
+paths = ["src/vault.rs", "tests/vault.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/vault.rs::the_index_links_no_source_git_ignores_so_a_fresh_clone_checks_clean passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "vault"
+test = "the_index_links_no_source_git_ignores_so_a_fresh_clone_checks_clean"
