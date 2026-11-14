@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "c63620259d73895ff467b842fe09323d2cb663ae",
+      "contract_digest": "ed588fa8f9f2b701d8fed7cd88a765b739adbbc3ff585b841ed6988ce59c99bb",
+      "execution_digest": "4c3a74eac9b2795f4aa9aaf5f65150db257268e043ad8b9cd59f7facade910de",
+      "workspace_digest": "d79bc47952932870b3bad7efc4fcde60d6b29e2207f7d7edb593294669b6d335",
+      "timestamp": 1794581420
+    }
+  ]
+}

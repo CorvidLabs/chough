@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-skill-routine-fast-path"
+title = "The stage contract opens with a short routine-change fast path that SKILL.md routes to"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-22"]
+requirements = ["REQ-cli-016"]
+paths = ["skills/chough-workflow/SKILL.md", "skills/chough-workflow/references/stages.md", "tests/package.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the package test the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change"

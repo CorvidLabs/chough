@@ -1,0 +1,51 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794545875,
+      "digest": "ed588fa8f9f2b701d8fed7cd88a765b739adbbc3ff585b841ed6988ce59c99bb",
+      "note": "Approved by Leif at the Chough gate \"Approve the scope of 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs\": \"Yes, macOS + Linux (Recommended)\" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q3 'Run CI once a day on main so a quiet week still counts?' for #217; this change's scope is that daily run plus the Archive base fallback a scheduled run needs, REQ-cli-064; relayed by claude-code-t370). Relayed and recorded by claude-code-t38r at 2026-11-13T04:57:54Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs",
+        "title": "#217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none",
+        "description": "#217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".github/workflows/ci.yml",
+          "CHANGELOG.md",
+          "docs/ci.md",
+          "tests/package.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "ci.yml runs on a daily schedule as well as on pushes to main and pull requests; the SpecSync Archive base falls back to github.sha, so a scheduled run gives check-specsync-archive.py a real base; tests/package.rs fails naming the missing schedule or fallback (red then green)"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "specs/cli/cli.3md: hosted runners have no Git identity, and a lifted bound must be searched for in tests and CI scripts too; check-specsync-archive.py refuses an empty or all-zero --base; GitHub may delay or drop scheduled runs at busy times, so the cron is set off the hour",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "bc61a1a1c2a8ac58121bf29fdf76bfd33237e6ea88993340a50e49af36aa6ecf"
+      },
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794581435,
+      "digest": "c7ea1f6254a6c1e85be59d919a61c34c58eee107376d77d5720d1d7824648b90",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

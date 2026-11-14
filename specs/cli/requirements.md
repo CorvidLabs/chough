@@ -461,12 +461,13 @@ Acceptance Criteria
 
 ### REQ-cli-055
 
-Chough doctor. `chough doctor` SHALL report the Chough debt of REQ-history-012 as JSON with `schema_version` 1, `mode` (`report`, `dry-run` or `fix`) and `findings`, each with `kind`, `target`, `fix` (the Chough command that fixes it), `decision` (whether the fix is a decision) and `status` (`found`, `fixed` or `skipped`, with a `reason` when skipped). With no flag, or with `--dry-run`, it SHALL change nothing and report each finding as `found`. With `--fix` it SHALL apply each fix that is not a decision. It SHALL apply a decision fix only when `--reason <text>` is given, and SHALL otherwise report it as `skipped` with a fix that names `--reason`. It SHALL exit 0 when no finding is left `found` or `skipped`, and 1 otherwise. It SHALL make no native read, and SHALL never record a human decision, approval, review or consent. Trace: DRIVE-17.
+Chough doctor. `chough doctor` SHALL report the Chough debt of REQ-history-012 as JSON with `schema_version` 1, `mode` (`report`, `dry-run` or `fix`) and `findings`, each with `kind`, `target`, `fix` (the Chough command that fixes it), `decision` (whether the fix is a decision) and `status` (`found`, `fixed` or `skipped`, with a `reason` when skipped). With no flag, or with `--dry-run`, it SHALL change nothing and report each finding as `found`. With `--fix` it SHALL apply each fix that is not a decision. It SHALL apply a decision fix only when `--reason <text>` is given, and SHALL otherwise report it as `skipped` with a fix that names `--reason`. It SHALL exit 0 when no finding is left `found` or `skipped`, and 1 otherwise. It SHALL make no native read, and SHALL never record a human decision, approval, review or consent. Its per-session findings (`finished_session`, `stale_gates`) SHALL come from one session check that `chough migrate`'s plan also runs on the planned records (REQ-records-009), so a migration's follow-ups name what the doctor will report. Trace: DRIVE-17.
 
 Acceptance Criteria
 - With no flag and with `--dry-run`, the doctor reports the same findings, each with a `chough` fix, exits 1, and leaves every file under `.chough/` unchanged.
 - `--fix` without `--reason` applies the fixes that are not decisions and reports each decision fix as `skipped`, naming `--reason`; a project with no debt reports no findings and exits 0.
 - No doctor run calls SpecSync.
+- On a tree just migrated from 0.5.x, `chough doctor` reports exactly the `finished_session` and `stale_gates` sessions the migration's follow-ups named.
 
 ### REQ-cli-056
 
@@ -524,7 +525,7 @@ Acceptance Criteria
 
 ### REQ-cli-059
 
-Ship through Chough. `chough change ship <id> [--close-gate <gate> --decided-by <who> --words <words> --where <where> --recorded-by <agent>]` SHALL, before running anything and with nothing written, refuse unless the active session's native change is `<id>` and its stage is accept, and unless every open human gate of the active session is the one `--close-gate` names; another session's gates hold only that session's stages (REQ-cli-030). The relay values SHALL be checked as `chough checkpoint --close-gate` checks them (REQ-cli-050). `--list <list> --gate <n>` MAY stand in for `--close-gate <gate>`: the gate SHALL be number `<n>` of that `chough gate list` list (REQ-cli-061), and its summary SHALL still have the listed digest, or the ship SHALL refuse before anything runs, naming `chough gate list`. The closed gate's relay SHALL then carry the summary digest and the list (REQ-history-014). Each refusal SHALL name the command that recovers. When the named gate drives review (REQ-cli-030) and the change has no current scoped review, it SHALL first record the review as the decided human with verdict `pass`, since a ship is run only on acceptance, as REQ-records-008 says, and SHALL stop with nothing more run or written when that review is refused. It SHALL then run `specsync change ship <id>` in the project root with no time bound, and pass SpecSync's standard output and standard error through unchanged. When SpecSync exits non-zero, it SHALL exit with that code and write nothing. When SpecSync succeeds, it SHALL close the named gate as `chough checkpoint --close-gate` would, a relayed claim, and then move the session to done as `chough stage advance --to done` would. After SpecSync's output it SHALL print by default a short text summary of the review, the ship, the gate close and the move into done, at most 12 lines, and SHALL print each step's full report under `--json`, so an agent loses nothing. When either step refuses after a successful ship, it SHALL exit 1, say that the change was shipped, and name each remaining command. Stopping Chough with SIGINT, SIGTERM or SIGHUP SHALL stop the SpecSync process it started (FLOW-14). The review step follows FLOW-23.
+Ship through Chough. `chough change ship <id> [--close-gate <gate> --decided-by <who> --words <words> --where <where> --recorded-by <agent>]` SHALL, before running anything and with nothing written, refuse unless the active session's native change is `<id>` and its stage is accept, and unless every open human gate of the active session is the one `--close-gate` names; another session's gates hold only that session's stages (REQ-cli-030). The relay values SHALL be checked as `chough checkpoint --close-gate` checks them (REQ-cli-050). `--list <list> --gate <n>` MAY stand in for `--close-gate <gate>`: the gate SHALL be number `<n>` of that `chough gate list` list (REQ-cli-061), and its summary SHALL still have the listed digest, or the ship SHALL refuse before anything runs, naming `chough gate list`. The closed gate's relay SHALL then carry the summary digest and the list (REQ-history-014). Each refusal SHALL name the command that recovers. When the named gate drives review (REQ-cli-030) and the change has no current scoped review, it SHALL first record the review as the decided human with verdict `pass`, since a ship is run only on acceptance, as REQ-records-008 says, and SHALL stop with nothing more run or written when that review is refused. It SHALL then run `specsync change ship <id>` in the project root with no time bound, and pass SpecSync's standard output and standard error through unchanged. When SpecSync exits non-zero, it SHALL exit with that code and write nothing. When SpecSync succeeds, it SHALL close the named gate as `chough checkpoint --close-gate` would, a relayed claim, and then move the session to done as `chough stage advance --to done` would. After SpecSync's output it SHALL print by default a short text summary of the review, the ship, the gate close and the move into done, at most 12 lines, and SHALL print each step's full report under `--json`, so an agent loses nothing; when the summary is longer than 12 lines, its last line SHALL name how many lines were dropped and point at `--json` for the full report. When either step refuses after a successful ship, it SHALL exit 1, say that the change was shipped, and name each remaining command. Stopping Chough with SIGINT, SIGTERM or SIGHUP SHALL stop the SpecSync process it started (FLOW-14). The review step follows FLOW-23.
 
 Acceptance Criteria
 - With the review gate's relay, `chough change ship` runs `specsync change ship <id>` once, closes the gate with the four values as a relayed claim, and moves the session to done.
@@ -535,7 +536,7 @@ Acceptance Criteria
 - With `--list` and `--gate` for a listed review gate, the ship closes that gate with the summary digest and the list in its relay, and a summary changed since it was listed is refused before SpecSync runs, naming `chough gate list`.
 - With a configured human and the review gate's relay, `chough change ship` runs `specsync change review` once as that human, then `specsync change ship`; with no configured identity for `--decided-by` it refuses with `refused:human-identity-unknown` before SpecSync runs.
 - The walkthrough and the skill's closeout run `chough change new`, `chough change check` and `chough change ship`, and record review through the human's gate decision.
-- `chough change ship` prints SpecSync's output, then at most 12 lines naming the review, the ship, the gate close and the move into done; `chough change ship --json` prints every step's full report as before.
+- `chough change ship` prints SpecSync's output, then at most 12 lines naming the review, the ship, the gate close and the move into done; a summary longer than 12 lines ends with a line naming the dropped lines and `--json`; `chough change ship --json` prints every step's full report as before.
 
 ### REQ-cli-060
 
@@ -586,6 +587,15 @@ Acceptance Criteria
 - With a change's delta and plan written but not committed, the scope gate's summary counts them and names the delta first, as it does after the commit.
 - At an intent gate with no native change, the summary gives each referenced criterion's ID and sentence and no diff line; a delta that only adds says adds, and one that adds and modifies names each.
 
+### REQ-cli-064
+
+Run CI once a day on main. The CI workflow SHALL run on a daily schedule as well as on every push to main and every pull request. GitHub runs a schedule on the default branch's latest commit, so the flake window (REQ-cli-062) sees a run of `Product / ubuntu-latest` and `Product / macos-latest` every day even when nothing merges. A scheduled run SHALL run the same jobs as a push to main. When an event has neither a pull request base nor a previous commit, the SpecSync Archive jobs SHALL take the run's own commit as their trusted base, so a scheduled run never hands the archive inspector an empty base. Trace: LIFE-21, DRIVE-19.
+
+Acceptance Criteria
+- `.github/workflows/ci.yml` has a `schedule` trigger with one daily `cron` entry, beside its `push` to main and `pull_request` triggers.
+- The SpecSync Archive jobs' base falls back to `github.sha` after the pull request base and the previous commit.
+- `tests/package.rs` fails, naming what is missing, when the schedule or the fallback is removed.
+
 ### REQ-cli-065
 
 Example hc templates. The repository SHALL hold an optional `integrations/` folder with a README and, for each of `claude-code`, `codex`, `kimi`, `grok` and `local`, an hc template at `integrations/<host>/hc-template.md`. Each template:
@@ -602,4 +612,20 @@ Acceptance Criteria
 - `integrations/templates.toml` lists exactly the five templates, each with an ordered versions list starting at 1. The local one is `unqualified` and the rest are `supported`. Each template's newest digest equals its file's SHA-256, so changing one byte fails the test until the next version is appended with the new digest. Versions out of order, or a repeated digest, also fail.
 - No `Command::new` in `src/` starts hc, Herdr or Rune, and neither `src/` nor `skills/` names Herdr or Rune.
 - The README names every template, says the folder is optional, and says Chough has no runtime dependency on hc, Herdr or Rune.
+
+### REQ-cli-066
+
+Host-matrix harness. The repository SHALL hold an end-to-end host-matrix harness under `tools/host-matrix/` (LIFE-21 item 4, LIFE-22, LIFE-24, LIFE-27).
+- `sh tools/host-matrix/run.sh <host>` SHALL drive one fixed Chough cycle in a new Git copy of `examples/shipping` without its `patches/`, one fresh host run per turn: init and intent; plan; build, test and accept; done; and a cold resume that changes nothing and states stage `done` and `chough session new`.
+- A host SHALL be an adapter: a shell file that defines `host_check`, `host_version` and `host_turn`, read from `integrations/<host>/adapter.sh` or from the file `--adapter` names. The harness SHALL NOT call hc, Herdr or Rune.
+- Between turns the harness SHALL stand in for each human gate only as `SIMULATED-host-matrix-not-a-human`, with notes that say SIMULATED, and SHALL NOT record a decision in a person's name (FLOW-10, FLOW-16).
+- Each host run SHALL run without the starting agent's or terminal's identity in its environment, with `CHOUGH_ACTOR` set to the host.
+- The verdict SHALL come only from the sample's files, Git and native status: the checks after each turn, the harness's own acceptance test of the shipping fee, `chough doctor --leaks`, and a host-independent shape of the records compared with `tools/host-matrix/expected-shape.json`.
+- It SHALL print one JSON result, PASS (exit 0), FAIL naming each failed check (exit 1) or UNAVAILABLE when the host cannot run (exit 2), with the host and its version, the platform, the chough version and commit, the command, the SHA-256 of the turn logs and the key failing lines. Raw logs SHALL stay outside the repository. A turn that runs past its time limit SHALL end with its whole process group and fail.
+- `sh tools/host-matrix/selftest.sh` SHALL run the harness with the scripted stand-in host, which runs no model. It SHALL fail unless the good run is PASS, each known-bad run fails on the check that names its fault, and a host that cannot run reads UNAVAILABLE. The known-bad runs are uncommitted work, a skipped scope gate, an approval by the host itself, an extra product file, a wrong cold resume and a hung turn. Hosted CI SHALL run it on Ubuntu and macOS (FLOW-21).
+
+Acceptance Criteria
+- `sh tools/host-matrix/selftest.sh` prints `HOST MATRIX SELFTEST PASSED` on macOS and Linux.
+- The `Host matrix self-test` CI job runs it on `ubuntu-latest` and `macos-latest`.
+- Every stand-in gate decision, native approval and native review in the sample names `SIMULATED-host-matrix-not-a-human`; none names a person.
 

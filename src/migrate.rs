@@ -163,6 +163,39 @@ pub(crate) struct ObservationHomes {
     pub(crate) receipts: BTreeMap<String, Receipt>,
 }
 
+impl ObservationHomes {
+    /// The name a migrated record's front matter gives a 0.5.x observation (t38n's
+    /// round-4 F9, REQ-records-003): its entry's file name, or its receipt's `id`, each
+    /// of which keeps the 0.5.x ID as its alias. One carried as neither keeps its ID,
+    /// which resolves as `removed`.
+    pub(crate) fn name(&self, id: &str) -> String {
+        if let Some(name) = self
+            .entries
+            .get(id)
+            .and_then(|path| path.rsplit('/').next())
+            .and_then(|file| file.strip_suffix(".md"))
+        {
+            return name.to_string();
+        }
+        self.receipts
+            .get(id)
+            .and_then(|map| map.iter().find(|(key, _)| key == "id"))
+            .map_or_else(|| id.to_string(), |(_, name)| name.clone())
+    }
+
+    /// Each of `ids` by [`ObservationHomes::name`], once, in order.
+    pub(crate) fn names(&self, ids: &[String]) -> Vec<String> {
+        let mut names: Vec<String> = vec![];
+        for id in ids {
+            let name = self.name(id);
+            if !names.contains(&name) {
+                names.push(name);
+            }
+        }
+        names
+    }
+}
+
 /// The 0.5.x record locations whose presence makes a tree unmigrated (REQ-records-010):
 /// files, folders whose contents count, and the folders whose `*.json` files count.
 const LEGACY_FILES: [&str; 3] = [
@@ -1161,14 +1194,13 @@ fn plan(root: &Path) -> Result<Plan> {
     carried.absorb(retired_files_0_5(root)?)?;
     // REQ-records-002: the reading guide, written only when there is none; one an
     // interrupted apply already wrote with these bytes stays planned, so the plan the
-    // resumed apply builds has the same digest.
+    // resumed apply builds has the same digest. A migrated guide names `artifacts/`.
     let guide = local_path(root, ".chough/README.md")?;
-    if !guide.exists()
-        || std::fs::read(&guide).is_ok_and(|bytes| bytes == crate::sessions::README.as_bytes())
-    {
+    let readme = crate::sessions::migrated_readme();
+    if !guide.exists() || std::fs::read(&guide).is_ok_and(|bytes| bytes == readme.as_bytes()) {
         carried.written.push(Written {
             path: ".chough/README.md".into(),
-            bytes: crate::sessions::README.into(),
+            bytes: readme,
         });
     }
     let links = bug_links_0_5(root)?;
@@ -1176,6 +1208,7 @@ fn plan(root: &Path) -> Result<Plan> {
     carried.absorb(evidence)?;
     story_receipts(&mut carried, &homes, &observations)?;
     session_verified_links(&mut carried, &homes, &observations)?;
+    observation_names(&mut carried, &homes, &observations)?;
     carried.absorb(bugs_0_5(root, &observations)?)?;
     // Knowledge runs last: its index.md is the one the tree has once every other
     // mapper's plan applies.
@@ -1249,6 +1282,13 @@ fn plan(root: &Path) -> Result<Plan> {
     // while it is not current, as `chough skill status` reports it, the plan names
     // `chough skill update`; the copy still names 0.5.x commands and paths until then.
     follow_ups.extend(crate::skill::update_advice(root)?);
+    // REQ-records-009, REQ-cli-055 (#246): doctor's own session check, run on the session
+    // records this plan writes, names what `chough doctor` reports right after the apply,
+    // so the stale gates' decisions are asked in the same round as the consent.
+    follow_ups.extend(crate::doctor::session_follow_ups(
+        root,
+        &planned_sessions(&carried)?,
+    )?);
     Ok(Plan {
         sources,
         legacy,
@@ -1258,6 +1298,46 @@ fn plan(root: &Path) -> Result<Plan> {
         redactions,
         follow_ups,
     })
+}
+
+/// Each open session record the plan writes, `.chough/sessions/<key>/session.md` as
+/// redacted, parsed, with the number of inbox entries it writes directly under that
+/// session's `agent/inbox/`, counted as `chough doctor` counts unfolded entries there.
+fn planned_sessions(
+    carried: &Carried,
+) -> Result<Vec<(String, crate::checkpoint::Checkpoint, usize)>> {
+    let dir = format!("{}/", crate::sessions::DIR);
+    let mut found = vec![];
+    for written in &carried.written {
+        let Some(key) = written
+            .path
+            .strip_prefix(&dir)
+            .and_then(|rest| rest.strip_suffix("/session.md"))
+            .filter(|key| !key.contains('/'))
+        else {
+            continue;
+        };
+        let crate::checkpoint::Session::V2(session) =
+            crate::checkpoint::parse(&written.path, &written.bytes)?;
+        let inbox = format!("{dir}{key}/agent/inbox/");
+        let unfolded = carried
+            .written
+            .iter()
+            .filter(|entry| {
+                entry
+                    .path
+                    .strip_prefix(&inbox)
+                    .and_then(|name| name.strip_suffix(".md"))
+                    .is_some_and(|name| {
+                        !name.contains('/')
+                            && !name.starts_with('.')
+                            && crate::records::valid_change_id(name)
+                    })
+            })
+            .count();
+        found.push((key.to_string(), *session, unfolded));
+    }
+    Ok(found)
 }
 
 /// Redact every leak in a written file (REQ-records-006), returning each redaction by
@@ -1797,6 +1877,39 @@ fn session_verified_links(
             changed = true;
         }
         if changed {
+            written.bytes = record.render();
+        }
+    }
+    Ok(())
+}
+
+/// t38n's round-4 F9 (REQ-records-009): a migrated session's and story's front matter
+/// `observations` name each carried entry or receipt, as the body links it, never the
+/// 0.5.x ID, which stays the entry's or receipt's alias; so `chough next` and `chough
+/// status` list the names a reader finds the files by.
+fn observation_names(
+    carried: &mut Carried,
+    sessions: &BTreeMap<String, SessionHome>,
+    homes: &ObservationHomes,
+) -> Result<()> {
+    for home in sessions.values() {
+        let path = if home.archived {
+            format!(".chough/archive/sessions/{}.md", home.id)
+        } else {
+            format!(".chough/sessions/{}/session.md", home.id)
+        };
+        let Some(written) = carried
+            .written
+            .iter_mut()
+            .find(|written| written.path == path)
+        else {
+            continue;
+        };
+        let mut record = crate::markdown::parse(&path, &written.bytes)?;
+        let listed = record.list("observations");
+        let named = homes.names(&listed);
+        if named != listed {
+            record.set("observations", crate::markdown::Value::List(named))?;
             written.bytes = record.render();
         }
     }

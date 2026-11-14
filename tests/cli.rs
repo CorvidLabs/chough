@@ -2572,6 +2572,230 @@ fn exercise_keeps_its_checkpoint_lock_inside_the_project() {
     }
 }
 
+/// The exercise's three shipping cases, bound to commands: TC-shipping-0001 fails until
+/// the file `fixed` exists, as the exercise's boundary test fails until its fix.
+const EXERCISE_CASES: &str = r#"profile = "chough-testing/1"
+module = "shipping"
+
+[[case]]
+id = "TC-shipping-0001"
+title = "Free shipping at exactly the threshold"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1"]
+requirements = ["REQ-shipping-002"]
+environments = ["exercise-local"]
+artifacts = ["test-log"]
+expected = ["An order of exactly 5000 cents has a fee of 0"]
+
+[case.bind]
+adapter = "command"
+argv = ["sh", "-c", "if [ -f fixed ]; then echo 'fee 0'; else echo 'fee 499'; fi"]
+expect_output = ["fee 0"]
+
+[[case]]
+id = "TC-shipping-0002"
+title = "Standard fee just below the threshold"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1"]
+requirements = ["REQ-shipping-001"]
+environments = ["exercise-local"]
+artifacts = ["test-log"]
+expected = ["An order of 4999 cents pays the standard fee"]
+
+[case.bind]
+adapter = "command"
+argv = ["sh", "-c", "echo 'fee 499'"]
+expect_output = ["fee 499"]
+
+[[case]]
+id = "TC-shipping-0003"
+title = "Free shipping above the threshold"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-1"]
+requirements = ["REQ-shipping-002"]
+environments = ["exercise-local"]
+artifacts = ["test-log"]
+expected = ["An order above 5000 cents has a fee of 0"]
+
+[case.bind]
+adapter = "command"
+argv = ["sh", "-c", "echo 'fee 0'"]
+expect_output = ["fee 0"]
+"#;
+
+/// `seconds` since the Unix epoch as the ISO UTC time an evidence entry records.
+fn iso_utc(seconds: u64) -> String {
+    let (days, rest) = ((seconds / 86_400) as i64, seconds % 86_400);
+    // Days to a civil date (proleptic Gregorian), after Howard Hinnant's algorithm.
+    let shifted = days + 719_468;
+    let era = shifted.div_euclid(146_097);
+    let day_of_era = shifted - era * 146_097;
+    let year_of_era =
+        (day_of_era - day_of_era / 1_460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let month_index = (5 * day_of_year + 2) / 153;
+    let day = day_of_year - (153 * month_index + 2) / 5 + 1;
+    let month = if month_index < 10 {
+        month_index + 3
+    } else {
+        month_index - 9
+    };
+    let year = year_of_era + era * 400 + i64::from(month <= 2);
+    format!(
+        "{year:04}-{month:02}-{day:02}T{:02}:{:02}:{:02}Z",
+        rest / 3_600,
+        rest % 3_600 / 60,
+        rest % 60
+    )
+}
+
+/// #247 (CI run 43357893936; REQ-cli-012): on a fast runner the exercise's rerun after
+/// the fix landed in the same second as the failing run, and REQ-cli-012 rightly refused
+/// `verified`, since a pass observed in the latest linked failure's second does not
+/// count. This runs the script's own helpers and its rerun-and-verify lines, cut out
+/// between their markers, on the exercise's three cases bound to commands. The failing
+/// run's recorded second is moved 3 seconds ahead, as `Fixture::observed_at` does
+/// elsewhere since `now()` cannot be injected, so the rerun is certain to land no later
+/// than that second, as it did on the fast runner. The script must wait until the clock
+/// is past the failure's recorded second before the rerun, so the bug is verified; the
+/// same-second rule itself is unchanged.
+#[cfg(unix)]
+#[test]
+fn exercise_rerun_waits_past_the_failing_runs_second_before_verifying() {
+    let script = fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/feature-bug-loop.sh"),
+    )
+    .unwrap();
+    let section = |name: &str| -> String {
+        let begin = script
+            .find(&format!("# {name}: begin\n"))
+            .unwrap_or_else(|| panic!("no {name} section"));
+        let end = script
+            .find(&format!("# {name}: end\n"))
+            .unwrap_or_else(|| panic!("no end to the {name} section"));
+        script[begin..end].to_string()
+    };
+    let fixture = Fixture::new();
+    fixture.write("specs/shipping/shipping.spec.md", "# Shipping contract\n");
+    fixture.write(
+        "specs/shipping/requirements.md",
+        "### REQ-shipping-001\nThe standard fee below the threshold.\n\n### REQ-shipping-002\nFree shipping at the threshold.\n",
+    );
+    fixture.write(".chough/cases/shipping.cases.toml", EXERCISE_CASES);
+    // The hi and SpecSync stand-ins, then init and a first commit.
+    fixture.evidence_fixture();
+
+    // The failing run and the bug that links it, as the exercise records them.
+    let run = fixture.run(&[
+        "cases",
+        "run",
+        "TC-shipping-0001",
+        "--environment",
+        "exercise-local",
+    ]);
+    let failed: Value = serde_json::from_slice(&run.stdout).unwrap_or_else(|_| {
+        panic!(
+            "cases run printed no JSON: {}",
+            String::from_utf8_lossy(&run.stderr)
+        )
+    });
+    assert_eq!(failed["outcome"], "failed", "{failed:#}");
+    let observation = failed["observation"].as_str().unwrap().to_string();
+    let bug = fixture.ok(&[
+        "bug",
+        "add",
+        "--title",
+        "Shipping charged at exactly the free threshold",
+        "--symptom",
+        "An order of exactly 5000 cents is charged the standard fee",
+        "--trigger",
+        "Order total equal to FREE_SHIPPING_FROM_CENTS",
+        "--expected",
+        "Fee of 0",
+        "--actual",
+        "Fee of 499",
+        "--environment",
+        "exercise-local",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-shipping-002",
+        "--case",
+        "TC-shipping-0001",
+        "--observation",
+        &observation,
+        "--classification",
+        "product-defect",
+        "--scope",
+        "blocking",
+    ])["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // As on the fast runner: the failure's recorded second is one the rerun reaches no
+    // later than. The conversion is checked against the second Chough recorded first.
+    let recorded = fixture.ok(&["next", "--json"])["last_failure"]["observed_at_unix_seconds"]
+        .as_u64()
+        .expect("the failing run's recorded second");
+    let entry = format!("{}/{observation}.md", fixture.evidence_dir());
+    let text = fixture.read(&entry);
+    let was = format!("\nobserved: {}\n", iso_utc(recorded));
+    assert!(text.contains(&was), "{entry} does not hold {was:?}: {text}");
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    let ahead = recorded.max(now) + 3;
+    fixture.write(
+        &entry,
+        &text.replace(&was, &format!("\nobserved: {}\n", iso_utc(ahead))),
+    );
+    assert_eq!(
+        fixture.ok(&["next", "--json"])["last_failure"]["observed_at_unix_seconds"],
+        ahead
+    );
+
+    // The fix, then the script's own rerun and verification.
+    fixture.write("fixed", "");
+    let body = format!(
+        "set -eu\n{}bug='{bug}'\n{}",
+        section("helpers"),
+        section("rerun after the fix")
+    );
+    let mut paths = vec![fixture.root().join("bin")];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    let out = Command::new("sh")
+        .args(["-c", &body, "feature-bug-loop.sh"])
+        .current_dir(fixture.root())
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .env("CHOUGH", env!("CARGO_BIN_EXE_chough"))
+        .env("CHOUGH_ENVIRONMENT", "exercise-local")
+        .output()
+        .unwrap();
+    // The script pipes `bug update` into jq, so a refused update does not stop it; the
+    // bug's status says whether the rerun verified it.
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(out.status.success(), "the rerun failed:\n{said}");
+    let shown = fixture.ok(&["bug", "show", &bug]);
+    assert_eq!(
+        shown["bug"]["status"], "verified",
+        "the rerun did not verify the bug:\n{said}"
+    );
+}
+
 /// Issue #83 (DRIVE-11): the writer lock lives in the project, so a writer started with
 /// another `TMPDIR` waits for a holder of the project's lock and then saves.
 #[cfg(unix)]

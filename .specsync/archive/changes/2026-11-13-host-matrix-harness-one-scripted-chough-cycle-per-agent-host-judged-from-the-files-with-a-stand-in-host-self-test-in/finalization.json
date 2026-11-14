@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in",
+  "implementation_commit": "419ded0cb5468251d7b2a08c89f9377e053e06fd",
+  "implementation_tree": "01166414e4f125918bc073f12736ab14254ac91f",
+  "contract_digest": "7eec2e344900b62ebedefddfa43e07d79d0f245eccd7a51dcb13b03ac8aee794",
+  "workspace_digest": "1445cf254bff50bbc5ec6fceab8c94baf1ed8fe87d25fbcedcf37a272edda6df",
+  "closing_digest": "8cefd7ac2d86d893d0d64dcd8eb1251de220c4bbe94ba9084594d1da047b0801",
+  "review_digest": "fc32ff68d6414dd0ef1f2cc27a3b186be2a93a2eaa95ac0270772527c0d6ef13",
+  "finalization_digest": "14b00238dd60e496177d8ee332f546a1f325ddf036f6f064601cdbd943634e5c",
+  "timestamp": 1794579528
+}
