@@ -49,6 +49,13 @@
       "timestamp": 1794677656,
       "digest": "866565a75a3297923b01479829f3fb687a5f3eae6c02e51e84e590c069546636",
       "note": "Same-PR finalization closing digest"
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794683701,
+      "digest": "386983e91dd58662ef8a8aa19d9bd311ea334e25da8ebe9aecdf842936350644",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [
