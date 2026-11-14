@@ -8,9 +8,15 @@
     "required_check": "SpecSync scoped review"
   },
   "verdict": "pass",
-  "implementation_commit": "8306f4c3d7314cab68fbed6ef6d0836a1d8bde07",
+  "implementation_commit": "c06afc780b240bf0c1587759f3b75c63f089247e",
   "contract_digest": "f31c1a14f696a0fcedd3feabcf44c3e0509c23f4f00173c1b600836e23d28e59",
   "execution_digest": "547ee33d7de0a5fff13185475e1177e7031d4bb9f5c4ce0f98cd5e9d1c91e17b",
-  "workspace_digest": "493be642e0de6052bbc9c1a5e7343e9dc9f3b70457c0dbeef80445f4bdffdde9",
-  "timestamp": 1794677537
+  "workspace_digest": "50866630fa85edb29c2e88c4a1cab3871b39c4317b5c51ffbad47970110be048",
+  "timestamp": 1794682446,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "I approve",
+    "where": "Claude Code desktop chat, 2026-11-14, answering that #253 was reopened and re-verified on current main",
+    "recorded_by": "claude-code"
+  }
 }
