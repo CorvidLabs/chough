@@ -13,6 +13,13 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>#217: fledge run flake-window computes Chough&apos;s two-week clean…</title>
+<id>urn:chough:journal:2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean</id>
+<updated>2026-11-14T17:34:54Z</updated>
+<link href="2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>#219: integrations/ ships versioned example hc templates for Claude Code</title>
 <id>urn:chough:journal:2026-11-14-219-integrations-ships-versioned-example-hc-templates-for</id>
 <updated>2026-11-14T17:34:03Z</updated>
@@ -136,13 +143,6 @@
 <id>urn:chough:journal:2026-11-12-chough-0-6-0-human-first-records</id>
 <updated>2026-11-12T14:35:01Z</updated>
 <link href="2026-11-12-chough-0-6-0-human-first-records.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Turn the MVP interview into intent and a 1.0 roadmap</title>
-<id>urn:chough:journal:2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap</id>
-<updated>2026-11-12T00:00:00Z</updated>
-<link href="2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
