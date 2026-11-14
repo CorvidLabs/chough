@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required",
+  "slug": "workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required",
+  "title": "Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)",
+  "description": "Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "ddc56e96ff77cb0313d7591bee61d5a4a2950f0e",
+  "created_at": 1794671384,
+  "updated_at": 1794671603,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "skills/chough-workflow/SKILL.md",
+    "skills/chough-workflow/references/stages.md",
+    ".agents/skills/chough-workflow/SKILL.md",
+    ".agents/skills/chough-workflow/references/stages.md",
+    "src/skill.rs",
+    "tests/skill_releases.rs",
+    "tests/fixtures/skill-releases/manifest.json",
+    "tests/package.rs",
+    "CHANGELOG.md",
+    ".chough/cases/cli.routine-fast-path.cases.toml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Guidance text in the shipped skill bundle and the digests that pin it; no requirement's wording or behavior changes.",
+  "acceptance_criteria": [
+    "The workflow skill's stage contract opens with a routine-change fast path: a bounded first read, the session and SpecSync commands in order, a delta for every affected spec, a stop at each human gate, and an early first edit; SKILL.md points to it; installed copies at the previous bundle update to it; the release corpus pins the new bytes."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "SKILL.md byte bound (tests/package.rs); release corpus pins (tests/skill_releases.rs); KNOWN_PREVIOUS for updatable copies (REQ-cli-016)",
+    "public_contract": "no"
+  }
+}
