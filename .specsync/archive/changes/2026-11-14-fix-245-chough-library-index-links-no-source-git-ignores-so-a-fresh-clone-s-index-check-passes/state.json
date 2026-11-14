@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes",
+  "slug": "fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes",
+  "title": "Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes",
+  "description": "Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "85304969e053e7477dff11d2ee53b6dddcb6a070",
+  "created_at": 1794579205,
+  "updated_at": 1794677547,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/vault.rs",
+    "tests/vault.rs",
+    "docs/cli.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough library index links no rule, skill, decision or policy file that Git ignores, so after chough init --host grok in a repository that ignores .grok, the index links nothing under .grok/ and library index --check passes in the working tree and in a fresh clone (red then green)"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif approved the scope at 2026-11-13T14:12Z ('Approve (Recommended)', relayed by t370): chough library index stops linking skill copies Git ignores, a small wording change (REQ-cli-043); t37f builds it; the chough init warning is a later, separate change. Outside a Git repository nothing is dropped. A failing test first; the exact file list; the full local suite before review.",
+    "public_contract": "yes"
+  }
+}
