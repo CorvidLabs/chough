@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes",
+  "implementation_commit": "d8cbdb39c52643cfa4863a721de2ac85221dce26",
+  "implementation_tree": "62a9fb1a3a3d8b1328dc919e36c9506693fc277a",
+  "contract_digest": "123a61549e2af07e69b02dcefefbf7c9db7d2749333417c54bd3445c4d6cee86",
+  "workspace_digest": "20c9c386c7635ef9faff00c19998825dc5ab7a37f9f257cf05558398d1f4cca4",
+  "closing_digest": "14d5bd007c6b3c87f5c69b741f21dd1f586bdb4015fe6cf5454762799f8ab7b8",
+  "review_digest": "09e69cb86af679f5f6e4ba4427081f61214aee0610392900b0f74f6e75e62b6b",
+  "finalization_digest": "b5d2bac045cecbc2cbbb9d40aeaf9fc76bc1723a43d5af3b7bbfab9fdefeb8f9",
+  "timestamp": 1794677546
+}
