@@ -13,6 +13,13 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>#219: integrations/ ships versioned example hc templates for Claude Code</title>
+<id>urn:chough:journal:2026-11-14-219-integrations-ships-versioned-example-hc-templates-for</id>
+<updated>2026-11-14T17:34:03Z</updated>
+<link href="2026-11-14-219-integrations-ships-versioned-example-hc-templates-for.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>Fix #245: the index links no source Git ignores</title>
 <id>urn:chough:journal:2026-11-14-fix-245-the-index-links-no-source-git-ignores</id>
 <updated>2026-11-14T17:33:02Z</updated>
@@ -136,13 +143,6 @@
 <id>urn:chough:journal:2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap</id>
 <updated>2026-11-12T00:00:00Z</updated>
 <link href="2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Return observation and case IDs from cases record and evidence add</title>
-<id>urn:chough:journal:2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence</id>
-<updated>2026-11-10T23:17:30Z</updated>
-<link href="2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
