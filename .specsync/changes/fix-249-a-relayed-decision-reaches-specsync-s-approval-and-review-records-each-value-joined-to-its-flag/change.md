@@ -1,6 +1,6 @@
 ---
 id: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
-state: draft
+state: approved
 type: bug_fix
 base_commit: d3138bed5495be77e66d35502a0891b156ffed8e
 ---

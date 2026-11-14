@@ -5,7 +5,7 @@ aliases: [249-relay-to-specsync]
 objective: "Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag"
 intent_scope: FLOW
 modules: [records, cli]
-stage: plan
+stage: test
 stage_status: active
 iteration: 1
 callers: []
@@ -16,7 +16,9 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: [2026-11-14-tc-cli-ship-relay-hyphen-values-join-their-flags]
+observations:
+  - 2026-11-14-tc-cli-ship-relay-hyphen-values-join-their-flags
+  - 2026-11-14-tc-cli-ship-relay-hyphen-values-join-their-flags-00f54b
 bugs: []
 blockers: []
 waiting_on_human:
@@ -24,12 +26,8 @@ waiting_on_human:
     holds: accept
     drives: review
     opened: 2026-11-14T19:23:31Z
-  - gate: Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
-    holds: plan
-    drives: approve
-    opened: 2026-11-14T19:24:33Z
 run_consents: []
-next: Continue plan
+next: Continue test
 ---
 # Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
 
@@ -42,10 +40,12 @@ Fix #249: a relayed decision reaches SpecSync's approval and review records, eac
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag": "approve" (Claude Code desktop chat, 2026-11-14, answering the scope summary for #288); recorded by claude-code; a relayed claim, not authenticated; ran specsync change approve fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag as 0xLeif
+- 0xLeif decided "Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag": "approve" (Claude Code desktop chat, 2026-11-14, answering the re-scoped #288 (Relay documented in the records spec)); recorded by claude-code; a relayed claim, not authenticated; ran specsync change approve fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag as 0xLeif
 
 ## What was verified
 
 - [Ran cargo test --locked --test change -- --exact ship_passes_a_relay_that_starts_with_a_hyphen_as_one_argument_per_field for TC-cli-ship-relay-hyphen-values-join-their-flags: passed (exit 0, tests run 1).](evidence/2026-11-14-tc-cli-ship-relay-hyphen-values-join-their-flags.md)
+- [Ran cargo test --locked --test change -- --exact ship_passes_a_relay_that_starts_with_a_hyphen_as_one_argument_per_field for TC-cli-ship-relay-hyphen-values-join-their-flags: passed (exit 0, tests run 1).](evidence/2026-11-14-tc-cli-ship-relay-hyphen-values-join-their-flags-00f54b.md)
 
 ## Open threads
 
@@ -129,4 +129,25 @@ Fix #249: a relayed decision reaches SpecSync's approval and review records, eac
   - revision: c1c1460078f70658bbe5332116ade161ae716f64
   - holds: plan
   - drives: approve
+  - by: claude-code
+- 2026-11-14T19:25:19Z · gate-closed · plan → plan · Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag ^t-c09e3b
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - revision: bcf921c319f4517914f551449d4d01c1dff2b1d7
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: approve
+    - where: Claude Code desktop chat, 2026-11-14, answering the re-scoped #288 (Relay documented in the records spec)
+    - recorded_by: claude-code
+    - native: specsync change approve fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+    - actor: 0xLeif
+  - by: claude-code
+- 2026-11-14T19:25:20Z · advance · plan → build · Scope re-approved by 0xLeif (relayed). ^t-6fead8
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - gate: native:approved
+  - revision: bcf921c319f4517914f551449d4d01c1dff2b1d7
+  - by: claude-code
+- 2026-11-14T19:25:20Z · advance · build → test · Build done; Relay documented; records exports 109/109. ^t-54fca1
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - gate: native:approved
+  - revision: bcf921c319f4517914f551449d4d01c1dff2b1d7
   - by: claude-code
