@@ -522,10 +522,29 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     Ok(0)
 }
 
-/// Print the short summary, at most [`SUMMARY_LINES`] lines (REQ-cli-059).
+/// The short summary's text, at most [`SUMMARY_LINES`] lines (REQ-cli-059). When
+/// the summary is longer, its last line names how many lines were dropped and
+/// points at `--json`, which prints every step's full report, so an agent loses
+/// nothing.
+fn short_summary(lines: &[String]) -> String {
+    let mut lines = lines.to_vec();
+    if lines.len() > SUMMARY_LINES {
+        // The cut's marker is the last line, so a cut keeps the first SUMMARY_LINES - 1
+        // lines and names the full report under --json rather than dropping silently.
+        let kept = SUMMARY_LINES - 1;
+        let dropped = lines.len() - kept;
+        lines.truncate(kept);
+        lines.push(format!(
+            "… {dropped} more lines; run with --json for the full report"
+        ));
+    }
+    lines.join("\n")
+}
+
+/// Print the short summary (REQ-cli-059).
 fn print_summary(lines: &[String]) -> Result<()> {
     let mut stdout = io::stdout().lock();
-    for line in lines.iter().take(SUMMARY_LINES) {
+    for line in short_summary(lines).lines() {
         writeln!(stdout, "{line}")?;
     }
     stdout.flush()?;
@@ -620,6 +639,31 @@ mod tests {
                 "{invalid}"
             );
         }
+    }
+
+    /// REQ-cli-059 (#276): a summary longer than [`SUMMARY_LINES`] is cut, and its
+    /// last line names the dropped lines and `--json` for the full report.
+    #[test]
+    fn the_summary_names_the_cut_and_json_when_it_is_longer_than_twelve_lines() {
+        let lines: Vec<String> = (1..=20).map(|n| format!("line {n}")).collect();
+        let summary = short_summary(&lines);
+        let printed: Vec<&str> = summary.lines().collect();
+        assert_eq!(printed.len(), SUMMARY_LINES, "{summary}");
+        assert_eq!(
+            printed[SUMMARY_LINES - 1],
+            "… 9 more lines; run with --json for the full report"
+        );
+        assert!(printed[SUMMARY_LINES - 1].contains("--json"));
+        assert_eq!(
+            printed[..SUMMARY_LINES - 1],
+            lines[..SUMMARY_LINES - 1]
+                .iter()
+                .map(|line| line.as_str())
+                .collect::<Vec<_>>()
+        );
+        // At the bound and under it, every line is printed whole and in order.
+        let short: Vec<String> = (1..=SUMMARY_LINES).map(|n| format!("line {n}")).collect();
+        assert_eq!(short_summary(&short), short.join("\n"));
     }
 
     #[test]
