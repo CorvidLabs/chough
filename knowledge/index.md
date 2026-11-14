@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Fix #249: a relayed decision reaches SpecSync's approval and review…](journal/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and.md) (2026-11-14, shipped)
 - [The leak check reads an scp-style host path](journal/2026-11-14-the-leak-check-reads-an-scp-style-host-path.md) (2026-11-14, shipped)
 - [#217: fledge run flake-window computes Chough's two-week clean…](journal/2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean.md) (2026-11-14, shipped)
 - [#219: integrations/ ships versioned example hc templates for Claude Code](journal/2026-11-14-219-integrations-ships-versioned-example-hc-templates-for.md) (2026-11-14, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [#217: seed the flake tracker](journal/2026-11-13-217-seed-the-flake-tracker.md) (2026-11-13, shipped)
 - [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
 - [Host-matrix harness](journal/2026-11-13-host-matrix-harness.md) (2026-11-13, shipped)
-- [Fix #246: migrate's preview names what doctor will report](journal/2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report.md) (2026-11-13, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag](../.specsync/archive/changes/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag/lesson-bundle.md), Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
 - [217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read](../.specsync/archive/changes/2026-11-14-217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read/lesson-bundle.md), #217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict
 - [219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a](../.specsync/archive/changes/2026-11-14-219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a/lesson-bundle.md), #219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune
-- [the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275](../.specsync/archive/changes/2026-11-14-the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275/lesson-bundle.md), The leak check flags an scp-style host path as the host name and the path it carries (#275)
 
 ## Snapshots and briefs
 
