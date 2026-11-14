@@ -7,11 +7,11 @@
   "title": "#217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict",
   "description": "#217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict",
   "kind": "feature",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "4a7a273b3ff6d617ef7475b8a19f28ff8ac22e4c",
   "created_at": 1794540952,
-  "updated_at": 1794677212,
+  "updated_at": 1794677658,
   "affected_specs": [
     "cli"
   ],
