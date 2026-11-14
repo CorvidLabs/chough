@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json](../.specsync/archive/changes/2026-11-14-fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json/lesson-bundle.md), Fix #276: mark a cut change ship summary with its line count and --json
 - [217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs](../.specsync/archive/changes/2026-11-13-217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs/lesson-bundle.md), #217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none
 - [217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each](../.specsync/archive/changes/2026-11-13-217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each/lesson-bundle.md), #217 bar 2: seed the flake tracker: the GitHub flake label on the known flake issues, and a note naming DRIVE-19 and each GitHub issue on the flake bug records
-- [host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in](../.specsync/archive/changes/2026-11-13-host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in/lesson-bundle.md), Host-matrix harness: one scripted Chough cycle per agent host, judged from the files, with a stand-in-host self-test in hosted CI on macOS and Linux
 
 ## Snapshots and briefs
 
