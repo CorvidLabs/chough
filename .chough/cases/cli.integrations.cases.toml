@@ -1,0 +1,110 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-integrations-templates"
+title = "Each example hc template has exactly hc's front matter, resumes with chough next, names an accepted init host and holds no local path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-24", "LIFE-22"]
+requirements = ["REQ-cli-065"]
+paths = ["integrations/README.md", "integrations/templates.toml", "integrations/claude-code/hc-template.md", "integrations/codex/hc-template.md", "integrations/kimi/hc-template.md", "integrations/grok/hc-template.md", "integrations/local/hc-template.md", "tests/integrations.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the integrations test each_template_has_hcs_front_matter_resumes_with_chough_next_and_holds_no_local_path passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "integrations"
+test = "each_template_has_hcs_front_matter_resumes_with_chough_next_and_holds_no_local_path"
+
+[[case]]
+id = "TC-cli-integrations-manifest"
+title = "integrations/templates.toml versions all five templates with their status and SHA-256"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-24", "LIFE-22"]
+requirements = ["REQ-cli-065"]
+paths = ["integrations/README.md", "integrations/templates.toml", "integrations/claude-code/hc-template.md", "integrations/codex/hc-template.md", "integrations/kimi/hc-template.md", "integrations/grok/hc-template.md", "integrations/local/hc-template.md", "tests/integrations.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the integrations test the_manifest_versions_every_template_with_its_digest passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "integrations"
+test = "the_manifest_versions_every_template_with_its_digest"
+
+[[case]]
+id = "TC-cli-integrations-digest-detects-change"
+title = "A changed template fails until a new version lists its digest, and a new digest at the same version or a repeated digest fails"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-24", "LIFE-22"]
+requirements = ["REQ-cli-065"]
+paths = ["integrations/README.md", "integrations/templates.toml", "integrations/claude-code/hc-template.md", "integrations/codex/hc-template.md", "integrations/kimi/hc-template.md", "integrations/grok/hc-template.md", "integrations/local/hc-template.md", "tests/integrations.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the integrations test a_changed_template_fails_until_a_new_version_lists_its_digest passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "integrations"
+test = "a_changed_template_fails_until_a_new_version_lists_its_digest"
+
+[[case]]
+id = "TC-cli-integrations-no-runtime-dependency"
+title = "Chough never starts hc, Herdr or Rune, and neither src/ nor the skill names Herdr or Rune"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-24", "LIFE-22"]
+requirements = ["REQ-cli-065"]
+paths = ["integrations/README.md", "integrations/templates.toml", "integrations/claude-code/hc-template.md", "integrations/codex/hc-template.md", "integrations/kimi/hc-template.md", "integrations/grok/hc-template.md", "integrations/local/hc-template.md", "tests/integrations.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the integrations test chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "integrations"
+test = "chough_never_starts_hc_herdr_or_rune_and_its_skill_never_names_them"
+
+[[case]]
+id = "TC-cli-integrations-readme"
+title = "The integrations README names every template and says the folder is optional with no runtime dependency"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-24", "LIFE-22"]
+requirements = ["REQ-cli-065"]
+paths = ["integrations/README.md", "integrations/templates.toml", "integrations/claude-code/hc-template.md", "integrations/codex/hc-template.md", "integrations/kimi/hc-template.md", "integrations/grok/hc-template.md", "integrations/local/hc-template.md", "tests/integrations.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the integrations test the_readme_names_every_template_and_says_chough_has_no_runtime_dependency passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "integrations"
+test = "the_readme_names_every_template_and_says_chough_has_no_runtime_dependency"
+
+[[case]]
+id = "TC-cli-integrations-skill-file-exists-after-init"
+title = "Each template's skill file exists after its own chough init --host"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-22", "LIFE-24"]
+requirements = ["REQ-cli-065"]
+paths = ["integrations/README.md", "integrations/templates.toml", "integrations/claude-code/hc-template.md", "integrations/codex/hc-template.md", "integrations/kimi/hc-template.md", "integrations/grok/hc-template.md", "integrations/local/hc-template.md", "tests/integrations.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the integrations test each_templates_skill_file_exists_after_its_own_chough_init passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "integrations"
+test = "each_templates_skill_file_exists_after_its_own_chough_init"

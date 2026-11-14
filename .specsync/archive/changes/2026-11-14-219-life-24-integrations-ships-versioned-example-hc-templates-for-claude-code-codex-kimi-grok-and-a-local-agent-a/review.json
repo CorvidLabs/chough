@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "8306f4c3d7314cab68fbed6ef6d0836a1d8bde07",
+  "contract_digest": "f31c1a14f696a0fcedd3feabcf44c3e0509c23f4f00173c1b600836e23d28e59",
+  "execution_digest": "547ee33d7de0a5fff13185475e1177e7031d4bb9f5c4ce0f98cd5e9d1c91e17b",
+  "workspace_digest": "493be642e0de6052bbc9c1a5e7343e9dc9f3b70457c0dbeef80445f4bdffdde9",
+  "timestamp": 1794677537
+}

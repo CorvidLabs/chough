@@ -1,0 +1,57 @@
+# Versioned example hc templates (REQ-cli-065). One entry per integrations/<host>/hc-template.md.
+# Each template keeps an ordered list of its versions. When you change a template, append
+# { version = <next>, sha256 = "<the new file's SHA-256>" } to its versions (shasum -a 256
+# <file>) and never edit a listed entry. tests/integrations.rs fails until the newest
+# entry is the file's digest, the versions run 1, 2, 3 in order, and no digest repeats;
+# it cannot see an in-place edit of a listed entry, which review checks in the diff.
+schema = "chough-integrations/1"
+
+[[template]]
+host = "claude-code"
+file = "integrations/claude-code/hc-template.md"
+name = "chough-claude"
+init_host = "claude"
+status = "supported"
+versions = [
+  { version = 1, sha256 = "c8ff86ab08d0025b4441e1198cc7cd6fa7ef28b81ae084ecc7108568368fd985" },
+]
+
+[[template]]
+host = "codex"
+file = "integrations/codex/hc-template.md"
+name = "chough-codex"
+init_host = "openai"
+status = "supported"
+versions = [
+  { version = 1, sha256 = "eb7b0a11bdbed966718ac3dbd5728af53bc38f250eb527af39aec77a584cd97d" },
+]
+
+[[template]]
+host = "kimi"
+file = "integrations/kimi/hc-template.md"
+name = "chough-kimi"
+init_host = "openai"
+status = "supported"
+versions = [
+  { version = 1, sha256 = "69c740ffd1ed47aee46a4ef32140c26364b28e6909b58f53feef52df84915d5a" },
+]
+
+[[template]]
+host = "grok"
+file = "integrations/grok/hc-template.md"
+name = "chough-grok"
+init_host = "openai"
+status = "supported"
+versions = [
+  { version = 1, sha256 = "2687d6e56b12bceec9e976d26464b4d15e4c67fbbb3a7842d0e819dfaa0a8a56" },
+]
+
+[[template]]
+host = "local"
+file = "integrations/local/hc-template.md"
+name = "chough-local"
+init_host = "openai"
+status = "unqualified"
+versions = [
+  { version = 1, sha256 = "d5a3832fb9485df343d753544058b91a3dfd6aefb171b044db585b8944197bdd" },
+]
