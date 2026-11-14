@@ -13,6 +13,13 @@
 <category term="shipped"/>
 </entry>
   <entry>
+<title>Fix #245: the index links no source Git ignores</title>
+<id>urn:chough:journal:2026-11-14-fix-245-the-index-links-no-source-git-ignores</id>
+<updated>2026-11-14T17:33:02Z</updated>
+<link href="2026-11-14-fix-245-the-index-links-no-source-git-ignores.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
 <title>Give agents, local models included</title>
 <id>urn:chough:journal:2026-11-14-give-agents-local-models-included</id>
 <updated>2026-11-14T16:18:53Z</updated>
@@ -136,13 +143,6 @@
 <id>urn:chough:journal:2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence</id>
 <updated>2026-11-10T23:17:30Z</updated>
 <link href="2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Keep gated finished sessions open on session use and new (#181)</title>
-<id>urn:chough:journal:2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181</id>
-<updated>2026-11-10T23:06:59Z</updated>
-<link href="2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
