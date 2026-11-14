@@ -358,13 +358,19 @@ fn urls(value: &str) -> Vec<(usize, usize)> {
 
 /// Whether the name at `start..end` names a host: inside a path, as a component after a
 /// `/` or `\` or before a `/`, inside a URL, or after `<user>@` (REQ-records-006). A `\`
-/// after the name is not a separator, since in TOML or JSON it escapes a quote.
+/// after the name is not a separator, since in TOML or JSON it escapes a quote. An scp-style
+/// remote path, `<host>:/<absolute path>`, names the host and the absolute path it names on
+/// it, so the host is in context there like it is in a path (REQ-records-006).
 fn names_a_host(bytes: &[u8], start: usize, end: usize, urls: &[(usize, usize)]) -> bool {
     let in_path =
         (start > 0 && matches!(bytes[start - 1], b'/' | b'\\')) || bytes.get(end) == Some(&b'/');
     let at_host = start >= 2 && bytes[start - 1] == b'@' && name_byte(bytes[start - 2]);
     let in_url = urls.iter().any(|(from, to)| *from <= start && end <= *to);
-    in_path || at_host || in_url
+    let scp = bytes.get(end) == Some(&b':')
+        && bytes
+            .get(end + 1)
+            .is_some_and(|byte| *byte == b'/' || *byte == b'\\');
+    in_path || at_host || in_url || scp
 }
 
 fn names(local: &Local, value: &str, all: &mut Vec<Match>) {
@@ -899,5 +905,67 @@ mod tests {
         }
         let dotted = Local::new(None, Some("pebble.lan"));
         assert_eq!(kinds(&dotted, "a pebble"), Vec::<&str>::new());
+    }
+
+    /// REQ-records-006, TC-records-scp-style-host-path: a value holding an scp-style
+    /// remote path, `<host>:/<absolute path>`, is checked like the path it carries; a home
+    /// or system root after the colon refuses as a path leak, and the host part counts as
+    /// the local host name when it matches, in the write guard and in doctor's scan alike.
+    /// Every host name here is synthetic, never this machine's.
+    #[test]
+    fn an_scp_style_remote_path_is_checked_like_the_path_it_carries() {
+        let local = Local::new(Some("SYNTHETICuser"), Some("brp"));
+        let kinds = |local: &Local, value: &str| -> Vec<&'static str> {
+            find(local, value)
+                .iter()
+                .map(|found| found.kind.name())
+                .collect()
+        };
+
+        for placed in [
+            "brp:/Users/SYNTHETIC-person/project",
+            "brp:/home/SYNTHETIC-person/project",
+            "ssh brp:/Users/SYNTHETIC-person/project",
+        ] {
+            assert_eq!(
+                kinds(&local, placed),
+                ["host-name", "home-path"],
+                "{placed:?}"
+            );
+            let error = check(&local, "lessons", placed).unwrap_err().to_string();
+            assert!(
+                error.starts_with("refused:leak: lessons holds home-path, host-name"),
+                "{error}"
+            );
+            assert_eq!(
+                find_in_case_definition(&local, placed).len(),
+                2,
+                "{placed:?}"
+            );
+        }
+        assert_eq!(
+            kinds(&local, "brp:/tmp/SYNTHETIC-scratch/x"),
+            ["host-name", "system-path"]
+        );
+        let error = check(&local, "lessons", "brp:/tmp/SYNTHETIC-scratch/x")
+            .unwrap_err()
+            .to_string();
+        assert!(
+            error.starts_with("refused:leak: lessons holds host-name, system-path"),
+            "{error}"
+        );
+        // The host part names the local host, so it is a host-name leak even when the path
+        // it names is not under a leak root; a host that is not this machine's is not, while
+        // the path it names is still checked as a path.
+        assert_eq!(kinds(&local, "brp:/srv/data"), ["host-name"]);
+        assert_eq!(
+            kinds(&local, "other:/Users/SYNTHETIC-person/x"),
+            ["home-path"]
+        );
+        // With --redact each part is replaced, counting both of them.
+        assert_eq!(
+            redact(&local, "see brp:/Users/SYNTHETIC-person/project").0,
+            "see <redacted:host-name>:<redacted:home-path>"
+        );
     }
 }

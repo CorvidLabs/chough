@@ -301,13 +301,19 @@ matter and body, for (REQ-records-006):
   and a `~/` path;
 - the local host name anywhere when it is at least 8 characters long or holds a digit,
   a hyphen or a dot, and a shorter all-letter host name, which may be an ordinary word,
-  only inside a path or a URL or as `<user>@<host>`, so a word that happens to be this
-  machine's name is written;
+  only inside a path or a URL or as `<user>@<host>`, or as the `<host>:/<absolute path>`
+  of an scp-style remote path, so a word that happens to be this machine's name is
+  written;
 - the local user name inside a path or as `<user>@<host>`;
 - an email address;
 - credentials: GitHub, GitLab, Slack, AWS and model-provider token forms, private key
   blocks, bearer and basic authorization values, JSON web tokens, and `password`,
   `secret`, `token` or `api_key` assignments with a value of 8 or more characters.
+
+An scp-style remote path, `<host>:/<absolute path>`, is checked like the path it
+carries, so a home or system root after the colon refuses as a path leak and the host
+part is checked as the local host name when it matches, in the write guard and in
+`chough doctor` alike.
 
 A match refuses the write as `refused:leak`, naming the field and the kind of match
 (`home-path`, `system-path`, `windows-path`, `host-name`, `user-name`, `email`, `token`,

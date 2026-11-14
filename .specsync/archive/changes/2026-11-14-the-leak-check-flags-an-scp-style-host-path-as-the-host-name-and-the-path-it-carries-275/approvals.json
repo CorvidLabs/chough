@@ -1,0 +1,220 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794677568,
+      "digest": "e9720ad79e476222b1de41f7d4f7f6b32b03ea10565d674b0421d3bf8338cb81",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275",
+        "title": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
+        "description": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.leaks.cases.toml",
+          ".chough/cases/records.scp-host-path.cases.toml",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/leaks.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A committed value holding an scp-style remote path <host>:/<absolute path> is refused as a path leak when a home or system root follows the colon, and its host part is refused as a host-name leak when it is the local host, in the write guard, --redact and doctor's scan alike."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "REQ-records-006 leak rules; the 0.6.1 short-host-name lesson (an ordinary word equal to a short host name is not a leak)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "records": "66bc9eb77005113ca62e7ce40a3760e1532f953d132c7970513225d73e374c5e"
+      },
+      "approved_delta_bases": {
+        "records: REQUIREMENT REQ-records-006": "0f977dbc865b46937eaa1869121d2cdd696c7abe4fedbfbfcca41609e6538e99"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794677791,
+      "digest": "e9720ad79e476222b1de41f7d4f7f6b32b03ea10565d674b0421d3bf8338cb81",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275\": \"0xLeif ran: specsync change approve the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275 --actor 0xLeif\" (0xLeif's own terminal in the Claude Code desktop app, 2026-11-14; the native approval is already recorded). Relayed and recorded by claude-code at 2026-11-14T17:36:30Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275",
+        "title": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
+        "description": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.leaks.cases.toml",
+          ".chough/cases/records.scp-host-path.cases.toml",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/leaks.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A committed value holding an scp-style remote path <host>:/<absolute path> is refused as a path leak when a home or system root follows the colon, and its host part is refused as a host-name leak when it is the local host, in the write guard, --redact and doctor's scan alike."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "REQ-records-006 leak rules; the 0.6.1 short-host-name lesson (an ordinary word equal to a short host name is not a leak)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "records": "66bc9eb77005113ca62e7ce40a3760e1532f953d132c7970513225d73e374c5e"
+      },
+      "approved_delta_bases": {
+        "records: REQUIREMENT REQ-records-006": "0f977dbc865b46937eaa1869121d2cdd696c7abe4fedbfbfcca41609e6538e99"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794678292,
+      "digest": "aa32e4b1e8acf00027b7714cdd83f80ab69abcc511b5b13b4db6df7deefef56b",
+      "note": "Same-PR finalization closing digest"
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794680296,
+      "digest": "f7ea39b13d22c5136729c5ef8af0899f10c9731ea1e4ba424ad3500fb539c23e",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [
+    {
+      "schema_version": 1,
+      "change_id": "the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275",
+      "actor": "0xLeif",
+      "reason": "Merged main after #280 merged; the #275 fix is unchanged.",
+      "timestamp": 1794679373,
+      "from_state": "archived",
+      "to_state": "verifying",
+      "superseded_approval": {
+        "gate": "finalization",
+        "actor": "specsync:finalization",
+        "timestamp": 1794678292,
+        "digest": "aa32e4b1e8acf00027b7714cdd83f80ab69abcc511b5b13b4db6df7deefef56b",
+        "note": "Same-PR finalization closing digest"
+      },
+      "prior_verification": {
+        "timestamp": 1794677794,
+        "commit": "40db11b291c1ce4e4201589a384269142f040302",
+        "contract_digest": "e9720ad79e476222b1de41f7d4f7f6b32b03ea10565d674b0421d3bf8338cb81",
+        "execution_digest": "bd6239fd59e643c4e8f579b96536182b45aa56c8f290927848bed0e97f3f4ab1",
+        "workspace_digest": "09ef790f919984c585a30ef7478997c6160d5f7d93af77c6d953eab4bf0338c4",
+        "acceptance_input_digest": "d1923889d964a5c8237b172a994df5f0a3a8537beb223b8bd2bde733b3d0b52e",
+        "acceptance_manifest": {
+          "schema_version": 1,
+          "entries": [
+            {
+              "path": ".chough/cases/records.leaks.cases.toml",
+              "kind": "file",
+              "mode": 33188,
+              "payload_digest": "29abd83ffe1e46fae7b0655429708d0e36ccb3f1a62ea72ba43cdc228edaf513",
+              "entry_digest": "2204150e729f77ffb6d586000ad379bd59e7008032600de1fd8140ccf9f9e70c",
+              "owners": [
+                "@exact:delivery"
+              ]
+            },
+            {
+              "path": ".chough/cases/records.scp-host-path.cases.toml",
+              "kind": "file",
+              "mode": 33188,
+              "payload_digest": "858042ed0486ede994c58259596b3ad1bf271ee4c8446c0b8a0c84c17e34bf9c",
+              "entry_digest": "54c2d0515e88961e24fc306271754ee60ff670a365dd34cb800b82ca8368ff8d",
+              "owners": [
+                "@exact:delivery"
+              ]
+            },
+            {
+              "path": "CHANGELOG.md",
+              "kind": "file",
+              "mode": 33188,
+              "payload_digest": "c4327461edfe3c10765d6d6852c14b5285cc44c4f8e30bb440e57913b0047960",
+              "entry_digest": "5a899f648e6b8254eede1252d06932822d419e36f293a95ca51789fd4e694284",
+              "owners": [
+                "@exact:delivery"
+              ]
+            },
+            {
+              "path": "docs/cli.md",
+              "kind": "file",
+              "mode": 33188,
+              "payload_digest": "6ffbb685399a4b5bd8b7433452f88776ac192091e4ae0314da6328c6d4468589",
+              "entry_digest": "a01a29482532f9141e5c86610ab5610154b5d39fa6e9708588e8be70d894d162",
+              "owners": [
+                "@exact:delivery"
+              ]
+            },
+            {
+              "path": "specs/records/records.spec.md",
+              "kind": "file",
+              "mode": 33188,
+              "payload_digest": "98d06f560dca94d5b55a5bb02d3b0c8460681f262c5c1627b250c6aea0ab867a",
+              "entry_digest": "4951b427ca3e7e0525f0a967b16f02673ad4db0179b79e8d89dac352839dbfd1",
+              "owners": [
+                "records"
+              ]
+            },
+            {
+              "path": "specs/records/requirements.md",
+              "kind": "file",
+              "mode": 33188,
+              "payload_digest": "66a976f57121c3a93e2e739a5a4cf2bb33d357873622b7f942cddde7df4af833",
+              "entry_digest": "5493ed01ea5226868b73446cdd90113414a675b56ba84bb346ce01cc4c29dfec",
+              "owners": [
+                "records"
+              ]
+            },
+            {
+              "path": "src/leaks.rs",
+              "kind": "file",
+              "mode": 33188,
+              "payload_digest": "62fb6a99b30563a6e55a2069f99a071091b2bc40f699a8c38d1462a8f6dc3f25",
+              "entry_digest": "bc06fe7fef61d042f5b04afec743538066acd5cd982a9c042a5ca0098d8f6f73",
+              "owners": [
+                "records"
+              ]
+            }
+          ]
+        },
+        "passed": true,
+        "commands": [
+          {
+            "command": "specsync check --spec records",
+            "success": true,
+            "exit_code": 0
+          }
+        ],
+        "requirement_ids": [
+          "REQ-records-006"
+        ]
+      },
+      "stale_acceptance_input_digest": "d1923889d964a5c8237b172a994df5f0a3a8537beb223b8bd2bde733b3d0b52e",
+      "current_acceptance_input_digest": "56a2ae95d7a632186ca331b2ae22aac1ec0d6fffbca0048b96101508f83220d2"
+    }
+  ]
+}
