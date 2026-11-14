@@ -5,7 +5,7 @@ aliases: [249-relay-to-specsync]
 objective: "Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag"
 intent_scope: FLOW
 modules: [records, cli]
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: []
 observations: [2026-11-14-tc-cli-ship-relay-hyphen-values-join-their-flags]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+    holds: accept
+    drives: review
+    opened: 2026-11-14T19:23:31Z
 run_consents: []
-next: Continue test
+next: Continue accept
 ---
 # Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
 
@@ -88,4 +92,15 @@ Fix #249: a relayed decision reaches SpecSync's approval and review records, eac
   - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
   - gate: native:approved
   - revision: 29ab84774fbabc23ced2eeae6940d4d35b0ce3af
+  - by: claude-code
+- 2026-11-14T19:23:31Z · advance · test → accept · Native check passed; the hyphen case passed. ^t-8f77e3
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - gate: native:verifying
+  - revision: 4b6c8d334e57eb17cd5bfb5e9fa6de25b9541308
+  - by: claude-code
+- 2026-11-14T19:23:31Z · gate-opened · accept → accept · Implementation review of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag ^t-40351c
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - revision: 4b6c8d334e57eb17cd5bfb5e9fa6de25b9541308
+  - holds: accept
+  - drives: review
   - by: claude-code
