@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275",
+  "slug": "the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275",
+  "title": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
+  "description": "The leak check flags an scp-style host path as the host name and the path it carries (#275)",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "9b729e908adf30b6511531776f6976b1afd01395",
+  "created_at": 1794676491,
+  "updated_at": 1794676502,
+  "affected_specs": [
+    "records"
+  ],
+  "affected_paths": [
+    "src/leaks.rs",
+    "specs/records/requirements.md",
+    "specs/records/records.spec.md",
+    "docs/cli.md",
+    "CHANGELOG.md",
+    ".chough/cases/records.scp-host-path.cases.toml",
+    ".chough/cases/records.leaks.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A committed value holding an scp-style remote path <host>:/<absolute path> is refused as a path leak when a home or system root follows the colon, and its host part is refused as a host-name leak when it is the local host, in the write guard, --redact and doctor's scan alike."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "REQ-records-006 leak rules; the 0.6.1 short-host-name lesson (an ordinary word equal to a short host name is not a leak)",
+    "public_contract": "yes"
+  }
+}
