@@ -5,7 +5,7 @@ aliases: [integrations-templates]
 objective: "#219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)"
 intent_scope: LIFE
 modules: [cli]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -71,13 +71,9 @@ bugs:
   - 2026-11-13-the-grok-template-opens-a-skill-file-its-own-chough-init-does
   - 2026-11-13-a-changed-integrations-template-passes-with-its-version
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
-    holds: accept
-    drives: review
-    opened: 2026-11-13T14:56:14Z
+waiting_on_human: []
 run_consents: []
-next: t384's re-review, then Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay
+next: Continue done
 ---
 # #219: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, with a README saying Chough has no runtime dependency on hc, Herdr or Rune (REQ-cli-065)
 
@@ -102,6 +98,7 @@ next: t384's re-review, then Leif's implementation review (relayed by t370), the
 - TC-cli-integrations-digest-detects-change now unit-tests the manifest checker (version_problems) on made-up data, so it passed at the red commit 2cf5facb by construction; the red-first proof for the version rule is TC-cli-integrations-manifest, red at 2cf5facb
 - Grok's template uses --host openai, the shared .agents copy, not --host grok: --host grok installs only .grok/skills, while a project set up for any other host has .agents/skills; one row of the approved design table said grok (reported to t370)
 - Leif decided "Approve the narrowed scope of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a": "Claude, Codex, Kimi, Grok + local (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q4 'Which hosts get an example template?' for #219; re-recorded after the send-back for REQ-cli-065's narrowed version wording (t384's re-review of #253): the coordinator claude-code-t370 checked the narrowed wording against this pick and judged it aligned on 2026-11-13 after Leif's 14:14Z approvals, under Leif's standing rule that the coordinator approves aligned requirement wording (coordinator chat, 2026-11-11); relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change approve 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a as 0xLeif
+- 0xLeif decided "Implementation review of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a": "0xLeif ran: specsync change review 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a --reviewer 0xLeif --verdict pass" (0xLeif's own terminal in the Claude Code desktop app, 2026-11-14; the native review is already recorded at 8306f4c); recorded by claude-code; a relayed claim, not authenticated; no native review ran (--no-native)
 
 ## What was verified
 
@@ -299,3 +296,17 @@ next: t384's re-review, then Leif's implementation review (relayed by t370), the
   - holds: accept
   - drives: review
   - by: claude-code (hc t38r)
+- 2026-11-14T17:34:00Z · gate-closed · accept → accept · Implementation review of 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a ^t-4431bd
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - revision: 31996ff0a43d0674c8df80f9a9631c6d3ecbffa3
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: 0xLeif ran: specsync change review 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a --reviewer 0xLeif --verdict pass
+    - where: 0xLeif's own terminal in the Claude Code desktop app, 2026-11-14; the native review is already recorded at 8306f4c
+    - recorded_by: claude-code
+  - by: claude-code
+- 2026-11-14T17:34:01Z · advance · accept → done · native:archived ^t-571007
+  - native_change: 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a
+  - gate: native:archived
+  - revision: 31996ff0a43d0674c8df80f9a9631c6d3ecbffa3
+  - by: claude-code
