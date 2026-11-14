@@ -1,6 +1,6 @@
 ---
 id: workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required
-state: approved
+state: implementing
 type: feature
 base_commit: ddc56e96ff77cb0313d7591bee61d5a4a2950f0e
 ---

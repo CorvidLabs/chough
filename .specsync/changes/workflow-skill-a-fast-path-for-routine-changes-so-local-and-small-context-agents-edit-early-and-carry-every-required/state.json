@@ -7,10 +7,11 @@
   "title": "Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)",
   "description": "Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "ddc56e96ff77cb0313d7591bee61d5a4a2950f0e",
   "created_at": 1794671384,
-  "updated_at": 1794671965,
+  "updated_at": 1794671989,
   "affected_specs": [
     "cli"
   ],

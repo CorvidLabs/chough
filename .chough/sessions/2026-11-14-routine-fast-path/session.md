@@ -5,7 +5,7 @@ aliases: [routine-fast-path]
 objective: Give agents, local models included, a short fast path through the workflow skill for routine changes (LIFE-22)
 intent_scope: LIFE
 modules: [cli]
-stage: build
+stage: test
 stage_status: active
 iteration: 1
 callers: []
@@ -16,12 +16,12 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations: [2026-11-14-tc-cli-skill-routine-fast-path]
 bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue test
 ---
 # Give agents, local models included, a short fast path through the workflow skill for routine changes (LIFE-22)
 
@@ -36,6 +36,8 @@ Give agents, local models included, a short fast path through the workflow skill
 - 0xLeif decided "Scope approval of workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required": "0xLeif ran: specsync change approve workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required --actor 0xLeif" (0xLeif's own terminal in the Claude Code desktop app, 2026-11-14; the native approval is already recorded); recorded by claude-code; a relayed claim, not authenticated; ran specsync change approve workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test package -- --exact the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change for TC-cli-skill-routine-fast-path: passed (exit 0, tests run 1).](evidence/2026-11-14-tc-cli-skill-routine-fast-path.md)
 
 ## Open threads
 
@@ -81,4 +83,9 @@ Give agents, local models included, a short fast path through the workflow skill
   - native_change: workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required
   - gate: native:approved
   - revision: 1ba9f702814a7d879cb9786c34bf5ce19d88e476
+  - by: claude-code
+- 2026-11-14T15:59:47Z · advance · build → test · Build is done in 1ba9f70; fmt, test and lint passed. ^t-a5a6f4
+  - native_change: workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required
+  - gate: native:approved
+  - revision: 94af1a8a87582e6ba23acb16bcf400fc7f2a06d7
   - by: claude-code
