@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275",
+  "implementation_commit": "40db11b291c1ce4e4201589a384269142f040302",
+  "implementation_tree": "1a0a1e9e9f0aa4fb34e614e1955cd01ae1712b22",
+  "contract_digest": "e9720ad79e476222b1de41f7d4f7f6b32b03ea10565d674b0421d3bf8338cb81",
+  "workspace_digest": "09ef790f919984c585a30ef7478997c6160d5f7d93af77c6d953eab4bf0338c4",
+  "closing_digest": "aa32e4b1e8acf00027b7714cdd83f80ab69abcc511b5b13b4db6df7deefef56b",
+  "review_digest": "31e2bf7a8655dbed4f87f080c9df2a8aeab743c5ce541f5df6a67bf78ea0b636",
+  "finalization_digest": "d196b9abb1400ea8e5c3dd475b576bbdc3836f37748ea5b4c6127f89af725791",
+  "timestamp": 1794678292
+}
