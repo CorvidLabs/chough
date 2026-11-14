@@ -1,6 +1,6 @@
 {
   "current_bundle_sha256": {
-    "SKILL.md": "fb5c6b572897cc3838bca579bc92de3fe08385d80ebd97d0e447e7fa593f766c",
+    "SKILL.md": "c6c0b4fea98dad74a3b2505bb33e1ebf9e154cf4bb7356fa9959af71bf0b2a40",
     "agents/openai.yaml": "e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0",
     "references/accept.md": "b063138264e63d1aeb528163e90e5ec6da036ec96aa883145fd8c3d3d5796eb7",
     "references/bugs.md": "a81ae65f51ded7a9e09901f21b881ae47a1652e7722298df8d9d0470ccc876c1",
@@ -13,7 +13,7 @@
     "references/plan.md": "06c450931a6c6dd6fdeb0bca5afcce984bad36239a6b21e7fe50e17e135b0fdd",
     "references/release.md": "77aaf7a6a8538b44f232f845b9bcbc609e2b369527aaf512b5d4f63316bb1ed9",
     "references/roles.md": "4995658517849e80e567a73eaf0399ec51123549a7e94649a17afa35ec40f20d",
-    "references/stages.md": "de8db3cb911d4b4cebf836be8c8dfcbf631b54ad663a75eab0345d392dddac46",
+    "references/stages.md": "dd6b1fcdbec31f75afbb0c89211d6490782fb9da20c1f0ab72690b1dbf54a1c6",
     "references/testing.md": "0389a3c78be3736e46ccdc2463f959fc7ca580ab22e9ae1a30222c72fcba5ec0",
     "references/validate.md": "1fd485b0b4720f6016a84015df958e17a9edf5fb1ccaecb9c9d8b2ad7e784f45",
     "templates/brief.md": "816e40ecd47f39ac62e8f0f5e84a9e6277e3470221df1d9c80fff9d6bccb378e",

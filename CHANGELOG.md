@@ -6,6 +6,11 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The workflow skill's stage contract opens with a fast path for a routine change: a
+  bounded first read, the session and native-change commands in order, a delta for every
+  affected spec, a stop at each human gate, an early first edit and the checks, so a
+  local or small-context agent edits early instead of surveying the repository. SKILL.md
+  routes to it, and an installed copy of the previous bundle updates to it (LIFE-22).
 - CI also runs once a day on main at 05:23 UTC, so the flake window sees macOS and
   Linux every day even when nothing merges. On a scheduled run the `SpecSync Archive`
   jobs take the run's own commit as their trusted base, since the event has neither a
