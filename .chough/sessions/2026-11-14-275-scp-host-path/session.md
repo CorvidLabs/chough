@@ -5,7 +5,7 @@ aliases: [275-scp-host-path]
 objective: The leak check reads an scp-style host path, host:/path, like the path it carries (#275)
 intent_scope: LIFE
 modules: [records]
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: []
 observations: [2026-11-14-tc-records-an-scp-style-host-path-is-checked-like-the-path-it]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275
+    holds: accept
+    drives: review
+    opened: 2026-11-14T17:40:21Z
 run_consents: []
-next: Continue test
+next: Continue accept
 ---
 # The leak check reads an scp-style host path, host:/path, like the path it carries (#275)
 
@@ -89,4 +93,15 @@ The leak check reads an scp-style host path, host:/path, like the path it carrie
   - native_change: the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275
   - gate: native:approved
   - revision: 2b617926f0f0d16dab31e83623bba0ad526a4773
+  - by: claude-code
+- 2026-11-14T17:40:21Z · advance · test → accept · Native check passed (a603f26); case TC-records-an-scp-style-host-path-is-checked-like-the-path-it-carries passed. ^t-a46c7c
+  - native_change: the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275
+  - gate: native:verifying
+  - revision: a603f26c58cd7c0680cf437778df374eda958750
+  - by: claude-code
+- 2026-11-14T17:40:21Z · gate-opened · accept → accept · Implementation review of the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275 ^t-701c98
+  - native_change: the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275
+  - revision: a603f26c58cd7c0680cf437778df374eda958750
+  - holds: accept
+  - drives: review
   - by: claude-code
