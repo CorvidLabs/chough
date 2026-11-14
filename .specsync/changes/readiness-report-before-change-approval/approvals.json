@@ -1,0 +1,59 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794690351,
+      "digest": "6331b2a06710fdd6462cc4eeb869c23f1831e3ac0ba15e678d7abffa2bb3390c",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of readiness-report-before-change-approval\": \"Approve this scope (Recommended)\" (Grok chat, 2026-11-14, choosing the option Approve this scope for this change's scope question. Relayed by grok (hc t1w).). Relayed and recorded by grok-t1w at 2026-11-14T21:05:51Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "readiness-report-before-change-approval",
+        "title": "Readiness report before change approval",
+        "description": "Readiness report before change approval",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/plan.md",
+          ".agents/skills/chough-workflow/references/stages.md",
+          ".chough/cases/cli.change-ready.cases.toml",
+          "CHANGELOG.md",
+          "INTENT.md",
+          "README.md",
+          "docs/cli.md",
+          "hi/drive.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/stages.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/change.rs",
+          "src/main.rs",
+          "src/ready.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/package.rs",
+          "tests/ready.rs",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough change ready exits 0 when nothing is missing and 1 when a finding remains, and each finding names the command that fixes it."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "cli lessons: change check refuses while tasks.md has unchecked boxes, so human gates stay plain text; an approved delta is frozen; pub(crate) is reported as an undocumented export, so new items stay pub(super); do not list .chough/sessions in affected paths.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "19592df66baa36ae280f94f6b033b4ce6d21f8bda41d5d5877d88066cf586933"
+      },
+      "approved_delta_bases": {}
+    }
+  ],
+  "reopenings": []
+}

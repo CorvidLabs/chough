@@ -19,6 +19,8 @@ new` prints the lessons of the modules you declare.
    its `Acceptance Criteria` list (docs/cli.md, "A new project and its first change").
    The deltas name exactly the specs the change affects; check they exist before the
    scope approval, since SpecSync can call a draft ready without one.
+   Run `chough change ready <id>` before the scope approval. It lists everything
+   still missing and names the command that fixes each piece.
 4. Estimate meaningful increments with relative size and the main uncertainty. Do not
    invent precise hours. Run `chough timing` and use its history ranges (per stage, bug
    fix and human gate) as the basis: they are elapsed wall-clock time, not effort, and

@@ -6,6 +6,10 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough change ready <id>` lists everything still missing before a change is
+  approved and exits 1 when anything is missing. Each finding names the command
+  that fixes it, and the command changes no tracked file and no SpecSync hash
+  cache (REQ-cli-067, DRIVE-29).
 - A relayed gate close's native approval or review, including the review `chough change
   ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
   `--recorded-by`, so SpecSync's approval and review records hold the relayed decision

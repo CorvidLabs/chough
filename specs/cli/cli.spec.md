@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 97
+version: 98
 status: active
 files:
   - src/main.rs
@@ -10,6 +10,7 @@ files:
   - src/context.rs
   - src/doctor.rs
   - src/change.rs
+  - src/ready.rs
   - src/gates.rs
   - src/direct_writes.rs
   - src/evidence.rs
@@ -37,6 +38,7 @@ files:
   - tests/subdirectory.rs
   - tests/doctor.rs
   - tests/change.rs
+  - tests/ready.rs
   - tests/gates.rs
   - tests/direct_writes.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
@@ -377,3 +379,4 @@ provider, runtime or hosted service.
 | 95 | 2026-11-13 | 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a: #219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune |
 | 96 | 2026-11-14 | fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes: Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes |
 | 97 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
+| 98 | 2026-11-14 | readiness-report-before-change-approval: Readiness report before change approval |

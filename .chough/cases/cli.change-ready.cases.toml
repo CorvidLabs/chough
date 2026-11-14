@@ -1,0 +1,182 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-change-ready-draft-fixes"
+title = "A draft names each missing fix and passes once they are fixed, having changed no file"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs", "docs/cli.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test a_draft_names_each_missing_fix_and_passes_once_they_are_fixed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_draft_names_each_missing_fix_and_passes_once_they_are_fixed"
+
+[[case]]
+id = "TC-cli-change-ready-stale-delta"
+title = "A delta left unchanged while its canonical text changes is named until the body is rewritten"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test a_stale_delta_is_named_until_the_body_is_rewritten passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_stale_delta_is_named_until_the_body_is_rewritten"
+
+[[case]]
+id = "TC-cli-change-ready-carried-delta"
+title = "A delta that already carries the canonical move is not named"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test a_delta_that_already_carries_the_canonical_move_is_not_named passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_delta_that_already_carries_the_canonical_move_is_not_named"
+
+[[case]]
+id = "TC-cli-change-ready-undocumented-export"
+title = "An undocumented export in a declared file is named, and one outside the declaration is not"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test an_undocumented_export_in_a_declared_file_is_named passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "an_undocumented_export_in_a_declared_file_is_named"
+
+[[case]]
+id = "TC-cli-change-ready-cross-module-case"
+title = "A changed case that links another module's requirement is named with the owning module"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test a_case_that_links_another_modules_requirement_is_named passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_case_that_links_another_modules_requirement_is_named"
+
+[[case]]
+id = "TC-cli-change-ready-outside-path"
+title = "A changed file outside the declared paths is named, and a draft's fix is the full path list"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test a_changed_file_outside_the_declared_paths_is_named passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_changed_file_outside_the_declared_paths_is_named"
+
+[[case]]
+id = "TC-cli-change-ready-no-spec-change"
+title = "Every delta on a change that declares no spec change is named for removal"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test a_no_spec_change_names_every_delta_for_removal passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_no_spec_change_names_every_delta_for_removal"
+
+[[case]]
+id = "TC-cli-change-ready-unknown-change"
+title = "An unknown change id exits 1 and names chough change status"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test an_unknown_change_names_status passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "an_unknown_change_names_status"
+
+[[case]]
+id = "TC-cli-change-ready-missing-specsync"
+title = "When specsync cannot be started the report names the install command once"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test a_missing_specsync_names_the_install_command passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_missing_specsync_names_the_install_command"
+
+[[case]]
+id = "TC-cli-change-ready-fast-path"
+title = "The fast path names chough change ready between the delta and the scope approval"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["skills/chough-workflow/references/stages.md", "tests/package.rs"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the package test the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change"
