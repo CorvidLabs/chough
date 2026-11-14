@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json](../.specsync/archive/changes/2026-11-14-fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json/lesson-bundle.md), Fix #276: mark a cut change ship summary with its line count and --json
 - [workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required](../.specsync/archive/changes/2026-11-14-workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required/lesson-bundle.md), Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)
 - [217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs](../.specsync/archive/changes/2026-11-13-217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs/lesson-bundle.md), #217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none
-- [217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each](../.specsync/archive/changes/2026-11-13-217-bar-2-seed-the-flake-tracker-the-github-flake-label-on-the-known-flake-issues-and-a-note-naming-drive-19-and-each/lesson-bundle.md), #217 bar 2: seed the flake tracker: the GitHub flake label on the known flake issues, and a note naming DRIVE-19 and each GitHub issue on the flake bug records
 
 ## Snapshots and briefs
 
