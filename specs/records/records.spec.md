@@ -1,6 +1,6 @@
 ---
 module: records
-version: 5
+version: 6
 status: active
 files:
   - src/markdown.rs
@@ -208,3 +208,4 @@ use this one for every record they write.
 | 3 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
 | 4 | 2026-11-13 | 0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak: 0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak |
 | 5 | 2026-11-13 | fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply: Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply |
+| 6 | 2026-11-14 | the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries: The leak check now flags an scp-style host path, `host:/path`, as the host name and the path it carries |
