@@ -19,13 +19,9 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
-    holds: plan
-    drives: approve
-    opened: 2026-11-14T17:49:27Z
+waiting_on_human: []
 run_consents: []
-next: Read scoped intent and native status, then choose the next action within the authorized scope.
+next: "Gate \"Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag\" closed (approved); run `chough stage advance` to move on."
 ---
 # Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
 
@@ -36,6 +32,8 @@ Fix #249: a relayed decision reaches SpecSync's approval and review records, eac
 ## Where it stands
 
 ## Decisions and why
+
+- 0xLeif decided "Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag": "approve" (Claude Code desktop chat, 2026-11-14, answering the scope summary for #288); recorded by claude-code; a relayed claim, not authenticated; ran specsync change approve fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag as 0xLeif
 
 ## What was verified
 
@@ -57,4 +55,25 @@ Fix #249: a relayed decision reaches SpecSync's approval and review records, eac
   - revision: d3138bed5495be77e66d35502a0891b156ffed8e
   - holds: plan
   - drives: approve
+  - by: claude-code
+- 2026-11-14T19:20:35Z · direct-native-write · plan → plan · fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag's lifecycle records changed outside Chough: state.json changed; state stays draft ^t-697b31
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - revision: 9e2150ce9706454e86fb8696bd180bb26d2381df
+  - direct_write:
+    - change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+    - files:
+      - state.json: changed
+    - before_state: draft
+    - after_state: draft
+  - by: claude-code
+- 2026-11-14T19:20:35Z · gate-closed · plan → plan · Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag ^t-f75837
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - revision: 9e2150ce9706454e86fb8696bd180bb26d2381df
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: approve
+    - where: Claude Code desktop chat, 2026-11-14, answering the scope summary for #288
+    - recorded_by: claude-code
+    - native: specsync change approve fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+    - actor: 0xLeif
   - by: claude-code
