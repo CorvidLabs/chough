@@ -114,6 +114,13 @@
         "where": "Claude Code desktop chat, 2026-11-14, answering the re-scoped #288 (Relay documented in the records spec)",
         "recorded_by": "claude-code"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794686619,
+      "digest": "3e27b974c3bad4687ad9d64525fb587524e25adeaa29effc641df685fecfd2b6",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
