@@ -13,6 +13,13 @@ All notable changes to Chough are recorded here. The format follows
   partly skipped main run, any rerun, a filed flake and a day without a green main run
   on both macOS and Linux restart the window. It exits 2 when GitHub cannot be read in
   full. Its fixtures run in the `CI gate fixtures` job.
+- `integrations/` ships optional, versioned example hc templates for Claude Code,
+  Codex, Kimi, Grok and a local agent, the local one unqualified until #220
+  (REQ-cli-065, #219). Each has hc's three front-matter keys, resumes with
+  `chough next`, loads the skill file its own `chough init` creates and holds no local
+  path. `integrations/templates.toml` lists each template's status and an ordered list
+  of its versions with their SHA-256, and a README says Chough has no runtime
+  dependency on hc, Herdr or Rune.
 - The workflow skill's stage contract opens with a fast path for a routine change: a
   bounded first read, the session and native-change commands in order, a delta for every
   affected spec, a stop at each human gate, an early first edit and the checks, so a
@@ -36,6 +43,7 @@ All notable changes to Chough are recorded here. The format follows
   `.chough/README.md` no longer lists `artifacts/`; and the README's init paragraph
   names each host's skill directory in one sentence.
 - The intent gate summary in `chough gate list` gives each criterion the session references by ID with its sentence from the `hi/` file that holds it, and no diff line, and each delta at a scope gate says which requirement IDs it adds and which it modifies instead of "adds or modifies" (REQ-cli-061).
+- `chough library index` links no rule, skill, decision or policy file that Git ignores, such as a host's skill copy under an ignored `.grok/`, so `knowledge/index.md` is the same in a working tree and a fresh clone, and `library index --check` passes there (#245, REQ-cli-043).
 - `chough next` with no open session, the normal state after done, says so, names `chough session new <key>` and exits 0 instead of failing, while `chough status` still refuses; `chough timing` says elapsed wall-clock once, in its header, with no gate-wait, case run or fix-time line repeating it, and its native note no longer reads "read read-only" (REQ-cli-021, REQ-history-006, REQ-reporting-001).
 - At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).
 - `chough change ship` prints SpecSync's output, then a short text summary of at most 12
@@ -47,6 +55,10 @@ All notable changes to Chough are recorded here. The format follows
   name: such a name is a leak only inside a path or a URL or as `<user>@<host>`, while a
   host name of 8 or more characters, or holding a digit, a hyphen or a dot, is still
   refused anywhere, in writes and in `chough doctor` alike (REQ-records-006).
+- The leak check now flags an scp-style remote path, `host:/path`, as the host name and
+  the path it carries: a home or system root after the colon refuses as a path leak, and
+  the host part counts as the local host name when it matches, in writes and in
+  `chough doctor` alike (REQ-records-006, #275).
 
 ## [0.6.0] - 2026-11-12
 
