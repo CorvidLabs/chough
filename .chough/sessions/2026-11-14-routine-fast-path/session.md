@@ -5,7 +5,7 @@ aliases: [routine-fast-path]
 objective: Give agents, local models included, a short fast path through the workflow skill for routine changes (LIFE-22)
 intent_scope: LIFE
 modules: [cli]
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: []
 observations: [2026-11-14-tc-cli-skill-routine-fast-path]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required
+    holds: accept
+    drives: review
+    opened: 2026-11-14T16:03:14Z
 run_consents: []
-next: Continue test
+next: Continue accept
 ---
 # Give agents, local models included, a short fast path through the workflow skill for routine changes (LIFE-22)
 
@@ -88,4 +92,15 @@ Give agents, local models included, a short fast path through the workflow skill
   - native_change: workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required
   - gate: native:approved
   - revision: 94af1a8a87582e6ba23acb16bcf400fc7f2a06d7
+  - by: claude-code
+- 2026-11-14T16:03:14Z · advance · test → accept · Native check passed (b8f30a7), case TC-cli-skill-routine-fast-path passed, verify lane green. ^t-70369b
+  - native_change: workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required
+  - gate: native:verifying
+  - revision: e597cd3485ee2235f3faf00778acee7e9bd4a8ac
+  - by: claude-code
+- 2026-11-14T16:03:14Z · gate-opened · accept → accept · Implementation review of workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required ^t-4c5039
+  - native_change: workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required
+  - revision: e597cd3485ee2235f3faf00778acee7e9bd4a8ac
+  - holds: accept
+  - drives: review
   - by: claude-code
