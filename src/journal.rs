@@ -461,10 +461,17 @@ fn first_paragraph(record: &Record, heading: &str) -> String {
         .unwrap_or_default()
 }
 
-/// The claim of a What was verified line: the text before a receipt line's ` — ` and its
-/// command, so a post never copies an evidence ID into the vault (REQ-cli-044).
+/// The claim of a What was verified line: the text before a receipt line's ` - ` and its
+/// command, so a post never copies an evidence ID into the vault (REQ-cli-044). A line
+/// written before that join keeps its earlier separator until Chough re-archives it, so
+/// both are read.
 fn claim_of(line: &str) -> String {
-    line.split(" — ").next().unwrap_or(line).to_string()
+    let end = [" - ", " — "]
+        .into_iter()
+        .filter_map(|separator| line.find(separator))
+        .min()
+        .unwrap_or(line.len());
+    line[..end].to_string()
 }
 
 /// `text` as one plain line: Markdown links become their text, so a link relative to the

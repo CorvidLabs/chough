@@ -6,6 +6,13 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- A closed session's archived story writes its What was verified receipt lines with a
+  dash between the claim and the command or the first fingerprint digits, and the
+  journal reads the claim back from that join, so Chough's own records no longer carry
+  an em dash that fails the CorvidLabs prose lints and a migrated or re-archived story
+  lists each entry once (#278, REQ-history-006, REQ-records-009). The join is now ` - `,
+  and a line written before it keeps its earlier dash until the session is re-archived,
+  so both read.
 - A relayed gate close's native approval or review, including the review `chough change
   ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
   `--recorded-by`, so SpecSync's approval and review records hold the relayed decision
