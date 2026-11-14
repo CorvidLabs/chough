@@ -24,16 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Give agents, local models included](journal/2026-11-14-give-agents-local-models-included.md) (2026-11-14, shipped)
+- [#217: CI also runs once a day on main](journal/2026-11-13-217-ci-also-runs-once-a-day-on-main.md) (2026-11-13, shipped)
+- [#217: seed the flake tracker](journal/2026-11-13-217-seed-the-flake-tracker.md) (2026-11-13, shipped)
 - [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
+- [Host-matrix harness](journal/2026-11-13-host-matrix-harness.md) (2026-11-13, shipped)
+- [Fix #246: migrate's preview names what doctor will report](journal/2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report.md) (2026-11-13, shipped)
 - [Fix #247: the example waits past the failing run's second](journal/2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second.md) (2026-11-13, shipped)
 - [0.6.1: next with no open session exits 0, and timing says elapsed once](journal/2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says.md) (2026-11-13, shipped)
 - [0.6.1: at the observation cap, writes refuse before writing](journal/2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md) (2026-11-13, shipped)
 - [0.6.1: chough change ship prints a short summary](journal/2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md) (2026-11-13, shipped)
-- [0.6.1: src/stage.rs recorded for PR 4](journal/2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md) (2026-11-13, shipped)
-- [0.6.1: the intent gate summary shows what is approved](journal/2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md) (2026-11-13, shipped)
-- [0.6.1: a short host name in an ordinary word is not a leak](journal/2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md) (2026-11-13, shipped)
-- [Chough 0.6.0 marked published in the roadmap](journal/2026-11-13-chough-0-6-0-marked-published-in-the-roadmap.md) (2026-11-13, shipped)
-- [Chough 0.6.0 release prep: the dogfood cycle and four fresh-eyes rounds](journal/2026-11-13-chough-0-6-0-release-prep-the-dogfood-cycle-and-four-fresh.md) (2026-11-13, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
-- [0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s](../.specsync/archive/changes/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s/lesson-bundle.md), 0.6.1: record polish: a bug's Actual line stands apart, migrated front matter names the new entries, and a fresh project's records README and the README's init paragraph are trimmed
-- [fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun](../.specsync/archive/changes/2026-11-13-fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun/lesson-bundle.md), Fix #247: the verify lane's example waits past the failing run's second before its rerun
-- [0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once](../.specsync/archive/changes/2026-11-13-0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once/lesson-bundle.md), 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once
+- [fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json](../.specsync/archive/changes/2026-11-14-fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json/lesson-bundle.md), Fix #276: mark a cut change ship summary with its line count and --json
+- [workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required](../.specsync/archive/changes/2026-11-14-workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required/lesson-bundle.md), Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)
+- [217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs](../.specsync/archive/changes/2026-11-13-217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs/lesson-bundle.md), #217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none
 
 ## Snapshots and briefs
 

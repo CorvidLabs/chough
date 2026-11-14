@@ -6,6 +6,22 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- The workflow skill's stage contract opens with a fast path for a routine change: a
+  bounded first read, the session and native-change commands in order, a delta for every
+  affected spec, a stop at each human gate, an early first edit and the checks, so a
+  local or small-context agent edits early instead of surveying the repository. SKILL.md
+  routes to it, and an installed copy of the previous bundle updates to it (LIFE-22).
+- CI also runs once a day on main at 05:23 UTC, so the flake window sees macOS and
+  Linux every day even when nothing merges. On a scheduled run the `SpecSync Archive`
+  jobs take the run's own commit as their trusted base, since the event has neither a
+  pull request base nor a previous commit (REQ-cli-064, #217).
+- A host-matrix harness in `tools/host-matrix/` drives one scripted Chough cycle per
+  agent host, one fresh host run per turn, in a throwaway copy of the shipping sample.
+  It stands in for every human gate only as `SIMULATED-host-matrix-not-a-human` and
+  judges the result only from the files, Git and native status. Its self-test runs a
+  scripted stand-in host with no model, and hosted CI runs it on Ubuntu and macOS. Real
+  host adapters follow (REQ-cli-066, #218).
+- `chough migrate`'s preview and the receipt's `## Follow-up` also name what `chough doctor` will report on the migrated tree, from doctor's own session check run on the planned records: the finished sessions `chough doctor --fix` archives, and each session whose open human gates are on an archived native change, with each gate's text and the decision it needs, `chough doctor --fix --reason` (#246, REQ-records-009, REQ-cli-055).
 - The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
 - Record polish: a bug's actual behaviour is its own `Actual:` paragraph under What
   happened; `chough migrate` names each carried entry or receipt in front matter, its
@@ -18,8 +34,9 @@ All notable changes to Chough are recorded here. The format follows
 - At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).
 - `chough change ship` prints SpecSync's output, then a short text summary of at most 12
   lines naming the review, the ship, the gate close and the move into done, in place of
-  the gate close's long JSON report and the move's summary; `--json` prints every step's
-  full report (REQ-cli-059).
+  the gate close's long JSON report and the move's summary; when the summary is longer,
+  its last line names how many lines were dropped and points at `--json`, which prints
+  every step's full report (REQ-cli-059, #276).
 - The leak check no longer refuses an ordinary word that equals a short all-letter host
   name: such a name is a leak only inside a path or a URL or as `<user>@<host>`, while a
   host name of 8 or more characters, or holding a digit, a hyphen or a dot, is still

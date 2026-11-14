@@ -35,9 +35,13 @@ list at close, and the receipts. A row with an unrecorded step does not count.
 
 The flake tracker is a GitHub label (`flake`) plus one local bug record per flake in
 `.chough/bugs/`, which holds its failing runs, diagnostics and stress results in its
-Log (#217); there is no notes file under `docs/`. Known today: #187 (timing test under a full
-macOS verify, DRIVE-19) and #132 (fork/fd inheritance: ETXTBSY on stand-in
-scripts, held checkpoint lock).
+Log (#217); there is no notes file under `docs/`. Each record names DRIVE-19 and its
+issue as `GitHub #<n>` in a Log note. The label is the current list. It was seeded on
+2026-11-13 with three closed flakes and one open one:
+- #187: a timing test under a full macOS verify;
+- #132: fork and fd inheritance (ETXTBSY on stand-in scripts, a held checkpoint lock);
+- #169: a timing trace test straddling a second;
+- #247: the exercise's same-second race, still open.
 
 Rules:
 
@@ -117,3 +121,21 @@ Design:
   host, not the driver.
 - Before each release, the matrix run's receipts are linked from the release
   notes; a missing or failed host leg blocks the release.
+
+How it is built, after Leif's choices of 2026-11-13 (LIFE-27 to LIFE-30):
+
+- The harness is `tools/host-matrix/` (REQ-cli-066). Each host runs as plain
+  command-line runs, one per turn, with no Herdr; an hc template for watching a run is
+  optional (LIFE-27). Its self-test drives a scripted stand-in host with no model. It
+  must pass the good run and fail each known-bad run on the check that names it, and it
+  runs in hosted CI on Ubuntu and macOS. How it judges is in
+  [its README](../tools/host-matrix/README.md).
+- Per-host adapters follow in later changes at `integrations/<host>/adapter.sh`, beside
+  each host's hc template (#219).
+- The Linux legs run in a Docker container on Leif's own computer, with the agents'
+  logins passed in only for the run (LIFE-28).
+- The local-agent leg is generic: any local command-line agent, with one settings file
+  naming its command and model, counts once one full run passes and is recorded
+  (LIFE-29, #220).
+- From the next weekly release, a failed or missing leg blocks the release for every
+  host that already passes; the local agent joins once it is qualified (LIFE-30).

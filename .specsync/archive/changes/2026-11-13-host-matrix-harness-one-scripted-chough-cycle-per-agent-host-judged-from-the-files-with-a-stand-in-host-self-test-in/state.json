@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in",
+  "slug": "host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in",
+  "title": "Host-matrix harness: one scripted Chough cycle per agent host, judged from the files, with a stand-in-host self-test in hosted CI on macOS and Linux",
+  "description": "Host-matrix harness: one scripted Chough cycle per agent host, judged from the files, with a stand-in-host self-test in hosted CI on macOS and Linux",
+  "kind": "feature",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "598c4bc527007f9bebe53f7291e31130b2891561",
+  "created_at": 1794541871,
+  "updated_at": 1794579530,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".chough/cases/cli.host-matrix.cases.toml",
+    ".github/workflows/ci.yml",
+    "CHANGELOG.md",
+    "INTENT.md",
+    "docs/ci.md",
+    "docs/test-plan-1.0.md",
+    "fledge.toml",
+    "hi/life.md",
+    "tools/host-matrix/README.md",
+    "tools/host-matrix/acceptance.rs",
+    "tools/host-matrix/expected-shape.json",
+    "tools/host-matrix/prompts/common.md",
+    "tools/host-matrix/prompts/turn-1.md",
+    "tools/host-matrix/prompts/turn-2.md",
+    "tools/host-matrix/prompts/turn-3.md",
+    "tools/host-matrix/prompts/turn-4.md",
+    "tools/host-matrix/prompts/turn-5.md",
+    "tools/host-matrix/run.sh",
+    "tools/host-matrix/selftest.sh",
+    "tools/host-matrix/shape.sh",
+    "tools/host-matrix/stand-in/adapter.sh",
+    "tools/host-matrix/stand-in/agent.sh"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "sh tools/host-matrix/selftest.sh prints HOST MATRIX SELFTEST PASSED on macOS and on Linux: the stand-in good run is PASS and each known-bad run is FAIL on the check that names it",
+    "Hosted CI runs the self-test as Host matrix self-test on ubuntu-latest and macos-latest",
+    "The harness never records a decision in a person name: every stand-in gate decision and native approval or review names SIMULATED-host-matrix-not-a-human"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The cli lessons in specs/cli/cli.3md: disposable repositories get a local Git identity (exercise identity, 2026-10-31); tasks.md lists gates and post-verification steps as plain text, not boxes; the delta is frozen at approval; new REQ IDs reach requirements.md only at change check, so the case is run after the scoped check; confirm an external agent can start before relying on it (cold-start tooling, 2026-10-31).",
+    "public_contract": "yes"
+  }
+}

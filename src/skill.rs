@@ -466,6 +466,15 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "templates/prototype/COMPANION.md",
         "a44f6812276d05332b69bac0cff237485c6aefc1973cddd77226c0ff97c66e83",
     ),
+    // Main ddc56e9 (v0.6.1); superseded by the routine-change fast path (LIFE-22).
+    (
+        "SKILL.md",
+        "fb5c6b572897cc3838bca579bc92de3fe08385d80ebd97d0e447e7fa593f766c",
+    ),
+    (
+        "references/stages.md",
+        "de8db3cb911d4b4cebf836be8c8dfcbf631b54ad663a75eab0345d392dddac46",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 90
+version: 93
 status: active
 files:
   - src/main.rs
@@ -368,4 +368,7 @@ provider, runtime or hosted service.
 | 87 | 2026-11-13 | 0-6-1-chough-change-ship-prints-a-short-text-summary-after-specsync-s-output-with-its-full-report-under-json: 0.6.1: chough change ship prints a short text summary after SpecSync's output, with its full report under --json |
 | 88 | 2026-11-13 | 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once: 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once |
 | 89 | 2026-11-13 | 0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as: 0.6.1: the intent gate summary gives each criterion's sentence, no diff line without a base, and adds or modifies said as such |
-| 90 | 2026-11-13 | fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes: Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes |
+| 90 | 2026-11-13 | fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply: Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply |
+| 91 | 2026-11-13 | host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in: Host-matrix harness: one scripted Chough cycle per agent host, judged from the files, with a stand-in-host self-test in hosted CI on macOS and Linux |
+| 92 | 2026-11-13 | 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs: #217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none |
+| 93 | 2026-11-14 | fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json: Fix #276: mark a cut change ship summary with its line count and --json |

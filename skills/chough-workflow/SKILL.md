@@ -44,13 +44,13 @@ See [lifecycle](references/lifecycle.md) for scope, provenance and ordering.
    are recorded; and the next task. An edit is any file change, including a Chough
    command that writes a record. Where the records do not say one of these, say so
    instead of guessing.
-5. Read [the stage contract](references/stages.md), then only the reference for the
-   current stage.
+5. Read [the stage contract](references/stages.md) and its fast path, then only
+   the current stage's reference.
 
 With no checkpoint, run
 `chough init --objective "<outcome>" --intent-scope <HI-family> --module <module>`; it
 never overwrites existing files and creates the first session; otherwise run
-`chough session new <change-id>`. Repeat `--host` per host (default `openai`). A
+`chough session new <change-id>`. Repeat `--host` per host. A
 0.5.x project needs `chough migrate` ([checkpoint.md](references/checkpoint.md)).
 
 ## Stages

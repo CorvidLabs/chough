@@ -126,3 +126,22 @@ expected = ["the change test ship_prints_a_short_summary_after_specsync_and_ever
 adapter = "cargo-test"
 test_target = "change"
 test = "ship_prints_a_short_summary_after_specsync_and_every_report_under_json"
+
+[[case]]
+id = "TC-cli-change-ship-cut-summary-names-the-cut-and-json"
+title = "A change ship summary longer than 12 lines is cut with a last line naming the dropped lines and --json"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-20"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "docs/cli.md"]
+environments = ["local-macos-arm64", "local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the change test the_summary_names_the_cut_and_json_when_it_is_longer_than_twelve_lines passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "change::tests::the_summary_names_the_cut_and_json_when_it_is_longer_than_twelve_lines"]
+expect_output = ["test result: ok. 1 passed"]
+timeout_seconds = 600

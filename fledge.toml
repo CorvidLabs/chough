@@ -16,6 +16,11 @@ knowledge = "cargo run --quiet --locked -- library index --check"
 # (REQ-records-006, REQ-history-012); it changes nothing.
 leaks = "cargo run --quiet --locked -- doctor --leaks"
 exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh examples/feature-bug-loop.sh"
+# The host-matrix harness (REQ-cli-066): `fledge run host-matrix -- <host>` drives that
+# agent host through one scripted Chough cycle; the self-test runs the stand-in host,
+# with no model. Neither is in a lane; hosted CI runs the self-test on Ubuntu and macOS.
+host-matrix = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh tools/host-matrix/run.sh"
+host-matrix-selftest = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh tools/host-matrix/selftest.sh"
 ci-archive-fixtures = "python3 .github/scripts/test-specsync-archive.py"
 linux-image = "sh tools/linux/image.sh"
 linux-verify = "sh tools/linux/verify.sh"
