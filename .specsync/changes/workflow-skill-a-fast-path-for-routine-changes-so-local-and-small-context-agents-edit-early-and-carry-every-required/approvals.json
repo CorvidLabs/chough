@@ -1,4 +1,91 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794671929,
+      "digest": "0aa68098cf68583867697716c9d2dd04da741b9cdb1db12e2800cf8b689fb889",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required",
+        "title": "Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)",
+        "description": "Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/SKILL.md",
+          ".agents/skills/chough-workflow/references/stages.md",
+          ".chough/cases/cli.routine-fast-path.cases.toml",
+          "CHANGELOG.md",
+          "skills/chough-workflow/SKILL.md",
+          "skills/chough-workflow/references/stages.md",
+          "src/skill.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/package.rs",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Guidance text in the shipped skill bundle and the digests that pin it; no requirement's wording or behavior changes.",
+        "acceptance_criteria": [
+          "The workflow skill's stage contract opens with a routine-change fast path: a bounded first read, the session and SpecSync commands in order, a delta for every affected spec, a stop at each human gate, and an early first edit; SKILL.md points to it; installed copies at the previous bundle update to it; the release corpus pins the new bytes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "SKILL.md byte bound (tests/package.rs); release corpus pins (tests/skill_releases.rs); KNOWN_PREVIOUS for updatable copies (REQ-cli-016)",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794671965,
+      "digest": "0aa68098cf68583867697716c9d2dd04da741b9cdb1db12e2800cf8b689fb889",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required\": \"0xLeif ran: specsync change approve workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required --actor 0xLeif\" (0xLeif's own terminal in the Claude Code desktop app, 2026-11-14; the native approval is already recorded). Relayed and recorded by claude-code at 2026-11-14T15:59:24Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required",
+        "title": "Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)",
+        "description": "Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/SKILL.md",
+          ".agents/skills/chough-workflow/references/stages.md",
+          ".chough/cases/cli.routine-fast-path.cases.toml",
+          "CHANGELOG.md",
+          "skills/chough-workflow/SKILL.md",
+          "skills/chough-workflow/references/stages.md",
+          "src/skill.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/package.rs",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "Guidance text in the shipped skill bundle and the digests that pin it; no requirement's wording or behavior changes.",
+        "acceptance_criteria": [
+          "The workflow skill's stage contract opens with a routine-change fast path: a bounded first read, the session and SpecSync commands in order, a delta for every affected spec, a stop at each human gate, and an early first edit; SKILL.md points to it; installed copies at the previous bundle update to it; the release corpus pins the new bytes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "SKILL.md byte bound (tests/package.rs); release corpus pins (tests/skill_releases.rs); KNOWN_PREVIOUS for updatable copies (REQ-cli-016)",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    }
+  ],
   "reopenings": []
 }
