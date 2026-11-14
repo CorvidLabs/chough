@@ -4251,3 +4251,26 @@ fn ci_runs_once_a_day_on_main_with_a_real_archive_base() {
         );
     }
 }
+
+/// #291 (DRIVE-12): this repository routes its module contracts to SpecSync's
+/// ancestor-aware merge driver, and AGENTS.md names the one-time setup, so two branches
+/// that each bump one module's `version:` and Change Log merge locally without a
+/// hand-resolved conflict.
+#[test]
+fn spec_files_merge_through_specsync_s_driver_in_this_repository() {
+    let attributes = fs::read_to_string(manifest_dir().join(".gitattributes")).unwrap();
+    for pattern in ["specs/**/*.spec.md", "specs/**/requirements.md"] {
+        assert!(
+            attributes.lines().any(|line| {
+                let mut fields = line.split_whitespace();
+                fields.next() == Some(pattern) && fields.any(|field| field == "merge=specsync")
+            }),
+            ".gitattributes routes {pattern} to merge=specsync"
+        );
+    }
+    let agents = fs::read_to_string(manifest_dir().join("AGENTS.md")).unwrap();
+    assert!(
+        agents.contains("specsync merge --install"),
+        "AGENTS.md names the one-time driver setup"
+    );
+}
