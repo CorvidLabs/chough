@@ -5,4 +5,4 @@ artifact: docs
 
 # Docs
 
-`AGENTS.md` setup line; `.gitattributes` comment; CHANGELOG.
+`AGENTS.md` setup line; `.gitattributes` comment; `docs/cli.md` driver list; CHANGELOG.

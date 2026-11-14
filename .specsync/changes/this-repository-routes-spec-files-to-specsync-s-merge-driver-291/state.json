@@ -10,13 +10,14 @@
   "state": "draft",
   "base_commit": "aa1c5a15815d61f281f45e742b45fadc5bf55828",
   "created_at": 1794679079,
-  "updated_at": 1794679236,
+  "updated_at": 1794679335,
   "affected_specs": [
     "cli"
   ],
   "affected_paths": [
     ".gitattributes",
     "AGENTS.md",
+    "docs/cli.md",
     "tests/package.rs",
     "CHANGELOG.md",
     ".chough/cases/cli.specsync-merge-driver.cases.toml"

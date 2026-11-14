@@ -689,9 +689,16 @@ CHANGELOG.md merge=union
 .chough/bugs/*.md merge=chough-bug
 knowledge/index.md merge=chough-generated
 knowledge/journal/feed.xml merge=chough-generated
+specs/**/*.spec.md merge=specsync
+specs/**/requirements.md merge=specsync
 ```
 
-`chough init` declares Chough's three lines for you. It appends each one that no line
+`chough init` declares Chough's three lines for you. The two `specs/` lines route module
+contracts to SpecSync's own ancestor-aware driver, so two branches that each bump one
+module's `version:` and Change Log merge without a hand-resolved conflict; run
+`specsync merge --install` once per clone to declare and register it (#291). GitHub's
+merge button runs no custom driver, so these drivers help local merges and branch
+updates. It appends each one that no line
 declares after the last line, creates the file when it is absent, and changes no line
 already there; the knowledge lines name `library-dir` when it is set.
 In the knowledge directory, only the two generated files, which `library index --check`
