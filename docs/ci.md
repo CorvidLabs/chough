@@ -104,6 +104,63 @@ Positive archive results use native historical authentication; broken-tool mocks
 are used only for rejection tests. A wrong local binary version is an error;
 select the correct tool for that invocation without replacing global tools.
 
+## Flakes and the clean window
+
+Chough 1.0 needs CI green on macOS and Linux, with zero known flakes, for two
+consecutive weeks (LIFE-21, bar 2 of [the 1.0 test plan](test-plan-1.0.md#bar-2-zero-known-flakes)).
+DRIVE-19 is the rule behind it: a failing test always means something is actually
+wrong.
+
+**Filing a flake.** Within a day of any intermittent failure, in CI or locally:
+
+1. Open a GitHub issue labelled `flake`, with the failing run or command, the commit
+   and the environment.
+2. Record it with `chough bug add --criterion DRIVE-19`, giving the failing run as
+   an observation. Then name the issue in the record's Log:
+   `chough bug update <id> --note "Tracked by the flake window (DRIVE-19); GitHub #<n>"`.
+
+A test that passed on a retry is itself a finding: file it. Close the issue only
+when the fix has merged and main CI has passed on both platforms since.
+
+**The window.** `fledge run flake-window` (REQ-cli-062) reads the CI workflow's runs
+for the last 45 days, their jobs, the `flake` issues and `.chough/bugs/`. It writes
+nothing and prints a JSON receipt. It needs `gh` with read access to the repository,
+and takes about half a minute. These restart the window:
+
+- a CI run on main with any job that did not succeed (failed, cancelled, timed out
+  or skipped);
+- a rerun of any CI run on any branch (`run_attempt` above 1);
+- a filed flake, meaning a `flake` issue or a bug record that names DRIVE-19;
+- a full UTC day with no main run whose `Product / ubuntu-latest` and
+  `Product / macos-latest` jobs both succeeded.
+
+The verdict is one of three:
+
+- `clean`: no restart in the last 14 days.
+- `running`: the receipt names `latest_restart` and gives `clean_from`, the earliest
+  time the window can be clean.
+- `blocked`: something in `blocked_by` holds the window. Either a flake issue or a
+  DRIVE-19 bug record is still open, a closed flake has had no fully green main run
+  since it closed, or a flake issue has no bug record naming it as `GitHub #<n>`.
+
+If GitHub cannot be read in full, or a bug record cannot be read, the check exits 2
+and gives no verdict. `--require-clean` exits 1 unless the verdict is `clean`. A day
+counts only when one main run passed both Product jobs. Until CI also runs once a day
+on main (REQ-cli-064), a day with no merge to main restarts the window.
+
+To keep proof of a run, save the input as well. Running the script directly prints
+only the receipt, while `fledge run` adds its own lines around it. A saved input
+recomputes the same receipt at the same bug records. The receipt's `inputs.sha256`
+covers the GitHub data, and `inputs.bug_records_sha256` covers the bug records:
+
+```sh
+python3 .github/scripts/flake-window.py --save-input flake-input.json > flake-receipt.json
+python3 .github/scripts/flake-window.py --input flake-input.json --now <computed_at>
+```
+
+The fixtures run in `CI gate fixtures` and locally with
+`fledge run ci-flake-window-fixtures`. They use a fake `gh` and no network.
+
 ## Required-check recommendation
 
 After these jobs exist on main and the effect on active PRs is reviewed, recommend

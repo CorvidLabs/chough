@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read",
+  "slug": "217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read",
+  "title": "#217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict",
+  "description": "#217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict",
+  "kind": "feature",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "4a7a273b3ff6d617ef7475b8a19f28ff8ac22e4c",
+  "created_at": 1794540952,
+  "updated_at": 1794677658,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    ".github/scripts/flake-window.py",
+    ".github/scripts/test-flake-window.py",
+    ".github/workflows/ci.yml",
+    "fledge.toml",
+    "docs/ci.md",
+    "docs/releasing.md",
+    "docs/test-plan-1.0.md",
+    "CHANGELOG.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "fledge run flake-window prints one JSON receipt and writes nothing: clean after 14 days of green main CI on macOS and Linux with no rerun and no open flake; running, naming the latest restart and when it can first be clean, after a red or skipped main run, a rerun on any branch, a filed flake or a day without a green main run on either OS; blocked while a flake issue or DRIVE-19 bug is open, a closed flake has no green main run since, or a flake issue has no bug record; exit 2 and never clean when GitHub cannot be read in full (red then green in .github/scripts/test-flake-window.py)"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "specs/cli/cli.3md: hosted CI runners have no Git identity, so the fixtures never commit; FLOW-10 and FLOW-16: the check records no human decision; LIFE-19: the release records the receipt as a short evidence entry, the raw input stays out of Git",
+    "public_contract": "no"
+  }
+}

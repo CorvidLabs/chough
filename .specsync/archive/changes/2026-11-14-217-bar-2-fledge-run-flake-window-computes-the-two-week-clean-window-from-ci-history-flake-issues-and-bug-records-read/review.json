@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "3be6d7da830fbba16b8ad741c5dfe5b6d2d7db89",
+  "contract_digest": "e4ceccdb98c8529397b9a0b5627e632893149ede474a4fc1977a03f5a7bfdfb1",
+  "execution_digest": "3cb6c8a9f8f454ac23b993106f758c88bfc454f364c3fb1ec9b31472248232a9",
+  "workspace_digest": "e25d9af8cca2aba794c38d821c049ad09c0a0a0cd524846734f5a33e1126413c",
+  "timestamp": 1794677543
+}

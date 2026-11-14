@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 93
+version: 94
 status: active
 files:
   - src/main.rs
@@ -372,3 +372,4 @@ provider, runtime or hosted service.
 | 91 | 2026-11-13 | host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in: Host-matrix harness: one scripted Chough cycle per agent host, judged from the files, with a stand-in-host self-test in hosted CI on macOS and Linux |
 | 92 | 2026-11-13 | 217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs: #217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none |
 | 93 | 2026-11-14 | fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json: Fix #276: mark a cut change ship summary with its line count and --json |
+| 94 | 2026-11-13 | 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read: #217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict |

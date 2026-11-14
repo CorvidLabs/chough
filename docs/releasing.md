@@ -8,6 +8,12 @@ toolchain from [Install the toolchain](../README.md#install-the-toolchain).
 Below, `X.Y.Z` is the version being released.
 
 1. Confirm that CI on main is green at the merge commit, including `MSRV / 1.88.0`.
+   For 1.0, also run the [flake window](ci.md#flakes-and-the-clean-window) check:
+   `python3 .github/scripts/flake-window.py --save-input <input> --require-clean > <receipt>`
+   must exit 0 with the verdict `clean`. Record it with `chough evidence add
+   --criterion LIFE-21 --kind structural --outcome passed --environment <env>
+   --summary "<verdict, window start, input sha256>" --artifact <receipt>`. It shows CI
+   history, not product behavior. Keep the input file out of Git.
 2. Check the package contents: `cargo package --list --locked` lists only `src/`,
    `skills/chough-workflow/`, `Cargo.toml`, `Cargo.lock`, `README.md` and `LICENSE`
    (plus the files cargo generates).
