@@ -1,0 +1,25 @@
+{
+  "timestamp": 1794684209,
+  "commit": "ac1ce6e573e6d705031e10ca1edbcfb7035327f8",
+  "contract_digest": "053ee29770e3bd97934b3b26c5496ae1b44039ff5f642bf9b303ee3482246258",
+  "execution_digest": "941a9c58571743a3608398c8c375f784b75444d6b15121045847bd3d9acb6cd4",
+  "workspace_digest": "2b7d7dac6a838b8af7b9f52d448c20fc9d7e84bfe0ce7405cb16cde3dabe782c",
+  "passed": false,
+  "commands": [
+    {
+      "command": "specsync check --spec cli --spec records",
+      "success": true,
+      "exit_code": 0
+    },
+    {
+      "command": "specsync change check fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag (effective contract: records)",
+      "success": false,
+      "exit_code": 1,
+      "output": "effective contract `records`: 108/109 exports documented\neffective contract `records`: Undocumented export 'Relay' from src/humans.rs"
+    }
+  ],
+  "requirement_ids": [
+    "REQ-cli-059",
+    "REQ-records-008"
+  ]
+}

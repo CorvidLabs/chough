@@ -1,6 +1,6 @@
 ---
 module: records
-version: 7
+version: 8
 status: active
 files:
   - src/markdown.rs
@@ -210,3 +210,4 @@ use this one for every record they write.
 | 5 | 2026-11-13 | fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply: Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply |
 | 6 | 2026-11-14 | the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries: The leak check now flags an scp-style host path, `host:/path`, as the host name and the path it carries |
 | 7 | 2026-11-14 | the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275: The leak check flags an scp-style host path as the host name and the path it carries (#275) |
+| 8 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
