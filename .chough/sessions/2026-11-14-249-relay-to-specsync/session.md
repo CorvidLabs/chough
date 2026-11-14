@@ -5,7 +5,7 @@ aliases: [249-relay-to-specsync]
 objective: "Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag"
 intent_scope: FLOW
 modules: [records, cli]
-stage: accept
+stage: plan
 stage_status: active
 iteration: 1
 callers: []
@@ -24,8 +24,12 @@ waiting_on_human:
     holds: accept
     drives: review
     opened: 2026-11-14T19:23:31Z
+  - gate: Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+    holds: plan
+    drives: approve
+    opened: 2026-11-14T19:24:33Z
 run_consents: []
-next: Continue accept
+next: Continue plan
 ---
 # Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
 
@@ -103,4 +107,26 @@ Fix #249: a relayed decision reaches SpecSync's approval and review records, eac
   - revision: 4b6c8d334e57eb17cd5bfb5e9fa6de25b9541308
   - holds: accept
   - drives: review
+  - by: claude-code
+- 2026-11-14T19:24:33Z · direct-native-write · accept → accept · fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-35a392
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - revision: c1c1460078f70658bbe5332116ade161ae716f64
+  - direct_write:
+    - change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: claude-code
+- 2026-11-14T19:24:33Z · back · accept → plan · Sent back to add Relay to the records spec's Public API (SpecSync's export check). ^t-891b06
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - revision: c1c1460078f70658bbe5332116ade161ae716f64
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 0 case(s) and 1 observation(s) to re-check with `chough status`
+  - by: claude-code
+- 2026-11-14T19:24:33Z · gate-opened · plan → plan · Scope approval of fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag ^t-479b42
+  - native_change: fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag
+  - revision: c1c1460078f70658bbe5332116ade161ae716f64
+  - holds: plan
+  - drives: approve
   - by: claude-code

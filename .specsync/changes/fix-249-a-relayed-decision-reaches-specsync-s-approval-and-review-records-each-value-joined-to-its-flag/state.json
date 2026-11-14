@@ -7,11 +7,10 @@
   "title": "Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag",
   "description": "Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag",
   "kind": "bug_fix",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "draft",
   "base_commit": "d3138bed5495be77e66d35502a0891b156ffed8e",
   "created_at": 1794678484,
-  "updated_at": 1794684210,
+  "updated_at": 1794684272,
   "affected_specs": [
     "cli",
     "records"
@@ -27,6 +26,7 @@
     "CHANGELOG.md",
     "specs/cli/requirements.md",
     "specs/records/requirements.md",
+    "specs/records/records.spec.md",
     ".chough/cases/cli.ship-relay.cases.toml"
   ],
   "no_spec_change": false,
