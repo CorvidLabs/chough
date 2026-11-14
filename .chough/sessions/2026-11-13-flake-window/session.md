@@ -5,7 +5,7 @@ aliases: [flake-window]
 objective: "#217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)"
 intent_scope: LIFE
 modules: [cli]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -53,13 +53,9 @@ observations:
   - 2026-11-13-live-run-after-the-fix-with-the-flake-labels-on-github-but
 bugs: [2026-11-13-flake-window-counts-a-day-covered-when-its-product-jobs-passed]
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
-    holds: accept
-    drives: review
-    opened: 2026-11-13T05:52:25Z
+waiting_on_human: []
 run_consents: []
-next: t384's re-review, then Leif's implementation review (relayed by t370), then chough change ship with the review gate's relay
+next: Continue done
 ---
 # #217: fledge run flake-window computes Chough's two-week clean window from CI history, flake issues and bug records (REQ-cli-062)
 
@@ -78,6 +74,7 @@ next: t384's re-review, then Leif's implementation review (relayed by t370), the
 - Requirement ID REQ-cli-062 (t382, records owner, 2026-11-13); a flake bug record names its issue as 'GitHub #<n>' in a bug update note, since bug update has no criterion flag
 - Leif decided "Approve the intent: fledge run flake-window computes the two-week clean window from CI history (#217, bar 2)": "Repo script + fledge task (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q1 'Where should the two-week check live?' for #217 (same answer set: Q2 'What restarts the window?': 'Any red, rerun or new flake (Recommended)'); relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated
 - Leif decided "Approve the scope of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read": "Any red, rerun or new flake (Recommended)" (coordinator chat (Claude Code, hc t370), 2026-11-13T03:30Z, answering ch10-flake's design question Q2 'What restarts the window?' for #217 (same answer set: Q1 'Where should the two-week check live?': 'Repo script + fledge task (Recommended)'); this change's scope is that design: a read-only repo script and fledge task, REQ-cli-062; relayed by claude-code-t370); recorded by claude-code-t38r; a relayed claim, not authenticated; ran specsync change approve 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read as 0xLeif
+- 0xLeif decided "Implementation review of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read": "0xLeif ran: specsync change review 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read --reviewer 0xLeif --verdict pass" (0xLeif's own terminal in the Claude Code desktop app, 2026-11-14; the native review is already recorded at 3be6d7d); recorded by claude-code; a relayed claim, not authenticated; no native review ran (--no-native)
 
 ## What was verified
 
@@ -193,3 +190,17 @@ next: t384's re-review, then Leif's implementation review (relayed by t370), the
   - holds: accept
   - drives: review
   - by: claude-code (hc t38r)
+- 2026-11-14T17:34:51Z · gate-closed · accept → accept · Implementation review of 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read ^t-6724d0
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - revision: 9740ec2e0bfb6ab467010cfc538faa68be3fdf97
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: 0xLeif ran: specsync change review 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read --reviewer 0xLeif --verdict pass
+    - where: 0xLeif's own terminal in the Claude Code desktop app, 2026-11-14; the native review is already recorded at 3be6d7d
+    - recorded_by: claude-code
+  - by: claude-code
+- 2026-11-14T17:34:52Z · advance · accept → done · native:archived ^t-7d8629
+  - native_change: 217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read
+  - gate: native:archived
+  - revision: 9740ec2e0bfb6ab467010cfc538faa68be3fdf97
+  - by: claude-code
