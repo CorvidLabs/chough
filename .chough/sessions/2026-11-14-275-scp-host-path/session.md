@@ -19,7 +19,11 @@ files: []
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Scope approval of the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275
+    holds: plan
+    drives: approve
+    opened: 2026-11-14T17:16:07Z
 run_consents: []
 next: Read scoped intent and native status, then choose the next action within the authorized scope.
 ---
@@ -47,4 +51,10 @@ The leak check reads an scp-style host path, host:/path, like the path it carrie
   - by: claude-code
 - 2026-11-14T17:14:51Z · skip · design → plan · Leak-check logic and its records only; no visual or interaction change. ^t-2ea5b4
   - revision: 9b729e908adf30b6511531776f6976b1afd01395
+  - by: claude-code
+- 2026-11-14T17:16:07Z · gate-opened · plan → plan · Scope approval of the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275 ^t-3b63d8
+  - native_change: the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275
+  - revision: b0a62e7abdf886aac7c7d47409a20f6dd54e0c18
+  - holds: plan
+  - drives: approve
   - by: claude-code
