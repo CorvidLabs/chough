@@ -117,12 +117,16 @@ fn a_scope_gate_runs_the_approval_once_as_the_configured_human() {
     assert_eq!(calls.len(), 1, "{calls:?}");
     assert!(
         calls[0].starts_with(&format!(
-            "change approve {ID} --actor SYNTHETIC-actor --note Approved by SYNTHETIC Person at the Chough gate \"{SCOPE}\": \"yes, go\" (SYNTHETIC chat, 2026-11-11). Relayed and recorded by SYNTHETIC-agent at "
+            "change approve {ID} --actor=SYNTHETIC-actor --note=Approved by SYNTHETIC Person at the Chough gate \"{SCOPE}\": \"yes, go\" (SYNTHETIC chat, 2026-11-11). Relayed and recorded by SYNTHETIC-agent at "
         )),
         "{calls:?}"
     );
+    // #249 (REQ-records-008): the relay also goes to SpecSync 6.3.0's own fields, so its
+    // approval record holds the relayed decision.
     assert!(
-        calls[0].ends_with("; a relayed claim, not authenticated."),
+        calls[0].ends_with(
+            "; a relayed claim, not authenticated. --words=yes, go --where=SYNTHETIC chat, 2026-11-11 --recorded-by=SYNTHETIC-agent"
+        ),
         "{calls:?}"
     );
     let step = &closed["relayed_decision"]["native_step"];
@@ -164,16 +168,45 @@ fn a_review_gate_needs_a_verdict_and_runs_the_review_with_it() {
     let mut with = relay(REVIEW, "SYNTHETIC-human");
     with.extend(["--verdict".into(), "block".into()]);
     fixture.ok(&args(&with));
+    // #249 (REQ-records-008): the review carries the relay in SpecSync 6.3.0's fields.
     assert_eq!(
         calls(&fixture),
         [format!(
-            "change review {ID} --reviewer SYNTHETIC-actor --verdict block"
+            "change review {ID} --reviewer=SYNTHETIC-actor --verdict=block --words=yes, go --where=SYNTHETIC chat, 2026-11-11 --recorded-by=SYNTHETIC-agent"
         )]
     );
     let decision = decisions(&fixture).pop().unwrap();
     assert!(
         decision.ends_with("as SYNTHETIC-actor with verdict block"),
         "{decision}"
+    );
+}
+
+/// #249 review (REQ-records-008): `checkpoint --close-gate` accepts relay words that start
+/// with `-`, and the native review gets each relay field joined to its flag, so SpecSync's
+/// parser reads `-x, go` as the words, not as a flag.
+#[cfg(unix)]
+#[test]
+fn a_relay_that_starts_with_a_hyphen_reaches_the_native_review_joined_to_its_flag() {
+    let fixture = project();
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        REVIEW,
+        "--holds",
+        "accept",
+    ]);
+    let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
+    let mut with = relay(REVIEW, "SYNTHETIC-human");
+    let words = with.iter().position(|value| value == "yes, go").unwrap();
+    with[words] = "-x, go".into();
+    with.extend(["--verdict".into(), "pass".into()]);
+    fixture.ok(&args(&with));
+    assert_eq!(
+        calls(&fixture),
+        [format!(
+            "change review {ID} --reviewer=SYNTHETIC-actor --verdict=pass --words=-x, go --where=SYNTHETIC chat, 2026-11-11 --recorded-by=SYNTHETIC-agent"
+        )]
     );
 }
 
@@ -346,7 +379,7 @@ fn the_project_file_overrides_the_user_file() {
     let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
     fixture.ok(&args(&relay("First scope", "SYNTHETIC-human")));
     assert!(
-        calls(&fixture)[0].contains("--actor user-actor "),
+        calls(&fixture)[0].contains("--actor=user-actor "),
         "{:?}",
         calls(&fixture)
     );
@@ -354,7 +387,7 @@ fn the_project_file_overrides_the_user_file() {
     let _ = std::fs::remove_file(fixture.root().join(".stub-calls"));
     fixture.ok(&args(&relay("Second scope", "SYNTHETIC-human")));
     assert!(
-        calls(&fixture)[0].contains("--actor SYNTHETIC-actor "),
+        calls(&fixture)[0].contains("--actor=SYNTHETIC-actor "),
         "{:?}",
         calls(&fixture)
     );
@@ -417,7 +450,7 @@ fn one_gate_record_runs_at_most_one_native_step() {
     fixture.ok(&args(&reply(&one)));
     let calls = calls(&fixture);
     assert_eq!(calls.len(), 1, "{calls:?}");
-    assert!(calls[0].starts_with(&format!("change approve {ID} --actor SYNTHETIC-actor")));
+    assert!(calls[0].starts_with(&format!("change approve {ID} --actor=SYNTHETIC-actor")));
     assert_eq!(
         fixture.checkpoint()["awaiting_human"],
         serde_json::json!(["Second scope"])
@@ -464,10 +497,12 @@ fn gate_record_reports_the_approval_it_ran_and_its_note_names_gate_record() {
     );
     let calls = calls(&fixture);
     assert_eq!(calls.len(), 1, "{calls:?}");
+    // #249 (REQ-records-008): the note names gate record, and the relay follows it in
+    // SpecSync 6.3.0's own fields.
     assert!(
         calls[0].contains("Relayed and recorded by SYNTHETIC-agent at ")
             && calls[0].ends_with(&format!(
-                " through chough gate record {list}; a relayed claim, not authenticated."
+                " through chough gate record {list}; a relayed claim, not authenticated. --words=yes, go --where=SYNTHETIC chat, 2026-11-11 --recorded-by=SYNTHETIC-agent"
             )),
         "{calls:?}"
     );

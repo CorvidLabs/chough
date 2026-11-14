@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag",
+  "implementation_commit": "f9b016771f741f4d11f812c8feadeadd9b3b5dfa",
+  "implementation_tree": "1444604ffa34bd34d22b173383a00406bcf6f3cc",
+  "contract_digest": "53ddcf6f0b20914a78d9b9e65747b9a8b594f90f95e08069059325d9e982c3d1",
+  "workspace_digest": "9ba9a4e20a1d0b94f9353b84a46dbd462bfbfd7a181cd2b0c6a89882057f6eca",
+  "closing_digest": "3e27b974c3bad4687ad9d64525fb587524e25adeaa29effc641df685fecfd2b6",
+  "review_digest": "f853eef66d31d1aaa5bb57eb26943960781cb478a62b7d42066e80615ba52846",
+  "finalization_digest": "954fed2ca664958e337dcd7551cc0ffe49346f09ffb7689fdac6b36d19b62e7a",
+  "timestamp": 1794686619
+}

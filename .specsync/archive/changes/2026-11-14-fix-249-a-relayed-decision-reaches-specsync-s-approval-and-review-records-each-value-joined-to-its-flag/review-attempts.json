@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "f9b016771f741f4d11f812c8feadeadd9b3b5dfa",
+      "contract_digest": "53ddcf6f0b20914a78d9b9e65747b9a8b594f90f95e08069059325d9e982c3d1",
+      "execution_digest": "9d383ba5a749c9a63deccfc21835ba6c4ef9b24f7b6d7786ddcb8e2f27582d68",
+      "workspace_digest": "9ba9a4e20a1d0b94f9353b84a46dbd462bfbfd7a181cd2b0c6a89882057f6eca",
+      "timestamp": 1794686612,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "i approve",
+        "where": "Claude Code desktop chat, 2026-11-14, answering that #288 was at accept and ready for review",
+        "recorded_by": "claude-code"
+      }
+    }
+  ]
+}

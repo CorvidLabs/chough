@@ -298,7 +298,7 @@ fn a_relayed_decision_never_touches_native_state_or_its_gate() {
     ));
     let calls = fixture.read(".stub-calls");
     assert!(
-        calls.starts_with("change approve x --actor SYNTHETIC-approver --note "),
+        calls.starts_with("change approve x --actor=SYNTHETIC-approver --note="),
         "{calls}"
     );
     assert_eq!(fixture.native_calls(), 1, "{calls}");
