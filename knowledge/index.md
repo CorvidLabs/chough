@@ -80,8 +80,8 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
-- [workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required](../.specsync/archive/changes/2026-11-14-workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required/lesson-bundle.md), Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)
 - [fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json](../.specsync/archive/changes/2026-11-14-fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json/lesson-bundle.md), Fix #276: mark a cut change ship summary with its line count and --json
+- [workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required](../.specsync/archive/changes/2026-11-14-workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required/lesson-bundle.md), Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)
 - [217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs](../.specsync/archive/changes/2026-11-13-217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs/lesson-bundle.md), #217 bar 2: CI runs once a day on main so the flake window sees macOS and Linux every day, and the SpecSync Archive jobs take the run's own commit as base when the event has none
 
 ## Snapshots and briefs
