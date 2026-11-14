@@ -24,16 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [The leak check reads an scp-style host path](journal/2026-11-14-the-leak-check-reads-an-scp-style-host-path.md) (2026-11-14, shipped)
 - [#217: fledge run flake-window computes Chough's two-week clean…](journal/2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean.md) (2026-11-14, shipped)
+- [#219: integrations/ ships versioned example hc templates for Claude Code](journal/2026-11-14-219-integrations-ships-versioned-example-hc-templates-for.md) (2026-11-14, shipped)
+- [Fix #245: the index links no source Git ignores](journal/2026-11-14-fix-245-the-index-links-no-source-git-ignores.md) (2026-11-14, shipped)
 - [Give agents, local models included](journal/2026-11-14-give-agents-local-models-included.md) (2026-11-14, shipped)
 - [#217: CI also runs once a day on main](journal/2026-11-13-217-ci-also-runs-once-a-day-on-main.md) (2026-11-13, shipped)
 - [#217: seed the flake tracker](journal/2026-11-13-217-seed-the-flake-tracker.md) (2026-11-13, shipped)
 - [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
 - [Host-matrix harness](journal/2026-11-13-host-matrix-harness.md) (2026-11-13, shipped)
 - [Fix #246: migrate's preview names what doctor will report](journal/2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report.md) (2026-11-13, shipped)
-- [Fix #247: the example waits past the failing run's second](journal/2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second.md) (2026-11-13, shipped)
-- [0.6.1: next with no open session exits 0, and timing says elapsed once](journal/2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says.md) (2026-11-13, shipped)
-- [0.6.1: at the observation cap, writes refuse before writing](journal/2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md) (2026-11-13, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a](../.specsync/archive/changes/2026-11-14-219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a/lesson-bundle.md), #219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune
+- [the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275](../.specsync/archive/changes/2026-11-14-the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275/lesson-bundle.md), The leak check flags an scp-style host path as the host name and the path it carries (#275)
 - [217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read](../.specsync/archive/changes/2026-11-14-217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read/lesson-bundle.md), #217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict
-- [fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json](../.specsync/archive/changes/2026-11-14-fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json/lesson-bundle.md), Fix #276: mark a cut change ship summary with its line count and --json
-- [workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required](../.specsync/archive/changes/2026-11-14-workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required/lesson-bundle.md), Workflow skill: a fast path for routine changes, so local and small-context agents edit early and carry every required delta (LIFE-22)
 
 ## Snapshots and briefs
 
