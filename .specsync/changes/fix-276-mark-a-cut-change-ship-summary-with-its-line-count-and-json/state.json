@@ -7,10 +7,10 @@
   "title": "Fix #276: mark a cut change ship summary with its line count and --json",
   "description": "Fix #276: mark a cut change ship summary with its line count and --json",
   "kind": "feature",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "ddc56e96ff77cb0313d7591bee61d5a4a2950f0e",
   "created_at": 1794647636,
-  "updated_at": 1794650127,
+  "updated_at": 1794670412,
   "affected_specs": [
     "cli"
   ],
