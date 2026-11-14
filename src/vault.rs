@@ -199,7 +199,10 @@ fn files_under(root: &Path, relative: &str) -> Result<Vec<String>> {
     Ok(found)
 }
 
-/// The project's rule, skill, decision and policy files that exist (REQ-cli-043).
+/// The project's rule, skill, decision and policy files that exist and Git does not
+/// ignore (REQ-cli-043). An ignored file, such as a host's skill copy under an ignored
+/// `.grok/`, never reaches another clone, so linking it would make the index a fresh
+/// clone generates differ from the committed one (#245).
 fn rule_files(root: &Path) -> Result<Vec<String>> {
     let mut rules = vec![
         "AGENTS.md".to_string(),
@@ -220,10 +223,49 @@ fn rule_files(root: &Path) -> Result<Vec<String>> {
         rules.push(format!("specs/{module}/{module}.3md"));
     }
     rules.push(".specsync/sdd.json".into());
-    Ok(rules
+    let present: Vec<String> = rules
         .into_iter()
         .filter(|path| exists(root, path))
+        .collect();
+    let ignored = git_ignored(root, &present);
+    Ok(present
+        .into_iter()
+        .filter(|path| !ignored.contains(path))
         .collect())
+}
+
+/// Which of `paths`, relative to `root`, Git ignores, from one `git check-ignore` call.
+/// A tracked file is never reported, since Git ignores no tracked file. Outside a Git
+/// work tree, or when Git cannot answer, none is.
+fn git_ignored(root: &Path, paths: &[String]) -> BTreeSet<String> {
+    if paths.is_empty() {
+        return BTreeSet::new();
+    }
+    let input: Vec<u8> = paths
+        .iter()
+        .flat_map(|path| path.bytes().chain([0]))
+        .collect();
+    let Ok(output) = crate::records::run_owned(
+        std::process::Command::new("git").arg("-C").arg(root).args([
+            "check-ignore",
+            "--stdin",
+            "-z",
+        ]),
+        Some(&input),
+    ) else {
+        return BTreeSet::new();
+    };
+    // Exit 0 names what is ignored, 1 means nothing is, and anything else is an error.
+    if output.status.code() != Some(0) {
+        return BTreeSet::new();
+    }
+    output
+        .stdout
+        .split(|byte| *byte == 0)
+        .filter_map(|path| std::str::from_utf8(path).ok())
+        .filter(|path| !path.is_empty())
+        .map(String::from)
+        .collect()
 }
 
 /// The file of open bug `id`: its Markdown record, or its JSON record before plan step 5.

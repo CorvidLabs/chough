@@ -22,6 +22,10 @@ exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" 
 host-matrix = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh tools/host-matrix/run.sh"
 host-matrix-selftest = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh tools/host-matrix/selftest.sh"
 ci-archive-fixtures = "python3 .github/scripts/test-specsync-archive.py"
+# The 1.0 flake window (REQ-cli-062): reads CI history, flake issues and bug records,
+# writes nothing, prints a receipt. Needs gh with read access to the repository.
+flake-window = "python3 .github/scripts/flake-window.py"
+ci-flake-window-fixtures = "python3 .github/scripts/test-flake-window.py"
 linux-image = "sh tools/linux/image.sh"
 linux-verify = "sh tools/linux/verify.sh"
 # Installed HI, SpecSync, Fledge and Rust beside the CI pins; fails naming each that

@@ -688,3 +688,64 @@ fn the_lesson_count_reads_plus_numbered_and_indented_items() {
         "{index}"
     );
 }
+
+/// #245 (corvid-agent, adopting Chough 0.6.0 in CorvidLabs/peck; REQ-cli-043): with
+/// `.grok` ignored by Git, `chough init --host grok` wrote the skill to `.grok/skills/`
+/// and `knowledge/index.md` linked that copy, which is never committed, so `chough
+/// library index --check` failed in every fresh clone. The index links no source that Git
+/// ignores, so a working tree and a fresh clone generate the same index.
+#[test]
+fn the_index_links_no_source_git_ignores_so_a_fresh_clone_checks_clean() {
+    let fixture = Fixture::new();
+    fixture.write(".gitignore", ".grok\n");
+    fixture.commit("init");
+    fixture.ok(&[
+        "init",
+        "--objective",
+        "Ship a focused change",
+        "--intent-scope",
+        "LIFE",
+        "--module",
+        "cli",
+        "--host",
+        "grok",
+    ]);
+    assert!(fixture.exists(".grok/skills/chough-workflow/SKILL.md"));
+    fixture.commit("chough");
+
+    // A fresh clone, where the ignored copy never arrives, checks clean.
+    let clones = tempfile::TempDir::new().unwrap();
+    let clone = clones.path().join("fresh");
+    let cloned = std::process::Command::new("git")
+        .arg("clone")
+        .arg("--quiet")
+        .arg(fixture.root())
+        .arg(&clone)
+        .output()
+        .unwrap();
+    assert!(cloned.status.success(), "{cloned:?}");
+    assert!(!clone.join(".grok").exists());
+    let mut check = std::process::Command::new(env!("CARGO_BIN_EXE_chough"));
+    check
+        .arg("--root")
+        .arg(&clone)
+        .args(["library", "index", "--check"])
+        .env("XDG_CONFIG_HOME", clone.join(common::USER_CONFIG));
+    for name in common::ACTOR_VARIABLES {
+        check.env_remove(name);
+    }
+    let checked = check.output().unwrap();
+    assert!(
+        checked.status.success(),
+        "a fresh clone's index check failed: {}",
+        String::from_utf8_lossy(&checked.stderr)
+    );
+
+    // In the working tree the ignored copy is not linked, and the check passes with it
+    // present or gone.
+    let index = fixture.read("knowledge/index.md");
+    assert!(!index.contains(".grok/"), "{index}");
+    fixture.ok(&["library", "index", "--check"]);
+    fs::remove_dir_all(fixture.root().join(".grok")).unwrap();
+    fixture.ok(&["library", "index", "--check"]);
+}

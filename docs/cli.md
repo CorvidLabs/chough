@@ -301,13 +301,19 @@ matter and body, for (REQ-records-006):
   and a `~/` path;
 - the local host name anywhere when it is at least 8 characters long or holds a digit,
   a hyphen or a dot, and a shorter all-letter host name, which may be an ordinary word,
-  only inside a path or a URL or as `<user>@<host>`, so a word that happens to be this
-  machine's name is written;
+  only inside a path or a URL or as `<user>@<host>`, or as the `<host>:/<absolute path>`
+  of an scp-style remote path, so a word that happens to be this machine's name is
+  written;
 - the local user name inside a path or as `<user>@<host>`;
 - an email address;
 - credentials: GitHub, GitLab, Slack, AWS and model-provider token forms, private key
   blocks, bearer and basic authorization values, JSON web tokens, and `password`,
   `secret`, `token` or `api_key` assignments with a value of 8 or more characters.
+
+An scp-style remote path, `<host>:/<absolute path>`, is checked like the path it
+carries, so a home or system root after the colon refuses as a path leak and the host
+part is checked as the local host name when it matches, in the write guard and in
+`chough doctor` alike.
 
 A match refuses the write as `refused:leak`, naming the field and the kind of match
 (`home-path`, `system-path`, `windows-path`, `host-name`, `user-name`, `email`, `token`,
@@ -1847,7 +1853,7 @@ has no other home (REQ-cli-044, KNOW-30, KNOW-31). It links to `hi/`, `specs/`,
 
 | Path | What it is |
 |---|---|
-| `index.md` | The reading guide, generated (`type: guide`): where to start; the journal and its feed as the timeline of archived changes, with `.specsync/archive/changes/` linked for changes archived before the journal began, and the newest 10 posts in the feed's order, a post without a `time` marked "(no time)"; where things live (`hi/`, `specs/`, `.specsync/archive/`, `.chough/README.md`, `.chough/archive/sessions/`, `fledge.toml`); at most 20 open bugs, blocking first and then the newest by `created`, each linked, with their total and, when more are open, `.chough/bugs/` linked and `chough bug list` named for the rest; the rule, skill, decision and policy files that exist; each module's lesson source with its count of lessons, every file in `lessons/` and the newest 3 archived lesson bundles; and existing snapshots and briefs |
+| `index.md` | The reading guide, generated (`type: guide`): where to start; the journal and its feed as the timeline of archived changes, with `.specsync/archive/changes/` linked for changes archived before the journal began, and the newest 10 posts in the feed's order, a post without a `time` marked "(no time)"; where things live (`hi/`, `specs/`, `.specsync/archive/`, `.chough/README.md`, `.chough/archive/sessions/`, `fledge.toml`); at most 20 open bugs, blocking first and then the newest by `created`, each linked, with their total and, when more are open, `.chough/bugs/` linked and `chough bug list` named for the rest; the rule, skill, decision and policy files that exist and Git does not ignore, so an ignored copy such as a host skill under an ignored `.grok/` is not linked and a fresh clone generates the same index (#245); each module's lesson source with its count of lessons, every file in `lessons/` and the newest 3 archived lesson bundles; and existing snapshots and briefs |
 | `journal/<date>-<slug>.md` | Short posts (`type: journal`), written once by create-new and never rewritten by Chough (REQ-records-011) |
 | `journal/feed.xml` | An Atom feed of the newest 20 posts, generated: newest first by `time`, and a post without one by its date and then name, after that date's timed posts. An entry's `updated` is its `time`, or its date at midnight UTC without one |
 | `lessons/<date>-<slug>.md` | Lessons that span projects (`type: lesson`, with `applies_to` and `source`) |

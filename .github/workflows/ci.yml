@@ -178,3 +178,5 @@ jobs:
           strict: 'true'
           require-coverage: '100'
       - run: python3 .github/scripts/test-specsync-archive.py
+      # The 1.0 flake window check's fixtures (REQ-cli-062); they read no network.
+      - run: python3 .github/scripts/test-flake-window.py

@@ -2,9 +2,37 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-14T16:18:53Z</updated>
+<updated>2026-11-14T17:45:12Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>The leak check reads an scp-style host path</title>
+<id>urn:chough:journal:2026-11-14-the-leak-check-reads-an-scp-style-host-path</id>
+<updated>2026-11-14T17:45:12Z</updated>
+<link href="2026-11-14-the-leak-check-reads-an-scp-style-host-path.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>#217: fledge run flake-window computes Chough&apos;s two-week clean…</title>
+<id>urn:chough:journal:2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean</id>
+<updated>2026-11-14T17:34:54Z</updated>
+<link href="2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>#219: integrations/ ships versioned example hc templates for Claude Code</title>
+<id>urn:chough:journal:2026-11-14-219-integrations-ships-versioned-example-hc-templates-for</id>
+<updated>2026-11-14T17:34:03Z</updated>
+<link href="2026-11-14-219-integrations-ships-versioned-example-hc-templates-for.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Fix #245: the index links no source Git ignores</title>
+<id>urn:chough:journal:2026-11-14-fix-245-the-index-links-no-source-git-ignores</id>
+<updated>2026-11-14T17:33:02Z</updated>
+<link href="2026-11-14-fix-245-the-index-links-no-source-git-ignores.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>Give agents, local models included</title>
 <id>urn:chough:journal:2026-11-14-give-agents-local-models-included</id>
@@ -115,34 +143,6 @@
 <id>urn:chough:journal:2026-11-12-chough-0-6-0-human-first-records</id>
 <updated>2026-11-12T14:35:01Z</updated>
 <link href="2026-11-12-chough-0-6-0-human-first-records.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Turn the MVP interview into intent and a 1.0 roadmap</title>
-<id>urn:chough:journal:2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap</id>
-<updated>2026-11-12T00:00:00Z</updated>
-<link href="2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Return observation and case IDs from cases record and evidence add</title>
-<id>urn:chough:journal:2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence</id>
-<updated>2026-11-10T23:17:30Z</updated>
-<link href="2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Keep gated finished sessions open on session use and new (#181)</title>
-<id>urn:chough:journal:2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181</id>
-<updated>2026-11-10T23:06:59Z</updated>
-<link href="2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Keep observations current across knowledge index rebuilds (#136)</title>
-<id>urn:chough:journal:2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136</id>
-<updated>2026-11-10T22:48:57Z</updated>
-<link href="2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
