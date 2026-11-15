@@ -22,7 +22,10 @@ Below, `X.Y.Z` is the version being released.
    `https://crates.io/api/v1/crates/chough/owners`); the README's first install
    command depends on it. If someone else holds it, stop and decide the name before going on.
 4. Check the version and the change log: `Cargo.toml` says `version = "X.Y.Z"`, and
-   in [CHANGELOG.md](../CHANGELOG.md) the entries that ship in this release sit under
+   `fledge run changelog -- --release X.Y.Z --date <release date>` has assembled every
+   fragment in `changelog.d/` into [CHANGELOG.md](../CHANGELOG.md), newest first, and
+   removed them (#290); it refuses, writing nothing, when that version already has a
+   heading. The entries that ship in this release then sit under
    `## [X.Y.Z] - <release date>`, with a `[X.Y.Z]` link to
    `https://github.com/CorvidLabs/chough/releases/tag/vX.Y.Z` at the end. The release
    preparation change normally does this (0.4.0's did, in #116); if it did not, do it
