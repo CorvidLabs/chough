@@ -672,11 +672,17 @@ fn the_changelog_task_keeps_a_blank_line_inside_a_bullet() {
     );
 }
 
-/// The `## [Unreleased]` section as it read at cf2ff72, the change whose converted
-/// fragments the release task assembles back, so the round trip can be compared against
-/// the committed copy of that text.
-const CF_UNRELEASED: &str = r#"## [Unreleased]
+/// The `## [Unreleased]` section as it read on main at cf82890 (#293). The converted
+/// fragments and #278's fragment hold its bullets, so the round trip is compared against
+/// this committed copy of that text.
+const MAIN_UNRELEASED: &str = r#"## [Unreleased]
 
+- A closed session's archived story writes its What was verified receipt lines with
+  ` - ` between the claim and the command or the first fingerprint digits, and a gate
+  summary names its change as `Change: <id> - <title>`, so Chough's own records no
+  longer carry an em dash that fails the CorvidLabs prose lints (#278, REQ-history-006,
+  REQ-cli-061). Stories archived earlier are not rewritten: the journal reads a claim
+  from either join (REQ-records-011).
 - A relayed gate close's native approval or review, including the review `chough change
   ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
   `--recorded-by`, so SpecSync's approval and review records hold the relayed decision
@@ -770,7 +776,7 @@ fn the_changelog_task_assembles_the_unreleased_fragments_gives_back_the_same_tex
     );
     let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
     assert_eq!(
-        assembled, CF_UNRELEASED,
+        assembled, MAIN_UNRELEASED,
         "assembling gives back the same text"
     );
     for (name, _) in &converted {
