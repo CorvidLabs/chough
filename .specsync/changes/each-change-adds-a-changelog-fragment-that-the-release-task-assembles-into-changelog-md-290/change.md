@@ -1,6 +1,6 @@
 ---
 id: each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290
-state: draft
+state: implementing
 type: operations
 base_commit: 49b1a252ae47a9e7a5fd8fe257c993d29351a90a
 ---
@@ -13,7 +13,7 @@ Each change adds a changelog fragment that the release task assembles into CHANG
 
 ## Affected Canonical Specs
 
-- None
+- `cli`
 
 ## Acceptance Criteria
 
