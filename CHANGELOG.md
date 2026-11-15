@@ -6,6 +6,7 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+- `chough change ready <id>` (REQ-cli-067, DRIVE-29): one read-only readiness report lists everything still missing before a change is approved and names the exact command that fixes each piece — a delta per affected spec, a stale delta, an undocumented export, a case linking another module's requirements, a changed file outside declared paths, and an unanswered interview question or incomplete artifact. It exits 0 when nothing is missing and writes nothing.
 - A relayed gate close's native approval or review, including the review `chough change
   ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
   `--recorded-by`, so SpecSync's approval and review records hold the relayed decision

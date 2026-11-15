@@ -1194,7 +1194,11 @@ Acceptance Criteria
 The deltas must name exactly the specs the change affects, and a spec is affected when
 it owns a file the change touches. SpecSync 6.3.0 can call a draft ready for approval
 before it has any delta, so check `deltas/` before asking the human to approve the
-scope.
+scope. Before approval, run `chough change ready <id>`: it lists everything still
+missing (delta per affected spec, stale delta, undocumented export, case linking
+another module, changed file outside declared paths, unanswered question, incomplete
+artifact) and names the exact fix command for each, exiting 0 when nothing is missing
+and writing nothing.
 
 The change's own `.specsync/changes/<id>/testing.md` must name every requirement its
 deltas add or modify before `specsync change check` (and so `chough change check`)
