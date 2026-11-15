@@ -16,7 +16,9 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: [2026-11-15-cargo-test-test-changelog-13-passed-including-the-round-trip]
+observations:
+  - 2026-11-15-cargo-test-test-changelog-13-passed-including-the-round-trip
+  - 2026-11-15-on-d081c91-cargo-test-test-changelog-18-passed-after-grok-s-8
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +40,7 @@ Describe the current objective before beginning work.
 ## What was verified
 
 - [cargo test --test changelog: 13 passed, including the round-trip that rebuilds cf2ff72's CHANGELOG.md byte for byte and the refusal of a repeated version heading; fledge run fmt and lint clean](evidence/2026-11-15-cargo-test-test-changelog-13-passed-including-the-round-trip.md)
+- [On d081c91, cargo test --test changelog 18 passed after Grok's 8 findings were fixed; fmt and lint clean; repro of same-day #99/#100 now assembles newest first](evidence/2026-11-15-on-d081c91-cargo-test-test-changelog-18-passed-after-grok-s-8.md)
 
 ## Open threads
 
