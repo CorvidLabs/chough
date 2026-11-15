@@ -1,6 +1,6 @@
 ---
 id: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
-state: verifying
+state: archived
 type: feature
 base_commit: 4d3c1a5cfddc9e6710be2dad1c39162816adacf0
 ---
