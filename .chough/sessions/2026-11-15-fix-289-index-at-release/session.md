@@ -5,7 +5,7 @@ aliases: [fix-289-index-at-release]
 objective: "Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs stop conflicting on knowledge/index.md and feed.xml"
 intent_scope: KNOW
 modules: [cli]
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -45,7 +45,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue test
+next: Continue accept
 ---
 # Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs stop conflicting on knowledge/index.md and feed.xml
 
@@ -137,4 +137,9 @@ Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs st
   - native_change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
   - gate: native:approved
   - revision: 26bf0f5405e166e6ee354ea070336fb5c259d4d3
+  - by: claude-code (hc t28)
+- 2026-11-15T20:23:21Z · advance · test → accept · native:approved ^t-2c8d0d
+  - native_change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+  - gate: native:approved
+  - revision: b47ef247957e3f59d3a9e50fa3e4f4b2cb1197cd
   - by: claude-code (hc t28)

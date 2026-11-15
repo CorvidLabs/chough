@@ -1,6 +1,6 @@
 ---
 module: records
-version: 8
+version: 9
 status: active
 files:
   - src/markdown.rs
@@ -212,3 +212,4 @@ use this one for every record they write.
 | 6 | 2026-11-14 | the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries: The leak check now flags an scp-style host path, `host:/path`, as the host name and the path it carries |
 | 7 | 2026-11-14 | the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275: The leak check flags an scp-style host path as the host name and the path it carries (#275) |
 | 8 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
+| 9 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
