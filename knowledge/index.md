@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Fix #290: each change adds a changelog fragment](journal/2026-11-15-fix-290-each-change-adds-a-changelog-fragment.md) (2026-11-15, shipped)
 - [Fix #278: Chough's records join a receipt's claim to its evidence…](journal/2026-11-15-fix-278-chough-s-records-join-a-receipt-s-claim-to-its.md) (2026-11-15, shipped)
 - [Fix #249: a relayed decision reaches SpecSync's approval and review…](journal/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and.md) (2026-11-14, shipped)
 - [The leak check reads an scp-style host path](journal/2026-11-14-the-leak-check-reads-an-scp-style-host-path.md) (2026-11-14, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [Give agents, local models included](journal/2026-11-14-give-agents-local-models-included.md) (2026-11-14, shipped)
 - [#217: CI also runs once a day on main](journal/2026-11-13-217-ci-also-runs-once-a-day-on-main.md) (2026-11-13, shipped)
 - [#217: seed the flake tracker](journal/2026-11-13-217-seed-the-flake-tracker.md) (2026-11-13, shipped)
-- [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290](../.specsync/archive/changes/2026-11-15-each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290/lesson-bundle.md), Each change adds a changelog fragment that the release task assembles into CHANGELOG.md (#290)
 - [chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with](../.specsync/archive/changes/2026-11-15-chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with/lesson-bundle.md), Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278)
 - [fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag](../.specsync/archive/changes/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag/lesson-bundle.md), Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
-- [217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read](../.specsync/archive/changes/2026-11-14-217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read/lesson-bundle.md), #217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict
 
 ## Snapshots and briefs
 

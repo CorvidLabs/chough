@@ -32,7 +32,9 @@ the same checkpoint (DRIVE-3, DRIVE-12):
 - `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` are listed in
   `verification_ignored_paths` (`.specsync/sdd.json`), so Chough's records can be
   written and committed at any point of the native order; `chough next` says so.
-  `CHANGELOG.md` merges with Git's union driver.
+- Add a change's changelog entry as a fragment of its own,
+  `changelog.d/<YYYY-MM-DD>-<change-id>.md`, not in `CHANGELOG.md`; a release assembles
+  the fragments into `CHANGELOG.md` with `fledge run changelog` (#290).
 - Add a change's cases in a file of its own,
   `.chough/cases/<module>.<change-topic>.cases.toml`, not in the shared module file.
 - Set up Chough's two merge drivers once per clone:
