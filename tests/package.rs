@@ -2398,6 +2398,66 @@ fn the_release_task_rebuilds_and_checks_the_knowledge_index() {
     );
 }
 
+/// Issue #289 (design B): no step of the ci or verify lane resolves to a task that runs
+/// the knowledge check, and the release task rebuilds the index and then checks it.
+#[test]
+fn no_ci_or_verify_lane_step_runs_the_knowledge_check_and_the_release_task_rebuilds_then_checks() {
+    let fledge = fs::read_to_string(manifest_dir().join("fledge.toml")).unwrap();
+    let task_command = |name: &str| -> String {
+        fledge
+            .split("[tasks]")
+            .nth(1)
+            .and_then(|tasks| tasks.split("\n[").next())
+            .unwrap_or("")
+            .lines()
+            .find_map(|line| {
+                let rest = line.trim_start();
+                let (key, value) = rest.split_once('=')?;
+                if key.trim() == name {
+                    return Some(value.trim().to_string());
+                }
+                None
+            })
+            .unwrap_or_else(|| panic!("fledge.toml has no task {name}"))
+    };
+    let release = task_command("release-check");
+    let rebuild = "cargo run --quiet --locked -- library index";
+    let check = "cargo run --quiet --locked -- library index --check";
+    assert!(
+        release.contains(rebuild)
+            && release.contains(check)
+            && release.find(rebuild) < release.find(check),
+        "the release task must rebuild then check: {release}"
+    );
+    for lane in ["ci", "verify"] {
+        let section = fledge
+            .split(&format!("[lanes.{lane}]"))
+            .nth(1)
+            .unwrap_or("");
+        let steps_line = section
+            .lines()
+            .find(|line| line.trim_start().starts_with("steps"))
+            .unwrap_or("");
+        let steps: Vec<String> = steps_line
+            .split('"')
+            .filter(|part| {
+                !part.is_empty()
+                    && part
+                        .chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+            })
+            .map(str::to_string)
+            .collect();
+        for step in steps {
+            let command = task_command(&step);
+            assert!(
+                !command.contains("library index"),
+                "the {lane} lane step {step} runs the knowledge check: {command}"
+            );
+        }
+    }
+}
+
 /// TC-cli-bug-0022-toolchain-matches-ci, a second copy on PATH (BUG-0022): when a tool
 /// differs, the failure names the copy PATH finds first, the one in use, and every
 /// other copy on PATH, each with its version, so the human knows which binary to fix.
