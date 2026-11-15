@@ -11,7 +11,7 @@ title = "A closed session's archived story joins its evidence with a dash, not a
 status = "active"
 track = "functional"
 method = "automated"
-criteria = ["DRIVE-16", "DRIVE-27"]
+criteria = ["DRIVE-7"]
 requirements = ["REQ-history-006"]
 paths = [
   "src/sessions.rs",

@@ -816,6 +816,18 @@ pub(super) fn feed(posts: &[Post]) -> String {
 mod tests {
     use super::*;
 
+    /// #278, REQ-records-011: a What was verified line gives its claim alone, whether it
+    /// joins its evidence with ` - ` or with the ` — ` of a story archived before that join.
+    #[test]
+    fn a_claim_is_read_from_either_join() {
+        let claim = "SYNTHETIC archived proof";
+        let dash = format!("{claim} - `cargo test` 0123456789ab ^ev-1");
+        let em_dash = format!("{claim} — `cargo test` 0123456789ab ^ev-1");
+        assert_eq!(claim_of(&dash), claim);
+        assert_eq!(claim_of(&em_dash), claim);
+        assert_eq!(claim_of(claim), claim);
+    }
+
     #[test]
     fn a_long_paragraph_is_cut_at_a_sentence_end() {
         let text = format!("{}. Second sentence here.", "a".repeat(20));
