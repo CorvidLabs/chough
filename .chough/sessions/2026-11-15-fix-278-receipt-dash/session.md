@@ -5,7 +5,7 @@ aliases: [fix-278-receipt-dash]
 objective: "Fix #278: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read the old join"
 intent_scope: ""
 modules: []
-stage: build
+stage: test
 stage_status: active
 iteration: 1
 callers: []
@@ -13,15 +13,15 @@ native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-da
 pr: ""
 criteria: [DRIVE-7]
 requirements: [REQ-history-006]
-cases: []
+cases: [TC-history-archived-stories-join-evidence-without-an-em-dash]
 design: []
 files: []
-observations: []
+observations: [2026-11-15-tc-history-archived-stories-join-evidence-without-an-em-dash]
 bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: Continue test
 ---
 # Describe the current objective before beginning work.
 
@@ -36,6 +36,8 @@ Describe the current objective before beginning work.
 - 0xLeif decided "Approve the scope of chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with": "yes" (Claude Code chat (hc t28), 2026-11-14, reply to the #278 scope summary); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test sessions -- --exact a_story_lists_each_entry_once_with_its_receipt for TC-history-archived-stories-join-evidence-without-an-em-dash: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-history-archived-stories-join-evidence-without-an-em-dash.md)
 
 ## Open threads
 
@@ -83,4 +85,9 @@ Describe the current objective before beginning work.
   - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
   - gate: native:approved
   - revision: cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8
+  - by: claude-code (hc t28)
+- 2026-11-15T03:04:02Z · advance · build → test · native:approved ^t-6e63e4
+  - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+  - gate: native:approved
+  - revision: 9bdae1013b8a5dd5b009543d27ce846037200189
   - by: claude-code (hc t28)

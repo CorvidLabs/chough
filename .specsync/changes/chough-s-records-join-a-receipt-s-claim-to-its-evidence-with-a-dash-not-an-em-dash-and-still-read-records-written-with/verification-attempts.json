@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1794711885,
+      "commit": "9bdae1013b8a5dd5b009543d27ce846037200189",
+      "contract_digest": "",
+      "workspace_digest": "",
+      "passed": false,
+      "commands": [],
+      "requirement_ids": [],
+      "refusal": "tasks.md contains incomplete tasks: finish the 5 open tasks in `.specsync/changes/chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with/tasks.md` (line 8: \"'receipt_line' and the gate summary join with ' - ' ('src/sessions.rs', 'src/gat...\"; line 9: \"'claim_of' reads both joins ('src/journal.rs').\"; line 10: \"Unit test in 'src/journal.rs' for a line with the earlier ' — ' join, and the up...\"; line 11: \"REQ-history-006, REQ-records-011 and REQ-cli-061 text and acceptance criteria; e...\"; line 12: \"Case in its own '.chough/cases/history.archived-stories.cases.toml'.\") and mark each one `[x]`, then re-run `specsync change check chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with`"
+    },
+    {
+      "timestamp": 1794711891,
+      "commit": "9bdae1013b8a5dd5b009543d27ce846037200189",
+      "contract_digest": "6304b90ba6f5f1dba69d3f5172adbc544d374e18a9c197305955eb7a39f24771",
+      "execution_digest": "9d1602e341eca0b5e2e9b02bc4ee07e76ab83f57b63b45d400115e3d15eadf29",
+      "workspace_digest": "9416f7a9c82e2f735dcd88b8bf36566385ffc7e9d3e3dbb534d732a7d9702b8b",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-061",
+        "REQ-history-006",
+        "REQ-records-011"
+      ]
+    }
+  ]
+}

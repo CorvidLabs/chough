@@ -1,6 +1,6 @@
 ---
 id: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
-state: approved
+state: implementing
 type: bug_fix
 base_commit: cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8
 ---
