@@ -2,9 +2,10 @@
 
 Before the release preparation change merges, on its branch, rebuild the generated
 knowledge files and run the release check: `fledge run release-check` runs
-`chough library index` and then `chough library index --check`. Commit
-`knowledge/index.md` and `knowledge/journal/feed.xml` when they change, so the merge
-commit, and the version commit tagged in step 5, hold the rebuilt index.
+`chough library index` and then `chough library index --check`. When the rebuild
+changes `knowledge/index.md` or `knowledge/journal/feed.xml`, the check fails before
+`--check` and names them: commit them and run it again, so the merge commit, and the
+version commit tagged in step 5, hold the rebuilt index. A green run means HEAD holds it.
 
 The steps below are for a human after the release preparation change merges. Nothing in
 Chough or its CI runs them, and each is a separate decision (see the optional release

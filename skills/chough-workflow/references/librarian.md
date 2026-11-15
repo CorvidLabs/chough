@@ -36,9 +36,10 @@ out of `.chough/` at done.
 in `.gitattributes` and sets the drivers in the clone's Git config. A fresh clone has
 no drivers, since Git does not clone config; `chough doctor` reports that as
 `merge_drivers`, and `chough doctor --fix` sets them. A merge keeps ours, and `chough
-library index` rebuilds both; the release task runs that rebuild and then
-`chough library index --check`, which fails until it does, so no pull request is stale
-before the release check.
+library index` rebuilds both. A pull request leaves them behind their sources on
+purpose: do not rebuild or commit them in a pull request. The release task rebuilds them
+on the release preparation branch, fails until the rebuild is committed, and then runs
+`chough library index --check` (see `docs/releasing.md`).
 
 ## From any stage
 

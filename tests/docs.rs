@@ -586,7 +586,7 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
         ("build", "build"),
     ];
     let mut problems = vec![];
-    for step in steps {
+    for &step in &steps {
         match words.iter().find(|(task, _)| *task == step) {
             None => problems.push(format!(
                 "fledge.toml verify step `{step}` has no README wording in this check; add it here and to README.md"
@@ -595,6 +595,14 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
                 "README.md Tested platforms: the verify lane list ({list}) does not name `{step}` (\"{word}\")"
             )),
             Some(_) => {}
+        }
+    }
+    // A task the lane no longer runs (the knowledge check left it in #289) is not named.
+    for (task, word) in words {
+        if !steps.contains(&task) && list.contains(word) {
+            problems.push(format!(
+                "README.md Tested platforms: the verify lane list ({list}) names `{task}` (\"{word}\"), which the verify lane does not run"
+            ));
         }
     }
     assert!(problems.is_empty(), "{}", problems.join("\n"));

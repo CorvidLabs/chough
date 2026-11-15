@@ -2429,6 +2429,12 @@ fn no_ci_or_verify_lane_step_runs_the_knowledge_check_and_the_release_task_rebui
             && release.find(rebuild) < release.find(check),
         "the release task must rebuild then check: {release}"
     );
+    let committed = "git diff --quiet HEAD -- knowledge/index.md knowledge/journal/feed.xml";
+    assert!(
+        release.find(rebuild) < release.find(committed)
+            && release.find(committed) < release.find(check),
+        "the release task must fail on an uncommitted rebuild before it checks: {release}"
+    );
     for lane in ["ci", "verify"] {
         let section = fledge
             .split(&format!("[lanes.{lane}]"))
