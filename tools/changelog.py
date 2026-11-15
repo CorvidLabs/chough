@@ -79,17 +79,27 @@ def fragment_error(path: Path, text: str) -> str | None:
     if text.startswith("\ufeff"):
         text = text[1:]
     current = False
+    bullet_seen = False
+    first_content: int | None = None
     for number, line in enumerate(text.split("\n"), start=1):
         if not line.strip():
             continue
+        if first_content is None:
+            first_content = number
         if line.startswith("- "):
             current = True
+            bullet_seen = True
             continue
         if current and line[:1] in (" ", "\t"):
             continue
         return (
             f"changelog: changelog.d/{path.name} line {number}: not a changelog bullet: "
             f"{line.strip()[:60]!r}"
+        )
+    if not bullet_seen:
+        return (
+            f"changelog: changelog.d/{path.name} line "
+            f"{first_content if first_content is not None else 1}: no changelog bullet found"
         )
     return None
 

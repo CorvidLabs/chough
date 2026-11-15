@@ -570,6 +570,43 @@ fn the_changelog_task_refuses_a_fragment_that_is_not_a_bullet() {
     assert!(fragment.exists(), "a refused release keeps the fragments");
 }
 
+/// A fragment that holds no bullet at all, not even a blank line or whitespace, is
+/// refused (LIFE-16, #290), naming the file and writing nothing, instead of assembling
+/// an empty release and deleting the fragment.
+#[test]
+fn the_changelog_task_refuses_a_fragment_that_has_no_bullet() {
+    for (name, contents) in [
+        ("2026-11-15-99-blank.md", "\n\n"),
+        ("2026-11-15-100-spaces.md", "   \n\t\n"),
+    ] {
+        let temp = tempfile::TempDir::new().expect("a temporary project root");
+        let root = temp.path();
+        std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+        std::fs::write(
+            root.join("CHANGELOG.md"),
+            "## [Unreleased]\n\n## [0.6.0] - 2026-11-12\n",
+        )
+        .expect("CHANGELOG.md");
+        let fragment = root.join("changelog.d").join(name);
+        std::fs::write(&fragment, contents).expect("the fragment");
+        let before = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
+
+        let output = run_assemble(root, "Unreleased", None);
+        assert!(
+            !output.status.success(),
+            "an assembly over a fragment that holds no bullet must fail"
+        );
+        let after = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
+        assert_eq!(before, after, "a refused release writes nothing");
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(
+            stderr.contains(&format!("changelog.d/{name}")),
+            "the refusal names the fragment file: {stderr}"
+        );
+        assert!(fragment.exists(), "a refused release keeps the fragments");
+    }
+}
+
 /// A fragment whose bullets carry a leading byte order mark (LIFE-16, #290) is accepted,
 /// the mark stripped, so a UTF-8 encoded fragment assembles like any other.
 #[test]
