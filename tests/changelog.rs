@@ -281,13 +281,10 @@ fn the_changelog_task_assembles_fragments_into_the_release_and_removes_them() {
     let temp = tempfile::TempDir::new().expect("a temporary project root");
     let root = temp.path();
     std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    std::fs::write(root.join("CHANGELOG.md"), "## [0.6.0] - 2026-11-12\n").expect("CHANGELOG.md");
     std::fs::write(
-        root.join("CHANGELOG.md"),
-        "## [0.7.0] - 2026-11-16\n\n## [0.6.0] - 2026-11-12\n",
-    )
-    .expect("CHANGELOG.md");
-    std::fs::write(
-        root.join("changelog.d").join("290-changelog-fragments.md"),
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md"),
         "- A changelog fragment names this change (#290).\n",
     )
     .expect("the fragment");
@@ -310,24 +307,105 @@ fn the_changelog_task_assembles_fragments_into_the_release_and_removes_them() {
     assert!(
         !root
             .join("changelog.d")
-            .join("290-changelog-fragments.md")
+            .join("2026-11-14-290-changelog-fragments.md")
             .exists(),
         "the changelog task removes the fragments after assembling"
     );
 }
 
-/// The release task assembles the fragments under `## [Unreleased]` back into the same
-/// text they came from, so a release is a pure copy of the fragments' bullets.
+/// A versioned release (LIFE-16, #290) inserts its heading right after the Unreleased
+/// section, keeps the open Unreleased text and consumes the fragments.
 #[test]
-fn the_changelog_task_assembles_the_unreleased_fragments_gives_back_the_same_text() {
+fn the_changelog_task_assembles_a_versioned_release_after_the_unreleased_section() {
     let temp = tempfile::TempDir::new().expect("a temporary project root");
     let root = temp.path();
-    let text = "## [Unreleased]\n\n- First bullet with a long\n  continuation.\n- Second bullet.\n\n## [0.6.0] - 2026-11-12\n";
     std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
-    std::fs::write(root.join("CHANGELOG.md"), text).expect("CHANGELOG.md");
     std::fs::write(
-        root.join("changelog.d").join("290-changelog-fragments.md"),
-        "- First bullet with a long\n  continuation.\n- Second bullet.\n",
+        root.join("CHANGELOG.md"),
+        "## [Unreleased]\n\n- An open change (#290) is still awaiting its release.\n\n## [0.6.0] - 2026-11-12\n",
+    )
+    .expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md"),
+        "- A changelog fragment names this change (#290).\n",
+    )
+    .expect("the fragment");
+
+    let output = run_assemble(root, "0.7.0", Some("2026-11-16"));
+    assert!(
+        output.status.success(),
+        "the changelog task failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
+    assert!(
+        assembled.contains("## [0.7.0] - 2026-11-16"),
+        "the assembled changelog names the release: {assembled}"
+    );
+    assert!(
+        assembled.contains("A changelog fragment names this change (#290)"),
+        "the assembled changelog holds the fragment's bullet: {assembled}"
+    );
+    assert!(
+        assembled.contains("- An open change (#290) is still awaiting its release."),
+        "a versioned release leaves the open Unreleased text in place: {assembled}"
+    );
+    assert!(
+        !root
+            .join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md")
+            .exists(),
+        "the changelog task removes the fragments after assembling"
+    );
+}
+
+/// A release (LIFE-16, #290) is refused, writing nothing, when its version heading is
+/// already there, so an assembly can never overwrite a shipped release.
+#[test]
+fn the_changelog_task_refuses_a_release_that_already_exists() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    let changelog = root.join("CHANGELOG.md");
+    std::fs::write(
+        &changelog,
+        "## [0.7.0] - 2026-11-16\n\n- A changelog fragment names this change (#290).\n",
+    )
+    .expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md"),
+        "- A changelog fragment names this change (#290).\n",
+    )
+    .expect("the fragment");
+    let before = std::fs::read_to_string(&changelog).expect("CHANGELOG.md");
+
+    let output = run_assemble(root, "0.7.0", Some("2026-11-16"));
+    assert!(
+        !output.status.success(),
+        "an assembly over an existing release heading must fail, not overwrite"
+    );
+    let after = std::fs::read_to_string(&changelog).expect("CHANGELOG.md");
+    assert_eq!(before, after, "a refused release writes nothing");
+}
+
+/// The release task (LIFE-16, #290) appends the fragments' bullets after what the
+/// section already holds, so an open section never loses its hand-written entries.
+#[test]
+fn the_changelog_task_appends_fragments_after_what_the_section_holds() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    std::fs::write(
+        root.join("CHANGELOG.md"),
+        "## [Unreleased]\n\n- A hand-written open change (#290) is still being written.\n\n## [0.6.0] - 2026-11-12\n",
+    )
+    .expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md"),
+        "- A changelog fragment names this change (#290).\n",
     )
     .expect("the fragment");
 
@@ -338,12 +416,60 @@ fn the_changelog_task_assembles_the_unreleased_fragments_gives_back_the_same_tex
         String::from_utf8_lossy(&output.stderr)
     );
     let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
-    assert_eq!(assembled, text, "assembling gives back the same text");
+    assert!(
+        assembled.contains("- A hand-written open change (#290) is still being written."),
+        "the section keeps what it already held: {assembled}"
+    );
+    assert!(
+        assembled.contains("- A changelog fragment names this change (#290)"),
+        "the assembled changelog holds the fragment's bullet: {assembled}"
+    );
     assert!(
         !root
             .join("changelog.d")
-            .join("290-changelog-fragments.md")
+            .join("2026-11-14-290-changelog-fragments.md")
             .exists(),
+        "the changelog task removes the fragments after assembling"
+    );
+}
+
+/// The release task assembles the fragments the converted Unreleased bullets became
+/// back into the Unreleased text, so a release is a pure copy of the fragments' bullets
+/// in shipping order, newest first.
+#[test]
+fn the_changelog_task_assembles_the_unreleased_fragments_gives_back_the_same_text() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    std::fs::write(
+        root.join("CHANGELOG.md"),
+        "## [Unreleased]\n\n## [0.6.0] - 2026-11-12\n",
+    )
+    .expect("CHANGELOG.md");
+    for (index, fragment) in fragments().iter().enumerate() {
+        std::fs::write(
+            root.join("changelog.d").join(format!("{index:02}.md")),
+            fragment,
+        )
+        .expect("the fragment");
+    }
+
+    let output = run_assemble(root, "Unreleased", None);
+    assert!(
+        output.status.success(),
+        "the changelog task failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
+    let mut expected = String::from("## [Unreleased]\n\n");
+    for fragment in fragments().iter().rev() {
+        expected.push_str(fragment.trim_end_matches('\n'));
+        expected.push('\n');
+    }
+    expected.push_str("\n## [0.6.0] - 2026-11-12\n");
+    assert_eq!(assembled, expected, "assembling gives back the same text");
+    assert!(
+        !root.join("changelog.d").join("00.md").exists(),
         "the changelog task removes the fragments after assembling"
     );
 }
@@ -361,7 +487,8 @@ fn the_changelog_task_assembles_the_same_bytes_twice() {
         )
         .expect("CHANGELOG.md");
         std::fs::write(
-            root.join("changelog.d").join("290-changelog-fragments.md"),
+            root.join("changelog.d")
+                .join("2026-11-14-290-changelog-fragments.md"),
             "- A changelog fragment names this change (#290).\n",
         )
         .expect("the fragment");

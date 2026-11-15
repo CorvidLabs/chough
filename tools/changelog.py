@@ -47,6 +47,20 @@ def bullet_groups(text: str) -> list[list[str]]:
     return groups
 
 
+def heading_index(lines: list[str], heading: str) -> int | None:
+    for index, line in enumerate(lines):
+        if line == heading:
+            return index
+    return None
+
+
+def next_heading(lines: list[str], index: int) -> int:
+    for following in range(index + 1, len(lines)):
+        if lines[following].startswith(HEADING_PREFIX):
+            return following
+    return len(lines)
+
+
 def assemble(root: Path, release: str, date: str | None) -> int:
     if release == "Unreleased":
         heading = "## [Unreleased]"
@@ -59,34 +73,40 @@ def assemble(root: Path, release: str, date: str | None) -> int:
     if not fragments:
         return 0
     bullets: list[list[str]] = []
-    for fragment in fragments:
+    for fragment in reversed(fragments):
         bullets.extend(bullet_groups(fragment.read_text(encoding="utf-8")))
     assembled = [line for bullet in bullets for line in bullet]
     changelog = root / "CHANGELOG.md"
     text = changelog.read_text(encoding="utf-8")
-    lines_of_text = text.split("\n")
-    if lines_of_text and lines_of_text[-1] == "":
-        lines_of_text.pop()
-    heading_index = None
-    for index, line in enumerate(lines_of_text):
-        if line == heading:
-            heading_index = index
-            break
-    if heading_index is None:
-        print(f"changelog: CHANGELOG.md has no {heading} section", file=sys.stderr)
-        return 2
-    next_heading = len(lines_of_text)
-    for index in range(heading_index + 1, len(lines_of_text)):
-        if lines_of_text[index].startswith(HEADING_PREFIX):
-            next_heading = index
-            break
-    body = [""] + assembled + [""] if assembled else [""]
-    lines_of_text[heading_index + 1 : next_heading] = body
-    changelog.write_text("\n".join(lines_of_text) + "\n", encoding="utf-8")
+    lines = text.split("\n")
+    if lines and lines[-1] == "":
+        lines.pop()
+    if release == "Unreleased":
+        index = heading_index(lines, heading)
+        if index is None:
+            print(f"changelog: CHANGELOG.md has no {heading} section", file=sys.stderr)
+            return 2
+        end = next_heading(lines, index)
+        body = list(lines[index + 1 : end])
+        appended = body
+        if not appended or appended[-1].strip() != "":
+            appended.append("")
+        appended.extend(assembled)
+        if not appended or appended[-1].strip() != "":
+            appended.append("")
+        lines[index + 1 : end] = appended
+    else:
+        if heading in lines:
+            print(f"changelog: CHANGELOG.md already has {heading}", file=sys.stderr)
+            return 2
+        unopened = heading_index(lines, "## [Unreleased]")
+        insert_at = len(lines) if unopened is None else next_heading(lines, unopened)
+        lines[insert_at:insert_at] = [heading] + ([""] + assembled + [""] if assembled else [""])
+    changelog.write_text("\n".join(lines) + "\n", encoding="utf-8")
     for fragment in fragments:
         fragment.unlink()
     print(
-        f"changelog: assembled {len(bullets)} bullets from {len(fragments)} fragments "
+        f"changelog: assembled {len(assembled)} bullets from {len(fragments)} fragments "
         f"into {heading}"
     )
     return 0
