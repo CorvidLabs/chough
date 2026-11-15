@@ -1,9 +1,18 @@
 # Releasing Chough
 
-These steps are for a human after the release preparation change merges. Nothing in
+Before the release preparation change merges, on its branch, rebuild the generated
+knowledge files and run the release check: `fledge run release-check` runs
+`chough library index` and then `chough library index --check`. When the rebuild
+changes `knowledge/index.md` or `knowledge/journal/feed.xml`, the check fails before
+`--check` and names them: commit them and run it again, so the merge commit, and the
+version commit tagged in step 5, hold the rebuilt index. A green run means HEAD holds it.
+
+The steps below are for a human after the release preparation change merges. Nothing in
 Chough or its CI runs them, and each is a separate decision (see the optional release
 stage in [the skill](../skills/chough-workflow/references/release.md)). Use the
-toolchain from [Install the toolchain](../README.md#install-the-toolchain).
+toolchain from [Install the toolchain](../README.md#install-the-toolchain). No CI job or
+lane runs `chough library index --check`; the release task is the only place the vault
+is checked, and it runs the rebuild first.
 
 Below, `X.Y.Z` is the version being released.
 

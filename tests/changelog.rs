@@ -760,9 +760,17 @@ fn the_changelog_task_assembles_the_unreleased_fragments_gives_back_the_same_tex
         "## [Unreleased]\n\n## [0.6.0] - 2026-11-12\n",
     )
     .expect("CHANGELOG.md");
+    // Only the fragments MAIN_UNRELEASED was fixed from: the numbered conversions of the
+    // old Unreleased bullets and #278's. A later change adds its own fragment, which this
+    // round trip must not read (#289).
     let converted: Vec<(String, String)> = fragment_files()
         .into_iter()
-        .filter(|(name, _)| name != "2026-11-14-290-changelog-fragments.md")
+        .filter(|(name, _)| {
+            let numbered = name.len() > 3
+                && name.as_bytes()[..2].iter().all(u8::is_ascii_digit)
+                && name.as_bytes()[2] == b'-';
+            numbered || name == "2026-11-15-fix-278-receipt-dash.md"
+        })
         .collect();
     for (name, contents) in &converted {
         std::fs::write(root.join("changelog.d").join(name), contents).expect("the fragment");

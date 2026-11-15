@@ -234,7 +234,8 @@ fn well_formed(xml: &str) -> Result<(), String> {
 
 /// REQ-records-011, TC-records-journal-and-feed: the move into done writes one `shipped`
 /// post within 1,200 bytes that links the PR, the archived story and the change's archive
-/// folder, and the feed and index list it.
+/// folder, and the librarian defers the vault rebuild to release, so the feed
+/// and the index list it once the vault is rebuilt.
 #[test]
 fn done_writes_a_short_post_and_the_feed_lists_it() {
     let fixture = at_accept();
@@ -293,6 +294,9 @@ fn done_writes_a_short_post_and_the_feed_lists_it() {
             "{target} does not resolve from the post"
         );
     }
+    // The librarian refreshes the vault at release, not at closeout, so the
+    // release task rebuilds before the check that names them.
+    fixture.ok(&["library", "index"]);
     let feed = fixture.read("knowledge/journal/feed.xml");
     well_formed(&feed).unwrap_or_else(|error| panic!("{error}: {feed}"));
     assert!(
@@ -309,17 +313,17 @@ fn done_writes_a_short_post_and_the_feed_lists_it() {
         "{index}"
     );
     assert_eq!(
-        moved["applied"]["librarian_index"]["status"], "refreshed",
+        moved["applied"]["librarian_index"]["status"], "deferred",
         "{moved:#}"
     );
     fixture.ok(&["library", "index", "--check"]);
 }
 
 /// REQ-records-011, TC-records-done-touches-only-its-own-post: around the move into done,
-/// nothing under `knowledge/` changes but the new post, `feed.xml`, and `index.md`'s
-/// journal list; an earlier post a person edited, a lesson and a brief stay byte-identical.
+/// nothing under `knowledge/` changes but the new post; the librarian refreshes the vault
+/// at release, not here, so the generated files are not touched.
 #[test]
-fn done_changes_no_knowledge_file_but_its_own_post_and_the_feed() {
+fn done_changes_no_knowledge_file_but_its_own_post() {
     let fixture = at_accept();
     fixture.write(
         "knowledge/journal/2026-01-02-an-earlier-post.md",
@@ -359,22 +363,13 @@ fn done_changes_no_knowledge_file_but_its_own_post_and_the_feed() {
         .keys()
         .filter(|key| after.get(*key).is_some_and(|bytes| *bytes != before[*key]))
         .collect();
-    assert_eq!(
-        changed,
-        ["knowledge/index.md", "knowledge/journal/feed.xml"],
-        "{moved:#}"
+    // The move into done writes no generated file: the librarian refreshes the vault at
+    // release, not here.
+    assert!(
+        changed.is_empty(),
+        "the move into done touched {changed:?}, not only its own post"
     );
-    // Only the index's list of newest posts differs.
-    let outside = |bytes: &[u8]| -> String {
-        let text = String::from_utf8_lossy(bytes).into_owned();
-        let (head, rest) = text.split_once("Newest posts:\n").expect("a journal list");
-        let tail = rest.split_once("\n## ").map_or("", |(_, tail)| tail);
-        format!("{head}{tail}")
-    };
-    assert_eq!(
-        outside(&before["knowledge/index.md"]),
-        outside(&after["knowledge/index.md"])
-    );
+    fixture.ok(&["library", "index"]);
     fixture.ok(&["library", "index", "--check"]);
 }
 
@@ -554,9 +549,12 @@ fn a_session_closed_without_done_gets_a_closed_post() {
     let (front, _) = split(&text);
     assert_eq!(field(front, "kind"), "closed", "{text}");
     assert_eq!(
-        closed["librarian_index"]["status"], "refreshed",
+        closed["librarian_index"]["status"], "deferred",
         "{closed:#}"
     );
+    // The librarian refreshes the vault at release, not here, so the release task
+    // rebuilds before the check passes.
+    fixture.ok(&["library", "index"]);
     fixture.ok(&["library", "index", "--check"]);
 }
 
@@ -608,8 +606,9 @@ fn git_succeeds(fixture: &Fixture, args: &[&str]) -> bool {
 
 /// REQ-cli-047: with `merge=chough-generated` declared, two branches that each add a post
 /// conflict in `index.md` and `feed.xml` under Git's text merge, and merge clean with the
-/// driver set up: the merged feed is ours byte for byte and parses, `library index --check`
-/// fails naming both files until `library index` rebuilds them, and then lists both posts.
+/// driver set up: the merged feed is ours byte for byte and parses; the merged sources have
+/// gained the other branch's post, so the strict check fails until the release task rebuilds
+/// them, and then lists both posts.
 #[test]
 fn two_branches_that_each_add_a_post_merge_clean_with_the_generated_driver() {
     let fixture = Fixture::new();
@@ -657,11 +656,10 @@ fn two_branches_that_each_add_a_post_merge_clean_with_the_generated_driver() {
     assert_eq!(fixture.read(feed), ours_feed, "the driver keeps ours");
     well_formed(&fixture.read(feed)).unwrap_or_else(|error| panic!("{error}"));
     assert!(fixture.exists(&ours) && fixture.exists(&theirs));
+    // The merged sources have gained the other branch's post, so the kept file is stale
+    // against them and the strict check fails until the rebuild writes both posts.
     let error = fixture.fails(&["library", "index", "--check"]);
-    assert!(
-        error.contains(feed) && error.contains("knowledge/index.md"),
-        "{error}"
-    );
+    assert!(error.contains(feed), "{error}");
     fixture.ok(&["library", "index"]);
     fixture.ok(&["library", "index", "--check"]);
     let rebuilt = fixture.read(feed);
@@ -1077,6 +1075,9 @@ fn a_posts_heading_holds_its_title_as_inert_markdown() {
             "{text}"
         );
     }
+    // The librarian refreshes the vault at release, not here, so the release task
+    // rebuilds before the check passes.
+    fixture.ok(&["library", "index"]);
     fixture.ok(&["library", "index", "--check"]);
 }
 
@@ -1194,6 +1195,9 @@ fn the_post_uses_the_title_and_summary_the_agent_set() {
     let (story_front, _) = split(&story);
     assert_eq!(field(story_front, "title"), title, "{story}");
     assert_eq!(items(story_front, "summary"), lines, "{story}");
+    // The librarian refreshes the vault at release, not here, so the release task
+    // rebuilds before the check passes.
+    fixture.ok(&["library", "index"]);
     fixture.ok(&["library", "index", "--check"]);
 }
 
