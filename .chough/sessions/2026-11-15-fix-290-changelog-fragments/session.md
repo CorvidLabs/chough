@@ -21,7 +21,11 @@ observations:
   - 2026-11-15-on-d081c91-cargo-test-test-changelog-18-passed-after-grok-s-8
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Review the implementation of each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290
+    holds: accept
+    drives: review
+    opened: 2026-11-15T16:28:42Z
 run_consents: []
 next: Continue accept
 ---
@@ -108,4 +112,10 @@ Describe the current objective before beginning work.
   - native_change: each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290
   - gate: native:verifying
   - revision: 3a95c197d1b8a5229134dbd91d5e8bf23f83a320
+  - by: claude-code (hc t28)
+- 2026-11-15T16:28:42Z · gate-opened · accept → accept · Review the implementation of each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290 ^t-71887d
+  - native_change: each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290
+  - revision: 957afb4d8b1833f12c868e3535085455f6540130
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t28)
