@@ -1,8 +1,9 @@
 //! The change log lists every shipped change under the release that first contained it
-//! (LIFE-16). These tests read only `CHANGELOG.md`: CI clones carry no tags, so where a
-//! change first shipped is checked against the tags by hand and pinned here.
+//! (LIFE-16). These tests read `CHANGELOG.md` and the fragments a change adds under
+//! `changelog.d/` together: CI clones carry no tags, so where a change first shipped is
+//! checked against the tags by hand and pinned here.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 fn changelog() -> String {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("CHANGELOG.md");
@@ -48,6 +49,63 @@ fn cites(entry: &str, number: u32) -> bool {
 }
 
 const RELEASED: &[&str] = &["0.4.0", "0.3.0", "0.2.0", "0.1.0"];
+
+fn manifest_dir() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).to_path_buf()
+}
+
+fn fragment_dir() -> PathBuf {
+    manifest_dir().join("changelog.d")
+}
+
+/// The contents of every `changelog.d/*.md` fragment, in sorted file-name order.
+fn fragments() -> Vec<String> {
+    let directory = fragment_dir();
+    let mut names: Vec<String> = std::fs::read_dir(&directory)
+        .expect("changelog.d is readable")
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            let path = entry.path();
+            let is_markdown = path
+                .extension()
+                .and_then(|extension| extension.to_str())
+                .is_some_and(|extension| extension == "md");
+            if is_markdown && path.is_file() {
+                Some(path.file_name()?.to_string_lossy().into_owned())
+            } else {
+                None
+            }
+        })
+        .collect();
+    names.sort();
+    names
+        .into_iter()
+        .map(|name| {
+            std::fs::read_to_string(directory.join(&name))
+                .unwrap_or_else(|error| panic!("changelog.d/{name} is readable: {error}"))
+        })
+        .collect()
+}
+
+fn changelog_script() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tools")
+        .join("changelog.py")
+}
+
+fn run_assemble(root: &Path, release: &str, date: Option<&str>) -> std::process::Output {
+    let mut command = std::process::Command::new("python3");
+    command
+        .arg(changelog_script())
+        .arg("--root")
+        .arg(root)
+        .arg("--release")
+        .arg(release);
+    if let Some(date) = date {
+        command.arg("--date").arg(date);
+    }
+    command.output().expect("the changelog task runs python3")
+}
 
 #[test]
 fn the_sessions_entry_is_under_0_4_0_where_77_first_shipped() {
@@ -183,4 +241,146 @@ fn the_0_6_0_also_list_names_nothing_0_6_0_removed() {
             "Also in 0.6.0 still describes {removed:?}, which 0.6.0 removed"
         );
     }
+}
+
+/// LIFE-16, #290: before a release the change the working branch is on is named by the
+/// changelog, from the fragment it adds under `changelog.d/` and not from a
+/// `CHANGELOG.md` Unreleased bullet that two open changes would edit together.
+#[test]
+fn the_changelog_names_this_change_before_release() {
+    let text = changelog();
+    let unreleased = entries(section(&text, "Unreleased"));
+    let mut named = unreleased.clone();
+    for fragment in fragments() {
+        named.extend(entries(&fragment));
+    }
+    let hits: Vec<String> = named
+        .into_iter()
+        .filter(|entry| cites(entry, 290))
+        .collect();
+    assert_eq!(
+        hits.len(),
+        1,
+        "the changelog names this change once: {hits:?}"
+    );
+    assert!(
+        hits[0].contains("changelog.d/"),
+        "the #290 entry is the changelog fragment change: {}",
+        hits[0]
+    );
+    assert!(
+        !unreleased.iter().any(|entry| cites(entry, 290)),
+        "before release the changelog names this change from its fragment, not from the Unreleased section: {unreleased:?}"
+    );
+}
+
+/// The release task (LIFE-16, #290) assembles every fragment into the release heading
+/// given and removes the fragments.
+#[test]
+fn the_changelog_task_assembles_fragments_into_the_release_and_removes_them() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    std::fs::write(
+        root.join("CHANGELOG.md"),
+        "## [0.7.0] - 2026-11-16\n\n## [0.6.0] - 2026-11-12\n",
+    )
+    .expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d").join("290-changelog-fragments.md"),
+        "- A changelog fragment names this change (#290).\n",
+    )
+    .expect("the fragment");
+
+    let output = run_assemble(root, "0.7.0", Some("2026-11-16"));
+    assert!(
+        output.status.success(),
+        "the changelog task failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
+    assert!(
+        assembled.contains("## [0.7.0] - 2026-11-16"),
+        "the assembled changelog names the release: {assembled}"
+    );
+    assert!(
+        assembled.contains("A changelog fragment names this change (#290)"),
+        "the assembled changelog holds the fragment's bullet: {assembled}"
+    );
+    assert!(
+        !root
+            .join("changelog.d")
+            .join("290-changelog-fragments.md")
+            .exists(),
+        "the changelog task removes the fragments after assembling"
+    );
+}
+
+/// The release task assembles the fragments under `## [Unreleased]` back into the same
+/// text they came from, so a release is a pure copy of the fragments' bullets.
+#[test]
+fn the_changelog_task_assembles_the_unreleased_fragments_gives_back_the_same_text() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    let text = "## [Unreleased]\n\n- First bullet with a long\n  continuation.\n- Second bullet.\n\n## [0.6.0] - 2026-11-12\n";
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    std::fs::write(root.join("CHANGELOG.md"), text).expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d").join("290-changelog-fragments.md"),
+        "- First bullet with a long\n  continuation.\n- Second bullet.\n",
+    )
+    .expect("the fragment");
+
+    let output = run_assemble(root, "Unreleased", None);
+    assert!(
+        output.status.success(),
+        "the changelog task failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
+    assert_eq!(assembled, text, "assembling gives back the same text");
+    assert!(
+        !root
+            .join("changelog.d")
+            .join("290-changelog-fragments.md")
+            .exists(),
+        "the changelog task removes the fragments after assembling"
+    );
+}
+
+/// The release task is deterministic: the same fragments give the same bytes.
+#[test]
+fn the_changelog_task_assembles_the_same_bytes_twice() {
+    let first = tempfile::TempDir::new().expect("a temporary project root");
+    let second = tempfile::TempDir::new().expect("a temporary project root");
+    for root in [first.path(), second.path()] {
+        std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+        std::fs::write(
+            root.join("CHANGELOG.md"),
+            "## [Unreleased]\n\n## [0.6.0] - 2026-11-12\n",
+        )
+        .expect("CHANGELOG.md");
+        std::fs::write(
+            root.join("changelog.d").join("290-changelog-fragments.md"),
+            "- A changelog fragment names this change (#290).\n",
+        )
+        .expect("the fragment");
+    }
+    let first_output = run_assemble(first.path(), "Unreleased", None);
+    let second_output = run_assemble(second.path(), "Unreleased", None);
+    assert!(
+        first_output.status.success(),
+        "the changelog task failed: {}",
+        String::from_utf8_lossy(&first_output.stderr)
+    );
+    assert!(
+        second_output.status.success(),
+        "the changelog task failed: {}",
+        String::from_utf8_lossy(&second_output.stderr)
+    );
+    let first_text =
+        std::fs::read_to_string(first.path().join("CHANGELOG.md")).expect("CHANGELOG.md");
+    let second_text =
+        std::fs::read_to_string(second.path().join("CHANGELOG.md")).expect("CHANGELOG.md");
+    assert_eq!(first_text, second_text);
 }
