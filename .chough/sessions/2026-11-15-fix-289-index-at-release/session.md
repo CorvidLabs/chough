@@ -45,7 +45,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: "Gate \"Re-approve the rebased deltas of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289\" closed (approved); run `chough stage advance` to move on."
 ---
 # Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs stop conflicting on knowledge/index.md and feed.xml
 
@@ -58,6 +58,7 @@ Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs st
 ## Decisions and why
 
 - 0xLeif decided "Approve the scope of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289": "yes I approve" (Claude Code chat (hc t28), 2026-11-15, on the #289 scope summary; list refreshed only for Flint's two announced tests (7321283) and a re-run of TC-cli-documented-merge-drivers-match); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289 as 0xLeif
+- 0xLeif decided "Re-approve the rebased deltas of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289": "yes I re-approve the #289 deltas" (Claude Code chat (hc t28), 2026-11-15, on the rebased REQ-history-006 and REQ-records-011 deltas; native approval recorded with specsync change approve); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289 as 0xLeif
 
 ## What was verified
 
@@ -142,4 +143,32 @@ Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs st
   - native_change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
   - gate: native:approved
   - revision: b47ef247957e3f59d3a9e50fa3e4f4b2cb1197cd
+  - by: claude-code (hc t28)
+- 2026-11-15T20:30:22Z · gate-opened · accept → accept · Re-approve the rebased deltas of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289 ^t-e96222
+  - native_change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+  - revision: 128f5478baf0d6150d02a8d55ec1130ef7acea76
+  - holds: accept
+  - drives: approve
+  - by: claude-code (hc t28)
+- 2026-11-15T20:39:35Z · direct-native-write · accept → accept · the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state stays verifying ^t-dbaf99
+  - native_change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+  - revision: 128f5478baf0d6150d02a8d55ec1130ef7acea76
+  - direct_write:
+    - change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: claude-code (hc t28)
+- 2026-11-15T20:39:35Z · gate-closed · accept → accept · Re-approve the rebased deltas of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289 ^t-c80dde
+  - native_change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+  - revision: 128f5478baf0d6150d02a8d55ec1130ef7acea76
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: yes I re-approve the #289 deltas
+    - where: Claude Code chat (hc t28), 2026-11-15, on the rebased REQ-history-006 and REQ-records-011 deltas; native approval recorded with specsync change approve
+    - recorded_by: claude-code (hc t28)
+    - native: specsync change approve the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+    - actor: 0xLeif
   - by: claude-code (hc t28)
