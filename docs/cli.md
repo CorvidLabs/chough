@@ -943,7 +943,7 @@ What was verified gives the latest receipt of each case and every receipt bound 
 case, one line each:
 
 ```text
-- <claim> — `<command>` <first 12 fingerprint digits> [screenshot](<session>/<file>) ^<evidence id>
+- <claim> - `<command>` <first 12 fingerprint digits> [screenshot](<session>/<file>) ^<evidence id>
 ```
 
 The command appears only when the claim does not already hold it, as a case run's

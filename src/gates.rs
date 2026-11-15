@@ -637,7 +637,7 @@ pub(super) fn summary(root: &Path, session: &Value, gate: &str) -> String {
                     .as_ref()
                     .and_then(|state| state["state"].as_str())
                     .unwrap_or("unknown");
-                lines.push(format!("Change: {change} — {title} ({current})"));
+                lines.push(format!("Change: {change} - {title} ({current})"));
             }
             None => lines.push("Change: none recorded".into()),
         }
