@@ -3,31 +3,16 @@ kind: session
 id: 2026-11-15-fix-290-changelog-fragments
 aliases: [fix-290-changelog-fragments]
 objective: "Fix #290: each change adds a changelog fragment, assembled into CHANGELOG.md at release, so open PRs stop conflicting on the changelog"
-intent_scope: ""
-modules: []
-stage: accept
-stage_status: active
+stage: done
+stage_status: archived
 iteration: 1
-callers: []
 native_change: each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290
-pr: ""
 criteria: [LIFE-16]
-requirements: []
-cases: []
-design: []
-files: []
 observations:
   - 2026-11-15-cargo-test-test-changelog-13-passed-including-the-round-trip
   - 2026-11-15-on-d081c91-cargo-test-test-changelog-18-passed-after-grok-s-8
-bugs: []
-blockers: []
-waiting_on_human:
-  - gate: Review the implementation of each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290
-    holds: accept
-    drives: review
-    opened: 2026-11-15T16:28:42Z
-run_consents: []
-next: Continue accept
+closed: 2026-11-15
+outcome: done
 ---
 # Describe the current objective before beginning work.
 
@@ -40,11 +25,16 @@ Describe the current objective before beginning work.
 ## Decisions and why
 
 - 0xLeif decided "Approve the scope of each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290": "yes" (Claude Code chat (hc t28), 2026-11-15, reply to the #290 scope summary); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290 as 0xLeif
+- 0xLeif decided "Review the implementation of each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290": "yes i approve" (Claude Code chat (hc t28), 2026-11-15, reply to the #290 implementation review (PR #296)); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change review each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290 as 0xLeif with verdict pass
 
 ## What was verified
 
-- [cargo test --test changelog: 13 passed, including the round-trip that rebuilds cf2ff72's CHANGELOG.md byte for byte and the refusal of a repeated version heading; fledge run fmt and lint clean](evidence/2026-11-15-cargo-test-test-changelog-13-passed-including-the-round-trip.md)
-- [On d081c91, cargo test --test changelog 18 passed after Grok's 8 findings were fixed; fmt and lint clean; repro of same-day #99/#100 now assembles newest first](evidence/2026-11-15-on-d081c91-cargo-test-test-changelog-18-passed-after-grok-s-8.md)
+- cargo test --test changelog: 13 passed, including the round-trip that rebuilds cf2ff72's CHANGELOG.md byte for byte and the refusal of a repeated version heading; fledge run fmt and lint clean — bb85aa0975bd ^2026-11-15-cargo-test-test-changelog-13-passed-including-the-round-trip
+- On d081c91, cargo test --test changelog 18 passed after Grok's 8 findings were fixed; fmt and lint clean; repro of same-day #99/#100 now assembles newest first — 26af66458d37 ^2026-11-15-on-d081c91-cargo-test-test-changelog-18-passed-after-grok-s-8
+
+## Bugs
+
+None.
 
 ## Open threads
 
@@ -119,3 +109,45 @@ Describe the current objective before beginning work.
   - holds: accept
   - drives: review
   - by: claude-code (hc t28)
+- 2026-11-15T16:41:21Z · gate-closed · accept → accept · Review the implementation of each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290 ^t-db8e3a
+  - native_change: each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290
+  - revision: 713621c4d1c4963a17b9bcf79eb379fe9d05d790
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: yes i approve
+    - where: Claude Code chat (hc t28), 2026-11-15, reply to the #290 implementation review (PR #296)
+    - recorded_by: claude-code (hc t28)
+    - native: specsync change review each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290
+    - actor: 0xLeif
+  - by: claude-code (hc t28)
+- 2026-11-15T16:41:22Z · advance · accept → done · native:archived ^t-cea6ff
+  - native_change: each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290
+  - gate: native:archived
+  - revision: 713621c4d1c4963a17b9bcf79eb379fe9d05d790
+  - by: claude-code (hc t28)
+
+Closed 2026-11-15: done.
+
+## Receipts
+
+```yaml
+receipts:
+  - id: 2026-11-15-cargo-test-test-changelog-13-passed-including-the-round-trip
+    claim: "cargo test --test changelog: 13 passed, including the round-trip that rebuilds cf2ff72's CHANGELOG.md byte for byte and the refusal of a repeated version heading; fledge run fmt and lint clean"
+    result: passed
+    revision: 3a95c197d1b8a5229134dbd91d5e8bf23f83a320
+    environment: local-macos-arm64
+    content: c68b423c4f71081b2b6285e61ebccbe42cfc93161157a41c05cb8f1c14cc8f9d
+    fingerprint: sha256:bb85aa0975bd3eb377c4c0b3c5ad2840147b82d3af68c7e6bab5f214cb8d7458
+    observed: 2026-11-15T15:12:33Z
+    actor: claude-code (hc t28)
+  - id: 2026-11-15-on-d081c91-cargo-test-test-changelog-18-passed-after-grok-s-8
+    claim: "On d081c91, cargo test --test changelog 18 passed after Grok's 8 findings were fixed; fmt and lint clean; repro of same-day #99/#100 now assembles newest first"
+    result: passed
+    revision: d081c910526761fb393fceb3633daa73ce3368e5
+    environment: local-macos-arm64
+    content: 18a9c39b9c3cc35e79f7c22e431d783d1766b839726faea6e4b278174ad72043
+    fingerprint: sha256:26af66458d3770822f183157d8549f7117efe210e87510c3d9492ff8183c21df
+    observed: 2026-11-15T15:55:59Z
+    actor: claude-code (hc t28)
+```
