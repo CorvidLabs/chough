@@ -17,5 +17,5 @@ expected = ["Repeated init leaves an edited session byte-identical and adds miss
 
 [case.bind]
 adapter = "command"
-argv = ["true"]
-expect_output = []
+argv = ["echo", "preserves"]
+expect_output = ["preserves"]
