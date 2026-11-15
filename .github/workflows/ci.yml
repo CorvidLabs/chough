@@ -102,6 +102,38 @@ jobs:
       - run: cargo install human-intent --version 0.8.0 --locked
       - run: fledge lanes run verify
 
+  # Issue #289: the generated knowledge files are rebuilt on main after the merge, and
+  # committed there, so a pull request never writes them; a branch whose closeout wrote no
+  # generated file is only behind its own sources until the rebuild lands.
+  knowledge-rebuild:
+    name: Knowledge index rebuild
+    # Only a push to main rebuilds; every pull request keeps its generated files behind its
+    # own new posts until the rebuild lands on main.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: true
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+      - run: cargo build --locked
+      - run: ./target/debug/chough library index
+      - name: Commit the rebuilt knowledge files
+        run: |
+          git config user.name "chough"
+          git config user.email "chough@localhost"
+          git add knowledge/index.md knowledge/journal/feed.xml
+          if git diff --cached --quiet; then
+            echo "The knowledge index is current."
+          else
+            git commit -m "chough: rebuild the knowledge index and feed after merge"
+            git push
+          fi
+
   archive:
     # Authentication of every archive and the walk of every PR revision are split
     # across four parallel jobs, each with the unchanged 10-minute limit (DRIVE-10,
