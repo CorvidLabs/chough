@@ -115,6 +115,13 @@
         "history: REQUIREMENT REQ-history-006": "6cb3ff3c3221284ac9052ca407e96deedf3a95bcb6abb7c8d29bd1f7c45f71d7",
         "records: REQUIREMENT REQ-records-011": "bb84b807184343e1c2f3e8a3855e26ffc7f41ea94caa6a3ec3affb4ee96bb5b0"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794714322,
+      "digest": "3e846a85664a33fa66488d0f0a2951c1480c3a737bd37f96fa8d332d55384ebc",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
