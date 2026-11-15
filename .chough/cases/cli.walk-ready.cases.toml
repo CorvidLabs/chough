@@ -1,0 +1,21 @@
+# Demo walk case for the change-ready mechanics (REQ-cli-001).
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-walk-ready-init-preserves"
+title = "Init preserves edited session and skill bytes and adds missing bundles"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4", "LIFE-6"]
+requirements = ["REQ-cli-001"]
+paths = ["specs/cli/requirements.md", ".chough/cases/cli.walk-ready.cases.toml"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+expected = ["Repeated init leaves an edited session byte-identical and adds missing bundle files without overwriting neighbors."]
+
+[case.bind]
+adapter = "command"
+argv = ["true"]
+expect_output = []
