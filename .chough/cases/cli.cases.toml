@@ -3001,7 +3001,7 @@ test = "init_still_succeeds_and_writes_no_knowledge_when_the_index_cannot_be_bou
 
 [[case]]
 id = "TC-cli-done-refreshes-knowledge-untrimmed"
-title = "done refreshes the knowledge index when nothing is trimmed"
+title = "done writes its post and defers the knowledge index rebuild to release when nothing is trimmed (#289)"
 status = "active"
 track = "functional"
 method = "automated"
@@ -3010,12 +3010,12 @@ requirements = ["REQ-cli-043"]
 paths = ["src/library.rs", "src/stage.rs", "tests/librarian_trim.rs"]
 environments = ["local-linux-aarch64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/librarian_trim.rs::done_refreshes_the_knowledge_index_when_nothing_is_trimmed passes"]
+expected = ["tests/librarian_trim.rs::done_defers_the_knowledge_index_refresh_when_nothing_is_trimmed passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "librarian_trim"
-test = "done_refreshes_the_knowledge_index_when_nothing_is_trimmed"
+test = "done_defers_the_knowledge_index_refresh_when_nothing_is_trimmed"
 
 [[case]]
 id = "TC-cli-librarian-off-no-knowledge-at-done"
