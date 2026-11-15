@@ -21,11 +21,10 @@ pub(super) enum LibraryCommand {
     /// Regenerate the vault's index.md and the journal feed from their sources.
     Index {
         /// Write nothing; fail naming each generated file that is missing or differs from
-        /// a rebuild (line endings ignored), so a merged vault is rebuilt before CI passes.
-        /// A file that is only behind its sources is current, not stale (#289): the librarian
-        /// refreshes the vault on main after the merge, so the check lets a branch whose own
-        /// closeout wrote no generated file pass, while a missing, malformed or hand-edited file
-        /// is still stale.
+        /// a rebuild (line endings ignored); a file that is only behind its sources is current,
+        /// not stale (#289): the librarian refreshes the vault on main after the merge, so the
+        /// check lets a branch whose own closeout wrote no generated file pass, while a missing,
+        /// malformed or hand-edited file is still stale.
         #[arg(long)]
         check: bool,
     },
@@ -232,8 +231,10 @@ fn feed_behind(root: &Path, dir: &str, committed: &str) -> Result<bool> {
     Ok(crate::journal::feed(&older) == committed)
 }
 
-/// Whether the committed reading guide is the build of an older set of posts, so the
-/// librarian is behind its sources rather than wrong (#289).
+/// Whether the committed reading guide is the build of an older source set, so the
+/// librarian is behind its sources rather than wrong (#289): the journal posts it lists
+/// still exist with the entries the librarian builds for them, it names no source that is
+/// gone, and it holds no line that is not a line the librarian writes.
 fn index_behind(root: &Path, dir: &str, committed: &str) -> Result<bool> {
     let posts = crate::journal::posts(root, dir)?;
     let named: Vec<String> = index_names(committed);
@@ -241,8 +242,81 @@ fn index_behind(root: &Path, dir: &str, committed: &str) -> Result<bool> {
         .into_iter()
         .filter(|post| named.contains(&post.name))
         .collect();
-    let rebuilt = crate::vault::index(root, dir, &older, &crate::vault::Pending::default())?;
-    Ok(rebuilt == committed)
+    if older.len() != named.len() {
+        // A post the guide lists is gone, so it is not the build of an older source set.
+        return Ok(false);
+    }
+    let older_guide = crate::vault::index(root, dir, &older, &crate::vault::Pending::default())?;
+    if journal_region(committed) != journal_region(&older_guide) {
+        // The guide's journal list is not the build of the posts it lists.
+        return Ok(false);
+    }
+    for line in committed.lines() {
+        if line.starts_with("- ") && !guide_line(line) {
+            // A line the librarian never writes, so the guide is not the build of an older
+            // source set.
+            return Ok(false);
+        }
+    }
+    if !sources_live(root, dir, committed)? {
+        // The guide names a source that is gone, so it is not the build of an older source
+        // set.
+        return Ok(false);
+    }
+    Ok(true)
+}
+
+/// The reading guide's journal list: what `Newest posts:` holds, up to the next heading.
+fn journal_region(text: &str) -> &str {
+    let Some((_, rest)) = text.split_once("Newest posts:\n\n") else {
+        return "";
+    };
+    let end = rest.find("\n## ").unwrap_or(rest.len());
+    &rest[..end]
+}
+
+/// Whether a line of the reading guide's lists is one the librarian writes, so a line that
+/// is not — a hand edit or a merge artifact — is not the build of an older source set.
+fn guide_line(line: &str) -> bool {
+    let Some(entry) = line.strip_prefix("- ") else {
+        return true;
+    };
+    if entry.starts_with("none") {
+        return true;
+    }
+    if entry.contains("](journal/") {
+        return true;
+    }
+    if entry.contains("](") {
+        return true;
+    }
+    if entry.contains(": [") || entry.contains(": `") {
+        return true;
+    }
+    if entry.contains(".specsync/archive/changes/") {
+        return true;
+    }
+    false
+}
+
+/// Whether every source the committed reading guide links is live (#289): a guide that
+/// names a source that is gone is not the build of an older source set.
+fn sources_live(root: &Path, dir: &str, committed: &str) -> Result<bool> {
+    let base = local_path(root, dir)?;
+    let mut rest = committed;
+    while let Some(start) = rest.find("](") {
+        rest = &rest[start + 2..];
+        let end = rest.find(')').unwrap_or(rest.len());
+        let target = rest[..end].to_string();
+        rest = &rest[end..];
+        if target.starts_with("http") || target.starts_with('#') || target.is_empty() {
+            continue;
+        }
+        if !base.join(&target).exists() {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 /// The journal posts a journal feed names, by post name, in feed order; the feed's own id

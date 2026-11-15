@@ -395,6 +395,30 @@ fn index_check_names_stale_files_and_passes_after_a_rebuild() {
     assert!(error.contains(feed), "{error}");
 }
 
+/// Issue #289: a pull request whose closeout wrote no generated file is only behind its own
+/// sources, so an index that is missing a new lesson bundle and a new archived change passes
+/// the check until the librarian rebuilds on main.
+#[test]
+fn an_index_missing_a_new_lesson_bundle_and_archived_change_is_behind() {
+    let fixture = vault();
+    archive(&fixture, 4, "a5");
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// Issue #289: an index that lists a lesson bundle of an archived change that is gone names
+/// a source that is not live, so the check still fails.
+#[test]
+fn an_index_listing_a_deleted_archived_change_fails() {
+    let fixture = vault();
+    let _ = std::fs::remove_dir_all(
+        fixture
+            .root()
+            .join(".specsync/archive/changes/2026-04-01-a4"),
+    );
+    let error = fixture.fails(&["library", "index", "--check"]);
+    assert!(error.contains("knowledge/index.md"), "{error}");
+}
+
 /// REQ-cli-015, KNOW-6: existing snapshots and briefs stay byte-identical and linked, and
 /// `library snapshot` and `library archive` are gone, the help naming `library index`.
 #[test]

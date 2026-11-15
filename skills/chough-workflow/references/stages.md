@@ -132,7 +132,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## done
 
 - Purpose: the change is archived. Merge follows the repository's process.
-- Outputs: the move into done archives the session into one story in `.chough/archive/sessions/`, a journal post and a refreshed knowledge index. Commit them, then run `chough doctor --fix` and commit that.
+- Outputs: the move into done archives the session into one story in `.chough/archive/sessions/`, a journal post, and the librarian refreshes the generated knowledge directory on main after the merge, not here. Commit the post, then run `chough doctor --fix` and commit that.
 - Transitions: release only with authorization, asked before done so the session stays open; start new work with `chough session new <key>`.
 
 ## release

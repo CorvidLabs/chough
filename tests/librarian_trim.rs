@@ -1,6 +1,7 @@
-//! The move into done refreshes the knowledge directory with the librarian on and builds
-//! nothing with it off (REQ-cli-043, KNOW-4). Nothing is trimmed at done any more: proof
-//! stays in its session and story (REQ-records-012).
+//! The move into done writes its journal post and defers the vault rebuild to main after
+//! the merge with the librarian on, and builds nothing with it off (REQ-cli-043, KNOW-4).
+//! Nothing is trimmed at done any more: proof stays in its session and story
+//! (REQ-records-012).
 #![cfg(unix)]
 
 mod common;
