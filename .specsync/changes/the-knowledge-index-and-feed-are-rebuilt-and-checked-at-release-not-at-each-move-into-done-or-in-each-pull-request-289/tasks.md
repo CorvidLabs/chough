@@ -9,4 +9,4 @@ artifact: tasks
 - [x] Strict `--check`, run only by the release check
 - [x] `release-check` task and release step order
 - [x] Docs and both skill copies; skill bundle pins
-- [ ] Tests: lanes run no --check and release-check does; a hand-edited linked bullet fails --check
+- [x] Tests: lanes run no --check and release-check does; a hand-edited linked bullet fails --check

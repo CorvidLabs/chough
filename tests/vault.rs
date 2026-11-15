@@ -399,7 +399,7 @@ fn index_check_names_stale_files_and_passes_after_a_rebuild() {
 /// while its link stayed (a lesson count) fails the strict check, naming the file, until the
 /// rebuild writes the right bytes.
 #[test]
-fn an_hand_edited_lesson_count_fails_the_check() {
+fn a_hand_edited_lesson_count_fails_the_check() {
     let fixture = vault();
     let index = fixture.read("knowledge/index.md");
     let edited = index.replace(", 2 lessons", ", 99 lessons");

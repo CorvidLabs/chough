@@ -2441,13 +2441,14 @@ fn no_ci_or_verify_lane_step_runs_the_knowledge_check_and_the_release_task_rebui
         let steps: Vec<String> = steps_line
             .split('"')
             .filter(|part| {
-                !part.is_empty()
-                    && part
-                        .chars()
-                        .all(|c| c.is_ascii_alphanumeric() || c == '-')
+                !part.is_empty() && part.chars().all(|c| c.is_ascii_alphanumeric() || c == '-')
             })
             .map(str::to_string)
             .collect();
+        assert!(
+            steps.len() > 3,
+            "the {lane} lane's steps were not read from one `steps = [...]` line: {steps_line}"
+        );
         for step in steps {
             let command = task_command(&step);
             assert!(
