@@ -50,7 +50,11 @@ observations:
   - 2026-11-15-tc-cli-build-reference-from-main-known-outdated-9cab66
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+    holds: accept
+    drives: review
+    opened: 2026-11-15T21:15:33Z
 run_consents: []
 next: "Gate \"Re-approve the rebased deltas of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289\" closed (approved); run `chough stage advance` to move on."
 ---
@@ -185,4 +189,10 @@ Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs st
     - recorded_by: claude-code (hc t28)
     - native: specsync change approve the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
     - actor: 0xLeif
+  - by: claude-code (hc t28)
+- 2026-11-15T21:15:33Z · gate-opened · accept → accept · Implementation review of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289 ^t-d7ec4b
+  - native_change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+  - revision: 2952b350a68e55c2d9f7221533e5c97d72586b37
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t28)
