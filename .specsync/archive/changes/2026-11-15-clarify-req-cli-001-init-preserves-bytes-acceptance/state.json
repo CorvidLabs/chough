@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "clarify-req-cli-001-init-preserves-bytes-acceptance",
   "slug": "clarify-req-cli-001-init-preserves-bytes-acceptance",
   "title": "Clarify REQ-cli-001 init-preserves-bytes acceptance",
   "description": "Clarify REQ-cli-001 init-preserves-bytes acceptance",
   "kind": "documentation",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8",
   "created_at": 1794713487,
-  "updated_at": 1794714678,
+  "updated_at": 1794714778,
   "affected_specs": [
     "cli"
   ],

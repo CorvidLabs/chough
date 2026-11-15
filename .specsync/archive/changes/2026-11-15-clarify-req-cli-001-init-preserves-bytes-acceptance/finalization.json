@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "clarify-req-cli-001-init-preserves-bytes-acceptance",
+  "implementation_commit": "ba30b7d713b9b331bf7e2e2362a531e1aa59c56a",
+  "implementation_tree": "1753f07c8a3452d047ac899845652887861addd7",
+  "contract_digest": "0beba74cefba630f8bb35dfb58209ea5dced50f69e2b40f83109a996be6e2e7c",
+  "workspace_digest": "87d10ddf49115edb6ab39da3646c8bb8ce1c25a26169b54f3f12ac47e875059c",
+  "closing_digest": "5a2746f998f905061e70f2b880c1b023451f490daaf92ab0b3516bfb20134290",
+  "review_digest": "30288b650233c683f82dbe1cc5ee7a417a16d7f4cfc21b57f88cd9378fd851b3",
+  "finalization_digest": "f8a1d89e660fbf3c698d0ae46823fb2ba82c0eef13cc910ad7c1dcac804e5545",
+  "timestamp": 1794714777
+}

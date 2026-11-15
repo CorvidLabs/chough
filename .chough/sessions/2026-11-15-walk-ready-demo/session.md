@@ -21,9 +21,13 @@ observations:
   - 2026-11-15-tc-cli-walk-ready-init-preserves-fcb611
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of clarify-req-cli-001-init-preserves-bytes-acceptance
+    holds: accept
+    drives: review
+    opened: 2026-11-15T03:52:27Z
 run_consents: []
-next: Run the case, then advance to test
+next: Human review, then change ship
 ---
 # Describe the current objective before beginning work.
 
@@ -36,6 +40,7 @@ Describe the current objective before beginning work.
 - Started demo walk: session created for change-ready mechanics
 - Change ready: nothing missing. Awaiting human scope approval before build.
 - Build done: REQ-cli-001 acceptance clarified, case added, CHANGELOG and docs updated, fmt/lint/change-check pass
+- Test case passed and evidence recorded. Ready for human implementation review.
 
 ## Decisions and why
 
@@ -90,4 +95,10 @@ Describe the current objective before beginning work.
   - native_change: clarify-req-cli-001-init-preserves-bytes-acceptance
   - gate: native:verifying
   - revision: 913c0068ee0894aaa6256eb2153419612f8e5172
+  - by: unknown agent (hc t15)
+- 2026-11-15T03:52:27Z · gate-opened · accept → accept · Implementation review of clarify-req-cli-001-init-preserves-bytes-acceptance ^t-f8b315
+  - native_change: clarify-req-cli-001-init-preserves-bytes-acceptance
+  - revision: ba30b7d713b9b331bf7e2e2362a531e1aa59c56a
+  - holds: accept
+  - drives: review
   - by: unknown agent (hc t15)
