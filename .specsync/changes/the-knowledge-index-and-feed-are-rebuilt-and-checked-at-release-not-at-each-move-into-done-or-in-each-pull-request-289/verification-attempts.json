@@ -132,6 +132,28 @@
         "REQ-history-006",
         "REQ-records-011"
       ]
+    },
+    {
+      "timestamp": 1794777335,
+      "commit": "935a4d3f7bdfee46201c648b808d2b5b2fb80f8f",
+      "contract_digest": "776bd435417d745684b63505c96a95495b50dbe4390d284b6f4b315363db5a3d",
+      "execution_digest": "b7d82ac1d57bea316c00745b0cc331607bb6aa4f62b2c154deda3459330474d3",
+      "workspace_digest": "f839189cc27e5399d10068c7cebf9373c4c6633ca4383722c169ca3aa085c3c1",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history --spec records --spec reporting",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-043",
+        "REQ-cli-047",
+        "REQ-cli-052",
+        "REQ-history-006",
+        "REQ-records-011"
+      ]
     }
   ]
 }
