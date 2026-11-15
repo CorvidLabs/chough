@@ -294,7 +294,7 @@ fn the_changelog_names_this_change_before_release() {
         "the changelog names this change once: {hits:?}"
     );
     assert!(
-        hits[0].contains("changelog.d/"),
+        hits[0].contains("changelog.d/<YYYY-MM-DD>-<change-id>.md"),
         "the #290 entry is the changelog fragment change: {}",
         hits[0]
     );
@@ -311,7 +311,11 @@ fn the_changelog_task_assembles_fragments_into_the_release_and_removes_them() {
     let temp = tempfile::TempDir::new().expect("a temporary project root");
     let root = temp.path();
     std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
-    std::fs::write(root.join("CHANGELOG.md"), "## [0.6.0] - 2026-11-12\n").expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("CHANGELOG.md"),
+        "## [Unreleased]\n\n## [0.6.0] - 2026-11-12\n",
+    )
+    .expect("CHANGELOG.md");
     std::fs::write(
         root.join("changelog.d")
             .join("2026-11-14-290-changelog-fragments.md"),
@@ -326,9 +330,10 @@ fn the_changelog_task_assembles_fragments_into_the_release_and_removes_them() {
         String::from_utf8_lossy(&output.stderr)
     );
     let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
-    assert!(
-        assembled.contains("## [0.7.0] - 2026-11-16"),
-        "the assembled changelog names the release: {assembled}"
+    assert_eq!(
+        assembled,
+        "## [Unreleased]\n\n## [0.7.0] - 2026-11-16\n\n- A changelog fragment names this change (#290).\n\n## [0.6.0] - 2026-11-12\n",
+        "the release heading lands right after the Unreleased section"
     );
     assert!(
         assembled.contains("A changelog fragment names this change (#290)"),
@@ -420,6 +425,43 @@ fn the_changelog_task_refuses_a_release_that_already_exists() {
     assert_eq!(before, after, "a refused release writes nothing");
 }
 
+/// A versioned release (LIFE-16, #290) refuses, writing nothing and keeping the
+/// fragments, when the changelog has no Unreleased section to release after, instead of
+/// appending the release at the end of the file.
+#[test]
+fn the_changelog_task_refuses_a_release_without_an_unreleased_section() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    let changelog = root.join("CHANGELOG.md");
+    std::fs::write(
+        &changelog,
+        "## [0.6.0] - 2026-11-12\n\n- A shipped change (#249).\n",
+    )
+    .expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md"),
+        "- A changelog fragment names this change (#290).\n",
+    )
+    .expect("the fragment");
+    let before = std::fs::read_to_string(&changelog).expect("CHANGELOG.md");
+
+    let output = run_assemble(root, "0.7.0", Some("2026-11-16"));
+    assert!(
+        !output.status.success(),
+        "a versioned release without an Unreleased section must fail, not append at the end"
+    );
+    let after = std::fs::read_to_string(&changelog).expect("CHANGELOG.md");
+    assert_eq!(before, after, "a refused release writes nothing");
+    assert!(
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md")
+            .exists(),
+        "a refused release keeps the fragments"
+    );
+}
+
 /// The release task (LIFE-16, #290) refuses a versioned release whose heading already
 /// exists, whatever date the existing heading carries, and writes nothing.
 #[test]
@@ -493,6 +535,103 @@ fn the_changelog_task_appends_fragments_after_what_the_section_holds() {
             .join("2026-11-14-290-changelog-fragments.md")
             .exists(),
         "the changelog task removes the fragments after assembling"
+    );
+}
+
+/// A fragment that holds prose instead of a bullet (LIFE-16, #290) is refused, naming the
+/// file and the line, writing nothing and keeping the fragment, instead of silently
+/// dropping the prose and shipping an empty release heading.
+#[test]
+fn the_changelog_task_refuses_a_fragment_that_is_not_a_bullet() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    let changelog = root.join("CHANGELOG.md");
+    std::fs::write(&changelog, "## [Unreleased]\n\n## [0.6.0] - 2026-11-12\n")
+        .expect("CHANGELOG.md");
+    let fragment = root
+        .join("changelog.d")
+        .join("2026-11-14-290-changelog-fragments.md");
+    std::fs::write(&fragment, "Some prose, not a bullet.\n").expect("the fragment");
+    let before = std::fs::read_to_string(&changelog).expect("CHANGELOG.md");
+
+    let output = run_assemble(root, "Unreleased", None);
+    assert!(
+        !output.status.success(),
+        "an assembly over a fragment that is not a bullet must fail"
+    );
+    let after = std::fs::read_to_string(&changelog).expect("CHANGELOG.md");
+    assert_eq!(before, after, "a refused release writes nothing");
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("changelog.d/2026-11-14-290-changelog-fragments.md line 1"),
+        "the refusal names the fragment file and line: {stderr}"
+    );
+    assert!(fragment.exists(), "a refused release keeps the fragments");
+}
+
+/// A fragment whose bullets carry a leading byte order mark (LIFE-16, #290) is accepted,
+/// the mark stripped, so a UTF-8 encoded fragment assembles like any other.
+#[test]
+fn the_changelog_task_accepts_a_fragment_with_a_byte_order_mark() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    std::fs::write(
+        root.join("CHANGELOG.md"),
+        "## [Unreleased]\n\n## [0.6.0] - 2026-11-12\n",
+    )
+    .expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md"),
+        "\u{feff}- A changelog fragment names this change (#290).\n",
+    )
+    .expect("the fragment");
+
+    let output = run_assemble(root, "Unreleased", None);
+    assert!(
+        output.status.success(),
+        "the changelog task failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
+    assert!(
+        assembled.contains("A changelog fragment names this change (#290)"),
+        "the BOM'd fragment assembles: {assembled}"
+    );
+}
+
+/// A blank line inside a bullet, before an indented continuation, is kept (LIFE-16, #290),
+/// so the bullet's continuation is not lost on the way to the release heading.
+#[test]
+fn the_changelog_task_keeps_a_blank_line_inside_a_bullet() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    std::fs::write(
+        root.join("CHANGELOG.md"),
+        "## [Unreleased]\n\n## [0.6.0] - 2026-11-12\n",
+    )
+    .expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md"),
+        "- A changelog fragment names this change (#290).\n\n  With a continuation.\n",
+    )
+    .expect("the fragment");
+
+    let output = run_assemble(root, "Unreleased", None);
+    assert!(
+        output.status.success(),
+        "the changelog task failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
+    assert_eq!(
+        assembled,
+        "## [Unreleased]\n\n- A changelog fragment names this change (#290).\n\n  With a continuation.\n\n## [0.6.0] - 2026-11-12\n",
+        "the blank line inside the bullet is kept"
     );
 }
 
