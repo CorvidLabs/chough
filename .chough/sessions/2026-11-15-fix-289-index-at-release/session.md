@@ -5,7 +5,7 @@ aliases: [fix-289-index-at-release]
 objective: "Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs stop conflicting on knowledge/index.md and feed.xml"
 intent_scope: KNOW
 modules: [cli]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -50,13 +50,9 @@ observations:
   - 2026-11-15-tc-cli-build-reference-from-main-known-outdated-9cab66
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
-    holds: accept
-    drives: review
-    opened: 2026-11-15T21:15:33Z
+waiting_on_human: []
 run_consents: []
-next: "Gate \"Re-approve the rebased deltas of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289\" closed (approved); run `chough stage advance` to move on."
+next: Continue done
 ---
 # Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs stop conflicting on knowledge/index.md and feed.xml
 
@@ -70,6 +66,7 @@ Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs st
 
 - 0xLeif decided "Approve the scope of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289": "yes I approve" (Claude Code chat (hc t28), 2026-11-15, on the #289 scope summary; list refreshed only for Flint's two announced tests (7321283) and a re-run of TC-cli-documented-merge-drivers-match); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289 as 0xLeif
 - 0xLeif decided "Re-approve the rebased deltas of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289": "yes I re-approve the #289 deltas" (Claude Code chat (hc t28), 2026-11-15, on the rebased REQ-history-006 and REQ-records-011 deltas; native approval recorded with specsync change approve); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289 as 0xLeif
+- 0xLeif decided "Implementation review of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289": "yes I accept #289" (Claude Code chat (hc t28), 2026-11-15, on the #289 implementation review (gate list ccf24edda81a, PR #297)); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change review the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -195,4 +192,20 @@ Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs st
   - revision: 2952b350a68e55c2d9f7221533e5c97d72586b37
   - holds: accept
   - drives: review
+  - by: claude-code (hc t28)
+- 2026-11-15T21:20:23Z · gate-closed · accept → accept · Implementation review of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289 ^t-77bb34
+  - native_change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+  - revision: ff99cda00d0cb8b5ef5128d99657b49637eed31b
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: yes I accept #289
+    - where: Claude Code chat (hc t28), 2026-11-15, on the #289 implementation review (gate list ccf24edda81a, PR #297)
+    - recorded_by: claude-code (hc t28)
+    - native: specsync change review the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+    - actor: 0xLeif
+  - by: claude-code (hc t28)
+- 2026-11-15T21:20:24Z · advance · accept → done · native:archived ^t-fd1da2
+  - native_change: the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289
+  - gate: native:archived
+  - revision: ff99cda00d0cb8b5ef5128d99657b49637eed31b
   - by: claude-code (hc t28)
