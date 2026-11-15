@@ -474,6 +474,26 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
     (
         "references/stages.md",
         "de8db3cb911d4b4cebf836be8c8dfcbf631b54ad663a75eab0345d392dddac46",
+    ),    // Main cf82890; superseded by rebuilding the knowledge index at release (#289).
+    (
+        "references/accept.md",
+        "b063138264e63d1aeb528163e90e5ec6da036ec96aa883145fd8c3d3d5796eb7",
+    ),
+    (
+        "references/checkpoint.md",
+        "8e5684f9c6871f804e1c81a45ac83e6bcadac635d9603a72d1d539bff3a2058c",
+    ),
+    (
+        "references/librarian.md",
+        "d16f00f6929079b73c408245af0218c17350d7939d6bff36f796e5bab9afda2b",
+    ),
+    (
+        "references/lifecycle.md",
+        "5838a2024495717a721aa0afd03ad3d39c32c690aaabad4d61933b647fb018af",
+    ),
+    (
+        "references/stages.md",
+        "dd6b1fcdbec31f75afbb0c89211d6490782fb9da20c1f0ab72690b1dbf54a1c6",
     ),
 ];
 
