@@ -493,6 +493,11 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
     ),
     (
         "references/stages.md",
+        "5c5f0b80d039b8c10b7b276ce73f2dd8e88aa9329503cd233d675d340128beac",
+    ),
+    // Main cf2ff72; superseded by changelog fragments in the fast path (#290).
+    (
+        "references/stages.md",
         "dd6b1fcdbec31f75afbb0c89211d6490782fb9da20c1f0ab72690b1dbf54a1c6",
     ),
 ];

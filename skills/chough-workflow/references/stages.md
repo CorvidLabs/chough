@@ -28,7 +28,8 @@ reference `chough next` names, and the code. Local and small-context agents star
    standing authorization covers it ([plan.md](plan.md)).
 5. Make the first code edit soon. Search for the names you need; don't survey.
 6. Add a test that fails without the fix and a case in its own
-   `.chough/cases/<module>.<topic>.cases.toml`; update the changelog and docs.
+   `.chough/cases/<module>.<topic>.cases.toml`; add the changelog entry as
+   `changelog.d/<YYYY-MM-DD>-<change-id>.md` and update the docs.
 7. `fledge run fmt`, `fledge run test`, `fledge run lint`, then `chough change check
    <id>`, commit, and stop for the human's review.
 

@@ -18,6 +18,10 @@ release-check = "cargo run --quiet --locked -- library index && cargo run --quie
 # Fails on a leak or an oversized record Git tracks under .chough/ or knowledge/
 # (REQ-records-006, REQ-history-012); it changes nothing.
 leaks = "cargo run --quiet --locked -- doctor --leaks"
+# Assembles changelog.d/ fragments into CHANGELOG.md under a release heading and
+# removes the fragments (LIFE-16); the release heading is given, e.g.
+# `fledge run changelog -- --release 0.7.0 --date 2026-11-16` or `--release Unreleased`.
+changelog = "python3 tools/changelog.py"
 exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh examples/feature-bug-loop.sh"
 # The host-matrix harness (REQ-cli-066): `fledge run host-matrix -- <host>` drives that
 # agent host through one scripted Chough cycle; the self-test runs the stand-in host,
