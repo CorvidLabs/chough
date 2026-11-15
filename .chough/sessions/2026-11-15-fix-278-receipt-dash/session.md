@@ -16,10 +16,16 @@ requirements: [REQ-history-006]
 cases: [TC-history-archived-stories-join-evidence-without-an-em-dash]
 design: []
 files: []
-observations: [2026-11-15-tc-history-archived-stories-join-evidence-without-an-em-dash]
+observations:
+  - 2026-11-15-tc-history-archived-stories-join-evidence-without-an-em-dash
+  - 2026-11-15-tc-history-archived-stories-join-evidence-without-an-em-dash-94e09a
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+    holds: accept
+    drives: review
+    opened: 2026-11-15T03:39:20Z
 run_consents: []
 next: Continue accept
 ---
@@ -34,10 +40,12 @@ Describe the current objective before beginning work.
 ## Decisions and why
 
 - 0xLeif decided "Approve the scope of chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with": "yes" (Claude Code chat (hc t28), 2026-11-14, reply to the #278 scope summary); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with as 0xLeif
+- 0xLeif decided "Re-approve the scope of chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with after review fixes": "Yes" (Claude Code chat (hc t28), 2026-11-14, reply to the #278 re-approval summary after Grok's review fixes); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with as 0xLeif
 
 ## What was verified
 
 - [Ran cargo test --locked --test sessions -- --exact a_story_lists_each_entry_once_with_its_receipt for TC-history-archived-stories-join-evidence-without-an-em-dash: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-history-archived-stories-join-evidence-without-an-em-dash.md)
+- [Ran cargo test --locked --test sessions -- --exact a_story_lists_each_entry_once_with_its_receipt for TC-history-archived-stories-join-evidence-without-an-em-dash: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-history-archived-stories-join-evidence-without-an-em-dash-94e09a.md)
 
 ## Open threads
 
@@ -95,4 +103,47 @@ Describe the current objective before beginning work.
   - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
   - gate: native:verifying
   - revision: a92ef3d52c0786cc8c1cdf45390bdebeb86c5c72
+  - by: claude-code (hc t28)
+- 2026-11-15T03:33:44Z · back · accept → plan · Grok's review: the REQ-history-006 and REQ-records-011 deltas changed after approval and need the human's approval again ^t-4fb0ee
+  - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+  - revision: 2a4c1d6bc7edd2c38796e417603ac87fe4335775
+  - refresh: plan: native definition; scope or contract changes need native reapproval, build: implementation against the current definition, test: rerun affected cases; earlier observations may be stale, accept: native verification and the human implementation review, checkpoint references: 1 case(s) and 1 observation(s) to re-check with `chough status`, native: the definition is verifying; changing intent, contract, acceptance criteria or scope needs native reapproval. Follow `specsync change status chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with`; Chough does not change native state.
+  - by: claude-code (hc t28)
+- 2026-11-15T03:33:44Z · gate-opened · plan → plan · Re-approve the scope of chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with after review fixes ^t-7b2d72
+  - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+  - revision: 2a4c1d6bc7edd2c38796e417603ac87fe4335775
+  - holds: plan
+  - drives: approve
+  - by: claude-code (hc t28)
+- 2026-11-15T03:39:01Z · gate-closed · plan → plan · Re-approve the scope of chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with after review fixes ^t-5f4951
+  - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+  - revision: 2a4c1d6bc7edd2c38796e417603ac87fe4335775
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes
+    - where: Claude Code chat (hc t28), 2026-11-14, reply to the #278 re-approval summary after Grok's review fixes
+    - recorded_by: claude-code (hc t28)
+    - native: specsync change approve chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+    - actor: 0xLeif
+  - by: claude-code (hc t28)
+- 2026-11-15T03:39:10Z · advance · plan → build · native:verifying ^t-dfd146
+  - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+  - gate: native:verifying
+  - revision: 2a4c1d6bc7edd2c38796e417603ac87fe4335775
+  - by: claude-code (hc t28)
+- 2026-11-15T03:39:10Z · advance · build → test · native:verifying ^t-2234ca
+  - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+  - gate: native:verifying
+  - revision: 2a4c1d6bc7edd2c38796e417603ac87fe4335775
+  - by: claude-code (hc t28)
+- 2026-11-15T03:39:10Z · advance · test → accept · native:verifying ^t-3c9949
+  - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+  - gate: native:verifying
+  - revision: 2a4c1d6bc7edd2c38796e417603ac87fe4335775
+  - by: claude-code (hc t28)
+- 2026-11-15T03:39:20Z · gate-opened · accept → accept · Implementation review of chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with ^t-45a151
+  - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+  - revision: 2a4c1d6bc7edd2c38796e417603ac87fe4335775
+  - holds: accept
+  - drives: review
   - by: claude-code (hc t28)
