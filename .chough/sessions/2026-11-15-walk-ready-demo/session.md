@@ -5,7 +5,7 @@ aliases: [walk-ready-demo]
 objective: Describe the current objective before beginning work.
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-15-tc-cli-walk-ready-init-preserves-fcb611
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of clarify-req-cli-001-init-preserves-bytes-acceptance
-    holds: accept
-    drives: review
-    opened: 2026-11-15T03:52:27Z
+waiting_on_human: []
 run_consents: []
-next: Human review, then change ship
+next: Continue done
 ---
 # Describe the current objective before beginning work.
 
@@ -45,6 +41,7 @@ Describe the current objective before beginning work.
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of clarify-req-cli-001-init-preserves-bytes-acceptance": "I approve" (chat, 2026-11-15 (this session)); recorded by pi-agent; a relayed claim, not authenticated; ran specsync change approve clarify-req-cli-001-init-preserves-bytes-acceptance as 0xLeif
+- 0xLeif decided "Implementation review of clarify-req-cli-001-init-preserves-bytes-acceptance": "I approve" (chat, 2026-11-15 (this session)); recorded by pi-agent; a relayed claim, not authenticated; ran specsync change review clarify-req-cli-001-init-preserves-bytes-acceptance as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -101,4 +98,20 @@ Describe the current objective before beginning work.
   - revision: ba30b7d713b9b331bf7e2e2362a531e1aa59c56a
   - holds: accept
   - drives: review
+  - by: unknown agent (hc t15)
+- 2026-11-15T03:53:16Z · gate-closed · accept → accept · Implementation review of clarify-req-cli-001-init-preserves-bytes-acceptance ^t-fb0ec1
+  - native_change: clarify-req-cli-001-init-preserves-bytes-acceptance
+  - revision: 8ffcc1f22ab015fcc0ad93779d98bc727b4f790a
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: I approve
+    - where: chat, 2026-11-15 (this session)
+    - recorded_by: pi-agent
+    - native: specsync change review clarify-req-cli-001-init-preserves-bytes-acceptance
+    - actor: 0xLeif
+  - by: unknown agent (hc t15)
+- 2026-11-15T03:53:17Z · advance · accept → done · native:archived ^t-46cf50
+  - native_change: clarify-req-cli-001-init-preserves-bytes-acceptance
+  - gate: native:archived
+  - revision: 8ffcc1f22ab015fcc0ad93779d98bc727b4f790a
   - by: unknown agent (hc t15)
