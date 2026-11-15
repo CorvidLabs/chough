@@ -461,14 +461,23 @@ fn first_paragraph(record: &Record, heading: &str) -> String {
         .unwrap_or_default()
 }
 
-/// The claim of a What was verified line: the text before a receipt line's ` - ` and its
-/// command, so a post never copies an evidence ID into the vault (REQ-cli-044). A line
-/// written before that join keeps its earlier separator until Chough re-archives it, so
-/// both are read.
+/// The claim of a What was verified line: the text before the join of a receipt line,
+/// so a post never copies an evidence ID into the vault (REQ-cli-044, REQ-records-011).
+/// The join is ` - `, or ` — ` in a story archived before Chough joined with a dash, and
+/// it is followed by the backticked command or the 12 fingerprint digits
+/// (REQ-history-006), so a ` - ` inside the claim is not taken for it.
 fn claim_of(line: &str) -> String {
+    let joins_evidence = |rest: &str| {
+        let word = rest.split(' ').next().unwrap_or_default();
+        rest.starts_with('`') || (word.len() == 12 && word.bytes().all(|b| b.is_ascii_hexdigit()))
+    };
     let end = [" - ", " — "]
         .into_iter()
-        .filter_map(|separator| line.find(separator))
+        .flat_map(|separator| {
+            line.match_indices(separator)
+                .filter(|(at, _)| joins_evidence(&line[at + separator.len()..]))
+                .map(|(at, _)| at)
+        })
         .min()
         .unwrap_or(line.len());
     line[..end].to_string()
@@ -826,6 +835,16 @@ mod tests {
         assert_eq!(claim_of(&dash), claim);
         assert_eq!(claim_of(&em_dash), claim);
         assert_eq!(claim_of(claim), claim);
+        // A claim holding ` - ` is kept whole, with either join, after a command or digits.
+        let claim = "fixed the parser - the second pass";
+        for line in [
+            format!("{claim} - abcdef012345 ^ev-1"),
+            format!("{claim} — abcdef012345 ^ev-1"),
+            format!("{claim} - `cargo test` abcdef012345 ^ev-1"),
+            format!("{claim} — `cargo test` ^ev-1"),
+        ] {
+            assert_eq!(claim_of(&line), claim, "{line}");
+        }
     }
 
     #[test]

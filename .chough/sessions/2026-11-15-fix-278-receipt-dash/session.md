@@ -5,7 +5,7 @@ aliases: [fix-278-receipt-dash]
 objective: "Fix #278: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read the old join"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue test
+next: Continue accept
 ---
 # Describe the current objective before beginning work.
 
@@ -90,4 +90,9 @@ Describe the current objective before beginning work.
   - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
   - gate: native:approved
   - revision: 9bdae1013b8a5dd5b009543d27ce846037200189
+  - by: claude-code (hc t28)
+- 2026-11-15T03:07:38Z · advance · test → accept · native:verifying ^t-6809a9
+  - native_change: chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with
+  - gate: native:verifying
+  - revision: a92ef3d52c0786cc8c1cdf45390bdebeb86c5c72
   - by: claude-code (hc t28)
