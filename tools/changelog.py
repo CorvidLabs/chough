@@ -32,7 +32,7 @@ def fragment_sort_key(path: Path) -> tuple[str, int, str]:
     date_match = re.match(r"^(\d{4}-\d{2}-\d{2})", stem)
     date = date_match.group(1) if date_match else ""
     rest = stem[date_match.end() :] if date_match else stem
-    issue_match = re.match(r"^(\d+)", rest)
+    issue_match = re.match(r"^[^0-9]*(\d+)", rest)
     issue = int(issue_match.group(1)) if issue_match else 0
     return (date, issue, rest)
 
@@ -173,7 +173,10 @@ def assemble(root: Path, release: str, date: str | None) -> int:
             )
             return 2
         insert_at = next_heading(lines, unopened)
-        lines[insert_at:insert_at] = [heading] + ([""] + assembled + [""] if assembled else [""])
+        block = [heading, ""] + assembled
+        if insert_at < len(lines):
+            block.append("")
+        lines[insert_at:insert_at] = block
     changelog.write_text("\n".join(lines) + "\n", encoding="utf-8")
     for fragment, _groups in parsed:
         fragment.unlink()

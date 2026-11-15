@@ -781,3 +781,41 @@ fn the_changelog_task_assembles_the_same_bytes_twice() {
         std::fs::read_to_string(second.path().join("CHANGELOG.md")).expect("CHANGELOG.md");
     assert_eq!(first_text, second_text);
 }
+
+/// The release task (LIFE-16, #290) assembles fragments newest first, so on the same
+/// date a higher numbered change, here `#100`, lands above a lower numbered change,
+/// here `#99`, instead of sorting the numbers as text.
+#[test]
+fn the_changelog_task_assembles_fragments_newest_first() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    std::fs::write(
+        root.join("CHANGELOG.md"),
+        "# Changelog\n\n## [Unreleased]\n",
+    )
+    .expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d").join("2026-11-15-99-older.md"),
+        "- older (#99).\n",
+    )
+    .expect("the older fragment");
+    std::fs::write(
+        root.join("changelog.d").join("2026-11-15-100-newer.md"),
+        "- newer (#100).\n",
+    )
+    .expect("the newer fragment");
+
+    let output = run_assemble(root, "0.7.0", Some("2026-11-16"));
+    assert!(
+        output.status.success(),
+        "the changelog task failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
+    assert_eq!(
+        assembled,
+        "# Changelog\n\n## [Unreleased]\n## [0.7.0] - 2026-11-16\n\n- newer (#100).\n- older (#99).\n",
+        "the fragments assemble newest first"
+    );
+}
