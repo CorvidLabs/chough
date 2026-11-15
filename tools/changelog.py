@@ -61,6 +61,17 @@ def next_heading(lines: list[str], index: int) -> int:
     return len(lines)
 
 
+def release_heading(lines: list[str], version: str) -> str | None:
+    """The first existing heading for `version`, whatever its date."""
+    prefix = f"## [{version}]"
+    for line in lines:
+        if line.startswith(prefix):
+            rest = line[len(prefix) :]
+            if rest == "" or rest.startswith("]") or rest.startswith(" -"):
+                return line
+    return None
+
+
 def assemble(root: Path, release: str, date: str | None) -> int:
     if release == "Unreleased":
         heading = "## [Unreleased]"
@@ -88,16 +99,18 @@ def assemble(root: Path, release: str, date: str | None) -> int:
             return 2
         end = next_heading(lines, index)
         body = list(lines[index + 1 : end])
-        appended = body
-        if not appended or appended[-1].strip() != "":
-            appended.append("")
-        appended.extend(assembled)
-        if not appended or appended[-1].strip() != "":
-            appended.append("")
-        lines[index + 1 : end] = appended
+        while body and body[-1].strip() == "":
+            body.pop()
+        if not body or body[-1].strip() == "":
+            body.append("")
+        body.extend(assembled)
+        if not body or body[-1].strip() != "":
+            body.append("")
+        lines[index + 1 : end] = body
     else:
-        if heading in lines:
-            print(f"changelog: CHANGELOG.md already has {heading}", file=sys.stderr)
+        existing = release_heading(lines, release)
+        if existing is not None:
+            print(f"changelog: CHANGELOG.md already has {existing}", file=sys.stderr)
             return 2
         unopened = heading_index(lines, "## [Unreleased]")
         insert_at = len(lines) if unopened is None else next_heading(lines, unopened)

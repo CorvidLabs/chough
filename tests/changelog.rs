@@ -87,6 +87,36 @@ fn fragments() -> Vec<String> {
         .collect()
 }
 
+/// Every `changelog.d/*.md` fragment, in sorted file-name order, as (name, contents).
+fn fragment_files() -> Vec<(String, String)> {
+    let directory = fragment_dir();
+    let mut names: Vec<String> = std::fs::read_dir(&directory)
+        .expect("changelog.d is readable")
+        .filter_map(|entry| {
+            let entry = entry.ok()?;
+            let path = entry.path();
+            let is_markdown = path
+                .extension()
+                .and_then(|extension| extension.to_str())
+                .is_some_and(|extension| extension == "md");
+            if is_markdown && path.is_file() {
+                Some(path.file_name()?.to_string_lossy().into_owned())
+            } else {
+                None
+            }
+        })
+        .collect();
+    names.sort();
+    names
+        .into_iter()
+        .map(|name| {
+            let contents = std::fs::read_to_string(directory.join(&name))
+                .unwrap_or_else(|error| panic!("changelog.d/{name} is readable: {error}"));
+            (name, contents)
+        })
+        .collect()
+}
+
 fn changelog_script() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tools")
@@ -390,6 +420,42 @@ fn the_changelog_task_refuses_a_release_that_already_exists() {
     assert_eq!(before, after, "a refused release writes nothing");
 }
 
+/// The release task (LIFE-16, #290) refuses a versioned release whose heading already
+/// exists, whatever date the existing heading carries, and writes nothing.
+#[test]
+fn the_changelog_task_refuses_a_release_that_exists_at_any_date() {
+    let temp = tempfile::TempDir::new().expect("a temporary project root");
+    let root = temp.path();
+    std::fs::create_dir_all(root.join("changelog.d")).expect("changelog.d");
+    let changelog = root.join("CHANGELOG.md");
+    std::fs::write(
+        &changelog,
+        "## [0.7.0] - 2026-11-16\n\n- A changelog fragment names this change (#290).\n",
+    )
+    .expect("CHANGELOG.md");
+    std::fs::write(
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md"),
+        "- A changelog fragment names this change (#290).\n",
+    )
+    .expect("the fragment");
+    let before = std::fs::read_to_string(&changelog).expect("CHANGELOG.md");
+
+    let output = run_assemble(root, "0.7.0", Some("2026-11-17"));
+    assert!(
+        !output.status.success(),
+        "an assembly over an existing release heading must fail, whatever its date"
+    );
+    let after = std::fs::read_to_string(&changelog).expect("CHANGELOG.md");
+    assert_eq!(before, after, "a refused release writes nothing");
+    assert!(
+        root.join("changelog.d")
+            .join("2026-11-14-290-changelog-fragments.md")
+            .exists(),
+        "a refused release keeps the fragments"
+    );
+}
+
 /// The release task (LIFE-16, #290) appends the fragments' bullets after what the
 /// section already holds, so an open section never loses its hand-written entries.
 #[test]
@@ -416,13 +482,10 @@ fn the_changelog_task_appends_fragments_after_what_the_section_holds() {
         String::from_utf8_lossy(&output.stderr)
     );
     let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
-    assert!(
-        assembled.contains("- A hand-written open change (#290) is still being written."),
-        "the section keeps what it already held: {assembled}"
-    );
-    assert!(
-        assembled.contains("- A changelog fragment names this change (#290)"),
-        "the assembled changelog holds the fragment's bullet: {assembled}"
+    let expected = "## [Unreleased]\n\n- A hand-written open change (#290) is still being written.\n- A changelog fragment names this change (#290).\n\n## [0.6.0] - 2026-11-12\n";
+    assert_eq!(
+        assembled, expected,
+        "the fragment is appended directly after the section's own entry, with no blank line"
     );
     assert!(
         !root
@@ -432,6 +495,75 @@ fn the_changelog_task_appends_fragments_after_what_the_section_holds() {
         "the changelog task removes the fragments after assembling"
     );
 }
+
+/// The `## [Unreleased]` section as it read at cf2ff72, the change whose converted
+/// fragments the release task assembles back, so the round trip can be compared against
+/// the committed copy of that text.
+const CF_UNRELEASED: &str = r#"## [Unreleased]
+
+- A relayed gate close's native approval or review, including the review `chough change
+  ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
+  `--recorded-by`, so SpecSync's approval and review records hold the relayed decision
+  (#249, REQ-records-008). Each value is passed joined to its flag (`--words=<words>`), so
+  relay text that starts with `-`, which Chough's own flags accept, is not read as a flag.
+  SpecSync 6.3.0 then records such a change at workflow version 3, which SpecSync
+  6.2.x refuses, so every checkout and CI job of a project that uses it needs 6.3.0.
+- `fledge run flake-window` computes the 1.0 flake window from CI history (REQ-cli-062,
+  #217). It reads the CI workflow's runs and jobs, the issues labelled `flake` and
+  `.chough/bugs/`, writes nothing, and prints a JSON receipt: `clean`, `running` (with
+  the latest restart and when the window can first be clean) or `blocked`. A red or
+  partly skipped main run, any rerun, a filed flake and a day without a green main run
+  on both macOS and Linux restart the window. It exits 2 when GitHub cannot be read in
+  full. Its fixtures run in the `CI gate fixtures` job.
+- `integrations/` ships optional, versioned example hc templates for Claude Code,
+  Codex, Kimi, Grok and a local agent, the local one unqualified until #220
+  (REQ-cli-065, #219). Each has hc's three front-matter keys, resumes with
+  `chough next`, loads the skill file its own `chough init` creates and holds no local
+  path. `integrations/templates.toml` lists each template's status and an ordered list
+  of its versions with their SHA-256, and a README says Chough has no runtime
+  dependency on hc, Herdr or Rune.
+- The workflow skill's stage contract opens with a fast path for a routine change: a
+  bounded first read, the session and native-change commands in order, a delta for every
+  affected spec, a stop at each human gate, an early first edit and the checks, so a
+  local or small-context agent edits early instead of surveying the repository. SKILL.md
+  routes to it, and an installed copy of the previous bundle updates to it (LIFE-22).
+- CI also runs once a day on main at 05:23 UTC, so the flake window sees macOS and
+  Linux every day even when nothing merges. On a scheduled run the `SpecSync Archive`
+  jobs take the run's own commit as their trusted base, since the event has neither a
+  pull request base nor a previous commit (REQ-cli-064, #217).
+- A host-matrix harness in `tools/host-matrix/` drives one scripted Chough cycle per
+  agent host, one fresh host run per turn, in a throwaway copy of the shipping sample.
+  It stands in for every human gate only as `SIMULATED-host-matrix-not-a-human` and
+  judges the result only from the files, Git and native status. Its self-test runs a
+  scripted stand-in host with no model, and hosted CI runs it on Ubuntu and macOS. Real
+  host adapters follow (REQ-cli-066, #218).
+- `chough migrate`'s preview and the receipt's `## Follow-up` also name what `chough doctor` will report on the migrated tree, from doctor's own session check run on the planned records: the finished sessions `chough doctor --fix` archives, and each session whose open human gates are on an archived native change, with each gate's text and the decision it needs, `chough doctor --fix --reason` (#246, REQ-records-009, REQ-cli-055).
+- The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
+- Record polish: a bug's actual behaviour is its own `Actual:` paragraph under What
+  happened; `chough migrate` names each carried entry or receipt in front matter, its
+  0.5.x ID kept as the alias, so `chough next` lists the new names; a fresh project's
+  `.chough/README.md` no longer lists `artifacts/`; and the README's init paragraph
+  names each host's skill directory in one sentence.
+- The intent gate summary in `chough gate list` gives each criterion the session references by ID with its sentence from the `hi/` file that holds it, and no diff line, and each delta at a scope gate says which requirement IDs it adds and which it modifies instead of "adds or modifies" (REQ-cli-061).
+- `chough library index` links no rule, skill, decision or policy file that Git ignores, such as a host's skill copy under an ignored `.grok/`, so `knowledge/index.md` is the same in a working tree and a fresh clone, and `library index --check` passes there (#245, REQ-cli-043).
+- `chough next` with no open session, the normal state after done, says so, names `chough session new <key>` and exits 0 instead of failing, while `chough status` still refuses; `chough timing` says elapsed wall-clock once, in its header, with no gate-wait, case run or fix-time line repeating it, and its native note no longer reads "read read-only" (REQ-cli-021, REQ-history-006, REQ-reporting-001).
+- At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).
+- `chough change ship` prints SpecSync's output, then a short text summary of at most 12
+  lines naming the review, the ship, the gate close and the move into done, in place of
+  the gate close's long JSON report and the move's summary; when the summary is longer,
+  its last line names how many lines were dropped and points at `--json`, which prints
+  every step's full report (REQ-cli-059, #276).
+- The leak check no longer refuses an ordinary word that equals a short all-letter host
+  name: such a name is a leak only inside a path or a URL or as `<user>@<host>`, while a
+  host name of 8 or more characters, or holding a digit, a hyphen or a dot, is still
+  refused anywhere, in writes and in `chough doctor` alike (REQ-records-006).
+- The leak check now flags an scp-style remote path, `host:/path`, as the host name and
+  the path it carries: a home or system root after the colon refuses as a path leak, and
+  the host part counts as the local host name when it matches, in writes and in
+  `chough doctor` alike (REQ-records-006, #275).
+
+## [0.6.0] - 2026-11-12
+"#;
 
 /// The release task assembles the fragments the converted Unreleased bullets became
 /// back into the Unreleased text, so a release is a pure copy of the fragments' bullets
@@ -446,12 +578,12 @@ fn the_changelog_task_assembles_the_unreleased_fragments_gives_back_the_same_tex
         "## [Unreleased]\n\n## [0.6.0] - 2026-11-12\n",
     )
     .expect("CHANGELOG.md");
-    for (index, fragment) in fragments().iter().enumerate() {
-        std::fs::write(
-            root.join("changelog.d").join(format!("{index:02}.md")),
-            fragment,
-        )
-        .expect("the fragment");
+    let converted: Vec<(String, String)> = fragment_files()
+        .into_iter()
+        .filter(|(name, _)| name != "2026-11-14-290-changelog-fragments.md")
+        .collect();
+    for (name, contents) in &converted {
+        std::fs::write(root.join("changelog.d").join(name), contents).expect("the fragment");
     }
 
     let output = run_assemble(root, "Unreleased", None);
@@ -461,17 +593,16 @@ fn the_changelog_task_assembles_the_unreleased_fragments_gives_back_the_same_tex
         String::from_utf8_lossy(&output.stderr)
     );
     let assembled = std::fs::read_to_string(root.join("CHANGELOG.md")).expect("CHANGELOG.md");
-    let mut expected = String::from("## [Unreleased]\n\n");
-    for fragment in fragments().iter().rev() {
-        expected.push_str(fragment.trim_end_matches('\n'));
-        expected.push('\n');
-    }
-    expected.push_str("\n## [0.6.0] - 2026-11-12\n");
-    assert_eq!(assembled, expected, "assembling gives back the same text");
-    assert!(
-        !root.join("changelog.d").join("00.md").exists(),
-        "the changelog task removes the fragments after assembling"
+    assert_eq!(
+        assembled, CF_UNRELEASED,
+        "assembling gives back the same text"
     );
+    for (name, _) in &converted {
+        assert!(
+            !root.join("changelog.d").join(name).exists(),
+            "the changelog task removes the fragments after assembling: changelog.d/{name}"
+        );
+    }
 }
 
 /// The release task is deterministic: the same fragments give the same bytes.
