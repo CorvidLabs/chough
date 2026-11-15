@@ -2367,6 +2367,37 @@ fn toolchain_task_names_a_version_that_differs() {
     );
 }
 
+/// Issue #289 (design B): the verify lane runs no knowledge task, so no lane or job checks
+/// the generated knowledge directory; the release task is the only place that rebuilds and
+/// then checks it.
+#[test]
+fn the_verify_lane_does_not_run_the_knowledge_check() {
+    let fledge = fs::read_to_string(manifest_dir().join("fledge.toml")).unwrap();
+    let verify = fledge
+        .split("[lanes.verify]")
+        .nth(1)
+        .and_then(|lane| lane.lines().find(|line| line.starts_with("steps = ")))
+        .unwrap_or_default();
+    assert!(
+        !verify.contains("knowledge"),
+        "the verify lane runs the knowledge task: {verify}"
+    );
+}
+
+/// Issue #289 (design B): the release task rebuilds the knowledge index and then checks it.
+#[test]
+fn the_release_task_rebuilds_and_checks_the_knowledge_index() {
+    let fledge = fs::read_to_string(manifest_dir().join("fledge.toml")).unwrap();
+    assert!(
+        fledge
+            .lines()
+            .any(|line| line.trim().starts_with("release-check = ")
+                && line.contains("library index")
+                && line.contains("library index --check")),
+        "fledge.toml defines no release-check task that rebuilds and checks the knowledge index:\n{fledge}"
+    );
+}
+
 /// TC-cli-bug-0022-toolchain-matches-ci, a second copy on PATH (BUG-0022): when a tool
 /// differs, the failure names the copy PATH finds first, the one in use, and every
 /// other copy on PATH, each with its version, so the human knows which binary to fix.

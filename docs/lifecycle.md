@@ -107,7 +107,7 @@ A request for changes is recorded with `chough checkpoint --close-gate "<gate>" 
 
 The move into done archives the session into one story,
 `.chough/archive/sessions/<id>.md`, writes a journal post, and the librarian refreshes
-the generated knowledge directory on main after the merge, not here. Commit the post.
+the generated knowledge directory at release, not here. Commit the post.
 Then run `chough doctor --fix`, which removes the session folder now that its bytes are
 committed, and commit that. The closeout is archive-first: the hosted
 Archive gate refuses while a native change is open. So only after finalize and these

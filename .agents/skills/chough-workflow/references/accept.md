@@ -103,8 +103,8 @@ story.
 
 The move into done archives the session into one story,
 `.chough/archive/sessions/<id>.md`, with every evidence entry as a receipt. With the
-librarian on, it also writes a journal post; the librarian refreshes the vault on
-main after the merge, not at closeout. The finish then takes two commits:
+librarian on, it also writes a journal post; the librarian refreshes the vault at
+release, not at closeout. The finish then takes two commits:
 
 1. Commit the story and the journal post with the archive.
 2. Run `chough doctor --fix`, which removes the session folder now that its bytes are

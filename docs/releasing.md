@@ -3,7 +3,9 @@
 These steps are for a human after the release preparation change merges. Nothing in
 Chough or its CI runs them, and each is a separate decision (see the optional release
 stage in [the skill](../skills/chough-workflow/references/release.md)). Use the
-toolchain from [Install the toolchain](../README.md#install-the-toolchain).
+toolchain from [Install the toolchain](../README.md#install-the-toolchain). No CI job or
+lane runs `chough library index --check`; the release task is the only place the vault
+is checked, and it runs the rebuild first.
 
 Below, `X.Y.Z` is the version being released.
 
@@ -17,9 +19,10 @@ Below, `X.Y.Z` is the version being released.
 2. Check the package contents: `cargo package --list --locked` lists only `src/`,
    `skills/chough-workflow/`, `Cargo.toml`, `Cargo.lock`, `README.md` and `LICENSE`
    (plus the files cargo generates).
-3. Rebuild the generated knowledge files: in the release preparation pull request, run
-   `chough library index` and commit `knowledge/index.md` and `knowledge/journal/feed.xml`
-   when it changes, before the version bump is tagged.
+3. Rebuild the generated knowledge files and run the release check: on the release
+   preparation branch, run `chough library index` and then `chough library index --check`
+   (the release task), and commit `knowledge/index.md` and `knowledge/journal/feed.xml`
+   when they change, before that branch merges and before the version commit is tagged.
 4. Dry run: `cargo publish --dry-run --locked`. Also check that the `chough` name on
    crates.io still has the expected owner (0xLeif on 2026-11-06, from
    `https://crates.io/api/v1/crates/chough/owners`); the README's first install

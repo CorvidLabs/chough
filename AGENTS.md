@@ -39,10 +39,9 @@ the same checkpoint (DRIVE-3, DRIVE-12):
   `git config --local merge.chough-bug.driver "chough bug merge %O %A %B"` and
   `git config --local merge.chough-generated.driver "chough library merge %O %A %B"`.
   Sessions need no merge driver: each is its own folder.
-- After merging main into a branch, the generated `knowledge/index.md` and its feed may
-  be behind the merged sources; the verify lane's `library index --check` lets a branch
-  that is only behind its own sources pass. Rebuild with `chough library index` and commit
-  `knowledge/` when preparing a release, before the version bump is tagged.
+- Rebuild the generated `knowledge/index.md` and its feed with `chough library index`
+  and commit `knowledge/` when preparing a release, before the version bump is tagged;
+  the release task then runs `chough library index --check` before that branch merges.
 - Still conflicting, until SpecSync fixes it: a module's spec change log and
   `requirements.md` (CorvidLabs/spec-sync#862). Keep both sides' rows, renumber yours
   after main's, set `version:` to the last row, and keep requirement IDs unique.

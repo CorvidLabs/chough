@@ -474,7 +474,7 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
     (
         "references/stages.md",
         "de8db3cb911d4b4cebf836be8c8dfcbf631b54ad663a75eab0345d392dddac46",
-    ),    // Main cf82890; superseded by rebuilding the knowledge index at release (#289).
+    ), // Main cf82890; superseded by rebuilding the knowledge index at release (#289).
     (
         "references/accept.md",
         "b063138264e63d1aeb528163e90e5ec6da036ec96aa883145fd8c3d3d5796eb7",

@@ -21,10 +21,7 @@ pub(super) enum LibraryCommand {
     /// Regenerate the vault's index.md and the journal feed from their sources.
     Index {
         /// Write nothing; fail naming each generated file that is missing or differs from
-        /// a rebuild (line endings ignored); a file that is only behind its sources is current,
-        /// not stale (#289): the librarian refreshes the vault on main after the merge, so the
-        /// check lets a branch whose own closeout wrote no generated file pass, while a missing,
-        /// malformed or hand-edited file is still stale.
+        /// a rebuild (line endings ignored), so a merged vault is rebuilt before CI passes.
         #[arg(long)]
         check: bool,
     },
@@ -180,170 +177,13 @@ fn current_text(root: &Path, relative: &str) -> Option<String> {
 }
 
 /// Each generated file that is missing or differs from a rebuild, with CRLF read as LF so
-/// a Windows checkout of a current file is current (REQ-cli-047, DRIVE-12). A file that is
-/// only behind its sources is current, not stale (#289): the librarian refreshes the vault
-/// on main after the merge, so a branch whose own closeout wrote no generated file is behind
-/// its own new posts and the check lets it pass, while a missing, malformed or hand-edited
-/// file is stale.
+/// a Windows checkout of a current file is current (REQ-cli-047, DRIVE-12).
 fn stale_files(root: &Path, dir: &str) -> Result<Vec<String>> {
-    let mut stale = vec![];
-    for (relative, content) in build(root, dir)? {
-        let Some(committed) = current_text(root, &relative) else {
-            stale.push(relative);
-            continue;
-        };
-        if committed == content {
-            continue;
-        }
-        if !is_behind(root, dir, &relative, &committed)? {
-            stale.push(relative);
-        }
-    }
-    Ok(stale)
-}
-
-/// Whether the committed generated file is only behind its sources, a valid build of an
-/// older source set, so the librarian may be behind rather than wrong (#289). A file that is
-/// missing, malformed or holds something no source has is never behind.
-fn is_behind(root: &Path, dir: &str, relative: &str, committed: &str) -> Result<bool> {
-    let Some(name) = relative.rsplit('/').next() else {
-        return Ok(false);
-    };
-    if name == crate::journal::FEED {
-        Ok(feed_behind(root, dir, committed)?)
-    } else if name == "index.md" {
-        Ok(index_behind(root, dir, committed)?)
-    } else {
-        Ok(false)
-    }
-}
-
-/// Whether the committed journal feed is the feed of an older set of posts, so the
-/// librarian is behind its sources rather than wrong (#289): every entry it names is a post
-/// the journal holds, with that post's title, kind and time.
-fn feed_behind(root: &Path, dir: &str, committed: &str) -> Result<bool> {
-    let posts = crate::journal::posts(root, dir)?;
-    let named: Vec<String> = feed_names(committed);
-    let older: Vec<crate::journal::Post> = posts
+    Ok(build(root, dir)?
         .into_iter()
-        .filter(|post| named.contains(&post.name))
-        .collect();
-    Ok(crate::journal::feed(&older) == committed)
-}
-
-/// Whether the committed reading guide is the build of an older source set, so the
-/// librarian is behind its sources rather than wrong (#289): the journal posts it lists
-/// still exist with the entries the librarian builds for them, it names no source that is
-/// gone, and it holds no line that is not a line the librarian writes.
-fn index_behind(root: &Path, dir: &str, committed: &str) -> Result<bool> {
-    let posts = crate::journal::posts(root, dir)?;
-    let named: Vec<String> = index_names(committed);
-    let older: Vec<crate::journal::Post> = posts
-        .into_iter()
-        .filter(|post| named.contains(&post.name))
-        .collect();
-    if older.len() != named.len() {
-        // A post the guide lists is gone, so it is not the build of an older source set.
-        return Ok(false);
-    }
-    let older_guide = crate::vault::index(root, dir, &older, &crate::vault::Pending::default())?;
-    if journal_region(committed) != journal_region(&older_guide) {
-        // The guide's journal list is not the build of the posts it lists.
-        return Ok(false);
-    }
-    for line in committed.lines() {
-        if line.starts_with("- ") && !guide_line(line) {
-            // A line the librarian never writes, so the guide is not the build of an older
-            // source set.
-            return Ok(false);
-        }
-    }
-    if !sources_live(root, dir, committed)? {
-        // The guide names a source that is gone, so it is not the build of an older source
-        // set.
-        return Ok(false);
-    }
-    Ok(true)
-}
-
-/// The reading guide's journal list: what `Newest posts:` holds, up to the next heading.
-fn journal_region(text: &str) -> &str {
-    let Some((_, rest)) = text.split_once("Newest posts:\n\n") else {
-        return "";
-    };
-    let end = rest.find("\n## ").unwrap_or(rest.len());
-    &rest[..end]
-}
-
-/// Whether a line of the reading guide's lists is one the librarian writes, so a line that
-/// is not — a hand edit or a merge artifact — is not the build of an older source set.
-fn guide_line(line: &str) -> bool {
-    let Some(entry) = line.strip_prefix("- ") else {
-        return true;
-    };
-    if entry.starts_with("none") {
-        return true;
-    }
-    if entry.contains("](journal/") {
-        return true;
-    }
-    if entry.contains("](") {
-        return true;
-    }
-    if entry.contains(": [") || entry.contains(": `") {
-        return true;
-    }
-    if entry.contains(".specsync/archive/changes/") {
-        return true;
-    }
-    false
-}
-
-/// Whether every source the committed reading guide links is live (#289): a guide that
-/// names a source that is gone is not the build of an older source set.
-fn sources_live(root: &Path, dir: &str, committed: &str) -> Result<bool> {
-    let base = local_path(root, dir)?;
-    let mut rest = committed;
-    while let Some(start) = rest.find("](") {
-        rest = &rest[start + 2..];
-        let end = rest.find(')').unwrap_or(rest.len());
-        let target = rest[..end].to_string();
-        rest = &rest[end..];
-        if target.starts_with("http") || target.starts_with('#') || target.is_empty() {
-            continue;
-        }
-        if !base.join(&target).exists() {
-            return Ok(false);
-        }
-    }
-    Ok(true)
-}
-
-/// The journal posts a journal feed names, by post name, in feed order; the feed's own id
-/// is not a post.
-fn feed_names(feed: &str) -> Vec<String> {
-    feed.split("<id>urn:chough:journal:")
-        .skip(1)
-        .filter_map(|entry| entry.split("</id>").next())
-        .map(str::to_string)
-        .collect()
-}
-
-/// The journal posts the reading guide's journal list names, by post name, in list
-/// order; each entry is `- [Title](journal/<name>.md) (date, kind)`.
-fn index_names(index: &str) -> Vec<String> {
-    let Some((_, rest)) = index.split_once("Newest posts:\n\n") else {
-        return Vec::new();
-    };
-    let tail = rest.split_once("\n## ").map_or(rest, |(before, _)| before);
-    tail.lines()
-        .filter(|line| line.starts_with("- "))
-        .filter_map(|line| {
-            let after = line.strip_prefix("- [")?;
-            let named = after.split("](").nth(1)?.split(".md)").next()?.to_string();
-            Some(named.trim_start_matches("journal/").to_string())
-        })
-        .collect()
+        .filter(|(relative, content)| current_text(root, relative).as_deref() != Some(content))
+        .map(|(relative, _)| relative)
+        .collect())
 }
 
 /// Regenerate `index.md` and `feed.xml` in the knowledge directory `dir`, writing only a
@@ -783,17 +623,15 @@ pub(super) fn merge_at_init(root: &Path) -> serde_json::Value {
 }
 
 /// The move into done (REQ-cli-043), after the session's archive step and its journal
-/// post: nothing is refreshed here any more (#289). The librarian refreshes the vault on
-/// main after the merge, so a branch whose closeout has not merged yet is only behind its
-/// own sources and `library index --check` lets that pass; the librarian writes no
-/// generated file at done. Never fails: `deferred` when the librarian is on, `skipped` with
-/// the librarian off, or `refused`.
+/// post: nothing is refreshed here any more (#289). The librarian refreshes the vault at
+/// release, not here, so the move writes no generated file at done. Never fails: `deferred`
+/// when the librarian is on, `skipped` with the librarian off, or `refused`.
 pub(super) fn refresh_at_done(root: &Path) -> serde_json::Value {
     match librarian_dir(root) {
         Ok(None) => json!({"status": "skipped", "reason": "the librarian is off"}),
         Ok(Some(dir)) => json!({
             "status": "deferred",
-            "reason": "the librarian refreshes the vault on main after the merge, not at closeout",
+            "reason": "the librarian refreshes the vault at release, not at closeout",
             "index": format!("{dir}/index.md"),
         }),
         Err(error) => json!({"status": "refused", "reason": format!("{error:#}")}),

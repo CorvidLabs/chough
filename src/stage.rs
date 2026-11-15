@@ -2877,8 +2877,8 @@ pub(super) fn run(root: &Path, command: StageCommand, as_json: bool) -> Result<(
         // and the active pointer is cleared; never undoes the move.
         let from = applied["from"].as_str().unwrap_or_default().to_string();
         applied["session_archive"] = crate::sessions::archive_at_done(root, &session, &from);
-        // REQ-records-011: then its journal post; the librarian refreshes the vault on
-        // main after the merge, not here, so neither undoes the move.
+        // REQ-records-011: then its journal post; the librarian refreshes the vault at
+        // release, not here, so neither undoes the move.
         if applied["session_archive"]["status"] == "archived"
             && let Some(id) = applied["session_archive"]["id"]
                 .as_str()

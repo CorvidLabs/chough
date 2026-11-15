@@ -26,8 +26,8 @@ links, so it reads in Obsidian and on GitHub alike. A link to a folder, such as
 `chough init` creates the folder. Every `chough stage advance` into done writes the
 session's `shipped` post, and `chough session close` a `closed` post (`applied.journal_post`
 and `applied.librarian_index` under `chough stage advance --json`; the default text names
-them on its `Closeout:` line). The librarian refreshes the vault on main after the merge,
-not at closeout, so closeout writes no generated file. Commit the post with the work.
+them on its `Closeout:` line). The librarian refreshes the vault at release, not at
+closeout, so closeout writes no generated file. Commit the post with the work.
 Chough never rewrites a post, so a person's edit is kept, and nothing is trimmed or moved
 out of `.chough/` at done.
 
@@ -36,9 +36,9 @@ out of `.chough/` at done.
 in `.gitattributes` and sets the drivers in the clone's Git config. A fresh clone has
 no drivers, since Git does not clone config; `chough doctor` reports that as
 `merge_drivers`, and `chough doctor --fix` sets them. A merge keeps ours, and `chough
-library index` rebuilds both; `chough library index --check` fails until it does, and it
-lets a branch whose generated files are only behind its own sources pass, so a pull
-request that closed out without writing one is not stale until the rebuild.
+library index` rebuilds both; the release task runs that rebuild and then
+`chough library index --check`, which fails until it does, so no pull request is stale
+before the release check.
 
 ## From any stage
 

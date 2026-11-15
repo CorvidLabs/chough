@@ -1274,7 +1274,7 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
     checkpoint::validate_v2(&session)?;
     let report = archive(root, &id, &session, "closed-without-done")?;
     // REQ-records-011: the closed session's journal post; the librarian refreshes the
-    // vault on main after the merge, not here.
+    // vault at release, not here.
     let post = crate::journal::post_for_close(root, &id);
     let index = crate::library::refresh_at_done(root);
     Ok(json!({

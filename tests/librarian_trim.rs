@@ -1,5 +1,5 @@
-//! The move into done writes its journal post and defers the vault rebuild to main after
-//! the merge with the librarian on, and builds nothing with it off (REQ-cli-043, KNOW-4).
+//! The move into done writes its journal post and defers the vault rebuild to release
+//! with the librarian on, and builds nothing with it off (REQ-cli-043, KNOW-4).
 //! Nothing is trimmed at done any more: proof stays in its session and story
 //! (REQ-records-012).
 #![cfg(unix)]
@@ -64,7 +64,7 @@ fn advance_to_done(fixture: &Fixture) -> Value {
 }
 
 /// REQ-cli-043: in a project that had no knowledge directory, the move into done writes
-/// its journal post and defers the vault rebuild to main after the merge, so `library
+/// its journal post and defers the vault rebuild to release, so `library
 /// index --check` passes once the vault is rebuilt; nothing is trimmed.
 #[test]
 fn done_defers_the_knowledge_index_refresh_when_nothing_is_trimmed() {
@@ -86,8 +86,8 @@ fn done_defers_the_knowledge_index_refresh_when_nothing_is_trimmed() {
         .as_str()
         .unwrap_or_default();
     assert!(fixture.exists(post), "{moved:#}");
-    // The librarian refreshes the vault on main after the merge, not here, so the feed
-    // and the index are rebuilt before the check that names them.
+    // The librarian refreshes the vault at release, not here, so the release task
+    // rebuilds before the check that names them.
     fixture.ok(&["library", "index"]);
     fixture.ok(&["library", "index", "--check"]);
 }

@@ -251,7 +251,7 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `evidence add` | Record an observation as an entry of the active session, with its revision, inputs, environment and artifacts, and optionally a key screenshot or a manual failure's key failing lines; freshness compares content, not the revision |
 | `bug add/update/search/list/show/report/merge` | Local-first backlog of Markdown bugs with an append-only Log; old IDs still resolve; report candidates are never posted; `merge` is the Git merge driver for bug records |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
-| `library init/index/merge` | Project librarian, on by default in `knowledge/`: `index.md` and the journal feed, regenerated from their sources; `index --check` fails when they are missing or wrong, and lets a branch whose generated files are only behind its own sources pass; `merge` is their Git merge driver |
+| `library init/index/merge` | Project librarian, on by default in `knowledge/`: `index.md` and the journal feed, regenerated from their sources; `index --check` fails when they are missing or wrong, and the release task runs the rebuild before the check; `merge` is their Git merge driver |
 | `journal add` | Write one short dated post in `knowledge/journal/` that links the records; the move into done and `session close` write one too |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 

@@ -138,7 +138,7 @@ The native review is a recorded claim bound to the reviewed content, not proof o
 reviewed; the relay is a claim too. The reviewer may be the scope approver. Do not
 commit between review and ship or finalize. The move into done archives the session
 into one story, `.chough/archive/sessions/<id>.md`, writes a journal post, and the
-librarian refreshes the generated knowledge directory on main after the merge, not here.
+librarian refreshes the generated knowledge directory at release, not here.
 Commit the post, then run `chough doctor --fix`, which removes the now-committed session
 folder, and commit that. Archive on the same pull request, then push and observe required
 CI at the
