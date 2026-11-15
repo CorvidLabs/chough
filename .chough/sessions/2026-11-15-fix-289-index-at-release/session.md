@@ -41,6 +41,13 @@ observations:
   - 2026-11-15-tc-cli-done-refreshes-knowledge-untrimmed-b4eb41
   - 2026-11-15-tc-records-done-touches-only-its-own-post-1be45e
   - 2026-11-15-at-26bf0f5-no-step-of-the-ci-or-verify-lane-runs-library-index
+  - 2026-11-15-tc-cli-readme-verify-list-matches-fledge-82659a
+  - 2026-11-15-tc-cli-native-workflow-bundle-consistency-9d9153
+  - 2026-11-15-tc-cli-integrations-digest-detects-change-ce76cd
+  - 2026-11-15-tc-cli-doc-links-resolve-a61080
+  - 2026-11-15-tc-cli-documented-merge-drivers-match-c89cb2
+  - 2026-11-15-tc-cli-knowledge-index-check-dc265b
+  - 2026-11-15-tc-cli-build-reference-from-main-known-outdated-9cab66
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -86,6 +93,13 @@ Fix #289: rebuild the knowledge index at release, not in each PR, so open PRs st
 - [Ran cargo test --locked --test librarian_trim -- --exact done_defers_the_knowledge_index_refresh_when_nothing_is_trimmed for TC-cli-done-refreshes-knowledge-untrimmed: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-cli-done-refreshes-knowledge-untrimmed-b4eb41.md)
 - [Ran cargo test --locked --test journal -- --exact done_changes_no_knowledge_file_but_its_own_post for TC-records-done-touches-only-its-own-post: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-records-done-touches-only-its-own-post-1be45e.md)
 - [At 26bf0f5: no step of the ci or verify lane runs library index; release-check rebuilds then runs the strict --check (and passes on this tree); a hand-edited lesson count with its link kept fails --check naming knowledge/index.md. Full suite 762 passed; fmt and lint clean.](evidence/2026-11-15-at-26bf0f5-no-step-of-the-ci-or-verify-lane-runs-library-index.md)
+- [Ran cargo test --locked --test docs -- --exact readme_verify_lane_list_names_every_fledge_verify_step for TC-cli-readme-verify-list-matches-fledge: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-cli-readme-verify-list-matches-fledge-82659a.md)
+- [Ran cargo test --locked --test workflow_authority -- --exact native_writer_examples_and_installed_workflows_are_consistent for TC-cli-native-workflow-bundle-consistency: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-cli-native-workflow-bundle-consistency-9d9153.md)
+- [Ran cargo test --locked --test integrations -- --exact a_changed_template_fails_until_a_new_version_lists_its_digest for TC-cli-integrations-digest-detects-change: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-cli-integrations-digest-detects-change-ce76cd.md)
+- [Ran cargo test --locked --test docs -- --exact relative_links_and_anchors_resolve for TC-cli-doc-links-resolve: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-cli-doc-links-resolve-a61080.md)
+- [Ran cargo test --locked --test docs -- --exact cli_reference_declares_the_merge_drivers_this_repository_declares for TC-cli-documented-merge-drivers-match: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-cli-documented-merge-drivers-match-c89cb2.md)
+- [Ran cargo test --locked --test vault -- --exact index_check_names_stale_files_and_passes_after_a_rebuild for TC-cli-knowledge-index-check: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-cli-knowledge-index-check-dc265b.md)
+- [Ran cargo test --locked --test cli -- --exact build_reference_from_main_4daf861_is_known_outdated for TC-cli-build-reference-from-main-known-outdated: passed (exit 0, tests run 1).](evidence/2026-11-15-tc-cli-build-reference-from-main-known-outdated-9cab66.md)
 
 ## Open threads
 
