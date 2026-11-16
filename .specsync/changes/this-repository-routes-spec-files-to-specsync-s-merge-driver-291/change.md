@@ -1,8 +1,8 @@
 ---
 id: this-repository-routes-spec-files-to-specsync-s-merge-driver-291
-state: draft
+state: approved
 type: feature
-base_commit: aa1c5a15815d61f281f45e742b45fadc5bf55828
+base_commit: 2b50b058ed10c8e02ec8fcd2223aeea98908785d
 ---
 
 # This repository routes spec files to SpecSync's merge driver (#291)
