@@ -24,16 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [The init case runs the real preservation test](journal/2026-11-16-the-init-case-runs-the-real-preservation-test.md) (2026-11-16, shipped)
+- [Spec files use SpecSync's merge driver](journal/2026-11-16-spec-files-use-specsync-s-merge-driver.md) (2026-11-16, shipped)
+- [Fix #289: rebuild the knowledge index at release](journal/2026-11-15-fix-289-rebuild-the-knowledge-index-at-release.md) (2026-11-15, shipped)
+- [Fix #290: each change adds a changelog fragment](journal/2026-11-15-fix-290-each-change-adds-a-changelog-fragment.md) (2026-11-15, shipped)
 - [Describe the current objective before beginning work](journal/2026-11-15-describe-the-current-objective-before-beginning-work.md) (2026-11-15, shipped)
+- [Fix #278: Chough's records join a receipt's claim to its evidence…](journal/2026-11-15-fix-278-chough-s-records-join-a-receipt-s-claim-to-its.md) (2026-11-15, shipped)
 - [Fix #249: a relayed decision reaches SpecSync's approval and review…](journal/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and.md) (2026-11-14, shipped)
 - [The leak check reads an scp-style host path](journal/2026-11-14-the-leak-check-reads-an-scp-style-host-path.md) (2026-11-14, shipped)
 - [#217: fledge run flake-window computes Chough's two-week clean…](journal/2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean.md) (2026-11-14, shipped)
 - [#219: integrations/ ships versioned example hc templates for Claude Code](journal/2026-11-14-219-integrations-ships-versioned-example-hc-templates-for.md) (2026-11-14, shipped)
-- [Fix #245: the index links no source Git ignores](journal/2026-11-14-fix-245-the-index-links-no-source-git-ignores.md) (2026-11-14, shipped)
-- [Give agents, local models included](journal/2026-11-14-give-agents-local-models-included.md) (2026-11-14, shipped)
-- [#217: CI also runs once a day on main](journal/2026-11-13-217-ci-also-runs-once-a-day-on-main.md) (2026-11-13, shipped)
-- [#217: seed the flake tracker](journal/2026-11-13-217-seed-the-flake-tracker.md) (2026-11-13, shipped)
-- [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
-- [clarify-req-cli-001-init-preserves-bytes-acceptance](../.specsync/archive/changes/2026-11-15-clarify-req-cli-001-init-preserves-bytes-acceptance/lesson-bundle.md), Clarify REQ-cli-001 init-preserves-bytes acceptance
-- [fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag](../.specsync/archive/changes/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag/lesson-bundle.md), Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
-- [217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read](../.specsync/archive/changes/2026-11-14-217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read/lesson-bundle.md), #217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict
+- [fix-295-the-init-case-runs-the-real-preservation-test](../.specsync/archive/changes/2026-11-16-fix-295-the-init-case-runs-the-real-preservation-test/lesson-bundle.md), Fix #295: the init case runs the real preservation test
+- [this-repository-routes-spec-files-to-specsync-s-merge-driver-291](../.specsync/archive/changes/2026-11-16-this-repository-routes-spec-files-to-specsync-s-merge-driver-291/lesson-bundle.md), This repository routes spec files to SpecSync's merge driver (#291)
+- [the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289](../.specsync/archive/changes/2026-11-15-the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289/lesson-bundle.md), The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)
 
 ## Snapshots and briefs
 
