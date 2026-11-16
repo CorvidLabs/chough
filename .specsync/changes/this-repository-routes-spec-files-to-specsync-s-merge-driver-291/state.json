@@ -7,10 +7,11 @@
   "title": "This repository routes spec files to SpecSync's merge driver (#291)",
   "description": "This repository routes spec files to SpecSync's merge driver (#291)",
   "kind": "feature",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "2b50b058ed10c8e02ec8fcd2223aeea98908785d",
   "created_at": 1794679079,
-  "updated_at": 1794799301,
+  "updated_at": 1794799430,
   "affected_specs": [
     "cli"
   ],

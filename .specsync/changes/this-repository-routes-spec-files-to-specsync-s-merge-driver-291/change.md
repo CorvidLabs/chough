@@ -1,6 +1,6 @@
 ---
 id: this-repository-routes-spec-files-to-specsync-s-merge-driver-291
-state: approved
+state: implementing
 type: feature
 base_commit: 2b50b058ed10c8e02ec8fcd2223aeea98908785d
 ---
