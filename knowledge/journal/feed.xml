@@ -2,9 +2,16 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-16T03:24:31Z</updated>
+<updated>2026-11-16T03:44:05Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>The init case runs the real preservation test</title>
+<id>urn:chough:journal:2026-11-16-the-init-case-runs-the-real-preservation-test</id>
+<updated>2026-11-16T03:44:05Z</updated>
+<link href="2026-11-16-the-init-case-runs-the-real-preservation-test.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>Spec files use SpecSync&apos;s merge driver</title>
 <id>urn:chough:journal:2026-11-16-spec-files-use-specsync-s-merge-driver</id>
@@ -24,6 +31,13 @@
 <id>urn:chough:journal:2026-11-15-fix-290-each-change-adds-a-changelog-fragment</id>
 <updated>2026-11-15T16:41:23Z</updated>
 <link href="2026-11-15-fix-290-each-change-adds-a-changelog-fragment.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Describe the current objective before beginning work</title>
+<id>urn:chough:journal:2026-11-15-describe-the-current-objective-before-beginning-work</id>
+<updated>2026-11-15T03:53:17Z</updated>
+<link href="2026-11-15-describe-the-current-objective-before-beginning-work.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
@@ -129,20 +143,6 @@
 <id>urn:chough:journal:2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing</id>
 <updated>2026-11-13T03:08:31Z</updated>
 <link href="2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>0.6.1: chough change ship prints a short summary</title>
-<id>urn:chough:journal:2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary</id>
-<updated>2026-11-13T02:58:41Z</updated>
-<link href="2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>0.6.1: src/stage.rs recorded for PR 4</title>
-<id>urn:chough:journal:2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4</id>
-<updated>2026-11-13T02:57:03Z</updated>
-<link href="2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md"/>
 <category term="shipped"/>
 </entry>
 </feed>
