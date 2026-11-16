@@ -89,7 +89,7 @@ example by an older Chough, is refused the same way. See [Migration](#migration)
 | `pref show\|set KEY VALUE\|unset KEY` | Standing preferences, each set with a required `--source`. Values (default first): `repeat-validation` ask, off, always; `monitoring` ask, off, always; `release` on-request, standing; `migration` on-request, standing (a standing `migration` preference gives the human's consent to `chough migrate --apply`); `monitor-initiation` capture-only, propose-change; `librarian` on, off (on by default; `off` is the recorded opt-out); `library-dir` a path (default `knowledge`); `required-lane` a name (default empty). Only `always` and `standing` authorize without a run consent. |
 | `consent show\|grant KEY --source S\|revoke KEY` | Run consent for the current objective: repeat-validation, monitoring and release. |
 | `validate run\|stop\|resume\|status` | Optional repeated runs of one case with stored limits and local capture of failures. `run CASE --times N --environment E [--interval S]` (N from 1 to 1000; S from 0, the default, to 3600 seconds) needs a case with a binding and a `repeat-validation` run consent or `pref set repeat-validation always`; unlike `stage enter validate`, `monitoring` does not authorize it. `resume ID` continues a stored run under its original ID or alias; `stop` and `status` take no argument. A stop request (state `stopped`) or a paused checkpoint stage (state `paused`) is checked immediately before every attempt, including after the interval, which is waited in slices of at most 200 ms; both states resume with `validate resume`. |
-| `library init\|index [--check]\|merge BASE OURS THEIRS` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`); see [Knowledge vault](#knowledge-vault). `init` builds `index.md`, `journal/` and `lessons/`. `index` regenerates `index.md` and the feed, and removes a `README.md` an earlier release generated once its bytes are committed; `index --check` writes nothing and fails naming each generated file that is missing or differs (see [Merging branches](#merging-branches)). `merge` is the Git merge driver for those two files: it keeps ours, and the next `library index` rebuilds them. No gate reads the knowledge directory. |
+| `library init\|index [--check]\|merge BASE OURS THEIRS` | The librarian, on by default in `knowledge/` (opt out with `pref set librarian off --source ...`); see [Knowledge vault](#knowledge-vault). `init` builds `index.md`, `journal/` and `lessons/`. `index` regenerates `index.md` and the feed, and removes a `README.md` an earlier release generated once its bytes are committed; `index --check` writes nothing, fails naming each generated file that is missing or differs from a rebuild, and is the release check's second step, run after the release task rebuilds (see [Merging branches](#merging-branches)). `merge` is the Git merge driver for those two files: it keeps ours, and the next `library index` rebuilds them. No gate reads the knowledge directory. |
 | `journal add --kind K --title T --body B [--link L]...`, `journal add --record STORY --title T --body B [--link L]...` | Write one post, `knowledge/journal/<date>-<slug>.md`, by create-new, then regenerate the index and feed (REQ-records-011). With `--record`, the post is an archived story's, for a backfill: its kind is `shipped` for a done story and `closed` otherwise, its date the story's `closed`, its `time` the story's latest Timeline time on that date (none otherwise), its `record` the story, and it links what the post at the move into done links, then each `--link`; it refuses a story that does not exist, and one a post's `record` already names, naming that post. `--kind` is `shipped`, `closed`, `intent`, `spec`, `broke` or `learned`; the body is at most 1,200 bytes; each `--link` is a project path Git tracks (a file, or a folder holding one; never under `.git/` or ignored) or an http(s) URL; a leading `./` is dropped, and a `#fragment` is kept on the link while the path before it is checked. The move into done writes a `shipped` post from the archived story and `session close` a `closed` one. Chough never rewrites or removes a post. |
 | `skill status\|update [--host H]...` | Compare installed copies with the bundle; update only missing and known-outdated files. Without `--host`, both act on every host whose skill directory is installed; `update` refuses when none is. Hosts that share a directory get one entry. Both report a `legacy` list for an older `.claude/skills` copy, with each file's state, and never write it. |
 | `skill remove-legacy [--host claude]` | Remove a legacy `.claude/skills` copy's files that are byte-identical to the current or a known earlier bundle, then empty directories; keeps edited and unknown files and reports `removed` and `kept`. Refuses, removing nothing, while the shared `.agents/skills` copy is missing. |
@@ -301,13 +301,19 @@ matter and body, for (REQ-records-006):
   and a `~/` path;
 - the local host name anywhere when it is at least 8 characters long or holds a digit,
   a hyphen or a dot, and a shorter all-letter host name, which may be an ordinary word,
-  only inside a path or a URL or as `<user>@<host>`, so a word that happens to be this
-  machine's name is written;
+  only inside a path or a URL or as `<user>@<host>`, or as the `<host>:/<absolute path>`
+  of an scp-style remote path, so a word that happens to be this machine's name is
+  written;
 - the local user name inside a path or as `<user>@<host>`;
 - an email address;
 - credentials: GitHub, GitLab, Slack, AWS and model-provider token forms, private key
   blocks, bearer and basic authorization values, JSON web tokens, and `password`,
   `secret`, `token` or `api_key` assignments with a value of 8 or more characters.
+
+An scp-style remote path, `<host>:/<absolute path>`, is checked like the path it
+carries, so a home or system root after the colon refuses as a path leak and the host
+part is checked as the local host name when it matches, in the write guard and in
+`chough doctor` alike.
 
 A match refuses the write as `refused:leak`, naming the field and the kind of match
 (`home-path`, `system-path`, `windows-path`, `host-name`, `user-name`, `email`, `token`,
@@ -528,6 +534,14 @@ whose SpecSync actor comes from the identity file (REQ-records-008, see
   `specsync_actor` as the reviewer and the verdict given as `--verdict pass` or
   `--verdict block`, which is required there and is never read from the words.
 
+Each step also passes the relay to SpecSync 6.3.0's own fields, `--words`, `--where`
+and `--recorded-by`, so SpecSync's approval or review records the relayed decision
+(#249). Chough bounds the whole decision at 4,096 bytes, so no field exceeds
+SpecSync's 4,096-byte bound for each.
+SpecSync 6.3.0 records a change approved or reviewed this way at workflow version 3,
+which SpecSync 6.2.x refuses, so every checkout and CI job of the project needs
+SpecSync 6.3.0.
+
 Every check the save makes runs before the native step. When SpecSync refuses, Chough
 passes its output and exit code through, the gate stays open and nothing is written.
 When it succeeds, Chough closes the gate and adds the decision, which names the step
@@ -649,7 +663,7 @@ file Chough writes (REQ-cli-047, DRIVE-12):
 | `CHANGELOG.md` | Git's `union` driver: both sides' lines are kept |
 | `.chough/bugs/<id>.md` | `chough bug merge`, below |
 | `knowledge/journal/<date>-<slug>.md` | Posts with unique names, written once |
-| `knowledge/index.md`, `knowledge/journal/feed.xml` | `chough library merge` keeps ours, then `chough library index`; `library index --check` fails CI until it is rebuilt |
+| `knowledge/index.md`, `knowledge/journal/feed.xml` | `chough library merge` keeps ours, then `chough library index`; `library index --check` fails a missing or wrong file until it is rebuilt, and the release task runs that rebuild before the check |
 
 Two branches that create a record with the same date and slug in the same folder, the
 same title on the same day, do conflict, and the merge shows it plainly.
@@ -674,13 +688,13 @@ field or paragraph both sides changed differently, such as `status`, is left for
 human: `ours` is unchanged and the command exits nonzero.
 
 `chough library index --check` writes nothing. It fails, naming each generated knowledge
-file that is missing or differs from a rebuild, with CRLF read as LF, and it is a step of
-the verify and ci lanes here.
+file that is missing or differs from a rebuild, with CRLF read as LF; it is the release
+check's second step, run after the release task rebuilds, and no lane or job runs it.
 
 `chough library merge <base> <ours> <theirs>` is the driver for `knowledge/index.md` and
 `knowledge/journal/feed.xml`. It keeps ours byte for byte and exits 0, so a merge commit
 never holds a union of two feeds that is not valid XML; the next `chough library index`
-rebuilds both from the merged posts and sources.
+rebuilds both from the merged posts and sources, and the release rebuilds them.
 
 Declare the drivers in `.gitattributes`:
 
@@ -909,10 +923,10 @@ done and its save succeeds, the same command goes on, with no further native rea
    title is the objective's first clause (cut at a word within 72 bytes) and the body
    the story's Goal, then `Why:` with its first decision, `Verified:` with its newest
    verified entry and `Next:` with its first open thread, within 1,200 bytes.
-3. It regenerates `index.md` and `journal/feed.xml`, reported as
-   `applied.librarian_index` with status `refreshed` and the index path, `skipped`
-   with the librarian off, or `refused` with its reason, so `chough library index
-   --check` passes right after done (KNOW-4).
+3. It defers the knowledge refresh: the librarian refreshes the vault at release, not
+   here, so with the librarian on the applied report carries `applied.librarian_index`
+   with status `deferred` and the reason, and `chough library index --check` runs only at
+   release, after the release task rebuilds (KNOW-4).
 
 None of these undoes the move into done. Nothing is trimmed and no other session or
 story is read, moved or rewritten. Then, until a session is opened, `chough next` says
@@ -920,10 +934,10 @@ there is no open session, names `chough session new <key>` and exits 0, since th
 normal state after done, while `chough status` refuses with "no open session" and names
 the same command (DRIVE-13).
 
-The finish takes two commits. First commit the story, the journal post and the
-regenerated index and feed. The session's own `session.md` changed in the move, so its
-bytes were not yet committed and it stayed. Then run `chough doctor --fix`, which
-removes the session folder now that its bytes are committed, and commit that.
+The finish takes two commits. First commit the story and the journal post. The session's
+own `session.md` changed in the move, so its bytes were not yet committed and it stayed.
+Then run `chough doctor --fix`, which removes the session folder now that its bytes are
+committed, and commit that.
 
 Each evidence entry the session holds becomes one map in the story's `receipts`, the
 fenced YAML block of its last section, `## Receipts`, in observation-time order, oldest
@@ -936,7 +950,7 @@ What was verified gives the latest receipt of each case and every receipt bound 
 case, one line each:
 
 ```text
-- <claim> — `<command>` <first 12 fingerprint digits> [screenshot](<session>/<file>) ^<evidence id>
+- <claim> - `<command>` <first 12 fingerprint digits> [screenshot](<session>/<file>) ^<evidence id>
 ```
 
 The command appears only when the claim does not already hold it, as a case run's
@@ -1218,7 +1232,8 @@ review (REQ-cli-059). It runs in these steps:
    --native-change <id>`, or `chough checkpoint --close-gate` for another open gate.
 2. When the named gate drives review and the change has no current scoped review, it
    first runs SpecSync's change review as the decided human with verdict `pass`,
-   since a ship is run only on acceptance (REQ-records-008). The identity is resolved
+   since a ship is run only on acceptance, passing the relay's words, place and
+   recording agent as `--words`, `--where` and `--recorded-by` (REQ-records-008). The identity is resolved
    before SpecSync runs (`refused:human-identity-unknown` otherwise), and a refused
    review stops here with SpecSync's output and exit code and nothing written.
 3. It runs `specsync change ship <id>` in `--root` with no time bound, and passes

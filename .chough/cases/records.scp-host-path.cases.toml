@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "records"
+
+[[case]]
+id = "TC-records-an-scp-style-host-path-is-checked-like-the-path-it-carries"
+title = "An scp-style remote path, host:/path, is checked like the path it carries: a home or system root after the colon is refused as a path leak, and the host part is refused as a host-name leak when it is the local host"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26", "LIFE-17", "FLOW-22"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the scp-style host path leak test passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "leaks::tests::an_scp_style_remote_path_is_checked_like_the_path_it_carries"]
+expect_output = ["test leaks::tests::an_scp_style_remote_path_is_checked_like_the_path_it_carries ... ok"]
+timeout_seconds = 600

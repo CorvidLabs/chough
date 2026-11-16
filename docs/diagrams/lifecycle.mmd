@@ -6,7 +6,7 @@ flowchart TB
     human -->|"changes requested"| build["Back to build"]
     build --> tests
     human -->|"approved"| ship["chough change ship --close-gate: SpecSync review as the human, then ship and finalize (same PR), then done"]
-    ship --> story["Commit the archived story, journal post and index"]
+    ship --> story["Commit the archived story and journal post"]
     story --> cleanup["chough doctor --fix removes the committed session folder; commit"]
     cleanup --> push["Push; hosted CI at the archived tip"]
     push --> merge["Merge through the normal process"]

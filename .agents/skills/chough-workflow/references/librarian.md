@@ -24,18 +24,22 @@ links, so it reads in Obsidian and on GitHub alike. A link to a folder, such as
 `../specs/`, opens on GitHub; Obsidian opens only links to files.
 
 `chough init` creates the folder. Every `chough stage advance` into done writes the
-session's `shipped` post, and `chough session close` a `closed` post, then regenerates
-`index.md` and the feed (`applied.journal_post` and `applied.librarian_index` under
-`chough stage advance --json`; the default text names them on its `Closeout:` line). Commit
-them with the work. Chough never rewrites a post, so a person's edit is kept, and
-nothing is trimmed or moved out of `.chough/` at done.
+session's `shipped` post, and `chough session close` a `closed` post (`applied.journal_post`
+and `applied.librarian_index` under `chough stage advance --json`; the default text names
+them on its `Closeout:` line). The librarian refreshes the vault at release, not at
+closeout, so closeout writes no generated file. Commit the post with the work.
+Chough never rewrites a post, so a person's edit is kept, and nothing is trimmed or moved
+out of `.chough/` at done.
 
 `index.md` and `journal/feed.xml` are generated. They merge with
 `merge=chough-generated`, and bugs with `merge=chough-bug`: `chough init` declares both
 in `.gitattributes` and sets the drivers in the clone's Git config. A fresh clone has
 no drivers, since Git does not clone config; `chough doctor` reports that as
 `merge_drivers`, and `chough doctor --fix` sets them. A merge keeps ours, and `chough
-library index` rebuilds both; `chough library index --check` fails until it does.
+library index` rebuilds both. A pull request leaves them behind their sources on
+purpose: do not rebuild or commit them in a pull request. The release task rebuilds them
+on the release preparation branch, fails until the rebuild is committed, and then runs
+`chough library index --check` (see `docs/releasing.md`).
 
 ## From any stage
 

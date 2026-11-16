@@ -623,15 +623,17 @@ pub(super) fn merge_at_init(root: &Path) -> serde_json::Value {
 }
 
 /// The move into done (REQ-cli-043), after the session's archive step and its journal
-/// post: regenerate `index.md` and `feed.xml`, so `library index --check` passes right
-/// after. Never fails: `refreshed`, `skipped` with the librarian off, or `refused`.
+/// post: nothing is refreshed here any more (#289). The librarian refreshes the vault at
+/// release, not here, so the move writes no generated file at done. Never fails: `deferred`
+/// when the librarian is on, `skipped` with the librarian off, or `refused`.
 pub(super) fn refresh_at_done(root: &Path) -> serde_json::Value {
     match librarian_dir(root) {
         Ok(None) => json!({"status": "skipped", "reason": "the librarian is off"}),
-        Ok(Some(dir)) => match regenerate(root, &dir) {
-            Ok(index) => json!({"status": "refreshed", "index": index}),
-            Err(error) => json!({"status": "refused", "reason": format!("{error:#}")}),
-        },
+        Ok(Some(dir)) => json!({
+            "status": "deferred",
+            "reason": "the librarian refreshes the vault at release, not at closeout",
+            "index": format!("{dir}/index.md"),
+        }),
         Err(error) => json!({"status": "refused", "reason": format!("{error:#}")}),
     }
 }

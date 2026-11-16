@@ -32,7 +32,9 @@ the same checkpoint (DRIVE-3, DRIVE-12):
 - `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` are listed in
   `verification_ignored_paths` (`.specsync/sdd.json`), so Chough's records can be
   written and committed at any point of the native order; `chough next` says so.
-  `CHANGELOG.md` merges with Git's union driver.
+- Add a change's changelog entry as a fragment of its own,
+  `changelog.d/<YYYY-MM-DD>-<change-id>.md`, not in `CHANGELOG.md`; a release assembles
+  the fragments into `CHANGELOG.md` with `fledge run changelog` (#290).
 - Add a change's cases in a file of its own,
   `.chough/cases/<module>.<change-topic>.cases.toml`, not in the shared module file.
 - Set up Chough's two merge drivers once per clone:
@@ -41,9 +43,9 @@ the same checkpoint (DRIVE-3, DRIVE-12):
   Also run `specsync merge --install` once, so `specs/**/*.spec.md` and
   `specs/**/requirements.md` merge through SpecSync's driver (#291).
   Sessions need no merge driver: each is its own folder.
-- After merging main into a branch, run `chough library index` and commit `knowledge/`.
-  The merge keeps your side of `knowledge/index.md` and the feed, and the verify lane's
-  `library index --check` fails until they are rebuilt.
+- Rebuild the generated `knowledge/index.md` and its feed with `chough library index`
+  and commit `knowledge/` when preparing a release, before the version bump is tagged;
+  the release task then runs `chough library index --check` before that branch merges.
 - Still conflicting, until SpecSync fixes it: a module's spec change log and
   `requirements.md` (CorvidLabs/spec-sync#862). Keep both sides' rows, renumber yours
   after main's, set `version:` to the last row, and keep requirement IDs unique.

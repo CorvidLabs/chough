@@ -1,6 +1,6 @@
 ---
 module: records
-version: 5
+version: 9
 status: active
 files:
   - src/markdown.rs
@@ -125,6 +125,7 @@ or redacting every value before it is written.
 | `LOCAL_FILE` | `.chough/local/identity.toml`, the project's identity file, which replaces the user file when present. |
 | `USER_FILE` | `chough/identity.toml` under `XDG_CONFIG_HOME` or `~/.config`, the user identity file. |
 | `Step` | A native step run as a human: an approval with its note, or a review with its verdict. |
+| `Relay` | A relayed decision's words, place and recording agent, which a native step passes to SpecSync as `--words`, `--where` and `--recorded-by`, each joined to its flag (REQ-records-008). |
 | `arguments` | The SpecSync arguments of a step, with the human's configured actor. |
 | `summary` | A step as one line for the decision and the output, without the note's text. |
 | `approval_note` | The note an approval records: the human's words, where and when, and the relaying agent. |
@@ -208,3 +209,8 @@ use this one for every record they write.
 | 3 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
 | 4 | 2026-11-13 | 0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak: 0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak |
 | 5 | 2026-11-13 | fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply: Fix #246: chough migrate's preview and receipt name the sessions chough doctor will report after the apply |
+| 6 | 2026-11-14 | the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries: The leak check now flags an scp-style host path, `host:/path`, as the host name and the path it carries |
+| 7 | 2026-11-14 | the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275: The leak check flags an scp-style host path as the host name and the path it carries (#275) |
+| 8 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
+| 9 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
+| 10 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
