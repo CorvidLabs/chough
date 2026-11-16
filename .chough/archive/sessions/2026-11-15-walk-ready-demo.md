@@ -110,6 +110,9 @@ None.
   - by: unknown agent (hc t15)
 
 Closed 2026-11-15: done.
+- 2026-11-16T03:21:41Z · correction · done → done · The receipt 2026-11-15-tc-cli-walk-ready-init-preserves, command echo preserves, exit 0, is a demo smoke result, not behavioral preservation evidence for REQ-cli-001. Case TC-cli-walk-ready-init-preserves now runs tests/cli.rs init_preserves_user_files_and_installs_a_complete_skill, which keeps edited session and skill bytes and adds a missing bundle file without rewriting the edited neighbor. The original receipts stay as recorded. ^t-beba6c
+  - corrects: ^t-794d02
+  - by: grok-t1w (grok, hc t1w)
 
 ## Receipts
 

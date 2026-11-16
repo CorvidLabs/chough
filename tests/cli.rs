@@ -314,6 +314,36 @@ fn init_preserves_user_files_and_installs_a_complete_skill() {
         .unwrap(),
         "user owned skill\n"
     );
+    // REQ-cli-001: a later init adds a missing bundle file and leaves the edited
+    // neighbor byte-identical.
+    let missing = ".agents/skills/chough-workflow/references/lifecycle.md";
+    fs::remove_file(fixture.root().join(missing)).unwrap();
+    let added = fixture.ok(&["init"]);
+    let created = added["created"].as_array().unwrap();
+    assert!(
+        created.iter().any(|item| item == missing),
+        "init adds the missing bundle file: {created:?}"
+    );
+    assert!(
+        created
+            .iter()
+            .all(|item| item != ".agents/skills/chough-workflow/SKILL.md"),
+        "init does not rewrite the edited neighbor: {created:?}"
+    );
+    assert!(fixture.root().join(missing).is_file());
+    assert_eq!(
+        fs::read_to_string(
+            fixture
+                .root()
+                .join(".agents/skills/chough-workflow/SKILL.md")
+        )
+        .unwrap(),
+        "user owned skill\n"
+    );
+    assert_eq!(
+        fixture.read(&session_file),
+        "user owned bytes, even if malformed\n"
+    );
 }
 
 #[test]
