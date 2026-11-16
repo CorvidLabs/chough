@@ -24,6 +24,8 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Spec files use SpecSync's merge driver](journal/2026-11-16-spec-files-use-specsync-s-merge-driver.md) (2026-11-16, shipped)
+- [Fix #289: rebuild the knowledge index at release](journal/2026-11-15-fix-289-rebuild-the-knowledge-index-at-release.md) (2026-11-15, shipped)
 - [Fix #290: each change adds a changelog fragment](journal/2026-11-15-fix-290-each-change-adds-a-changelog-fragment.md) (2026-11-15, shipped)
 - [Fix #278: Chough's records join a receipt's claim to its evidence…](journal/2026-11-15-fix-278-chough-s-records-join-a-receipt-s-claim-to-its.md) (2026-11-15, shipped)
 - [Fix #249: a relayed decision reaches SpecSync's approval and review…](journal/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and.md) (2026-11-14, shipped)
@@ -32,8 +34,6 @@ Newest posts:
 - [#219: integrations/ ships versioned example hc templates for Claude Code](journal/2026-11-14-219-integrations-ships-versioned-example-hc-templates-for.md) (2026-11-14, shipped)
 - [Fix #245: the index links no source Git ignores](journal/2026-11-14-fix-245-the-index-links-no-source-git-ignores.md) (2026-11-14, shipped)
 - [Give agents, local models included](journal/2026-11-14-give-agents-local-models-included.md) (2026-11-14, shipped)
-- [#217: CI also runs once a day on main](journal/2026-11-13-217-ci-also-runs-once-a-day-on-main.md) (2026-11-13, shipped)
-- [#217: seed the flake tracker](journal/2026-11-13-217-seed-the-flake-tracker.md) (2026-11-13, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [this-repository-routes-spec-files-to-specsync-s-merge-driver-291](../.specsync/archive/changes/2026-11-16-this-repository-routes-spec-files-to-specsync-s-merge-driver-291/lesson-bundle.md), This repository routes spec files to SpecSync's merge driver (#291)
+- [the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289](../.specsync/archive/changes/2026-11-15-the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289/lesson-bundle.md), The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)
 - [each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290](../.specsync/archive/changes/2026-11-15-each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290/lesson-bundle.md), Each change adds a changelog fragment that the release task assembles into CHANGELOG.md (#290)
-- [chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with](../.specsync/archive/changes/2026-11-15-chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with/lesson-bundle.md), Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278)
-- [fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag](../.specsync/archive/changes/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag/lesson-bundle.md), Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
 
 ## Snapshots and briefs
 

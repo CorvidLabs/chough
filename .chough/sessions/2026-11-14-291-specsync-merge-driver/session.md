@@ -5,7 +5,7 @@ aliases: [291-specsync-merge-driver]
 objective: Spec files merge through SpecSync's own merge driver in this repository (#291, DRIVE-12)
 intent_scope: DRIVE
 modules: [cli]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -24,16 +24,12 @@ files:
 observations: [2026-11-16-tc-cli-specsync-merge-driver-wired]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of this-repository-routes-spec-files-to-specsync-s-merge-driver-291
-    holds: accept
-    drives: review
-    opened: 2026-11-16T03:23:16Z
+waiting_on_human: []
 run_consents: []
-next: Advance through build and test. The driver lines, notes, package test and case are already in the tree.
+next: Continue done
 title: Spec files use SpecSync's merge driver
 summary:
-  - This repository routes spec contracts to SpecSync's merge driver, and AGENTS.md names the one-time install. The package case passed on macOS. Next is the review, the ship, and the pull request.
+  - This repository routes spec contracts to SpecSync's merge driver, and AGENTS.md names the one-time install. The package case passed on macOS, one test, exit 0. The change is archived on pull request 292.
 ---
 # Spec files merge through SpecSync's own merge driver in this repository (#291, DRIVE-12)
 
@@ -46,6 +42,7 @@ Spec files merge through SpecSync's own merge driver in this repository (#291, D
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of this-repository-routes-spec-files-to-specsync-s-merge-driver-291": "finish them up" (Grok session on 2026-11-16, relayed by grok-t1w); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve this-repository-routes-spec-files-to-specsync-s-merge-driver-291 as 0xLeif
+- 0xLeif decided "Implementation review of this-repository-routes-spec-files-to-specsync-s-merge-driver-291": "finish them up" (Grok session on 2026-11-16, relayed by grok-t1w); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change review this-repository-routes-spec-files-to-specsync-s-merge-driver-291 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -111,4 +108,20 @@ Spec files merge through SpecSync's own merge driver in this repository (#291, D
   - revision: b56f988b6bcf35bd376667b8bbea88665cfe4074
   - holds: accept
   - drives: review
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-16T03:24:31Z · gate-closed · accept → accept · Implementation review of this-repository-routes-spec-files-to-specsync-s-merge-driver-291 ^t-491848
+  - native_change: this-repository-routes-spec-files-to-specsync-s-merge-driver-291
+  - revision: 2e2d644db2f396fd0a477b33e95b5dad28a75f0c
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: finish them up
+    - where: Grok session on 2026-11-16, relayed by grok-t1w
+    - recorded_by: grok-t1w
+    - native: specsync change review this-repository-routes-spec-files-to-specsync-s-merge-driver-291
+    - actor: 0xLeif
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-16T03:24:31Z · advance · accept → done · native:archived ^t-dfa67a
+  - native_change: this-repository-routes-spec-files-to-specsync-s-merge-driver-291
+  - gate: native:archived
+  - revision: 2e2d644db2f396fd0a477b33e95b5dad28a75f0c
   - by: grok-t1w (grok, hc t1w)
