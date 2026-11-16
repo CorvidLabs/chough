@@ -1,6 +1,6 @@
 ---
 id: fix-295-the-init-case-runs-the-real-preservation-test
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 82a52e2dd5cb9f131b5c1a33133002fbda83b9f6
 ---
