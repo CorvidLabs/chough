@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "this-repository-routes-spec-files-to-specsync-s-merge-driver-291",
+  "implementation_commit": "bd2c14259d78b7c5a5e705a87e39550feef53a61",
+  "implementation_tree": "d2ee12e3c775d6825b090b77b4d0e895a0a3e98c",
+  "contract_digest": "bdc4129389ab836360d6d18bb72514f93cbf2836e866a4fe6862d6e5ba02451e",
+  "workspace_digest": "1fc95a33153dc81509f57fbfc20e717500346b00821e2b3483b0c94ea2afdde2",
+  "closing_digest": "151463dcdf0332fb69beeeaea818bfb40281bcfe1bfb8074c6b51b847c6fac59",
+  "review_digest": "896a6140e50cfa1aebd88a1a7025ede647fb67814472da6db7f91b7ec5ad9ca0",
+  "finalization_digest": "558ed0d88a0d97138f26d0051518d108fa122e68cd1a73c5bb7be65a84d4d7a6",
+  "timestamp": 1794799452
+}

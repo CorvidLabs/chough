@@ -40,6 +40,8 @@ the same checkpoint (DRIVE-3, DRIVE-12):
 - Set up Chough's two merge drivers once per clone:
   `git config --local merge.chough-bug.driver "chough bug merge %O %A %B"` and
   `git config --local merge.chough-generated.driver "chough library merge %O %A %B"`.
+  Also run `specsync merge --install` once, so `specs/**/*.spec.md` and
+  `specs/**/requirements.md` merge through SpecSync's driver (#291).
   Sessions need no merge driver: each is its own folder.
 - Rebuild the generated `knowledge/index.md` and its feed with `chough library index`
   and commit `knowledge/` when preparing a release, before the version bump is tagged;

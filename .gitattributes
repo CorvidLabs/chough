@@ -15,3 +15,10 @@ CHANGELOG.md merge=union
 .chough/bugs/*.md merge=chough-bug
 knowledge/index.md merge=chough-generated
 knowledge/journal/feed.xml merge=chough-generated
+
+# Module contracts merge through SpecSync's ancestor-aware driver, so two branches that
+# each bump one module's version and Change Log land together (#291, DRIVE-12). Run
+# `specsync merge --install` once per clone to register it. GitHub's merge button runs
+# no custom driver, so this helps local merges and branch updates.
+specs/**/*.spec.md merge=specsync
+specs/**/requirements.md merge=specsync
