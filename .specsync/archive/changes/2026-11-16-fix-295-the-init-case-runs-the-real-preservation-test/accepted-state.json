@@ -7,11 +7,11 @@
   "title": "Fix #295: the init case runs the real preservation test",
   "description": "Fix #295: the init case runs the real preservation test",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "82a52e2dd5cb9f131b5c1a33133002fbda83b9f6",
   "created_at": 1794799983,
-  "updated_at": 1794800599,
+  "updated_at": 1794800625,
   "affected_specs": [
     "cli"
   ],

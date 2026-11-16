@@ -40,6 +40,13 @@
         "where": "Grok session on 2026-11-16, relayed by grok-t1w",
         "recorded_by": "grok-t1w"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794800625,
+      "digest": "d454e450d252a1a7d02515678bc50df07ebd9a1a749244257b7c0e4f210fa6df",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
