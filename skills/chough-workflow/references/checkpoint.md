@@ -162,7 +162,7 @@ switching work never archives, closes or changes another session, even a finishe
 one; `chough session list`, `chough next` and `chough doctor` name each finished open
 session with its fix, `chough doctor --fix`. Close abandoned work with `chough session
 close <key> --reason <text>`. The move into done takes two commits: first commit the
-story with the journal post and the refreshed knowledge index, then run
+story with the journal post, then run
 `chough doctor --fix` to remove the now-committed session folder and commit that.
 Chough removes a file only when its exact bytes are committed at HEAD, so nothing
 uncommitted is ever lost; what it keeps it reports. When a fresh

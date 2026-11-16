@@ -1,0 +1,30 @@
+profile = "chough-testing/1"
+module = "history"
+
+# #278: Chough's own archived-story receipt lines and gate summaries join with a dash,
+# not an em dash, so Chough's records stop failing the CorvidLabs prose lints, and the
+# journal reads a line's claim back from that join.
+
+[[case]]
+id = "TC-history-archived-stories-join-evidence-without-an-em-dash"
+title = "A closed session's archived story joins its evidence with a dash, not an em dash, and the journal reads the claim back from it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-7"]
+requirements = ["REQ-history-006"]
+paths = [
+  "src/sessions.rs",
+  "src/journal.rs",
+  "src/gates.rs",
+  "tests/sessions.rs",
+  "tests/migrate_evidence.rs",
+]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the sessions test a_story_lists_each_entry_once_with_its_receipt passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_lists_each_entry_once_with_its_receipt"

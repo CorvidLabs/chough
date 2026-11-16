@@ -6,68 +6,6 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
-- `chough change ready <id>` (REQ-cli-067, DRIVE-29): one read-only readiness report lists everything still missing before a change is approved and names the exact command that fixes each piece — a delta per affected spec, a stale delta, an undocumented export, a case linking another module's requirements, a changed file outside declared paths, and an unanswered interview question or incomplete artifact. It exits 0 when nothing is missing and writes nothing.
-- A relayed gate close's native approval or review, including the review `chough change
-  ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
-  `--recorded-by`, so SpecSync's approval and review records hold the relayed decision
-  (#249, REQ-records-008). Each value is passed joined to its flag (`--words=<words>`), so
-  relay text that starts with `-`, which Chough's own flags accept, is not read as a flag.
-  SpecSync 6.3.0 then records such a change at workflow version 3, which SpecSync
-  6.2.x refuses, so every checkout and CI job of a project that uses it needs 6.3.0.
-- `fledge run flake-window` computes the 1.0 flake window from CI history (REQ-cli-062,
-  #217). It reads the CI workflow's runs and jobs, the issues labelled `flake` and
-  `.chough/bugs/`, writes nothing, and prints a JSON receipt: `clean`, `running` (with
-  the latest restart and when the window can first be clean) or `blocked`. A red or
-  partly skipped main run, any rerun, a filed flake and a day without a green main run
-  on both macOS and Linux restart the window. It exits 2 when GitHub cannot be read in
-  full. Its fixtures run in the `CI gate fixtures` job.
-- `integrations/` ships optional, versioned example hc templates for Claude Code,
-  Codex, Kimi, Grok and a local agent, the local one unqualified until #220
-  (REQ-cli-065, #219). Each has hc's three front-matter keys, resumes with
-  `chough next`, loads the skill file its own `chough init` creates and holds no local
-  path. `integrations/templates.toml` lists each template's status and an ordered list
-  of its versions with their SHA-256, and a README says Chough has no runtime
-  dependency on hc, Herdr or Rune.
-- The workflow skill's stage contract opens with a fast path for a routine change: a
-  bounded first read, the session and native-change commands in order, a delta for every
-  affected spec, a stop at each human gate, an early first edit and the checks, so a
-  local or small-context agent edits early instead of surveying the repository. SKILL.md
-  routes to it, and an installed copy of the previous bundle updates to it (LIFE-22).
-- CI also runs once a day on main at 05:23 UTC, so the flake window sees macOS and
-  Linux every day even when nothing merges. On a scheduled run the `SpecSync Archive`
-  jobs take the run's own commit as their trusted base, since the event has neither a
-  pull request base nor a previous commit (REQ-cli-064, #217).
-- A host-matrix harness in `tools/host-matrix/` drives one scripted Chough cycle per
-  agent host, one fresh host run per turn, in a throwaway copy of the shipping sample.
-  It stands in for every human gate only as `SIMULATED-host-matrix-not-a-human` and
-  judges the result only from the files, Git and native status. Its self-test runs a
-  scripted stand-in host with no model, and hosted CI runs it on Ubuntu and macOS. Real
-  host adapters follow (REQ-cli-066, #218).
-- `chough migrate`'s preview and the receipt's `## Follow-up` also name what `chough doctor` will report on the migrated tree, from doctor's own session check run on the planned records: the finished sessions `chough doctor --fix` archives, and each session whose open human gates are on an archived native change, with each gate's text and the decision it needs, `chough doctor --fix --reason` (#246, REQ-records-009, REQ-cli-055).
-- The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
-- Record polish: a bug's actual behaviour is its own `Actual:` paragraph under What
-  happened; `chough migrate` names each carried entry or receipt in front matter, its
-  0.5.x ID kept as the alias, so `chough next` lists the new names; a fresh project's
-  `.chough/README.md` no longer lists `artifacts/`; and the README's init paragraph
-  names each host's skill directory in one sentence.
-- The intent gate summary in `chough gate list` gives each criterion the session references by ID with its sentence from the `hi/` file that holds it, and no diff line, and each delta at a scope gate says which requirement IDs it adds and which it modifies instead of "adds or modifies" (REQ-cli-061).
-- `chough library index` links no rule, skill, decision or policy file that Git ignores, such as a host's skill copy under an ignored `.grok/`, so `knowledge/index.md` is the same in a working tree and a fresh clone, and `library index --check` passes there (#245, REQ-cli-043).
-- `chough next` with no open session, the normal state after done, says so, names `chough session new <key>` and exits 0 instead of failing, while `chough status` still refuses; `chough timing` says elapsed wall-clock once, in its header, with no gate-wait, case run or fix-time line repeating it, and its native note no longer reads "read read-only" (REQ-cli-021, REQ-history-006, REQ-reporting-001).
-- At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).
-- `chough change ship` prints SpecSync's output, then a short text summary of at most 12
-  lines naming the review, the ship, the gate close and the move into done, in place of
-  the gate close's long JSON report and the move's summary; when the summary is longer,
-  its last line names how many lines were dropped and points at `--json`, which prints
-  every step's full report (REQ-cli-059, #276).
-- The leak check no longer refuses an ordinary word that equals a short all-letter host
-  name: such a name is a leak only inside a path or a URL or as `<user>@<host>`, while a
-  host name of 8 or more characters, or holding a digit, a hyphen or a dot, is still
-  refused anywhere, in writes and in `chough doctor` alike (REQ-records-006).
-- The leak check now flags an scp-style remote path, `host:/path`, as the host name and
-  the path it carries: a home or system root after the colon refuses as a path leak, and
-  the host part counts as the local host name when it matches, in writes and in
-  `chough doctor` alike (REQ-records-006, #275).
-
 ## [0.6.0] - 2026-11-12
 
 ### Human-first records (breaking)

@@ -1046,7 +1046,7 @@ fn story_verified_lines(
 }
 
 /// A receipt's What was verified line (REQ-history-006): its claim, or its ID without
-/// one; after one ` — `, its command unless the claim already holds it and the first 12
+/// one; after one ` - `, its command unless the claim already holds it and the first 12
 /// digits of its fingerprint, when it has them; a link to `screenshot`, its key
 /// screenshot beside the story, when given; ending `^<evidence id>`. A story at
 /// archiving and the migration write the same line (REQ-records-009). None for a
@@ -1079,7 +1079,7 @@ pub(super) fn receipt_line(
     }
     let mut line = claim;
     if !parts.is_empty() {
-        line.push_str(&format!(" — {}", parts.join(" ")));
+        line.push_str(&format!(" - {}", parts.join(" ")));
     }
     if let Some(link) = screenshot {
         line.push_str(&format!(" [screenshot]({link})"));
@@ -1273,7 +1273,8 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
     session.decisions.push(decision);
     checkpoint::validate_v2(&session)?;
     let report = archive(root, &id, &session, "closed-without-done")?;
-    // REQ-records-011: the closed session's journal post, then the index and feed.
+    // REQ-records-011: the closed session's journal post; the librarian refreshes the
+    // vault at release, not here.
     let post = crate::journal::post_for_close(root, &id);
     let index = crate::library::refresh_at_done(root);
     Ok(json!({

@@ -137,10 +137,11 @@ need can be seen (DRIVE-21).
 The native review is a recorded claim bound to the reviewed content, not proof of who
 reviewed; the relay is a claim too. The reviewer may be the scope approver. Do not
 commit between review and ship or finalize. The move into done archives the session
-into one story, `.chough/archive/sessions/<id>.md`, writes a journal post and
-refreshes `knowledge/index.md` and its feed. Commit those, then run
-`chough doctor --fix`, which removes the now-committed session folder, and commit
-that. Archive on the same pull request, then push and observe required CI at the
+into one story, `.chough/archive/sessions/<id>.md`, writes a journal post, and the
+librarian refreshes the generated knowledge directory at release, not here.
+Commit the post, then run `chough doctor --fix`, which removes the now-committed session
+folder, and commit that. Archive on the same pull request, then push and observe required
+CI at the
 actual tip, and merge only when every change on that pull request is archived. A push
 before the review only shows the work early: expect the Archive gate red and do not
 wait on it. Review and finalize several changes one at a time.

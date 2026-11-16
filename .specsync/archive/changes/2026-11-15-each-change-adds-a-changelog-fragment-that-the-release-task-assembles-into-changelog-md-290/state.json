@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290",
+  "slug": "each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290",
+  "title": "Each change adds a changelog fragment that the release task assembles into CHANGELOG.md (#290)",
+  "description": "Each change adds a changelog fragment that the release task assembles into CHANGELOG.md (#290)",
+  "kind": "operations",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "49b1a252ae47a9e7a5fd8fe257c993d29351a90a",
+  "created_at": 1794726929,
+  "updated_at": 1794760859,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "CHANGELOG.md",
+    "changelog.d",
+    "tools/changelog.py",
+    "fledge.toml",
+    "tests/changelog.rs",
+    "AGENTS.md",
+    "docs/releasing.md",
+    "skills/chough-workflow/references/stages.md",
+    ".agents/skills/chough-workflow/references/stages.md",
+    "src/skill.rs",
+    "tests/fixtures/skill-releases/manifest.json",
+    "tests/skill_releases.rs",
+    "tests/package.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "No requirement describes the changelog's layout; LIFE-16 is unchanged, and the change is repository tooling, its tests, the release doc and the workflow skill's fast path",
+  "acceptance_criteria": [
+    "A change adds its entry as changelog.d/<date>-<change-id>.md and CHANGELOG.md is not edited by the change"
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing",
+    "design",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Assembly must be deterministic and must never drop existing CHANGELOG.md text",
+    "public_contract": "no"
+  }
+}

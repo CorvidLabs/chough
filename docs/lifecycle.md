@@ -75,7 +75,7 @@ flowchart TB
     human -->|"changes requested"| build["Back to build"]
     build --> tests
     human -->|"approved"| ship["chough change ship --close-gate: SpecSync review as the human, then ship and finalize (same PR), then done"]
-    ship --> story["Commit the archived story, journal post and index"]
+    ship --> story["Commit the archived story and journal post"]
     story --> cleanup["chough doctor --fix removes the committed session folder; commit"]
     cleanup --> push["Push; hosted CI at the archived tip"]
     push --> merge["Merge through the normal process"]
@@ -106,9 +106,10 @@ A request for changes is recorded with `chough checkpoint --close-gate "<gate>" 
 --no-native`, which runs nothing, and the work goes back to build.
 
 The move into done archives the session into one story,
-`.chough/archive/sessions/<id>.md`, writes a journal post and regenerates `knowledge/`.
-Commit those. Then run `chough doctor --fix`, which removes the session folder now that
-its bytes are committed, and commit that. The closeout is archive-first: the hosted
+`.chough/archive/sessions/<id>.md`, writes a journal post, and the librarian refreshes
+the generated knowledge directory at release, not here. Commit the post.
+Then run `chough doctor --fix`, which removes the session folder now that its bytes are
+committed, and commit that. The closeout is archive-first: the hosted
 Archive gate refuses while a native change is open. So only after finalize and these
 two commits do you push and observe hosted CI at the archived tip (#122). A push before
 the review only shows the work early: expect the Archive gate red and do not wait on
