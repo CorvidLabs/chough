@@ -1,6 +1,6 @@
 ---
 id: pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 613f7bdb02409e6a296ad597b0c8df405de25e58
 ---
