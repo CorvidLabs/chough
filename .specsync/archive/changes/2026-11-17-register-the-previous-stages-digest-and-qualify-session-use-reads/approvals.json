@@ -44,6 +44,13 @@
         "where": "Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. These two review findings are what still block that merge.",
         "recorded_by": "grok-t1w"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794926987,
+      "digest": "da0b3b1707bad29af0f7905ddd12c2b073d2ea15d779b5f03a36dfed52ce8ff6",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

@@ -1,6 +1,6 @@
 ---
 id: register-the-previous-stages-digest-and-qualify-session-use-reads
-state: implementing
+state: archived
 type: bug_fix
 base_commit: ab0d421149f12d9ad2984c833cfe1d9346d3989e
 ---

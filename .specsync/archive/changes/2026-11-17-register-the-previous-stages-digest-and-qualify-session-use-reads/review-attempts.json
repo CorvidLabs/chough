@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "register-the-previous-stages-digest-and-qualify-session-use-reads",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "1044263846f31c785db1bda4a32d0a8c4b3d206b",
+      "contract_digest": "facadc6fcecb07a6ed45376927822b516dfb9981f46eba02d281bfba0ec38d86",
+      "execution_digest": "e3974bf62893fba3edb6dabb6c9a50a47bea7c0bf7287c53bf21a07ab44d84e6",
+      "workspace_digest": "17e9a07ced6a09c63795834626016fdcd1ba811271a5ab4c5328fdefd9507581",
+      "timestamp": 1794926981,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Ship it, then merge when CI is green (Recommended)",
+        "where": "Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This review addresses the two threads that still block that merge.",
+        "recorded_by": "grok-t1w"
+      }
+    }
+  ]
+}
