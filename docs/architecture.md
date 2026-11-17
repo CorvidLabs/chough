@@ -244,4 +244,7 @@ the Timeline and a closing line. Chough reads the story back, then removes each 
 of the session folder whose bytes are committed at HEAD, keeps and reports the rest,
 and clears the active pointer. `chough doctor --fix` finishes the removal after the
 commit. Starting or switching work never moves or rewrites another session's folder or story.
-`session use` reads only the session it activates. There is no roll-up and no count or age bound on the archive.
+`session use` of an exact open session ID returns that ID without reading another
+session. A bare key or alias reads each open session to match its aliases and its
+bare slug. A name that matches none also reads archived stories to see whether it
+is archived. There is no roll-up and no count or age bound on the archive.
