@@ -9,19 +9,23 @@ stage: plan
 stage_status: active
 iteration: 1
 callers: []
-native_change: ""
+native_change: fix-301
 pr: ""
 criteria: [FLOW-18]
 requirements: []
 cases: []
 design: []
-files: []
+files: [docs/cli.md, src/checkpoint.rs]
 observations: []
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Scope approval of fix-301
+    holds: plan
+    drives: approve
+    opened: 2026-11-17T14:48:16Z
 run_consents: []
-next: Read scoped intent and native status, then choose the next action within the authorized scope.
+next: Waiting for scope approval of fix-301
 ---
 # Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (issue 301)
 
@@ -47,4 +51,10 @@ Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (
   - by: unknown agent (hc t46)
 - 2026-11-17T14:41:34Z · skip · design → plan · no visual change ^t-401e31
   - revision: 0fd9fd229744da039e9d43a5ce1df6dfe5ddc8d7
+  - by: unknown agent (hc t46)
+- 2026-11-17T14:48:16Z · gate-opened · plan → plan · Scope approval of fix-301 ^t-2626bf
+  - native_change: fix-301
+  - revision: 6ba82f6ae39f7ffffbd4a4df43e9e8e8d50fabd3
+  - holds: plan
+  - drives: approve
   - by: unknown agent (hc t46)
