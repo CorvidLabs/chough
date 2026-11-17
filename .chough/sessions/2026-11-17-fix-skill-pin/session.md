@@ -5,7 +5,7 @@ aliases: [fix-skill-pin]
 objective: The skill release pin matches the edited workflow fast path, so the release corpus check passes.
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -16,12 +16,19 @@ requirements: []
 cases: []
 design: []
 files: []
-observations: []
+observations: [2026-11-17-cargo-test-locked-test-skill-releases-passed-7-passed-the]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
+    holds: accept
+    drives: review
+    opened: 2026-11-17T14:31:23Z
 run_consents: []
-next: Continue build
+next: Continue accept
+title: Skill release pin matches the edited fast path
+summary:
+  - The current bundle pin for references/stages.md now matches the edited workflow fast path. cargo test --locked --test skill_releases passed, 7 tests. This unblocks CI on the docs pull request.
 ---
 # The skill release pin matches the edited workflow fast path, so the release corpus check passes.
 
@@ -36,6 +43,8 @@ The skill release pin matches the edited workflow fast path, so the release corp
 - 0xLeif decided "Approve the scope of pin-the-edited-workflow-fast-path-in-the-skill-release-corpus": "Ship it, then merge when CI is green (Recommended)" (Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This pin is the CI failure that blocks that merge: Product, MSRV, and Fledge verify failed on 613f7bdb because references/stages.md drifted from the current bundle pin.); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve pin-the-edited-workflow-fast-path-in-the-skill-release-corpus as 0xLeif
 
 ## What was verified
+
+- [cargo test --locked --test skill_releases passed: 7 passed. The current bundle pin matches references/stages.md.](evidence/2026-11-17-cargo-test-locked-test-skill-releases-passed-7-passed-the.md)
 
 ## Open threads
 
@@ -73,4 +82,20 @@ The skill release pin matches the edited workflow fast path, so the release corp
   - native_change: pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
   - gate: native:approved
   - revision: 613f7bdb02409e6a296ad597b0c8df405de25e58
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-17T14:31:16Z · advance · build → test · Product test evidence recorded for the skill release pin. ^t-a5d96c
+  - native_change: pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
+  - gate: native:approved
+  - revision: 02cc11b5ec01390e63c962d7b499419640d99e55
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-17T14:31:16Z · advance · test → accept · The pin test passed. Ready for the recorded review. ^t-3a3640
+  - native_change: pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
+  - gate: native:approved
+  - revision: 02cc11b5ec01390e63c962d7b499419640d99e55
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-17T14:31:23Z · gate-opened · accept → accept · Implementation review of pin-the-edited-workflow-fast-path-in-the-skill-release-corpus ^t-b824ce
+  - native_change: pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
+  - revision: 02cc11b5ec01390e63c962d7b499419640d99e55
+  - holds: accept
+  - drives: review
   - by: grok-t1w (grok, hc t1w)
