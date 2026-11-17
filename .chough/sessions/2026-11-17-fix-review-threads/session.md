@@ -5,7 +5,7 @@ aliases: [fix-review-threads]
 objective: Register main's previous stages.md digest so skill update replaces a pristine copy, and qualify which session files session use reads, so the docs pull request can merge.
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-17-tc-cli-previous-stages-0fd9fd22]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of register-the-previous-stages-digest-and-qualify-session-use-reads
-    holds: accept
-    drives: review
-    opened: 2026-11-17T14:49:06Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: Previous stages digest updates; session reads qualified
 summary:
   - chough skill update replaces a pristine copy of the workflow stages file from main 0fd9fd22, and an edited copy stays. The architecture note names which session files session use reads.
@@ -41,6 +37,7 @@ Register main's previous stages.md digest so skill update replaces a pristine co
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of register-the-previous-stages-digest-and-qualify-session-use-reads": "Ship it, then merge when CI is green (Recommended)" (Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. These two review findings are what still block that merge.); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve register-the-previous-stages-digest-and-qualify-session-use-reads as 0xLeif
+- 0xLeif decided "Implementation review of register-the-previous-stages-digest-and-qualify-session-use-reads": "Ship it, then merge when CI is green (Recommended)" (Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This review addresses the two threads that still block that merge.); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change review register-the-previous-stages-digest-and-qualify-session-use-reads as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -98,4 +95,20 @@ Register main's previous stages.md digest so skill update replaces a pristine co
   - revision: ab0d421149f12d9ad2984c833cfe1d9346d3989e
   - holds: accept
   - drives: review
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-17T14:50:05Z · gate-closed · accept → accept · Implementation review of register-the-previous-stages-digest-and-qualify-session-use-reads ^t-fc45e1
+  - native_change: register-the-previous-stages-digest-and-qualify-session-use-reads
+  - revision: d90bd6b4644397876d213eeb99f029ce17117600
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Ship it, then merge when CI is green (Recommended)
+    - where: Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This review addresses the two threads that still block that merge.
+    - recorded_by: grok-t1w
+    - native: specsync change review register-the-previous-stages-digest-and-qualify-session-use-reads
+    - actor: 0xLeif
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-17T14:50:06Z · advance · accept → done · native:archived ^t-aa51ab
+  - native_change: register-the-previous-stages-digest-and-qualify-session-use-reads
+  - gate: native:archived
+  - revision: d90bd6b4644397876d213eeb99f029ce17117600
   - by: grok-t1w (grok, hc t1w)
