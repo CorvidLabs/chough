@@ -5,7 +5,7 @@ aliases: [fix-skill-pin]
 objective: The skill release pin matches the edited workflow fast path, so the release corpus check passes.
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-17-cargo-test-locked-test-skill-releases-passed-7-passed-the]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
-    holds: accept
-    drives: review
-    opened: 2026-11-17T14:31:23Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: Skill release pin matches the edited fast path
 summary:
   - The current bundle pin for references/stages.md now matches the edited workflow fast path. cargo test --locked --test skill_releases passed, 7 tests. This unblocks CI on the docs pull request.
@@ -41,6 +37,7 @@ The skill release pin matches the edited workflow fast path, so the release corp
 ## Decisions and why
 
 - 0xLeif decided "Approve the scope of pin-the-edited-workflow-fast-path-in-the-skill-release-corpus": "Ship it, then merge when CI is green (Recommended)" (Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This pin is the CI failure that blocks that merge: Product, MSRV, and Fledge verify failed on 613f7bdb because references/stages.md drifted from the current bundle pin.); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve pin-the-edited-workflow-fast-path-in-the-skill-release-corpus as 0xLeif
+- 0xLeif decided "Implementation review of pin-the-edited-workflow-fast-path-in-the-skill-release-corpus": "Ship it, then merge when CI is green (Recommended)" (Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This review is the pin that makes that CI green.); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change review pin-the-edited-workflow-fast-path-in-the-skill-release-corpus as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -98,4 +95,20 @@ The skill release pin matches the edited workflow fast path, so the release corp
   - revision: 02cc11b5ec01390e63c962d7b499419640d99e55
   - holds: accept
   - drives: review
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-17T14:31:54Z · gate-closed · accept → accept · Implementation review of pin-the-edited-workflow-fast-path-in-the-skill-release-corpus ^t-371c5c
+  - native_change: pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
+  - revision: 298fc54c1d1c55487a6bbed762912414ee61e102
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Ship it, then merge when CI is green (Recommended)
+    - where: Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This review is the pin that makes that CI green.
+    - recorded_by: grok-t1w
+    - native: specsync change review pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
+    - actor: 0xLeif
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-17T14:31:55Z · advance · accept → done · native:archived ^t-72bc5d
+  - native_change: pin-the-edited-workflow-fast-path-in-the-skill-release-corpus
+  - gate: native:archived
+  - revision: 298fc54c1d1c55487a6bbed762912414ee61e102
   - by: grok-t1w (grok, hc t1w)
