@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-previous-stages-0fd9fd22"
+title = "A pristine stages file from main 0fd9fd22 updates, an edited copy stays, and the session-use read claim is qualified"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["FLOW-18"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "tests/docs.rs", "tests/fixtures/stages-at-0fd9fd22.md", "docs/architecture.md"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["stages_from_main_0fd9fd22_update_and_an_edited_copy_stays passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "docs"
+test = "stages_from_main_0fd9fd22_update_and_an_edited_copy_stays"

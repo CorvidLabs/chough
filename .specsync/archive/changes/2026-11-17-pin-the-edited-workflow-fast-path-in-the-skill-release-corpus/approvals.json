@@ -1,0 +1,53 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794925863,
+      "digest": "0e8a502f0d997c929f57e50eb46bb7c9bfd3f9f25401922be4a9c631cf243c4b",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of pin-the-edited-workflow-fast-path-in-the-skill-release-corpus\": \"Ship it, then merge when CI is green (Recommended)\" (Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This pin is the CI failure that blocks that merge: Product, MSRV, and Fledge verify failed on 613f7bdb because references/stages.md drifted from the current bundle pin.). Relayed and recorded by grok-t1w at 2026-11-17T14:31:02Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "pin-the-edited-workflow-fast-path-in-the-skill-release-corpus",
+        "title": "Pin the edited workflow fast path in the skill release corpus",
+        "description": "Pin the edited workflow fast path in the skill release corpus",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "FLOW-18 already requires the skill to say what current main does and a check to fail when it drifts. Updating the current bundle pin records the edited stages.md. No requirement text changes.",
+        "acceptance_criteria": [
+          "tests/skill_releases.rs passes, and the current bundle pin for references/stages.md is the hash of skills/chough-workflow/references/stages.md."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "FLOW-18. The skill says what current main does, and the release corpus check fails when the current bundle drifts. No requirement text changes.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Ship it, then merge when CI is green (Recommended)",
+        "where": "Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This pin is the CI failure that blocks that merge: Product, MSRV, and Fledge verify failed on 613f7bdb because references/stages.md drifted from the current bundle pin.",
+        "recorded_by": "grok-t1w"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794925899,
+      "digest": "c01fb5db370a42457947be55e170699bbc8d0b94d7939d7f97e34c5660e49492",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

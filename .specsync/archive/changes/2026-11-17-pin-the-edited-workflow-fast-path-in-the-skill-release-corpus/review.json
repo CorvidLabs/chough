@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "pin-the-edited-workflow-fast-path-in-the-skill-release-corpus",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "6f89faa4e7761066eba42410d54f2cafe58db6c4",
+  "contract_digest": "0e8a502f0d997c929f57e50eb46bb7c9bfd3f9f25401922be4a9c631cf243c4b",
+  "execution_digest": "7a0a4b81b081107b4139f87a95cc5690d5089f728e99579df1f0f5b3cf89ea44",
+  "workspace_digest": "86775bae7200d4a56a53c0ad191b8463292dada5629ed7d4e4c11f8f235df8b9",
+  "timestamp": 1794925892,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Ship it, then merge when CI is green (Recommended)",
+    "where": "Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This review is the pin that makes that CI green.",
+    "recorded_by": "grok-t1w"
+  }
+}

@@ -43,14 +43,17 @@ flowchart TB
 | `.chough/archive/migrations/<id>.md` | The receipt of a migration from 0.5.x |
 | `.chough/bugs/<id>.md` | The local bug backlog: one Markdown record per bug with an append-only `## Log`; earlier IDs are aliases |
 | `.chough/preferences.json` | Standing project preferences, each with its source |
-| `.chough/cases/<module>.cases.toml` | Test definitions (`chough-testing/1`) with curated `TC-<module>-<title-slug>` IDs for new cases and exact legacy numeric IDs retained |
+| `.chough/cases/<module>.cases.toml` and `<module>.<part>.cases.toml` | Test definitions (`chough-testing/1`). The part form is the cases one change adds. New cases use curated `TC-<module>-<title-slug>` IDs; exact legacy numeric IDs stay |
 | `.chough/local/` | One worktree's machine-local state, ignored by Git: the active-session pointer, the writer lock, gate lists, direct-write baselines, `external-artifacts.toml`, `logs/`, a pending `validation.stop` and an optional `identity.toml` |
 | `knowledge/` (librarian, on by default; `library-dir` renames it, `librarian off` opts out) | The generated reading guide `index.md`, the journal in `journal/` with its generated `feed.xml`, and cross-project lessons in `lessons/`. It links and never copies a record or source, and no gate reads it. Earlier `library/` snapshots and `briefs/` are kept as they are |
 | `<host>/skills/chough-workflow/` | Installed skill copies; edits are preserved |
 
 
-Every record Chough writes is one Markdown file with YAML front matter, and the file is
-the record's only source of truth (REQ-records-001). The front matter is a strict YAML
+Every session, story, evidence entry, bug, inbox entry, journal post and migration
+receipt Chough writes is one Markdown file with YAML front matter, and the file is the
+record's only source of truth (REQ-records-001). `.chough/preferences.json` is JSON,
+case definitions are TOML, and `.chough/local/` is machine-local state, not that
+Markdown record. The front matter is a strict YAML
 subset that Chough reads and writes without a dependency, and it holds the fields
 agents parse. The body is for people. Chough owns only the front matter and the
 sections it appends to: it keeps any front matter key it does not know, and every body
@@ -240,5 +243,8 @@ front matter with the outcome and a receipt per evidence entry, the story as wri
 the Timeline and a closing line. Chough reads the story back, then removes each file
 of the session folder whose bytes are committed at HEAD, keeps and reports the rest,
 and clears the active pointer. `chough doctor --fix` finishes the removal after the
-commit. Starting or switching work never reads, moves or rewrites another session's
-folder or story. There is no roll-up and no count or age bound on the archive.
+commit. Starting or switching work never moves or rewrites another session's folder or story.
+`session use` of an exact open session ID returns that ID without reading another
+session. A bare key or alias reads each open session to match its aliases and its
+bare slug. A name that matches none also reads archived stories to see whether it
+is archived. There is no roll-up and no count or age bound on the archive.

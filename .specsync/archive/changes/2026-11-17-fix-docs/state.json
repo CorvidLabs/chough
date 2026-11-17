@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-docs",
+  "slug": "fix-docs",
+  "title": "Fix docs",
+  "description": "fix docs",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "0fd9fd229744da039e9d43a5ce1df6dfe5ddc8d7",
+  "created_at": 1794871051,
+  "updated_at": 1794925418,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "skills/chough-workflow/references/stages.md",
+    ".agents/skills/chough-workflow/references/stages.md",
+    "AGENTS.md",
+    "docs/lifecycle.md",
+    "docs/architecture.md",
+    "docs/integrations.md",
+    "docs/ci.md",
+    "docs/walkthrough.md",
+    "docs/verification.md",
+    "docs/exercises/feature-bug-loop.md",
+    "integrations/templates.toml",
+    "integrations/claude-code/hc-template.md",
+    "integrations/codex/hc-template.md",
+    "integrations/kimi/hc-template.md",
+    "integrations/grok/hc-template.md",
+    "integrations/local/hc-template.md",
+    "changelog.d/2026-11-16-fix-docs.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "FLOW-18 already requires the docs, skill and diagrams to say what current main does. This change corrects drifted sentences and does not change requirement text.",
+  "acceptance_criteria": [
+    "The drifted sentences match current main, the fast path keeps its frozen steps inside 32 lines, and each changed host template's newest digest is that file's SHA-256."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "FLOW-18. The docs, skill and diagrams say what current main does. No requirement text changes.",
+    "public_contract": "no"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "pin-the-edited-workflow-fast-path-in-the-skill-release-corpus",
+  "slug": "pin-the-edited-workflow-fast-path-in-the-skill-release-corpus",
+  "title": "Pin the edited workflow fast path in the skill release corpus",
+  "description": "Pin the edited workflow fast path in the skill release corpus",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "613f7bdb02409e6a296ad597b0c8df405de25e58",
+  "created_at": 1794925808,
+  "updated_at": 1794925900,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/skill_releases.rs",
+    "tests/fixtures/skill-releases/manifest.json"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "FLOW-18 already requires the skill to say what current main does and a check to fail when it drifts. Updating the current bundle pin records the edited stages.md. No requirement text changes.",
+  "acceptance_criteria": [
+    "tests/skill_releases.rs passes, and the current bundle pin for references/stages.md is the hash of skills/chough-workflow/references/stages.md."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "FLOW-18. The skill says what current main does, and the release corpus check fails when the current bundle drifts. No requirement text changes.",
+    "public_contract": "no"
+  }
+}
