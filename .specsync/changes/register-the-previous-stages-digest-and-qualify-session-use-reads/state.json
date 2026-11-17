@@ -7,10 +7,11 @@
   "title": "Register the previous stages digest and qualify session-use reads",
   "description": "Register the previous stages digest and qualify session-use reads",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "ab0d421149f12d9ad2984c833cfe1d9346d3989e",
   "created_at": 1794926653,
-  "updated_at": 1794926770,
+  "updated_at": 1794926972,
   "affected_specs": [
     "cli"
   ],
