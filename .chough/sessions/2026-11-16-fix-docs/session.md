@@ -5,7 +5,7 @@ aliases: [fix-docs]
 objective: The docs, the workflow skill, and the host templates say what current main does, so a local agent can follow them.
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -65,13 +65,9 @@ observations:
   - 2026-11-17-tc-records-migration-docs-name-every-key
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-docs
-    holds: accept
-    drives: review
-    opened: 2026-11-17T14:23:12Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: Docs and host templates match current main
 summary:
   - FLOW-18. The docs, workflow fast path, and five host templates now say what current main does. Forty-six automated docs-linked cases passed locally. Scope approval and this implementation review are relayed claims from 0xLeif. Next is to archive fix-docs and merge the pull request when CI is green.
@@ -87,6 +83,7 @@ Describe the current objective before beginning work.
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-docs": "make a PR and keep improving this and then make sure that we update all the documents and all everything's accurate" (Grok session on 2026-11-16, relayed by grok-t1w); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve fix-docs as 0xLeif
+- 0xLeif decided "Implementation review of fix-docs": "Ship it, then merge when CI is green (Recommended)" (Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change review fix-docs as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -187,4 +184,20 @@ Describe the current objective before beginning work.
   - revision: 5cb7e11a28236e4254d6d94a5f98f0b68e846b14
   - holds: accept
   - drives: review
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-17T14:23:54Z · gate-closed · accept → accept · Implementation review of fix-docs ^t-6f1093
+  - native_change: fix-docs
+  - revision: 0c42e705301f3afca865253f17f7a008cd68e5c2
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Ship it, then merge when CI is green (Recommended)
+    - where: Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w
+    - recorded_by: grok-t1w
+    - native: specsync change review fix-docs
+    - actor: 0xLeif
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-17T14:23:55Z · advance · accept → done · native:archived ^t-024f96
+  - native_change: fix-docs
+  - gate: native:archived
+  - revision: 0c42e705301f3afca865253f17f7a008cd68e5c2
   - by: grok-t1w (grok, hc t1w)
