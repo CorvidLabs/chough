@@ -40,6 +40,13 @@
         "where": "Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. This pin is the CI failure that blocks that merge: Product, MSRV, and Fledge verify failed on 613f7bdb because references/stages.md drifted from the current bundle pin.",
         "recorded_by": "grok-t1w"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794925899,
+      "digest": "c01fb5db370a42457947be55e170699bbc8d0b94d7939d7f97e34c5660e49492",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

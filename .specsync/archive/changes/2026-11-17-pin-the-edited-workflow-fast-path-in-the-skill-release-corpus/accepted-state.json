@@ -7,11 +7,11 @@
   "title": "Pin the edited workflow fast path in the skill release corpus",
   "description": "Pin the edited workflow fast path in the skill release corpus",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "613f7bdb02409e6a296ad597b0c8df405de25e58",
   "created_at": 1794925808,
-  "updated_at": 1794925886,
+  "updated_at": 1794925899,
   "affected_specs": [
     "cli"
   ],
