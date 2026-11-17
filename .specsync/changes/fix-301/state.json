@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "fix-301",
+  "slug": "fix-301",
+  "title": "Fix 301",
+  "description": "fix 301",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "0fd9fd229744da039e9d43a5ce1df6dfe5ddc8d7",
+  "created_at": 1794926531,
+  "updated_at": 1794926553,
+  "affected_specs": [],
+  "affected_paths": [
+    "docs/cli.md",
+    "src/checkpoint.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "Docs and help-text only: adds clap help text to the list-valued checkpoint flags and updates docs/cli.md; no canonical spec, requirement, or behavior changes.",
+  "acceptance_criteria": [
+    "docs/cli.md documents the checkpoint command's list-valued flags (--criterion, --requirement, --case, --design, --file, --observation, --bug) and chough checkpoint --help prints help text for each of them"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}
