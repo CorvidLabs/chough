@@ -16,7 +16,9 @@ requirements: [REQ-history-012, REQ-cli-055]
 cases: [TC-cli-doctor-redact-never-rewrites-an-id]
 design: []
 files: []
-observations: [2026-11-18-tc-cli-doctor-redact-never-rewrites-an-id]
+observations:
+  - 2026-11-18-tc-cli-doctor-redact-never-rewrites-an-id
+  - 2026-11-18-tc-cli-doctor-redact-never-rewrites-an-id-47c83d
 bugs: []
 blockers: []
 waiting_on_human:
@@ -46,6 +48,7 @@ A leaking ID reference's refusal names the recovery, and doctor --fix --redact n
 ## What was verified
 
 - [Ran cargo test --locked --test leaks -- --exact doctor_redact_never_rewrites_an_id for TC-cli-doctor-redact-never-rewrites-an-id: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-doctor-redact-never-rewrites-an-id.md)
+- [Ran cargo test --locked --test leaks -- --exact doctor_redact_never_rewrites_an_id for TC-cli-doctor-redact-never-rewrites-an-id: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-doctor-redact-never-rewrites-an-id-47c83d.md)
 
 ## Open threads
 
