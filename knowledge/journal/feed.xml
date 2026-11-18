@@ -2,9 +2,16 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-18T17:03:45Z</updated>
+<updated>2026-11-18T17:10:31Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>A test asserts the gate summary&apos;s Change line separator</title>
+<id>urn:chough:journal:2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator</id>
+<updated>2026-11-18T17:10:31Z</updated>
+<link href="2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>evidence add, cases run and cases record re-read session.md under…</title>
 <id>urn:chough:journal:2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md</id>
@@ -136,13 +143,6 @@
 <id>urn:chough:journal:2026-11-15-fix-289-rebuild-the-knowledge-index-at-release</id>
 <updated>2026-11-15T21:20:26Z</updated>
 <link href="2026-11-15-fix-289-rebuild-the-knowledge-index-at-release.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Fix #290: each change adds a changelog fragment</title>
-<id>urn:chough:journal:2026-11-15-fix-290-each-change-adds-a-changelog-fragment</id>
-<updated>2026-11-15T16:41:23Z</updated>
-<link href="2026-11-15-fix-290-each-change-adds-a-changelog-fragment.md"/>
 <category term="shipped"/>
 </entry>
 </feed>

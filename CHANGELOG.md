@@ -8,6 +8,9 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [0.6.1] - 2026-11-18
 
+- A test now checks the gate summary's change line, `Change: <id> - <title> (<state>)`,
+  with a plain dash and no em dash, so the em dash #278 removed can't come back
+  unnoticed (#294, REQ-cli-061).
 - `chough evidence add`, `cases run` and `cases record` now read the session under the
   project's writer lock before they add their observation reference, so an update
   another writer saves meanwhile is kept. Before, they read `session.md` first and
