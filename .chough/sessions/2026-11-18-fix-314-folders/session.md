@@ -5,7 +5,7 @@ aliases: [fix-314-folders]
 objective: "The migration neither descends into nor removes a ._* folder (REQ-records-015, #321 review P3)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-18-tc-records-migrate-skips-macos-metadata-52e47c]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-314-folders
-    holds: accept
-    drives: review
-    opened: 2026-11-18T18:21:06Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # The migration neither descends into nor removes a ._* folder (REQ-records-015, #321 review P3)
 
@@ -40,6 +36,7 @@ The migration neither descends into nor removes a ._* folder (REQ-records-015, #
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-314-folders": "Fix it in #321 first" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his choice for his [P3] review thread on #321 ('Exclude metadata directories from recursive cleanup ... Skip is_os_metadata entries before recursing/removing and cover a ._* directory alongside the existing metadata-file regression'), approving a small follow-up change on #321's branch); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-314-folders as 0xLeif
+- 0xLeif decided "Implementation review of fix-314-folders": "Fix it in #321 first" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his [P3] review thread on #321, with the instruction to fix it in a small follow-up change on #321's branch, run the verify lane, ship and push, the tester glancing at it before he resolves the thread); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-314-folders as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -95,4 +92,20 @@ The migration neither descends into nor removes a ._* folder (REQ-records-015, #
   - revision: b2a227e3aa07fed5bf465dca8c70a8c35c4476ca
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T18:25:05Z · gate-closed · accept → accept · Implementation review of fix-314-folders ^t-784c5b
+  - native_change: fix-314-folders
+  - revision: 1555753f4651830618299f4efcd1548db4af5105
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Fix it in #321 first
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his [P3] review thread on #321, with the instruction to fix it in a small follow-up change on #321's branch, run the verify lane, ship and push, the tester glancing at it before he resolves the thread
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-314-folders
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T18:25:06Z · advance · accept → done · native:archived ^t-6c8af3
+  - native_change: fix-314-folders
+  - gate: native:archived
+  - revision: 1555753f4651830618299f4efcd1548db4af5105
   - by: chough-fixer (claude-opus-5-5, hc t4n)
