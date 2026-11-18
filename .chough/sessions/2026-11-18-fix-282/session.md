@@ -16,7 +16,9 @@ requirements: [REQ-cli-007]
 cases: [TC-cli-checkpoint-pr-sets-the-pull-request]
 design: []
 files: []
-observations: [2026-11-18-tc-cli-checkpoint-pr-sets-the-pull-request]
+observations:
+  - 2026-11-18-tc-cli-checkpoint-pr-sets-the-pull-request
+  - 2026-11-18-tc-cli-checkpoint-pr-sets-the-pull-request-1a789c
 bugs: []
 blockers: []
 waiting_on_human:
@@ -45,6 +47,7 @@ chough checkpoint --pr <number or URL> sets the session's pr field with the exis
 ## What was verified
 
 - [Ran cargo test --locked --test checkpoint -- --exact checkpoint_pr_sets_and_clears_the_pull_request for TC-cli-checkpoint-pr-sets-the-pull-request: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-checkpoint-pr-sets-the-pull-request.md)
+- [Ran cargo test --locked --test checkpoint -- --exact checkpoint_pr_sets_and_clears_the_pull_request for TC-cli-checkpoint-pr-sets-the-pull-request: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-checkpoint-pr-sets-the-pull-request-1a789c.md)
 
 ## Open threads
 
