@@ -16,7 +16,9 @@ requirements: [REQ-cli-009]
 cases: [TC-cli-a-retired-case-keeps-its-fledge-task-binding]
 design: []
 files: []
-observations: [2026-11-18-tc-cli-a-retired-case-keeps-its-fledge-task-binding]
+observations:
+  - 2026-11-18-tc-cli-a-retired-case-keeps-its-fledge-task-binding
+  - 2026-11-18-tc-cli-a-retired-case-keeps-its-fledge-task-binding-37d595
 bugs: []
 blockers: []
 waiting_on_human:
@@ -44,6 +46,7 @@ cases check returns early for a retired case before checking its fledge-task bin
 ## What was verified
 
 - [Ran cargo test --locked --test cases -- --exact a_retired_case_keeps_a_binding_to_a_removed_fledge_task for TC-cli-a-retired-case-keeps-its-fledge-task-binding: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-retired-case-keeps-its-fledge-task-binding.md)
+- [Ran cargo test --locked --test cases -- --exact a_retired_case_keeps_a_binding_to_a_removed_fledge_task for TC-cli-a-retired-case-keeps-its-fledge-task-binding: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-retired-case-keeps-its-fledge-task-binding-37d595.md)
 
 ## Open threads
 
