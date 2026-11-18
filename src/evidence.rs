@@ -2682,8 +2682,10 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 /// the order and shape the migration writes them (REQ-history-006, REQ-cli-017):
 /// id; aliases as one scalar, comma-and-space separated; claim; result; command, the
 /// executed argument vector joined by spaces; revision; environment; content;
-/// fingerprint; raw_log; case and case_digest; screenshot; observed; duration_seconds;
-/// and the actor. Each field is written only when known. Front-matter-native maps.
+/// fingerprint; raw_log; case and case_digest; criteria and requirements, each one
+/// scalar, comma-and-space separated, and limitations, one scalar, semicolon-and-space
+/// separated (#286); screenshot; observed; duration_seconds; and the actor. Each field is
+/// written only when known. Front-matter-native maps.
 pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(String, String)>>> {
     let mut receipts = vec![];
     // REQ-history-006 (t38j): receipts in observation-time order, oldest first, then by
@@ -2718,6 +2720,16 @@ pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(Stri
         if let Some(case) = evidence.cases.first() {
             map.push(("case".into(), case.id.clone()));
             map.push(("case_digest".into(), case.digest.clone()));
+        }
+        // #286: what the entry was verified against, and its stated limits.
+        if !evidence.criteria.is_empty() {
+            map.push(("criteria".into(), evidence.criteria.join(", ")));
+        }
+        if !evidence.requirements.is_empty() {
+            map.push(("requirements".into(), evidence.requirements.join(", ")));
+        }
+        if !evidence.limitations.is_empty() {
+            map.push(("limitations".into(), evidence.limitations.join("; ")));
         }
         if let Some(screenshot) = &evidence.screenshot {
             map.push(("screenshot".into(), screenshot.clone()));
