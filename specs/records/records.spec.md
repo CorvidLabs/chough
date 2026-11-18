@@ -1,6 +1,6 @@
 ---
 module: records
-version: 12
+version: 13
 status: active
 files:
   - src/markdown.rs
@@ -216,4 +216,5 @@ use this one for every record they write.
 | 10 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
 | 10 | 2026-11-18 | fix-314: Fix 314 |
 | 11 | 2026-11-18 | fix-264: Fix 264 |
-| 12 | 2026-11-18 | fix-286: Fix 286 |
+| 12 | 2026-11-18 | fix-265: Fix 265 |
+| 13 | 2026-11-18 | fix-286: Fix 286 |
