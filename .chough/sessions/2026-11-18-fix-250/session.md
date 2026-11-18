@@ -19,6 +19,7 @@ files: [src/doctor.rs, src/checkpoint.rs, src/stage.rs, src/session_md.rs, tests
 observations:
   - 2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason
   - 2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason-c672c9
+  - 2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason-28a08b
 bugs: []
 blockers: []
 waiting_on_human:
@@ -48,6 +49,7 @@ When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline
 
 - [Ran cargo test --locked --test doctor -- --exact doctor_decision_fixes_need_a_reason_and_record_no_human_decision for TC-history-a-withdrawn-stale-gate-keeps-doctors-reason: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason.md)
 - [Ran cargo test --locked --test doctor -- --exact doctor_decision_fixes_need_a_reason_and_record_no_human_decision for TC-history-a-withdrawn-stale-gate-keeps-doctors-reason: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason-c672c9.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_decision_fixes_need_a_reason_and_record_no_human_decision for TC-history-a-withdrawn-stale-gate-keeps-doctors-reason: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason-28a08b.md)
 
 ## Open threads
 
