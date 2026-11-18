@@ -1377,3 +1377,38 @@ fn a_heading_underline_is_not_a_conflict_marker() {
     fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
     assert!(fixture.read(&file).contains("Notes\n=======\n"));
 }
+
+/// REQ-records-001 (#339): a conflict quoted inside a fenced code block, as an example or
+/// tool output, is not a marker, with backtick and tilde fences, so the session saves.
+/// A lone `=======` with text after it is not refused either, since a heading underline
+/// may be followed directly by text; `chough doctor` warns of it instead.
+#[test]
+fn a_fenced_example_and_a_lone_separator_both_save() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let file = fixture.session_file();
+    let good = fixture.read(&file);
+    let fenced = good.replacen(
+        "## Goal\n\nShip alpha\n",
+        "## Goal\n\nShip alpha\n\n```text\n<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> other\n```\n\n~~~\n<<<<<<< HEAD\n~~~\n",
+        1,
+    );
+    assert_ne!(fenced, good);
+    fixture.write(&file, &fenced);
+    fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
+    assert!(fixture.read(&file).contains("```text\n<<<<<<< HEAD\n"));
+
+    let lone = fixture.read(&file).replacen(
+        "## Goal\n\nShip alpha\n",
+        "## Goal\n\nShip alpha\n=======\nShip beta\n",
+        1,
+    );
+    fixture.write(&file, &lone);
+    fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC also kept"]);
+    assert!(
+        fixture
+            .read(&file)
+            .contains("Ship alpha\n=======\nShip beta\n")
+    );
+}

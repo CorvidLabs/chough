@@ -53,6 +53,7 @@ enum Kind {
     MergeDriverOutdated,
     ConflictMarkers,
     GitOperation,
+    PossibleConflictSeparator,
 }
 
 impl Kind {
@@ -74,6 +75,7 @@ impl Kind {
             Self::MergeDriverOutdated => "merge_driver_outdated",
             Self::ConflictMarkers => "conflict_markers",
             Self::GitOperation => "git_operation",
+            Self::PossibleConflictSeparator => "possible_conflict_separator",
         }
     }
 }
@@ -89,6 +91,8 @@ struct Finding {
     blocked: Option<String>,
     /// Fields the finding adds to its JSON, such as the missing entries.
     detail: Option<Value>,
+    /// A warning only: reported, but it never makes doctor exit 1 (#339).
+    advisory: bool,
 }
 
 impl Finding {
@@ -102,6 +106,7 @@ impl Finding {
             reason: None,
             blocked: None,
             detail: None,
+            advisory: false,
         }
     }
 
@@ -125,6 +130,9 @@ impl Finding {
             for (key, field) in detail {
                 value[key] = field.clone();
             }
+        }
+        if self.advisory {
+            value["advisory"] = json!(true);
         }
         value
     }
@@ -713,14 +721,24 @@ fn conflict_marker_findings(root: &Path, files: &[String]) -> Result<Vec<Finding
     let mut found = vec![];
     // The generated knowledge index has a bound but is not a record.
     let index = format!("{}/index.md", knowledge.trim_end_matches('/'));
-    for path in files.iter().filter(|path| path.ends_with(".md")) {
-        if *path == index || !matches!(bound_of(path, &knowledge), Some((_, false))) {
+    for path in files {
+        // Records, and the case definitions a change's verification reads (#339).
+        let case_definition = path.starts_with(".chough/cases/") && path.ends_with(".cases.toml");
+        let record = path.ends_with(".md")
+            && *path != index
+            && matches!(bound_of(path, &knowledge), Some((_, false)));
+        if !case_definition && !record {
             continue;
         }
         let Some(text) = tracked_text(root, path) else {
             continue;
         };
-        for (line, marker) in crate::records::conflict_markers(&text) {
+        let markers = if case_definition {
+            crate::records::conflict_markers_in_toml(&text)
+        } else {
+            crate::records::conflict_markers(&text)
+        };
+        for (line, marker) in markers {
             let mut finding = Finding::new(
                 Kind::ConflictMarkers,
                 path,
@@ -731,6 +749,21 @@ fn conflict_marker_findings(root: &Path, files: &[String]) -> Result<Vec<Finding
                 "{path} line {line} holds the Git conflict marker `{marker}`; doctor never rewrites a record"
             ));
             finding.detail = Some(json!({"line": line, "marker": marker}));
+            found.push(finding);
+        }
+        // A lone `=======` may be a heading underline, so it is a warning only (#339).
+        for line in crate::records::lone_separators(&text, !case_definition) {
+            let mut finding = Finding::new(
+                Kind::PossibleConflictSeparator,
+                path,
+                "none: if the line is left from a Git conflict, resolve it by hand; a heading underline can stay".into(),
+                false,
+            );
+            finding.advisory = true;
+            finding.detail = Some(json!({
+                "line": line,
+                "warning": format!("possible leftover conflict separator at line {line}"),
+            }));
             found.push(finding);
         }
     }
@@ -1410,7 +1443,8 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         | Kind::Unreadable
         | Kind::MergeDriverOutdated
         | Kind::ConflictMarkers
-        | Kind::GitOperation => {
+        | Kind::GitOperation
+        | Kind::PossibleConflictSeparator => {
             bail!("{} has no fix", finding.kind.name())
         }
         Kind::Leak => {
@@ -1569,7 +1603,10 @@ pub(super) fn run(root: &Path, args: DoctorArgs) -> Result<bool> {
             found.push(cleared);
         }
     }
-    let unresolved = found.iter().any(|finding| finding.status != "fixed");
+    // An advisory finding warns only and never makes doctor exit 1 (#339).
+    let unresolved = found
+        .iter()
+        .any(|finding| finding.status != "fixed" && !finding.advisory);
     print_json(&json!({
         "schema_version": 1,
         "mode": mode,

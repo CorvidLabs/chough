@@ -247,7 +247,17 @@ pub(super) fn load(root: &Path) -> Result<Vec<Located>> {
     let mut ids = BTreeSet::new();
     for name in names {
         let file = format!("{CASES_DIR}/{name}");
-        let parsed: CaseFile = toml::from_str(&read_bounded(&local_path(root, &file)?)?)
+        let text = read_bounded(&local_path(root, &file)?)?;
+        // #339: a half-merged definition names its conflict, not only that it is invalid.
+        if let Some((line, marker)) = crate::records::conflict_markers_in_toml(&text)
+            .into_iter()
+            .next()
+        {
+            bail!(
+                "{file} line {line} holds the Git conflict marker `{marker}`; resolve the conflict by hand, then run `chough cases check` again"
+            );
+        }
+        let parsed: CaseFile = toml::from_str(&text)
             .with_context(|| format!("{file}: invalid chough-testing definition"))?;
         ensure!(
             parsed.profile == PROFILE,

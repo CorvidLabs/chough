@@ -1019,9 +1019,9 @@ fn doctor_reports_merge_drivers_that_would_run_an_older_chough() {
 
 /// REQ-records-001, REQ-cli-055 (#265), TC-records-doctor-reports-conflict-markers-in-records:
 /// a committed record whose body holds a conflict gives one `conflict_markers` finding per
-/// marker line, naming the file, the line and the marker, and `--fix` skips them; a
-/// committed file that is not a record, a case definition or `.chough/README.md`, gives
-/// none, and a heading underline outside a conflict is not one.
+/// marker line, naming the file, the line and the marker, and `--fix` skips them. Since
+/// #339 a committed case definition gives them too, while `.chough/README.md`, which is
+/// not a record, gives none, and a heading underline outside a conflict is not one.
 #[test]
 fn doctor_reports_conflict_markers_in_committed_records_only() {
     let fixture = Fixture::new();
@@ -1031,8 +1031,9 @@ fn doctor_reports_conflict_markers_in_committed_records_only() {
         story,
         "---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\nHeading\n=======\n\n<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> branch\n",
     );
+    let cases = ".chough/cases/old.cases.toml";
     fixture.write(
-        ".chough/cases/old.cases.toml",
+        cases,
         "# <<<<<<< HEAD\n<<<<<<< HEAD\n=======\n>>>>>>> branch\n",
     );
     let readme = fixture.read(".chough/README.md");
@@ -1060,6 +1061,9 @@ fn doctor_reports_conflict_markers_in_committed_records_only() {
             (story.to_string(), 10, "<<<<<<< HEAD".to_string()),
             (story.to_string(), 12, "=======".to_string()),
             (story.to_string(), 14, ">>>>>>> branch".to_string()),
+            (cases.to_string(), 2, "<<<<<<< HEAD".to_string()),
+            (cases.to_string(), 3, "=======".to_string()),
+            (cases.to_string(), 4, ">>>>>>> branch".to_string()),
         ],
         "{report:#}"
     );
@@ -1067,4 +1071,48 @@ fn doctor_reports_conflict_markers_in_committed_records_only() {
     for finding in of_kind(&fixed, "conflict_markers") {
         assert_eq!(finding["status"], "skipped", "{fixed:#}");
     }
+}
+
+/// REQ-records-001, REQ-cli-055 (#339), TC-records-doctor-warns-of-a-lone-conflict-separator:
+/// a lone `=======` outside any conflict, in a committed record or case definition, is a
+/// `possible_conflict_separator` finding naming the line, "possible leftover conflict
+/// separator at line N". It is advisory, a warning only, so doctor's exit status is what
+/// it was without it; a `=======` inside a code fence gives none.
+#[test]
+fn doctor_warns_of_a_lone_conflict_separator_without_failing() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("a session");
+    let (before, report) = doctor(&fixture, &[]);
+    assert!(
+        of_kind(&report, "possible_conflict_separator").is_empty(),
+        "{report:#}"
+    );
+    let file = fixture.session_file();
+    let text = fixture.read(&file).replacen(
+        "## Goal\n\nShip a focused change\n",
+        "## Goal\n\nShip a focused change\n=======\nShip beta\n\n```\n=======\n```\n",
+        1,
+    );
+    let line = text.lines().position(|line| line == "=======").unwrap() + 1;
+    fixture.write(&file, &text);
+    fixture.commit("a lone separator in the Goal");
+    let (after, report) = doctor(&fixture, &[]);
+    let found = of_kind(&report, "possible_conflict_separator");
+    assert_eq!(found.len(), 1, "{report:#}");
+    assert_eq!(found[0]["target"], file);
+    assert_eq!(found[0]["line"], line);
+    assert_eq!(found[0]["advisory"], true);
+    assert_eq!(
+        found[0]["warning"],
+        format!("possible leftover conflict separator at line {line}")
+    );
+    assert!(
+        of_kind(&report, "conflict_markers").is_empty(),
+        "{report:#}"
+    );
+    assert_eq!(
+        after, before,
+        "an advisory finding changed doctor's exit: {report:#}"
+    );
 }

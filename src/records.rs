@@ -240,46 +240,95 @@ pub(super) fn valid_change_id(value: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
 }
 
-/// Reject blank text and text that would make a record unreadable.
 /// Every Git conflict marker in a record's body, each with its 1-based line in the file
-/// and the line (REQ-records-001, #265). The body is what follows the front matter's
-/// closing `---`. A line starting `<<<<<<<` or `>>>>>>>` is a marker; a line of
-/// `=======` is one only while a `<<<<<<<` line is open, so a Markdown heading underline
-/// is not.
+/// and the line (REQ-records-001, #265, #339). The body is what follows the front
+/// matter's closing `---`. A line starting `<<<<<<<` or `>>>>>>>` is a marker, and a line
+/// of `=======` is one inside a conflict. A marker inside a fenced code block, quoting an
+/// example or tool output, does not count.
 pub(super) fn conflict_markers(text: &str) -> Vec<(usize, String)> {
-    let mut lines = text.lines().enumerate().peekable();
-    if lines.peek().is_some_and(|(_, line)| *line == "---") {
-        lines.next();
-        for (_, line) in lines.by_ref() {
-            if line == "---" {
-                break;
-            }
-        }
+    scan_conflicts(text, true).0
+}
+
+/// Every Git conflict marker in a TOML case definition (#339), by the same rule as
+/// [`conflict_markers`], with no front matter or code fences to skip.
+pub(super) fn conflict_markers_in_toml(text: &str) -> Vec<(usize, String)> {
+    scan_conflicts(text, false).0
+}
+
+/// The 1-based lines of each lone `=======` outside a conflict and outside a code fence
+/// (#339): possibly left by a half-resolved conflict, possibly a heading underline, so
+/// `chough doctor` warns of it and no write is refused for it.
+pub(super) fn lone_separators(text: &str, markdown: bool) -> Vec<usize> {
+    scan_conflicts(text, markdown).1
+}
+
+/// The conflict markers of `text` and the lines of its lone `=======` separators.
+fn scan_conflicts(text: &str, markdown: bool) -> (Vec<(usize, String)>, Vec<usize>) {
+    let lines: Vec<&str> = text
+        .lines()
+        .map(|line| line.trim_end_matches('\r'))
+        .collect();
+    let mut start = 0;
+    if markdown && lines.first() == Some(&"---") {
+        start = lines
+            .iter()
+            .skip(1)
+            .position(|line| *line == "---")
+            .map_or(lines.len(), |at| at + 2);
     }
     let mut open = false;
+    // The open code fence's character and length, while inside one.
+    let mut fence: Option<(char, usize)> = None;
     let mut found = vec![];
-    for (number, line) in lines {
-        let line = line.trim_end_matches('\r');
+    let mut lone = vec![];
+    for (index, &line) in lines.iter().enumerate().skip(start) {
+        if markdown {
+            let trimmed = line.trim_start_matches(' ');
+            let run_of = |mark: char| trimmed.chars().take_while(|c| *c == mark).count();
+            let opener = trimmed
+                .chars()
+                .next()
+                .filter(|mark| (*mark == '`' || *mark == '~') && line.len() - trimmed.len() <= 3)
+                .map(|mark| (mark, run_of(mark)))
+                .filter(|(_, run)| *run >= 3);
+            match (fence, opener) {
+                (None, Some(opened)) => {
+                    fence = Some(opened);
+                    continue;
+                }
+                (Some((mark, length)), Some((closing, run)))
+                    if closing == mark && run >= length && trimmed[run..].trim().is_empty() =>
+                {
+                    fence = None;
+                    continue;
+                }
+                (Some(_), _) => continue,
+                (None, None) => {}
+            }
+        }
         let marker = if line.starts_with("<<<<<<<") {
             open = true;
             true
         } else if line.starts_with(">>>>>>>") {
             open = false;
             true
+        } else if line == "=======" && !open {
+            lone.push(index + 1);
+            false
         } else {
             open && line == "======="
         };
         if marker {
-            found.push((number + 1, line.to_string()));
+            found.push((index + 1, line.to_string()));
         }
     }
-    found
+    (found, lone)
 }
 
 /// Whether `relative` is where a record of REQ-records-001 lives: a Markdown file under
 /// `.chough/`, or a journal post in the knowledge directory. A generated knowledge note
 /// or an installed skill file is not one, so it may quote a conflict marker.
-fn holds_a_record(root: &Path, relative: &str) -> bool {
+pub(super) fn holds_a_record(root: &Path, relative: &str) -> bool {
     if !relative.ends_with(".md") {
         return false;
     }

@@ -2971,3 +2971,33 @@ fn a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines(
         "the expected text is not quoted: {line}"
     );
 }
+
+/// #339: a case definition half-merged by Git names its conflict in `cases check`, the
+/// file, the line and the marker, rather than only that the definition is invalid.
+#[test]
+fn cases_check_names_a_conflict_marker_in_a_definition() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let text = format!(
+        "{HEADER}<<<<<<< HEAD{}=======\n{}>>>>>>> other\n",
+        case("TC-cli-0001", "functional", "REQ-cli-001", ""),
+        case("TC-cli-0002", "functional", "REQ-cli-001", "")
+    );
+    fixture.write(".chough/cases/cli.cases.toml", &text);
+    let line = text
+        .lines()
+        .position(|line| line == "<<<<<<< HEAD")
+        .unwrap()
+        + 1;
+    let refused = fixture.fails(&["cases", "check"]);
+    assert!(
+        refused.contains(&format!(
+            ".chough/cases/cli.cases.toml line {line} holds the Git conflict marker `<<<<<<< HEAD`"
+        )),
+        "{refused}"
+    );
+    assert!(
+        !refused.contains("invalid chough-testing definition"),
+        "{refused}"
+    );
+}
