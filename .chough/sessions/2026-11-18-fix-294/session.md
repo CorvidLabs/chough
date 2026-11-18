@@ -16,7 +16,9 @@ requirements: [REQ-cli-061]
 cases: [TC-cli-gate-summary-names-its-change-with-a-plain-dash]
 design: []
 files: []
-observations: [2026-11-18-tc-cli-gate-summary-names-its-change-with-a-plain-dash]
+observations:
+  - 2026-11-18-tc-cli-gate-summary-names-its-change-with-a-plain-dash
+  - 2026-11-18-tc-cli-gate-summary-names-its-change-with-a-plain-dash-fb30c0
 bugs: []
 blockers: []
 waiting_on_human:
@@ -45,6 +47,7 @@ A test asserts the gate summary's Change line separator, with no em dash (REQ-cl
 ## What was verified
 
 - [Ran cargo test --locked --test gates -- --exact a_gate_summary_names_its_change_with_a_plain_dash for TC-cli-gate-summary-names-its-change-with-a-plain-dash: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-gate-summary-names-its-change-with-a-plain-dash.md)
+- [Ran cargo test --locked --test gates -- --exact a_gate_summary_names_its_change_with_a_plain_dash for TC-cli-gate-summary-names-its-change-with-a-plain-dash: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-gate-summary-names-its-change-with-a-plain-dash-fb30c0.md)
 
 ## Open threads
 
