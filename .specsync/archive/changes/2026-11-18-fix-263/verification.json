@@ -1,0 +1,82 @@
+{
+  "timestamp": 1795029929,
+  "commit": "c62201a0ef85db42ad357377db73df2198f3f8d9",
+  "contract_digest": "f87857ad9326f9cf69314a8649421c28a01b43132ad302227a4add1b3e50019f",
+  "execution_digest": "8fd63cde9565bf19735c2faeccf4acc04b28bfaf8a63e277fe9713723ec754d4",
+  "workspace_digest": "ca5d4e36d128338a07e6d238802839a254db2bd43d8f224848aeff0744ae7e34",
+  "acceptance_input_digest": "a057393b88b43052fce465073e9ee2562645ca7f9debfc87043ecd39cb0b2098",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".chough/cases/records.migrate-case-colliding-target.cases.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "add962b7040fc140f6986a55792ad75bbde7f2c0bd017261bf6e9aae734ecab0",
+        "entry_digest": "443214c10340f2d21d8f8572d2f58b4bbaa51c63f5be7689b22cf036ece83e12",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/2026-11-18-fix-263.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "315ab4089eaf33ccf8409abdb4694fe178dd5e2014d0c4032d499c98c16733bb",
+        "entry_digest": "76fe4bf8605f6d8440bfa9dfc618792bb0b28a7ecb0d9f1f236b78045512d839",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/records/records.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b3cd29cd142b09459b282d1084b45f220c331e5183bf0b8f0227791b3462a3b6",
+        "entry_digest": "5d940f33823a09ba5333bdac8a3b125599af1b315d075ce62e221008d6b48d32",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "specs/records/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ff1d5729089b6f961752cf5c2888b9b56dd34787aa01622fd5e1151608216e90",
+        "entry_digest": "330e73b8f2730669849db060a48d8586412978a45ffaa91fa371fc989868621d",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "src/migrate.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "757764cc14a34a4e2d8cd66f5fb0209e40936f2f52e07aedab867009b062e379",
+        "entry_digest": "b827689d3ad84573f63e3e177c1f4b5f2de37ee38b25feebe93286a016b64519",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "tests/migrate_knowledge.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "e9559136f580cede5b8fe125e3124844cdec853be6224d9f3d88c327c825c77a",
+        "entry_digest": "f98c8c968f85d72f6a8b97542112524e2db22880dd5dc123de09442ab866b0b6",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec records",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

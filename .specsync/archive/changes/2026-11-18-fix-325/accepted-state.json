@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-325",
+  "slug": "fix-325",
+  "title": "Fix 325",
+  "description": "fix 325",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "cef86e2622a2a908856b0c2cf11b29d3c1d3e472",
+  "created_at": 1795026859,
+  "updated_at": 1795030734,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "tests/evidence.rs",
+    ".chough/cases/cli.busy-evidence-add.cases.toml",
+    "changelog.d/2026-11-18-fix-325.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-cli-040 already says a writer that cannot take the lock within 30 seconds refuses as refused:checkpoint-busy with nothing saved; only the evidence save's lock order and its test change.",
+  "acceptance_criteria": [
+    "While another process holds the project's writer lock, chough evidence add writes no entry while it waits, and when it refuses as refused:checkpoint-busy after the wait every file is unchanged, so a rerun records one entry, not two. cases run and cases record take the lock before writing their entry too, after any case has run."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes. The writer lock must not be held while cases run runs its case, since a writer that waits 30 seconds refuses (REQ-cli-040). No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}
