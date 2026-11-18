@@ -1,0 +1,58 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794962170,
+      "digest": "2944d46bcf93f6370c2b088b88003d0ab284dddebe7fdb4c04112ac186ad7c22",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-262\": \"record my scope approval of fix-272, fix-267, fix-262 and fix-260 as 0xLeif\" (Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates). Relayed and recorded by fable-t4b at 2026-11-18T00:36:10Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-262",
+        "title": "Fix 262",
+        "description": "fix 262",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.non-regular-files.cases.toml",
+          "changelog.d/2026-11-18-fix-262.md",
+          "src/evidence.rs",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/special_files.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-history-006 already says a session that cannot be read is listed with the reason and the shelve recovery and stops no other command; only the readers and their tests change.",
+        "acceptance_criteria": [
+          "With a FIFO named like a bug record in .chough/bugs/, chough status, chough next and chough bug list each exit 0 without blocking. With a FIFO in place of an open session's session.md, chough session list reports that session as not readable with a reason and the recovery chough session shelve <id>, another session's commands still work, and chough session shelve <id> moves the folder without blocking."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "record my scope approval of fix-272, fix-267, fix-262 and fix-260 as 0xLeif",
+        "where": "Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794964524,
+      "digest": "1b60683806647b4ca6db93c7e21842a26436460b08a8f7156e71e586d6e37d85",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

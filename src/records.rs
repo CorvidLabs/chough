@@ -386,9 +386,38 @@ pub(super) fn read_spec_file(path: &Path) -> Result<String> {
     Ok(std::fs::read_to_string(path)?)
 }
 
-/// Read a structured record within an explicit byte bound.
+/// Open `path` for reading only when it is a regular file, and never block. Opening a
+/// FIFO for reading waits for a writer, so on Unix the open is non-blocking, and the
+/// type is checked on the opened handle, not on the path beforehand: a file swapped
+/// for a FIFO between a check and the open would still block (#262, review of #305).
+/// Non-blocking mode changes nothing for a regular file.
+pub(super) fn open_regular(path: &Path) -> Result<File> {
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt as _;
+        options.custom_flags(libc::O_NONBLOCK);
+    }
+    #[cfg(not(unix))]
+    ensure!(
+        fs::metadata(path)?.is_file(),
+        "not a regular file: {}",
+        path.display()
+    );
+    let file = options.open(path)?;
+    ensure!(
+        file.metadata()?.is_file(),
+        "not a regular file: {}",
+        path.display()
+    );
+    Ok(file)
+}
+
+/// Read a structured record within an explicit byte bound. A FIFO, device or directory
+/// in a record's place is refused without blocking (#262).
 pub(super) fn read_bounded_record(path: &Path, limit: u64) -> Result<String> {
-    let file = File::open(path)?;
+    let file = open_regular(path)?;
     let mut content = String::new();
     file.take(limit + 1).read_to_string(&mut content)?;
     ensure!(
@@ -1696,6 +1725,41 @@ mod tests {
     }
 
     use super::*;
+
+    /// #262, review of #305: the reader has no check before its open for a swap to slip
+    /// past. A FIFO at the path at the moment of the open is refused at once, by the
+    /// type of the opened handle; with a blocking open this test would time out.
+    #[cfg(unix)]
+    #[test]
+    fn a_fifo_at_the_moment_of_the_open_is_refused_without_blocking() {
+        let root = tempfile::tempdir().unwrap();
+        let fifo = root.path().join("session.md");
+        assert!(
+            Command::new("mkfifo")
+                .arg(&fifo)
+                .status()
+                .unwrap()
+                .success()
+        );
+        let regular = root.path().join("regular.md");
+        fs::write(&regular, "---\nid: a\n---\n").unwrap();
+        let (sender, receiver) = mpsc::channel();
+        let path = fifo.clone();
+        thread::spawn(move || {
+            let opened = open_regular(&path).map(|_| ()).map_err(|e| e.to_string());
+            let read = read_bounded_record(&path, 64).map_err(|e| e.to_string());
+            let _ = sender.send((opened, read));
+        });
+        let (opened, read) = receiver
+            .recv_timeout(Duration::from_secs(10))
+            .expect("opening a FIFO blocked");
+        assert!(opened.unwrap_err().contains("not a regular file"));
+        assert!(read.unwrap_err().contains("not a regular file"));
+        assert_eq!(
+            read_bounded_record(&regular, 64).unwrap(),
+            "---\nid: a\n---\n"
+        );
+    }
 
     fn limits(cap: usize, seconds: u64) -> Limits {
         Limits {
