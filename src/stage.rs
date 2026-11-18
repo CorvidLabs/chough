@@ -1239,6 +1239,7 @@ pub(super) fn assess(
     session: &Checkpoint,
     state: &NativeState,
     blocking: &[String],
+    unrelated: &[String],
     history: Option<&crate::history::HistoryRead>,
 ) -> (Option<(String, Gate)>, Action) {
     let current = session.stage.current.as_str();
@@ -1314,7 +1315,7 @@ pub(super) fn assess(
                 "Acceptance-blocking bugs are open ({}); go back to build and retest the affected cases.",
                 blocking.join(", ")
             ),
-            reason: "Acceptance waits for every blocking bug to be verified or rescoped.".into(),
+            reason: "Acceptance waits for every blocking bug related to this session to be verified or rescoped.".into(),
             command: Some("chough stage back --to build --reason \"<why>\"".into()),
         }
     } else if let Some(refusal) = (current == "test")
@@ -1513,13 +1514,22 @@ pub(super) fn assess(
             sentence(&session.next_action)
         };
         if observations().is_some_and(|all| every_case_passed(session, all)) {
-            // F7 (REQ-cli-021): blocking bugs were handled above, so with every referenced
-            // case's latest run passed, test is done.
+            // F7 (REQ-cli-021): blocking bugs related to this session were handled above.
+            let aside = if unrelated.is_empty() {
+                "no blocking bug related to this session is open".to_string()
+            } else {
+                format!(
+                    "blocking bugs not related to this session ({}) do not block it",
+                    unrelated.join(", ")
+                )
+            };
             Action {
                 action: format!(
-                    "Continue test: {next}Every referenced case's latest run passed and no blocking bug is open, so move to accept with `chough stage advance`."
+                    "Continue test: {next}Every referenced case's latest run passed and {aside}, so move to accept with `chough stage advance`."
                 ),
-                reason: "Each case the checkpoint references passed on its latest run, and no acceptance-blocking bug is open.".into(),
+                reason: format!(
+                    "Each case the checkpoint references passed on its latest run, and {aside}."
+                ),
                 command: Some("chough stage advance".into()),
             }
         } else {
@@ -2417,11 +2427,11 @@ fn forward_step(
 ) -> Result<Option<String>> {
     let (from, to) = route;
     if from == "test" && to == "accept" {
-        let blocking = bugs::open_blocking(root)?;
+        let blocking = bugs::open_blocking(root, session)?;
         ensure!(
-            blocking.is_empty(),
+            blocking.stops.is_empty(),
             "{kind} refused (refused:blocking-bugs): open acceptance-blocking bugs {}; go back to build, fix and retest",
-            blocking.join(", ")
+            blocking.stops.join(", ")
         );
         if let Some(refusal) = unlinked_failure(root, session)? {
             bail!("{kind} refused (refused:unlinked-failure): {refusal}");

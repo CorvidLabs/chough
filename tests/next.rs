@@ -317,6 +317,7 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     session["awaiting_human"] = json!(list("Gate"));
     session["blockers"] = json!(list("Blocker"));
     session["observations"] = json!([current_id, "2026-11-10-stale-000"]);
+    session["bugs"] = json!(["BUG-0001", "BUG-0002"]);
     session["next_action"] = json!("n".repeat(4_096));
     session["objective"] = json!("o".repeat(4_000));
     let session_text = write_session(&fixture, &session);

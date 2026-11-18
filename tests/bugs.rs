@@ -329,6 +329,7 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
     let added = json(&add_bug(&fixture, &["--scope", "blocking"]));
     let id = added["id"].as_str().unwrap().to_string();
     assert_new_bug_name(&id);
+    fixture.ok(&["checkpoint", "--bug", &id]);
     assert!(
         fixture
             .fails(&["stage", "advance"])
@@ -363,6 +364,109 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
         "The human moved it to a follow-up change",
     ]);
     fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(fixture.session()["stage"]["current"], "accept");
+}
+
+/// A blocking bug stops only a session that lists it, holds its evidence, or shares a
+/// criterion, requirement, or case. A bug that names none of those stops no session.
+/// `chough next` names it and says it does not block this session (REQ-cli-054).
+#[test]
+fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let first = fixture.active_id();
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.ok(&["session", "new", "other", "--objective", "Other work"]);
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let id = json(&add_bug(&fixture, &["--scope", "blocking"]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    set_bug_fields(
+        &fixture,
+        &id,
+        &[
+            ("criteria", "[]"),
+            ("requirements", "[]"),
+            ("cases", "[]"),
+            ("evidence", "[]"),
+        ],
+    );
+    let next = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
+    assert!(
+        next.contains(&id) && next.contains("do not block this session"),
+        "{next}"
+    );
+    assert!(
+        !next.contains("go back to build"),
+        "an unrelated blocking bug must not send this session back to build: {next}"
+    );
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(fixture.session()["stage"]["current"], "accept");
+    fixture.ok(&["session", "use", &first]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(fixture.session()["stage"]["current"], "accept");
+
+    fixture.ok(&["session", "new", "linked", "--objective", "Linked work"]);
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.ok(&["checkpoint", "--bug", &id]);
+    let refusal = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refusal.contains("refused:blocking-bugs") && refusal.contains(&id),
+        "{refusal}"
+    );
+    assert_eq!(fixture.session()["stage"]["current"], "test");
+
+    fixture.ok(&[
+        "session",
+        "new",
+        "shares",
+        "--objective",
+        "Shares the requirement",
+    ]);
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let shared = json(&add_bug(
+        &fixture,
+        &[
+            "--scope",
+            "blocking",
+            "--distinct",
+            "a different defect that names REQ-cli-001",
+        ],
+    ))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    fixture.ok(&["checkpoint", "--requirement", "REQ-cli-001"]);
+    let shared_refusal = fixture.fails(&["stage", "advance"]);
+    assert!(
+        shared_refusal.contains("refused:blocking-bugs") && shared_refusal.contains(&shared),
+        "{shared_refusal}"
+    );
+    fixture.ok(&[
+        "session",
+        "new",
+        "outsider",
+        "--objective",
+        "No shared link",
+    ]);
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let warning = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
+    assert!(
+        warning.contains(&shared) && warning.contains("do not block this session"),
+        "{warning}"
+    );
     fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.session()["stage"]["current"], "accept");
 }
@@ -1298,6 +1402,7 @@ fn only_an_open_blocking_bug_blocks_leaving_test() {
         .as_str()
         .unwrap()
         .to_string();
+    fixture.ok(&["checkpoint", "--bug", &id]);
     for scope in ["blocking", "in-scope", "out-of-scope"] {
         for status in STATUSES {
             set_bug_fields(&fixture, &id, &[("scope", scope), ("status", status)]);

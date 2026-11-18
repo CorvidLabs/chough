@@ -405,6 +405,7 @@ struct Assessment {
     deltas: Option<String>,
     open_bugs: Vec<Value>,
     blocking: Vec<String>,
+    unrelated_blocking: Vec<String>,
 }
 
 fn assess(root: &Path) -> Result<Assessment> {
@@ -415,7 +416,13 @@ fn assess(root: &Path) -> Result<Assessment> {
     let change = checkpoint.and_then(|checkpoint| checkpoint.native_change.as_deref());
     let native = native_read(root, change)?;
     let open_bugs = bugs::open_backlog(root)?;
-    let blocking = bugs::open_blocking(root)?;
+    let (blocking, unrelated_blocking) = match checkpoint {
+        Some(checkpoint) => {
+            let found = bugs::open_blocking(root, checkpoint)?;
+            (found.stops, found.warns)
+        }
+        None => (Vec::new(), Vec::new()),
+    };
     let history_read = checkpoint.map(|checkpoint| {
         history::selected(
             checkpoint,
@@ -437,7 +444,14 @@ fn assess(root: &Path) -> Result<Assessment> {
         ),
         Some(checkpoint) => {
             let state = stage::native_state_from(root, change, native.as_ref())?;
-            let (gate, action) = stage::assess(root, checkpoint, &state, &blocking, history_read.as_ref());
+            let (gate, action) = stage::assess(
+                root,
+                checkpoint,
+                &state,
+                &blocking,
+                &unrelated_blocking,
+                history_read.as_ref(),
+            );
             (gate, action, Some(stage::delta_summary(root, change, &state)))
         }
     };
@@ -459,6 +473,7 @@ fn assess(root: &Path) -> Result<Assessment> {
         deltas,
         open_bugs,
         blocking,
+        unrelated_blocking,
     })
 }
 
@@ -579,6 +594,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "environment": environment,
         "open_bugs": assessment.open_bugs,
         "blocking_bugs": assessment.blocking,
+        "unrelated_blocking_bugs": assessment.unrelated_blocking,
         "human_approval": "unknown; Chough does not authenticate human identity or approval",
         "delivery": "unknown; a recorded observation does not establish deployment or release",
     }))
@@ -1057,6 +1073,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "blockers": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.blockers).iter()),
         "open_questions": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.open_questions).iter()),
         "blocking_bugs": listed(assessment.blocking.iter()),
+        "unrelated_blocking_bugs": listed(assessment.unrelated_blocking.iter()),
         "other_open_bugs": assessment.open_bugs.len().saturating_sub(assessment.blocking.len()),
         "observations": {
             "needs_attention_total": attention.rows.len(),
@@ -1267,6 +1284,25 @@ fn next_text(view: &Value) -> String {
             ids.join(", ")
         )
     });
+    let unrelated = &view["unrelated_blocking_bugs"];
+    let unrelated_ids: Vec<String> = unrelated["items"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(text)
+        .collect();
+    let unrelated_total = unrelated["total"].as_u64().unwrap_or(0);
+    if unrelated_total > 0 {
+        let more = if unrelated_total > unrelated_ids.len() as u64 {
+            ", ..."
+        } else {
+            ""
+        };
+        lines.push(format!(
+            "Other blocking bugs: {}{more} (do not block this session)",
+            unrelated_ids.join(", ")
+        ));
+    }
     let observations = &view["observations"];
     let total = observations["needs_attention_total"].as_u64().unwrap_or(0);
     let items = observations["items"]

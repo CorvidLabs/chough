@@ -1809,12 +1809,68 @@ pub(super) fn is_closed_status(status: &str) -> bool {
     CLOSED.contains(&status)
 }
 
-pub(super) fn open_blocking(root: &Path) -> Result<Vec<String>> {
-    Ok(read_all(root)?
+/// Open blocking bugs as one session meets them (REQ-cli-054).
+pub(super) struct SessionBlocking {
+    /// Bugs that stop this session leaving test.
+    pub(super) stops: Vec<String>,
+    /// Open blocking bugs that are not related to this session.
+    pub(super) warns: Vec<String>,
+}
+
+/// Whether `bug` is related to `session`: the session lists it, its evidence names
+/// that session, or they share a criterion, requirement, or case.
+fn related_to(session: &crate::checkpoint::Checkpoint, bug: &Stored) -> bool {
+    if session.bugs.iter().any(|id| bug.holds(id)) {
+        return true;
+    }
+    let id = session.meta.id.as_str();
+    if !id.is_empty() {
+        let prefix = format!("{id}/");
+        if bug
+            .list("evidence")
+            .iter()
+            .any(|link| link.starts_with(&prefix))
+        {
+            return true;
+        }
+    }
+    let references = &session.references;
+    for (key, held) in [
+        ("criteria", &references.criteria),
+        ("requirements", &references.requirements),
+        ("cases", &references.cases),
+    ] {
+        if bug
+            .list(key)
+            .iter()
+            .any(|item| held.iter().any(|have| have == item))
+        {
+            return true;
+        }
+    }
+    false
+}
+
+/// Every open bug with scope blocking, split by whether it stops `session`.
+/// A bug that names no criterion, requirement, case, or evidence, and is on no
+/// session's bugs list, is not related to this session, so it warns and does not stop.
+pub(super) fn open_blocking(
+    root: &Path,
+    session: &crate::checkpoint::Checkpoint,
+) -> Result<SessionBlocking> {
+    let mut stops = vec![];
+    let mut warns = vec![];
+    for bug in read_all(root)?
         .iter()
         .filter(|bug| bug.is_open() && bug.text("scope") == "blocking")
-        .map(|bug| bug.id().to_string())
-        .collect())
+    {
+        if related_to(session, bug) {
+            stops.push(bug.id().to_string());
+        } else {
+            warns.push(bug.id().to_string());
+        }
+    }
+    Ok(SessionBlocking { stops, warns })
 }
 
 pub(super) fn open_backlog_section(root: &Path, as_json: bool) -> Result<Section> {
