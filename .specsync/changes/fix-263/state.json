@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "fix-263",
   "slug": "fix-263",
   "title": "Fix 263",
   "description": "fix 263",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "be6c9f126e448bd33945a52261d55db2a9677d3d",
   "created_at": 1795011870,
-  "updated_at": 1795011881,
+  "updated_at": 1795015393,
   "affected_specs": [
     "records"
   ],
