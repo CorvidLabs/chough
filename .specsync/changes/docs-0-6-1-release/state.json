@@ -7,10 +7,11 @@
   "title": "Docs 0 6 1 release",
   "description": "docs 0 6 1 release",
   "kind": "documentation",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "cef86e2622a2a908856b0c2cf11b29d3c1d3e472",
   "created_at": 1795024220,
-  "updated_at": 1795024591,
+  "updated_at": 1795024762,
   "affected_specs": [],
   "affected_paths": [
     "docs/roadmap-1.0.md",
