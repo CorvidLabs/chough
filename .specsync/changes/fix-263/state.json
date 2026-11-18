@@ -7,10 +7,11 @@
   "title": "Fix 263",
   "description": "fix 263",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "be6c9f126e448bd33945a52261d55db2a9677d3d",
   "created_at": 1795011870,
-  "updated_at": 1795015393,
+  "updated_at": 1795015755,
   "affected_specs": [
     "records"
   ],
