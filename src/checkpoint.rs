@@ -557,6 +557,16 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         count += guard(local, "consent source", &mut consent.source)?;
         count += guard(local, "consent objective", &mut consent.objective)?;
     }
+    // The criterion, requirement, case, observation and bug references are IDs that
+    // `validate_v2` limits to an ID form; these two are free-form paths (#268).
+    for (name, list) in [
+        ("file", &mut session.references.files),
+        ("design", &mut session.references.design),
+    ] {
+        for value in list.iter_mut() {
+            count += guard(local, name, value)?;
+        }
+    }
     for alias in &mut session.meta.aliases {
         count += guard(local, "alias", alias)?;
     }

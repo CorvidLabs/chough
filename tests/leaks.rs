@@ -616,3 +616,57 @@ fn a_hyphen_glued_token_is_refused_at_the_write_and_found_by_the_doctor() {
     assert_eq!(leaks[0]["target"], lesson);
     assert_eq!(leaks[0]["match"], "token");
 }
+
+/// REQ-records-006, TC-records-a-file-or-design-path-passes-the-leak-guard (#268): a
+/// `checkpoint --file` or `--design` path is a value Chough writes into `session.md`, so
+/// a token in it refuses the write naming the field, with the token never echoed and
+/// every file unchanged; with `--redact` the path is stored redacted; a clean path is
+/// saved as before.
+#[test]
+fn a_token_in_a_file_or_design_path_is_refused_at_the_write() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+    let path = concat!("src/", "ghp_", "abcdefghij0123456789abcdefghij0123", ".txt");
+    let secret = concat!("ghp_", "abcdefghij0123456789");
+    refused(
+        &fixture,
+        &["checkpoint", "--file", path],
+        "file",
+        "token",
+        secret,
+    );
+    refused(
+        &fixture,
+        &["checkpoint", "--design", path],
+        "design",
+        "token",
+        secret,
+    );
+
+    let said = redacted(&fixture, &["checkpoint", "--file", path, "--design", path]);
+    assert!(!said.contains(secret), "--redact echoed the value: {said}");
+    assert!(
+        holding(fixture.root(), secret).is_empty(),
+        "a file still holds the token"
+    );
+    let session = holding(fixture.root(), "src/<redacted:token>.txt");
+    assert_eq!(session.len(), 1, "{session:?}");
+    assert!(session[0].ends_with("/session.md"), "{session:?}");
+
+    let output = run(
+        &fixture,
+        &[
+            "checkpoint",
+            "--file",
+            "src/main.rs",
+            "--design",
+            "docs/flow.md",
+        ],
+    );
+    assert!(output.status.success(), "{output:?}");
+    let session = fs::read_to_string(fixture.root().join(&session[0])).unwrap();
+    assert!(session.contains("src/main.rs"), "{session}");
+    assert!(session.contains("docs/flow.md"), "{session}");
+}

@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #268: a token in a `chough checkpoint --file` or `--design` path passed the
+# write guard and was committed to session.md's files list; only doctor found it later.
+
+[[case]]
+id = "TC-records-a-file-or-design-path-passes-the-leak-guard"
+title = "A token in a checkpoint --file or --design path refuses the write as refused:leak naming the field with every file unchanged, --redact stores the path redacted, and a clean path is saved"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/checkpoint.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::a_token_in_a_file_or_design_path_is_refused_at_the_write passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "a_token_in_a_file_or_design_path_is_refused_at_the_write"
