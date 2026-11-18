@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-272-uninitialised-root",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "2c6264697004a0811e4a7722f12887c8f1716f48",
+  "contract_digest": "7669aa320c402942eae2e283a409771a9c571968874bae42d6b5d8f0b7c60684",
+  "execution_digest": "1c6967aedc9296eb0c2c8e8f0e55e57c78d948c1f283c1ee9207be3fcb82b494",
+  "workspace_digest": "9e698cb92e1ebf2a8c578d766ed231e26021cee57f3f5cbf04ce0f4547381b4a",
+  "timestamp": 1794981538,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Pass (Recommended)",
+    "where": "Claude Code session with Fable, 2026-11-17, answer to the interview question 'Do you pass the implementation review of fix-272-uninitialised-root?' after the agent review passed 552d236",
+    "recorded_by": "fable-t4b"
+  }
+}

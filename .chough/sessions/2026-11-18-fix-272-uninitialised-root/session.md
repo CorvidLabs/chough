@@ -28,6 +28,9 @@ waiting_on_human:
     opened: 2026-11-18T02:09:01Z
 run_consents: []
 next: Wait for Leif's implementation review of fix-272-uninitialised-root; read the PR's reviews first; do not ship
+title: journal add holds the writer lock with no .chough directory
+summary:
+  - "In a project with no .chough directory, journal add took no lock, so parallel posts could still miss the feed after #302. It now takes the checkpoint lock directly, as REQ-cli-040 requires. Two tests failed first; the verify lane passed on macOS after main (5408c44) was merged in. Linux was not run locally."
 ---
 # journal add holds the writer lock in a project with no .chough directory too, so parallel posts all reach the feed there (REQ-cli-040, review of #302)
 

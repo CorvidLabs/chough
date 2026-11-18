@@ -41,6 +41,13 @@
         "where": "Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the gates on #308, #305 and #306",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794981545,
+      "digest": "01eca1268e8986d508a171392ccdf890abef3e753cb6b4191d9a91e588cf98e6",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
