@@ -24,6 +24,9 @@ observations:
   - 2026-11-18-tc-records-a-file-or-design-path-passes-the-leak-guard-3c5e8e
   - 2026-11-18-tc-records-an-id-reference-passes-the-leak-guard
   - 2026-11-18-tc-records-evidence-add-in-a-leaking-session-writes-nothing
+  - 2026-11-18-tc-records-a-file-or-design-path-passes-the-leak-guard-5d82c1
+  - 2026-11-18-tc-records-an-id-reference-passes-the-leak-guard-b71b57
+  - 2026-11-18-tc-records-evidence-add-in-a-leaking-session-writes-nothing-b4d572
 bugs: []
 blockers: []
 waiting_on_human:
@@ -56,6 +59,9 @@ checkpoint --file and --design values pass the write-time leak guard (REQ-record
 - [Ran cargo test --locked --test leaks -- --exact a_token_in_a_file_or_design_path_is_refused_at_the_write for TC-records-a-file-or-design-path-passes-the-leak-guard: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-file-or-design-path-passes-the-leak-guard-3c5e8e.md)
 - [Ran cargo test --locked --test leaks -- --exact a_token_in_an_id_reference_is_refused_even_under_redact for TC-records-an-id-reference-passes-the-leak-guard: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-an-id-reference-passes-the-leak-guard.md)
 - [Ran cargo test --locked --test leaks -- --exact evidence_add_in_a_session_holding_a_leak_writes_nothing for TC-records-evidence-add-in-a-leaking-session-writes-nothing: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-evidence-add-in-a-leaking-session-writes-nothing.md)
+- [Ran cargo test --locked --test leaks -- --exact a_token_in_a_file_or_design_path_is_refused_at_the_write for TC-records-a-file-or-design-path-passes-the-leak-guard: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-file-or-design-path-passes-the-leak-guard-5d82c1.md)
+- [Ran cargo test --locked --test leaks -- --exact a_token_in_an_id_reference_is_refused_even_under_redact for TC-records-an-id-reference-passes-the-leak-guard: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-an-id-reference-passes-the-leak-guard-b71b57.md)
+- [Ran cargo test --locked --test leaks -- --exact evidence_add_in_a_session_holding_a_leak_writes_nothing for TC-records-evidence-add-in-a-leaking-session-writes-nothing: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-evidence-add-in-a-leaking-session-writes-nothing-b4d572.md)
 
 ## Open threads
 
