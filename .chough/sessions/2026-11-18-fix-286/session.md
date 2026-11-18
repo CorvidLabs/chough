@@ -5,7 +5,7 @@ aliases: [fix-286]
 objective: "An archived story's receipts keep each evidence entry's criteria, requirements and limitations (REQ-history-006, #286)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-history-a-receipt-keeps-its-entrys-criteria-requirements-21b18c
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-286
-    holds: accept
-    drives: review
-    opened: 2026-11-18T19:58:46Z
+waiting_on_human: []
 run_consents: []
-next: Wait for the tester's check and Leif's implementation review of fix-286
+next: Continue done
 ---
 # An archived story's receipts keep each evidence entry's criteria, requirements and limitations (REQ-history-006, #286)
 
@@ -42,6 +38,7 @@ An archived story's receipts keep each evidence entry's criteria, requirements a
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-286": "keep all three. Archived receipts keep the entry's criteria, requirements and limitations, so the story says what was verified against what and its honest limits stay visible. This adds the three to REQ-history-006's receipt field list." (Leif's decision comment on GitHub issue #286, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-286 as 0xLeif
+- 0xLeif decided "Implementation review of fix-286": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's PASS on PR #342); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-286 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -98,4 +95,20 @@ An archived story's receipts keep each evidence entry's criteria, requirements a
   - revision: 3978e527802d479546a9a3a057ca24213d0acbfe
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:45:00Z · gate-closed · accept → accept · Implementation review of fix-286 ^t-f25d26
+  - native_change: fix-286
+  - revision: c17a2df9bcf964fbf646e1e75d704714a6700458
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's PASS on PR #342
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-286
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:45:02Z · advance · accept → done · native:archived ^t-05f4dc
+  - native_change: fix-286
+  - gate: native:archived
+  - revision: c17a2df9bcf964fbf646e1e75d704714a6700458
   - by: fable (claude-fable-5-2, hc t4b)
