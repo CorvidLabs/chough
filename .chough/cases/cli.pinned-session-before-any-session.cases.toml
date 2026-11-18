@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #334: with CHOUGH_SESSION set and no session yet, commands refused naming
+# chough session list instead of guiding to chough session new.
+
+[[case]]
+id = "TC-cli-a-pinned-session-before-any-session-names-session-new"
+title = "With CHOUGH_SESSION or --session set and no session open, a command refuses naming the variable or option and chough session new <key>, with nothing written"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-cli-037"]
+paths = ["src/main.rs", "tests/session_pin.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/session_pin.rs::a_pinned_session_before_any_session_names_session_new passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "session_pin"
+test = "a_pinned_session_before_any_session_names_session_new"

@@ -221,3 +221,31 @@ fn init_and_inbox_add_keep_their_session_and_session_use_ignores_the_variable() 
     ]);
     assert!(output.status.success(), "{}", said(&output));
 }
+
+/// REQ-cli-037 (#334), TC-cli-a-pinned-session-before-any-session-names-session-new: with
+/// `CHOUGH_SESSION` set in a project where no session is open yet, a command refuses
+/// naming the variable and `chough session new <key>`, the way on, not `chough session
+/// list`, which would list nothing; `--session` is named the same way. Nothing is
+/// written.
+#[test]
+fn a_pinned_session_before_any_session_names_session_new() {
+    let fixture = Fixture::new();
+    // `chough init` alone creates no session (REQ-cli-037).
+    fixture.ok(&["init"]);
+    let before = tree(fixture.root());
+    let output = fixture.run_with_env(&["next"], &[("CHOUGH_SESSION", "alpha")]);
+    let text = said(&output);
+    assert!(!output.status.success(), "{text}");
+    assert!(text.contains("refused:session-not-open"), "{text}");
+    assert!(text.contains("CHOUGH_SESSION"), "{text}");
+    assert!(text.contains("chough session new <key>"), "{text}");
+    assert!(!text.contains("chough session list"), "{text}");
+    assert_eq!(tree(fixture.root()), before);
+
+    let output = fixture.run(&["next", "--session", "alpha"]);
+    let text = said(&output);
+    assert!(!output.status.success(), "{text}");
+    assert!(text.contains("--session"), "{text}");
+    assert!(text.contains("chough session new <key>"), "{text}");
+    assert_eq!(tree(fixture.root()), before);
+}
