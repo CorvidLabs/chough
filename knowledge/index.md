@@ -24,6 +24,7 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
+- [Chough 0.6.1 release preparation](journal/2026-11-18-chough-0-6-1-release-preparation.md) (2026-11-18, shipped)
 - [A test asserts the gate summary's Change line separator](journal/2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator.md) (2026-11-18, shipped)
 - [evidence add, cases run and cases record re-read session.md under…](journal/2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md.md) (2026-11-18, shipped)
 - [The feature-bug-loop example stops at a refused chough or SpecSync…](journal/2026-11-18-the-feature-bug-loop-example-stops-at-a-refused-chough-or.md) (2026-11-18, shipped)
@@ -33,7 +34,6 @@ Newest posts:
 - [A new record whose write fails is not left behind](journal/2026-11-18-a-new-record-whose-write-fails-is-not-left-behind.md) (2026-11-18, shipped)
 - [A FIFO swapped in at the open blocks no reader](journal/2026-11-18-a-fifo-swapped-in-at-the-open-blocks-no-reader.md) (2026-11-18, shipped)
 - [journal add holds the writer lock with no .chough directory](journal/2026-11-18-journal-add-holds-the-writer-lock-with-no-chough-directory.md) (2026-11-18, shipped)
-- [Docs and help-text change for the list-valued checkpoint flags and…](journal/2026-11-18-docs-and-help-text-change-for-the-list-valued-checkpoint-flags.md) (2026-11-18, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
+- [release-0-6-1](../.specsync/archive/changes/2026-11-18-release-0-6-1/lesson-bundle.md), Release 0 6 1
 - [fix-294](../.specsync/archive/changes/2026-11-18-fix-294/lesson-bundle.md), Fix 294
 - [fix-317](../.specsync/archive/changes/2026-11-18-fix-317/lesson-bundle.md), Fix 317
-- [fix-274](../.specsync/archive/changes/2026-11-18-fix-274/lesson-bundle.md), Fix 274
 
 ## Snapshots and briefs
 
