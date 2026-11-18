@@ -5,7 +5,7 @@ aliases: [fix-250]
 objective: "When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason, and doctor's JSON echoes it (REQ-history-012, #250)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -23,13 +23,9 @@ observations:
   - 2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason-070019
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-250
-    holds: accept
-    drives: review
-    opened: 2026-11-18T20:15:19Z
+waiting_on_human: []
 run_consents: []
-next: Wait for the tester's check and Leif's implementation review of fix-250
+next: Continue done
 title: A stale gate that doctor withdraws keeps the reason
 summary:
   - chough doctor --fix --reason withdrew stale gates and wrote the reason nowhere (#250). Each withdrawn gate's gate-closed Timeline entry now holds it as its withdrawn field, so the archived story carries it, and doctor's JSON echoes it as decision_reason. The reason passes the leak guard before anything is written. Two tests failed first; the verify lane passed on macOS after main was merged in, with the tests run after the deltas were materialized, and tester2 passed the recheck. The change was sent back once to rewrite its deltas onto main. Linux was not run locally.
@@ -48,6 +44,7 @@ When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline
 
 - 0xLeif decided "Scope approval of fix-250": "record it on each gate. When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason in the person's words, and doctor's JSON echoes it back. REQ-history-012 gets that sentence." (Leif's decision comment on GitHub issue #250, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-250 as 0xLeif
 - 0xLeif decided "Scope approval of fix-250, rewritten onto main (native approval)": "Yes: send back once + re-approve" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him whether fable-t4b may run the send-back on fix-250 this once and whether he re-approves the same scope: the reason on each withdrawn gate's gate-closed entry, echoed in doctor's JSON; only REQ-history-012, REQ-cli-030 and REQ-records-004 change; the REQ-history-002 list edit removed); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-250 as 0xLeif
+- 0xLeif decided "Implementation review of fix-250": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's recheck PASS on PR #345 at 805d980); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-250 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -134,4 +131,20 @@ When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline
     - recorded_by: fable-t4b
     - native: specsync change approve fix-250
     - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T21:21:38Z · gate-closed · accept → accept · Implementation review of fix-250 ^t-90cd3f
+  - native_change: fix-250
+  - revision: 24754639cb0b3f9633f70c372e27d58726a8c271
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's recheck PASS on PR #345 at 805d980
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-250
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T21:21:39Z · advance · accept → done · native:archived ^t-e26106
+  - native_change: fix-250
+  - gate: native:archived
+  - revision: 24754639cb0b3f9633f70c372e27d58726a8c271
   - by: fable (claude-fable-5-2, hc t4b)
