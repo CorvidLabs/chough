@@ -19,13 +19,9 @@ files: [docs/cli.md, src/checkpoint.rs, src/main.rs]
 observations: []
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Scope approval of fix-301
-    holds: plan
-    drives: approve
-    opened: 2026-11-17T14:48:16Z
+waiting_on_human: []
 run_consents: []
-next: Waiting for scope approval of fix-301
+next: "Gate \"Scope approval of fix-301\" closed (approved); run `chough stage advance` to move on."
 ---
 # Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (issue 301)
 
@@ -36,6 +32,8 @@ Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (
 ## Where it stands
 
 ## Decisions and why
+
+- 0xLeif decided "Scope approval of fix-301": "approved" (Claude Code chat (hc t28), 2026-11-17, in reply to the #301 scope summary (docs/cli.md rows, help text for all 11 checkpoint flags, help --help exits 0, changelog fragment)); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve fix-301 as 0xLeif
 
 ## What was verified
 
@@ -58,3 +56,34 @@ Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (
   - holds: plan
   - drives: approve
   - by: unknown agent (hc t46)
+- 2026-11-18T00:46:11Z · direct-native-write · plan → plan · fix-301's lifecycle records changed outside Chough: state.json changed; state stays draft ^t-467e72
+  - native_change: fix-301
+  - revision: 4f5922fd1617cb49a98ea86c59e431030bcdabf9
+  - direct_write:
+    - change: fix-301
+    - files:
+      - state.json: changed
+    - before_state: draft
+    - after_state: draft
+  - by: claude-code (hc t28)
+- 2026-11-18T00:46:11Z · direct-native-write · plan → plan · fix-301's lifecycle records changed outside Chough: state.json changed; state stays draft ^t-0cc9d0
+  - native_change: fix-301
+  - revision: 4f5922fd1617cb49a98ea86c59e431030bcdabf9
+  - direct_write:
+    - change: fix-301
+    - files:
+      - state.json: changed
+    - before_state: draft
+    - after_state: draft
+  - by: claude-code (hc t28)
+- 2026-11-18T00:46:11Z · gate-closed · plan → plan · Scope approval of fix-301 ^t-868cee
+  - native_change: fix-301
+  - revision: 4f5922fd1617cb49a98ea86c59e431030bcdabf9
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: approved
+    - where: Claude Code chat (hc t28), 2026-11-17, in reply to the #301 scope summary (docs/cli.md rows, help text for all 11 checkpoint flags, help --help exits 0, changelog fragment)
+    - recorded_by: claude-code (hc t28)
+    - native: specsync change approve fix-301
+    - actor: 0xLeif
+  - by: claude-code (hc t28)
