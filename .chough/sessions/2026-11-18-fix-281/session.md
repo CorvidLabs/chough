@@ -19,6 +19,7 @@ files: [src/stage.rs, src/checkpoint.rs, src/session_md.rs, tests/stages.rs]
 observations:
   - 2026-11-18-tc-cli-a-session-that-needs-no-native-change-reaches-done
   - 2026-11-18-tc-cli-a-session-that-needs-no-native-change-reaches-done-9af9ee
+  - 2026-11-18-tc-cli-a-session-that-needs-no-native-change-reaches-done-a502af
 bugs: []
 blockers: []
 waiting_on_human:
@@ -47,6 +48,7 @@ A session can record that it needs no native change, with a reason, and then adv
 
 - [Ran cargo test --locked --test stages -- --exact a_session_that_needs_no_native_change_reaches_done_and_archives_as_done for TC-cli-a-session-that-needs-no-native-change-reaches-done: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-session-that-needs-no-native-change-reaches-done.md)
 - [Ran cargo test --locked --test stages -- --exact a_session_that_needs_no_native_change_reaches_done_and_archives_as_done for TC-cli-a-session-that-needs-no-native-change-reaches-done: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-session-that-needs-no-native-change-reaches-done-9af9ee.md)
+- [Ran cargo test --locked --test stages -- --exact a_session_that_needs_no_native_change_reaches_done_and_archives_as_done for TC-cli-a-session-that-needs-no-native-change-reaches-done: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-session-that-needs-no-native-change-reaches-done-a502af.md)
 
 ## Open threads
 
