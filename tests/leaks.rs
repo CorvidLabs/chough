@@ -550,3 +550,69 @@ fn a_given_name_holding_the_host_name_is_refused() {
     let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
     refused(&fixture, &arguments, "id", "host-name", &words);
 }
+
+/// REQ-records-006 (#267), TC-records-a-hyphen-glued-token-is-a-leak: a token glued to
+/// a hyphen, the shape a slug or a run name gives it, is refused at the write like the
+/// same token after a space, and the doctor reports it in a committed file.
+#[test]
+fn a_hyphen_glued_token_is_refused_at_the_write_and_found_by_the_doctor() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+    let glued = concat!("x-", "ghp_", "abcdefghij0123456789abcdefghij0123");
+    let secret = concat!("ghp_", "abcdefghij0123456789");
+    let decision = format!("decided: probe {glued}");
+    refused(
+        &fixture,
+        &["checkpoint", "--decision", &decision],
+        "decision",
+        "token",
+        secret,
+    );
+    let before = tree(fixture.root());
+    let output = run(&fixture, &["session", "new", glued, "--objective", "probe"]);
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        !output.status.success(),
+        "the session key was written: {said}"
+    );
+    assert!(said.contains("refused:leak"), "{said}");
+    assert!(said.contains("holds token"), "{said}");
+    assert!(
+        !said.contains(secret),
+        "the refusal echoed the value: {said}"
+    );
+    assert_eq!(tree(fixture.root()), before, "session new changed a file");
+
+    let lesson = "knowledge/lessons/2026-01-01-old-run.md";
+    fixture.write(
+        lesson,
+        &format!(
+            "---\nid: 2026-01-01-old-run\ntitle: \"Old\"\ntype: lesson\ntags: []\n---\n\nSee run {glued}\n"
+        ),
+    );
+    fixture.git(&["add", lesson]);
+    fixture.git(&["commit", "-qm", "an old run name"]);
+    let output = run(&fixture, &["doctor", "--leaks"]);
+    let said = String::from_utf8_lossy(&output.stdout).into_owned();
+    assert_eq!(output.status.code(), Some(1), "{said}");
+    assert!(
+        !said.contains(secret),
+        "the doctor echoed the value: {said}"
+    );
+    let report: serde_json::Value = serde_json::from_str(&said).unwrap();
+    let leaks: Vec<&serde_json::Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["kind"] == "leak")
+        .collect();
+    assert_eq!(leaks.len(), 1, "{report:#}");
+    assert_eq!(leaks[0]["target"], lesson);
+    assert_eq!(leaks[0]["match"], "token");
+}
