@@ -5,7 +5,7 @@ aliases: [fix-301]
 objective: Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (issue 301)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: [docs/cli.md, src/checkpoint.rs, src/main.rs]
 observations: [2026-11-18-fledge-run-fmt-lint-and-test-pass-785-passed-0-failed]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-301
-    holds: accept
-    drives: review
-    opened: 2026-11-18T03:35:46Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (issue 301)
 
@@ -39,6 +35,7 @@ Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (
 
 - 0xLeif decided "Scope approval of fix-301": "approved" (Claude Code chat (hc t28), 2026-11-17, in reply to the #301 scope summary (docs/cli.md rows, help text for all 11 checkpoint flags, help --help exits 0, changelog fragment)); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve fix-301 as 0xLeif
 - 0xLeif, Claude Code chat (hc t28), 2026-11-17: "drop change ready from #301". main has no chough change ready command, so docs/cli.md does not add it; the approved acceptance criteria's change ready clause is out of scope. Recorded by claude-code (hc t28).
+- 0xLeif decided "Implementation review of fix-301": "approve the #76 fix review and #301, merge on green" (Claude Code chat (hc t28), 2026-11-17, in reply to: #301 review: the review gate on #309 is open); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change review fix-301 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -114,4 +111,22 @@ Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (
   - revision: a265791f12cfe2dfeea8ff44d4f1ae37d8ca3640
   - holds: accept
   - drives: review
+  - by: claude-code (hc t28)
+- 2026-11-18T03:37:39Z · gate-closed · accept → accept · Implementation review of fix-301 ^t-67ccbf
+  - native_change: fix-301
+  - revision: 63679edaf445dce86f58c23ce4d9aaa2016fd413
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: approve the #76 fix review and #301, merge on green
+    - where: Claude Code chat (hc t28), 2026-11-17, in reply to: #301 review: the review gate on #309 is open
+    - recorded_by: claude-code (hc t28)
+    - summary_digest: 35001eb8d17c5286bdaed45e834a846236f9d302d0994e72dfcdc451c963a261
+    - list: d409e72ca459
+    - native: specsync change review fix-301
+    - actor: 0xLeif
+  - by: claude-code (hc t28)
+- 2026-11-18T03:37:40Z · advance · accept → done · native:archived ^t-aa07cf
+  - native_change: fix-301
+  - gate: native:archived
+  - revision: 63679edaf445dce86f58c23ce4d9aaa2016fd413
   - by: claude-code (hc t28)
