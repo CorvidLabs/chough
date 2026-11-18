@@ -28,6 +28,9 @@ waiting_on_human:
     opened: 2026-11-18T17:31:03Z
 run_consents: []
 next: Wait for Leif's implementation review of release-0-6-1; the tag and publish are his separate decisions
+title: Chough 0.6.1 release preparation
+summary:
+  - "Version 0.6.1, the change log assembled from 36 fragments of merged changes, the knowledge index rebuilt, and two changelog tests fixed so they hold once a release removes the fragments. The release check and the publish dry run passed on macOS. The test step failed once on two of #324's evidence tests under heavy machine load and passed in two full reruns; that failure was not explained. Nothing is tagged or published; those are Leif's separate decisions."
 ---
 # Prepare the Chough 0.6.1 patch release: version 0.6.1, the changelog assembled from changelog.d, the knowledge index rebuilt, and the release dry runs; stop before the tag
 

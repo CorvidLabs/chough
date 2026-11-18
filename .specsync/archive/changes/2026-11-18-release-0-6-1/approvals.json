@@ -83,6 +83,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18; the same answer as the gate closed just before, which was opened at build and so drove no native approval",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795023181,
+      "digest": "2d02e2084b91692a9e5d5c31326cd82468c731de08c6fb77444cd6db29aa564b",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
