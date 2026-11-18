@@ -5,7 +5,7 @@ aliases: [fix-263]
 objective: "migrate --apply refuses before writing when a planned target that differs only in case from a removed 0.5.x file already exists with other bytes (REQ-records-009, #263)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-records-migrate-refuses-a-separate-case-colliding-target-406fa9
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-263
-    holds: accept
-    drives: review
-    opened: 2026-11-18T15:30:21Z
+waiting_on_human: []
 run_consents: []
-next: Wait for Leif's implementation review of fix-263
+next: Continue done
 title: migrate --apply refuses a separate case-colliding target before writing
 summary:
   - On a case-sensitive file system a separate knowledge/index.md passed the pre-write check, and the apply removed the 0.5.x files before failing on it, leaving a receipt for bytes it never wrote (#263). The check now exempts a case-colliding target only when it is the removed file under its other spelling. The test fails on main and passes with the fix in the chough-linux:3 image; the verify lane passed on macOS after main (169062c) was merged in. The full lane was not run on Linux locally.
@@ -46,6 +42,7 @@ migrate --apply refuses before writing when a planned target that differs only i
 
 - The pre-write check exempts a case-colliding target only when it is the removed file under its other spelling: the other spelling still opens and the folder does not list both names. The session's criteria list DRIVE-27 by my mistake; LIFE-20 is the one that applies
 - 0xLeif decided "Scope approval of fix-263": "Approve (Recommended)" (Claude Code session with Fable, 2026-11-18, answer to the interview question 'fix-263 (draft PR #312) ... Do you approve the scope?'); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-263 as 0xLeif
+- 0xLeif decided "Implementation review of fix-263": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's PASS on PR #312); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-263 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -102,4 +99,20 @@ migrate --apply refuses before writing when a planned target that differs only i
   - revision: ccc1a57e1f8fb4fcb0cb92d8331949a5ebe8be22
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T19:26:07Z · gate-closed · accept → accept · Implementation review of fix-263 ^t-36a08b
+  - native_change: fix-263
+  - revision: f9bbe7bc2a96ace53be021142299c5d8bb08fa3a
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's PASS on PR #312
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-263
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T19:26:08Z · advance · accept → done · native:archived ^t-d5286a
+  - native_change: fix-263
+  - gate: native:archived
+  - revision: f9bbe7bc2a96ace53be021142299c5d8bb08fa3a
   - by: fable (claude-fable-5-2, hc t4b)
