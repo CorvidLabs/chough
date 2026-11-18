@@ -19,6 +19,7 @@ files: [src/bugs.rs, src/migrate.rs, tests/migrate_evidence.rs]
 observations:
   - 2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations
   - 2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations-1d1109
+  - 2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations-af96fe
 bugs: []
 blockers: []
 waiting_on_human:
@@ -47,6 +48,7 @@ A migrated bug's body links each carried observation to the file of the entry or
 
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_bugs_body_links_its_carried_observations for TC-records-a-migrated-bugs-body-links-its-carried-observations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations.md)
 - [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_bugs_body_links_its_carried_observations for TC-records-a-migrated-bugs-body-links-its-carried-observations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations-1d1109.md)
+- [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_bugs_body_links_its_carried_observations for TC-records-a-migrated-bugs-body-links-its-carried-observations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations-af96fe.md)
 
 ## Open threads
 
