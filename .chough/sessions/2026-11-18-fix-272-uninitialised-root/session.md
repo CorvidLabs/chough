@@ -5,7 +5,7 @@ aliases: [fix-272-uninitialised-root]
 objective: "journal add holds the writer lock in a project with no .chough directory too, so parallel posts all reach the feed there (REQ-cli-040, review of #302)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-cli-journal-add-holds-the-writer-lock-with-no-chough-2cdcfe
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-272-uninitialised-root
-    holds: accept
-    drives: review
-    opened: 2026-11-18T02:09:01Z
+waiting_on_human: []
 run_consents: []
-next: Wait for Leif's implementation review of fix-272-uninitialised-root; read the PR's reviews first; do not ship
+next: Continue done
 title: journal add holds the writer lock with no .chough directory
 summary:
   - "In a project with no .chough directory, journal add took no lock, so parallel posts could still miss the feed after #302. It now takes the checkpoint lock directly, as REQ-cli-040 requires. Two tests failed first; the verify lane passed on macOS after main (5408c44) was merged in. Linux was not run locally."
@@ -48,6 +44,7 @@ journal add holds the writer lock in a project with no .chough directory too, so
 - Leif, 2026-11-17, answering Fable's question on the agent review of #302: 'Fix forward: lock'. journal add takes the writer lock in a project with no .chough directory too; refusing such a project and reverting 8083df5 were the rejected options.
 - No requirement text changes (--no-spec-change): REQ-cli-040 names journal add with no exception for an uninitialised project.
 - 0xLeif decided "Scope approval of fix-272-uninitialised-root": "approve all three, record as 0xLeif" (Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the gates on #308, #305 and #306); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-272-uninitialised-root as 0xLeif
+- 0xLeif decided "Implementation review of fix-272-uninitialised-root": "Pass (Recommended)" (Claude Code session with Fable, 2026-11-17, answer to the interview question 'Do you pass the implementation review of fix-272-uninitialised-root?' after the agent review passed 552d236); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-272-uninitialised-root as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -104,4 +101,20 @@ journal add holds the writer lock in a project with no .chough directory too, so
   - revision: ea5224b381a4b9ce0e51c61cda419fb848ab46d2
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T05:59:22Z · gate-closed · accept → accept · Implementation review of fix-272-uninitialised-root ^t-af7335
+  - native_change: fix-272-uninitialised-root
+  - revision: 46c9080ba4055008f83b39ca022bad46ff9a2b65
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Pass (Recommended)
+    - where: Claude Code session with Fable, 2026-11-17, answer to the interview question 'Do you pass the implementation review of fix-272-uninitialised-root?' after the agent review passed 552d236
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-272-uninitialised-root
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T05:59:23Z · advance · accept → done · native:archived ^t-bf12aa
+  - native_change: fix-272-uninitialised-root
+  - gate: native:archived
+  - revision: 46c9080ba4055008f83b39ca022bad46ff9a2b65
   - by: fable (claude-fable-5-2, hc t4b)
