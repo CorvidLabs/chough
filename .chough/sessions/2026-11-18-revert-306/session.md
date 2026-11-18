@@ -16,7 +16,9 @@ requirements: [REQ-records-001]
 cases: [TC-records-a-volume-without-hard-links-takes-new-records]
 design: []
 files: [src/records.rs, tests/no_hard_links.rs]
-observations: [2026-11-18-ran-tests-no-hard-links-rs-new-records-are-written-on-a-volume]
+observations:
+  - 2026-11-18-ran-tests-no-hard-links-rs-new-records-are-written-on-a-volume
+  - 2026-11-18-tc-records-a-volume-without-hard-links-takes-new-records
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -40,6 +42,7 @@ Revert #306's new-record writer for 0.6.1: it cannot create records on a file sy
 ## What was verified
 
 - [Ran tests/no_hard_links.rs::new_records_are_written_on_a_volume_without_hard_links by hand on a 64 MB exFAT image at about 08:50 on 2026-11-18, before it was marked ignored: with main's writer chough init failed with 'Operation not supported (os error 45)'; with the revert init, bug add and journal add passed (1 passed, 3.08s). A second run at 09:21 hung in hdiutil attach and was stopped, so it gave no result.](evidence/2026-11-18-ran-tests-no-hard-links-rs-new-records-are-written-on-a-volume.md)
+- [Verdicts 1=pass. Ran the test by hand on a 64 MB exFAT image at about 08:50 on 2026-11-18, before it was marked ignored: with main's writer chough init failed with 'Operation not supported (os error 45)'; with the revert init, bug add and journal add passed (1 passed, 3.08s).](evidence/2026-11-18-tc-records-a-volume-without-hard-links-takes-new-records.md)
 
 ## Open threads
 
