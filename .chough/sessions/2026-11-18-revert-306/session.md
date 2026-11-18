@@ -5,7 +5,7 @@ aliases: [revert-306]
 objective: "Revert #306's new-record writer for 0.6.1: it cannot create records on a file system without hard links (#313) and its temporary files are swept by a concurrent writer; #260 is redone in 0.6.2"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,11 +19,16 @@ files: [src/records.rs, tests/no_hard_links.rs]
 observations:
   - 2026-11-18-ran-tests-no-hard-links-rs-new-records-are-written-on-a-volume
   - 2026-11-18-tc-records-a-volume-without-hard-links-takes-new-records
+  - 2026-11-18-ran-the-tester-s-parallel-repro-60-checkpoint-and-60-evidence
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of revert-306
+    holds: accept
+    drives: review
+    opened: 2026-11-18T16:29:56Z
 run_consents: []
-next: Continue test
+next: Wait for Leif's implementation review of revert-306
 ---
 # Revert #306's new-record writer for 0.6.1: it cannot create records on a file system without hard links (#313) and its temporary files are swept by a concurrent writer; #260 is redone in 0.6.2
 
@@ -43,6 +48,7 @@ Revert #306's new-record writer for 0.6.1: it cannot create records on a file sy
 
 - [Ran tests/no_hard_links.rs::new_records_are_written_on_a_volume_without_hard_links by hand on a 64 MB exFAT image at about 08:50 on 2026-11-18, before it was marked ignored: with main's writer chough init failed with 'Operation not supported (os error 45)'; with the revert init, bug add and journal add passed (1 passed, 3.08s). A second run at 09:21 hung in hdiutil attach and was stopped, so it gave no result.](evidence/2026-11-18-ran-tests-no-hard-links-rs-new-records-are-written-on-a-volume.md)
 - [Verdicts 1=pass. Ran the test by hand on a 64 MB exFAT image at about 08:50 on 2026-11-18, before it was marked ignored: with main's writer chough init failed with 'Operation not supported (os error 45)'; with the revert init, bug add and journal add passed (1 passed, 3.08s).](evidence/2026-11-18-tc-records-a-volume-without-hard-links-takes-new-records.md)
+- [Ran the tester's parallel repro (60 checkpoint and 60 evidence add writers at once, chough-swarm-0611/runs/s3/repro/f2.sh) three times against this branch's debug build: all 120 writers exited 0 in each run, with no swept temporary file.](evidence/2026-11-18-ran-the-tester-s-parallel-repro-60-checkpoint-and-60-evidence.md)
 
 ## Open threads
 
@@ -83,4 +89,15 @@ Revert #306's new-record writer for 0.6.1: it cannot create records on a file sy
   - native_change: revert-306
   - gate: native:approved
   - revision: 66543c2bf509627ec2a165414acae0bc8ab59c4a
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T16:29:56Z · advance · test → accept · native:verifying ^t-e89a47
+  - native_change: revert-306
+  - gate: native:verifying
+  - revision: 0cd19f98cde9dd17435a28021ebc7e35cc274c17
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T16:29:56Z · gate-opened · accept → accept · Implementation review of revert-306 ^t-3af31f
+  - native_change: revert-306
+  - revision: 0cd19f98cde9dd17435a28021ebc7e35cc274c17
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
