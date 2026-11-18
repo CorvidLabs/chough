@@ -1,0 +1,21 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #313: since #306 no new record could be created on a file system without hard
+# links, such as exFAT. #306's writer was reverted for 0.6.1. The test mounts an image
+# with hdiutil, which can hang, so it is ignored by default and run by hand.
+
+[[case]]
+id = "TC-records-a-volume-without-hard-links-takes-new-records"
+title = "On an exFAT volume, where a hard link is refused, chough init, bug add and journal add write whole records"
+status = "active"
+track = "functional"
+method = "manual"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/no_hard_links.rs"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+setup = ["macOS with hdiutil, and the chough binary built from the commit under test"]
+steps = ["Run cargo test --locked --test no_hard_links -- --ignored on macOS, with no other disk image operation running."]
+expected = ["tests/no_hard_links.rs::new_records_are_written_on_a_volume_without_hard_links passes"]
