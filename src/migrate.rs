@@ -504,6 +504,12 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
                     ),
                 });
             }
+            // #339: a plan the apply would refuse is not offered to apply, in JSON either.
+            if view["apply_refused"].is_object()
+                && let Some(fields) = view.as_object_mut()
+            {
+                fields.remove("apply");
+            }
             // REQ-records-009 (F12b): a person consents to the plan, so it is text by
             // default, and the same plan and digest as JSON under --json.
             if args.json {

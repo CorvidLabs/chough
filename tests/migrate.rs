@@ -1896,6 +1896,8 @@ fn migrate_refuses_a_plan_whose_files_would_hold_conflict_markers() {
     let fixture = migrate_project("adopted", &[(entry, &conflicted)]);
     let preview = fixture.ok(&["migrate", "--json"]);
     let digest = preview["plan_digest"].as_str().unwrap().to_string();
+    // A plan the apply would refuse is not offered to apply, in JSON either.
+    assert!(preview.get("apply").is_none(), "{preview:#}");
     // #339: the preview says up front that the apply refuses, naming the 0.5.x source.
     assert_eq!(
         preview["apply_refused"]["refusal"], "refused:conflict-markers",
