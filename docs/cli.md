@@ -992,6 +992,8 @@ any refusal the apply would give now, then the plan digest and the apply command
 - `sources`: each 0.5.x file with its SHA-256;
 - `becomes`: each 0.5.x file with the 0.6.0 files it becomes;
 - `writes`: each 0.6.0 file it would write;
+- `receipt`: the receipt the apply writes, named when the plan is built and so part of
+  its digest;
 - `redactions`: every value it would redact, by file, field and kind;
 - `removed`: every file it would remove without carrying it, with why;
 - `kept`: each open bug's fixture under `.chough/artifacts/`, kept byte for byte, with
@@ -1027,10 +1029,14 @@ another record. Before writing anything, `--apply` refuses:
 | `refused:change-open` | A native change in the project is not archived, named; the upgrade never runs while a change is open |
 | `refused:no-consent` | Neither `--consent` nor a standing `migration` preference gives the human's consent |
 | `refused:uncommitted` | A 0.5.x file it would remove differs from its bytes at HEAD or is untracked, named, so Git holds every byte it removes |
-| `refused:target-exists` | A file it would write already exists with other bytes |
+| `refused:target-exists` | A file it would write, the receipt included, already exists with other bytes; every target is checked before any is written |
 
 It then writes the 0.6.0 tree by create-new only, reads each file back and compares
-its digest, and writes the receipt `.chough/archive/migrations/<date>-from-0-5.md`:
+its digest, and writes the receipt the plan names as `receipt`,
+`.chough/archive/migrations/<date>-from-0-5.md`. A second migration on the same day,
+for a 0.5.x record written into an already migrated tree, names
+`<date>-from-0-5-2.md` (then `-3`, and so on), keeps the first receipt as it is, and
+its name is part of the plan's digest. The receipt lists
 every file before and after with its path, size and SHA-256, the redactions by file,
 field and kind, every removed file with why and the commit that holds it, and the
 old-to-new ID map, with `none` under any section that has nothing to list. Every
