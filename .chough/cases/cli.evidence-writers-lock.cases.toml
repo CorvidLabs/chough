@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #317: evidence add, cases run and cases record read session.md before taking
+# the writer lock and saved that stale copy under it, so parallel writers lost updates.
+
+[[case]]
+id = "TC-cli-evidence-writers-reread-under-the-lock"
+title = "An update saved while evidence add waits for the writer lock survives its save, and evidence add's observation reference is added"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-11"]
+requirements = ["REQ-cli-040"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::evidence_add_rereads_the_session_under_the_writer_lock passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "evidence_add_rereads_the_session_under_the_writer_lock"

@@ -833,3 +833,193 @@ fn an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change() {
     assert!(!next.to_string().contains("left-behind"), "{next:#}");
     fixture.ok(&["gate", "list", "--json"]);
 }
+
+/// `chough <args>` in `fixture` as a child process the test can watch, with the same
+/// PATH, actor and identity isolation as `Fixture::run`.
+fn spawnable(fixture: &Fixture, args: &[&str]) -> std::process::Command {
+    let mut command = std::process::Command::new(env!("CARGO_BIN_EXE_chough"));
+    command.arg("--root").arg(fixture.root()).args(args);
+    let mut paths = vec![fixture.root().join("bin")];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    command.env("PATH", std::env::join_paths(paths).unwrap());
+    for name in common::ACTOR_VARIABLES {
+        command.env_remove(name);
+    }
+    command.env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG));
+    command
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
+    command
+}
+
+/// `evidence add` arguments for a passed human observation with this summary.
+fn add_args(summary: &str) -> Vec<String> {
+    [
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        summary,
+    ]
+    .iter()
+    .map(|part| part.to_string())
+    .collect()
+}
+
+/// The active session's folder, relative to the project.
+fn session_folder(fixture: &Fixture) -> String {
+    let sessions = fixture.root().join(".chough/sessions");
+    let mut names: Vec<String> = fs::read_dir(&sessions)
+        .unwrap()
+        .flatten()
+        .filter(|entry| entry.path().is_dir())
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect();
+    assert_eq!(names.len(), 1, "{names:?}");
+    format!(".chough/sessions/{}", names.remove(0))
+}
+
+/// REQ-cli-040 (#317), TC-cli-evidence-writers-reread-under-the-lock: `evidence add`
+/// reads the session it changes under the project's writer lock, so an update another
+/// writer saves while it waits for the lock survives its save. The test holds the lock,
+/// lets `evidence add` write its entry and block, changes the session's next action as
+/// another writer would, and then releases the lock.
+#[cfg(unix)]
+#[test]
+fn evidence_add_rereads_the_session_under_the_writer_lock() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let folder = session_folder(&fixture);
+    let lock_path = common::checkpoint_lock_path(fixture.root()).unwrap();
+    fs::create_dir_all(lock_path.parent().unwrap()).unwrap();
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+
+    let args = add_args("SYNTHETIC entry saved after the wait");
+    let args: Vec<&str> = args.iter().map(String::as_str).collect();
+    let mut add = spawnable(&fixture, &args).spawn().unwrap();
+    // The entry is written by create-new before the session save waits for the lock.
+    let evidence = fixture.root().join(&folder).join("evidence");
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+    while fs::read_dir(&evidence).map_or(0, |entries| entries.count()) == 0 {
+        assert!(
+            std::time::Instant::now() < deadline,
+            "evidence add wrote no entry"
+        );
+        assert!(
+            add.try_wait().unwrap().is_none(),
+            "evidence add ended early"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(25));
+    }
+    std::thread::sleep(std::time::Duration::from_millis(500));
+    assert!(
+        add.try_wait().unwrap().is_none(),
+        "evidence add did not wait for the writer lock"
+    );
+
+    // Another writer's update, saved while evidence add waits.
+    let record = format!("{folder}/session.md");
+    let text = fixture.read(&record);
+    let next = text
+        .lines()
+        .find(|line| line.starts_with("next: "))
+        .expect("a next action")
+        .to_string();
+    fixture.write(
+        &record,
+        &text.replacen(
+            &next,
+            "next: SYNTHETIC next action saved by another writer",
+            1,
+        ),
+    );
+    <fs::File as fs4::FileExt>::unlock(&lock).unwrap();
+
+    let output = add.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = fixture.read(&record);
+    assert!(
+        text.contains("SYNTHETIC next action saved by another writer"),
+        "the other writer's update was lost:\n{text}"
+    );
+    assert_eq!(
+        fixture.checkpoint()["observations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1,
+        "{text}"
+    );
+}
+
+/// REQ-cli-040 (#317): ten `checkpoint --decision` and ten `evidence add` commands at
+/// once each apply their change to the latest session, so all ten decisions and all ten
+/// observation references are kept.
+#[cfg(unix)]
+#[test]
+fn parallel_decisions_and_evidence_adds_all_land() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let mut children = vec![];
+    for number in 1..=10 {
+        let decision = format!("decided: SYNTHETIC storm decision {number}");
+        children.push(
+            spawnable(&fixture, &["checkpoint", "--decision", &decision])
+                .spawn()
+                .unwrap(),
+        );
+        let args = add_args(&format!("SYNTHETIC storm entry {number}"));
+        let args: Vec<&str> = args.iter().map(String::as_str).collect();
+        children.push(spawnable(&fixture, &args).spawn().unwrap());
+    }
+    for child in children {
+        let output = child.wait_with_output().unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let text = fixture.read(&format!("{}/session.md", session_folder(&fixture)));
+    assert_eq!(
+        text.matches("SYNTHETIC storm decision ").count(),
+        10,
+        "decisions were lost:\n{text}"
+    );
+    assert_eq!(
+        fixture.checkpoint()["observations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        10,
+        "observation references were lost:\n{text}"
+    );
+}

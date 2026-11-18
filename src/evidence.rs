@@ -523,9 +523,10 @@ pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Res
         return Err(error);
     }
 
-    let mut session = match crate::checkpoint::read_session(root)? {
-        crate::checkpoint::Session::V2(session) => *session,
-    };
+    // REQ-cli-040 (#317): read the session under the writer lock, which the save keeps,
+    // so an update another writer saved while this one ran its case or wrote its entry
+    // is kept. A case has already run, so it never ran under the lock.
+    let mut session = crate::checkpoint::read_checkpoint(root)?;
     if !session.observations.contains(&name) {
         session.observations.push(name.clone());
     }
