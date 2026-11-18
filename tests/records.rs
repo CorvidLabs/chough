@@ -1035,9 +1035,13 @@ fn names_are_date_and_slug_with_aliases() {
     assert!(fixture.read(&path).contains("SYNTHETIC note"));
     // Linked by the old ID: the checkpoint resolves it, as it refuses an unknown one.
     fixture.ok(&["checkpoint", "--bug", "BUG-0012"]);
-    let linked = front(&fixture.read(&fixture.session_file()))["bugs"].clone();
+    // The session already lists the bug `bug add` filed in it (#329), so read the list
+    // from the checkpoint rather than from one front matter line.
+    let linked = fixture.session()["bugs"].clone();
     assert!(
-        items(&linked).iter().any(|bug| bug == "BUG-0012"),
+        linked
+            .as_array()
+            .is_some_and(|bugs| bugs.iter().any(|bug| bug == "BUG-0012")),
         "{linked}"
     );
     // An alias two bugs hold is refused by bug show.
@@ -1399,4 +1403,48 @@ fn a_goal_a_person_wrote_is_never_filled() {
         text.contains("\n# Add a shout flag to greet.py\n"),
         "{text}"
     );
+}
+
+/// REQ-records-001 (#265), TC-records-a-conflict-marker-write-is-refused: a session whose
+/// body holds a Git conflict block refuses the next write as `refused:conflict-markers`,
+/// naming the file, the line and the marker, and the refused write changes nothing.
+#[test]
+fn a_record_body_with_conflict_markers_is_refused_and_unchanged() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let file = fixture.session_file();
+    let good = fixture.read(&file);
+    let bad = good.replacen(
+        "## Goal\n\nShip alpha\n",
+        "## Goal\n\n<<<<<<< HEAD\nShip alpha\n=======\nShip beta\n>>>>>>> other\n",
+        1,
+    );
+    assert_ne!(bad, good);
+    let line = bad.lines().position(|line| line == "<<<<<<< HEAD").unwrap() + 1;
+    fixture.write(&file, &bad);
+    let refused = fixture.fails(&["checkpoint", "--decision", "never written"]);
+    assert!(refused.contains("refused:conflict-markers"), "{refused}");
+    assert!(refused.contains(&file), "{refused}");
+    assert!(refused.contains(&format!("line {line}")), "{refused}");
+    assert!(refused.contains("<<<<<<< HEAD"), "{refused}");
+    assert_eq!(fixture.read(&file), bad, "a refused write changed the file");
+}
+
+/// REQ-records-001 (#265): a `=======` line outside a conflict, such as a Markdown
+/// heading underline, is not a conflict marker, so the session saves as before.
+#[test]
+fn a_heading_underline_is_not_a_conflict_marker() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let file = fixture.session_file();
+    let text = fixture.read(&file).replacen(
+        "## Goal\n\nShip alpha\n",
+        "## Goal\n\nShip alpha\n\nNotes\n=======\n",
+        1,
+    );
+    fixture.write(&file, &text);
+    fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
+    assert!(fixture.read(&file).contains("Notes\n=======\n"));
 }

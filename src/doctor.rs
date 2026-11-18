@@ -51,6 +51,7 @@ enum Kind {
     RecordsInVerification,
     MergeDrivers,
     MergeDriverOutdated,
+    ConflictMarkers,
     GitOperation,
 }
 
@@ -71,6 +72,7 @@ impl Kind {
             Self::RecordsInVerification => "records_in_verification",
             Self::MergeDrivers => "merge_drivers",
             Self::MergeDriverOutdated => "merge_driver_outdated",
+            Self::ConflictMarkers => "conflict_markers",
             Self::GitOperation => "git_operation",
         }
     }
@@ -83,6 +85,8 @@ struct Finding {
     decision: bool,
     status: &'static str,
     reason: Option<String>,
+    /// The `--reason` a decision fix was applied with (REQ-history-012, #250).
+    decision_reason: Option<String>,
     /// Why the fix cannot run even with `--fix`, when known before fixing.
     blocked: Option<String>,
     /// Fields the finding adds to its JSON, such as the missing entries.
@@ -98,6 +102,7 @@ impl Finding {
             decision,
             status: "found",
             reason: None,
+            decision_reason: None,
             blocked: None,
             detail: None,
         }
@@ -118,6 +123,9 @@ impl Finding {
         });
         if let Some(reason) = &self.reason {
             value["reason"] = json!(reason);
+        }
+        if let Some(reason) = &self.decision_reason {
+            value["decision_reason"] = json!(reason);
         }
         if let Some(Value::Object(detail)) = &self.detail {
             for (key, field) in detail {
@@ -702,6 +710,39 @@ fn alias_findings(root: &Path) -> Vec<Finding> {
     found
 }
 
+/// Each conflict marker in the body of a committed record (REQ-records-001, #265): one
+/// finding per marker line, naming the file, the line and the marker. Only records are
+/// read, the files `bound_of` gives a record's bound; a case definition, a README or a
+/// generated index is not one. A conflict is resolved by hand, so there is no fix.
+fn conflict_marker_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
+    let knowledge = crate::prefs::effective(root, "library-dir")?.0;
+    let mut found = vec![];
+    // The generated knowledge index has a bound but is not a record.
+    let index = format!("{}/index.md", knowledge.trim_end_matches('/'));
+    for path in files.iter().filter(|path| path.ends_with(".md")) {
+        if *path == index || !matches!(bound_of(path, &knowledge), Some((_, false))) {
+            continue;
+        }
+        let Some(text) = tracked_text(root, path) else {
+            continue;
+        };
+        for (line, marker) in crate::records::conflict_markers(&text) {
+            let mut finding = Finding::new(
+                Kind::ConflictMarkers,
+                path,
+                "none: resolve the conflict in the record by hand in a reviewed change, then run chough doctor again".into(),
+                false,
+            );
+            finding.blocked = Some(format!(
+                "{path} line {line} holds the Git conflict marker `{marker}`; doctor never rewrites a record"
+            ));
+            finding.detail = Some(json!({"line": line, "marker": marker}));
+            found.push(finding);
+        }
+    }
+    Ok(found)
+}
+
 /// The bound of one key screenshot and of all of a session's (REQ-records-013).
 const SCREENSHOT_BOUND: u64 = 524_288;
 const SESSION_SCREENSHOTS_BOUND: u64 = 2_097_152;
@@ -1150,6 +1191,7 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     found.extend(records_in_verification(root));
     found.extend(merge_drivers(root)?);
     found.extend(merge_driver_outdated(root));
+    found.extend(conflict_marker_findings(root, &files)?);
     found.extend(git_operation_finding(root));
     Ok(found)
 }
@@ -1373,6 +1415,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         | Kind::Oversize
         | Kind::Unreadable
         | Kind::MergeDriverOutdated
+        | Kind::ConflictMarkers
         | Kind::GitOperation => {
             bail!("{} has no fix", finding.kind.name())
         }
@@ -1413,7 +1456,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         }
         Kind::StaleGates => {
             sessions::pin(root, &sessions::session_file(&finding.target));
-            let result = checkpoint::withdraw_gates(root);
+            let result = checkpoint::withdraw_gates(root, reason.unwrap_or_default());
             sessions::unpin(root);
             result?;
         }
@@ -1487,6 +1530,21 @@ pub(super) fn run(root: &Path, args: DoctorArgs) -> Result<bool> {
             match apply(root, finding, &args, reason) {
                 Ok(()) => {
                     found[index - 1].status = "fixed";
+                    // REQ-history-012 (#250): a decision the fix applied echoes the
+                    // reason it was given.
+                    if found[index - 1].decision
+                        && let Some(reason) = reason
+                    {
+                        // What was written: under `--redact` the reason is echoed as
+                        // redacted, never raw (REQ-records-006).
+                        let mut echoed = reason.to_string();
+                        let _ = crate::leaks::guard(
+                            crate::leaks::Local::current(),
+                            "reason",
+                            &mut echoed,
+                        );
+                        found[index - 1].decision_reason = Some(echoed);
+                    }
                     // A withdrawn gate leaves a finished session, archived next.
                     if found[index - 1].kind == Kind::StaleGates {
                         let key = found[index - 1].target.clone();

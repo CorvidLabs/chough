@@ -1,0 +1,56 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795032560,
+      "digest": "7243a32d7975cdc1b8bed11e87944068177f7a3803edd536ca1e8b8ba5a2bff0",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-283\": \"skip the check for retired cases. cases check returns early for a retired case before checking its fledge-task binding, so the original binding stays as history.\" (Leif's decision comment on CorvidLabs/chough#283 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for the 0.6.2 list). Relayed and recorded by chough-fixer-t4g at 2026-11-18T20:09:19Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-283",
+        "title": "Fix 283",
+        "description": "fix 283",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.retired-case-binding.cases.toml",
+          "changelog.d/2026-11-18-fix-283.md",
+          "docs/cli.md",
+          "src/cases.rs",
+          "tests/cases.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "No requirement says cases check validates a retired case's fledge-task binding; the code checked it before its retired-case early return. Leif decided the check is skipped for retired cases so the original binding stays as history; a retired case was already never run (find_checked), so only the check order, a test and the docs change.",
+        "acceptance_criteria": [
+          "chough cases check passes a retired case whose fledge-task binding names a task no longer in fledge.toml, with the binding kept as written, while an active case naming a missing task is still refused naming the task; cases run still refuses the retired case."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decision on #283 (2026-11-18 planning interview): skip the check for retired cases, returning early before the fledge-task binding check, so the original binding stays as history. Human gates as plain text in tasks.md. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "skip the check for retired cases. cases check returns early for a retired case before checking its fledge-task binding, so the original binding stays as history.",
+        "where": "Leif's decision comment on CorvidLabs/chough#283 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for the 0.6.2 list",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795043932,
+      "digest": "d67858ba7c86345b5eef23dd6fe3020b23192c539cc1d8756581f248643e9033",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

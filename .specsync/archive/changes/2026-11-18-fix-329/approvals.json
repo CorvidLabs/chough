@@ -1,0 +1,62 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795031647,
+      "digest": "ebfa043c128e9975399749eb3475a640c2695d711b2115477dd5c1b2f059e64b",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-329\": \"auto-link. chough bug add while a session is active relates the new bug to that session, so a blocking bug stops it. A bug filed with no session active stays unlinked and gets the existing warning. … Recreate on my word\" (Leif's decision comment on CorvidLabs/chough#329 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then, relayed by hc t4c on 2026-11-18, 'Recreate on my word' to recreate fix-329 with tests/records.rs declared, since its alias test reads the session's bugs list; the first draft was never pushed). Relayed and recorded by chough-fixer-t4g at 2026-11-18T19:54:06Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-329",
+        "title": "Fix 329",
+        "description": "fix 329",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.bug-joins-the-active-session.cases.toml",
+          "changelog.d/2026-11-18-fix-329.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "tests/bugs.rs",
+          "tests/records.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough bug add while a session is active puts the new bug on that session's bugs list, with or without --observation, so a blocking bug filed with nothing linked stops that session leaving test and its story names it. A bug added with no session active is on no session's bugs list and stops no session, and chough next names it as not blocking that session. chough bug update with --observation joins the active session only when the entry it names is that session's, as before."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Human gates are listed as plain text in tasks.md, and the deltas are frozen at approval. Leif's decision on #329 (2026-11-18 planning interview) fixes the behaviour: auto-link on bug add; no session active stays unlinked with the existing warning. tests/records.rs is declared because its alias test reads the session's bugs list, which now also holds the bug the test files. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "7ff9cb2e2259a497f1cbca14f3a1d4b1fd59bae851f955609c0185dff9727fa0"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-012": "1d5b2618146c3d51740926e65f2ae0fdc98e92e569cdbff627a3eada35f753f4",
+        "cli: REQUIREMENT REQ-cli-054": "fc24815b397f91c5c50e400ced51d53fed2de74c0483dd8f22de53f881c998c7"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "auto-link. chough bug add while a session is active relates the new bug to that session, so a blocking bug stops it. A bug filed with no session active stays unlinked and gets the existing warning. … Recreate on my word",
+        "where": "Leif's decision comment on CorvidLabs/chough#329 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then, relayed by hc t4c on 2026-11-18, 'Recreate on my word' to recreate fix-329 with tests/records.rs declared, since its alias test reads the session's bugs list; the first draft was never pushed",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795043038,
+      "digest": "2b16f0243394de107c34b28a2c662dffed5922323f7cf340939aa3e4bc973291",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

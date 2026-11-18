@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #298: change ship ran SpecSync's review and ship, then the move into done was
+# refused because SpecSync read the change's history as corrupt.
+
+[[case]]
+id = "TC-cli-ship-refuses-a-corrupt-history"
+title = "With a commit in the change's history holding a change both open and archived, change ship refuses as refused:corrupt-history naming the commit and the change, runs no SpecSync step and leaves the session unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_refuses_a_history_with_a_change_both_open_and_archived passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_refuses_a_history_with_a_change_both_open_and_archived"

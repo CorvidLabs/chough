@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-298",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "dc083b9718058cfbbc16df92a718b8fbd2837bae",
+  "contract_digest": "76321585d4e3aab2655db0c5f445ab1c0a47140ba5569b8765371e37b8fe066f",
+  "execution_digest": "959a7c8904e77411963128c8b17ef18875808ee3421c332ca182d4e929aed569",
+  "workspace_digest": "f1d6301ae89308afb358d1bef90b48c3042bd6b003be4c42ac7de997e4f655a3",
+  "timestamp": 1795042168,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve, merge when green",
+    "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #333 after tester2's recheck PASS",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}

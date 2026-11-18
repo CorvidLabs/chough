@@ -500,6 +500,9 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
         "fingerprint",
         "case",
         "case_digest",
+        "criteria",
+        "requirements",
+        "limitations",
         "screenshot",
         "observed",
         "duration_seconds",
@@ -509,6 +512,21 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
             allowed.contains(&key.as_str()),
             "{key} on a receipt: {story_text}"
         );
+    }
+    // #286: a migrated receipt keeps what its observation was verified against.
+    let joined = |key: &str| -> String {
+        product[key]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|value| value.as_str().unwrap())
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+    assert!(!joined("criteria").is_empty(), "{product:#}");
+    assert_eq!(receipt["criteria"], joined("criteria"), "{story_text}");
+    if !joined("requirements").is_empty() {
+        assert_eq!(receipt["requirements"], joined("requirements"));
     }
     let bug_path = alias(&plan, &legacy_bug_id(&before, &bug));
     let bug_text = fixture.read(&bug_path);
@@ -1424,5 +1442,98 @@ fn migrated_front_matter_names_the_carried_entries() {
     }
     for old in [CASE_RUN, PRODUCT, bug_only] {
         assert!(!listed.contains(&old), "{old}: {next:#}");
+    }
+}
+
+/// REQ-records-009 (#277), TC-records-a-migrated-bugs-body-links-its-carried-observations:
+/// a migrated bug's Log names each carried observation as a Markdown link, relative to
+/// the bug's own file, to the open session's evidence entry or to the archived story
+/// that holds its receipt, and every such link opens a file. A receipt only the bug
+/// holds is named as the bug's own.
+#[test]
+fn a_migrated_bugs_body_links_its_carried_observations() {
+    let fixture = project("releases/v0.5.0");
+    let in_story = "OBS-product-test-00000000000000000000a001";
+    let bug_only = "OBS-product-test-00000000000000000000b001";
+    let observed = legacy(&fixture, PRODUCT)["observed_at_unix_seconds"]
+        .as_u64()
+        .unwrap();
+    observation_like(
+        &fixture,
+        PRODUCT,
+        in_story,
+        "SYNTHETIC archived proof",
+        observed + 60,
+    );
+    observation_like(
+        &fixture,
+        PRODUCT,
+        bug_only,
+        "SYNTHETIC bug-only proof",
+        observed + 120,
+    );
+    reference(&fixture, ".chough/sessions/fixture-first.json", &[PRODUCT]);
+    reference(
+        &fixture,
+        ".chough/sessions/archive/fixture-second.json",
+        &[in_story],
+    );
+    let bug = link_bug(&fixture, &[PRODUCT, in_story, bug_only]);
+    fixture.commit("a 0.5.x bug that links an entry, a story's receipt and its own");
+    let before = tree(fixture.root());
+    let (plan, _) = migrate(&fixture);
+
+    let bug_path = alias(&plan, &legacy_bug_id(&before, &bug));
+    let bug_text = fixture.read(&bug_path);
+    let reported = bug_text
+        .lines()
+        .find(|line| line.contains("Reported (") && line.contains("; evidence: "))
+        .unwrap_or_else(|| panic!("no Reported line with evidence: {bug_text}"));
+    let entry = alias(&plan, PRODUCT);
+    let story = alias(&plan, in_story);
+    let name = |path: &str| {
+        path.rsplit('/')
+            .next()
+            .unwrap()
+            .trim_end_matches(".md")
+            .to_string()
+    };
+    let story_receipt = maps(&fixture.read(&story), "receipts")
+        .into_iter()
+        .find(|receipt| receipt["aliases"] == in_story)
+        .unwrap()["id"]
+        .clone();
+    let own_receipt = maps(&bug_text, "receipts")
+        .into_iter()
+        .find(|receipt| receipt["aliases"] == bug_only)
+        .unwrap()["id"]
+        .clone();
+    let expected = format!(
+        "; evidence: [{}](../{}), [{story_receipt}](../{}), {own_receipt} (a receipt of this bug)",
+        name(&entry),
+        entry.trim_start_matches(".chough/"),
+        story.trim_start_matches(".chough/"),
+    );
+    assert!(
+        reported.contains(&expected),
+        "{reported}\nwanted {expected}"
+    );
+
+    // Every link in the bug's body opens a file, read from the bug's own folder.
+    let folder = fixture.root().join(".chough/bugs");
+    let mut links = 0;
+    for (at, _) in bug_text.match_indices("](") {
+        let target = &bug_text[at + 2..];
+        let target = &target[..target.find(')').unwrap()];
+        assert!(
+            folder.join(target).is_file(),
+            "{target} does not open from {bug_path}"
+        );
+        links += 1;
+    }
+    assert_eq!(links, 2, "{bug_text}");
+    // The bare 0.5.x IDs are gone from the body's evidence text.
+    for old in [PRODUCT, in_story, bug_only] {
+        assert!(!reported.contains(old), "{reported}");
     }
 }

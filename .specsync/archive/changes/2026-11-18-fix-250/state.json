@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-250",
+  "slug": "fix-250",
+  "title": "Fix 250",
+  "description": "fix 250",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "e47b4cfaabe2e68fd02246be01fb7e8e256fe00b",
+  "created_at": 1795032434,
+  "updated_at": 1795036877,
+  "affected_specs": [
+    "history",
+    "cli",
+    "records"
+  ],
+  "affected_paths": [
+    "src/stage.rs",
+    "src/session_md.rs",
+    "src/checkpoint.rs",
+    "src/doctor.rs",
+    "src/history.rs",
+    "tests/doctor.rs",
+    "docs/cli.md",
+    "specs/history/requirements.md",
+    "specs/cli/requirements.md",
+    "specs/records/requirements.md",
+    ".chough/cases/history.stale-gate-reason.cases.toml",
+    "changelog.d/2026-11-18-fix-250.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "After chough doctor --fix --reason withdraws a stale gate, that gate's gate-closed Timeline entry in the archived story holds the reason as its withdrawn field, in the person's words; doctor's JSON gives decision_reason on each decision finding it fixed and on no other finding; withdrawing still records no human decision."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes, and the deltas are frozen at approval. REQ-history-002 keeps the Timeline append-only: the field is written with the entry, never added to an existing one.",
+    "public_contract": "yes"
+  }
+}

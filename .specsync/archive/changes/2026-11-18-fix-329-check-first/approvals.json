@@ -1,0 +1,57 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795043744,
+      "digest": "e32cbd8fc31c4a6a2a5ed59bee744c5e637370baa629fbd518e73e94aac2a30b",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-329-check-first\": \"Yes, for today\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, that a real gap his review thread finds in an already-approved PR is fixed inside its approved scope as a small follow-up change, applied by hc t4c to his P2 thread on #343 ('Preflight the checkpoint bound before creating the bug'), with t4c's design point: check that the session can take another bug link before writing anything, and refuse with nothing written). Relayed and recorded by chough-fixer-t4g at 2026-11-18T23:15:43Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-329-check-first",
+        "title": "Fix 329 check first",
+        "description": "fix 329 check first",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.bug-joins-the-active-session.cases.toml",
+          "changelog.d/2026-11-18-fix-329.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/checkpoint.rs",
+          "tests/bugs.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-cli-012 already says chough bug add while a session is active SHALL add the new bug to that session's checkpoint; a bug written but left out of a full session broke that, so bug add now checks that the session can take the link before writing anything and refuses otherwise, with only code, test and doc changes.",
+        "acceptance_criteria": [
+          "With a session active that already holds its 200 bug links, chough bug add refuses before writing anything, naming the session and the limit, and no new .chough/bugs record exists afterwards; the session record is byte-identical. With room left, bug add writes the bug and links it as before."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's P2 review comment on #343 and the standing rule 'Yes, for today' set the scope, with t4c's design point: check that the active session can take another bug link before writing anything and refuse with nothing written, as in #312, #340 and #332, rather than removing a file afterwards (#306). Deltas none; REQ-cli-012 already requires the link. A boundary regression test, red first.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, for today",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, that a real gap his review thread finds in an already-approved PR is fixed inside its approved scope as a small follow-up change, applied by hc t4c to his P2 thread on #343 ('Preflight the checkpoint bound before creating the bug'), with t4c's design point: check that the session can take another bug link before writing anything, and refuse with nothing written",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795044807,
+      "digest": "984b2931dffb9b32ffc00e7779857235be24ce6a1f5479b246dc793c29322024",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

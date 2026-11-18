@@ -1879,6 +1879,37 @@ fn migrate_skips_macos_metadata_beside_0_5_records() {
     }
 }
 
+/// REQ-records-001 (#265), TC-records-migrate-refuses-conflict-markers: a 0.5.x inbox
+/// entry's text becomes the body of its 0.6 entry as written, so an entry whose text
+/// holds a Git conflict block would migrate into a record with conflict markers in its
+/// body; `migrate --apply` checks every planned file first and refuses as
+/// `refused:conflict-markers`, naming the file and the marker, before it writes anything.
+#[test]
+fn migrate_refuses_a_plan_whose_files_would_hold_conflict_markers() {
+    let entry = ".chough/sessions/open-two.inbox/INB-0590e45a5d1e2245e91e1121.json";
+    let original = std::fs::read_to_string(fixture_dir("adopted").join(entry)).unwrap();
+    let conflicted = original.replace(
+        "\"text\": \"Keep the second run?\"",
+        "\"text\": \"Keep the second run?\\n<<<<<<< HEAD\\nyes\\n=======\\nno\\n>>>>>>> other\"",
+    );
+    assert_ne!(conflicted, original);
+    let fixture = migrate_project("adopted", &[(entry, &conflicted)]);
+    let digest = fixture.ok(&["migrate", "--json"])["plan_digest"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let before = files(fixture.root());
+    let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert!(refused.contains("refused:conflict-markers"), "{refused}");
+    assert!(refused.contains("/agent/inbox/"), "{refused}");
+    assert!(refused.contains("<<<<<<< HEAD"), "{refused}");
+    assert_eq!(
+        files(fixture.root()),
+        before,
+        "the refused apply wrote a file"
+    );
+}
+
 /// REQ-records-009 (#264), TC-records-a-second-same-day-migration-names-its-own-receipt:
 /// a 0.5.x record written into an already migrated tree on the same day is migrated by
 /// a second plan, which names its receipt `<date>-from-0-5-2.md` in the preview, as
