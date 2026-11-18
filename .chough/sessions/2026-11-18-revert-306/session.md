@@ -5,7 +5,7 @@ aliases: [revert-306]
 objective: "Revert #306's new-record writer for 0.6.1: it cannot create records on a file system without hard links (#313) and its temporary files are swept by a concurrent writer; #260 is redone in 0.6.2"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-18-ran-the-tester-s-parallel-repro-60-checkpoint-and-60-evidence
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of revert-306
-    holds: accept
-    drives: review
-    opened: 2026-11-18T16:29:56Z
+waiting_on_human: []
 run_consents: []
-next: Wait for Leif's implementation review of revert-306
+next: Continue done
 title: "Revert #306's new-record writer for 0.6.1"
 summary:
   - "#306's writer linked a temporary file to a new record's name. It failed on file systems without hard links (#313) and a concurrent writer swept its temporary files. The create-new writer is 0.6.0's again; #305's reader and #308's lock are kept. The verify lane passed on macOS after main (f8029cb) was merged in, the tester's parallel repro passed 3 of 3, and one hand run on exFAT passed. Linux was not run locally. #260 is open again for 0.6.2."
@@ -46,6 +42,7 @@ Revert #306's new-record writer for 0.6.1: it cannot create records on a file sy
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of revert-306": "Revert #306" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, as his answer to: revert #306 for 0.6.1, or fix both regressions forward); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve revert-306 as 0xLeif
+- 0xLeif decided "Implementation review of revert-306": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after the tester's PASS on PR #323); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review revert-306 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -103,4 +100,20 @@ Revert #306's new-record writer for 0.6.1: it cannot create records on a file sy
   - revision: 0cd19f98cde9dd17435a28021ebc7e35cc274c17
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T16:46:26Z · gate-closed · accept → accept · Implementation review of revert-306 ^t-5b8980
+  - native_change: revert-306
+  - revision: 71c28925f0c2859351e942e806e738c370a566cf
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after the tester's PASS on PR #323
+    - recorded_by: fable-t4b
+    - native: specsync change review revert-306
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T16:46:27Z · advance · accept → done · native:archived ^t-ceafec
+  - native_change: revert-306
+  - gate: native:archived
+  - revision: 71c28925f0c2859351e942e806e738c370a566cf
   - by: fable (claude-fable-5-2, hc t4b)
