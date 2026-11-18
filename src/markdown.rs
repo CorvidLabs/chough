@@ -236,6 +236,27 @@ impl Record {
         Some(&self.body[start..end])
     }
 
+    /// Fill a placeholder nobody has edited, once (REQ-records-004, #269): the text of the
+    /// `## <heading>` section becomes `with` when, trimmed, it is exactly `untouched`,
+    /// with the blank lines around it kept, and the body's `# <title>` line becomes
+    /// `# <with>` when it is exactly `# <untouched>`. Anything a person wrote is kept.
+    pub(super) fn fill_placeholder(&mut self, heading: &str, untouched: &str, with: &str) {
+        if let Some((start, end)) = section_span(&self.body, heading) {
+            let text = &self.body[start..end];
+            if text.trim() == untouched {
+                let lead = text.len() - text.trim_start().len();
+                let tail = text.len() - text.trim_end().len();
+                let filled = format!("{}{with}{}", &text[..lead], &text[text.len() - tail..]);
+                self.body.replace_range(start..end, &filled);
+            }
+        }
+        let title = format!("# {untouched}\n");
+        if self.body.starts_with(&title) {
+            self.body
+                .replace_range(..title.len(), &format!("# {with}\n"));
+        }
+    }
+
     /// Append `text` (whole lines) to the end of the `## <heading>` section, before the
     /// blank lines that close it, or create the section at the end of the body. Every
     /// other body byte is kept.

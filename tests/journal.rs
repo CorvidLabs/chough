@@ -1581,3 +1581,46 @@ fn parallel_journal_adds_all_reach_the_feed_in_a_project_with_no_chough_director
         fixture.ok(&["library", "index", "--check"]);
     }
 }
+
+/// REQ-records-004, REQ-records-011 (#269), TC-records-the-journal-post-uses-the-filled-goal:
+/// a session started without an objective holds the placeholder as its title and Goal;
+/// after `checkpoint --objective` and the move into done, the journal post and the
+/// archived story carry the objective, and neither keeps the placeholder.
+#[test]
+fn the_journal_post_and_story_use_the_objective_set_after_session_new() {
+    const PLACEHOLDER: &str = "Describe the current objective before beginning work.";
+    let fixture = at_accept();
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let (head, rest) = text.split_once("## Goal\n").expect("a Goal section");
+    let rest = rest
+        .find("\n## ")
+        .map_or(String::new(), |at| rest[at + 1..].to_string());
+    let title_start = head.find("\n# ").expect("a title") + 1;
+    let title_end = title_start + head[title_start..].find('\n').unwrap() + 1;
+    let head = format!(
+        "{}# {PLACEHOLDER}\n{}",
+        &head[..title_start],
+        &head[title_end..]
+    );
+    fixture.write(&file, &format!("{head}## Goal\n\n{PLACEHOLDER}\n\n{rest}"));
+    fixture.set_front("objective", PLACEHOLDER);
+    fixture.commit("a session started without an objective");
+    fixture.ok(&[
+        "checkpoint",
+        "--objective",
+        "Add a --shout option to greet.py that uppercases the greeting",
+    ]);
+    fixture.commit("the objective");
+    let (_, post, story) = advance_to_done(&fixture);
+    for (name, text) in [("post", &post), ("story", &story)] {
+        assert!(
+            !text.contains(PLACEHOLDER),
+            "the {name} keeps the placeholder:\n{text}"
+        );
+        assert!(
+            text.contains("Add a --shout option to greet.py that uppercases the greeting"),
+            "the {name} lacks the objective:\n{text}"
+        );
+    }
+}

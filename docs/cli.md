@@ -751,7 +751,12 @@ The front matter gives `kind: session`, `id`, `aliases`, `objective`, `intent_sc
 `opened`), `run_consents` and `next`. The body is the story, in this order: `#
 <objective>`, `## Goal`, `## Where it stands`, `## Decisions and why`, `## What was
 verified`, `## Open threads` and `## Timeline`. Chough writes the Goal from the
-objective once and never rewrites the Goal or Where it stands paragraphs. A decision
+objective once and never rewrites the Goal or Where it stands paragraphs, with one
+exception (#269). `session new` without `--objective` writes the placeholder
+"Describe the current objective before beginning work." as the title and the Goal.
+While either still holds it untouched, the first `checkpoint --objective` fills it with
+the objective, so the archived story and its journal post carry the objective. A title
+or Goal a person wrote is never rewritten. A decision
 from `checkpoint --decision` is one item in Decisions and why, completed work one item
 in Where it stands, and an open question one item in Open threads.
 `--resolve-question` keeps the question's line and marks it ` (resolved)`; with
