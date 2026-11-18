@@ -924,7 +924,9 @@ done and its save succeeds, the same command goes on, with no further native rea
    the session's front matter with `stage: done`, `stage_status: archived` and no
    `next`, since the session's next action no longer applies, `closed` (the UTC date),
    `outcome` (`done`), and no receipts and no empty value, so the story comes first;
-   then the story as written, with a `## Bugs` section after What was verified that
+   then the story as written, with one line `Objective at closeout: <objective>` after the
+   Goal paragraph when the Goal is not the current objective, as after a later
+   `checkpoint --objective` (#344), and a `## Bugs` section after What was verified that
    names each bug of the session's checkpoint with its title and status, linked to its
    record; then the Timeline and a closing line `Closed <date>: <outcome>.`; and last a
    `## Receipts` section holding the receipts as one fenced YAML block. It reads the
@@ -943,7 +945,7 @@ done and its save succeeds, the same command goes on, with no further native rea
    with `chough checkpoint --title "<short human title>" --summary "<what changed and
    why, what was verified with its final numbers, what is next>"`. Without them, the
    title is the objective's first clause (cut at a word within 72 bytes) and the body
-   the story's Goal, then `Why:` with its first decision, `Verified:` with its newest
+   opens with the current objective (#344), then `Why:` with its first decision, `Verified:` with its newest
    verified entry and `Next:` with its first open thread, within 1,200 bytes.
 3. It defers the knowledge refresh: the librarian refreshes the vault at release, not
    here, so with the librarian on the applied report carries `applied.librarian_index`

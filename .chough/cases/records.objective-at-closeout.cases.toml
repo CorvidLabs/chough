@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# #344 review of #269: after a second checkpoint --objective, the closeout post's title
+# showed the new objective while its body kept the first, filled into the Goal once.
+
+[[case]]
+id = "TC-records-a-changed-objective-is-in-the-post-and-one-story-line"
+title = "After a second checkpoint --objective, the closeout post's body opens with the current objective and the story keeps its filled-once title and Goal with exactly one Objective at closeout line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-records-011"]
+paths = ["src/journal.rs", "src/sessions.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::a_changed_objective_is_in_the_post_and_one_story_line passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "a_changed_objective_is_in_the_post_and_one_story_line"

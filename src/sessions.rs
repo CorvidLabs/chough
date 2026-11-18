@@ -891,6 +891,20 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     let mut linked = session.clone();
     linked.evidence_links = checkpoint::evidence_links(root, &linked);
     let mut record = checkpoint::render_checkpoint(&linked)?;
+    // REQ-history-006 (#344): when the objective changed after the Goal was filled, the
+    // story says so in one line after the Goal paragraph; nothing is rewritten.
+    let objective = session
+        .objective
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let goal = crate::journal::first_paragraph(&record, crate::session_md::GOAL);
+    if !objective.is_empty() && goal != objective {
+        record.append_to_section(
+            crate::session_md::GOAL,
+            &format!("\nObjective at closeout: {objective}\n"),
+        )?;
+    }
     // REQ-history-006 (Kimi 6): the story is archived, and the session's next action no
     // longer applies.
     record.set_scalar("stage_status", ARCHIVED_STATUS)?;

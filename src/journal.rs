@@ -383,13 +383,15 @@ fn derived_title(objective: &str) -> String {
     format!("{}…", clause[..word].trim_end())
 }
 
-/// A post body derived from a story (REQ-records-011): the Goal's first paragraph, then
+/// A post body derived from a story (REQ-records-011): the session's current objective,
+/// as the title is derived from it, so the two agree after a later `checkpoint
+/// --objective` (#344), then
 /// `Why:` with the first Decisions and why entry, `Verified:` with the newest What was
 /// verified entry and `Next:` with the first open thread, an empty part left out. Each
 /// part is cut at a sentence end to its share of `room`; a short part's spare share goes
 /// to the parts that need it, the Goal first.
 fn derived_body(record: &Record, room: usize) -> String {
-    use crate::session_md::{DECISIONS, GOAL, VERIFIED, items, open_threads};
+    use crate::session_md::{DECISIONS, VERIFIED, items, open_threads};
     let decision = items(record, DECISIONS).into_iter().next().map(|decision| {
         decision
             .strip_prefix("decided: ")
@@ -397,7 +399,7 @@ fn derived_body(record: &Record, room: usize) -> String {
     });
     // Each part: its label's length, its text with the label, and its weight.
     let parts: Vec<(usize, String, usize)> = [
-        ("", Some(first_paragraph(record, GOAL)), 2),
+        ("", record.scalar("objective").map(str::to_string), 2),
         ("Why: ", decision, 1),
         (
             "Verified: ",
@@ -449,7 +451,7 @@ fn derived_body(record: &Record, room: usize) -> String {
 }
 
 /// The first non-blank paragraph of section `heading`, as one line of text.
-fn first_paragraph(record: &Record, heading: &str) -> String {
+pub(super) fn first_paragraph(record: &Record, heading: &str) -> String {
     let Some(section) = record.section(heading) else {
         return String::new();
     };
