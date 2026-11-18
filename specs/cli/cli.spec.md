@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 98
+version: 99
 status: active
 files:
   - src/main.rs
@@ -380,3 +380,4 @@ provider, runtime or hosted service.
 | 96 | 2026-11-14 | fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes: Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes |
 | 97 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
 | 98 | 2026-11-14 | readiness-report-before-change-approval: Readiness report before change approval |
+| 99 | 2026-11-18 | fix-307: Fix 307 |
