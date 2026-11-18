@@ -7,10 +7,11 @@
   "title": "Fix 262 open race",
   "description": "fix 262 open race",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "caa6ee65a46ec3f4798e0a64c22bb263d062814a",
   "created_at": 1794966916,
-  "updated_at": 1794967551,
+  "updated_at": 1794967888,
   "affected_specs": [
     "cli",
     "history"
