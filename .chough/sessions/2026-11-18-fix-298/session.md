@@ -5,7 +5,7 @@ aliases: [fix-298]
 objective: "chough change ship refuses before review when the change's history holds a change both open and archived in one commit (REQ-cli-059, #298)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -24,13 +24,9 @@ observations:
   - 2026-11-18-tc-cli-ship-refuses-a-corrupt-history-e50125
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-298
-    holds: accept
-    drives: review
-    opened: 2026-11-18T18:44:54Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # chough change ship refuses before review when the change's history holds a change both open and archived in one commit (REQ-cli-059, #298)
 
@@ -48,6 +44,7 @@ chough change ship refuses before review when the change's history holds a chang
 
 - SpecSync reports terminal-evidence validity only after it archives, and its ship --dry-run stops before the review, so Chough checks the change's own history (base..HEAD) for a change both open and archived in one commit, as an interim until SpecSync's preflight (spec-sync#1082).
 - 0xLeif decided "Scope approval of fix-298": "Both: Chough check now + SpecSync" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his choice of option (3) for #298, refusing before review when base..HEAD shows a change both open and archived in one commit, with the SpecSync preflight filed as CorvidLabs/spec-sync#1082; it follows his decision comment on #298, 'check before shipping'); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-298 as 0xLeif
+- 0xLeif decided "Implementation review of fix-298": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #333 after tester2's recheck PASS); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-298 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -107,4 +104,20 @@ chough change ship refuses before review when the change's history holds a chang
   - revision: cef86e2622a2a908856b0c2cf11b29d3c1d3e472
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T22:50:06Z · gate-closed · accept → accept · Implementation review of fix-298 ^t-83a2b4
+  - native_change: fix-298
+  - revision: 4e1ff0286615ac5cf878fae970c9be91db3318d7
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #333 after tester2's recheck PASS
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-298
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T22:50:07Z · advance · accept → done · native:archived ^t-6d0b51
+  - native_change: fix-298
+  - gate: native:archived
+  - revision: 4e1ff0286615ac5cf878fae970c9be91db3318d7
   - by: chough-fixer (claude-opus-5-5, hc t4n)
