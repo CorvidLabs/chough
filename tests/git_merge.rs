@@ -308,3 +308,87 @@ fn a_finished_rebase_is_not_in_progress() {
     );
     assert_eq!(doctor_git_findings(&fixture).len(), 1);
 }
+
+/// REQ-cli-069 (#330 review, P2): `pref set` and `pref unset` write
+/// `.chough/preferences.json`, a Chough record, so while a path under `.chough/` is
+/// unmerged they refuse as `refused:unmerged` with every file unchanged, as every other
+/// writer does; `pref show` still runs, and after the merge is aborted they write again.
+#[test]
+fn preference_writes_refuse_while_chough_is_unmerged() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.configure_human();
+    fixture.init();
+    fixture.ok(&[
+        "pref",
+        "set",
+        "librarian",
+        "off",
+        "--source",
+        "SYNTHETIC fixture",
+    ]);
+    fixture.commit("base");
+    let readme = ".chough/README.md";
+    let side = |text: &str| {
+        let mut body = fixture.read(readme);
+        body.push_str(&format!("\n{text}\n"));
+        fixture.write(readme, &body);
+    };
+    fixture.git(&["checkout", "-q", "-b", "other"]);
+    side("SYNTHETIC the other branch's note");
+    fixture.commit("other side");
+    fixture.git(&["checkout", "-q", "main"]);
+    side("SYNTHETIC this branch's note");
+    fixture.commit("our side");
+    let merge = Command::new("git")
+        .current_dir(fixture.root())
+        .args([
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+        ])
+        .args(["merge", "--no-edit", "other"])
+        .output()
+        .unwrap();
+    assert!(!merge.status.success(), "the merge did not conflict");
+
+    for args in [
+        &[
+            "pref",
+            "set",
+            "librarian",
+            "on",
+            "--source",
+            "SYNTHETIC mid-merge",
+        ][..],
+        &[
+            "pref",
+            "unset",
+            "librarian",
+            "--source",
+            "SYNTHETIC mid-merge",
+        ][..],
+    ] {
+        let before = tree(fixture.root());
+        let output = fixture.run(args);
+        let text = said(&output);
+        assert!(!output.status.success(), "{args:?} ran mid-merge: {text}");
+        assert!(text.contains("refused:unmerged"), "{args:?}: {text}");
+        assert!(text.contains(readme), "{args:?}: {text}");
+        assert_eq!(tree(fixture.root()), before, "{args:?} changed a file");
+    }
+    let before = tree(fixture.root());
+    let shown = fixture.run(&["pref", "show"]);
+    assert!(shown.status.success(), "{}", said(&shown));
+    assert_eq!(tree(fixture.root()), before, "pref show changed a file");
+
+    fixture.git(&["merge", "--abort"]);
+    fixture.ok(&[
+        "pref",
+        "unset",
+        "librarian",
+        "--source",
+        "SYNTHETIC after the merge",
+    ]);
+}
