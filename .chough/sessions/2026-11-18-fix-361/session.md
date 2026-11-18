@@ -5,7 +5,7 @@ aliases: [fix-361]
 objective: chough doctor and chough next say when installed skill files are known-outdated and name chough skill update, and status JSON carries no_native_change (#361)
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: [src/skill.rs, src/doctor.rs, src/main.rs, tests/package.rs]
 observations: [2026-11-18-tc-cli-doctor-and-next-name-skill-update-for-outdated-files]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-361
+    holds: accept
+    drives: review
+    opened: 2026-11-18T23:44:05Z
 run_consents: []
-next: Continue test
+next: Wait for the tester's check and Leif's implementation review of fix-361
 ---
 # chough doctor and chough next say when installed skill files are known-outdated and name chough skill update, and status JSON carries no_native_change (#361)
 
@@ -80,4 +84,15 @@ chough doctor and chough next say when installed skill files are known-outdated 
   - native_change: fix-361
   - gate: native:approved
   - revision: 66b82f22a2eb775ece9ab823b4f2698137474a68
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T23:44:05Z · advance · test → accept · native:verifying ^t-7d694b
+  - native_change: fix-361
+  - gate: native:verifying
+  - revision: 298d00547f969f18b7aa4b0075d39f6b3f97a637
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T23:44:05Z · gate-opened · accept → accept · Implementation review of fix-361 ^t-0df171
+  - native_change: fix-361
+  - revision: 298d00547f969f18b7aa4b0075d39f6b3f97a637
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
