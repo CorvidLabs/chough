@@ -38,6 +38,7 @@ chough change ship refuses before review when the change's history holds a chang
 ## Where it stands
 
 - Failing test first: ship_refuses_a_history_with_a_change_both_open_and_archived failed on main (the ship ran SpecSync); change ship now checks base..HEAD for a change both open and archived in one commit before anything runs, marked interim until spec-sync#1082, and all 23 change tests pass
+- #333 tester BLOCK fixed: the corrupt-history check counts a change only by its state.json on both sides, as SpecSync 6.3.0 does, so a leftover tasks.md beside an archive no longer refuses; the refusal names the commit that brought the duplicate in and how many hold it; ship_runs_with_a_leftover_file_of_an_archived_change and the updated refusal test failed on the previous check and pass
 
 ## Decisions and why
 

@@ -628,8 +628,9 @@ const HISTORY_LIMIT: usize = 1_000;
 
 /// Refuse a ship whose change history SpecSync would read as corrupt (REQ-cli-059, #298):
 /// a commit between the change's recorded base commit and HEAD that holds another change
-/// both open under `.specsync/changes/<id>/` and archived under
-/// `.specsync/archive/changes/<date>-<id>/`, as a merge of main can leave. SpecSync then
+/// both open, `.specsync/changes/<id>/state.json`, and archived,
+/// `.specsync/archive/changes/<date>-<id>/state.json`, as a merge of main can leave; a
+/// leftover file other than `state.json` is not a second state, as SpecSync reads it. SpecSync then
 /// reports the archive's terminal evidence as `corrupt-history`, but only after it has
 /// archived, so the ship would stop halfway.
 ///
@@ -660,6 +661,10 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     let Some(commits) = git(&["rev-list", &format!("{base}..HEAD")]) else {
         return Ok(());
     };
+    // Newest first, as `git rev-list` gives them: the change kept both ways, and every
+    // commit in the window that holds it, so the refusal can name the one that brought
+    // it in, as SpecSync's own reason does, and say how many hold it.
+    let mut found: Option<(String, Vec<String>)> = None;
     for commit in commits.lines().take(HISTORY_LIMIT) {
         let Some(paths) = git(&[
             "ls-tree",
@@ -672,17 +677,21 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
         ]) else {
             continue;
         };
+        // SpecSync's rule counts a change's `state.json` on both sides, not any file: a
+        // leftover such as a `tasks.md` beside an archive is not a second state (#333).
         let mut open = std::collections::BTreeSet::new();
         let mut archived = std::collections::BTreeSet::new();
         for path in paths.lines() {
-            if let Some(rest) = path.strip_prefix(".specsync/archive/changes/") {
-                let folder = rest.split('/').next().unwrap_or_default();
+            let Some(folder) = path.strip_suffix("/state.json") else {
+                continue;
+            };
+            if let Some(folder) = folder.strip_prefix(".specsync/archive/changes/") {
                 // `<YYYY-MM-DD>-<id>`: the change ID follows the 11-byte date prefix.
-                if folder.len() > 11 && folder.as_bytes()[10] == b'-' {
+                if !folder.contains('/') && folder.len() > 11 && folder.as_bytes()[10] == b'-' {
                     archived.insert(folder[11..].to_string());
                 }
-            } else if let Some(rest) = path.strip_prefix(".specsync/changes/")
-                && let Some((folder, _)) = rest.split_once('/')
+            } else if let Some(folder) = folder.strip_prefix(".specsync/changes/")
+                && !folder.contains('/')
             {
                 open.insert(folder.to_string());
             }
@@ -690,15 +699,33 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
         // The change being shipped is left out: its own archive appears only when
         // SpecSync ships it, and a history is poisoned by another change kept both open
         // and archived, as a merge of main leaves (#298).
-        if let Some(both) = open
+        let both: Vec<&String> = open
             .intersection(&archived)
-            .find(|both| both.as_str() != id)
-        {
-            bail!(
-                "refused:corrupt-history: commit {} in this change's history holds change `{both}` both open under .specsync/changes/{both}/ and archived under .specsync/archive/changes/, which SpecSync reads as corrupt history, so the archive's terminal evidence would not authenticate and the ship would stop halfway; nothing ran. Rebuild the branch from the default branch without that commit (for example, start a new branch from it and bring over this change's own commits), then run `chough change check {id}` and the ship again. (Chough checks this until SpecSync's own preflight, CorvidLabs/spec-sync#1082, exists.)",
-                &commit[..commit.len().min(12)]
-            );
+            .filter(|both| both.as_str() != id)
+            .collect();
+        match &mut found {
+            None => {
+                if let Some(first) = both.first() {
+                    found = Some(((*first).clone(), vec![commit.to_string()]));
+                }
+            }
+            Some((change, holding)) => {
+                if both.iter().any(|both| *both == change) {
+                    holding.push(commit.to_string());
+                }
+            }
         }
+    }
+    if let Some((both, holding)) = found {
+        let short = |commit: &str| commit[..commit.len().min(12)].to_string();
+        let first = short(holding.last().map(String::as_str).unwrap_or_default());
+        let held = match holding.len() {
+            1 => "it is the only commit that holds it".to_string(),
+            count => format!("{count} commits from it to {} hold it", short(&holding[0])),
+        };
+        bail!(
+            "refused:corrupt-history: commit {first} in this change's history brought in change `{both}` both open (.specsync/changes/{both}/state.json) and archived (under .specsync/archive/changes/), and {held}; SpecSync reads that as corrupt history, so the archive's terminal evidence would not authenticate and the ship would stop halfway; nothing ran. Rebuild the branch from the default branch without those commits (for example, start a new branch from it and bring over this change's own commits), then run `chough change check {id}` and the ship again. (Chough checks this until SpecSync's own preflight, CorvidLabs/spec-sync#1082, exists.)"
+        );
     }
     Ok(())
 }
