@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #313: since #306 no new record could be created on a file system without hard
+# links, such as exFAT. #306's writer was reverted for 0.6.1.
+
+[[case]]
+id = "TC-records-a-volume-without-hard-links-takes-new-records"
+title = "On an exFAT volume, where a hard link is refused, chough init, bug add and journal add write whole records"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/no_hard_links.rs"]
+environments = ["local-macos-arm64", "ci-macos"]
+artifacts = ["test-log"]
+expected = ["tests/no_hard_links.rs::new_records_are_written_on_a_volume_without_hard_links passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "no_hard_links"
+test = "new_records_are_written_on_a_volume_without_hard_links"
