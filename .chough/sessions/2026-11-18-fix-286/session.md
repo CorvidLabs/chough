@@ -16,7 +16,9 @@ requirements: [REQ-history-006]
 cases: [TC-history-a-receipt-keeps-its-entrys-criteria-requirements-and-limitations]
 design: []
 files: [src/evidence.rs, src/evidence_migrate.rs, tests/evidence.rs]
-observations: [2026-11-18-tc-history-a-receipt-keeps-its-entrys-criteria-requirements]
+observations:
+  - 2026-11-18-tc-history-a-receipt-keeps-its-entrys-criteria-requirements
+  - 2026-11-18-tc-history-a-receipt-keeps-its-entrys-criteria-requirements-21b18c
 bugs: []
 blockers: []
 waiting_on_human:
@@ -44,6 +46,7 @@ An archived story's receipts keep each evidence entry's criteria, requirements a
 ## What was verified
 
 - [Ran cargo test --locked --test evidence -- --exact a_story_receipt_carries_each_field_its_entry_knows for TC-history-a-receipt-keeps-its-entrys-criteria-requirements-and-limitations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-receipt-keeps-its-entrys-criteria-requirements.md)
+- [Ran cargo test --locked --test evidence -- --exact a_story_receipt_carries_each_field_its_entry_knows for TC-history-a-receipt-keeps-its-entrys-criteria-requirements-and-limitations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-receipt-keeps-its-entrys-criteria-requirements-21b18c.md)
 
 ## Open threads
 
