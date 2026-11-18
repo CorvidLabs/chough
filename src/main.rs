@@ -352,7 +352,7 @@ fn main() -> Result<()> {
                     );
                 }
             } else if sessions::none_open(&root)? {
-                print!("{}", no_open_session(as_json));
+                print!("{}", no_open_session(&root, as_json));
             } else {
                 print!("{}", next(&root, environment.as_deref(), as_json)?);
             }
@@ -1061,7 +1061,9 @@ fn pin_session(root: &Path, name: &str) -> Result<()> {
 /// The next view with no open session, the normal state after the move into done
 /// archives one (REQ-cli-021, REQ-history-006): that no session is open and the command
 /// that opens the next one, as text or compact JSON, with no session to read.
-fn no_open_session(as_json: bool) -> String {
+fn no_open_session(root: &Path, as_json: bool) -> String {
+    // REQ-cli-016 (#361): the skill nudge shows with no session open too.
+    let skill_outdated = skill::known_outdated(root).map_or(0, |files| files.len());
     let action = json!({
         "action": "Start the next piece of work in a new session.",
         "reason": "There is no open session, the normal state after the move into done archives one.",
@@ -1070,11 +1072,20 @@ fn no_open_session(as_json: bool) -> String {
     if as_json {
         return format!(
             "{}\n",
-            json!({"session": null, "next_valid_action": action})
+            json!({
+                "session": null,
+                "skill_outdated": skill_outdated,
+                "next_valid_action": action,
+            })
         );
     }
+    let nudge = if skill_outdated > 0 {
+        "Skill files are outdated: run `chough skill update`\n"
+    } else {
+        ""
+    };
     format!(
-        "Session: none open\nNext: {}\n  Why: {}\n  Run: {NEW_SESSION}\n",
+        "Session: none open\n{nudge}Next: {}\n  Why: {}\n  Run: {NEW_SESSION}\n",
         action["action"].as_str().unwrap_or_default(),
         action["reason"].as_str().unwrap_or_default()
     )

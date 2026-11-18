@@ -16,6 +16,9 @@ artifact: testing
 - after `chough skill update` on the outdated copy, both are clear;
 - `chough status` carries `no_native_change` once the session recorded it.
 
+- with no session open, `next` still gives `skill_outdated` in its JSON and shows the
+  line under `Session: none open` (added on Leif's review of #362).
+
 It fails on main, where doctor reports nothing. No new free-text input is added.
 
 ## Requirement evidence

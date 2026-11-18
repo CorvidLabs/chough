@@ -4449,4 +4449,26 @@ fn doctor_and_next_say_when_skill_files_are_known_outdated() {
         status.contains("\"no_native_change\": \"SYNTHETIC planning only\""),
         "{status}"
     );
+
+    // With no session open the nudge shows too (Leif's review of #362).
+    let session = fs::read_dir(root.join(".chough/sessions"))
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .next()
+        .expect("an open session");
+    chough(
+        root,
+        &["session", "close", &session, "--reason", "SYNTHETIC closed"],
+    );
+    let none: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(none["session"], Value::Null, "{none}");
+    assert_eq!(none["skill_outdated"], 0, "{none}");
+    assert!(!raw(&["next"]).contains(line));
+    fs::write(&installed, STAGES_AT_F19823D).unwrap();
+    let none: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(none["skill_outdated"], 1, "{none}");
+    let text = raw(&["next"]);
+    assert!(text.starts_with("Session: none open\n"), "{text}");
+    assert!(text.contains(line), "{text}");
 }

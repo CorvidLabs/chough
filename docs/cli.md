@@ -1509,7 +1509,8 @@ cache or metadata-only freshness shortcut.
 With no open session and no pointer, as after the move into done, `next` reads nothing
 and shows only `Session: none open` and a next valid action naming `chough session new
 <key> --objective "<outcome>"` (in JSON, `session` is `null` beside
-`next_valid_action`), and exits 0.
+`next_valid_action` and `skill_outdated`), with the skill line of `skill_outdated`
+below when it applies, and exits 0.
 It makes at most one `specsync change status` read, or reuses an authenticated archived
 response as above, and evaluates the gate for the next main
 stage on that response, and shows:
