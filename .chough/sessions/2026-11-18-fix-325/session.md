@@ -5,7 +5,7 @@ aliases: [fix-325]
 objective: "A refused:checkpoint-busy evidence add leaves nothing behind, so a rerun does not duplicate the entry (REQ-cli-040, #325)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-cli-a-busy-evidence-add-leaves-nothing-583391
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-325
-    holds: accept
-    drives: review
-    opened: 2026-11-18T18:37:46Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # A refused:checkpoint-busy evidence add leaves nothing behind, so a rerun does not duplicate the entry (REQ-cli-040, #325)
 
@@ -42,6 +38,7 @@ A refused:checkpoint-busy evidence add leaves nothing behind, so a rerun does no
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-325": "approved as a fix. A refused:checkpoint-busy evidence add leaves nothing behind, so a rerun doesn't duplicate the entry." (Leif's decision comment on CorvidLabs/chough#325 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for this change); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-325 as 0xLeif
+- 0xLeif decided "Implementation review of fix-325": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #332 after the tester's PASS); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-325 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -98,4 +95,20 @@ A refused:checkpoint-busy evidence add leaves nothing behind, so a rerun does no
   - revision: cef86e2622a2a908856b0c2cf11b29d3c1d3e472
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:39:18Z · gate-closed · accept → accept · Implementation review of fix-325 ^t-c3831b
+  - native_change: fix-325
+  - revision: 173b2570c8376c205f0523f1ec1479e044a28921
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #332 after the tester's PASS
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-325
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:39:19Z · advance · accept → done · native:archived ^t-c6a803
+  - native_change: fix-325
+  - gate: native:archived
+  - revision: 173b2570c8376c205f0523f1ec1479e044a28921
   - by: chough-fixer (claude-opus-5-5, hc t4n)
