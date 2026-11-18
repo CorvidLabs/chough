@@ -345,6 +345,8 @@ pub(super) fn read_session(root: &Path) -> Result<Session> {
 /// written before #268, refuses here too, so no entry is written for a save that cannot
 /// happen (REQ-records-006).
 pub(super) fn observation_room(root: &Path) -> Result<()> {
+    // REQ-cli-069: refused before the entry is written, while `.chough/` is mid-conflict.
+    crate::doctor::refuse_if_unmerged(root)?;
     let Session::V2(session) = read_session(root)?;
     if session.observations.len() >= MAX_OBSERVATIONS {
         bail!(observations_full(root, session.observations.len(), 1)?);
@@ -410,6 +412,9 @@ pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
     if held.iter().any(|(locked, _)| *locked == path) {
         return Ok(());
     }
+    // REQ-cli-069: every record writer takes this lock before it writes, so a path
+    // under `.chough/` left unmerged by a merge or rebase refuses the write here.
+    crate::doctor::refuse_if_unmerged(root)?;
     let file = match OpenOptions::new()
         .read(true)
         .write(true)

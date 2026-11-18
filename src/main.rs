@@ -272,6 +272,14 @@ fn main() -> Result<()> {
             }
         }
         Commands::Status { environment, .. } => {
+            // REQ-cli-069: while `.chough/` is mid-conflict, the records are not read.
+            if let Some(git) = doctor::git_operation(&root).filter(|git| git.blocks_writes()) {
+                print_summary_first(&json!({
+                    "schema_version": 1,
+                    "summary": merge_in_progress(&git),
+                }))?;
+                return Ok(());
+            }
             let report = status(&root, environment.as_deref())?;
             let phase = std::time::Instant::now();
             print_summary_first(&report)?;
@@ -283,7 +291,27 @@ fn main() -> Result<()> {
         } => {
             // REQ-cli-021, REQ-history-006: no open session is the normal state after
             // the move into done, so next says so and exits 0; status still refuses.
-            if sessions::none_open(&root)? {
+            // REQ-cli-069: while `.chough/` is mid-conflict, the records are not read.
+            if let Some(git) = doctor::git_operation(&root).filter(|git| git.blocks_writes()) {
+                let view = merge_in_progress(&git);
+                if as_json {
+                    println!("{view}");
+                } else {
+                    print!(
+                        "Git: {}\nNext: {}\n  Why: {}\n  Run: {}\n",
+                        view["git_operation"]["text"].as_str().unwrap_or_default(),
+                        view["next_valid_action"]["action"]
+                            .as_str()
+                            .unwrap_or_default(),
+                        view["next_valid_action"]["reason"]
+                            .as_str()
+                            .unwrap_or_default(),
+                        view["next_valid_action"]["command"]
+                            .as_str()
+                            .unwrap_or_default(),
+                    );
+                }
+            } else if sessions::none_open(&root)? {
                 print!("{}", no_open_session(as_json));
             } else {
                 print!("{}", next(&root, environment.as_deref(), as_json)?);
@@ -579,6 +607,8 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             },
             "gates": open_gates(checkpoint, LIST_LIMIT),
             "blockers": listed(checkpoint.blockers.iter()),
+            // REQ-cli-069: a merge or rebase in progress, when there is one.
+            "git_operation": doctor::git_operation(root).map(|git| git.view()),
         }),
     };
     Ok(json!({
@@ -957,6 +987,21 @@ fn lessons(root: &Path, modules: &[String]) -> Result<Value> {
 /// The command that opens the next session, as the move into done names it.
 const NEW_SESSION: &str = "chough session new <key> --objective \"<outcome>\"";
 
+/// The view `next` and `status` give while a path under `.chough/` is unmerged
+/// (REQ-cli-069): the merge or rebase in progress and finishing or aborting it as the
+/// next action, with no record read, since Chough's records are mid-conflict.
+fn merge_in_progress(git: &doctor::GitOperation) -> Value {
+    json!({
+        "session": null,
+        "git_operation": git.view(),
+        "next_valid_action": {
+            "action": "Finish or abort the merge or rebase first; Chough reads and writes its records again once nothing under .chough/ is unmerged.",
+            "reason": "Paths under .chough/ are unmerged, so Chough's records are mid-conflict and every write refuses.",
+            "command": "git status",
+        },
+    })
+}
+
 /// The next view with no open session, the normal state after the move into done
 /// archives one (REQ-cli-021, REQ-history-006): that no session is open and the command
 /// that opens the next one, as text or compact JSON, with no session to read.
@@ -1113,6 +1158,8 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "knowledge": library::pointer(root),
         // REQ-records-014: when Chough's own writes are safe in the native order.
         "chough_writes": doctor::exclusions(root).writes(),
+        // REQ-cli-069: a merge or rebase in progress, when there is one.
+        "git_operation": doctor::git_operation(root).map(|git| git.view()),
         "environment": environment.map(cut),
         "full_view": "chough status",
         "truncated": false,
@@ -1160,6 +1207,10 @@ fn next_text(view: &Value) -> String {
         other => other.to_string(),
     };
     let mut lines = vec![format!("Objective: {}", text(&view["objective"]))];
+    // REQ-cli-069: a merge or rebase in progress shows right below the objective.
+    if let Some(git) = view["git_operation"]["text"].as_str() {
+        lines.push(format!("Git: {git}"));
+    }
     let stage = &view["stage"];
     if stage.is_null() {
         lines.push("Stage: none (schema 1 session)".into());
