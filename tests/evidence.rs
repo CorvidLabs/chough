@@ -1023,3 +1023,106 @@ fn parallel_decisions_and_evidence_adds_all_land() {
         "observation references were lost:\n{text}"
     );
 }
+
+/// REQ-cli-040 (#317), TC-cli-bug-add-holds-the-writer-lock: `bug add` given an
+/// observation of the active session takes the project's writer lock before it reads
+/// anything, so it writes no bug while another writer holds the lock, and then adds the
+/// bug to the session without losing that writer's update. The test holds the lock,
+/// starts `bug add`, changes the session's next action as another writer would, and
+/// releases the lock.
+#[cfg(unix)]
+#[test]
+fn bug_add_holds_the_writer_lock_and_keeps_another_writers_update() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let folder = session_folder(&fixture);
+    let mut failed = add_args("SYNTHETIC failing check");
+    let at = failed.iter().position(|part| part == "passed").unwrap();
+    failed[at] = "failed".to_string();
+    let failed: Vec<&str> = failed.iter().map(String::as_str).collect();
+    let observation = fixture.ok(&failed)["observation"]
+        .as_str()
+        .expect("the failed observation's ID")
+        .to_string();
+
+    let lock_path = common::checkpoint_lock_path(fixture.root()).unwrap();
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let mut add = spawnable(
+        &fixture,
+        &[
+            "bug",
+            "add",
+            "--title",
+            "SYNTHETIC check fails at the boundary",
+            "--symptom",
+            "The check fails",
+            "--trigger",
+            "Running the check",
+            "--expected",
+            "It passes",
+            "--actual",
+            "It fails",
+            "--environment",
+            "local",
+            "--observation",
+            &observation,
+        ],
+    )
+    .spawn()
+    .unwrap();
+    // bug add takes the lock before it reads anything, so it waits and writes nothing.
+    let bugs = fixture.root().join(".chough/bugs");
+    std::thread::sleep(std::time::Duration::from_millis(1_000));
+    assert!(
+        add.try_wait().unwrap().is_none(),
+        "bug add did not wait for the writer lock"
+    );
+    assert_eq!(
+        fs::read_dir(&bugs).map_or(0, |entries| entries.count()),
+        0,
+        "a bug was written under another writer's lock"
+    );
+
+    let record = format!("{folder}/session.md");
+    let text = fixture.read(&record);
+    let next = text
+        .lines()
+        .find(|line| line.starts_with("next: "))
+        .expect("a next action")
+        .to_string();
+    fixture.write(
+        &record,
+        &text.replacen(
+            &next,
+            "next: SYNTHETIC next action saved by another writer",
+            1,
+        ),
+    );
+    <fs::File as fs4::FileExt>::unlock(&lock).unwrap();
+
+    let output = add.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = fixture.read(&record);
+    assert!(
+        text.contains("SYNTHETIC next action saved by another writer"),
+        "the other writer's update was lost:\n{text}"
+    );
+    assert_eq!(
+        fixture.checkpoint()["bugs"].as_array().unwrap().len(),
+        1,
+        "the bug did not join the session:\n{text}"
+    );
+}
