@@ -141,3 +141,128 @@ fn a_session_whose_record_is_a_fifo_is_listed_with_the_reason_and_recovery() {
         "{listed}"
     );
 }
+
+/// The bytes of a macOS AppleDouble file, which is not UTF-8 and not a record.
+const APPLE_DOUBLE: &[u8] = b"\x00\x05\x16\x07\x00\x02\x00\x00Mac OS X        \x00\x02\xff\xfe";
+
+fn write_bytes(fixture: &Fixture, relative: &str, bytes: &[u8]) {
+    let path = fixture.root().join(relative);
+    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+    std::fs::write(path, bytes).unwrap();
+}
+
+/// REQ-cli-068 (#314), TC-cli-macos-metadata-files-stop-no-reader: the `.DS_Store` and
+/// AppleDouble `._*` files macOS writes beside files are not records. With one in
+/// `.chough/bugs/`, a session's `evidence/` or `.chough/archive/sessions/`, `next` and
+/// `status` still answer; in `.chough/cases/` the definitions still check; and
+/// `doctor` reports no committed one as unreadable, while a malformed record with an
+/// ordinary name still is.
+#[test]
+fn macos_metadata_files_in_chough_stop_no_reader() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("init");
+    let session = fixture.active_id();
+    for folder in [
+        ".chough/bugs".to_string(),
+        format!(".chough/sessions/{session}/evidence"),
+        ".chough/archive/sessions".to_string(),
+    ] {
+        let apple_double = format!("{folder}/._2026-11-18-synthetic-record.md");
+        let finder = format!("{folder}/.DS_Store");
+        write_bytes(&fixture, &apple_double, APPLE_DOUBLE);
+        write_bytes(&fixture, &finder, APPLE_DOUBLE);
+        for args in [&["next"][..], &["status"][..], &["bug", "list"][..]] {
+            let output = run_within_deadline(&fixture, args);
+            assert!(
+                output.status.success(),
+                "{args:?} with {apple_double}: {}",
+                said(&output)
+            );
+        }
+        std::fs::remove_file(fixture.root().join(&apple_double)).unwrap();
+        std::fs::remove_file(fixture.root().join(&finder)).unwrap();
+    }
+
+    write_bytes(&fixture, ".chough/cases/.DS_Store", APPLE_DOUBLE);
+    write_bytes(
+        &fixture,
+        ".chough/cases/._cli.synthetic.cases.toml",
+        APPLE_DOUBLE,
+    );
+    let output = run_within_deadline(&fixture, &["cases", "check"]);
+    assert!(output.status.success(), "cases check: {}", said(&output));
+
+    write_bytes(
+        &fixture,
+        ".chough/bugs/._2026-11-18-synthetic-record.md",
+        APPLE_DOUBLE,
+    );
+    fixture.write(
+        ".chough/bugs/2026-11-18-synthetic-broken.md",
+        "not a record\n",
+    );
+    fixture.git(&["add", "-A"]);
+    fixture.git(&["commit", "-qm", "macOS metadata and a broken record"]);
+    let output = run_within_deadline(&fixture, &["doctor"]);
+    let report: serde_json::Value = serde_json::from_slice(&output.stdout)
+        .unwrap_or_else(|_| panic!("doctor printed no JSON: {}", said(&output)));
+    let unreadable: Vec<&str> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["kind"] == "unreadable")
+        .filter_map(|finding| finding["target"].as_str())
+        .collect();
+    assert_eq!(
+        unreadable,
+        [".chough/bugs/2026-11-18-synthetic-broken.md"],
+        "{report:#}"
+    );
+}
+
+/// REQ-cli-068 (#314 review), TC-cli-a-leak-in-a-binary-metadata-file-is-found: the
+/// leak scan reads a tracked AppleDouble file's bytes, which are not UTF-8, so a leak
+/// macOS wrote into its extended attributes is reported; `doctor --fix --redact`
+/// leaves that binary file byte-identical and reports the finding skipped, since
+/// rewriting decoded text would corrupt it.
+#[test]
+fn a_leak_in_a_binary_metadata_file_is_found_and_left_unrewritten() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("init");
+    let target = ".chough/bugs/._2026-11-18-synthetic-leaky.md";
+    let mut bytes = APPLE_DOUBLE.to_vec();
+    bytes.extend_from_slice(b"\x00com.apple.metadata:kMDItemWhereFroms\x00mailto:");
+    bytes.extend_from_slice(concat!("someone", "@", "example.com").as_bytes());
+    bytes.extend_from_slice(b"\x00\xff");
+    write_bytes(&fixture, target, &bytes);
+    fixture.git(&["add", "-A"]);
+    fixture.git(&["commit", "-qm", "a binary AppleDouble file with a leak"]);
+
+    let leaks = |args: &[&str]| -> Vec<serde_json::Value> {
+        let output = run_within_deadline(&fixture, args);
+        let report: serde_json::Value = serde_json::from_slice(&output.stdout)
+            .unwrap_or_else(|_| panic!("doctor printed no JSON: {}", said(&output)));
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "leak")
+            .cloned()
+            .collect()
+    };
+    let found = leaks(&["doctor", "--leaks"]);
+    assert_eq!(found.len(), 1, "{found:#?}");
+    assert_eq!(found[0]["target"], target);
+    assert_eq!(found[0]["match"], "email");
+
+    let fixed = leaks(&["doctor", "--fix", "--redact"]);
+    assert_eq!(fixed.len(), 1, "{fixed:#?}");
+    assert_eq!(fixed[0]["status"], "skipped", "{fixed:#?}");
+    assert_eq!(
+        std::fs::read(fixture.root().join(target)).unwrap(),
+        bytes,
+        "the binary file was rewritten"
+    );
+}
