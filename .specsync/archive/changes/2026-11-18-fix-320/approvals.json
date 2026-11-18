@@ -51,6 +51,13 @@
         "where": "Leif's decision comment on CorvidLabs/chough#320 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for this change",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795032317,
+      "digest": "beebd60821029627c6b591140fd6b7857b4ebe608191ea5dc2c1809bf9a47106",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
