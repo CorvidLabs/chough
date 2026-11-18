@@ -293,7 +293,12 @@ pub(super) fn write_new_bounded(
     write_new_bytes(root, relative, content.as_bytes())
 }
 
-/// Create a file of any bounded size only when it does not exist.
+/// Create a file of any bounded size only when it does not exist. REQ-records-001
+/// (#260): a new file is whole or it is not there. The bytes go to a private temporary
+/// file, which is then hard-linked to the name, and a link never replaces a file. So a
+/// write that fails part way, as on a full disk or past a file size limit, leaves
+/// nothing at the name, and nothing here ever removes what is at the name: a file
+/// another writer put there meanwhile is kept, and the call returns false for it.
 pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Result<bool> {
     let path = local_path(root, relative)?;
     if path.exists() {
@@ -302,12 +307,30 @@ pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Re
     }
     fs::create_dir_all(path.parent().context("file has no parent")?)?;
     local_path(root, relative)?;
+    let temporary = temporary_for(root, relative, &path)?;
+    publish_new(&temporary, &path, content)
+        .with_context(|| format!("writing {relative} failed, so no file was left at that name"))
+}
+
+/// Write `content` to `temporary`, link it to `path` and remove `temporary`; false when
+/// `path` already exists. Only a `temporary` this call created is ever removed: when
+/// one of that name is already there, the create fails and it is left as it is.
+fn publish_new(temporary: &Path, path: &Path, content: &[u8]) -> io::Result<bool> {
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
-        .open(&path)?;
-    file.write_all(content)?;
-    Ok(true)
+        .open(temporary)?;
+    let published = (|| -> io::Result<bool> {
+        file.write_all(content)?;
+        drop(file);
+        match fs::hard_link(temporary, path) {
+            Ok(()) => Ok(true),
+            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => Ok(false),
+            Err(error) => Err(error),
+        }
+    })();
+    let _ = fs::remove_file(temporary);
+    published
 }
 
 /// Replace a managed record atomically: write a sibling temporary file, then rename.
@@ -1725,6 +1748,45 @@ mod tests {
     }
 
     use super::*;
+
+    /// REQ-records-001 (#260, review of #306): a failed new-file write removes only its
+    /// own temporary file. A file another writer put at the name meanwhile is kept
+    /// byte for byte, whether the write fails or reaches the link.
+    #[test]
+    fn a_failed_or_late_new_write_never_removes_what_is_at_the_name() {
+        let root = tempfile::tempdir().unwrap();
+        let path = root.path().join("record.md");
+        fs::write(&path, "SECOND_WRITER_CANARY").unwrap();
+
+        // The write fails: its temporary cannot be created.
+        let missing = root.path().join("no-such-folder/.record.md.1.tmp");
+        assert!(publish_new(&missing, &path, b"first writer").is_err());
+        assert_eq!(fs::read_to_string(&path).unwrap(), "SECOND_WRITER_CANARY");
+
+        // The write succeeds, but the name is taken by the time of the link.
+        let temporary = root.path().join(".record.md.1.tmp");
+        assert!(!publish_new(&temporary, &path, b"first writer").unwrap());
+        assert_eq!(fs::read_to_string(&path).unwrap(), "SECOND_WRITER_CANARY");
+        assert!(!temporary.exists());
+
+        // A temporary of that name is already there (review of #306, second finding):
+        // the create fails, and neither it nor the file at the name is touched.
+        fs::write(&temporary, "EARLIER_TEMPORARY_CANARY").unwrap();
+        let error = publish_new(&temporary, &path, b"first writer").unwrap_err();
+        assert_eq!(error.kind(), io::ErrorKind::AlreadyExists);
+        assert_eq!(
+            fs::read_to_string(&temporary).unwrap(),
+            "EARLIER_TEMPORARY_CANARY"
+        );
+        assert_eq!(fs::read_to_string(&path).unwrap(), "SECOND_WRITER_CANARY");
+        fs::remove_file(&temporary).unwrap();
+
+        // With the name free, the file appears whole and the temporary is gone.
+        let free = root.path().join("free.md");
+        assert!(publish_new(&temporary, &free, b"first writer").unwrap());
+        assert_eq!(fs::read_to_string(&free).unwrap(), "first writer");
+        assert!(!temporary.exists());
+    }
 
     /// #262, review of #305: the reader has no check before its open for a swap to slip
     /// past. A FIFO at the path at the moment of the open is refused at once, by the
