@@ -7,10 +7,11 @@
   "title": "A blocking bug stops only a session it is related to",
   "description": "A blocking bug stops only a session it is related to",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "8abb5bb89b5244e72327e1ea6abfc7e66634ebe1",
   "created_at": 1794961506,
-  "updated_at": 1794961585,
+  "updated_at": 1794961902,
   "affected_specs": [
     "cli"
   ],

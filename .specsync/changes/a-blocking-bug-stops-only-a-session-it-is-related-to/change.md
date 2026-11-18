@@ -1,6 +1,6 @@
 ---
 id: a-blocking-bug-stops-only-a-session-it-is-related-to
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 8abb5bb89b5244e72327e1ea6abfc7e66634ebe1
 ---
