@@ -1984,6 +1984,11 @@ or `CARGO_UNSTABLE_`. `CARGO_TARGET_DIR`, which only chooses where cargo writes,
 allowed. For `command` and `fledge-task`, which name their
 program in argv, a declared `PATH` can change which program that name resolves to.
 
+A retired case is kept as history. `cases check` still reads its shape but checks
+neither its links nor whether its `fledge-task` binding's task is still in
+`fledge.toml`, since removing that task is often why the case was retired, so the
+binding stays as written (#283). `cases run` and `cases record` refuse a retired case.
+
 `env` lives in the committed case file, so it is not a place for secrets. Its names
 and values are part of the case digest: adding or editing `env` makes earlier
 observations `stale-case-definition`, while an omitted or empty `env` leaves the
