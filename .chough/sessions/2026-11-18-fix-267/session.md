@@ -16,7 +16,9 @@ requirements: [REQ-records-006]
 cases: [TC-records-a-hyphen-glued-token-is-a-leak]
 design: []
 files: [src/leaks.rs, tests/leaks.rs]
-observations: [2026-11-18-tc-records-a-hyphen-glued-token-is-a-leak]
+observations:
+  - 2026-11-18-tc-records-a-hyphen-glued-token-is-a-leak
+  - 2026-11-18-tc-records-a-hyphen-glued-token-is-a-leak-aa5529
 bugs: []
 blockers: []
 waiting_on_human:
@@ -47,6 +49,7 @@ A credential glued to a hyphen, as in a slug or run name, is refused as a leak l
 ## What was verified
 
 - [Ran cargo test --locked --test leaks -- --exact a_hyphen_glued_token_is_refused_at_the_write_and_found_by_the_doctor for TC-records-a-hyphen-glued-token-is-a-leak: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-hyphen-glued-token-is-a-leak.md)
+- [Ran cargo test --locked --test leaks -- --exact a_hyphen_glued_token_is_refused_at_the_write_and_found_by_the_doctor for TC-records-a-hyphen-glued-token-is-a-leak: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-hyphen-glued-token-is-a-leak-aa5529.md)
 
 ## Open threads
 
