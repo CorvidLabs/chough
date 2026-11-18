@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-286",
+  "slug": "fix-286",
+  "title": "Fix 286",
+  "description": "fix 286",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "9dd28de28015ce6f873e237044cc9650e74a3712",
+  "created_at": 1795031259,
+  "updated_at": 1795034648,
+  "affected_specs": [
+    "history",
+    "cli",
+    "records"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "src/evidence_migrate.rs",
+    "tests/evidence.rs",
+    "tests/migrate_evidence.rs",
+    "docs/cli.md",
+    "specs/history/requirements.md",
+    "specs/history/history.spec.md",
+    ".chough/cases/history.receipts-keep-links.cases.toml",
+    "changelog.d/2026-11-18-fix-286.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A receipt in an archived story keeps its evidence entry's criteria and requirements, each one scalar, comma-and-space separated, and its limitations, one scalar, semicolon-and-space separated, each only when the entry has any, placed after case_digest; a migrated receipt keeps them the same way. The What was verified lines are unchanged."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes, and the delta is frozen at approval. The history lessons were read; none constrains the receipt fields.",
+    "public_contract": "yes"
+  }
+}
