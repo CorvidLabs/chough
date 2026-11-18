@@ -21,3 +21,23 @@ expected = ["tests/bugs.rs::a_blocking_bug_added_in_a_session_stops_it passes"]
 adapter = "cargo-test"
 test_target = "bugs"
 test = "a_blocking_bug_added_in_a_session_stops_it"
+
+# The #343 review: with the session full, bug add wrote a bug it then could not link.
+
+[[case]]
+id = "TC-cli-bug-add-refuses-before-writing-when-the-session-is-full"
+title = "With the active session holding its 200 bug links, bug add refuses before writing anything, naming the session and the limit, and no bug record is left behind"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-5"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "src/checkpoint.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::bug_add_refuses_before_writing_when_the_session_is_full passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "bug_add_refuses_before_writing_when_the_session_is_full"

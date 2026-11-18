@@ -2508,3 +2508,65 @@ fn a_bug_body_gives_its_actual_line_its_own_paragraph() {
     assert_eq!(legacy["symptom"], "Seeded legacy record remains readable");
     assert_eq!(legacy["actual"], "The legacy identity is present");
 }
+
+/// Every file under `root` but `.git` and `.chough/local`, with its bytes.
+fn tree(root: &std::path::Path) -> std::collections::BTreeMap<String, Vec<u8>> {
+    fn walk(
+        base: &std::path::Path,
+        dir: &std::path::Path,
+        out: &mut std::collections::BTreeMap<String, Vec<u8>>,
+    ) {
+        for entry in std::fs::read_dir(dir).unwrap().flatten() {
+            let path = entry.path();
+            let name = path
+                .strip_prefix(base)
+                .unwrap()
+                .to_string_lossy()
+                .into_owned();
+            if name == ".git" || name.starts_with(".chough/local") {
+                continue;
+            }
+            if path.is_dir() {
+                walk(base, &path, out);
+            } else {
+                out.insert(name, std::fs::read(&path).unwrap());
+            }
+        }
+    }
+    let mut out = std::collections::BTreeMap::new();
+    walk(root, root, &mut out);
+    out
+}
+
+/// REQ-cli-012 (#343 review), TC-cli-bug-add-refuses-before-writing-when-the-session-is-full:
+/// with the active session already holding its 200 bug links, `bug add` refuses before
+/// writing anything, naming the session and the limit, so no bug is left out of the
+/// session it was filed in: no new bug record exists and every file is unchanged.
+#[test]
+fn bug_add_refuses_before_writing_when_the_session_is_full() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let held: Vec<String> = (0..200)
+        .map(|n| format!("2026-01-01-held-bug-{n}"))
+        .collect();
+    fixture.set_front("bugs", &format!("[{}]", held.join(", ")));
+    assert_eq!(fixture.session()["bugs"].as_array().unwrap().len(), 200);
+    let before = tree(fixture.root());
+    let output = add_bug(&fixture, &[]);
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!output.status.success(), "{said}");
+    let after = tree(fixture.root());
+    let written: Vec<&String> = after
+        .keys()
+        .filter(|name| !before.contains_key(*name))
+        .collect();
+    assert!(written.is_empty(), "left behind {written:?}: {said}");
+    assert_eq!(after, before, "{said}");
+    assert!(said.contains(&fixture.active_id()), "{said}");
+    assert!(said.contains("200"), "{said}");
+    assert!(said.contains("nothing was written"), "{said}");
+}

@@ -451,7 +451,9 @@ observation and its revision.
 `bug add` while a session is active also adds the new bug to that session's
 checkpoint, as `checkpoint --bug` does, once, with or without `--observation`, so the
 session's story names the bugs found in it and a blocking bug filed in it stops it
-leaving test (#329). With no session active, it joins no checkpoint: a blocking bug
+leaving test (#329). When that session cannot take another bug, as with its 200 bug
+links held, `bug add` refuses before writing anything, naming the session, so a bug is
+never left out of the session it was filed in. With no session active, it joins no checkpoint: a blocking bug
 filed then stops no session, and `chough next` names it under "Other blocking bugs"
 as not blocking this session. `bug update` given `--observation` with an evidence entry
 of the active session also adds the bug to that session's checkpoint; an entry of

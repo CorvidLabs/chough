@@ -856,6 +856,32 @@ fn join_active_session(root: &Path, bug: &str, links: &[String], always: bool) -
     crate::checkpoint::save_checkpoint(root, &mut session)
 }
 
+/// Before `bug add` writes anything (#343 review): the active session, if one is, can
+/// take the new bug's link, checked as its save would check it, so a new bug is never
+/// left out of the session it was filed in. The check holds a name as long as any name
+/// `create` can give the bug, so the save after it is never larger than the one checked.
+fn session_takes_a_bug(root: &Path) -> Result<()> {
+    let Some(active) = crate::sessions::checkpoint_path(root)
+        .ok()
+        .and_then(|relative| crate::sessions::id_of(&relative))
+    else {
+        return Ok(());
+    };
+    let mut session = match crate::checkpoint::read_session(root)? {
+        crate::checkpoint::Session::V2(session) => *session,
+    };
+    let date = identity::utc_date(now()?);
+    session.bugs.push(format!(
+        "{date}-{}",
+        "x".repeat(identity::NAME_LIMIT - date.len() - 1)
+    ));
+    crate::checkpoint::check_save(root, &session).map_err(|error| {
+        anyhow::anyhow!(
+            "refused: session {active} cannot take another bug ({error:#}), and a bug added now would be left out of it; run `chough session new <key>` and add the bug there; nothing was written"
+        )
+    })
+}
+
 fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Result<()> {
     if bug.text("classification") != "regression" {
         return Ok(());
@@ -1453,6 +1479,7 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         source: args.source,
         notes,
     };
+    session_takes_a_bug(root)?;
     let (stored, redacted) = create(root, draft, false)?;
     join_active_session(root, stored.id(), &stored.list("evidence"), true)?;
     let mut output = json!({
