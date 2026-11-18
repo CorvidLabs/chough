@@ -23,6 +23,10 @@ observations:
   - 2026-11-18-tc-records-doctor-warns-of-a-lone-conflict-separator
   - 2026-11-18-tc-records-a-fenced-example-and-a-lone-separator-both-save-ed6ca5
   - 2026-11-18-tc-records-doctor-warns-of-a-lone-conflict-separator-e8c46f
+  - 2026-11-18-tc-records-a-fenced-example-and-a-lone-separator-both-save-97319a
+  - 2026-11-18-tc-records-doctor-warns-of-a-lone-conflict-separator-0e0d4a
+  - 2026-11-18-tc-records-a-fence-hides-a-conflict-only-when-closed
+  - 2026-11-18-tc-records-a-conflict-in-chough-s-own-sections-is-a-marker
 bugs: []
 blockers: []
 waiting_on_human:
@@ -54,6 +58,10 @@ Conflict-marker follow-ups: markers in fenced code blocks don't count, a stray =
 - [Ran cargo test --locked --test doctor -- --exact doctor_warns_of_a_lone_conflict_separator_without_failing for TC-records-doctor-warns-of-a-lone-conflict-separator: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-doctor-warns-of-a-lone-conflict-separator.md)
 - [Ran cargo test --locked --test records -- --exact a_fenced_example_and_a_lone_separator_both_save for TC-records-a-fenced-example-and-a-lone-separator-both-save: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-fenced-example-and-a-lone-separator-both-save-ed6ca5.md)
 - [Ran cargo test --locked --test doctor -- --exact doctor_warns_of_a_lone_conflict_separator_without_failing for TC-records-doctor-warns-of-a-lone-conflict-separator: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-doctor-warns-of-a-lone-conflict-separator-e8c46f.md)
+- [Ran cargo test --locked --test records -- --exact a_fenced_example_and_a_lone_separator_both_save for TC-records-a-fenced-example-and-a-lone-separator-both-save: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-fenced-example-and-a-lone-separator-both-save-97319a.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_warns_of_a_lone_conflict_separator_without_failing for TC-records-doctor-warns-of-a-lone-conflict-separator: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-doctor-warns-of-a-lone-conflict-separator-0e0d4a.md)
+- [Ran cargo test --locked --test records -- --exact a_fence_hides_a_conflict_only_when_it_is_one_and_closes for TC-records-a-fence-hides-a-conflict-only-when-closed: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-fence-hides-a-conflict-only-when-closed.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_reports_a_conflict_inside_chough_s_own_fenced_sections for TC-records-a-conflict-in-chough-s-own-sections-is-a-marker: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-conflict-in-chough-s-own-sections-is-a-marker.md)
 
 ## Open threads
 
