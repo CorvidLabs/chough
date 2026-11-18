@@ -674,10 +674,10 @@ pub(super) struct CheckpointArgs {
     summary: Option<String>,
     #[arg(long)]
     native_change: Option<String>,
-    /// The human decisions the session recorded, one per `--decision <DECISIONS>`.
+    /// A human decision the session recorded; repeat the flag for each one.
     #[arg(long = "decision")]
     decisions: Vec<String>,
-    /// The open questions the session is waiting on, one per `--question <QUESTIONS>`.
+    /// An open question the session is waiting on; repeat the flag for each one.
     #[arg(long = "question")]
     questions: Vec<String>,
     /// Resolve an open question by its exact text; its line stays, marked resolved.
@@ -686,14 +686,14 @@ pub(super) struct CheckpointArgs {
     /// The answer to the one question `--resolve-question` names, appended to its line.
     #[arg(long, requires = "resolved")]
     answer: Option<String>,
-    /// The work the session completed, one per `--completed <COMPLETED>`.
+    /// Work the session completed; repeat the flag for each item.
     #[arg(long = "completed")]
     completed: Vec<String>,
     /// Remove a completed entry by its exact text, before `--completed` adds any, so the
     /// two together correct a mistaken entry in one call.
     #[arg(long = "remove-completed")]
     remove_completed: Vec<String>,
-    /// The blockers the session hit, one per `--blocker <BLOCKERS>`.
+    /// A blocker the session hit; repeat the flag for each one.
     #[arg(long = "blocker")]
     blockers: Vec<String>,
     #[arg(long)]
@@ -760,25 +760,25 @@ pub(super) struct CheckpointArgs {
     /// The gate list the summary came from (REQ-history-014).
     #[arg(long, hide = true, requires_all = ["close_gate", "summary_digest"])]
     list: Option<String>,
-    /// The criteria the session references, one per `--criterion <CRITERIA>`.
+    /// An HI criterion the session covers, by ID; repeat the flag for each one.
     #[arg(long = "criterion")]
     criteria: Vec<String>,
-    /// The requirements the session references, one per `--requirement <REQUIREMENTS>`.
+    /// A requirement the session covers, by ID; repeat the flag for each one.
     #[arg(long = "requirement")]
     requirements: Vec<String>,
-    /// The cases the session references, one per `--case <CASES>`.
+    /// A test case the session references, by ID; repeat the flag for each one.
     #[arg(long = "case")]
     cases: Vec<String>,
-    /// The design documents or notes the session references, one per `--design <DESIGN>`.
+    /// A design document or note the session references; repeat the flag for each one.
     #[arg(long = "design")]
     design: Vec<String>,
-    /// The files the session references, one per `--file <FILES>`.
+    /// A file the session references; repeat the flag for each one.
     #[arg(long = "file")]
     files: Vec<String>,
-    /// The observations or evidence entries the session records, one per `--observation <OBSERVATIONS>`.
+    /// An evidence entry the session references, by ID; repeat the flag for each one.
     #[arg(long = "observation")]
     observations: Vec<String>,
-    /// The bugs the session references, one per `--bug <BUGS>`.
+    /// A bug the session references, by name or alias; repeat the flag for each one.
     #[arg(long = "bug")]
     bugs: Vec<String>,
 }

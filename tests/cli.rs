@@ -3549,6 +3549,9 @@ fn checkpoint_help_names_the_eleven_list_valued_flags() {
         String::from_utf8_lossy(&output.stderr)
     );
     let stdout = String::from_utf8_lossy(&output.stdout);
+    // Each flag's line in the long help is followed by its description; before #301 these
+    // eleven flags printed none, so the next line was the following flag.
+    let lines: Vec<&str> = stdout.lines().collect();
     for flag in [
         "--criterion",
         "--requirement",
@@ -3562,9 +3565,14 @@ fn checkpoint_help_names_the_eleven_list_valued_flags() {
         "--completed",
         "--blocker",
     ] {
+        let at = lines
+            .iter()
+            .position(|line| line.trim_start().starts_with(&format!("{flag} ")))
+            .unwrap_or_else(|| panic!("checkpoint --help does not name {flag}:\n{stdout}"));
+        let next = lines.get(at + 1).map(|line| line.trim()).unwrap_or("");
         assert!(
-            stdout.contains(flag),
-            "checkpoint --help does not name {flag}:\n{stdout}"
+            !next.is_empty() && !next.starts_with('-'),
+            "checkpoint --help prints no description for {flag}:\n{stdout}"
         );
     }
 }
