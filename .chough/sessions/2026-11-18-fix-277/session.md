@@ -16,7 +16,7 @@ requirements: [REQ-records-009]
 cases: [TC-records-a-migrated-bugs-body-links-its-carried-observations]
 design: []
 files: [src/bugs.rs, src/migrate.rs, tests/migrate_evidence.rs]
-observations: []
+observations: [2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +38,8 @@ A migrated bug's body links each carried observation to the file of the entry or
 - 0xLeif decided "Scope approval of fix-277": "relative links. A migrated bug's body links each carried observation to the file of the entry or story that holds it, as a new bug's body does." (Leif's decision comment on GitHub issue #277, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-277 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test migrate_evidence -- --exact a_migrated_bugs_body_links_its_carried_observations for TC-records-a-migrated-bugs-body-links-its-carried-observations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations.md)
 
 ## Open threads
 
