@@ -19,6 +19,7 @@ files: []
 observations:
   - 2026-11-18-tc-cli-git-merge-in-progress-warns-and-refuses-writes
   - 2026-11-18-tc-cli-git-merge-in-progress-warns-and-refuses-writes-882968
+  - 2026-11-18-tc-cli-git-merge-in-progress-warns-and-refuses-writes-437438
 bugs: []
 blockers: []
 waiting_on_human:
@@ -49,6 +50,7 @@ next, status and doctor warn during a git merge or rebase, and writes refuse whi
 
 - [Ran cargo test --locked --test git_merge -- --exact a_merge_conflict_in_chough_warns_and_refuses_writes for TC-cli-git-merge-in-progress-warns-and-refuses-writes: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-git-merge-in-progress-warns-and-refuses-writes.md)
 - [Ran cargo test --locked --test git_merge -- --exact a_merge_conflict_in_chough_warns_and_refuses_writes for TC-cli-git-merge-in-progress-warns-and-refuses-writes: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-git-merge-in-progress-warns-and-refuses-writes-882968.md)
+- [Ran cargo test --locked --test git_merge -- --exact a_merge_conflict_in_chough_warns_and_refuses_writes for TC-cli-git-merge-in-progress-warns-and-refuses-writes: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-git-merge-in-progress-warns-and-refuses-writes-437438.md)
 
 ## Open threads
 
