@@ -49,6 +49,13 @@
         "where": "Leif's decision comment on CorvidLabs/chough#329 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then, relayed by hc t4c on 2026-11-18, 'Recreate on my word' to recreate fix-329 with tests/records.rs declared, since its alias test reads the session's bugs list; the first draft was never pushed",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795043038,
+      "digest": "2b16f0243394de107c34b28a2c662dffed5922323f7cf340939aa3e4bc973291",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

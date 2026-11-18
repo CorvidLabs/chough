@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-329",
+  "slug": "fix-329",
+  "title": "Fix 329",
+  "description": "fix 329",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "275fe4dae6d7a083751186bee89627af9f8140fe",
+  "created_at": 1795031624,
+  "updated_at": 1795043038,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/bugs.rs",
+    "tests/bugs.rs",
+    "tests/records.rs",
+    "docs/cli.md",
+    ".chough/cases/cli.bug-joins-the-active-session.cases.toml",
+    "changelog.d/2026-11-18-fix-329.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough bug add while a session is active puts the new bug on that session's bugs list, with or without --observation, so a blocking bug filed with nothing linked stops that session leaving test and its story names it. A bug added with no session active is on no session's bugs list and stops no session, and chough next names it as not blocking that session. chough bug update with --observation joins the active session only when the entry it names is that session's, as before."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Human gates are listed as plain text in tasks.md, and the deltas are frozen at approval. Leif's decision on #329 (2026-11-18 planning interview) fixes the behaviour: auto-link on bug add; no session active stays unlinked with the existing warning. tests/records.rs is declared because its alias test reads the session's bugs list, which now also holds the bug the test files. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}
