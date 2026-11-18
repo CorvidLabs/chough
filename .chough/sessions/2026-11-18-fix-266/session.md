@@ -5,7 +5,7 @@ aliases: [fix-266]
 objective: "next, status and doctor warn during a git merge or rebase, and writes refuse while .chough paths are unmerged (REQ-cli-069, #266)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-18-tc-cli-git-merge-in-progress-warns-and-refuses-writes-437438
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-266
-    holds: accept
-    drives: review
-    opened: 2026-11-18T18:26:42Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # next, status and doctor warn during a git merge or rebase, and writes refuse while .chough paths are unmerged (REQ-cli-069, #266)
 
@@ -45,6 +41,7 @@ next, status and doctor warn during a git merge or rebase, and writes refuse whi
 - The rule is a new REQ-cli-069, with the doctor finding defined there beside REQ-history-012's, since #250 and #320 also change REQ-history-012. Writes are refused at the writer lock and before an evidence entry is written, so a refused writer leaves nothing; the merge drivers take no lock and still run.
 - 0xLeif decided "Scope approval of fix-266": "warn, and refuse .chough writes. next, status and doctor report an in-progress git merge or rebase (MERGE_HEAD, REBASE_HEAD, unmerged paths) with 'finish or abort it first'. Write commands refuse only while paths under .chough/ are unmerged." (Leif's decision comment on CorvidLabs/chough#266 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for this change); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-266 as 0xLeif
 - 0xLeif decided "Scope approval of fix-266 without REBASE_HEAD": "Let the fixer send it back once" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: he chose that the fixer run the send-back on fix-266 this once and drop REBASE_HEAD from REQ-cli-069 so the requirement matches the code, recorded as his approval of that one-line change (and the same words in the acceptance criteria)); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-266 as 0xLeif
+- 0xLeif decided "Implementation review of fix-266": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #330 after the tester's recheck PASS at 69f156a; with it he chose 'Let the fixer send it back once' to drop REBASE_HEAD from REQ-cli-069, recorded at that re-approval); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-266 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -130,4 +127,32 @@ next, status and doctor warn during a git merge or rebase, and writes refuse whi
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve fix-266
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:24:40Z · direct-native-write · accept → accept · fix-266's lifecycle records changed outside Chough: state.json changed, verification.json changed, verification-attempts.json changed; state verifying → approved ^t-1a4c8a
+  - native_change: fix-266
+  - revision: b454154fdf69de31e16ea4f66740cb3ae9c38463
+  - direct_write:
+    - change: fix-266
+    - files:
+      - state.json: changed
+      - verification.json: changed
+      - verification-attempts.json: changed
+    - before_state: verifying
+    - after_state: approved
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:24:40Z · gate-closed · accept → accept · Implementation review of fix-266 ^t-fba80f
+  - native_change: fix-266
+  - revision: b454154fdf69de31e16ea4f66740cb3ae9c38463
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #330 after the tester's recheck PASS at 69f156a; with it he chose 'Let the fixer send it back once' to drop REBASE_HEAD from REQ-cli-069, recorded at that re-approval
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-266
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:24:41Z · advance · accept → done · native:archived ^t-09f9ef
+  - native_change: fix-266
+  - gate: native:archived
+  - revision: b454154fdf69de31e16ea4f66740cb3ae9c38463
   - by: chough-fixer (claude-opus-5-5, hc t4n)
