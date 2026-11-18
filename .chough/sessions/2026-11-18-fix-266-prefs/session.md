@@ -5,7 +5,7 @@ aliases: [fix-266-prefs]
 objective: pref set and pref unset take the writer lock, so they refuse while a .chough path is unmerged, as REQ-cli-069 promises (#330 review P2)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-cargo-test-locked-test-git-merge-preference-writes-refuse
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-266-prefs
-    holds: accept
-    drives: review
-    opened: 2026-11-18T19:36:28Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # pref set and pref unset take the writer lock, so they refuse while a .chough path is unmerged, as REQ-cli-069 promises (#330 review P2)
 
@@ -42,6 +38,7 @@ pref set and pref unset take the writer lock, so they refuse while a .chough pat
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-266-prefs": "Fix first, you resolve" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his own P2 review thread on #330 ('Cover preference writers before relying on this lock as the merge guard … regress pref set/unset'): a small follow-up native change on #330's branch in which pref set and pref unset take the writer lock, with a regression test red first); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-266-prefs as 0xLeif
+- 0xLeif decided "Implementation review of fix-266-prefs": "Fix first, you resolve" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his P2 review thread on #330, with the instruction to make a small follow-up native change on #330's branch, run the verify lane, ship and push; a tester glances at it, he resolves the thread, then the fixer merges); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-266-prefs as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -98,4 +95,20 @@ pref set and pref unset take the writer lock, so they refuse while a .chough pat
   - revision: 968172b73473b5f9149355b47bb9a59a7ea48d17
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:44:05Z · gate-closed · accept → accept · Implementation review of fix-266-prefs ^t-b4d3ea
+  - native_change: fix-266-prefs
+  - revision: 53a50215063a71144cd9f4d14360fab544eaa587
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Fix first, you resolve
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his P2 review thread on #330, with the instruction to make a small follow-up native change on #330's branch, run the verify lane, ship and push; a tester glances at it, he resolves the thread, then the fixer merges
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-266-prefs
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:44:06Z · advance · accept → done · native:archived ^t-d3f974
+  - native_change: fix-266-prefs
+  - gate: native:archived
+  - revision: 53a50215063a71144cd9f4d14360fab544eaa587
   - by: chough-fixer (claude-opus-5-5, hc t4n)
