@@ -1016,3 +1016,55 @@ fn doctor_reports_merge_drivers_that_would_run_an_older_chough() {
     let (_, report) = doctor(&fixture, &[]);
     assert!(outdated(&report).is_empty(), "{report:#}");
 }
+
+/// REQ-records-001, REQ-cli-055 (#265), TC-records-doctor-reports-conflict-markers-in-records:
+/// a committed record whose body holds a conflict gives one `conflict_markers` finding per
+/// marker line, naming the file, the line and the marker, and `--fix` skips them; a
+/// committed file that is not a record, a case definition or `.chough/README.md`, gives
+/// none, and a heading underline outside a conflict is not one.
+#[test]
+fn doctor_reports_conflict_markers_in_committed_records_only() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let story = ".chough/archive/sessions/2026-01-01-old.md";
+    fixture.write(
+        story,
+        "---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\nHeading\n=======\n\n<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> branch\n",
+    );
+    fixture.write(
+        ".chough/cases/old.cases.toml",
+        "# <<<<<<< HEAD\n<<<<<<< HEAD\n=======\n>>>>>>> branch\n",
+    );
+    let readme = fixture.read(".chough/README.md");
+    fixture.write(
+        ".chough/README.md",
+        &format!("{readme}\n<<<<<<< HEAD\n=======\n>>>>>>> branch\n"),
+    );
+    fixture.commit("an old story and two files that are not records");
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let found = of_kind(&report, "conflict_markers");
+    let named: Vec<(String, u64, String)> = found
+        .iter()
+        .map(|finding| {
+            (
+                finding["target"].as_str().unwrap().to_string(),
+                finding["line"].as_u64().unwrap(),
+                finding["marker"].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    assert_eq!(
+        named,
+        [
+            (story.to_string(), 10, "<<<<<<< HEAD".to_string()),
+            (story.to_string(), 12, "=======".to_string()),
+            (story.to_string(), 14, ">>>>>>> branch".to_string()),
+        ],
+        "{report:#}"
+    );
+    let (_, fixed) = doctor(&fixture, &["--fix"]);
+    for finding in of_kind(&fixed, "conflict_markers") {
+        assert_eq!(finding["status"], "skipped", "{fixed:#}");
+    }
+}
