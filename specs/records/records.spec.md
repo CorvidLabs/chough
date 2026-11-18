@@ -1,6 +1,6 @@
 ---
 module: records
-version: 11
+version: 12
 status: active
 files:
   - src/markdown.rs
@@ -167,6 +167,9 @@ or redacting every value before it is written.
    suffix, never a count; a clash draws one suffix, and a second clash is refused
    without another draw.
 5. A refusal for a leak names the field and the kind of match, never the text.
+6. A session's front matter holds `no_native_change`, the reason its work needs no
+   native change, only once the session recorded it (REQ-cli-007), and never together
+   with a native change; an archived story keeps it.
 
 ## Behavioral Examples
 
@@ -216,3 +219,4 @@ use this one for every record they write.
 | 10 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
 | 10 | 2026-11-18 | fix-314: Fix 314 |
 | 11 | 2026-11-18 | fix-264: Fix 264 |
+| 12 | 2026-11-18 | fix-281: Fix 281 |
