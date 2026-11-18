@@ -19,6 +19,7 @@ files: [src/records.rs, tests/bugs.rs]
 observations:
   - 2026-11-18-tc-records-a-failed-new-record-write-leaves-no-file
   - 2026-11-18-tc-records-a-failed-new-record-write-leaves-no-file-7d826f
+  - 2026-11-18-tc-records-a-failed-new-record-write-leaves-no-file-23bdea
 bugs: []
 blockers: []
 waiting_on_human:
@@ -50,6 +51,7 @@ A new record whose write fails is not left behind as an empty or cut-off file (R
 
 - [Ran cargo test --locked --test bugs -- --exact a_bug_add_whose_write_fails_part_way_leaves_no_partial_record for TC-records-a-failed-new-record-write-leaves-no-file: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-failed-new-record-write-leaves-no-file.md)
 - [Ran cargo test --locked --test bugs -- --exact a_bug_add_whose_write_fails_part_way_leaves_no_partial_record for TC-records-a-failed-new-record-write-leaves-no-file: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-failed-new-record-write-leaves-no-file-7d826f.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_add_whose_write_fails_part_way_leaves_no_partial_record for TC-records-a-failed-new-record-write-leaves-no-file: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-failed-new-record-write-leaves-no-file-23bdea.md)
 
 ## Open threads
 
