@@ -19,6 +19,8 @@ files: []
 observations:
   - 2026-11-18-tc-cli-bug-add-refuses-before-writing-when-the-session-is-full
   - 2026-11-18-tc-cli-bug-add-joins-the-active-session-6ae083
+  - 2026-11-18-tc-cli-bug-add-refuses-before-writing-when-the-session-is-full-259e47
+  - 2026-11-18-tc-cli-bug-add-joins-the-active-session-b70300
 bugs: []
 blockers: []
 waiting_on_human:
@@ -45,6 +47,8 @@ bug add checks that the active session can take another bug link before writing 
 
 - [Ran cargo test --locked --test bugs -- --exact bug_add_refuses_before_writing_when_the_session_is_full for TC-cli-bug-add-refuses-before-writing-when-the-session-is-full: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-refuses-before-writing-when-the-session-is-full.md)
 - [Ran cargo test --locked --test bugs -- --exact a_blocking_bug_added_in_a_session_stops_it for TC-cli-bug-add-joins-the-active-session: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-joins-the-active-session-6ae083.md)
+- [Ran cargo test --locked --test bugs -- --exact bug_add_refuses_before_writing_when_the_session_is_full for TC-cli-bug-add-refuses-before-writing-when-the-session-is-full: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-refuses-before-writing-when-the-session-is-full-259e47.md)
+- [Ran cargo test --locked --test bugs -- --exact a_blocking_bug_added_in_a_session_stops_it for TC-cli-bug-add-joins-the-active-session: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-joins-the-active-session-b70300.md)
 
 ## Open threads
 
