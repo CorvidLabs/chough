@@ -38,6 +38,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him: 'Chough docs PR #327: add the 0.6.1 row to the roadmap (released, crates.io, the clean install check passed) and fix README line 258 (the stale documents 0.6.0, which is not released yet). Docs only. Approve the scope?'",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795028273,
+      "digest": "049997d304cd86cd0f9a096e95d69164cab3ae008cd6ab6157b5feed1948e635",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

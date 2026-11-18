@@ -26,6 +26,9 @@ waiting_on_human:
     opened: 2026-11-18T18:00:18Z
 run_consents: []
 next: Wait for Leif's implementation review of docs-0-6-1-release
+title: The 0.6.1 release row and the README release sentence
+summary:
+  - The roadmap's delivered table has the 0.6.1 release row with the tag, the release preparation PR, the crates.io version, the GitHub release and the clean install observed on macOS arm64. The README no longer says 0.6.0 is not released yet. The verify lane passed on macOS after main (0b7ac77) was merged in; Linux was not run locally.
 ---
 # The roadmap's delivered table has the 0.6.1 release row, and the README no longer says 0.6.0 is not released yet
 
