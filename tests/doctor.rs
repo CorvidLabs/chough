@@ -278,6 +278,34 @@ fn doctor_decision_fixes_need_a_reason_and_record_no_human_decision() {
         serde_json::json!([]),
         "{archived:#}"
     );
+    // #250: each withdrawn gate's Timeline entry carries the reason, in the archived
+    // story too, and doctor's JSON echoes it on the decisions it applied.
+    let story = fixture.read(&format!(
+        ".chough/archive/sessions/{}.md",
+        fixture.id_of("alpha")
+    ));
+    let closed_entry = story
+        .find("· gate-closed ·")
+        .unwrap_or_else(|| panic!("no gate-closed entry: {story}"));
+    let after = &story[closed_entry..];
+    let entry_end = after.find("\n- ").unwrap_or(after.len());
+    assert!(
+        after[..entry_end].contains("  - withdrawn: Superseded; ch-alpha is archived"),
+        "{}",
+        &after[..entry_end]
+    );
+    for finding in fixed["findings"].as_array().unwrap() {
+        let echoed = finding["decision_reason"].as_str();
+        if finding["decision"] == true {
+            assert_eq!(
+                echoed,
+                Some("Superseded; ch-alpha is archived"),
+                "{finding:#}"
+            );
+        } else {
+            assert_eq!(echoed, None, "{finding:#}");
+        }
+    }
     // Withdrawing a gate records no human decision.
     assert!(
         !archived["decisions"]

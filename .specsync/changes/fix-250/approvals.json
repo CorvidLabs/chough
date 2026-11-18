@@ -1,0 +1,67 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795032564,
+      "digest": "cbcd45de53889e956bb9ac59af05cf9f6e4d5680277d0b91624ef0a639ea65ea",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-250\": \"record it on each gate. When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason in the person's words, and doctor's JSON echoes it back. REQ-history-012 gets that sentence.\" (Leif's decision comment on GitHub issue #250, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval). Relayed and recorded by fable-t4b at 2026-11-18T20:09:24Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-250",
+        "title": "Fix 250",
+        "description": "fix 250",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.stale-gate-reason.cases.toml",
+          "changelog.d/2026-11-18-fix-250.md",
+          "docs/cli.md",
+          "specs/cli/requirements.md",
+          "specs/history/requirements.md",
+          "specs/records/requirements.md",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/history.rs",
+          "src/session_md.rs",
+          "src/stage.rs",
+          "tests/doctor.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "After chough doctor --fix --reason withdraws a stale gate, that gate's gate-closed Timeline entry in the archived story holds the reason as its withdrawn field, in the person's words; doctor's JSON gives decision_reason on each decision finding it fixed and on no other finding; withdrawing still records no human decision."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes, and the deltas are frozen at approval. REQ-history-002 keeps the Timeline append-only: the field is written with the entry, never added to an existing one.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "3fbb8a8911ebdf993d9aa03aff3ff2ae36d06cdc950288a6905be5000215b3cf",
+        "history": "ea1aa176da5ba7b24486343c053387daf458187171c82fdf429d8749ac0146aa",
+        "records": "80f169ab3aa382727cf315e7c1c623da9fce59630ed79a46c72f4b3dbae9d947"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-030": "26e0acb72838f8f7f69eec60a0c7d3a4fff36f33c310f1fc44a1469e92d139cb",
+        "history: REQUIREMENT REQ-history-002": "a8e9a8631d71744e4f20cedfa8b1a564f22b866d9d22e224f6c995e5495ada8e",
+        "history: REQUIREMENT REQ-history-012": "f11b1f06e5688534149cee8eb00fc07c734f376942f39dd6fc1790c568e14321",
+        "records: REQUIREMENT REQ-records-004": "758b168c55f79b3d7213e35643f2a54acc2ae346ad0d969f8aa85765875e8bca"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "record it on each gate. When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason in the person's words, and doctor's JSON echoes it back. REQ-history-012 gets that sentence.",
+        "where": "Leif's decision comment on GitHub issue #250, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ],
+  "reopenings": []
+}

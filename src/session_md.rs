@@ -437,6 +437,7 @@ fn parse_head_with(head: &str, lenient: bool) -> Result<(Entry, bool)> {
                 holds: None,
                 drives: None,
                 corrects: None,
+                withdrawn: None,
             },
             native_change: None,
         },
@@ -624,6 +625,7 @@ fn apply_field(entry: &mut Entry, key: &str, value: String, parts: &[String]) ->
         "holds" => transition.holds = Some(value),
         "drives" => transition.drives = Some(value),
         "corrects" => transition.corrects = Some(value),
+        "withdrawn" => transition.withdrawn = Some(value),
         // A field a later Chough writes (`by`, corrections and so on) reads as unknown.
         _ => {}
     }
@@ -718,6 +720,9 @@ fn render_entry(transition: &Transition, native_change: Option<&str>, id: &str) 
     }
     if let Some(corrects) = &transition.corrects {
         field(&mut out, "corrects", corrects);
+    }
+    if let Some(withdrawn) = &transition.withdrawn {
+        field(&mut out, "withdrawn", withdrawn);
     }
     if let Some(actor) = &transition.actor {
         field(&mut out, "by", &actor.display());
@@ -990,6 +995,7 @@ mod tests {
             holds: None,
             drives: None,
             corrects: None,
+            withdrawn: None,
         }
     }
 

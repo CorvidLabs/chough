@@ -83,6 +83,8 @@ struct Finding {
     decision: bool,
     status: &'static str,
     reason: Option<String>,
+    /// The `--reason` a decision fix was applied with (REQ-history-012, #250).
+    decision_reason: Option<String>,
     /// Why the fix cannot run even with `--fix`, when known before fixing.
     blocked: Option<String>,
     /// Fields the finding adds to its JSON, such as the missing entries.
@@ -98,6 +100,7 @@ impl Finding {
             decision,
             status: "found",
             reason: None,
+            decision_reason: None,
             blocked: None,
             detail: None,
         }
@@ -118,6 +121,9 @@ impl Finding {
         });
         if let Some(reason) = &self.reason {
             value["reason"] = json!(reason);
+        }
+        if let Some(reason) = &self.decision_reason {
+            value["decision_reason"] = json!(reason);
         }
         if let Some(Value::Object(detail)) = &self.detail {
             for (key, field) in detail {
@@ -1294,7 +1300,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         }
         Kind::StaleGates => {
             sessions::pin(root, &sessions::session_file(&finding.target));
-            let result = checkpoint::withdraw_gates(root);
+            let result = checkpoint::withdraw_gates(root, reason.unwrap_or_default());
             sessions::unpin(root);
             result?;
         }
@@ -1368,6 +1374,13 @@ pub(super) fn run(root: &Path, args: DoctorArgs) -> Result<bool> {
             match apply(root, finding, &args, reason) {
                 Ok(()) => {
                     found[index - 1].status = "fixed";
+                    // REQ-history-012 (#250): a decision the fix applied echoes the
+                    // reason it was given.
+                    if found[index - 1].decision
+                        && let Some(reason) = reason
+                    {
+                        found[index - 1].decision_reason = Some(reason.to_string());
+                    }
                     // A withdrawn gate leaves a finished session, archived next.
                     if found[index - 1].kind == Kind::StaleGates {
                         let key = found[index - 1].target.clone();

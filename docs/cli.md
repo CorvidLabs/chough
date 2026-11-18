@@ -850,7 +850,7 @@ native read, and never records a human decision, approval, review or consent.
 | `stale_pointer` | The active pointer names a missing or archived session | Remove the pointer |
 | `finished_session` | An open session at done, or with its native change archived on HEAD | Archive it into its story; one with unfolded inbox entries is skipped, naming `chough inbox fold` |
 | `unfinished_archive` | A session folder whose story exists and that still holds files | Remove each file whose bytes are committed at HEAD; otherwise skipped, naming the commit to make |
-| `stale_gates` | A finished session with open awaiting-human gates, whose native change is archived | A decision: withdraw the gates as `checkpoint --clear-awaiting-human` does, recording no human decision, then archive the session |
+| `stale_gates` | A finished session with open awaiting-human gates, whose native change is archived | A decision: withdraw the gates as `checkpoint --clear-awaiting-human` does, recording no human decision, write the reason on each withdrawn gate's `gate-closed` Timeline entry as `withdrawn: <reason>`, which the archived story keeps, then archive the session. A decision fix that was applied echoes the reason as `decision_reason` |
 | `unfinished_session` | An open, unfinished session named with `--close <key>` | A decision: `session close <key> --reason` |
 | `timeline_rewritten` | A session or story whose Timeline at HEAD is not an exact prefix of its working Timeline (REQ-history-002); `entries` names the entries that differ | None: restore them from `git show HEAD:<file>` by hand |
 | `alias_conflict` | An ID that is the `id` or an alias of two records of one kind (REQ-records-003); `records` names both | None: decide which record keeps it |
