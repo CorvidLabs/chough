@@ -251,10 +251,11 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
 /// Front matter keys whose values are a record's ID or IDs it references (REQ-records-003).
 /// A leak on such a line is never redacted, since a redacted ID no longer reads
 /// (REQ-history-012, #320).
-const ID_KEYS: [&str; 12] = [
+const ID_KEYS: [&str; 14] = [
     "id",
     "aliases",
     "native_change",
+    "modules",
     "criteria",
     "requirements",
     "cases",
@@ -263,6 +264,7 @@ const ID_KEYS: [&str; 12] = [
     "evidence",
     "related",
     "duplicate_of",
+    "regression_baseline",
     "case",
 ];
 

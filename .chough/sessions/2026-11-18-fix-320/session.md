@@ -36,6 +36,7 @@ A leaking ID reference's refusal names the recovery, and doctor --fix --redact n
 ## Where it stands
 
 - Failing tests first: a_leaking_id_reference_names_the_recovery and doctor_redact_never_rewrites_an_id failed on main (no recovery named; the doctor rewrote the ID); the refusal now names chough session shelve <id>, and the doctor's leak fix leaves ID lines byte for byte with their findings skipped, so all 11 leak tests pass
+- #335 tester BLOCK fixed: modules and regression_baseline are ID keys, so doctor --fix --redact leaves those lines byte for byte with their findings skipped; doctor_redact_never_rewrites_modules_or_a_regression_baseline failed without the two keys and passes with them; the docs row notes that a body link to a file whose name holds a match is redacted with the body
 
 ## Decisions and why
 
