@@ -109,6 +109,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #335 (#320) merged and changed REQ-cli-055, SpecSync refused fix-265's approved cli delta as approved against changed canonical text; the delta was rebased onto main's REQ-cli-055 with only #265's clause and acceptance line added, nothing else changed, and he re-approved it",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795033950,
+      "digest": "a2fa8cce04859507bada9262514f364d97a3d989c699cb1850068a60af7db689",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
