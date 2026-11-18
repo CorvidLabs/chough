@@ -89,6 +89,10 @@ pub(super) struct Checkpoint {
     pub(super) stage: StageState,
     #[serde(default)]
     pub(super) native_change: Option<String>,
+    /// Why this session's work needs no native change, when it recorded that
+    /// (REQ-cli-007, #281); never set together with `native_change`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) no_native_change: Option<String>,
     #[serde(default)]
     pub(super) references: References,
     #[serde(default)]
@@ -181,6 +185,7 @@ pub(super) fn new_checkpoint(
             iteration: 1,
         },
         native_change: None,
+        no_native_change: None,
         references: References::default(),
         decisions: vec![],
         open_questions: vec![],
@@ -564,6 +569,11 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
     count += guard(local, "objective", &mut session.objective)?;
     count += guard(local, "intent_scope", &mut session.intent_scope)?;
     count += guard(local, "next", &mut session.next_action)?;
+    // REQ-records-006 (#281): the reason a session needs no native change is a written
+    // value like the others.
+    if let Some(reason) = &mut session.no_native_change {
+        count += guard(local, "no_native_change", reason)?;
+    }
     for (name, list) in [
         ("decision", &mut session.decisions),
         ("completed", &mut session.completed),
@@ -598,11 +608,11 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         ("bug", &session.bugs),
     ] {
         for value in list {
-            check_id(local, name, value)?;
+            check_id(local, &session.meta.id, name, value)?;
         }
     }
     if let Some(change) = &session.native_change {
-        check_id(local, "native_change", change)?;
+        check_id(local, &session.meta.id, "native_change", change)?;
     }
     for alias in &mut session.meta.aliases {
         count += guard(local, "alias", alias)?;
@@ -635,7 +645,7 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
 /// Refuse an ID reference that leaks, under `--redact` too (REQ-records-006, #268): an
 /// ID keeps its ID form, which `<redacted:<kind>>` would break, so the only fix is to
 /// remove it. Names the field and the kinds, never the text.
-fn check_id(local: &crate::leaks::Local, field: &str, value: &str) -> Result<()> {
+fn check_id(local: &crate::leaks::Local, session: &str, field: &str, value: &str) -> Result<()> {
     let found = crate::leaks::find(local, value);
     if found.is_empty() {
         return Ok(());
@@ -644,7 +654,7 @@ fn check_id(local: &crate::leaks::Local, field: &str, value: &str) -> Result<()>
     kinds.sort_unstable();
     kinds.dedup();
     bail!(
-        "refused:leak: {field} holds {}; an ID cannot be redacted, so remove it; nothing was written",
+        "refused:leak: {field} holds {}; an ID cannot be redacted, so remove it from this command, or, when the session already holds it, set the session aside with `chough session shelve {session}` and continue in `chough session new <key>` (#320); nothing was written",
         kinds.join(", ")
     )
 }
@@ -738,6 +748,10 @@ pub(super) struct CheckpointArgs {
     summary: Option<String>,
     #[arg(long)]
     native_change: Option<String>,
+    /// Record that this session's work needs no native change, with the reason, so its
+    /// stage moves are not refused for lacking one. Human gates still hold.
+    #[arg(long, value_name = "REASON", allow_hyphen_values = true)]
+    no_native_change: Option<String>,
     /// A human decision the session recorded; repeat the flag for each one.
     #[arg(long = "decision")]
     decisions: Vec<String>,
@@ -1179,22 +1193,6 @@ fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Optio
     })
 }
 
-/// Save `session` with a gate-closed entry for each of `cleared` and a gate-opened entry
-/// for each of `opened`, all in the same atomic replace as the checkpoint change, so a
-/// refused save writes neither. `checkpoint` and the doctor's gate withdrawal
-/// (REQ-history-012) share it.
-fn save_with_gate_events(
-    root: &Path,
-    session: &mut Checkpoint,
-    current_stage: &str,
-    cleared: &[String],
-    opened: &[String],
-    relay_for: impl Fn(&String) -> Option<stage::RelayedBy>,
-) -> Result<()> {
-    queue_gate_events(root, session, current_stage, cleared, opened, relay_for)?;
-    save_checkpoint(root, session)
-}
-
 /// Queue a gate-closed entry for each of `cleared` and a gate-opened entry for each of
 /// `opened` for the next save.
 fn queue_gate_events(
@@ -1223,15 +1221,29 @@ fn queue_gate_events(
 
 /// Withdraw every open awaiting-human gate of the canonical checkpoint, as
 /// `chough checkpoint --clear-awaiting-human` does: gate-closed events with no relayed
-/// decision, and no decision recorded. Returns the withdrawn gates.
-pub(super) fn withdraw_gates(root: &Path) -> Result<Vec<String>> {
+/// decision, and no decision recorded. Each gate-closed entry carries `reason`, the
+/// words `chough doctor --fix --reason` was given (REQ-history-012, #250). Returns the
+/// withdrawn gates.
+pub(super) fn withdraw_gates(root: &Path, reason: &str) -> Result<Vec<String>> {
+    // REQ-records-006: the reason is a written value, so it is refused for a leak, or
+    // redacted under `--redact`, before anything is written, as `session close
+    // --reason` is.
+    let mut reason = reason.to_string();
+    crate::leaks::guard(crate::leaks::Local::current(), "reason", &mut reason)?;
     let mut session = read_checkpoint(root)?;
     let cleared = std::mem::take(&mut session.awaiting_human);
     if cleared.is_empty() {
         return Ok(cleared);
     }
     let current_stage = session.stage.current.clone();
-    save_with_gate_events(root, &mut session, &current_stage, &cleared, &[], |_| None)?;
+    let queued = session.pending.len();
+    queue_gate_events(root, &mut session, &current_stage, &cleared, &[], |_| None)?;
+    for entry in session.pending.iter_mut().skip(queued) {
+        if entry.kind == stage::GATE_CLOSED {
+            entry.withdrawn = Some(reason.clone());
+        }
+    }
+    save_checkpoint(root, &mut session)?;
     Ok(cleared)
 }
 
@@ -1343,6 +1355,7 @@ impl CheckpointArgs {
             title,
             summary,
             native_change,
+            no_native_change,
             decisions,
             questions,
             resolved,
@@ -1380,6 +1393,7 @@ impl CheckpointArgs {
             && title.is_none()
             && summary.is_none()
             && native_change.is_none()
+            && no_native_change.is_none()
             && answer.is_none()
             && close_gate.is_none()
             && decided_by.is_none()
@@ -1455,6 +1469,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             holds: None,
             drives: None,
             corrects: None,
+            withdrawn: None,
         };
         stage::validate_relay(&probe)
             .context("the summary digest and list are not a valid pair; nothing was saved")?;
@@ -1558,6 +1573,23 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         );
         ensure_native_change_known(root, &change)?;
         session.native_change = Some(change);
+        // A session with a native change no longer says it needs none (#281).
+        session.no_native_change = None;
+        changed = true;
+    }
+    if let Some(reason) = args.no_native_change {
+        let reason = reason.trim().to_string();
+        ensure!(
+            !reason.is_empty(),
+            "--no-native-change needs a reason: say why this session's work needs no native change"
+        );
+        ensure_text("no_native_change", &reason)?;
+        if let Some(change) = &session.native_change {
+            bail!(
+                "refused: the session records native change {change}, so it cannot also record that it needs none; nothing was saved."
+            );
+        }
+        session.no_native_change = Some(reason);
         changed = true;
     }
     // Clears run before additions, so entries given in the same call are kept.

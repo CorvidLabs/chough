@@ -51,6 +51,7 @@ enum Kind {
     RecordsInVerification,
     MergeDrivers,
     MergeDriverOutdated,
+    ConflictMarkers,
     GitOperation,
 }
 
@@ -71,6 +72,7 @@ impl Kind {
             Self::RecordsInVerification => "records_in_verification",
             Self::MergeDrivers => "merge_drivers",
             Self::MergeDriverOutdated => "merge_driver_outdated",
+            Self::ConflictMarkers => "conflict_markers",
             Self::GitOperation => "git_operation",
         }
     }
@@ -83,6 +85,8 @@ struct Finding {
     decision: bool,
     status: &'static str,
     reason: Option<String>,
+    /// The `--reason` a decision fix was applied with (REQ-history-012, #250).
+    decision_reason: Option<String>,
     /// Why the fix cannot run even with `--fix`, when known before fixing.
     blocked: Option<String>,
     /// Fields the finding adds to its JSON, such as the missing entries.
@@ -98,6 +102,7 @@ impl Finding {
             decision,
             status: "found",
             reason: None,
+            decision_reason: None,
             blocked: None,
             detail: None,
         }
@@ -118,6 +123,9 @@ impl Finding {
         });
         if let Some(reason) = &self.reason {
             value["reason"] = json!(reason);
+        }
+        if let Some(reason) = &self.decision_reason {
+            value["decision_reason"] = json!(reason);
         }
         if let Some(Value::Object(detail)) = &self.detail {
             for (key, field) in detail {
@@ -385,6 +393,11 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
         // REQ-records-006: a temporary path in a case definition is a deliberate test
         // setting, not a leak; everything else in it is checked as anywhere else.
         let case_definition = path.starts_with(".chough/cases/") && path.ends_with(".cases.toml");
+        let ids = if path.ends_with(".md") {
+            id_lines(&text)
+        } else {
+            Default::default()
+        };
         for (number, line) in text.lines().enumerate() {
             let matches = if case_definition {
                 crate::leaks::find_in_case_definition(local, line)
@@ -402,11 +415,115 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
                     false,
                 );
                 finding.detail = Some(json!({"line": number + 1, "match": kind}));
+                // REQ-history-012 (#320): an ID is never redacted; the finding names
+                // the recovery instead.
+                if ids.contains(&number) {
+                    let recovery = id_leak_recovery(path);
+                    finding.fix = format!("none: {recovery}");
+                    finding.blocked = Some(format!(
+                        "line {} gives an ID, which `--redact` never rewrites since a redacted ID no longer reads; {recovery}",
+                        number + 1
+                    ));
+                }
                 found.push(finding);
             }
         }
     }
     found
+}
+
+/// Front matter keys whose values are a record's ID or IDs it references (REQ-records-003).
+/// A leak on such a line is never redacted, since a redacted ID no longer reads
+/// (REQ-history-012, #320).
+const ID_KEYS: [&str; 14] = [
+    "id",
+    "aliases",
+    "native_change",
+    "modules",
+    "criteria",
+    "requirements",
+    "cases",
+    "observations",
+    "bugs",
+    "evidence",
+    "related",
+    "duplicate_of",
+    "regression_baseline",
+    "case",
+];
+
+/// The zero-based numbers of `text`'s front matter lines that give an ID: a line whose
+/// key is an ID key, a block-list item under one, and an ID key inside a list of maps.
+fn id_lines(text: &str) -> std::collections::BTreeSet<usize> {
+    let mut ids = std::collections::BTreeSet::new();
+    let mut lines = text.lines().enumerate();
+    if !matches!(lines.next(), Some((_, "---"))) {
+        return ids;
+    }
+    let key_of = |line: &str| line.split_once(':').map(|(key, _)| key.trim().to_string());
+    let mut under_id_key = false;
+    for (number, line) in lines {
+        if line == "---" {
+            break;
+        }
+        let continued = line.starts_with(' ') || line.starts_with('-');
+        if !continued {
+            under_id_key = key_of(line).is_some_and(|key| ID_KEYS.contains(&key.as_str()));
+            if under_id_key {
+                ids.insert(number);
+            }
+            continue;
+        }
+        let item = line.trim_start().trim_start_matches("- ");
+        let inner_id = key_of(item).is_some_and(|key| ID_KEYS.contains(&key.as_str()));
+        if under_id_key || inner_id {
+            ids.insert(number);
+        }
+    }
+    ids
+}
+
+/// What to do about a leak in an ID of the record at `path`, which `--redact` never
+/// rewrites (#320): shelve a session, otherwise remove it in a reviewed hand edit.
+fn id_leak_recovery(path: &str) -> String {
+    match path.split('/').collect::<Vec<_>>().as_slice() {
+        [".chough", "sessions", id, "session.md"] => format!(
+            "set the session aside with `chough session shelve {id}` and continue in `chough session new <key>`"
+        ),
+        _ => "remove it from the record in a reviewed hand edit".to_string(),
+    }
+}
+
+/// `text` with its leaks redacted, except on the front matter lines in `keep`: the body
+/// as a whole, so a block that spans lines is found, and each other front matter line.
+fn redact_except(text: &str, keep: &std::collections::BTreeSet<usize>) -> (String, usize) {
+    let local = crate::leaks::Local::current();
+    if keep.is_empty() {
+        return crate::leaks::redact(local, text);
+    }
+    let lines: Vec<&str> = text.split_inclusive('\n').collect();
+    let close = lines
+        .iter()
+        .enumerate()
+        .skip(1)
+        .find(|(_, line)| line.trim_end_matches(['\n', '\r']) == "---")
+        .map(|(number, _)| number)
+        .unwrap_or(lines.len().saturating_sub(1));
+    let mut out = String::with_capacity(text.len());
+    let mut count = 0;
+    for (number, line) in lines.iter().enumerate().take(close + 1) {
+        if number == 0 || number == close || keep.contains(&number) {
+            out.push_str(line);
+        } else {
+            let (redacted, found) = crate::leaks::redact(local, line);
+            count += found;
+            out.push_str(&redacted);
+        }
+    }
+    let body: String = lines.iter().skip(close + 1).copied().collect();
+    let (body, found) = crate::leaks::redact(local, &body);
+    out.push_str(&body);
+    (out, count + found)
 }
 
 /// The ID of a Timeline entry, from its `^t-xxxxxx` anchor, or its position.
@@ -591,6 +708,39 @@ fn alias_findings(root: &Path) -> Vec<Finding> {
         }
     }
     found
+}
+
+/// Each conflict marker in the body of a committed record (REQ-records-001, #265): one
+/// finding per marker line, naming the file, the line and the marker. Only records are
+/// read, the files `bound_of` gives a record's bound; a case definition, a README or a
+/// generated index is not one. A conflict is resolved by hand, so there is no fix.
+fn conflict_marker_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
+    let knowledge = crate::prefs::effective(root, "library-dir")?.0;
+    let mut found = vec![];
+    // The generated knowledge index has a bound but is not a record.
+    let index = format!("{}/index.md", knowledge.trim_end_matches('/'));
+    for path in files.iter().filter(|path| path.ends_with(".md")) {
+        if *path == index || !matches!(bound_of(path, &knowledge), Some((_, false))) {
+            continue;
+        }
+        let Some(text) = tracked_text(root, path) else {
+            continue;
+        };
+        for (line, marker) in crate::records::conflict_markers(&text) {
+            let mut finding = Finding::new(
+                Kind::ConflictMarkers,
+                path,
+                "none: resolve the conflict in the record by hand in a reviewed change, then run chough doctor again".into(),
+                false,
+            );
+            finding.blocked = Some(format!(
+                "{path} line {line} holds the Git conflict marker `{marker}`; doctor never rewrites a record"
+            ));
+            finding.detail = Some(json!({"line": line, "marker": marker}));
+            found.push(finding);
+        }
+    }
+    Ok(found)
 }
 
 /// The bound of one key screenshot and of all of a session's (REQ-records-013).
@@ -1041,6 +1191,7 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     found.extend(records_in_verification(root));
     found.extend(merge_drivers(root)?);
     found.extend(merge_driver_outdated(root));
+    found.extend(conflict_marker_findings(root, &files)?);
     found.extend(git_operation_finding(root));
     Ok(found)
 }
@@ -1264,6 +1415,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         | Kind::Oversize
         | Kind::Unreadable
         | Kind::MergeDriverOutdated
+        | Kind::ConflictMarkers
         | Kind::GitOperation => {
             bail!("{} has no fix", finding.kind.name())
         }
@@ -1280,11 +1432,21 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
                     finding.target
                 );
             };
-            let (redacted, count) = crate::leaks::redact(crate::leaks::Local::current(), &text);
+            // REQ-history-012 (#320): a record's ID lines are never rewritten; its other
+            // lines still are, whichever of its findings comes first.
+            let ids = if finding.target.ends_with(".md") {
+                id_lines(&text)
+            } else {
+                Default::default()
+            };
+            let (redacted, count) = redact_except(&text, &ids);
             if count > 0 {
                 crate::records::write_replace(root, &finding.target, &redacted)?;
             }
             ensure!(path.is_file(), "{} is gone", finding.target);
+            if let Some(blocked) = &finding.blocked {
+                bail!("{blocked}");
+            }
         }
         Kind::StalePointer => {
             let path = local_path(root, sessions::POINTER)?;
@@ -1294,7 +1456,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         }
         Kind::StaleGates => {
             sessions::pin(root, &sessions::session_file(&finding.target));
-            let result = checkpoint::withdraw_gates(root);
+            let result = checkpoint::withdraw_gates(root, reason.unwrap_or_default());
             sessions::unpin(root);
             result?;
         }
@@ -1368,6 +1530,21 @@ pub(super) fn run(root: &Path, args: DoctorArgs) -> Result<bool> {
             match apply(root, finding, &args, reason) {
                 Ok(()) => {
                     found[index - 1].status = "fixed";
+                    // REQ-history-012 (#250): a decision the fix applied echoes the
+                    // reason it was given.
+                    if found[index - 1].decision
+                        && let Some(reason) = reason
+                    {
+                        // What was written: under `--redact` the reason is echoed as
+                        // redacted, never raw (REQ-records-006).
+                        let mut echoed = reason.to_string();
+                        let _ = crate::leaks::guard(
+                            crate::leaks::Local::current(),
+                            "reason",
+                            &mut echoed,
+                        );
+                        found[index - 1].decision_reason = Some(echoed);
+                    }
                     // A withdrawn gate leaves a finished session, archived next.
                     if found[index - 1].kind == Kind::StaleGates {
                         let key = found[index - 1].target.clone();

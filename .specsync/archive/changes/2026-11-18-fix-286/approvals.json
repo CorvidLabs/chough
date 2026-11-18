@@ -1,0 +1,70 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795031712,
+      "digest": "5848cd71d14caa623bf66c11b9a01f1fc7c74d317d989277fdc6098a770c5219",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-286\": \"keep all three. Archived receipts keep the entry's criteria, requirements and limitations, so the story says what was verified against what and its honest limits stay visible. This adds the three to REQ-history-006's receipt field list.\" (Leif's decision comment on GitHub issue #286, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval). Relayed and recorded by fable-t4b at 2026-11-18T19:55:11Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-286",
+        "title": "Fix 286",
+        "description": "fix 286",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.receipts-keep-links.cases.toml",
+          "changelog.d/2026-11-18-fix-286.md",
+          "docs/cli.md",
+          "specs/history/history.spec.md",
+          "specs/history/requirements.md",
+          "src/evidence.rs",
+          "src/evidence_migrate.rs",
+          "tests/evidence.rs",
+          "tests/migrate_evidence.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A receipt in an archived story keeps its evidence entry's criteria and requirements, each one scalar, comma-and-space separated, and its limitations, one scalar, semicolon-and-space separated, each only when the entry has any, placed after case_digest; a migrated receipt keeps them the same way. The What was verified lines are unchanged."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes, and the delta is frozen at approval. The history lessons were read; none constrains the receipt fields.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "0a4ecf94aa897898e67a08bc575c7768af80ca32dcee5c1864e246936265309a",
+        "history": "1a7b37ee786c87a64d843477e2b8e46ec128241b9a523de713ee3e08cac9ebe3",
+        "records": "2969189ea7320694f5c9e802e5f7b0382550b2867e308cace1d8563456713d8b"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-017": "d7f2faf19be8740af7befc5583b043304aa5c48c86479101d64db87d74603042",
+        "history: REQUIREMENT REQ-history-006": "79e4464ef99272c2ff0d9a6afa27e8176e9da5368630a44ca723d1fb7eb469d1",
+        "records: SPEC SECTION Public API": "1635aaf6472fedf0654ea4388ab61e55b53e77fe33742424d316f8c5cede6db5"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "keep all three. Archived receipts keep the entry's criteria, requirements and limitations, so the story says what was verified against what and its honest limits stay visible. This adds the three to REQ-history-006's receipt field list.",
+        "where": "Leif's decision comment on GitHub issue #286, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795034648,
+      "digest": "3befbe3db58d165937b1e4c84d3e330f89314c89e3eb12305379ba5342ef8782",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
