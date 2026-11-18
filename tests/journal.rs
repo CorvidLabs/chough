@@ -1503,3 +1503,81 @@ fn parallel_journal_adds_all_reach_the_feed() {
     );
     fixture.ok(&["library", "index", "--check"]);
 }
+
+/// REQ-cli-040 (review of #302), TC-cli-journal-add-holds-the-writer-lock-with-no-
+/// chough-directory: `journal add` writes in a project with no `.chough/` too, so it
+/// takes the writer lock there as well, creating `.chough/local/` as any first writer
+/// does, and a later add waits for a holder of that lock.
+#[test]
+fn journal_add_takes_the_writer_lock_in_a_project_with_no_chough_directory() {
+    let fixture = Fixture::new();
+    assert!(!fixture.exists(".chough"));
+    let output = journal_add(&fixture, "A SYNTHETIC first post")
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        fixture.exists(".chough/local/checkpoint.lock"),
+        "journal add took no writer lock in a project with no .chough directory"
+    );
+
+    let lock = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(fixture.root().join(".chough/local/checkpoint.lock"))
+        .unwrap();
+    <std::fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let mut add = journal_add(&fixture, "A SYNTHETIC second post")
+        .spawn()
+        .unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(700));
+    assert!(
+        add.try_wait().unwrap().is_none(),
+        "journal add did not wait for the writer lock"
+    );
+    <std::fs::File as fs4::FileExt>::unlock(&lock).unwrap();
+    let output = add.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let feed = fixture.read("knowledge/journal/feed.xml");
+    assert_eq!(feed.matches("<title>A SYNTHETIC ").count(), 2, "{feed}");
+}
+
+/// REQ-cli-040 (review of #302): in each of five projects with no `.chough/`, twelve
+/// `journal add` commands at once leave a feed that lists all twelve. Without the lock
+/// this fails only when the race is lost, so it is a timing-sensitive check.
+#[test]
+fn parallel_journal_adds_all_reach_the_feed_in_a_project_with_no_chough_directory() {
+    for round in 1..=5 {
+        let fixture = Fixture::new();
+        let adds: Vec<std::process::Child> = (1..=12)
+            .map(|number| {
+                journal_add(&fixture, &format!("SYNTHETIC storm post {number}"))
+                    .spawn()
+                    .unwrap()
+            })
+            .collect();
+        for add in adds {
+            let output = add.wait_with_output().unwrap();
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        let feed = fixture.read("knowledge/journal/feed.xml");
+        assert_eq!(
+            feed.matches("<title>SYNTHETIC storm post").count(),
+            12,
+            "round {round}: {feed}"
+        );
+        fixture.ok(&["library", "index", "--check"]);
+    }
+}
