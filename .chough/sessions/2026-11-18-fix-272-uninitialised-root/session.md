@@ -16,7 +16,9 @@ requirements: [REQ-cli-040]
 cases: [TC-cli-journal-add-holds-the-writer-lock-with-no-chough-directory]
 design: []
 files: [src/journal.rs, tests/journal.rs]
-observations: [2026-11-18-tc-cli-journal-add-holds-the-writer-lock-with-no-chough]
+observations:
+  - 2026-11-18-tc-cli-journal-add-holds-the-writer-lock-with-no-chough
+  - 2026-11-18-tc-cli-journal-add-holds-the-writer-lock-with-no-chough-2cdcfe
 bugs: []
 blockers: []
 waiting_on_human:
@@ -47,6 +49,7 @@ journal add holds the writer lock in a project with no .chough directory too, so
 ## What was verified
 
 - [Ran cargo test --locked --test journal -- --exact journal_add_takes_the_writer_lock_in_a_project_with_no_chough_directory for TC-cli-journal-add-holds-the-writer-lock-with-no-chough-directory: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-journal-add-holds-the-writer-lock-with-no-chough.md)
+- [Ran cargo test --locked --test journal -- --exact journal_add_takes_the_writer_lock_in_a_project_with_no_chough_directory for TC-cli-journal-add-holds-the-writer-lock-with-no-chough-directory: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-journal-add-holds-the-writer-lock-with-no-chough-2cdcfe.md)
 
 ## Open threads
 
