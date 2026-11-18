@@ -23,6 +23,8 @@ observations:
   - 2026-11-18-tc-records-the-journal-post-uses-the-filled-goal
   - 2026-11-18-tc-records-the-default-goal-is-filled-once-b084da
   - 2026-11-18-tc-records-the-journal-post-uses-the-filled-goal-6cc4d2
+  - 2026-11-18-tc-records-the-default-goal-is-filled-once-98b066
+  - 2026-11-18-tc-records-the-journal-post-uses-the-filled-goal-1c26fa
 bugs: []
 blockers: []
 waiting_on_human:
@@ -54,6 +56,8 @@ checkpoint --objective fills the session's untouched default Goal once, so the s
 - [Ran cargo test --locked --test journal -- --exact the_journal_post_and_story_use_the_objective_set_after_session_new for TC-records-the-journal-post-uses-the-filled-goal: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-the-journal-post-uses-the-filled-goal.md)
 - [Ran cargo test --locked --test records -- --exact a_default_goal_is_filled_once_by_the_objective for TC-records-the-default-goal-is-filled-once: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-the-default-goal-is-filled-once-b084da.md)
 - [Ran cargo test --locked --test journal -- --exact the_journal_post_and_story_use_the_objective_set_after_session_new for TC-records-the-journal-post-uses-the-filled-goal: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-the-journal-post-uses-the-filled-goal-6cc4d2.md)
+- [Ran cargo test --locked --test records -- --exact a_default_goal_is_filled_once_by_the_objective for TC-records-the-default-goal-is-filled-once: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-the-default-goal-is-filled-once-98b066.md)
+- [Ran cargo test --locked --test journal -- --exact the_journal_post_and_story_use_the_objective_set_after_session_new for TC-records-the-journal-post-uses-the-filled-goal: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-the-journal-post-uses-the-filled-goal-1c26fa.md)
 
 ## Open threads
 

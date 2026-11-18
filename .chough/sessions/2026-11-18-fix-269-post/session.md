@@ -16,7 +16,9 @@ requirements: [REQ-records-011, REQ-history-006]
 cases: [TC-records-a-changed-objective-is-in-the-post-and-one-story-line]
 design: []
 files: []
-observations: [2026-11-18-tc-records-a-changed-objective-is-in-the-post-and-one-story]
+observations:
+  - 2026-11-18-tc-records-a-changed-objective-is-in-the-post-and-one-story
+  - 2026-11-18-tc-records-a-changed-objective-is-in-the-post-and-one-story-129957
 bugs: []
 blockers: []
 waiting_on_human:
@@ -45,6 +47,7 @@ A closeout's journal post body opens with the current objective, and the archive
 ## What was verified
 
 - [Ran cargo test --locked --test journal -- --exact a_changed_objective_is_in_the_post_and_one_story_line for TC-records-a-changed-objective-is-in-the-post-and-one-story-line: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-changed-objective-is-in-the-post-and-one-story.md)
+- [Ran cargo test --locked --test journal -- --exact a_changed_objective_is_in_the_post_and_one_story_line for TC-records-a-changed-objective-is-in-the-post-and-one-story-line: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-changed-objective-is-in-the-post-and-one-story-129957.md)
 
 ## Open threads
 
