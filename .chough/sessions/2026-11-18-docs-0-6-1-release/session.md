@@ -5,7 +5,7 @@ aliases: [docs-0-6-1-release]
 objective: The roadmap's delivered table has the 0.6.1 release row, and the README no longer says 0.6.0 is not released yet
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: [README.md, docs/roadmap-1.0.md]
 observations: [2026-11-18-after-cargo-publish-locked-from-tag-v0-6-1-cef86e2-ended-with]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of docs-0-6-1-release
-    holds: accept
-    drives: review
-    opened: 2026-11-18T18:00:18Z
+waiting_on_human: []
 run_consents: []
-next: Wait for Leif's implementation review of docs-0-6-1-release
+next: Continue done
 title: The 0.6.1 release row and the README release sentence
 summary:
   - The roadmap's delivered table has the 0.6.1 release row with the tag, the release preparation PR, the crates.io version, the GitHub release and the clean install observed on macOS arm64. The README no longer says 0.6.0 is not released yet. The verify lane passed on macOS after main (0b7ac77) was merged in; Linux was not run locally.
@@ -43,6 +39,7 @@ The roadmap's delivered table has the 0.6.1 release row, and the README no longe
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of docs-0-6-1-release": "Approve" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him: 'Chough docs PR #327: add the 0.6.1 row to the roadmap (released, crates.io, the clean install check passed) and fix README line 258 (the stale documents 0.6.0, which is not released yet). Docs only. Approve the scope?'); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve docs-0-6-1-release as 0xLeif
+- 0xLeif decided "Implementation review of docs-0-6-1-release": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after it read PR #327's diff for him); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review docs-0-6-1-release as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -98,4 +95,20 @@ The roadmap's delivered table has the 0.6.1 release row, and the README no longe
   - revision: 73d3c62bfbf14a4f5da6e299ed3c15469e4693b3
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T18:58:15Z · gate-closed · accept → accept · Implementation review of docs-0-6-1-release ^t-714003
+  - native_change: docs-0-6-1-release
+  - revision: 231aa0b15554950e98e0935e79099f920b4d1708
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after it read PR #327's diff for him
+    - recorded_by: fable-t4b
+    - native: specsync change review docs-0-6-1-release
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T18:58:16Z · advance · accept → done · native:archived ^t-69b7c5
+  - native_change: docs-0-6-1-release
+  - gate: native:archived
+  - revision: 231aa0b15554950e98e0935e79099f920b4d1708
   - by: fable (claude-fable-5-2, hc t4b)
