@@ -28,6 +28,9 @@ waiting_on_human:
     opened: 2026-11-18T15:30:21Z
 run_consents: []
 next: Wait for Leif's implementation review of fix-263
+title: migrate --apply refuses a separate case-colliding target before writing
+summary:
+  - On a case-sensitive file system a separate knowledge/index.md passed the pre-write check, and the apply removed the 0.5.x files before failing on it, leaving a receipt for bytes it never wrote (#263). The check now exempts a case-colliding target only when it is the removed file under its other spelling. The test fails on main and passes with the fix in the chough-linux:3 image; the verify lane passed on macOS after main (169062c) was merged in. The full lane was not run on Linux locally.
 ---
 # migrate --apply refuses before writing when a planned target that differs only in case from a removed 0.5.x file already exists with other bytes (REQ-records-009, #263)
 

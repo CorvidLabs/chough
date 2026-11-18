@@ -41,6 +41,13 @@
         "where": "Claude Code session with Fable, 2026-11-18, answer to the interview question 'fix-263 (draft PR #312) ... Do you approve the scope?'",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795029943,
+      "digest": "4e0be503400914ac47e17297f6c4d5af7fd6bda80fba2af2de6a5e5352e5b9ab",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
