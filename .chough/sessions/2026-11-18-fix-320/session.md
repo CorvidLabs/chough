@@ -5,7 +5,7 @@ aliases: [fix-320]
 objective: "A leaking ID reference's refusal names the recovery, and doctor --fix --redact never rewrites an ID (REQ-history-012, REQ-cli-055, #320)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-18-tc-cli-doctor-redact-never-rewrites-an-id-0155b6
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-320
-    holds: accept
-    drives: review
-    opened: 2026-11-18T19:03:38Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # A leaking ID reference's refusal names the recovery, and doctor --fix --redact never rewrites an ID (REQ-history-012, REQ-cli-055, #320)
 
@@ -45,6 +41,7 @@ A leaking ID reference's refusal names the recovery, and doctor --fix --redact n
 
 - The refusal's recovery fits REQ-records-006 as it stands; the doctor's never rewriting an ID changes REQ-history-012's leak fix and REQ-cli-055's --fix, since the doctor code is cli's. session new --module's leak is left on #320, outside Leif's decision.
 - 0xLeif decided "Scope approval of fix-320": "approved as a fix. The refusal names the recovery (chough session shelve <id>, or a command that removes the reference), and doctor --fix --redact never rewrites an ID." (Leif's decision comment on CorvidLabs/chough#320 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for this change); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-320 as 0xLeif
+- 0xLeif decided "Implementation review of fix-320": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #335 after tester2's recheck PASS at c3a30cf); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-320 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -102,4 +99,20 @@ A leaking ID reference's refusal names the recovery, and doctor --fix --redact n
   - revision: cef86e2622a2a908856b0c2cf11b29d3c1d3e472
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T20:05:37Z · gate-closed · accept → accept · Implementation review of fix-320 ^t-e3e7ab
+  - native_change: fix-320
+  - revision: 1baa6764976d510557e8075f5e61af4c7a5cb9dc
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #335 after tester2's recheck PASS at c3a30cf
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-320
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T20:05:38Z · advance · accept → done · native:archived ^t-73806c
+  - native_change: fix-320
+  - gate: native:archived
+  - revision: 1baa6764976d510557e8075f5e61af4c7a5cb9dc
   - by: chough-fixer (claude-opus-5-5, hc t4n)
