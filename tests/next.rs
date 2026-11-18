@@ -901,6 +901,8 @@ fn keeps_todays_action_when_something_else_applies() {
     // A blocking bug at test.
     let fixture = archived_at("test");
     fixture.bug_md("BUG-0001", "blocking", "open", &[]);
+    // A blocking bug stops only a session it is related to, so the session lists it.
+    fixture.ok(&["checkpoint", "--bug", "BUG-0001"]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(
         action
