@@ -23,6 +23,9 @@ observations:
   - 2026-11-18-tc-records-a-conflict-marker-write-is-refused
   - 2026-11-18-tc-records-migrate-refuses-conflict-markers
   - 2026-11-18-tc-records-doctor-reports-conflict-markers-in-records
+  - 2026-11-18-tc-records-a-conflict-marker-write-is-refused-3eb8ee
+  - 2026-11-18-tc-records-doctor-reports-conflict-markers-in-records-fc3116
+  - 2026-11-18-tc-records-migrate-refuses-conflict-markers-dd4e5d
 bugs: []
 blockers: []
 waiting_on_human:
@@ -46,12 +49,16 @@ A record body may not hold Git conflict markers: writes refuse naming the file, 
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-265": "Approve the scope. … Yes, within scope" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, in two answers: 'Approve the scope' (a record body may not hold git conflict markers; writes refused naming the file, line and marker; chough doctor reports committed records holding them; a new sentence in REQ-records-001), then 'Yes, within scope' to the doctor sentence in REQ-cli-055 beside REQ-records-001, counting ======= only between <<<<<<< and >>>>>>>, and migrate checking every planned file before writing any); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-265 as 0xLeif
+- 0xLeif decided "Re-approval of fix-265's rebased delta": "Re-approve" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #335 (#320) merged and changed REQ-cli-055, SpecSync refused fix-265's approved cli delta as approved against changed canonical text; the delta was rebased onto main's REQ-cli-055 with only #265's clause and acceptance line added, nothing else changed, and he re-approved it); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-265 as 0xLeif
 
 ## What was verified
 
 - [Ran cargo test --locked --test records -- --exact a_record_body_with_conflict_markers_is_refused_and_unchanged for TC-records-a-conflict-marker-write-is-refused: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-conflict-marker-write-is-refused.md)
 - [Ran cargo test --locked --test migrate -- --exact migrate_refuses_a_plan_whose_files_would_hold_conflict_markers for TC-records-migrate-refuses-conflict-markers: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-migrate-refuses-conflict-markers.md)
 - [Ran cargo test --locked --test doctor -- --exact doctor_reports_conflict_markers_in_committed_records_only for TC-records-doctor-reports-conflict-markers-in-records: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-doctor-reports-conflict-markers-in-records.md)
+- [Ran cargo test --locked --test records -- --exact a_record_body_with_conflict_markers_is_refused_and_unchanged for TC-records-a-conflict-marker-write-is-refused: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-conflict-marker-write-is-refused-3eb8ee.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_reports_conflict_markers_in_committed_records_only for TC-records-doctor-reports-conflict-markers-in-records: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-doctor-reports-conflict-markers-in-records-fc3116.md)
+- [Ran cargo test --locked --test migrate -- --exact migrate_refuses_a_plan_whose_files_would_hold_conflict_markers for TC-records-migrate-refuses-conflict-markers: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-migrate-refuses-conflict-markers-dd4e5d.md)
 
 ## Open threads
 
@@ -103,4 +110,21 @@ A record body may not hold Git conflict markers: writes refuse naming the file, 
   - revision: 0b7ac77e7acf916d40a464035b1fa22c0b503d29
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T20:26:12Z · gate-opened · accept → accept · Re-approval of fix-265's rebased delta ^t-d5c167
+  - native_change: fix-265
+  - revision: 5ae9b83ea3adb45f8f4e52bf5a5c5c5867c316f4
+  - holds: accept
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T20:26:12Z · gate-closed · accept → accept · Re-approval of fix-265's rebased delta ^t-4e7504
+  - native_change: fix-265
+  - revision: 5ae9b83ea3adb45f8f4e52bf5a5c5c5867c316f4
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Re-approve
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #335 (#320) merged and changed REQ-cli-055, SpecSync refused fix-265's approved cli delta as approved against changed canonical text; the delta was rebased onto main's REQ-cli-055 with only #265's clause and acceptance line added, nothing else changed, and he re-approved it
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve fix-265
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)
