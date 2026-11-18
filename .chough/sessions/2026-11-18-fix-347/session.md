@@ -5,7 +5,7 @@ aliases: [fix-347]
 objective: A new bug's Log links its evidence with relative links, and chough doctor reports and fixes a bug link left stale when its session is archived (#347)
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -23,9 +23,13 @@ observations:
   - 2026-11-18-tc-cli-doctor-relinks-a-bugs-evidence-after-archiving
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-347
+    holds: accept
+    drives: review
+    opened: 2026-11-18T23:14:52Z
 run_consents: []
-next: Continue test
+next: Wait for the tester's check and Leif's implementation review of fix-347
 ---
 # A new bug's Log links its evidence with relative links, and chough doctor reports and fixes a bug link left stale when its session is archived (#347)
 
@@ -85,4 +89,15 @@ A new bug's Log links its evidence with relative links, and chough doctor report
   - native_change: fix-347
   - gate: native:approved
   - revision: dbd0b1f7c772ae17e4b0ff59bd92a7024bfffe2b
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T23:14:52Z · advance · test → accept · native:verifying ^t-d18465
+  - native_change: fix-347
+  - gate: native:verifying
+  - revision: 8072f4dd5c336fae3b3053c464cfde4938520188
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T23:14:52Z · gate-opened · accept → accept · Implementation review of fix-347 ^t-c9e1ca
+  - native_change: fix-347
+  - revision: 8072f4dd5c336fae3b3053c464cfde4938520188
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
