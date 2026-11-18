@@ -293,7 +293,12 @@ pub(super) fn write_new_bounded(
     write_new_bytes(root, relative, content.as_bytes())
 }
 
-/// Create a file of any bounded size only when it does not exist.
+/// Create a file of any bounded size only when it does not exist. REQ-records-001
+/// (#260): a new file is whole or it is not there. The bytes go to a private temporary
+/// file, which is then hard-linked to the name, and a link never replaces a file. So a
+/// write that fails part way, as on a full disk or past a file size limit, leaves
+/// nothing at the name, and nothing here ever removes what is at the name: a file
+/// another writer put there meanwhile is kept, and the call returns false for it.
 pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Result<bool> {
     let path = local_path(root, relative)?;
     if path.exists() {
@@ -302,12 +307,30 @@ pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Re
     }
     fs::create_dir_all(path.parent().context("file has no parent")?)?;
     local_path(root, relative)?;
+    let temporary = temporary_for(root, relative, &path)?;
+    publish_new(&temporary, &path, content)
+        .with_context(|| format!("writing {relative} failed, so no file was left at that name"))
+}
+
+/// Write `content` to `temporary`, link it to `path` and remove `temporary`; false when
+/// `path` already exists. Only a `temporary` this call created is ever removed: when
+/// one of that name is already there, the create fails and it is left as it is.
+fn publish_new(temporary: &Path, path: &Path, content: &[u8]) -> io::Result<bool> {
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
-        .open(&path)?;
-    file.write_all(content)?;
-    Ok(true)
+        .open(temporary)?;
+    let published = (|| -> io::Result<bool> {
+        file.write_all(content)?;
+        drop(file);
+        match fs::hard_link(temporary, path) {
+            Ok(()) => Ok(true),
+            Err(error) if error.kind() == io::ErrorKind::AlreadyExists => Ok(false),
+            Err(error) => Err(error),
+        }
+    })();
+    let _ = fs::remove_file(temporary);
+    published
 }
 
 /// Replace a managed record atomically: write a sibling temporary file, then rename.
@@ -386,9 +409,38 @@ pub(super) fn read_spec_file(path: &Path) -> Result<String> {
     Ok(std::fs::read_to_string(path)?)
 }
 
-/// Read a structured record within an explicit byte bound.
+/// Open `path` for reading only when it is a regular file, and never block. Opening a
+/// FIFO for reading waits for a writer, so on Unix the open is non-blocking, and the
+/// type is checked on the opened handle, not on the path beforehand: a file swapped
+/// for a FIFO between a check and the open would still block (#262, review of #305).
+/// Non-blocking mode changes nothing for a regular file.
+pub(super) fn open_regular(path: &Path) -> Result<File> {
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt as _;
+        options.custom_flags(libc::O_NONBLOCK);
+    }
+    #[cfg(not(unix))]
+    ensure!(
+        fs::metadata(path)?.is_file(),
+        "not a regular file: {}",
+        path.display()
+    );
+    let file = options.open(path)?;
+    ensure!(
+        file.metadata()?.is_file(),
+        "not a regular file: {}",
+        path.display()
+    );
+    Ok(file)
+}
+
+/// Read a structured record within an explicit byte bound. A FIFO, device or directory
+/// in a record's place is refused without blocking (#262).
 pub(super) fn read_bounded_record(path: &Path, limit: u64) -> Result<String> {
-    let file = File::open(path)?;
+    let file = open_regular(path)?;
     let mut content = String::new();
     file.take(limit + 1).read_to_string(&mut content)?;
     ensure!(
@@ -1696,6 +1748,80 @@ mod tests {
     }
 
     use super::*;
+
+    /// REQ-records-001 (#260, review of #306): a failed new-file write removes only its
+    /// own temporary file. A file another writer put at the name meanwhile is kept
+    /// byte for byte, whether the write fails or reaches the link.
+    #[test]
+    fn a_failed_or_late_new_write_never_removes_what_is_at_the_name() {
+        let root = tempfile::tempdir().unwrap();
+        let path = root.path().join("record.md");
+        fs::write(&path, "SECOND_WRITER_CANARY").unwrap();
+
+        // The write fails: its temporary cannot be created.
+        let missing = root.path().join("no-such-folder/.record.md.1.tmp");
+        assert!(publish_new(&missing, &path, b"first writer").is_err());
+        assert_eq!(fs::read_to_string(&path).unwrap(), "SECOND_WRITER_CANARY");
+
+        // The write succeeds, but the name is taken by the time of the link.
+        let temporary = root.path().join(".record.md.1.tmp");
+        assert!(!publish_new(&temporary, &path, b"first writer").unwrap());
+        assert_eq!(fs::read_to_string(&path).unwrap(), "SECOND_WRITER_CANARY");
+        assert!(!temporary.exists());
+
+        // A temporary of that name is already there (review of #306, second finding):
+        // the create fails, and neither it nor the file at the name is touched.
+        fs::write(&temporary, "EARLIER_TEMPORARY_CANARY").unwrap();
+        let error = publish_new(&temporary, &path, b"first writer").unwrap_err();
+        assert_eq!(error.kind(), io::ErrorKind::AlreadyExists);
+        assert_eq!(
+            fs::read_to_string(&temporary).unwrap(),
+            "EARLIER_TEMPORARY_CANARY"
+        );
+        assert_eq!(fs::read_to_string(&path).unwrap(), "SECOND_WRITER_CANARY");
+        fs::remove_file(&temporary).unwrap();
+
+        // With the name free, the file appears whole and the temporary is gone.
+        let free = root.path().join("free.md");
+        assert!(publish_new(&temporary, &free, b"first writer").unwrap());
+        assert_eq!(fs::read_to_string(&free).unwrap(), "first writer");
+        assert!(!temporary.exists());
+    }
+
+    /// #262, review of #305: the reader has no check before its open for a swap to slip
+    /// past. A FIFO at the path at the moment of the open is refused at once, by the
+    /// type of the opened handle; with a blocking open this test would time out.
+    #[cfg(unix)]
+    #[test]
+    fn a_fifo_at_the_moment_of_the_open_is_refused_without_blocking() {
+        let root = tempfile::tempdir().unwrap();
+        let fifo = root.path().join("session.md");
+        assert!(
+            Command::new("mkfifo")
+                .arg(&fifo)
+                .status()
+                .unwrap()
+                .success()
+        );
+        let regular = root.path().join("regular.md");
+        fs::write(&regular, "---\nid: a\n---\n").unwrap();
+        let (sender, receiver) = mpsc::channel();
+        let path = fifo.clone();
+        thread::spawn(move || {
+            let opened = open_regular(&path).map(|_| ()).map_err(|e| e.to_string());
+            let read = read_bounded_record(&path, 64).map_err(|e| e.to_string());
+            let _ = sender.send((opened, read));
+        });
+        let (opened, read) = receiver
+            .recv_timeout(Duration::from_secs(10))
+            .expect("opening a FIFO blocked");
+        assert!(opened.unwrap_err().contains("not a regular file"));
+        assert!(read.unwrap_err().contains("not a regular file"));
+        assert_eq!(
+            read_bounded_record(&regular, 64).unwrap(),
+            "---\nid: a\n---\n"
+        );
+    }
 
     fn limits(cap: usize, seconds: u64) -> Limits {
         Limits {

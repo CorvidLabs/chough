@@ -1139,8 +1139,10 @@ fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
     let Ok(entries) = fs::read_dir(&folder) else {
         return Ok(found);
     };
+    // Only regular files are records, as `chough bug list` reads the folder (#262).
     let mut names: Vec<String> = entries
         .flatten()
+        .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_file()))
         .map(|entry| entry.file_name().to_string_lossy().into_owned())
         .filter(|name| name.ends_with(".md"))
         .collect();
@@ -2626,6 +2628,10 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
             if !name.ends_with(".json") && !name.ends_with(".md") {
                 continue;
             }
+            // Only regular files are records, as `chough bug list` reads the folder (#262).
+            if !entry.file_type()?.is_file() {
+                continue;
+            }
             let text = read_bounded_record(&entry.path(), markdown::RECORD_BOUND)?;
             let ids: Vec<String> = if name.ends_with(".json") {
                 serde_json::from_str::<Value>(&text)?
@@ -3038,7 +3044,8 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
         for entry in fs::read_dir(&bugs)? {
             let entry = entry?;
             let name = entry.file_name().to_string_lossy().into_owned();
-            if name.ends_with(".md") {
+            // Only regular files are records, as `chough bug list` reads the folder (#262).
+            if name.ends_with(".md") && entry.file_type()?.is_file() {
                 let text = read_bounded_record(&entry.path(), markdown::RECORD_BOUND)?;
                 let record = markdown::parse(&name, &text)?;
                 for map in record.maps("receipts") {

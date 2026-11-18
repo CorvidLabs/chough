@@ -1395,3 +1395,189 @@ fn a_storys_receipts_are_in_observation_time_order() {
         "receipts are not in observation-time order: {story}"
     );
 }
+
+/// `chough journal add` as a child process the test can watch, with the fixture's
+/// isolation: no actor variable and no identity file of this machine.
+fn journal_add(fixture: &Fixture, title: &str) -> std::process::Command {
+    let mut command = std::process::Command::new(env!("CARGO_BIN_EXE_chough"));
+    command
+        .arg("--root")
+        .arg(fixture.root())
+        .args(["journal", "add", "--kind", "learned", "--title", title])
+        .args(["--body", "One short paragraph."])
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
+    for name in common::ACTOR_VARIABLES {
+        command.env_remove(name);
+    }
+    command.env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG));
+    command
+}
+
+/// REQ-cli-040 (#272), TC-cli-journal-add-holds-the-writer-lock: `journal add` is a
+/// record writer, so while another process holds the project's writer lock it waits
+/// and writes nothing, and once the lock is free it writes its post and the feed.
+#[test]
+fn journal_add_waits_for_the_writer_lock() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("init");
+    let lock_path = common::checkpoint_lock_path(fixture.root()).unwrap();
+    std::fs::create_dir_all(lock_path.parent().unwrap()).unwrap();
+    let lock = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .unwrap();
+    <std::fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let posts = || -> Vec<String> {
+        std::fs::read_dir(fixture.root().join("knowledge/journal"))
+            .map(|entries| {
+                entries
+                    .flatten()
+                    .map(|entry| entry.file_name().to_string_lossy().into_owned())
+                    .filter(|name| name.ends_with("a-synthetic-waiting-post.md"))
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
+
+    let mut add = journal_add(&fixture, "A SYNTHETIC waiting post")
+        .spawn()
+        .unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(700));
+    assert!(
+        add.try_wait().unwrap().is_none(),
+        "journal add did not wait for the writer lock"
+    );
+    assert_eq!(
+        posts(),
+        Vec::<String>::new(),
+        "a post was written under another writer's lock"
+    );
+
+    <std::fs::File as fs4::FileExt>::unlock(&lock).unwrap();
+    let output = add.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(posts().len(), 1);
+    assert!(
+        fixture
+            .read("knowledge/journal/feed.xml")
+            .contains("A SYNTHETIC waiting post")
+    );
+}
+
+/// REQ-cli-040 (#272): twelve `journal add` commands at once each rebuild the feed from
+/// the latest posts, so the last feed lists all twelve and the index check passes.
+#[test]
+fn parallel_journal_adds_all_reach_the_feed() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("init");
+    let adds: Vec<std::process::Child> = (1..=12)
+        .map(|number| {
+            journal_add(&fixture, &format!("SYNTHETIC storm post {number}"))
+                .spawn()
+                .unwrap()
+        })
+        .collect();
+    for add in adds {
+        let output = add.wait_with_output().unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let feed = fixture.read("knowledge/journal/feed.xml");
+    assert_eq!(
+        feed.matches("<title>SYNTHETIC storm post").count(),
+        12,
+        "{feed}"
+    );
+    fixture.ok(&["library", "index", "--check"]);
+}
+
+/// REQ-cli-040 (review of #302), TC-cli-journal-add-holds-the-writer-lock-with-no-
+/// chough-directory: `journal add` writes in a project with no `.chough/` too, so it
+/// takes the writer lock there as well, creating `.chough/local/` as any first writer
+/// does, and a later add waits for a holder of that lock.
+#[test]
+fn journal_add_takes_the_writer_lock_in_a_project_with_no_chough_directory() {
+    let fixture = Fixture::new();
+    assert!(!fixture.exists(".chough"));
+    let output = journal_add(&fixture, "A SYNTHETIC first post")
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        fixture.exists(".chough/local/checkpoint.lock"),
+        "journal add took no writer lock in a project with no .chough directory"
+    );
+
+    let lock = std::fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(fixture.root().join(".chough/local/checkpoint.lock"))
+        .unwrap();
+    <std::fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let mut add = journal_add(&fixture, "A SYNTHETIC second post")
+        .spawn()
+        .unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(700));
+    assert!(
+        add.try_wait().unwrap().is_none(),
+        "journal add did not wait for the writer lock"
+    );
+    <std::fs::File as fs4::FileExt>::unlock(&lock).unwrap();
+    let output = add.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let feed = fixture.read("knowledge/journal/feed.xml");
+    assert_eq!(feed.matches("<title>A SYNTHETIC ").count(), 2, "{feed}");
+}
+
+/// REQ-cli-040 (review of #302): in each of five projects with no `.chough/`, twelve
+/// `journal add` commands at once leave a feed that lists all twelve. Without the lock
+/// this fails only when the race is lost, so it is a timing-sensitive check.
+#[test]
+fn parallel_journal_adds_all_reach_the_feed_in_a_project_with_no_chough_directory() {
+    for round in 1..=5 {
+        let fixture = Fixture::new();
+        let adds: Vec<std::process::Child> = (1..=12)
+            .map(|number| {
+                journal_add(&fixture, &format!("SYNTHETIC storm post {number}"))
+                    .spawn()
+                    .unwrap()
+            })
+            .collect();
+        for add in adds {
+            let output = add.wait_with_output().unwrap();
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+        let feed = fixture.read("knowledge/journal/feed.xml");
+        assert_eq!(
+            feed.matches("<title>SYNTHETIC storm post").count(),
+            12,
+            "round {round}: {feed}"
+        );
+        fixture.ok(&["library", "index", "--check"]);
+    }
+}
