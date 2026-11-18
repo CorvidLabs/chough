@@ -43,6 +43,13 @@
         "where": "Claude Code chat (hc t28), 2026-11-17, in reply to the #301 scope summary (docs/cli.md rows, help text for all 11 checkpoint flags, help --help exits 0, changelog fragment)",
         "recorded_by": "claude-code (hc t28)"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794973042,
+      "digest": "7e389be6b84e47540b333a9475ef160d76d2a975a8ba4aeab0c5c2405315687c",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
