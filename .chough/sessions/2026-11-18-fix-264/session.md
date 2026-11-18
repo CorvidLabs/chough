@@ -21,6 +21,8 @@ files: [src/migrate.rs, tests/migrate.rs, docs/cli.md]
 observations:
   - 2026-11-18-tc-records-a-second-same-day-migration-names-its-own-receipt
   - 2026-11-18-tc-records-a-receipt-name-taken-after-the-preview-refuses
+  - 2026-11-18-tc-records-a-second-same-day-migration-names-its-own-receipt-c45a11
+  - 2026-11-18-tc-records-a-receipt-name-taken-after-the-preview-refuses-e7c049
 bugs: []
 blockers: []
 waiting_on_human:
@@ -49,6 +51,8 @@ A second same-day migration names its receipt with a deterministic suffix that i
 
 - [Ran cargo test --locked --test migrate -- --exact a_second_same_day_migration_names_its_own_receipt for TC-records-a-second-same-day-migration-names-its-own-receipt: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-second-same-day-migration-names-its-own-receipt.md)
 - [Ran cargo test --locked --test migrate -- --exact a_receipt_name_taken_after_the_preview_refuses_before_any_write for TC-records-a-receipt-name-taken-after-the-preview-refuses-before-any-write: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-receipt-name-taken-after-the-preview-refuses.md)
+- [Ran cargo test --locked --test migrate -- --exact a_second_same_day_migration_names_its_own_receipt for TC-records-a-second-same-day-migration-names-its-own-receipt: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-second-same-day-migration-names-its-own-receipt-c45a11.md)
+- [Ran cargo test --locked --test migrate -- --exact a_receipt_name_taken_after_the_preview_refuses_before_any_write for TC-records-a-receipt-name-taken-after-the-preview-refuses-before-any-write: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-receipt-name-taken-after-the-preview-refuses-e7c049.md)
 
 ## Open threads
 
