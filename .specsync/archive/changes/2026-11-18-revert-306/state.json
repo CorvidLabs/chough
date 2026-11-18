@@ -7,11 +7,11 @@
   "title": "Revert 306",
   "description": "revert 306",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "66543c2bf509627ec2a165414acae0bc8ab59c4a",
   "created_at": 1795016762,
-  "updated_at": 1795020292,
+  "updated_at": 1795020365,
   "affected_specs": [
     "cli"
   ],

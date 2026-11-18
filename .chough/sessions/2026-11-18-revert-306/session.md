@@ -29,6 +29,9 @@ waiting_on_human:
     opened: 2026-11-18T16:29:56Z
 run_consents: []
 next: Wait for Leif's implementation review of revert-306
+title: "Revert #306's new-record writer for 0.6.1"
+summary:
+  - "#306's writer linked a temporary file to a new record's name. It failed on file systems without hard links (#313) and a concurrent writer swept its temporary files. The create-new writer is 0.6.0's again; #305's reader and #308's lock are kept. The verify lane passed on macOS after main (f8029cb) was merged in, the tester's parallel repro passed 3 of 3, and one hand run on exFAT passed. Linux was not run locally. #260 is open again for 0.6.2."
 ---
 # Revert #306's new-record writer for 0.6.1: it cannot create records on a file system without hard links (#313) and its temporary files are swept by a concurrent writer; #260 is redone in 0.6.2
 

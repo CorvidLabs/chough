@@ -45,6 +45,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, as his answer to: revert #306 for 0.6.1, or fix both regressions forward",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795020364,
+      "digest": "b9313d768cc4d179a2e0a807560ac7557316143b5155207643a3cf999126748f",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
