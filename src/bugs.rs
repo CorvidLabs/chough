@@ -823,12 +823,29 @@ fn check_evidence(evidence: &Evidence<'_>, bug: &Stored, ids: &[String]) -> Resu
 /// other link is stored as given.
 /// REQ-history-012 (#347): the bugs whose body links an open session's evidence entry
 /// that is gone because its session was archived, each with those entries and the
-/// session whose archived story now holds them. An entry the bug's body already links
+/// session whose archived story now holds them as receipts. An entry the bug's body already links
 /// to that story is left out, so a fixed bug is not found again.
 pub(super) fn stale_evidence_links(root: &Path) -> Vec<(String, Vec<(String, String)>)> {
     const OPEN: &str = "](../sessions/";
     let mut found = vec![];
-    for bug in read_all(root).unwrap_or_default() {
+    // Only what an archived story holds as a receipt is relinked: such an ID passed the
+    // leak guard when its evidence was added, and a link to an entry that was never
+    // recorded gets no line saying it moved.
+    let evidence = Evidence::new(root);
+    let held = |entry: &str, session: &str| {
+        let place = format!("{session}/{entry}");
+        evidence
+            .index()
+            .iter()
+            .any(|(_, linked)| linked.label == "story-receipt" && linked.place == place)
+    };
+    // Each bug that reads; one that does not is `unreadable`'s to report, and hides no
+    // other bug's links.
+    for (name, record) in records_in(root, BUGS_DIR, Kind::Bug.bound()) {
+        let bug = Stored {
+            path: format!("{BUGS_DIR}/{}.md", name.trim_end_matches(".md")),
+            record,
+        };
         let text = bug.record.render();
         let mut stale: Vec<(String, String)> = vec![];
         for (at, _) in text.match_indices(OPEN) {
@@ -846,7 +863,7 @@ pub(super) fn stale_evidence_links(root: &Path) -> Vec<(String, Vec<(String, Str
                 |relative: String| local_path(root, &relative).is_ok_and(|path| path.is_file());
             let link = (entry.to_string(), session.to_string());
             if !exists(format!(".chough/sessions/{session}/evidence/{entry}.md"))
-                && exists(format!(".chough/archive/sessions/{session}.md"))
+                && held(entry, session)
                 && !text.contains(&story_link(entry, session))
                 && !stale.contains(&link)
             {
@@ -876,8 +893,12 @@ pub(super) fn relink_archived_evidence(root: &Path, path: &str) -> Result<()> {
     else {
         return Ok(());
     };
-    let mut stored = read_all(root)?
+    let mut stored = records_in(root, BUGS_DIR, Kind::Bug.bound())
         .into_iter()
+        .map(|(name, record)| Stored {
+            path: format!("{BUGS_DIR}/{}.md", name.trim_end_matches(".md")),
+            record,
+        })
         .find(|bug| bug.path == path)
         .with_context(|| format!("{path} is gone"))?;
     let links: Vec<String> = stale

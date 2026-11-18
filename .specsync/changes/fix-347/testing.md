@@ -17,6 +17,12 @@ Two new tests in `tests/bugs.rs`, both failing on main:
   appends one Log entry linking the story, every earlier Log line is unchanged
   and in order, the story file exists, and the bug is not reported again.
 
+`doctor_relinks_only_what_the_archived_story_holds_as_a_receipt` (added after the
+tester's findings on #360): a note that links an entry never recorded, and a
+hand-edited link whose entry name holds a credential, are not relinked; only the
+entry the story holds as a receipt is, and the credential is never written again.
+It fails without the receipt check.
+
 Two existing tests that pinned the bare `<session>/<id>` text in a Log line now
 expect the link. The link text is built from evidence names the bug already
 holds, so no new free-text input is added.

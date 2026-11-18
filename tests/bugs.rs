@@ -2543,3 +2543,71 @@ fn doctor_relinks_a_bugs_evidence_after_its_session_is_archived() {
     assert_eq!(log(&after).len(), log(&before).len() + 1);
     assert!(stale(&report(&[])).is_empty());
 }
+
+/// REQ-history-012 (#347, the tester's findings on #360): doctor relinks only an entry
+/// the archived story holds as a receipt. A link to an entry that was never recorded
+/// gets no line saying it moved, and a hand-edited link whose entry name holds a
+/// credential is never written again.
+#[test]
+fn doctor_relinks_only_what_the_archived_story_holds_as_a_receipt() {
+    let fixture = ordered_bug(&[("first-failure", "failed", 100)]);
+    let id = only_bug_id(&fixture);
+    let session = fixture.active_id();
+    let path = format!(".chough/bugs/{id}.md");
+    let real = "2026-11-10-first-failure";
+    let never = "2026-11-10-never-recorded";
+    fixture.ok(&[
+        "bug",
+        "update",
+        &id,
+        "--note",
+        &format!("SYNTHETIC see [{never}](../sessions/{session}/evidence/{never}.md)"),
+    ]);
+    let token = concat!("glpat-", "abcdefghijklmnopqrstuvwx");
+    let text = fixture.read(&path);
+    fixture.write(
+        &path,
+        &format!(
+            "{text}- 2026-11-10T00:00:05Z · SYNTHETIC hand edit [x](../sessions/{session}/evidence/{token}.md)\n"
+        ),
+    );
+    fixture.commit("the bug, a note and a hand edit");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+
+    let report = |args: &[&str]| -> Value {
+        let mut all = vec!["doctor"];
+        all.extend_from_slice(args);
+        serde_json::from_slice(&fixture.run(&all).stdout).unwrap()
+    };
+    let stale = |report: &Value| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "stale_bug_links")
+            .cloned()
+            .collect()
+    };
+    let found = stale(&report(&[]));
+    assert_eq!(found.len(), 1, "{found:#?}");
+    let links = found[0]["links"].as_array().unwrap();
+    assert_eq!(links.len(), 1, "{links:#?}");
+    assert_eq!(links[0]["entry"], real);
+
+    report(&["--fix"]);
+    let after = fixture.read(&path);
+    let added: Vec<&str> = after
+        .lines()
+        .filter(|line| line.contains("Evidence now in its archived session"))
+        .collect();
+    assert_eq!(added.len(), 1, "{after}");
+    assert!(
+        added[0].contains(&format!("[{real}](../archive/sessions/{session}.md)")),
+        "{}",
+        added[0]
+    );
+    assert!(!added[0].contains(never), "{}", added[0]);
+    assert!(!added[0].contains(token), "{}", added[0]);
+    assert_eq!(after.matches(token).count(), 1, "{after}");
+    assert!(stale(&report(&[])).is_empty());
+}
