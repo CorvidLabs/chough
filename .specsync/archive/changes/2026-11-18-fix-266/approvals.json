@@ -95,6 +95,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: he chose that the fixer run the send-back on fix-266 this once and drop REBASE_HEAD from REQ-cli-069 so the requirement matches the code, recorded as his approval of that one-line change (and the same words in the acceptance criteria)",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795029851,
+      "digest": "9a8eda64f733c2a33a5f06ef66d9cd470ab94a2f66a3544a5711ef10bf75b5f9",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
