@@ -1,0 +1,55 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795042076,
+      "digest": "f9db5aea11f80b1f17e81bf15c4351cb2497d13cfe5274d7dc072e4761b26004",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-349\": \"Part 1 now; 2 and 3 later\" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, in answer to fable-t4b's scope question on #349: one small PR now for the story's What was verified line showing limitations; his decision 'yes' for that line is in issue #349). Relayed and recorded by fable-t4b at 2026-11-18T22:47:56Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-349",
+        "title": "Fix 349",
+        "description": "fix 349",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.story-line-shows-limitations.cases.toml",
+          "changelog.d/2026-11-18-fix-349.md",
+          "docs/cli.md",
+          "specs/history/history.spec.md",
+          "specs/history/requirements.md",
+          "src/sessions.rs",
+          "tests/evidence.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "An archived story's What was verified line of an entry that has limitations ends with '; limits: ' and those limitations before its ^<evidence id>, and the line of an entry without any holds no such text. The receipts are unchanged."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The history lessons were read; none constrains the line. Human gates are plain text in tasks.md, not checkboxes, and the delta is frozen at approval.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "history": "b48d50ff5b7eb2c79f68177e8e1c199c88c68f19f170056db966c5c4330ea351"
+      },
+      "approved_delta_bases": {
+        "history: REQUIREMENT REQ-history-006": "1645aea201b81242595e4b3c72ac6027f89da637432f339645b0163f09f97de6"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Part 1 now; 2 and 3 later",
+        "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18, in answer to fable-t4b's scope question on #349: one small PR now for the story's What was verified line showing limitations; his decision 'yes' for that line is in issue #349",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ],
+  "reopenings": []
+}

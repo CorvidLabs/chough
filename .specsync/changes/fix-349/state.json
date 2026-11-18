@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-349",
+  "slug": "fix-349",
+  "title": "Fix 349",
+  "description": "fix 349",
+  "kind": "bug_fix",
+  "state": "approved",
+  "base_commit": "235c3bfb063e835f67c4aae12f873ceac4074be7",
+  "created_at": 1795041817,
+  "updated_at": 1795042076,
+  "affected_specs": [
+    "history"
+  ],
+  "affected_paths": [
+    "src/sessions.rs",
+    "tests/evidence.rs",
+    "docs/cli.md",
+    "specs/history/requirements.md",
+    "specs/history/history.spec.md",
+    ".chough/cases/history.story-line-shows-limitations.cases.toml",
+    "changelog.d/2026-11-18-fix-349.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "An archived story's What was verified line of an entry that has limitations ends with '; limits: ' and those limitations before its ^<evidence id>, and the line of an entry without any holds no such text. The receipts are unchanged."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The history lessons were read; none constrains the line. Human gates are plain text in tasks.md, not checkboxes, and the delta is frozen at approval.",
+    "public_contract": "yes"
+  }
+}

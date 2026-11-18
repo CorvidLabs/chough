@@ -969,11 +969,12 @@ What was verified gives the latest receipt of each case and every receipt bound 
 case, one line each:
 
 ```text
-- <claim> - `<command>` <first 12 fingerprint digits> [screenshot](<session>/<file>) ^<evidence id>
+- <claim> - `<command>` <first 12 fingerprint digits>; limits: <limitations> [screenshot](<session>/<file>) ^<evidence id>
 ```
 
 The command appears only when the claim does not already hold it, as a case run's
-claim does, and the digits and the screenshot link only when the receipt has them; a
+claim does, and the digits, `; limits: ` with the entry's limitations, and the
+screenshot link only when the receipt has them; a
 receipt without a claim shows its ID. The line replaces the item that linked the entry
 while the session was open, since that folder leaves with the session; an item a
 person wrote that names the entry is kept, and that entry gets no second line. A

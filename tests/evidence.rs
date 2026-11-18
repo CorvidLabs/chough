@@ -682,6 +682,26 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
         limited["limitations"],
         "SYNTHETIC only the first page was read; SYNTHETIC no network"
     );
+    // #349: the story's What was verified line shows the limits beside the claim, and
+    // an entry without any gets no such text.
+    let line_of = |id: &str| -> String {
+        story
+            .lines()
+            .find(|line| line.starts_with("- ") && line.ends_with(&format!(" ^{id}")))
+            .unwrap_or_else(|| panic!("no What was verified line for {id}: {story}"))
+            .to_string()
+    };
+    assert!(
+        line_of(&limited_entry)
+            .contains("; limits: SYNTHETIC only the first page was read; SYNTHETIC no network ^"),
+        "{}",
+        line_of(&limited_entry)
+    );
+    assert!(
+        !line_of(&plain_entry).contains("limits:"),
+        "{}",
+        line_of(&plain_entry)
+    );
     assert_eq!(case["criteria"], "LIFE-1");
     assert_eq!(case["requirements"], "REQ-cli-001");
     assert!(
