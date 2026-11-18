@@ -448,10 +448,14 @@ update --fix <text>` sets it, which the Log records too; marking a bug verified 
 its Fix still says `Not fixed yet.` replaces that with a line naming the passing
 observation and its revision.
 
-`bug add` and `bug update` given `--observation` with an evidence entry of the active
-session also add the bug to that session's checkpoint, as `checkpoint --bug` does, once,
-so the session's story names the bugs found in it. An entry of another session, or a
-receipt, leaves the active checkpoint unchanged.
+`bug add` while a session is active also adds the new bug to that session's
+checkpoint, as `checkpoint --bug` does, once, with or without `--observation`, so the
+session's story names the bugs found in it and a blocking bug filed in it stops it
+leaving test (#329). With no session active, it joins no checkpoint: a blocking bug
+filed then stops no session, and `chough next` names it under "Other blocking bugs"
+as not blocking this session. `bug update` given `--observation` with an evidence entry
+of the active session also adds the bug to that session's checkpoint; an entry of
+another session, or a receipt, leaves the active checkpoint unchanged.
 
 Manual `bug add` and automatic failure capture both name a new bug `<date>-<title
 slug>` by create-new (see [Record names](#record-names)). An update never renames the

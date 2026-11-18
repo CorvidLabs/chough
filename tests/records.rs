@@ -1035,9 +1035,13 @@ fn names_are_date_and_slug_with_aliases() {
     assert!(fixture.read(&path).contains("SYNTHETIC note"));
     // Linked by the old ID: the checkpoint resolves it, as it refuses an unknown one.
     fixture.ok(&["checkpoint", "--bug", "BUG-0012"]);
-    let linked = front(&fixture.read(&fixture.session_file()))["bugs"].clone();
+    // The session already lists the bug `bug add` filed in it (#329), so read the list
+    // from the checkpoint rather than from one front matter line.
+    let linked = fixture.session()["bugs"].clone();
     assert!(
-        items(&linked).iter().any(|bug| bug == "BUG-0012"),
+        linked
+            .as_array()
+            .is_some_and(|bugs| bugs.iter().any(|bug| bug == "BUG-0012")),
         "{linked}"
     );
     // An alias two bugs hold is refused by bug show.

@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 103
+version: 104
 status: active
 files:
   - src/main.rs
@@ -383,3 +383,4 @@ provider, runtime or hosted service.
 | 101 | 2026-11-18 | a-blocking-bug-stops-only-a-session-it-is-related-to: A blocking bug stops only a session it is related to |
 | 102 | 2026-11-18 | fix-314: Fix 314 |
 | 103 | 2026-11-18 | fix-271: Fix 271 |
+| 104 | 2026-11-18 | fix-329: Fix 329 |

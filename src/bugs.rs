@@ -829,12 +829,13 @@ fn stored_form(id: &str, linked: &Linked) -> String {
     }
 }
 
-/// REQ-cli-012: a bug written with `--observation` naming an entry of the active session,
-/// which [`stored_form`] stores as `<session>/<id>`, joins that session's checkpoint as
-/// `checkpoint --bug` adds it (REQ-records-004), once, so the session's story names the
-/// bugs found in it. An entry of another session, a receipt or no active session leaves
-/// every checkpoint unchanged.
-fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
+/// REQ-cli-012: the bug joins the active session's checkpoint as `checkpoint --bug` adds
+/// it (REQ-records-004), once, so the session's story names the bugs found in it and a
+/// blocking one stops it (REQ-cli-054). A new bug (`always`) joins whenever a session is
+/// active (#329); an updated one joins only when `--observation` names an entry of the
+/// active session, which [`stored_form`] stores as `<session>/<id>`. An entry of another
+/// session, a receipt or no active session leaves every checkpoint unchanged.
+fn join_active_session(root: &Path, bug: &str, links: &[String], always: bool) -> Result<()> {
     let Some(active) = crate::sessions::checkpoint_path(root)
         .ok()
         .and_then(|relative| crate::sessions::id_of(&relative))
@@ -842,7 +843,7 @@ fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
         return Ok(());
     };
     let prefix = format!("{active}/");
-    if !links.iter().any(|link| link.starts_with(&prefix)) {
+    if !always && !links.iter().any(|link| link.starts_with(&prefix)) {
         return Ok(());
     }
     let mut session = match crate::checkpoint::read_session(root)? {
@@ -1453,7 +1454,7 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         notes,
     };
     let (stored, redacted) = create(root, draft, false)?;
-    join_active_session(root, stored.id(), &stored.list("evidence"))?;
+    join_active_session(root, stored.id(), &stored.list("evidence"), true)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
@@ -1617,7 +1618,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     validate(&stored)?;
     let redacted = guard(&mut stored.record, Local::current())?;
     markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
-    join_active_session(root, &id, &links)?;
+    join_active_session(root, &id, &links, false)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
