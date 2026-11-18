@@ -5,7 +5,7 @@ aliases: [fix-263]
 objective: "migrate --apply refuses before writing when a planned target that differs only in case from a removed 0.5.x file already exists with other bytes (REQ-records-009, #263)"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: [src/migrate.rs, tests/migrate_knowledge.rs]
 observations: [2026-11-18-tc-records-migrate-refuses-a-separate-case-colliding-target]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-263
+    holds: accept
+    drives: review
+    opened: 2026-11-18T15:30:21Z
 run_consents: []
-next: Continue test
+next: Wait for Leif's implementation review of fix-263
 ---
 # migrate --apply refuses before writing when a planned target that differs only in case from a removed 0.5.x file already exists with other bytes (REQ-records-009, #263)
 
@@ -81,4 +85,15 @@ migrate --apply refuses before writing when a planned target that differs only i
   - native_change: fix-263
   - gate: native:approved
   - revision: 500ace1de42eff30f9fee1dac0f1a0ac5769dc51
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T15:30:21Z · advance · test → accept · native:verifying ^t-6c0a7f
+  - native_change: fix-263
+  - gate: native:verifying
+  - revision: ccc1a57e1f8fb4fcb0cb92d8331949a5ebe8be22
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T15:30:21Z · gate-opened · accept → accept · Implementation review of fix-263 ^t-ede328
+  - native_change: fix-263
+  - revision: ccc1a57e1f8fb4fcb0cb92d8331949a5ebe8be22
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
