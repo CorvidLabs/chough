@@ -1,6 +1,6 @@
 ---
 id: fix-339
-state: verifying
+state: implementing
 type: bug_fix
 base_commit: af8ca8901b2a23affcd40ac74865d99637448346
 ---
