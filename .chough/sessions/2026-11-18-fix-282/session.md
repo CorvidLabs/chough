@@ -5,7 +5,7 @@ aliases: [fix-282]
 objective: "chough checkpoint --pr <number or URL> sets the session's pr field with the existing validation, like --objective and --title (REQ-cli-007, #282)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-cli-checkpoint-pr-sets-the-pull-request-1a789c
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-282
-    holds: accept
-    drives: review
-    opened: 2026-11-18T20:34:11Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # chough checkpoint --pr <number or URL> sets the session's pr field with the existing validation, like --objective and --title (REQ-cli-007, #282)
 
@@ -43,6 +39,7 @@ chough checkpoint --pr <number or URL> sets the session's pr field with the exis
 
 - 0xLeif decided "Scope approval of fix-282": "add chough checkpoint --pr <number or URL>, with the existing pr validation and a Timeline entry, like every other checkpoint field. … No Timeline entry" (Leif's decision comment on CorvidLabs/chough#282 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then 'No Timeline entry', relayed by hc t4c on 2026-11-18: --pr sets the pr field with the existing validation, like --objective and --title, cli only); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-282 as 0xLeif
 - 0xLeif decided "Re-approval of fix-282 onto main's REQ-cli-007": "Re-approve" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #348 (fix-281) changed REQ-cli-007 on main, he re-approved fix-282's delta rebased onto main's text, keeping #348's --no-native-change sentence and adding only the --pr sentence and its acceptance criterion); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-282 as 0xLeif
+- 0xLeif decided "Implementation review of fix-282": "Approve now + follow-up" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #350 after the tester's check; the follow-up is #353 (show pr in next, status, context and the checkpoint view, and accept only a number or an http(s) URL)); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-282 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -116,4 +113,20 @@ chough checkpoint --pr <number or URL> sets the session's pr field with the exis
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve fix-282
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:47:00Z · gate-closed · accept → accept · Implementation review of fix-282 ^t-7c20d3
+  - native_change: fix-282
+  - revision: 7e9efb442b97ee196680f595f32d08abf669bc08
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve now + follow-up
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #350 after the tester's check; the follow-up is #353 (show pr in next, status, context and the checkpoint view, and accept only a number or an http(s) URL)
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-282
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:47:01Z · advance · accept → done · native:archived ^t-07680c
+  - native_change: fix-282
+  - gate: native:archived
+  - revision: 7e9efb442b97ee196680f595f32d08abf669bc08
   - by: chough-fixer (claude-opus-5-5, hc t4n)
