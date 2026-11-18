@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-282",
+  "slug": "fix-282",
+  "title": "Fix 282",
+  "description": "fix 282",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "66efea4dd777077ef9bbd412cf0fac8f7ea93b41",
+  "created_at": 1795033468,
+  "updated_at": 1795045599,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/checkpoint.rs",
+    "tests/checkpoint.rs",
+    "docs/cli.md",
+    ".chough/cases/cli.checkpoint-pr.cases.toml",
+    "changelog.d/2026-11-18-fix-282.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "chough checkpoint --pr 150 and --pr with a pull request URL each set the session's pr field, which another process reads back; an empty value clears it; a value with a line break, or one holding a local path or a token, is refused with the session file byte-identical, or redacted under --redact, as the pr field's existing guard does. Setting it adds no Timeline entry, as --objective and --title do not."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif's decision on #282 (2026-11-18 planning interview) adds chough checkpoint --pr <number or URL> with the existing pr validation; his later answer 'No Timeline entry' makes it like --objective and --title, cli only. Human gates as plain text in tasks.md; deltas frozen at approval. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

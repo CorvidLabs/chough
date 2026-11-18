@@ -755,6 +755,10 @@ pub(super) struct CheckpointArgs {
     /// (REQ-records-011); an empty value removes it.
     #[arg(long, allow_hyphen_values = true)]
     summary: Option<String>,
+    /// The session's pull request, a number or URL, one line; an empty value clears it
+    /// (REQ-cli-007, #282).
+    #[arg(long)]
+    pr: Option<String>,
     #[arg(long)]
     native_change: Option<String>,
     /// Record that this session's work needs no native change, with the reason, so its
@@ -1363,6 +1367,7 @@ impl CheckpointArgs {
             next_action,
             title,
             summary,
+            pr,
             native_change,
             no_native_change,
             decisions,
@@ -1401,6 +1406,7 @@ impl CheckpointArgs {
             && next_action.is_none()
             && title.is_none()
             && summary.is_none()
+            && pr.is_none()
             && native_change.is_none()
             && no_native_change.is_none()
             && answer.is_none()
@@ -1573,6 +1579,19 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     }
     if let Some(summary) = args.summary {
         session.meta.summary = crate::journal::checked_summary(&summary)?;
+        changed = true;
+    }
+    // REQ-cli-007 (#282): one line, as the objective is; the save's leak guard checks it
+    // as it always has. Like --objective and --title, it adds no Timeline entry.
+    if let Some(pr) = args.pr {
+        if !pr.is_empty() {
+            ensure_text("pr", &pr)?;
+            ensure!(
+                !pr.contains(['\n', '\r']),
+                "--pr is one line: the pull request's number or URL; nothing was saved"
+            );
+        }
+        session.meta.pr = pr;
         changed = true;
     }
     if let Some(change) = args.native_change {
