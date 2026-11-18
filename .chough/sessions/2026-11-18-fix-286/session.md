@@ -16,7 +16,7 @@ requirements: [REQ-history-006]
 cases: [TC-history-a-receipt-keeps-its-entrys-criteria-requirements-and-limitations]
 design: []
 files: [src/evidence.rs, src/evidence_migrate.rs, tests/evidence.rs]
-observations: []
+observations: [2026-11-18-tc-history-a-receipt-keeps-its-entrys-criteria-requirements]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +38,8 @@ An archived story's receipts keep each evidence entry's criteria, requirements a
 - 0xLeif decided "Scope approval of fix-286": "keep all three. Archived receipts keep the entry's criteria, requirements and limitations, so the story says what was verified against what and its honest limits stay visible. This adds the three to REQ-history-006's receipt field list." (Leif's decision comment on GitHub issue #286, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-286 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test evidence -- --exact a_story_receipt_carries_each_field_its_entry_knows for TC-history-a-receipt-keeps-its-entrys-criteria-requirements-and-limitations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-receipt-keeps-its-entrys-criteria-requirements.md)
 
 ## Open threads
 
