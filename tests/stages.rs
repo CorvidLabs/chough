@@ -3545,6 +3545,39 @@ fn a_session_that_needs_no_native_change_reaches_done_and_archives_as_done() {
         "{archived}"
     );
 
+    // REQ-records-006 (the tester's finding on #348): the reason is a written value. One
+    // that holds a credential or an email address is refused with nothing saved, as
+    // --objective and --decision refuse it, and --redact stores it redacted.
+    let leaky = Fixture::new();
+    leaky.stubs();
+    leaky.native("draft");
+    leaky.init();
+    let token = concat!("ghp_", "abcdefghijklmnopqrstuvwxyz0123456789");
+    for sample in [
+        format!("SYNTHETIC planning only, token {token}"),
+        "SYNTHETIC planning only, ask someone@example.org".to_string(),
+    ] {
+        let before = leaky.read(&leaky.session_file());
+        let refused = leaky.fails(&["checkpoint", "--no-native-change", &sample]);
+        assert!(refused.contains("refused:leak"), "{refused}");
+        assert!(!refused.contains(token), "{refused}");
+        assert_eq!(leaky.read(&leaky.session_file()), before);
+    }
+    leaky.ok(&[
+        "checkpoint",
+        "--redact",
+        "--no-native-change",
+        &format!("SYNTHETIC planning only, token {token}"),
+    ]);
+    let stored = leaky.read(&leaky.session_file());
+    assert!(!stored.contains(token), "{stored}");
+    assert!(
+        stored
+            .lines()
+            .any(|line| line.starts_with("no_native_change: ") && line.contains("<redacted:")),
+        "{stored}"
+    );
+
     // With a native change recorded, the session cannot also say it needs none, and
     // recording a native change later takes the reason away.
     let other = Fixture::new();

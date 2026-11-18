@@ -569,6 +569,11 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
     count += guard(local, "objective", &mut session.objective)?;
     count += guard(local, "intent_scope", &mut session.intent_scope)?;
     count += guard(local, "next", &mut session.next_action)?;
+    // REQ-records-006 (#281): the reason a session needs no native change is a written
+    // value like the others.
+    if let Some(reason) = &mut session.no_native_change {
+        count += guard(local, "no_native_change", reason)?;
+    }
     for (name, list) in [
         ("decision", &mut session.decisions),
         ("completed", &mut session.completed),

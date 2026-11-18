@@ -19,6 +19,10 @@ with SpecSync configured and no native change recorded:
 - recording a native change removes the reason, and the flag is then refused,
   naming the change.
 
+- a reason holding a credential or an email address is refused as `refused:leak`
+  with the session unchanged, and `--redact` stores it redacted (added after the
+  tester's finding on #348; it fails without the leak guard).
+
 It fails on main, which has no such flag.
 
 ## Requirement evidence
