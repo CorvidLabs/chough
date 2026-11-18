@@ -1230,3 +1230,62 @@ fn a_busy_evidence_add_writes_nothing_and_refuses_with_nothing_saved() {
     );
     assert_eq!(entries(), 1, "the rerun did not record exactly one entry");
 }
+
+/// REQ-history-006 (#349, the tester's finding on #358): a What was verified line is one
+/// line whatever its claim or a limitation holds. A summary or a limitation with line
+/// breaks is folded into the line, so no extra item appears under What was verified and
+/// a `## Timeline` inside a limitation does not become a second Timeline heading.
+#[cfg(unix)]
+#[test]
+fn a_verified_line_stays_one_line_whatever_its_claim_or_limits_hold() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let session = fixture.active_id();
+    let added = fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC first line\nSYNTHETIC second line",
+        "--limitation",
+        "SYNTHETIC limit\n## Timeline\n- SYNTHETIC forged entry",
+    ]);
+    let entry = added["observation"].as_str().unwrap().to_string();
+    fixture.commit("the entry");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
+    let line = story
+        .lines()
+        .find(|line| line.ends_with(&format!(" ^{entry}")))
+        .unwrap_or_else(|| panic!("no What was verified line for {entry}: {story}"));
+    assert!(
+        line.starts_with("- SYNTHETIC first line SYNTHETIC second line"),
+        "{line}"
+    );
+    assert!(
+        line.contains("; limits: SYNTHETIC limit ## Timeline - SYNTHETIC forged entry ^"),
+        "{line}"
+    );
+    assert_eq!(
+        story.lines().filter(|line| *line == "## Timeline").count(),
+        1,
+        "{story}"
+    );
+    assert!(
+        !story.lines().any(|line| line == "- SYNTHETIC forged entry"),
+        "{story}"
+    );
+    assert!(
+        !story.lines().any(|line| line == "SYNTHETIC second line"),
+        "{story}"
+    );
+}

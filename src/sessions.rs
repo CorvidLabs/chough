@@ -1095,6 +1095,14 @@ pub(super) fn receipt_line(
         line.push_str(&format!(" [screenshot]({link})"));
     }
     line.push_str(&format!(" ^{entry}"));
+    // One line, whatever line breaks a claim or a limitation holds: a second line
+    // would read as another item, or as a heading, of the story (#349).
+    let line = line
+        .split(['\n', '\r'])
+        .map(str::trim)
+        .filter(|part| !part.is_empty())
+        .collect::<Vec<_>>()
+        .join(" ");
     Some(line)
 }
 
