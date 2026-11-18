@@ -40,6 +40,7 @@ chough checkpoint --pr <number or URL> sets the session's pr field with the exis
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-282": "add chough checkpoint --pr <number or URL>, with the existing pr validation and a Timeline entry, like every other checkpoint field. … No Timeline entry" (Leif's decision comment on CorvidLabs/chough#282 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then 'No Timeline entry', relayed by hc t4c on 2026-11-18: --pr sets the pr field with the existing validation, like --objective and --title, cli only); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-282 as 0xLeif
+- 0xLeif decided "Re-approval of fix-282 onto main's REQ-cli-007": "Re-approve" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #348 (fix-281) changed REQ-cli-007 on main, he re-approved fix-282's delta rebased onto main's text, keeping #348's --no-native-change sentence and adding only the --pr sentence and its acceptance criterion); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-282 as 0xLeif
 
 ## What was verified
 
@@ -95,4 +96,21 @@ chough checkpoint --pr <number or URL> sets the session's pr field with the exis
   - revision: 66efea4dd777077ef9bbd412cf0fac8f7ea93b41
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:30:28Z · gate-opened · accept → accept · Re-approval of fix-282 onto main's REQ-cli-007 ^t-c736fe
+  - native_change: fix-282
+  - revision: 348c0ebad005cb188137a0255d3378f2a0d52c15
+  - holds: accept
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:30:28Z · gate-closed · accept → accept · Re-approval of fix-282 onto main's REQ-cli-007 ^t-42d489
+  - native_change: fix-282
+  - revision: 348c0ebad005cb188137a0255d3378f2a0d52c15
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Re-approve
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #348 (fix-281) changed REQ-cli-007 on main, he re-approved fix-282's delta rebased onto main's text, keeping #348's --no-native-change sentence and adding only the --pr sentence and its acceptance criterion
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve fix-282
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)
