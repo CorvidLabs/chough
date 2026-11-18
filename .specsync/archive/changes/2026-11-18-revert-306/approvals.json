@@ -1,0 +1,58 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795016866,
+      "digest": "6276b8772d0b4dfb8867081839a583bfc176d983d3916e08a2fe9caaa2f2e9e0",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of revert-306\": \"Revert #306\" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, as his answer to: revert #306 for 0.6.1, or fix both regressions forward). Relayed and recorded by fable-t4b at 2026-11-18T15:47:45Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "revert-306",
+        "title": "Revert 306",
+        "description": "revert 306",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.no-hard-links.cases.toml",
+          ".chough/cases/records.no-partial-new-record.cases.toml",
+          "changelog.d/2026-11-18-fix-260.md",
+          "changelog.d/2026-11-18-revert-306.md",
+          "src/records.rs",
+          "tests/bugs.rs",
+          "tests/no_hard_links.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "No requirement text changes. #306 changed how a new record is written (a temporary file linked to the name). That writer fails on file systems without hard links (#313) and leaves its temporary files where a concurrent writer sweeps them. The create-new writer goes back to what 0.6.0 shipped; #260 reopens for 0.6.2.",
+        "acceptance_criteria": [
+          "On an exFAT volume chough init, chough bug add and chough journal add succeed and write whole records, as in 0.6.0. The create-new writer in src/records.rs is the one 0.6.0 shipped. #305's non-blocking reader and #308's journal lock are unchanged."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes. The archived change fix-260 and its records stay as history; only code, its test, its case and its changelog fragment are reverted.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Revert #306",
+        "where": "Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, as his answer to: revert #306 for 0.6.1, or fix both regressions forward",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795020364,
+      "digest": "b9313d768cc4d179a2e0a807560ac7557316143b5155207643a3cf999126748f",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
