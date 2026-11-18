@@ -16,7 +16,7 @@ requirements: [REQ-history-012]
 cases: [TC-history-a-withdrawn-stale-gate-keeps-doctors-reason]
 design: []
 files: [src/doctor.rs, src/checkpoint.rs, src/stage.rs, src/session_md.rs, tests/doctor.rs]
-observations: []
+observations: [2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +38,8 @@ When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline
 - 0xLeif decided "Scope approval of fix-250": "record it on each gate. When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason in the person's words, and doctor's JSON echoes it back. REQ-history-012 gets that sentence." (Leif's decision comment on GitHub issue #250, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-250 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test doctor -- --exact doctor_decision_fixes_need_a_reason_and_record_no_human_decision for TC-history-a-withdrawn-stale-gate-keeps-doctors-reason: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason.md)
 
 ## Open threads
 
