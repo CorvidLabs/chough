@@ -5,7 +5,7 @@ aliases: [fix-314]
 objective: "Readers in .chough and the knowledge directory, chough migrate's 0.5.x readers included, skip the macOS metadata files .DS_Store and ._*, and the leak scan reads a tracked one's bytes (REQ-cli-068, REQ-records-015, #314)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -25,13 +25,9 @@ observations:
   - 2026-11-18-tc-records-migrate-skips-macos-metadata
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-314
-    holds: accept
-    drives: review
-    opened: 2026-11-18T17:54:38Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Readers in .chough and the knowledge directory, chough migrate's 0.5.x readers included, skip the macOS metadata files .DS_Store and ._*, and the leak scan reads a tracked one's bytes (REQ-cli-068, REQ-records-015, #314)
 
@@ -47,6 +43,7 @@ Readers in .chough and the knowledge directory, chough migrate's 0.5.x readers i
 
 - fix-314 recreated once more from main on Leif's word ('Recreate once more'), after the tester's recheck of #321 found metadata beside 0.5.x knowledge notes listed for removal by src/library.rs and macOS's rmdir deleting orphaned ._ files with emptied folders. It declares src/library.rs, adds the library.rs skip and the empty-folder rule (820af00 on the previous build), and replaces #321's branch by force-push as before.
 - 0xLeif decided "Scope approval of fix-314, recreated once more with src/library.rs": "Recreate once more" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, in answer to whether to add src/library.rs to #321 by recreating fix-314 once more, reopening it himself, or with a migrate.rs workaround; it follows his earlier 'Skip them', 'Recreate on my word', 'Force-push onto #321' and 'Approve' for the wider scope (REQ-records-015 beside REQ-cli-068, src/migrate.rs, src/evidence_migrate.rs and src/bugs.rs declared)); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-314 as 0xLeif
+- 0xLeif decided "Implementation review of fix-314": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #321 after the tester's recheck 2 PASS at 6a54e36); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-314 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -104,4 +101,20 @@ Readers in .chough and the knowledge directory, chough migrate's 0.5.x readers i
   - revision: cef86e2622a2a908856b0c2cf11b29d3c1d3e472
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T18:12:53Z · gate-closed · accept → accept · Implementation review of fix-314 ^t-921e56
+  - native_change: fix-314
+  - revision: a33cfb55becd29f422a85be5df1b73fa29ca1573
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #321 after the tester's recheck 2 PASS at 6a54e36
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-314
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T18:12:54Z · advance · accept → done · native:archived ^t-c1eb7d
+  - native_change: fix-314
+  - gate: native:archived
+  - revision: a33cfb55becd29f422a85be5df1b73fa29ca1573
   - by: chough-fixer (claude-opus-5-5, hc t4n)
