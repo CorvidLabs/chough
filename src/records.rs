@@ -313,13 +313,14 @@ pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Re
 }
 
 /// Write `content` to `temporary`, link it to `path` and remove `temporary`; false when
-/// `path` already exists. Only `temporary`, this call's own file, is ever removed.
+/// `path` already exists. Only a `temporary` this call created is ever removed: when
+/// one of that name is already there, the create fails and it is left as it is.
 fn publish_new(temporary: &Path, path: &Path, content: &[u8]) -> io::Result<bool> {
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(temporary)?;
     let published = (|| -> io::Result<bool> {
-        let mut file = OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(temporary)?;
         file.write_all(content)?;
         drop(file);
         match fs::hard_link(temporary, path) {
@@ -1738,6 +1739,18 @@ mod tests {
         assert!(!publish_new(&temporary, &path, b"first writer").unwrap());
         assert_eq!(fs::read_to_string(&path).unwrap(), "SECOND_WRITER_CANARY");
         assert!(!temporary.exists());
+
+        // A temporary of that name is already there (review of #306, second finding):
+        // the create fails, and neither it nor the file at the name is touched.
+        fs::write(&temporary, "EARLIER_TEMPORARY_CANARY").unwrap();
+        let error = publish_new(&temporary, &path, b"first writer").unwrap_err();
+        assert_eq!(error.kind(), io::ErrorKind::AlreadyExists);
+        assert_eq!(
+            fs::read_to_string(&temporary).unwrap(),
+            "EARLIER_TEMPORARY_CANARY"
+        );
+        assert_eq!(fs::read_to_string(&path).unwrap(), "SECOND_WRITER_CANARY");
+        fs::remove_file(&temporary).unwrap();
 
         // With the name free, the file appears whole and the temporary is gone.
         let free = root.path().join("free.md");
