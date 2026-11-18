@@ -40,6 +40,7 @@ The workflow skill teaches --no-native-change, and chough next offers both paths
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-351": "yes, both" (Leif's decision of 2026-11-18 recorded in GitHub issue #351 (the skill explains chough checkpoint --no-native-change, and chough next offers both paths when a move is refused for lacking a native change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-351 as 0xLeif
+- 0xLeif decided "Scope approval of fix-351, with three more paths (native approval)": "Yes: send back once + re-approve" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him fable-t4b's question: send back fix-351 once and re-approve it with src/skill.rs, src/checkpoint.rs and src/main.rs added; the requirement text does not change); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-351 as 0xLeif
 
 ## What was verified
 
@@ -95,4 +96,32 @@ The workflow skill teaches --no-native-change, and chough next offers both paths
   - revision: 6d0d9165e59d5f1c668304e3dd2102c23578a343
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T23:17:22Z · gate-opened · accept → accept · Scope approval of fix-351, with three more paths (native approval) ^t-fc1e4e
+  - native_change: fix-351
+  - revision: 4e9b834f753512414f83850ff174074ace676328
+  - holds: accept
+  - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T23:17:22Z · direct-native-write · accept → accept · fix-351's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-8a1656
+  - native_change: fix-351
+  - revision: 4e9b834f753512414f83850ff174074ace676328
+  - direct_write:
+    - change: fix-351
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T23:17:22Z · gate-closed · accept → accept · Scope approval of fix-351, with three more paths (native approval) ^t-761d73
+  - native_change: fix-351
+  - revision: 4e9b834f753512414f83850ff174074ace676328
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes: send back once + re-approve
+    - where: Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him fable-t4b's question: send back fix-351 once and re-approve it with src/skill.rs, src/checkpoint.rs and src/main.rs added; the requirement text does not change
+    - recorded_by: fable-t4b
+    - native: specsync change approve fix-351
+    - actor: 0xLeif
   - by: fable (claude-fable-5-2, hc t4b)

@@ -19,6 +19,15 @@ It fails on main, where the refusal names only `--native-change`. The skill
 release manifest digest and its pinned hash are refreshed, and the skill, package,
 docs and next tests pass.
 
+Added after the tester's findings on #359:
+
+- `skill::released_digests::every_released_file_the_bundle_replaces_is_known_previous`:
+  every skill file as 0.6.1 shipped it is still current or a known previous digest, so
+  a 0.6.1 install updates. It fails without the 0.6.1 `lifecycle.md` digest.
+- the stages test also refuses the literal `<reason>` placeholder and expects
+  `chough next` to say `Native change: none needed: <reason>`, with
+  `no_native_change` in its JSON.
+
 ## Requirement evidence
 
 | Requirement | Evidence |

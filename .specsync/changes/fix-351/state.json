@@ -7,16 +7,18 @@
   "title": "Fix 351",
   "description": "fix 351",
   "kind": "bug_fix",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "approved",
   "base_commit": "235c3bfb063e835f67c4aae12f873ceac4074be7",
   "created_at": 1795042416,
-  "updated_at": 1795042742,
+  "updated_at": 1795043843,
   "affected_specs": [
     "cli"
   ],
   "affected_paths": [
     "src/stage.rs",
+    "src/skill.rs",
+    "src/checkpoint.rs",
+    "src/main.rs",
     "tests/stages.rs",
     "specs/cli/requirements.md",
     "specs/cli/cli.spec.md",
