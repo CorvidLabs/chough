@@ -7,11 +7,11 @@
   "title": "Fix 283",
   "description": "fix 283",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "e47b4cfaabe2e68fd02246be01fb7e8e256fe00b",
   "created_at": 1795032541,
-  "updated_at": 1795043623,
+  "updated_at": 1795043932,
   "affected_specs": [
     "cli"
   ],
