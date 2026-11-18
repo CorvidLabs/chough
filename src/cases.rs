@@ -232,6 +232,10 @@ pub(super) fn load(root: &Path) -> Result<Vec<Located>> {
             .to_str()
             .context("invalid case filename")?
             .to_string();
+        // macOS metadata beside the definitions is not a definition (REQ-cli-068).
+        if crate::evidence::is_os_metadata(&name) {
+            continue;
+        }
         ensure!(
             name.ends_with(".cases.toml"),
             "unexpected file in {CASES_DIR}: {name}"

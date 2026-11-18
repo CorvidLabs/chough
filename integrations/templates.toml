@@ -15,6 +15,7 @@ status = "supported"
 versions = [
   { version = 1, sha256 = "c8ff86ab08d0025b4441e1198cc7cd6fa7ef28b81ae084ecc7108568368fd985" },
   { version = 2, sha256 = "1f46b7e49b678efc3a72227f16c90c27fb6676ab9798d8a134d94f81809a593a" },
+  { version = 3, sha256 = "1bec88091985a29a2fd8186e87df08e70b64aa1f4fd16d5a74e4d9627d250e7c" },
 ]
 
 [[template]]
@@ -26,6 +27,7 @@ status = "supported"
 versions = [
   { version = 1, sha256 = "eb7b0a11bdbed966718ac3dbd5728af53bc38f250eb527af39aec77a584cd97d" },
   { version = 2, sha256 = "36840e0da80545fd54ecacfb5133d3ac8bd4742f139ad5db652862f8339f6d6e" },
+  { version = 3, sha256 = "50ce82828cc9ed077865b9d85a9df5f43fe320f7c913e7667a1c5431c9bf6e17" },
 ]
 
 [[template]]
@@ -37,6 +39,7 @@ status = "supported"
 versions = [
   { version = 1, sha256 = "69c740ffd1ed47aee46a4ef32140c26364b28e6909b58f53feef52df84915d5a" },
   { version = 2, sha256 = "b40dd034d8c50e39a319ad65add731a2f316decae916a90a725dd8aa98a7c897" },
+  { version = 3, sha256 = "bc9e4f2c6d212a2b47586414d83548c791dde339fc78c337e5698bd0efb1559f" },
 ]
 
 [[template]]
@@ -48,6 +51,7 @@ status = "supported"
 versions = [
   { version = 1, sha256 = "2687d6e56b12bceec9e976d26464b4d15e4c67fbbb3a7842d0e819dfaa0a8a56" },
   { version = 2, sha256 = "b461318c23533d175e4bc2a7601c679042a32b752b8cdf19ccfe42af5848314c" },
+  { version = 3, sha256 = "06f576d3733b91284ae6b58b3595483bbcf92c6a24bb6bbcac0004cafae9cc13" },
 ]
 
 [[template]]
@@ -59,4 +63,5 @@ status = "unqualified"
 versions = [
   { version = 1, sha256 = "d5a3832fb9485df343d753544058b91a3dfd6aefb171b044db585b8944197bdd" },
   { version = 2, sha256 = "b3e2efb21f302df0644c7c5241352dda5ca30f4f577f451a92f89283a136df1c" },
+  { version = 3, sha256 = "ad4839c915a2f8f7aa95d3af400779e292eb4062b9d1dee3b77fd4675bb80161" },
 ]
