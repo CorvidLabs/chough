@@ -3627,6 +3627,22 @@ fn a_move_refused_for_lacking_a_change_offers_both_paths() {
     let text = fixture.ok_text(&["next"]);
     assert!(text.contains(flag), "{text}");
 
+    // The tester's findings on #359: the literal placeholder is refused, and once the
+    // session says it needs no native change, `next` says so with the reason.
+    let placeholder = fixture.fails(&["checkpoint", "--no-native-change", "<reason>"]);
+    assert!(placeholder.contains("placeholder"), "{placeholder}");
+    assert_eq!(fixture.session()["no_native_change"], Value::Null);
+    let reason = "SYNTHETIC planning only";
+    fixture.ok(&["checkpoint", "--no-native-change", reason]);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["no_native_change"], reason, "{next}");
+    let text = fixture.ok_text(&["next"]);
+    assert!(
+        text.contains(&format!("Native change: none needed: {reason}")),
+        "{text}"
+    );
+    assert!(!text.contains("Native change: none recorded"), "{text}");
+
     for copy in ["skills", ".agents/skills"] {
         let lifecycle = fs::read_to_string(
             Path::new(env!("CARGO_MANIFEST_DIR"))
