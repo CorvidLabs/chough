@@ -707,7 +707,7 @@ fn apply(
         let path = local_path(root, &written.path)?;
         if let Ok(existing) = std::fs::read(&path)
             && existing != written.bytes
-            && !collides_by_case(plan, &written.path)
+            && !is_a_planned_removal_by_case(root, plan, &written.path)?
         {
             bail!(
                 "refused:target-exists: {} already exists with other bytes, and the migration writes by create-new only, so nothing more was written.",
@@ -876,6 +876,42 @@ fn collides_by_case(plan: &Plan, path: &str) -> bool {
         .keys()
         .chain(plan.carried.sources.iter())
         .any(|removed| removed != path && removed.eq_ignore_ascii_case(path))
+}
+
+/// Whether the file read at the planned `path` is a planned removal under its other
+/// spelling, so its other bytes are the 0.5.x file's and not a target in the way
+/// (REQ-records-009, #263). That holds only where the two names are one file: a
+/// removal that differs only in case still opens, and the folder does not list both
+/// names. On a case-sensitive file system `knowledge/index.md` beside
+/// `knowledge/INDEX.md` is a file of its own, and the apply refuses it before writing.
+fn is_a_planned_removal_by_case(root: &Path, plan: &Plan, path: &str) -> Result<bool> {
+    let target = local_path(root, path)?;
+    for removed in plan
+        .carried
+        .removed
+        .keys()
+        .chain(plan.carried.sources.iter())
+        .filter(|removed| *removed != path && removed.eq_ignore_ascii_case(path))
+    {
+        if one_file_by_case(&target, &local_path(root, removed)?) {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+/// Whether `target` and `removal`, two paths in one folder that differ only in case,
+/// name one file: `removal` opens, and the folder does not list both names.
+fn one_file_by_case(target: &Path, removal: &Path) -> bool {
+    let listed = |path: &Path| {
+        path.parent()
+            .zip(path.file_name())
+            .is_some_and(|(folder, name)| {
+                std::fs::read_dir(folder)
+                    .is_ok_and(|entries| entries.flatten().any(|entry| entry.file_name() == name))
+            })
+    };
+    removal.exists() && !(listed(target) && listed(removal))
 }
 
 /// Write one planned file by create-new, or count it done when it already holds the
@@ -2186,5 +2222,25 @@ mod tests {
         let mut two = Carried::default();
         two.written.push(file);
         assert!(one.absorb(two).is_err());
+    }
+
+    /// REQ-records-009 (#263): two names that differ only in case are one file only
+    /// where the file system says so. A folder that lists both holds two files, and a
+    /// target whose other spelling no longer opens stands alone.
+    #[test]
+    fn two_names_differing_only_in_case_are_one_file_only_when_the_folder_lists_one() {
+        let root = tempfile::tempdir().unwrap();
+        let old = root.path().join("INDEX.md");
+        let new = root.path().join("index.md");
+        std::fs::write(&old, "old").unwrap();
+        if new.exists() {
+            // A case-insensitive file system: one file under either spelling.
+            assert!(one_file_by_case(&new, &old));
+            return;
+        }
+        std::fs::write(&new, "other bytes").unwrap();
+        assert!(!one_file_by_case(&new, &old), "the folder lists both names");
+        std::fs::remove_file(&old).unwrap();
+        assert!(!one_file_by_case(&new, &old), "the other spelling is gone");
     }
 }
