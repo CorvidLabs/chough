@@ -16,7 +16,9 @@ requirements: [REQ-records-009]
 cases: [TC-records-migrate-refuses-a-separate-case-colliding-target]
 design: []
 files: [src/migrate.rs, tests/migrate_knowledge.rs]
-observations: [2026-11-18-tc-records-migrate-refuses-a-separate-case-colliding-target]
+observations:
+  - 2026-11-18-tc-records-migrate-refuses-a-separate-case-colliding-target
+  - 2026-11-18-tc-records-migrate-refuses-a-separate-case-colliding-target-406fa9
 bugs: []
 blockers: []
 waiting_on_human:
@@ -45,6 +47,7 @@ migrate --apply refuses before writing when a planned target that differs only i
 ## What was verified
 
 - [Ran cargo test --locked --test migrate_knowledge -- --exact a_separate_file_at_a_case_colliding_target_refuses_before_any_write for TC-records-migrate-refuses-a-separate-case-colliding-target: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-migrate-refuses-a-separate-case-colliding-target.md)
+- [Ran cargo test --locked --test migrate_knowledge -- --exact a_separate_file_at_a_case_colliding_target_refuses_before_any_write for TC-records-migrate-refuses-a-separate-case-colliding-target: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-migrate-refuses-a-separate-case-colliding-target-406fa9.md)
 
 ## Open threads
 
