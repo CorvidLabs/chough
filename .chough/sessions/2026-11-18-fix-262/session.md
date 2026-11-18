@@ -5,7 +5,7 @@ aliases: [fix-262]
 objective: "A FIFO or other non-regular file in a record's place blocks no reader, and a session whose record is one is listed with the reason and the shelve recovery (REQ-history-006, #262)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -25,13 +25,9 @@ observations:
   - 2026-11-18-tc-history-a-session-whose-record-is-a-fifo-is-listed-1d0a81
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-262
-    holds: accept
-    drives: review
-    opened: 2026-11-18T00:37:06Z
+waiting_on_human: []
 run_consents: []
-next: "Wait for Leif's implementation review of fix-262 on PR #305; do not ship"
+next: Continue done
 title: A FIFO in a record's place blocks no reader
 summary:
   - A FIFO in .chough/bugs/ blocked status and next for ever, and a session whose session.md was one vanished from session list (#262). Readers no longer open a non-regular file, and such a session is listed with the reason and the shelve recovery, as REQ-history-006 required. Two tests failed on main first; the verify lane passed on macOS at 448f47c, before main was merged in.
@@ -52,6 +48,7 @@ A FIFO or other non-regular file in a record's place blocks no reader, and a ses
 - No requirement text changes (--no-spec-change). The session part rests on REQ-history-006. For the bugs folder no requirement names non-regular files; status and next now skip them as bug list already does. A doctor finding for such a file is new behaviour and is left out.
 - Leif, 2026-11-17, in the task he gave Fable: 'implement only defects the existing contract already requires, open draft pull requests, and stop at every human gate.' The code and tests were written on that instruction before scope approval; Fable approves nothing.
 - 0xLeif decided "Scope approval of fix-262": "record my scope approval of fix-272, fix-267, fix-262 and fix-260 as 0xLeif" (Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-262 as 0xLeif
+- 0xLeif decided "Implementation review of fix-262": "pass all four, merge one at a time" (Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the four implementation review gates); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-262 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -112,4 +109,20 @@ A FIFO or other non-regular file in a record's place blocks no reader, and a ses
   - revision: 8abb5bb89b5244e72327e1ea6abfc7e66634ebe1
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T01:15:46Z · gate-closed · accept → accept · Implementation review of fix-262 ^t-d7b872
+  - native_change: fix-262
+  - revision: 34a112ca17c712b6e81d40593f2694abe79eaf2b
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: pass all four, merge one at a time
+    - where: Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the four implementation review gates
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-262
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T01:15:47Z · advance · accept → done · native:archived ^t-1dd8f9
+  - native_change: fix-262
+  - gate: native:archived
+  - revision: 34a112ca17c712b6e81d40593f2694abe79eaf2b
   - by: fable (claude-fable-5-2, hc t4b)
