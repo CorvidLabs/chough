@@ -159,6 +159,7 @@ pub(super) fn read(relative: &str, text: &str) -> Result<Checkpoint> {
         },
     };
     session.native_change = Some(field("native_change")).filter(|change| !change.is_empty());
+    session.no_native_change = Some(field("no_native_change")).filter(|reason| !reason.is_empty());
     session.references = References {
         criteria: record.list("criteria"),
         requirements: record.list("requirements"),
@@ -237,6 +238,14 @@ pub(super) fn render_with(
         "native_change",
         session.native_change.as_deref().unwrap_or(""),
     )?;
+    // REQ-cli-007 (#281): kept only once the session recorded it, so every other
+    // session reads as before.
+    match &session.no_native_change {
+        Some(reason) => record.set_scalar("no_native_change", reason)?,
+        None => {
+            record.remove("no_native_change");
+        }
+    }
     record.set_scalar("pr", &meta.pr)?;
     // REQ-records-011: the journal post's title and summary, kept only once the agent
     // gave them, so a session without them reads as before.

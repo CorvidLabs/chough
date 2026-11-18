@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-281",
+  "slug": "fix-281",
+  "title": "Fix 281",
+  "description": "fix 281",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "66efea4dd777077ef9bbd412cf0fac8f7ea93b41",
+  "created_at": 1795033036,
+  "updated_at": 1795036056,
+  "affected_specs": [
+    "cli",
+    "records"
+  ],
+  "affected_paths": [
+    "src/stage.rs",
+    "src/checkpoint.rs",
+    "src/session_md.rs",
+    "tests/stages.rs",
+    "docs/cli.md",
+    "specs/cli/requirements.md",
+    "specs/records/records.spec.md",
+    ".chough/cases/cli.no-native-change-required.cases.toml",
+    "changelog.d/2026-11-18-fix-281.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With SpecSync configured and no native change recorded, chough checkpoint --no-native-change <reason> records the reason in the session; its gated stage moves are then allowed and labelled ungated:no-native-change-required, so it reaches done and is archived with outcome done, the story keeping the reason; an open human gate still refuses the move; a blank reason is refused; the flag is refused while a native change is recorded, and recording one removes the reason."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes, and the deltas are frozen at approval. REQ-cli-030 is unchanged: no flag or reason bypasses a human gate, and this flag does not.",
+    "public_contract": "yes"
+  }
+}

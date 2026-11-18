@@ -567,6 +567,17 @@ pub(super) fn gate_for_state(
                 "{purpose} cannot be checked, so it is refused: {reason}. SpecSync rejects this policy too (see `specsync change audit`); fix the file, or set \"enabled\": false in a valid policy to disable native gates deliberately."
             ),
         ),
+        // REQ-cli-007 (#281): the session recorded, with a reason, that its work needs
+        // no native change, so no native lifecycle gates this move. A human gate that
+        // holds the stage still refuses it, before this is read.
+        NativeState::NoChange if session.no_native_change.is_some() => Gate {
+            allowed: true,
+            label: "ungated:no-native-change-required".into(),
+            detail: format!(
+                "The session records that its work needs no native change: {}",
+                session.no_native_change.as_deref().unwrap_or_default()
+            ),
+        },
         NativeState::NoChange => refused(
             "refused:no-native-change".into(),
             format!(

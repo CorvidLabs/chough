@@ -739,6 +739,13 @@ fn apply(
             .collect::<Vec<_>>()
             .join(", ")
     );
+    // REQ-records-001 (#265): no record is written with a Git conflict marker in its
+    // body; every planned file is checked before any is written, so nothing is.
+    for written in &plan.files {
+        if let Ok(text) = std::str::from_utf8(&written.bytes) {
+            crate::records::refuse_conflict_markers(root, &written.path, text)?;
+        }
+    }
     for written in &plan.files {
         let path = local_path(root, &written.path)?;
         if let Ok(existing) = std::fs::read(&path)

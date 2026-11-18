@@ -241,6 +241,73 @@ pub(super) fn valid_change_id(value: &str) -> bool {
 }
 
 /// Reject blank text and text that would make a record unreadable.
+/// Every Git conflict marker in a record's body, each with its 1-based line in the file
+/// and the line (REQ-records-001, #265). The body is what follows the front matter's
+/// closing `---`. A line starting `<<<<<<<` or `>>>>>>>` is a marker; a line of
+/// `=======` is one only while a `<<<<<<<` line is open, so a Markdown heading underline
+/// is not.
+pub(super) fn conflict_markers(text: &str) -> Vec<(usize, String)> {
+    let mut lines = text.lines().enumerate().peekable();
+    if lines.peek().is_some_and(|(_, line)| *line == "---") {
+        lines.next();
+        for (_, line) in lines.by_ref() {
+            if line == "---" {
+                break;
+            }
+        }
+    }
+    let mut open = false;
+    let mut found = vec![];
+    for (number, line) in lines {
+        let line = line.trim_end_matches('\r');
+        let marker = if line.starts_with("<<<<<<<") {
+            open = true;
+            true
+        } else if line.starts_with(">>>>>>>") {
+            open = false;
+            true
+        } else {
+            open && line == "======="
+        };
+        if marker {
+            found.push((number + 1, line.to_string()));
+        }
+    }
+    found
+}
+
+/// Whether `relative` is where a record of REQ-records-001 lives: a Markdown file under
+/// `.chough/`, or a journal post in the knowledge directory. A generated knowledge note
+/// or an installed skill file is not one, so it may quote a conflict marker.
+fn holds_a_record(root: &Path, relative: &str) -> bool {
+    if !relative.ends_with(".md") {
+        return false;
+    }
+    if relative.starts_with(".chough/") {
+        return true;
+    }
+    let knowledge = crate::prefs::effective(root, "library-dir")
+        .map(|(dir, _)| dir)
+        .unwrap_or_else(|_| "knowledge".into());
+    relative
+        .strip_prefix(&format!("{}/journal/", knowledge.trim_end_matches('/')))
+        .is_some_and(|name| !name.contains('/'))
+}
+
+/// Refuse to write a record whose body holds a Git conflict marker, naming the file,
+/// the line and the marker, before anything is written (REQ-records-001).
+pub(super) fn refuse_conflict_markers(root: &Path, relative: &str, content: &str) -> Result<()> {
+    if !holds_a_record(root, relative) {
+        return Ok(());
+    }
+    if let Some((line, marker)) = conflict_markers(content).into_iter().next() {
+        bail!(
+            "refused:conflict-markers: {relative} line {line} holds the Git conflict marker `{marker}`; resolve the conflict in that record by hand, then run the command again; nothing was written"
+        );
+    }
+    Ok(())
+}
+
 pub(super) fn ensure_text(label: &str, value: &str) -> Result<()> {
     ensure!(!value.trim().is_empty(), "{label} must not be blank");
     ensure!(
@@ -286,6 +353,7 @@ pub(super) fn write_new_bounded(
     content: &str,
     limit: u64,
 ) -> Result<bool> {
+    refuse_conflict_markers(root, relative, content)?;
     ensure!(
         content.len() as u64 <= limit,
         "managed file exceeds {limit} bytes: {relative}"
@@ -322,6 +390,7 @@ pub(super) fn write_replace_bounded(
     content: &str,
     limit: u64,
 ) -> Result<()> {
+    refuse_conflict_markers(root, relative, content)?;
     ensure!(
         content.len() as u64 <= limit,
         "managed file exceeds {limit} bytes: {relative}"
