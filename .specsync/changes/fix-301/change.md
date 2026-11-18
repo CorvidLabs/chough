@@ -5,7 +5,7 @@ type: bug_fix
 base_commit: 0fd9fd229744da039e9d43a5ce1df6dfe5ddc8d7
 ---
 
-# Fix 301
+# CLI reference and help text cover every command and flag (#301)
 
 ## Intent
 
@@ -21,4 +21,4 @@ Add clap help text to all eleven list-valued checkpoint flags (--criterion, --re
 
 ## No-spec Rationale
 
-Docs and help-text only: adds clap help text to the list-valued checkpoint flags and updates docs/cli.md; no canonical spec, requirement, or behavior changes.
+No canonical spec or requirement wording changes. This is a CLI bug fix: chough help --help currently exits 2 (no help subcommand exists) and should exit 0 with help text, so it changes CLI behavior (exit code and help output) only. A changelog fragment at changelog.d/<YYYY-MM-DD>-fix-301.md accompanies this change, per repo convention.
