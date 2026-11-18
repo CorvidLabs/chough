@@ -30,6 +30,9 @@ waiting_on_human:
     opened: 2026-11-18T00:37:12Z
 run_consents: []
 next: "Wait for Leif's implementation review of fix-260 on PR #306; do not ship"
+title: A new record whose write fails is not left behind
+summary:
+  - "A bug add whose write failed part way left a partial record at the name (#260). A new record is now written to a private temporary file and linked into place, and a failure removes only the temporary this call created. Tests failed first, including both review findings on #306; the verify lane passed on macOS after main (c78f878) was merged in. Linux and a real full disk were not run locally."
 ---
 # A new record whose write fails is not left behind as an empty or cut-off file (REQ-records-001, #260)
 
