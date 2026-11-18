@@ -1130,6 +1130,12 @@ they were. Each finding names one exact command that fixes it.
 - A changed file outside the declared paths. On a draft, including `Draft`:
   `chough change answer <id> affected_paths "<the full list>"`. After approval:
   `specsync change send-back <id> --actor <name> --reason "<the paths>"`.
+- A module that owns an affected path and is not declared, which SpecSync's approval
+  refuses: the path is an existing file outside test and fixture folders, a spec lists
+  it in `files:`, and no declared module does. On a draft:
+  `chough change answer <id> affected_specs "<the full list>"`. After approval:
+  `specsync change send-back <id> --actor <name> --reason "declare <module> in affected_specs"`.
+  Declaring a module can add interview questions, which the next report lists.
 - An unanswered interview question: `chough change answer <id> <question> "<answer>"`.
   An artifact that is still a TODO, or a plan missing approach, out of scope, steps,
   risks, or constraints consulted: `complete <path>`.

@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #307: change ready said nothing was missing, then the approval refused because
+# no declared module owned the affected src/ paths.
+
+[[case]]
+id = "TC-cli-change-ready-undeclared-owning-module"
+title = "A module that owns an affected file and is not declared is named with its paths and the affected_specs answer, and a folder, a test file, a file not yet created and an unlisted path are not"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-29"]
+requirements = ["REQ-cli-067"]
+paths = ["src/ready.rs", "tests/ready.rs", "docs/cli.md"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the ready test a_path_whose_owning_module_is_not_declared_is_named passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "ready"
+test = "a_path_whose_owning_module_is_not_declared_is_named"

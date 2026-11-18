@@ -5,7 +5,7 @@ aliases: [fix-307]
 objective: "chough change ready names an affected path whose owning module the change does not declare, so the approval does not refuse on it after ready said nothing is missing (REQ-cli-067, #307)"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -15,17 +15,13 @@ criteria: [DRIVE-29]
 requirements: [REQ-cli-067]
 cases: []
 design: []
-files: []
-observations: []
+files: [src/ready.rs, tests/ready.rs, docs/cli.md]
+observations: [2026-11-18-tc-cli-change-ready-undeclared-owning-module]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Scope approval of fix-307
-    holds: plan
-    drives: approve
-    opened: 2026-11-18T14:49:15Z
+waiting_on_human: []
 run_consents: []
-next: Wait for Leif's approval of the corrected scope of fix-307; then implement the finding in src/ready.rs
+next: Continue build
 ---
 # chough change ready names an affected path whose owning module the change does not declare, so the approval does not refuse on it after ready said nothing is missing (REQ-cli-067, #307)
 
@@ -35,13 +31,18 @@ chough change ready names an affected path whose owning module the change does n
 
 ## Where it stands
 
+- Implemented the undeclared owning module finding; tests/ready.rs passes 10 of 10
+
 ## Decisions and why
 
 - A missing owning module is a new kind of finding, so REQ-cli-067 is modified by a delta; the finding names the module once with its paths and says declaring it can add questions, which the next report lists
 - 0xLeif decided "Scope approval of fix-307": "Approve (Recommended)" (Claude Code session with Fable, 2026-11-18, answer to the interview question 'Do you approve the scope of fix-307?'); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-307 as 0xLeif
 - The first scope named folders and test files that SpecSync's approval accepts; on Leif's choice 'You run it this once' fable-t4b ran specsync change send-back and narrowed the entry to SpecSync 6.3.0's own rule
+- 0xLeif decided "Scope approval of fix-307": "Approve (Recommended)" (Claude Code session with Fable, 2026-11-18, answer to the interview question 'fix-307, corrected scope ... Do you approve this scope?' after the send-back); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-307 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test ready -- --exact a_path_whose_owning_module_is_not_declared_is_named for TC-cli-change-ready-undeclared-owning-module: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-change-ready-undeclared-owning-module.md)
 
 ## Open threads
 
@@ -78,4 +79,31 @@ chough change ready names an affected path whose owning module the change does n
   - revision: 3eab8e6fa14f5823c3ead5361ef5fa592bb1268f
   - holds: plan
   - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T14:49:57Z · direct-native-write · plan → plan · fix-307's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-6f562f
+  - native_change: fix-307
+  - revision: 315aca55cae30ebf05f77d0af8dae048298e24ff
+  - direct_write:
+    - change: fix-307
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T14:49:57Z · gate-closed · plan → plan · Scope approval of fix-307 ^t-15ed57
+  - native_change: fix-307
+  - revision: 315aca55cae30ebf05f77d0af8dae048298e24ff
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve (Recommended)
+    - where: Claude Code session with Fable, 2026-11-18, answer to the interview question 'fix-307, corrected scope ... Do you approve this scope?' after the send-back
+    - recorded_by: fable-t4b
+    - native: specsync change approve fix-307
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T14:53:16Z · advance · plan → build · native:approved ^t-6b6a61
+  - native_change: fix-307
+  - gate: native:approved
+  - revision: 315aca55cae30ebf05f77d0af8dae048298e24ff
   - by: fable (claude-fable-5-2, hc t4b)

@@ -179,6 +179,7 @@ fn collect(root: &Path, change: &Change) -> Vec<Finding> {
     findings.extend(specsync_findings(root, change));
     findings.extend(case_findings(root, change));
     findings.extend(path_findings(root, change));
+    findings.extend(owner_findings(root, change));
     findings.extend(artifact_findings(root, change));
     findings
 }
@@ -666,6 +667,112 @@ fn path_findings(root: &Path, change: &Change) -> Vec<Finding> {
             fix: fix.clone(),
         })
         .collect()
+}
+
+/// REQ-cli-067 (#307): SpecSync's approval refuses an affected path that is an existing
+/// file, outside test and fixture folders, when a spec lists it in `files:` and no
+/// declared module does. One finding names each such module with the paths it owns.
+fn owner_findings(root: &Path, change: &Change) -> Vec<Finding> {
+    let listings = spec_listings(root);
+    let declared_lists = |path: &str| {
+        listings
+            .iter()
+            .any(|(module, files)| change.affected_specs.contains(module) && files.contains(path))
+    };
+    let mut owned: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
+    for path in &change.affected_paths {
+        let path = path.as_str();
+        if in_test_or_fixture_folder(path) || !root.join(path).is_file() || declared_lists(path) {
+            continue;
+        }
+        for (module, files) in &listings {
+            if files.contains(path) {
+                owned.entry(module).or_default().push(path);
+            }
+        }
+    }
+    if owned.is_empty() {
+        return Vec::new();
+    }
+    let mut specs = change.affected_specs.clone();
+    specs.extend(owned.keys().map(|module| module.to_string()));
+    let draft = change.state.eq_ignore_ascii_case("draft");
+    owned
+        .into_iter()
+        .map(|(module, mut paths)| {
+            paths.sort_unstable();
+            paths.dedup();
+            Finding {
+                text: format!(
+                    "{module} owns {} and is not in affected_specs; declaring it can add interview questions",
+                    paths.join(",")
+                ),
+                fix: if draft {
+                    format!(
+                        "chough change answer {} affected_specs \"{}\"",
+                        change.id,
+                        specs.join(",")
+                    )
+                } else {
+                    format!(
+                        "specsync change send-back {} --actor <name> --reason \"declare {module} in affected_specs\"",
+                        change.id
+                    )
+                },
+            }
+        })
+        .collect()
+}
+
+/// The test and fixture folders SpecSync does not count as production source.
+fn in_test_or_fixture_folder(path: &str) -> bool {
+    path.split('/').rev().skip(1).any(|folder| {
+        matches!(
+            folder,
+            "tests" | "test" | "Tests" | "fixtures" | "__fixtures__"
+        )
+    })
+}
+
+/// Each module under the specs folder with the paths its spec's `files:` lists.
+fn spec_listings(root: &Path) -> Vec<(String, BTreeSet<String>)> {
+    let specs = root.join(specs_dir(root));
+    let mut listings = Vec::new();
+    for entry in fs::read_dir(&specs).into_iter().flatten().flatten() {
+        let module = entry.file_name().to_string_lossy().into_owned();
+        let Ok(text) = fs::read_to_string(entry.path().join(format!("{module}.spec.md"))) else {
+            continue;
+        };
+        listings.push((module, listed_files(&text)));
+    }
+    listings.sort();
+    listings
+}
+
+/// The entries of the `files:` list in a spec's front matter.
+fn listed_files(spec: &str) -> BTreeSet<String> {
+    let mut files = BTreeSet::new();
+    let mut lines = spec.lines();
+    if lines.next().map(str::trim_end) != Some("---") {
+        return files;
+    }
+    let mut in_files = false;
+    for line in lines {
+        if line.trim_end() == "---" {
+            break;
+        }
+        if !line.starts_with([' ', '\t', '-']) {
+            in_files = line.trim_end() == "files:";
+            continue;
+        }
+        if let Some(entry) = line.trim().strip_prefix('-').filter(|_| in_files) {
+            let entry = entry.trim().trim_matches(['"', '\'']);
+            if !entry.is_empty() {
+                files.insert(entry.replace('\\', "/"));
+            }
+        }
+    }
+    files
 }
 
 fn ignored_prefixes(root: &Path) -> Vec<String> {
