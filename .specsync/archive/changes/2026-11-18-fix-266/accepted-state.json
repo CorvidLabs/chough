@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-266",
+  "slug": "fix-266",
+  "title": "Fix 266",
+  "description": "fix 266",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "cef86e2622a2a908856b0c2cf11b29d3c1d3e472",
+  "created_at": 1795025781,
+  "updated_at": 1795029851,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/doctor.rs",
+    "src/main.rs",
+    "src/checkpoint.rs",
+    "tests/git_merge.rs",
+    "docs/cli.md",
+    ".chough/cases/cli.git-merge-in-progress.cases.toml",
+    "changelog.d/2026-11-18-fix-266.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "During a git merge or rebase (MERGE_HEAD, or a rebase-merge or rebase-apply folder in the Git directory), chough next and chough status print a line naming it and saying to finish or abort it first, and chough doctor reports a git_operation finding with no fix that names it and any unmerged paths. While a path under .chough/ is unmerged, a command that writes Chough's records refuses as refused:unmerged, naming the paths and saying to finish or abort the merge or rebase first, with every file unchanged; reads still work. With no merge or rebase in progress nothing changes."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the delta is frozen at approval. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

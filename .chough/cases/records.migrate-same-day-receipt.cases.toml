@@ -1,0 +1,41 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #264: a second migration on one day wrote its session folder and then refused
+# on the first migration's receipt name, with no way forward.
+
+[[case]]
+id = "TC-records-a-second-same-day-migration-names-its-own-receipt"
+title = "A second migration on one day names its receipt <date>-from-0-5-2.md in the plan and its digest, writes it, and leaves the first receipt byte for byte"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20", "DRIVE-27"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs", "docs/cli.md"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_second_same_day_migration_names_its_own_receipt passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_second_same_day_migration_names_its_own_receipt"
+
+[[case]]
+id = "TC-records-a-receipt-name-taken-after-the-preview-refuses-before-any-write"
+title = "When another plan's receipt takes the previewed name after the preview, migrate --apply refuses with every file unchanged, and a fresh preview names the next receipt"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::a_receipt_name_taken_after_the_preview_refuses_before_any_write passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "a_receipt_name_taken_after_the_preview_refuses_before_any_write"

@@ -473,13 +473,15 @@ Acceptance Criteria
 
 ### REQ-cli-055
 
-Chough doctor. `chough doctor` SHALL report the Chough debt of REQ-history-012 as JSON with `schema_version` 1, `mode` (`report`, `dry-run` or `fix`) and `findings`, each with `kind`, `target`, `fix` (the Chough command that fixes it), `decision` (whether the fix is a decision) and `status` (`found`, `fixed` or `skipped`, with a `reason` when skipped). With no flag, or with `--dry-run`, it SHALL change nothing and report each finding as `found`. With `--fix` it SHALL apply each fix that is not a decision. It SHALL apply a decision fix only when `--reason <text>` is given, and SHALL otherwise report it as `skipped` with a fix that names `--reason`. It SHALL exit 0 when no finding is left `found` or `skipped`, and 1 otherwise. It SHALL make no native read, and SHALL never record a human decision, approval, review or consent. Its per-session findings (`finished_session`, `stale_gates`) SHALL come from one session check that `chough migrate`'s plan also runs on the planned records (REQ-records-009), so a migration's follow-ups name what the doctor will report. Trace: DRIVE-17.
+Chough doctor. `chough doctor` SHALL report the Chough debt of REQ-history-012 and each committed record whose body holds a Git conflict marker (REQ-records-001) as JSON with `schema_version` 1, `mode` (`report`, `dry-run` or `fix`) and `findings`, each with `kind`, `target`, `fix` (the Chough command that fixes it), `decision` (whether the fix is a decision) and `status` (`found`, `fixed` or `skipped`, with a `reason` when skipped). With no flag, or with `--dry-run`, it SHALL change nothing and report each finding as `found`. With `--fix` it SHALL apply each fix that is not a decision. A fix that would leave a record unreadable, such as redacting an ID (REQ-history-012), SHALL NOT be applied: its finding SHALL be `skipped`, with the reason and the recovery, and the record SHALL stay byte for byte as it was on that line. It SHALL apply a decision fix only when `--reason <text>` is given, and SHALL otherwise report it as `skipped` with a fix that names `--reason`. It SHALL exit 0 when no finding is left `found` or `skipped`, and 1 otherwise. It SHALL make no native read, and SHALL never record a human decision, approval, review or consent. Its per-session findings (`finished_session`, `stale_gates`) SHALL come from one session check that `chough migrate`'s plan also runs on the planned records (REQ-records-009), so a migration's follow-ups name what the doctor will report. Trace: DRIVE-17.
 
 Acceptance Criteria
 - With no flag and with `--dry-run`, the doctor reports the same findings, each with a `chough` fix, exits 1, and leaves every file under `.chough/` unchanged.
 - `--fix` without `--reason` applies the fixes that are not decisions and reports each decision fix as `skipped`, naming `--reason`; a project with no debt reports no findings and exits 0.
 - No doctor run calls SpecSync.
 - On a tree just migrated from 0.5.x, `chough doctor` reports exactly the `finished_session` and `stale_gates` sessions the migration's follow-ups named.
+- `--fix --redact` on a committed session record whose ID reference holds a token leaves that line unchanged and the session readable, and reports the finding `skipped`, naming `chough session shelve <id>`.
+- A committed record whose body holds a conflict gives a `conflict_markers` finding with no fix, and `--fix` reports it `skipped`.
 
 ### REQ-cli-056
 
@@ -668,4 +670,13 @@ Acceptance Criteria
 - With a `.DS_Store` file and an AppleDouble `._<name>.cases.toml` file in `.chough/cases/`, `chough cases check` passes.
 - A committed `._<name>.md` file in `.chough/bugs/` gives no `unreadable` finding from `chough doctor`, while a committed malformed record with an ordinary name still gives one.
 - A committed binary AppleDouble `._<name>.md` file whose bytes hold an email gives a `leak` finding from `chough doctor --leaks`, and `chough doctor --fix --redact` leaves it byte-identical with that finding `skipped`.
+
+### REQ-cli-069
+
+Git merge or rebase in progress. When Git reports a merge in progress (`MERGE_HEAD`), a rebase in progress (a `rebase-merge` or `rebase-apply` folder in the Git directory) or unmerged paths, `chough next` and `chough status` SHALL say so in a line of their own, naming the operation and the unmerged paths under `.chough/` (at most 10, with their total) and saying to finish or abort it first, and SHALL give the same as `git_operation` in their JSON; `chough doctor` SHALL report it as a `git_operation` finding with no fix, naming the operation and those paths, beside the findings of REQ-history-012. While any path under `.chough/` is unmerged, every command that writes a Chough record (REQ-cli-040) SHALL refuse as `refused:unmerged`, naming those paths and saying to finish or abort the merge or rebase first, with every file unchanged; a command that only reads SHALL still run, and Chough's merge drivers, which write only the files Git hands them, SHALL still run. Outside a Git work tree, or with no merge or rebase in progress, nothing changes. Trace: DRIVE-17, DRIVE-11, DRIVE-3.
+
+Acceptance Criteria
+- During a merge that leaves a `.chough/` record conflicted, `chough next` and `chough status` exit 0 and name the merge and the path, `chough doctor` reports one `git_operation` finding naming them, and `chough checkpoint --decision`, `chough evidence add` and `chough bug add` refuse as `refused:unmerged` with every file unchanged.
+- During a merge whose only conflict is outside `.chough/`, `next`, `status` and `doctor` still name the merge, and a write succeeds.
+- Once the merge is committed or aborted, none of this appears.
 

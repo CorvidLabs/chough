@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-265",
+  "slug": "fix-265",
+  "title": "Fix 265",
+  "description": "fix 265",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "0b7ac77e7acf916d40a464035b1fa22c0b503d29",
+  "created_at": 1795028678,
+  "updated_at": 1795033950,
+  "affected_specs": [
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "src/doctor.rs",
+    "src/migrate.rs",
+    "tests/records.rs",
+    "tests/doctor.rs",
+    "tests/migrate.rs",
+    "docs/cli.md",
+    ".chough/cases/records.conflict-markers.cases.toml",
+    "changelog.d/2026-11-18-fix-265.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A record write whose body holds a Git conflict marker, a line starting <<<<<<<, a line starting >>>>>>>, or a ======= line between them, is refused as refused:conflict-markers naming the file, the line and the marker, with every file unchanged; a ======= line outside such a block, as a Markdown heading underline, is not a marker. chough doctor reports each committed record (not other tracked files) whose body holds one as a conflict_markers finding naming the file, the line and the marker, with no fix, and exits 1. chough migrate checks every file it would write before writing any and refuses, writing nothing, when one would hold a conflict marker."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the deltas are frozen at approval. Ripple's review of the local team's attempt: limit the doctor scan to records, keep the cases' expectations apart, and declare and test src/migrate.rs's guard. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}
