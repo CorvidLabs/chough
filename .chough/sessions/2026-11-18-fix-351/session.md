@@ -5,7 +5,7 @@ aliases: [fix-351]
 objective: The workflow skill teaches --no-native-change, and chough next offers both paths when a move is refused for lacking a native change (#351)
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: [src/stage.rs, tests/stages.rs, skills/chough-workflow/references/lifecyc
 observations: [2026-11-18-tc-cli-a-refused-move-for-lacking-a-change-offers-both-paths]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-351
+    holds: accept
+    drives: review
+    opened: 2026-11-18T22:58:59Z
 run_consents: []
-next: Continue test
+next: Wait for the tester's check and Leif's implementation review of fix-351
 ---
 # The workflow skill teaches --no-native-change, and chough next offers both paths when a move is refused for lacking a native change (#351)
 
@@ -80,4 +84,15 @@ The workflow skill teaches --no-native-change, and chough next offers both paths
   - native_change: fix-351
   - gate: native:approved
   - revision: 235c3bfb063e835f67c4aae12f873ceac4074be7
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T22:58:59Z · advance · test → accept · native:verifying ^t-353f53
+  - native_change: fix-351
+  - gate: native:verifying
+  - revision: 6d0d9165e59d5f1c668304e3dd2102c23578a343
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T22:58:59Z · gate-opened · accept → accept · Implementation review of fix-351 ^t-8df6a1
+  - native_change: fix-351
+  - revision: 6d0d9165e59d5f1c668304e3dd2102c23578a343
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
