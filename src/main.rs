@@ -1052,14 +1052,25 @@ fn merge_in_progress(git: &doctor::GitOperation) -> Value {
 /// the command then uses; the shared pointer is not touched. A name that is not an open
 /// session refuses before anything is read or written.
 fn pin_session(root: &Path, name: &str, source: &str) -> Result<()> {
+    let resolved = sessions::resolve_open(root, name);
     // #334: with no session open at all, the way on is a new session, which `chough
-    // session list` would not show.
+    // session list` would not show. The detail still says when the named session is
+    // archived, and an option is dropped where the variable is unset.
     if sessions::open_ids(root)?.is_empty() {
+        let detail = match &resolved {
+            Err(error) => format!(" ({error:#})"),
+            Ok(_) => String::new(),
+        };
+        let leave = if source.starts_with("--") {
+            "drop"
+        } else {
+            "unset"
+        };
         bail!(
-            "refused:session-not-open: {source} names {name}, but no session is open yet; run `chough session new <key>` to start one, or unset {source}; nothing was written"
+            "refused:session-not-open: {source} names {name}, but no session is open{detail}; run `chough session new <key>` to start one, or {leave} {source}; nothing was written"
         );
     }
-    let id = sessions::resolve_open(root, name).map_err(|error| {
+    let id = resolved.map_err(|error| {
         anyhow::anyhow!(
             "refused:session-not-open: {name}, named by {source}, is not an open session ({error:#}); run `chough session list` for the open ones; nothing was written"
         )
