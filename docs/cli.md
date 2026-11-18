@@ -1232,6 +1232,14 @@ review (REQ-cli-059). It runs in these steps:
    --close-gate` checks them. Each refusal names the command that recovers: the full
    ship command with the relay, `chough stage advance --to accept`, `chough checkpoint
    --native-change <id>`, or `chough checkpoint --close-gate` for another open gate.
+   It also refuses, as `refused:corrupt-history`, when a commit between the change's
+   recorded base commit and HEAD holds a change both open under `.specsync/changes/`
+   and archived under `.specsync/archive/changes/`, as a merge of main can leave.
+   SpecSync reads that history as corrupt and would only say so after archiving, so
+   the ship would stop halfway (#298). The refusal names the commit and the change, and
+   says to rebuild the branch without that commit. This check is interim: Chough repeats
+   SpecSync's rule until SpecSync offers its own validity preflight before the review
+   (CorvidLabs/spec-sync#1082).
 2. When the named gate drives review and the change has no current scoped review, it
    first runs SpecSync's change review as the decided human with verdict `pass`,
    since a ship is run only on acceptance, passing the relay's words, place and

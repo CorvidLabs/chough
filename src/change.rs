@@ -342,6 +342,10 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         }
     })?;
 
+    // REQ-cli-059 (#298): refuse before anything runs when the change's history holds a
+    // commit that SpecSync reads as corrupt, so nothing is left half done.
+    refuse_corrupt_history(root, id)?;
+
     // REQ-cli-059, REQ-records-008: a gate that drives review ships with the decided
     // human's review, verdict pass since a ship runs only on acceptance, unless a
     // scoped review is already current. The identity is resolved before SpecSync runs,
@@ -617,6 +621,80 @@ fn signal(status: &std::process::ExitStatus) -> Option<i32> {
 #[cfg(not(unix))]
 fn signal(_: &std::process::ExitStatus) -> Option<i32> {
     None
+}
+
+/// The most commits of a change's history the corrupt-history check reads.
+const HISTORY_LIMIT: usize = 1_000;
+
+/// Refuse a ship whose change history SpecSync would read as corrupt (REQ-cli-059, #298):
+/// a commit between the change's recorded base commit and HEAD that holds a change both
+/// open under `.specsync/changes/<id>/` and archived under
+/// `.specsync/archive/changes/<date>-<id>/`, as a merge of main can leave. SpecSync then
+/// reports the archive's terminal evidence as `corrupt-history`, but only after it has
+/// archived, so the ship would stop halfway.
+///
+/// Interim: this repeats one SpecSync rule in Chough until SpecSync offers a validity
+/// preflight before the review (CorvidLabs/spec-sync#1082); then Chough calls that
+/// instead. With no recorded base commit, or outside Git, there is nothing to check.
+fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
+    let state = root.join(".specsync/changes").join(id).join("state.json");
+    let Some(base) = std::fs::read_to_string(state)
+        .ok()
+        .and_then(|text| serde_json::from_str::<serde_json::Value>(&text).ok())
+        .and_then(|state| state["base_commit"].as_str().map(String::from))
+        .filter(|base| !base.is_empty())
+    else {
+        return Ok(());
+    };
+    let git = |arguments: &[&str]| -> Option<String> {
+        let output = records::run_owned(
+            Command::new("git").arg("-C").arg(root).args(arguments),
+            None,
+        )
+        .ok()?;
+        output
+            .status
+            .success()
+            .then(|| String::from_utf8_lossy(&output.stdout).into_owned())
+    };
+    let Some(commits) = git(&["rev-list", &format!("{base}..HEAD")]) else {
+        return Ok(());
+    };
+    for commit in commits.lines().take(HISTORY_LIMIT) {
+        let Some(paths) = git(&[
+            "ls-tree",
+            "-r",
+            "--name-only",
+            commit,
+            "--",
+            ".specsync/changes",
+            ".specsync/archive/changes",
+        ]) else {
+            continue;
+        };
+        let mut open = std::collections::BTreeSet::new();
+        let mut archived = std::collections::BTreeSet::new();
+        for path in paths.lines() {
+            if let Some(rest) = path.strip_prefix(".specsync/archive/changes/") {
+                let folder = rest.split('/').next().unwrap_or_default();
+                // `<YYYY-MM-DD>-<id>`: the change ID follows the 11-byte date prefix.
+                if folder.len() > 11 && folder.as_bytes()[10] == b'-' {
+                    archived.insert(folder[11..].to_string());
+                }
+            } else if let Some(rest) = path.strip_prefix(".specsync/changes/")
+                && let Some((folder, _)) = rest.split_once('/')
+            {
+                open.insert(folder.to_string());
+            }
+        }
+        if let Some(both) = open.intersection(&archived).next() {
+            bail!(
+                "refused:corrupt-history: commit {} in this change's history holds change `{both}` both open under .specsync/changes/{both}/ and archived under .specsync/archive/changes/, which SpecSync reads as corrupt history, so the archive's terminal evidence would not authenticate and the ship would stop halfway; nothing ran. Rebuild the branch from the default branch without that commit (for example, start a new branch from it and bring over this change's own commits), then run `chough change check {id}` and the ship again. (Chough checks this until SpecSync's own preflight, CorvidLabs/spec-sync#1082, exists.)",
+                &commit[..commit.len().min(12)]
+            );
+        }
+    }
+    Ok(())
 }
 
 #[cfg(test)]
