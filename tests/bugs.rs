@@ -2337,7 +2337,18 @@ fn a_bug_add_whose_write_fails_part_way_leaves_no_partial_record() {
         Vec::<String>::new(),
         "a partial record was left: {said}"
     );
-    assert!(said.contains("the file was not kept"), "{said}");
+    assert!(said.contains("no file was left at that name"), "{said}");
+    // The write's own temporary file is gone too.
+    let temps: Vec<String> = std::fs::read_dir(fixture.root().join(".chough/local"))
+        .map(|entries| {
+            entries
+                .flatten()
+                .map(|entry| entry.file_name().to_string_lossy().into_owned())
+                .filter(|name| name.ends_with(".tmp"))
+                .collect()
+        })
+        .unwrap_or_default();
+    assert_eq!(temps, Vec::<String>::new(), "a temporary file was left");
     for args in [&["bug", "list"][..], &["status"][..], &["next"][..]] {
         let output = fixture.run(args);
         assert!(
