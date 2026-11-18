@@ -306,7 +306,16 @@ pub(super) fn write_new_bytes(root: &Path, relative: &str, content: &[u8]) -> Re
         .write(true)
         .create_new(true)
         .open(&path)?;
-    file.write_all(content)?;
+    // REQ-records-001 (#260): a new record is whole or it is not there. A write that
+    // fails part way, as on a full disk or past a file size limit, would leave an empty
+    // or cut-off file that readers refuse or, worse, accept; this call created the
+    // file, so it removes it.
+    if let Err(error) = file.write_all(content) {
+        drop(file);
+        let _ = fs::remove_file(&path);
+        return Err(error)
+            .with_context(|| format!("writing {relative} failed, so the file was not kept"));
+    }
     Ok(true)
 }
 
