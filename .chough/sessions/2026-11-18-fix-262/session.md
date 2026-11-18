@@ -21,6 +21,8 @@ files: [src/records.rs, src/evidence.rs, src/sessions.rs, tests/special_files.rs
 observations:
   - 2026-11-18-tc-history-a-fifo-in-the-bugs-folder-blocks-no-reader
   - 2026-11-18-tc-history-a-session-whose-record-is-a-fifo-is-listed
+  - 2026-11-18-tc-history-a-fifo-in-the-bugs-folder-blocks-no-reader-dd7eb7
+  - 2026-11-18-tc-history-a-session-whose-record-is-a-fifo-is-listed-1d0a81
 bugs: []
 blockers: []
 waiting_on_human:
@@ -52,6 +54,8 @@ A FIFO or other non-regular file in a record's place blocks no reader, and a ses
 
 - [Ran cargo test --locked --test special_files -- --exact a_fifo_in_the_bugs_folder_blocks_no_reader for TC-history-a-fifo-in-the-bugs-folder-blocks-no-reader: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-fifo-in-the-bugs-folder-blocks-no-reader.md)
 - [Ran cargo test --locked --test special_files -- --exact a_session_whose_record_is_a_fifo_is_listed_with_the_reason_and_recovery for TC-history-a-session-whose-record-is-a-fifo-is-listed: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-session-whose-record-is-a-fifo-is-listed.md)
+- [Ran cargo test --locked --test special_files -- --exact a_fifo_in_the_bugs_folder_blocks_no_reader for TC-history-a-fifo-in-the-bugs-folder-blocks-no-reader: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-fifo-in-the-bugs-folder-blocks-no-reader-dd7eb7.md)
+- [Ran cargo test --locked --test special_files -- --exact a_session_whose_record_is_a_fifo_is_listed_with_the_reason_and_recovery for TC-history-a-session-whose-record-is-a-fifo-is-listed: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-session-whose-record-is-a-fifo-is-listed-1d0a81.md)
 
 ## Open threads
 
