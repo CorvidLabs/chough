@@ -41,6 +41,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, in answer to: Approve the scope for all three A-list fixes: #268 (checkpoint --file/--design skip the write-time leak guard), #274 (feature-bug-loop example: no pipefail), #294 (test-only: the gate summary Change line)?",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795021806,
+      "digest": "2e7c58cd85c6319c4c6fafb265e07edf85c2673590d0c53fd39da1330e92e6d8",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
