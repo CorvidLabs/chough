@@ -5,7 +5,7 @@ aliases: [fix-277]
 objective: "A migrated bug's body links each carried observation to the file of the entry or story that holds it (REQ-records-009, #277)"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -21,9 +21,13 @@ observations:
   - 2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations-1d1109
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-277
+    holds: accept
+    drives: review
+    opened: 2026-11-18T19:55:31Z
 run_consents: []
-next: Continue test
+next: Wait for the tester's check and Leif's implementation review of fix-277
 ---
 # A migrated bug's body links each carried observation to the file of the entry or story that holds it (REQ-records-009, #277)
 
@@ -83,4 +87,15 @@ A migrated bug's body links each carried observation to the file of the entry or
   - native_change: fix-277
   - gate: native:approved
   - revision: 9dd28de28015ce6f873e237044cc9650e74a3712
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T19:55:31Z · advance · test → accept · native:verifying ^t-3a8c08
+  - native_change: fix-277
+  - gate: native:verifying
+  - revision: 50aa2a4988e3d786aefa2641b6636e28771db80c
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T19:55:31Z · gate-opened · accept → accept · Implementation review of fix-277 ^t-57502e
+  - native_change: fix-277
+  - revision: 50aa2a4988e3d786aefa2641b6636e28771db80c
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
