@@ -7,11 +7,11 @@
   "title": "Fix 281",
   "description": "fix 281",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "66efea4dd777077ef9bbd412cf0fac8f7ea93b41",
   "created_at": 1795033036,
-  "updated_at": 1795035995,
+  "updated_at": 1795036056,
   "affected_specs": [
     "cli",
     "records"

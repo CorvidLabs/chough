@@ -29,6 +29,9 @@ waiting_on_human:
     opened: 2026-11-18T20:23:40Z
 run_consents: []
 next: Wait for the tester's check and Leif's implementation review of fix-281
+title: A session that needs no native change can reach done
+summary:
+  - "A finished session with no native change could only be archived as abandoned (#281). chough checkpoint --no-native-change <reason> now records that the work needs none, and why; its gated moves are then allowed as ungated:no-native-change-required, so it reaches done and is archived with outcome done. An open human gate still refuses, and the reason passes the leak guard. A new test failed on main first; the verify lane passed on macOS after main was merged in, and tester2 passed the recheck. Linux was not run locally. #351 covers the skill and chough next."
 ---
 # A session can record that it needs no native change, with a reason, and then advance to done and archive with outcome done; its human gates still need a person (#281)
 
