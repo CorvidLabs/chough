@@ -28,6 +28,9 @@ waiting_on_human:
     opened: 2026-11-18T02:11:26Z
 run_consents: []
 next: Wait for Leif's implementation review of fix-262-open-race; read the PR's reviews first; do not ship
+title: A FIFO swapped in at the open blocks no reader
+summary:
+  - "A record replaced by a FIFO between the file-type check and the open could still block session list and shelve (review finding on #305). Readers now open without blocking and check the opened handle. A unit test covers the open; the verify lane passed on macOS after main (347a005) was merged in. Linux was not run locally."
 ---
 # No reader can block on a FIFO swapped in between the regular-file check and the open: the type is checked on the opened handle (REQ-history-006, review of #305)
 
