@@ -5,7 +5,7 @@ aliases: [fix-329-check-first]
 objective: bug add checks that the active session can take another bug link before writing the bug, and refuses with nothing written (#343 review P2)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -23,13 +23,9 @@ observations:
   - 2026-11-18-tc-cli-bug-add-joins-the-active-session-b70300
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-329-check-first
-    holds: accept
-    drives: review
-    opened: 2026-11-18T23:21:05Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # bug add checks that the active session can take another bug link before writing the bug, and refuses with nothing written (#343 review P2)
 
@@ -42,6 +38,7 @@ bug add checks that the active session can take another bug link before writing 
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-329-check-first": "Yes, for today" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, that a real gap his review thread finds in an already-approved PR is fixed inside its approved scope as a small follow-up change, applied by hc t4c to his P2 thread on #343 ('Preflight the checkpoint bound before creating the bug'), with t4c's design point: check that the session can take another bug link before writing anything, and refuse with nothing written); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-329-check-first as 0xLeif
+- 0xLeif decided "Implementation review of fix-329-check-first": "Yes, for today" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, applied by hc t4c to his P2 thread on #343; after tester2's PASS of the follow-up at eae1915, hc t4c replied on and resolved the thread under his standing OK and asked for the merge); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-329-check-first as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -100,4 +97,20 @@ bug add checks that the active session can take another bug link before writing 
   - revision: 5bf4ac67509f06b528373db43a61be9137bcf711
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:33:50Z · gate-closed · accept → accept · Implementation review of fix-329-check-first ^t-9393fd
+  - native_change: fix-329-check-first
+  - revision: 6eb003360ae68be1b39d76ac717147174c60fba4
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, for today
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, applied by hc t4c to his P2 thread on #343; after tester2's PASS of the follow-up at eae1915, hc t4c replied on and resolved the thread under his standing OK and asked for the merge
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-329-check-first
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:33:51Z · advance · accept → done · native:archived ^t-01ce08
+  - native_change: fix-329-check-first
+  - gate: native:archived
+  - revision: 6eb003360ae68be1b39d76ac717147174c60fba4
   - by: chough-fixer (claude-opus-5-5, hc t4n)
