@@ -54,6 +54,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, in answer to whether to add src/library.rs to #321 by recreating fix-314 once more, reopening it himself, or with a migrate.rs workaround; it follows his earlier 'Skip them', 'Recreate on my word', 'Force-push onto #321' and 'Approve' for the wider scope (REQ-records-015 beside REQ-cli-068, src/migrate.rs, src/evidence_migrate.rs and src/bugs.rs declared)",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795025551,
+      "digest": "2d17db29f05cf9d80b5fd224b8d92667ea212e9ccdeffa5356597da5448aad45",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
