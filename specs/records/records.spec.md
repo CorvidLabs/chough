@@ -1,6 +1,6 @@
 ---
 module: records
-version: 9
+version: 10
 status: active
 files:
   - src/markdown.rs
@@ -214,3 +214,4 @@ use this one for every record they write.
 | 8 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
 | 9 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
 | 10 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
+| 10 | 2026-11-18 | fix-314: Fix 314 |
