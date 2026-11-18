@@ -872,6 +872,20 @@ pub(super) struct Exclusions {
     /// Listed entries broader than a record prefix, such as `.chough/`, which also hide
     /// case definitions and preferences that a change's verification needs.
     pub(super) broader: Vec<String>,
+    /// SpecSync settings that cover the whole repository (#251, #279): `source_dirs`
+    /// holding `.` in `.specsync/config.toml`, and `.` in the policy's
+    /// `meaningful_paths`. SpecSync refuses a `verification_ignored_paths` entry that
+    /// overlaps either, and a whole-repository `source_dirs` counts the skill bundle
+    /// `chough init` installs as uncovered source.
+    pub(super) whole_repo: Vec<String>,
+}
+
+/// SpecSync's native configuration, whose `source_dirs` Chough reads and never writes.
+const SPECSYNC_CONFIG: &str = ".specsync/config.toml";
+
+/// Whether a SpecSync path entry names the repository root.
+fn is_root(entry: &str) -> bool {
+    matches!(entry.trim_end_matches('/'), "" | ".")
 }
 
 impl Exclusions {
@@ -892,6 +906,36 @@ impl Exclusions {
     /// The advice `chough doctor` and `chough init` give while a record prefix is not
     /// listed exactly, or None when all three are.
     pub(super) fn advice(&self) -> Option<String> {
+        // REQ-records-014 (#251, #279): while SpecSync covers the whole repository, the
+        // list is refused as overlapping, so the advice is to narrow first.
+        if !self.whole_repo.is_empty() && (self.no_policy || !self.missing.is_empty()) {
+            let list = if self.no_policy {
+                String::new()
+            } else {
+                format!(
+                    ", then list {} in verification_ignored_paths in {SDD_POLICY}",
+                    self.missing.join(", ")
+                )
+            };
+            let verb = if self.whole_repo.len() > 1 {
+                "cover"
+            } else {
+                "covers"
+            };
+            let bundle = if self
+                .whole_repo
+                .iter()
+                .any(|setting| setting.starts_with("source_dirs"))
+            {
+                ", and SpecSync counts the skill bundle `chough init` installs as uncovered source"
+            } else {
+                ""
+            };
+            return Some(format!(
+                "{} {verb} the whole repository, so SpecSync refuses a verification_ignored_paths entry for Chough's record folders as overlapping it{bundle}. Narrow source_dirs to the folders that hold the code, for example [\"src\"], and keep \".\" out of meaningful_paths{list}; each is an ordinary reviewed change, and Chough writes neither file.",
+                self.whole_repo.join(" and ")
+            ));
+        }
         if self.no_policy {
             return None;
         }
@@ -958,7 +1002,21 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
         unreadable: None,
         missing: vec![],
         broader: vec![],
+        whole_repo: vec![],
     };
+    // `source_dirs` lives in SpecSync's config; an unreadable one is SpecSync's to report.
+    if let Ok(path) = local_path(root, SPECSYNC_CONFIG)
+        && let Ok(text) = crate::records::read_native_text(&path)
+        && let Ok(config) = toml::from_str::<toml::Value>(&text)
+        && config
+            .get("source_dirs")
+            .and_then(toml::Value::as_array)
+            .is_some_and(|dirs| dirs.iter().filter_map(toml::Value::as_str).any(is_root))
+    {
+        found
+            .whole_repo
+            .push(format!("source_dirs = [\".\"] in {SPECSYNC_CONFIG}"));
+    }
     let path = match local_path(root, SDD_POLICY) {
         Ok(path) => path,
         Err(error) => {
@@ -979,6 +1037,14 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
             return found;
         }
     };
+    if policy["meaningful_paths"]
+        .as_array()
+        .is_some_and(|paths| paths.iter().filter_map(Value::as_str).any(is_root))
+    {
+        found
+            .whole_repo
+            .push(format!("\".\" in meaningful_paths in {SDD_POLICY}"));
+    }
     let listed: Vec<String> = policy["verification_ignored_paths"]
         .as_array()
         .into_iter()
@@ -1005,25 +1071,32 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
 /// finding is never fixed by `--fix`.
 fn records_in_verification(root: &Path) -> Option<Finding> {
     let exclusions = exclusions(root);
+    // The finding is the policy's (REQ-history-012): with no policy, only `chough init`
+    // gives the narrowing advice.
+    if exclusions.no_policy {
+        return None;
+    }
     let advice = exclusions.advice()?;
-    let mut finding = Finding::new(
-        Kind::RecordsInVerification,
-        SDD_POLICY,
+    let entries = if exclusions.missing.is_empty() {
+        RECORD_PREFIXES.join(", ")
+    } else {
+        exclusions.missing.join(", ")
+    };
+    let fix = if exclusions.whole_repo.is_empty() {
+        format!("add {entries} to verification_ignored_paths in {SDD_POLICY} in a reviewed change")
+    } else {
         format!(
-            "add {} to verification_ignored_paths in {SDD_POLICY} in a reviewed change",
-            if exclusions.missing.is_empty() {
-                RECORD_PREFIXES.join(", ")
-            } else {
-                exclusions.missing.join(", ")
-            }
-        ),
-        false,
-    );
+            "narrow SpecSync's whole-repository {} to the code folders, then add {entries} to verification_ignored_paths in {SDD_POLICY}, in reviewed changes",
+            exclusions.whole_repo.join(" and ")
+        )
+    };
+    let mut finding = Finding::new(Kind::RecordsInVerification, SDD_POLICY, fix, false);
     finding.blocked = Some(format!(
         "Chough never writes {SDD_POLICY}; adding the entries is an ordinary reviewed change to it"
     ));
     finding.detail = Some(json!({
         "missing": exclusions.missing,
+        "whole_repo": exclusions.whole_repo,
         "specsync": format!("{EXCLUSIONS_SINCE} and later"),
         "advice": advice,
     }));

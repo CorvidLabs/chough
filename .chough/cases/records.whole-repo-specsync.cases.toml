@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #251 and #279: with SpecSync's source_dirs = ["."], Chough advised listing its
+# record folders, which SpecSync refuses as overlapping, and the skill bundle counted as
+# uncovered source.
+
+[[case]]
+id = "TC-records-a-whole-repository-specsync-gets-the-narrowing-advice"
+title = "With source_dirs or meaningful_paths covering the whole repository, chough init and chough doctor advise narrowing to the code folders and say why, then the list; once narrowed the advice is the list again, and neither file is written"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-4"]
+requirements = ["REQ-records-014"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_whole_repository_specsync_gets_the_narrowing_advice passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_whole_repository_specsync_gets_the_narrowing_advice"

@@ -1016,3 +1016,75 @@ fn doctor_reports_merge_drivers_that_would_run_an_older_chough() {
     let (_, report) = doctor(&fixture, &[]);
     assert!(outdated(&report).is_empty(), "{report:#}");
 }
+
+/// REQ-records-014 (#251, #279), TC-cli-whole-repository-specsync-gets-the-narrowing-advice:
+/// while SpecSync's `source_dirs` or `meaningful_paths` covers the whole repository,
+/// SpecSync refuses the record folders in `verification_ignored_paths` as overlapping, so
+/// `chough init` and `chough doctor` advise narrowing to the code folders first and say
+/// why, the skill bundle counted as uncovered source among it; once both are narrowed the
+/// advice is the list again. Neither file is ever written.
+#[test]
+fn a_whole_repository_specsync_gets_the_narrowing_advice() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    let config = "specs_dir = \"specs\"\nsource_dirs = [\".\"]\n";
+    fixture.write(".specsync/config.toml", config);
+    let init = fixture.ok(&[
+        "init",
+        "--objective",
+        "SYNTHETIC objective",
+        "--intent-scope",
+        "LIFE",
+    ]);
+    let advice = init["records_in_verification"].as_str().unwrap_or_default();
+    assert!(
+        advice.contains("source_dirs = [\".\"] in .specsync/config.toml covers the whole repository")
+            && advice.contains("refuses a verification_ignored_paths entry")
+            && advice.contains("skill bundle")
+            && advice.contains("for example [\"src\"]")
+            && !advice.contains("then list"),
+        "{init:#}"
+    );
+    // No policy: the doctor finding is the policy's, so there is none.
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(exclusions_finding(&report).is_none(), "{report:#}");
+
+    let whole = "{\n  \"version\": 2,\n  \"enabled\": true,\n  \"meaningful_paths\": [\".\"],\n  \"verification_ignored_paths\": []\n}\n";
+    fixture.write(".specsync/sdd.json", whole);
+    let (code, report) = doctor(&fixture, &["--fix"]);
+    assert_eq!(code, 1, "{report:#}");
+    let finding = exclusions_finding(&report).expect("a records_in_verification finding");
+    assert!(
+        finding["fix"]
+            .as_str()
+            .is_some_and(|fix| fix.starts_with("narrow SpecSync's whole-repository source_dirs")),
+        "{finding:#}"
+    );
+    let advice = finding["advice"].as_str().unwrap_or_default();
+    assert!(
+        advice.contains("and \".\" in meaningful_paths in .specsync/sdd.json cover the whole repository")
+            && advice.contains("then list .chough/sessions/, .chough/archive/, .chough/bugs/ in verification_ignored_paths"),
+        "{finding:#}"
+    );
+    assert_eq!(fixture.read(".specsync/config.toml"), config);
+    assert_eq!(fixture.read(".specsync/sdd.json"), whole);
+
+    fixture.write(
+        ".specsync/config.toml",
+        "specs_dir = \"specs\"\nsource_dirs = [\"src\"]\n",
+    );
+    fixture.write(".specsync/sdd.json", &policy(&[]));
+    let (_, report) = doctor(&fixture, &[]);
+    let finding = exclusions_finding(&report).expect("a records_in_verification finding");
+    assert!(
+        finding["fix"].as_str().is_some_and(|fix| fix.starts_with("add ")),
+        "{finding:#}"
+    );
+    assert!(
+        !finding["advice"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("whole repository"),
+        "{finding:#}"
+    );
+}
