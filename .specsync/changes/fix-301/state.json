@@ -7,10 +7,11 @@
   "title": "CLI reference and help text cover every command and flag (#301)",
   "description": "Add clap help text to all eleven list-valued checkpoint flags (--criterion, --requirement, --case, --design, --file, --observation, --bug, --decision, --question, --completed, --blocker), document the full CLI reference in docs/cli.md (checkpoint flags, change ready, doctor --leaks, migrate --json, stage help, top-level chough help), and make chough help --help exit 0 with help text, covered by a test.",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "0fd9fd229744da039e9d43a5ce1df6dfe5ddc8d7",
   "created_at": 1794926531,
-  "updated_at": 1794962771,
+  "updated_at": 1794972794,
   "affected_specs": [
     "cli"
   ],
