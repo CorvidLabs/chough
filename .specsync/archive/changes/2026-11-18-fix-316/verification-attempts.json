@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1795016897,
+      "commit": "1dc428c07fafc2b7fcf39977492f5a3720a16b0c",
+      "contract_digest": "324593c7512798824e641f58a2789c6a52ceec9a76b6fae525c1ff8388983c17",
+      "execution_digest": "fd9f58e11a7a15a3c2a3f8efe84c4534b375bef033dd92c6a753cefd303af941",
+      "workspace_digest": "c07518c09f5d9a3af6d139055e5d48d048345f3028bf819476a984e271003660",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795016899,
+      "commit": "a17617d309f802ef8c940e71090f9236bd4b2fe7",
+      "contract_digest": "324593c7512798824e641f58a2789c6a52ceec9a76b6fae525c1ff8388983c17",
+      "execution_digest": "fd9f58e11a7a15a3c2a3f8efe84c4534b375bef033dd92c6a753cefd303af941",
+      "workspace_digest": "c07518c09f5d9a3af6d139055e5d48d048345f3028bf819476a984e271003660",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795016899,
+      "commit": "d52fe25e13a32daf616006d8f418dbe018eb2a4a",
+      "contract_digest": "324593c7512798824e641f58a2789c6a52ceec9a76b6fae525c1ff8388983c17",
+      "execution_digest": "fd9f58e11a7a15a3c2a3f8efe84c4534b375bef033dd92c6a753cefd303af941",
+      "workspace_digest": "c07518c09f5d9a3af6d139055e5d48d048345f3028bf819476a984e271003660",
+      "acceptance_input_digest": "91327a09ad7f3e6a5c3611a30928802dde631bba8f991c6d401c322eb88e525f",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": ".chough/cases/records.sk-after-a-hyphen.cases.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "459577540603923f85173abc14372902738525146d420010732ae3cc6836653b",
+            "entry_digest": "b566dc6b67a772fa22bbcf6765c714f97bfa942a65aac694c42447c202768ea6",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "changelog.d/2026-11-18-fix-316.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4f08b61f4f4047c4b42fed9bd0ad607d4ca1f5a845a69f089e5dbeff402182c1",
+            "entry_digest": "1076c23ffa6c4c6d36be3770ad93ff7e26dfe9a7b6b5de1fceadda03e430caca",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "specs/records/records.spec.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "826b5fa50e3ac69e7fc40d6856aee8c932e5211d99f9f022934aa9c2007d2bcd",
+            "entry_digest": "8b2cb1aed4e1afbfe0a3f72d2b78d6f814f3989ad91695bec3a71899bbafaa2c",
+            "owners": [
+              "records"
+            ]
+          },
+          {
+            "path": "specs/records/requirements.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b50bb9be3536a21f95f28321322d0ecbc62e0adea9eff5042e61efc6beb3b0a3",
+            "entry_digest": "9076d1d57c2eae56d861328fd6394a764e1aa000e1fe0c09bcd94a9643fa5f0b",
+            "owners": [
+              "records"
+            ]
+          },
+          {
+            "path": "src/leaks.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "486302313b2dcfe36ad98c9e357ed6a05fcc4191de6eba8729247706b1f1b168",
+            "entry_digest": "561e2ad067e7aba121cf54bad98f9dd1ae6178c907fda618666100db71350271",
+            "owners": [
+              "records"
+            ]
+          },
+          {
+            "path": "tests/leaks.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ea7544339d91f3f13286ba7005ed92d0f6f14016758d383dd7fffde69aed4b00",
+            "entry_digest": "1eeb306b5fa66f5ac22f35afbaa2ffbd379873cc9b44bfc224386580d3502d11",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    }
+  ]
+}

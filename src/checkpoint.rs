@@ -340,12 +340,16 @@ pub(super) fn read_session(root: &Path) -> Result<Session> {
 
 /// Refuse a write that adds an observation reference while the active session's
 /// `observations` list is at its bound, before the write runs or writes anything
-/// (REQ-cli-032): `cases run`, `cases record` and `evidence add` call it first.
+/// (REQ-cli-032): `cases run`, `cases record` and `evidence add` call it first. A
+/// session that already holds a value its save would refuse as a leak, such as a path
+/// written before #268, refuses here too, so no entry is written for a save that cannot
+/// happen (REQ-records-006).
 pub(super) fn observation_room(root: &Path) -> Result<()> {
     let Session::V2(session) = read_session(root)?;
     if session.observations.len() >= MAX_OBSERVATIONS {
         bail!(observations_full(root, session.observations.len(), 1)?);
     }
+    guard_leaks(&mut (*session).clone())?;
     Ok(())
 }
 
@@ -557,6 +561,31 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         count += guard(local, "consent source", &mut consent.source)?;
         count += guard(local, "consent objective", &mut consent.objective)?;
     }
+    // Every reference is a value Chough writes (#268). A path is redacted like any value
+    // under `--redact`; an ID is only checked, since its ID form would not hold
+    // `<redacted:<kind>>` and the session would no longer read.
+    for (name, list) in [
+        ("file", &mut session.references.files),
+        ("design", &mut session.references.design),
+    ] {
+        for value in list.iter_mut() {
+            count += guard(local, name, value)?;
+        }
+    }
+    for (name, list) in [
+        ("criterion", &session.references.criteria),
+        ("requirement", &session.references.requirements),
+        ("case", &session.references.cases),
+        ("observation", &session.observations),
+        ("bug", &session.bugs),
+    ] {
+        for value in list {
+            check_id(local, name, value)?;
+        }
+    }
+    if let Some(change) = &session.native_change {
+        check_id(local, "native_change", change)?;
+    }
     for alias in &mut session.meta.aliases {
         count += guard(local, "alias", alias)?;
     }
@@ -583,6 +612,23 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         }
     }
     Ok(count)
+}
+
+/// Refuse an ID reference that leaks, under `--redact` too (REQ-records-006, #268): an
+/// ID keeps its ID form, which `<redacted:<kind>>` would break, so the only fix is to
+/// remove it. Names the field and the kinds, never the text.
+fn check_id(local: &crate::leaks::Local, field: &str, value: &str) -> Result<()> {
+    let found = crate::leaks::find(local, value);
+    if found.is_empty() {
+        return Ok(());
+    }
+    let mut kinds: Vec<&str> = found.iter().map(|found| found.kind.name()).collect();
+    kinds.sort_unstable();
+    kinds.dedup();
+    bail!(
+        "refused:leak: {field} holds {}; an ID cannot be redacted, so remove it; nothing was written",
+        kinds.join(", ")
+    )
 }
 
 /// The session record `session` saves as, within its bound (REQ-records-001), with
