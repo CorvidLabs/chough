@@ -395,3 +395,43 @@ fn a_case_only_rename_reaches_git_under_the_new_name() {
         "the committed index is not the planned one"
     );
 }
+
+/// REQ-records-009 (#263), TC-records-migrate-refuses-a-separate-case-colliding-target:
+/// on a case-sensitive file system `knowledge/index.md` beside the 0.5.x
+/// `knowledge/INDEX.md` is a file of its own. When it holds other bytes, the apply
+/// refuses it as `refused:target-exists` before writing: no file is written, removed or
+/// changed, so no receipt claims bytes that were never written. On a case-insensitive
+/// file system the two names are one file, so the state cannot exist and the test says
+/// so and stops.
+#[test]
+fn a_separate_file_at_a_case_colliding_target_refuses_before_any_write() {
+    let fixture = Fixture::new();
+    vault_0_5(&fixture);
+    fixture.commit("the 0.5.x vault");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert!(writes(&plan).contains_key("knowledge/index.md"), "{plan:#}");
+    let digest = plan["plan_digest"].as_str().unwrap().to_string();
+    let target = fixture.root().join("knowledge/index.md");
+    if target.exists() {
+        eprintln!("skipped: this file system folds case, so knowledge/index.md is INDEX.md");
+        return;
+    }
+    fs::write(&target, "SYNTHETIC junk\n").unwrap();
+    let before = tree(fixture.root());
+    let refused = fixture.fails(&[
+        "migrate",
+        "--apply",
+        &digest,
+        "--consent",
+        "SYNTHETIC-human said migrate the vault (fixture)",
+    ]);
+    assert!(
+        refused.contains("refused:target-exists") && refused.contains("knowledge/index.md"),
+        "{refused}"
+    );
+    assert_eq!(
+        tree(fixture.root()),
+        before,
+        "the refused apply wrote, removed or changed a file"
+    );
+}
