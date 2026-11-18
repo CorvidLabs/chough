@@ -7,10 +7,11 @@
   "title": "Fix 329 check first",
   "description": "fix 329 check first",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "2e371c8855e4ea8ca965634b59c56c26b0329d06",
   "created_at": 1795043677,
-  "updated_at": 1795043744,
+  "updated_at": 1795044048,
   "affected_specs": [
     "cli"
   ],
