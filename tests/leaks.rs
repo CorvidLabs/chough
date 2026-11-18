@@ -706,3 +706,143 @@ fn a_slug_holding_sk_is_not_a_key_and_a_glued_token_still_is() {
         concat!("ghp_", "abcdefghij0123456789"),
     );
 }
+
+/// REQ-records-006, TC-records-a-file-or-design-path-passes-the-leak-guard (#268): a
+/// `checkpoint --file` or `--design` path is a value Chough writes into `session.md`, so
+/// a token in it refuses the write naming the field, with the token never echoed and
+/// every file unchanged; with `--redact` the path is stored redacted; a clean path is
+/// saved as before.
+#[test]
+fn a_token_in_a_file_or_design_path_is_refused_at_the_write() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+    let path = concat!("src/", "ghp_", "abcdefghij0123456789abcdefghij0123", ".txt");
+    let secret = concat!("ghp_", "abcdefghij0123456789");
+    refused(
+        &fixture,
+        &["checkpoint", "--file", path],
+        "file",
+        "token",
+        secret,
+    );
+    refused(
+        &fixture,
+        &["checkpoint", "--design", path],
+        "design",
+        "token",
+        secret,
+    );
+
+    let said = redacted(&fixture, &["checkpoint", "--file", path, "--design", path]);
+    assert!(!said.contains(secret), "--redact echoed the value: {said}");
+    assert!(
+        holding(fixture.root(), secret).is_empty(),
+        "a file still holds the token"
+    );
+    let session = holding(fixture.root(), "src/<redacted:token>.txt");
+    assert_eq!(session.len(), 1, "{session:?}");
+    assert!(session[0].ends_with("/session.md"), "{session:?}");
+
+    let output = run(
+        &fixture,
+        &[
+            "checkpoint",
+            "--file",
+            "src/main.rs",
+            "--design",
+            "docs/flow.md",
+        ],
+    );
+    assert!(output.status.success(), "{output:?}");
+    let session = fs::read_to_string(fixture.root().join(&session[0])).unwrap();
+    assert!(session.contains("src/main.rs"), "{session}");
+    assert!(session.contains("docs/flow.md"), "{session}");
+}
+
+/// REQ-records-006 (#268): an ID reference is a value Chough writes too, so a token in a
+/// `--criterion`, `--requirement`, `--case`, `--observation` or `--native-change` value
+/// refuses the write naming the field; under `--redact` it still refuses, since an ID
+/// would not keep its form as `<redacted:<kind>>`, with every file unchanged.
+#[test]
+fn a_token_in_an_id_reference_is_refused_even_under_redact() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+    let secret = concat!("ghp_", "abcdefghij0123456789");
+    let github = concat!("ghp_", "abcdefghij0123456789abcdefghij0123");
+    let criterion = format!("x-{github}");
+    let case = format!("TC-x-{github}");
+    let requirement = concat!("REQ-", "AKIA", "ABCDEFGHIJKLMNOP");
+    let observation = concat!("o-", "glp", "at-abcdefghijklmnopqrstuvwx");
+    for (flag, value, field, hidden) in [
+        ("--criterion", criterion.as_str(), "criterion", secret),
+        (
+            "--requirement",
+            requirement,
+            "requirement",
+            "ABCDEFGHIJKLMNOP",
+        ),
+        ("--case", case.as_str(), "case", secret),
+        (
+            "--observation",
+            observation,
+            "observation",
+            "abcdefghijklmnopqrst",
+        ),
+        ("--native-change", github, "native_change", secret),
+    ] {
+        refused(
+            &fixture,
+            &["checkpoint", flag, value],
+            field,
+            "token",
+            hidden,
+        );
+        refused(
+            &fixture,
+            &["--redact", "checkpoint", flag, value],
+            field,
+            "token",
+            hidden,
+        );
+    }
+    assert!(holding(fixture.root(), secret).is_empty());
+}
+
+/// REQ-records-006 (#268 review): in a session that already holds a value its save
+/// would refuse, such as a token-bearing `--file` path written before #268, `evidence
+/// add` refuses before it writes its entry, so a retry adds nothing either.
+#[test]
+fn evidence_add_in_a_session_holding_a_leak_writes_nothing() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.configure_human();
+    fixture.init();
+    let path = concat!("src/", "ghp_", "abcdefghij0123456789abcdefghij0123", ".txt");
+    let session = tree(fixture.root())
+        .into_keys()
+        .find(|name| name.ends_with("/session.md"))
+        .unwrap();
+    let text = fs::read_to_string(fixture.root().join(&session)).unwrap();
+    assert!(text.contains("\nfiles: []\n"), "{text}");
+    fs::write(
+        fixture.root().join(&session),
+        text.replace("\nfiles: []\n", &format!("\nfiles: [{path}]\n")),
+    )
+    .unwrap();
+    fixture.commit("a session written before #268");
+    let arguments = evidence_add("SYNTHETIC entry in a leaking session");
+    let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
+    for _ in 0..2 {
+        refused(
+            &fixture,
+            &arguments,
+            "file",
+            "token",
+            concat!("ghp_", "abcdefghij0123456789"),
+        );
+    }
+}

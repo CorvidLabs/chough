@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-268",
+  "slug": "fix-268",
+  "title": "Fix 268",
+  "description": "fix 268",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "be6c9f126e448bd33945a52261d55db2a9677d3d",
+  "created_at": 1795016181,
+  "updated_at": 1795018838,
+  "affected_specs": [
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/checkpoint.rs",
+    "tests/leaks.rs",
+    ".chough/cases/records.checkpoint-file-leak-guard.cases.toml",
+    "changelog.d/2026-11-18-fix-268.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-records-006 already requires every value Chough writes, front matter included, to pass the leak check; only the checkpoint guard and its tests change.",
+  "acceptance_criteria": [
+    "A token form in a chough checkpoint --file or --design value, such as src/ghp_<token>.txt, refuses the write as refused:leak naming the field (file or design) and the kind token, never echoing the value, with every file unchanged; with --redact the stored path holds <redacted:token> and the command says it redacted. A file or design path that holds no leak is saved as before."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}
