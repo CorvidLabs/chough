@@ -32,6 +32,9 @@ waiting_on_human:
     opened: 2026-11-18T00:37:06Z
 run_consents: []
 next: "Wait for Leif's implementation review of fix-262 on PR #305; do not ship"
+title: A FIFO in a record's place blocks no reader
+summary:
+  - A FIFO in .chough/bugs/ blocked status and next for ever, and a session whose session.md was one vanished from session list (#262). Readers no longer open a non-regular file, and such a session is listed with the reason and the shelve recovery, as REQ-history-006 required. Two tests failed on main first; the verify lane passed on macOS at 448f47c, before main was merged in.
 ---
 # A FIFO or other non-regular file in a record's place blocks no reader, and a session whose record is one is listed with the reason and the shelve recovery (REQ-history-006, #262)
 

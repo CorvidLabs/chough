@@ -45,6 +45,13 @@
         "where": "Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794964524,
+      "digest": "1b60683806647b4ca6db93c7e21842a26436460b08a8f7156e71e586d6e37d85",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

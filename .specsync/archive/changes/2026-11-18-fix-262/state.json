@@ -7,11 +7,11 @@
   "title": "Fix 262",
   "description": "fix 262",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "8abb5bb89b5244e72327e1ea6abfc7e66634ebe1",
   "created_at": 1794962148,
-  "updated_at": 1794964511,
+  "updated_at": 1794964526,
   "affected_specs": [
     "cli",
     "history"
