@@ -10,12 +10,16 @@
   "state": "draft",
   "base_commit": "0fd9fd229744da039e9d43a5ce1df6dfe5ddc8d7",
   "created_at": 1794926531,
-  "updated_at": 1794958639,
-  "affected_specs": [],
+  "updated_at": 1794962763,
+  "affected_specs": [
+    "cli"
+  ],
   "affected_paths": [
     "docs/cli.md",
     "src/checkpoint.rs",
-    "src/main.rs"
+    "src/main.rs",
+    "tests/cli.rs",
+    "changelog.d/"
   ],
   "no_spec_change": true,
   "no_spec_change_rationale": "No canonical spec or requirement wording changes. This is a CLI bug fix: chough help --help currently exits 2 (no help subcommand exists) and should exit 0 with help text, so it changes CLI behavior (exit code and help output) only. A changelog fragment at changelog.d/<YYYY-MM-DD>-fix-301.md accompanies this change, per repo convention.",
@@ -33,6 +37,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "no",
+    "constraints": "No requirement wording changes. Only docs/cli.md, clap help text on the checkpoint flags, the help --help exit code, a test for it in tests/cli.rs and a changelog fragment change; every other command's flags, output and exit codes stay as they are.",
     "public_contract": "no"
   }
 }

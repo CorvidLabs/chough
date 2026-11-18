@@ -13,7 +13,7 @@ Add clap help text to all eleven list-valued checkpoint flags (--criterion, --re
 
 ## Affected Canonical Specs
 
-- None
+- `cli`
 
 ## Acceptance Criteria
 
