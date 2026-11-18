@@ -46,6 +46,7 @@ checkpoint --objective fills the session's untouched default Goal once, so the s
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-269": "fill the placeholder once. When the session's Goal section still holds the untouched default text, checkpoint --objective replaces it. A Goal a person has written is never rewritten. The journal post and the archived story use the current objective. This adds that one exception to REQ-records-004. … Yes, fill both" (Leif's decision comment on CorvidLabs/chough#269 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then 'Yes, fill both', relayed by hc t4c on 2026-11-18, to fill the story's '# ...' title as well as the Goal when it still holds the untouched default, under the same never-rewrite-a-person's-text rule); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-269 as 0xLeif
+- 0xLeif decided "Re-approval of fix-269 onto main's REQ-records-004": "Re-approve both" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #345 changed REQ-records-004 on main, he re-approved fix-269's and fix-269-post's deltas rebased onto main's REQ-records-004 and REQ-history-006, keeping #345's and #342's additions and adding only #344's own sentences and criteria); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-269 as 0xLeif
 
 ## What was verified
 
@@ -104,4 +105,32 @@ checkpoint --objective fills the session's untouched default Goal once, so the s
   - revision: 387d8314aa6dbd9836c7935eaa34530b59fd8c82
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:57:31Z · gate-opened · accept → accept · Re-approval of fix-269 onto main's REQ-records-004 ^t-c86199
+  - native_change: fix-269
+  - revision: f1aef4cd25db5c418dc52934079bc84651476ed0
+  - holds: accept
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:57:31Z · direct-native-write · accept → accept · fix-269's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state stays verifying ^t-4486c0
+  - native_change: fix-269
+  - revision: f1aef4cd25db5c418dc52934079bc84651476ed0
+  - direct_write:
+    - change: fix-269
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:57:31Z · gate-closed · accept → accept · Re-approval of fix-269 onto main's REQ-records-004 ^t-e90c6f
+  - native_change: fix-269
+  - revision: f1aef4cd25db5c418dc52934079bc84651476ed0
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Re-approve both
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #345 changed REQ-records-004 on main, he re-approved fix-269's and fix-269-post's deltas rebased onto main's REQ-records-004 and REQ-history-006, keeping #345's and #342's additions and adding only #344's own sentences and criteria
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve fix-269
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)

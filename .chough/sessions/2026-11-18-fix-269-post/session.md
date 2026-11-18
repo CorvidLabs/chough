@@ -40,6 +40,7 @@ A closeout's journal post body opens with the current objective, and the archive
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-269-post": "Fix first: post uses current … Add one line if changed" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answers on the tester's #344 finding, within his #269 scope: the journal post's body describes the current objective while the session's Goal keeps the filled-once text, as a small follow-up change on #344 declaring src/journal.rs and REQ-records-011; and at closeout, if the objective changed after the Goal was filled, the story gets one added line 'Objective at closeout: <current objective>', nothing rewritten); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-269-post as 0xLeif
+- 0xLeif decided "Re-approval of fix-269-post onto main's REQ-history-006": "Re-approve both" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #342 changed REQ-history-006 on main, he re-approved fix-269's and fix-269-post's deltas rebased onto main's REQ-records-004 and REQ-history-006, keeping #345's and #342's additions and adding only #344's own sentences and criteria); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-269-post as 0xLeif
 
 ## What was verified
 
@@ -95,4 +96,32 @@ A closeout's journal post body opens with the current objective, and the archive
   - revision: 8f3270abaedf56575c3afcc9999c43e6cf6cbd9b
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:57:35Z · gate-opened · accept → accept · Re-approval of fix-269-post onto main's REQ-history-006 ^t-9de7d3
+  - native_change: fix-269-post
+  - revision: f1aef4cd25db5c418dc52934079bc84651476ed0
+  - holds: accept
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:57:35Z · direct-native-write · accept → accept · fix-269-post's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state stays verifying ^t-07675b
+  - native_change: fix-269-post
+  - revision: f1aef4cd25db5c418dc52934079bc84651476ed0
+  - direct_write:
+    - change: fix-269-post
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:57:35Z · gate-closed · accept → accept · Re-approval of fix-269-post onto main's REQ-history-006 ^t-b45820
+  - native_change: fix-269-post
+  - revision: f1aef4cd25db5c418dc52934079bc84651476ed0
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Re-approve both
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #342 changed REQ-history-006 on main, he re-approved fix-269's and fix-269-post's deltas rebased onto main's REQ-records-004 and REQ-history-006, keeping #345's and #342's additions and adding only #344's own sentences and criteria
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve fix-269-post
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)

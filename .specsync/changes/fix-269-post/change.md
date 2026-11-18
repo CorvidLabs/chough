@@ -1,6 +1,6 @@
 ---
 id: fix-269-post
-state: implementing
+state: verifying
 type: bug_fix
 base_commit: 8f3270abaedf56575c3afcc9999c43e6cf6cbd9b
 ---
