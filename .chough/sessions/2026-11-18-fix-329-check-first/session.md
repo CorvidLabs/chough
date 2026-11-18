@@ -16,7 +16,9 @@ requirements: [REQ-cli-012]
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-18-tc-cli-bug-add-refuses-before-writing-when-the-session-is-full
+  - 2026-11-18-tc-cli-bug-add-joins-the-active-session-6ae083
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -36,6 +38,9 @@ bug add checks that the active session can take another bug link before writing 
 - 0xLeif decided "Scope approval of fix-329-check-first": "Yes, for today" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, that a real gap his review thread finds in an already-approved PR is fixed inside its approved scope as a small follow-up change, applied by hc t4c to his P2 thread on #343 ('Preflight the checkpoint bound before creating the bug'), with t4c's design point: check that the session can take another bug link before writing anything, and refuse with nothing written); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-329-check-first as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test bugs -- --exact bug_add_refuses_before_writing_when_the_session_is_full for TC-cli-bug-add-refuses-before-writing-when-the-session-is-full: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-refuses-before-writing-when-the-session-is-full.md)
+- [Ran cargo test --locked --test bugs -- --exact a_blocking_bug_added_in_a_session_stops_it for TC-cli-bug-add-joins-the-active-session: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-joins-the-active-session-6ae083.md)
 
 ## Open threads
 
