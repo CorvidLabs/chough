@@ -5,7 +5,7 @@ aliases: [fix-277]
 objective: "A migrated bug's body links each carried observation to the file of the entry or story that holds it (REQ-records-009, #277)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-18-tc-records-a-migrated-bugs-body-links-its-carried-observations-af96fe
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-277
-    holds: accept
-    drives: review
-    opened: 2026-11-18T19:55:31Z
+waiting_on_human: []
 run_consents: []
-next: Wait for the tester's check and Leif's implementation review of fix-277
+next: Continue done
 title: A migrated bug's Log links each carried observation
 summary:
   - A bug that chough migrate writes named its carried observations in its Log by bare 0.5.x ID (#277). The Log now links each to the open session's evidence entry or to the archived story that holds its receipt, relative to the bug's file; a receipt only the bug holds is named as its own. A new test failed on main first; the verify lane passed on macOS after main was merged in, and the tester passed it. Linux was not run locally.
@@ -46,6 +42,7 @@ A migrated bug's body links each carried observation to the file of the entry or
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-277": "relative links. A migrated bug's body links each carried observation to the file of the entry or story that holds it, as a new bug's body does." (Leif's decision comment on GitHub issue #277, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-277 as 0xLeif
+- 0xLeif decided "Implementation review of fix-277": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after the tester's PASS on PR #341); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-277 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -103,4 +100,20 @@ A migrated bug's body links each carried observation to the file of the entry or
   - revision: 50aa2a4988e3d786aefa2641b6636e28771db80c
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:29:58Z · gate-closed · accept → accept · Implementation review of fix-277 ^t-76b6c9
+  - native_change: fix-277
+  - revision: 33fe5d17f887ab7df8f9b25aa69a37126ffb00f0
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after the tester's PASS on PR #341
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-277
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:29:59Z · advance · accept → done · native:archived ^t-39e46d
+  - native_change: fix-277
+  - gate: native:archived
+  - revision: 33fe5d17f887ab7df8f9b25aa69a37126ffb00f0
   - by: fable (claude-fable-5-2, hc t4b)
