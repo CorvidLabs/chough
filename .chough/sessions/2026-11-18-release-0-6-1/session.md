@@ -5,7 +5,7 @@ aliases: [release-0-6-1]
 objective: "Prepare the Chough 0.6.1 patch release: version 0.6.1, the changelog assembled from changelog.d, the knowledge index rebuilt, and the release dry runs; stop before the tag"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -15,13 +15,19 @@ criteria: [LIFE-25, LIFE-16]
 requirements: []
 cases: []
 design: []
-files: []
-observations: []
+files: [Cargo.toml, CHANGELOG.md, tests/changelog.rs]
+observations:
+  - 2026-11-18-at-7bb57a6-on-release-0-6-1-cargo-package-list-locked-listed
+  - 2026-11-18-verify-lane-steps-on-release-0-6-1-at-7bb57a6-toolchain-fmt
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of release-0-6-1
+    holds: accept
+    drives: review
+    opened: 2026-11-18T17:31:03Z
 run_consents: []
-next: "Gate \"Scope approval of release-0-6-1, widened (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Wait for Leif's implementation review of release-0-6-1; the tag and publish are his separate decisions
 ---
 # Prepare the Chough 0.6.1 patch release: version 0.6.1, the changelog assembled from changelog.d, the knowledge index rebuilt, and the release dry runs; stop before the tag
 
@@ -31,6 +37,8 @@ Prepare the Chough 0.6.1 patch release: version 0.6.1, the changelog assembled f
 
 ## Where it stands
 
+- Version 0.6.1, the change log assembled from 36 fragments, the index rebuilt, the two changelog tests fixed, dry runs recorded
+
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of release-0-6-1": "Approve" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him: 'Chough 0.6.1 release prep (change release-0-6-1): set the version to 0.6.1, build CHANGELOG.md from the merged changes only, rebuild the knowledge index, and run the release dry runs. No code changes, no tag, no publish. Approve the scope?'; given to fable-t4b as the answer to the same question in Claude Code); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve release-0-6-1 as 0xLeif
@@ -38,6 +46,9 @@ Prepare the Chough 0.6.1 patch release: version 0.6.1, the changelog assembled f
 - 0xLeif decided "Scope approval of release-0-6-1, widened (native approval)": "Widen the release change" (Relayed by Leif's planning session (hc t4c) on 2026-11-18; the same answer as the gate closed just before, which was opened at build and so drove no native approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve release-0-6-1 as 0xLeif
 
 ## What was verified
+
+- [At 7bb57a6 on release/0.6.1: cargo package --list --locked listed only src (33), skills/chough-workflow (24), Cargo.toml, Cargo.lock, README.md and LICENSE plus cargo's generated files; cargo publish --dry-run --locked built chough v0.6.1 and stopped at 'aborting upload due to dry run'; crates.io's owners API listed 0xLeif as the only owner of chough, at 0.6.0; fledge run release-check passed. A rehearsal: nothing was published.](evidence/2026-11-18-at-7bb57a6-on-release-0-6-1-cargo-package-list-locked-listed.md)
+- [Verify lane steps on release/0.6.1 at 7bb57a6: toolchain, fmt, lint, intent, spec, audit, cases, leaks, exercise and build passed. The test step failed once (tests/evidence.rs: parallel_decisions_and_evidence_adds_all_land and evidence_add_rereads_the_session_under_the_writer_lock, from #324, lost updates) and then passed in two full reruns; the two tests also passed 3 times alone and 48 times under eight-way load. The one failure was not reproduced or explained.](evidence/2026-11-18-verify-lane-steps-on-release-0-6-1-at-7bb57a6-toolchain-fmt.md)
 
 ## Open threads
 
@@ -116,4 +127,20 @@ Prepare the Chough 0.6.1 patch release: version 0.6.1, the changelog assembled f
     - recorded_by: fable-t4b
     - native: specsync change approve release-0-6-1
     - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T17:31:03Z · advance · build → test · native:verifying ^t-05ae29
+  - native_change: release-0-6-1
+  - gate: native:verifying
+  - revision: 7bb57a609060fb2b53e672466bb689e431b75f5d
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T17:31:03Z · advance · test → accept · native:verifying ^t-b7a73c
+  - native_change: release-0-6-1
+  - gate: native:verifying
+  - revision: 7bb57a609060fb2b53e672466bb689e431b75f5d
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T17:31:03Z · gate-opened · accept → accept · Implementation review of release-0-6-1 ^t-690413
+  - native_change: release-0-6-1
+  - revision: 7bb57a609060fb2b53e672466bb689e431b75f5d
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
