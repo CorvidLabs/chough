@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 101
+version: 103
 status: active
 files:
   - src/main.rs
@@ -381,3 +381,5 @@ provider, runtime or hosted service.
 | 99 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
 | 100 | 2026-11-15 | clarify-req-cli-001-init-preserves-bytes-acceptance: Clarify REQ-cli-001 init-preserves-bytes acceptance |
 | 101 | 2026-11-18 | a-blocking-bug-stops-only-a-session-it-is-related-to: A blocking bug stops only a session it is related to |
+| 102 | 2026-11-18 | fix-314: Fix 314 |
+| 103 | 2026-11-18 | fix-271: Fix 271 |

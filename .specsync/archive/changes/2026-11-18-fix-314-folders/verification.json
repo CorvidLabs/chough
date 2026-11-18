@@ -1,0 +1,72 @@
+{
+  "timestamp": 1795026068,
+  "commit": "38f22e1b7c7da51325d3afa78415ad88832b641e",
+  "contract_digest": "e0d2e1c157fd5c1b2d6ee53ae3f26536a23a417fa38a551563a9d0baba206484",
+  "execution_digest": "3261163a16929f28108f8d8ee0344c5be5d61d38d87b20660c304bad4ddf8360",
+  "workspace_digest": "94879b929d2f6e44181cfa3a263b88f8ef10c5f8aea4181632a0899a75f815e5",
+  "acceptance_input_digest": "fbe6c70dad5476d191b930dd2605a8a956f9f547edc2e6c2d2bfff9a1098781b",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": "changelog.d/2026-11-18-fix-314-folders.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "7ce2273f94e46d09dacf06a2c64077908057d96c6a467e96bb3b91e4cc8314cb",
+        "entry_digest": "bccabe73d494196b20e9df5f9de1e0ec01ded935a09a312de3ac27f2f554671b",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/records/records.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b3cd29cd142b09459b282d1084b45f220c331e5183bf0b8f0227791b3462a3b6",
+        "entry_digest": "5d940f33823a09ba5333bdac8a3b125599af1b315d075ce62e221008d6b48d32",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "specs/records/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "ff1d5729089b6f961752cf5c2888b9b56dd34787aa01622fd5e1151608216e90",
+        "entry_digest": "330e73b8f2730669849db060a48d8586412978a45ffaa91fa371fc989868621d",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "src/migrate.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "99b49cca58b0ebc285ed8396fcfbc9b0e5bb7925953652b5ab04b691cb0cacc3",
+        "entry_digest": "d3e463ec18a96068a7bcb7cff9f76778e2e42f1b6611bc8391f3497071a92b83",
+        "owners": [
+          "records"
+        ]
+      },
+      {
+        "path": "tests/migrate.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "3d0acde16a406895df509d265d0bbcb637dc79ca98be46607ffe502aef5fc696",
+        "entry_digest": "85c51703a549860cabe021cdcbad114b46e3c23f7f2081f88f77816eda994410",
+        "owners": [
+          "@exact:test"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec records",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

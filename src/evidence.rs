@@ -1053,6 +1053,14 @@ pub(super) fn load_all(root: &Path) -> Result<Vec<Evidence>> {
     Ok(found)
 }
 
+/// Whether `name` is metadata macOS writes beside files: Finder's `.DS_Store`, or an
+/// AppleDouble `._<name>` file, which macOS writes beside every file on exFAT and other
+/// non-Apple volumes. Readers in `.chough/` skip it; it is never a record (REQ-cli-068,
+/// #314).
+pub(super) fn is_os_metadata(name: &str) -> bool {
+    name == ".DS_Store" || name.starts_with("._")
+}
+
 /// The evidence entries of one session.
 fn load_session(root: &Path, session_id: &str) -> Result<Vec<Evidence>> {
     let dir = evidence_dir(session_id);
@@ -1064,7 +1072,7 @@ fn load_session(root: &Path, session_id: &str) -> Result<Vec<Evidence>> {
     let mut names: Vec<String> = entries
         .filter_map(|entry| entry.ok())
         .filter_map(|entry| entry.file_name().into_string().ok())
-        .filter(|name| name.ends_with(".md"))
+        .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
         .collect();
     names.sort();
     for name in names {
@@ -1149,7 +1157,7 @@ fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
         .flatten()
         .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_file()))
         .map(|entry| entry.file_name().to_string_lossy().into_owned())
-        .filter(|name| name.ends_with(".md"))
+        .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
         .collect();
     names.sort();
     for name in names {
@@ -1264,7 +1272,7 @@ impl Index {
             let mut names: Vec<String> = entries
                 .filter_map(|entry| entry.ok())
                 .filter_map(|entry| entry.file_name().into_string().ok())
-                .filter(|name| name.ends_with(".md"))
+                .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
                 .collect();
             names.sort();
             for name in names {
@@ -1342,7 +1350,7 @@ impl Index {
         let mut names: Vec<String> = entries
             .filter_map(|entry| entry.ok())
             .filter_map(|entry| entry.file_name().into_string().ok())
-            .filter(|name| name.ends_with(".md"))
+            .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
             .collect();
         names.sort();
         for name in names {
@@ -2630,7 +2638,7 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
         for entry in fs::read_dir(&bugs)? {
             let entry = entry?;
             let name = entry.file_name().to_string_lossy().into_owned();
-            if !name.ends_with(".json") && !name.ends_with(".md") {
+            if (!name.ends_with(".json") && !name.ends_with(".md")) || is_os_metadata(&name) {
                 continue;
             }
             // Only regular files are records, as `chough bug list` reads the folder (#262).
@@ -3031,7 +3039,7 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
         let mut names: Vec<String> = fs::read_dir(&archive)?
             .filter_map(|entry| entry.ok())
             .filter_map(|entry| entry.file_name().into_string().ok())
-            .filter(|name| name.ends_with(".md"))
+            .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
             .collect();
         names.sort();
         for name in names {
@@ -3050,7 +3058,7 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
             let entry = entry?;
             let name = entry.file_name().to_string_lossy().into_owned();
             // Only regular files are records, as `chough bug list` reads the folder (#262).
-            if name.ends_with(".md") && entry.file_type()?.is_file() {
+            if name.ends_with(".md") && !is_os_metadata(&name) && entry.file_type()?.is_file() {
                 let text = read_bounded_record(&entry.path(), markdown::RECORD_BOUND)?;
                 let record = markdown::parse(&name, &text)?;
                 for map in record.maps("receipts") {

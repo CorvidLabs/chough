@@ -1,0 +1,67 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795024452,
+      "digest": "ccad2e2a66f3ac65f3ccdb83efa0954529f37bc974cc2aaae7320ebe4260ec2a",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-314, recreated once more with src/library.rs\": \"Recreate once more\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, in answer to whether to add src/library.rs to #321 by recreating fix-314 once more, reopening it himself, or with a migrate.rs workaround; it follows his earlier 'Skip them', 'Recreate on my word', 'Force-push onto #321' and 'Approve' for the wider scope (REQ-records-015 beside REQ-cli-068, src/migrate.rs, src/evidence_migrate.rs and src/bugs.rs declared)). Relayed and recorded by chough-fixer-t4g at 2026-11-18T17:54:11Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-314",
+        "title": "Fix 314",
+        "description": "fix 314",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.macos-metadata.cases.toml",
+          ".chough/cases/records.migrate-macos-metadata.cases.toml",
+          "changelog.d/2026-11-18-fix-314.md",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/doctor.rs",
+          "src/evidence.rs",
+          "src/evidence_migrate.rs",
+          "src/library.rs",
+          "src/migrate.rs",
+          "tests/migrate.rs",
+          "tests/special_files.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With an AppleDouble ._<name>.md file in .chough/bugs/, in a session's evidence/ and in .chough/archive/sessions/, chough next and chough status succeed as they do without it; a .DS_Store or ._<name>.cases.toml file in .chough/cases/ leaves chough cases check passing; chough doctor reports no unreadable finding for a committed ._ file; a 0.5.x project with ._ and .DS_Store files beside its bugs, sessions, archived sessions, inbox entries, evidence, history events and knowledge notes previews with the same plan digest as without them, applies, and still holds every one of them after; a committed binary AppleDouble file holding an email gives a leak finding from chough doctor --leaks, and chough doctor --fix --redact leaves it byte-identical; a malformed record with an ordinary name is still refused, naming the file."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the deltas are frozen at approval. records::publish_new is not touched. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "f0a9def603f182876e9a5221a857ce6922c4f2fbbe4a8dfab5c80da1ec6613d8",
+        "records": "557cc6cb472b731956c546e14ad5ed6dbeb326bac4babbd75ffbb4d30ca30931"
+      },
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Recreate once more",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, in answer to whether to add src/library.rs to #321 by recreating fix-314 once more, reopening it himself, or with a migrate.rs workaround; it follows his earlier 'Skip them', 'Recreate on my word', 'Force-push onto #321' and 'Approve' for the wider scope (REQ-records-015 beside REQ-cli-068, src/migrate.rs, src/evidence_migrate.rs and src/bugs.rs declared)",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795025551,
+      "digest": "2d17db29f05cf9d80b5fd224b8d92667ea212e9ccdeffa5356597da5448aad45",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

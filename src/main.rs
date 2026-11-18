@@ -52,6 +52,11 @@ struct Cli {
     /// credential in a committed record, instead of refusing the write (REQ-records-006).
     #[arg(long, global = true)]
     redact: bool,
+    /// The session this command reads and writes, by ID, alias or bare slug, whatever the
+    /// shared active-session pointer says; `CHOUGH_SESSION` sets it for a whole shell. The
+    /// pointer never moves (REQ-cli-037). `init` and `inbox add` keep their own --session.
+    #[arg(long, global = true)]
+    session: Option<String>,
     #[command(subcommand)]
     command: Commands,
 }
@@ -239,6 +244,28 @@ fn main() -> Result<()> {
         migrate::exempt_from_guard();
     } else {
         migrate::ensure_migrated(&root)?;
+    }
+    // REQ-cli-037 (#271): a shell pins its session with --session or CHOUGH_SESSION, so
+    // each agent writes to its own session whatever the shared pointer says. The commands
+    // that set or name a session themselves are left alone.
+    let requested = cli.session.clone().or_else(|| {
+        std::env::var("CHOUGH_SESSION")
+            .ok()
+            .filter(|value| !value.trim().is_empty())
+    });
+    if let Some(name) = requested
+        && !matches!(
+            &cli.command,
+            Commands::Init { .. }
+                | Commands::Session { .. }
+                | Commands::Migrate(_)
+                | Commands::Skill { .. }
+                | Commands::Inbox {
+                    command: sessions::InboxCommand::Add { .. }
+                }
+        )
+    {
+        pin_session(&root, &name)?;
     }
     match cli.command {
         Commands::Init {
@@ -956,6 +983,20 @@ fn lessons(root: &Path, modules: &[String]) -> Result<Value> {
 
 /// The command that opens the next session, as the move into done names it.
 const NEW_SESSION: &str = "chough session new <key> --objective \"<outcome>\"";
+
+/// Pin the session `name` names for this command (REQ-cli-037): an open session by ID,
+/// alias or bare slug, as `chough session use` resolves it, which every read and write of
+/// the command then uses; the shared pointer is not touched. A name that is not an open
+/// session refuses before anything is read or written.
+fn pin_session(root: &Path, name: &str) -> Result<()> {
+    let id = sessions::resolve_open(root, name).map_err(|error| {
+        anyhow::anyhow!(
+            "refused:session-not-open: {name}, named by --session or CHOUGH_SESSION, is not an open session ({error:#}); run `chough session list` for the open ones; nothing was written"
+        )
+    })?;
+    sessions::pin(root, &sessions::session_file(&id));
+    Ok(())
+}
 
 /// The next view with no open session, the normal state after the move into done
 /// archives one (REQ-cli-021, REQ-history-006): that no session is open and the command

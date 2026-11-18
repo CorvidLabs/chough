@@ -281,7 +281,11 @@ pub(crate) fn legacy_paths(root: &Path) -> Result<Vec<String>> {
         };
         for entry in entries.flatten() {
             let name = entry.file_name().to_string_lossy().to_string();
-            if name.ends_with(".json") && entry.path().is_file() {
+            // macOS metadata beside a 0.5.x record is not one (REQ-records-015).
+            if name.ends_with(".json")
+                && !crate::evidence::is_os_metadata(&name)
+                && entry.path().is_file()
+            {
                 found.insert(format!("{folder}/{name}"));
             }
         }
@@ -308,12 +312,16 @@ fn accountable_paths(root: &Path) -> Result<Vec<String>> {
     Ok(found.into_iter().collect())
 }
 
-/// Every file under `relative`, as project-relative paths.
+/// Every file under `relative`, as project-relative paths, leaving out macOS metadata
+/// files and folders, which the migration neither carries nor removes (REQ-records-015).
 fn walk_files(root: &Path, relative: &str, found: &mut BTreeSet<String>) -> Result<()> {
     let Ok(entries) = std::fs::read_dir(local_path(root, relative)?) else {
         return Ok(());
     };
     for entry in entries.flatten() {
+        if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
+            continue;
+        }
         let name = format!("{relative}/{}", entry.file_name().to_string_lossy());
         let kind = entry.file_type()?;
         if kind.is_dir() {
@@ -707,7 +715,7 @@ fn apply(
         let path = local_path(root, &written.path)?;
         if let Ok(existing) = std::fs::read(&path)
             && existing != written.bytes
-            && !collides_by_case(plan, &written.path)
+            && !is_a_planned_removal_by_case(root, plan, &written.path)?
         {
             bail!(
                 "refused:target-exists: {} already exists with other bytes, and the migration writes by create-new only, so nothing more was written.",
@@ -878,6 +886,42 @@ fn collides_by_case(plan: &Plan, path: &str) -> bool {
         .any(|removed| removed != path && removed.eq_ignore_ascii_case(path))
 }
 
+/// Whether the file read at the planned `path` is a planned removal under its other
+/// spelling, so its other bytes are the 0.5.x file's and not a target in the way
+/// (REQ-records-009, #263). That holds only where the two names are one file: a
+/// removal that differs only in case still opens, and the folder does not list both
+/// names. On a case-sensitive file system `knowledge/index.md` beside
+/// `knowledge/INDEX.md` is a file of its own, and the apply refuses it before writing.
+fn is_a_planned_removal_by_case(root: &Path, plan: &Plan, path: &str) -> Result<bool> {
+    let target = local_path(root, path)?;
+    for removed in plan
+        .carried
+        .removed
+        .keys()
+        .chain(plan.carried.sources.iter())
+        .filter(|removed| *removed != path && removed.eq_ignore_ascii_case(path))
+    {
+        if one_file_by_case(&target, &local_path(root, removed)?) {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+/// Whether `target` and `removal`, two paths in one folder that differ only in case,
+/// name one file: `removal` opens, and the folder does not list both names.
+fn one_file_by_case(target: &Path, removal: &Path) -> bool {
+    let listed = |path: &Path| {
+        path.parent()
+            .zip(path.file_name())
+            .is_some_and(|(folder, name)| {
+                std::fs::read_dir(folder)
+                    .is_ok_and(|entries| entries.flatten().any(|entry| entry.file_name() == name))
+            })
+    };
+    removal.exists() && !(listed(target) && listed(removal))
+}
+
 /// Write one planned file by create-new, or count it done when it already holds the
 /// planned bytes, then read it back.
 fn write_planned(root: &Path, written: &Planned, written_now: &mut Vec<String>) -> Result<()> {
@@ -999,10 +1043,17 @@ fn is_valid(state: &str) -> bool {
     matches!(state, "authenticated-history" | "exact" | "valid")
 }
 
+/// Whether the folder at `path` holds nothing at all. macOS's rmdir deletes orphaned
+/// AppleDouble `._*` files in a folder it removes, so a folder is removed only when this
+/// holds, and the migration never removes macOS metadata (REQ-records-015).
+fn holds_nothing(path: &Path) -> bool {
+    std::fs::read_dir(path).is_ok_and(|mut entries| entries.next().is_none())
+}
+
 /// Remove each folder a removal left empty, from the removed file's own folder up to,
 /// never including, the project root: a session rolled into the vault leaves no empty
-/// `knowledge/attachments/<folder>/sessions/` behind. A folder that still holds anything
-/// stays.
+/// `knowledge/attachments/<folder>/sessions/` behind. A folder that still holds anything,
+/// macOS metadata included, stays.
 fn prune_emptied<'a>(root: &Path, removed: impl Iterator<Item = &'a str>) {
     for path in removed {
         let mut folder = Path::new(path).parent();
@@ -1010,7 +1061,7 @@ fn prune_emptied<'a>(root: &Path, removed: impl Iterator<Item = &'a str>) {
             let Ok(local) = local_path(root, &relative.to_string_lossy()) else {
                 break;
             };
-            if std::fs::remove_dir(local).is_err() {
+            if !holds_nothing(&local) || std::fs::remove_dir(local).is_err() {
                 break;
             }
             folder = relative.parent();
@@ -1023,12 +1074,19 @@ fn prune_empty_folders(root: &Path) -> Result<()> {
     fn prune(path: &std::path::Path) {
         if let Ok(entries) = std::fs::read_dir(path) {
             for entry in entries.flatten() {
+                // A macOS metadata folder is neither entered nor removed, so the folder
+                // that holds it stays too (REQ-records-015, #321 review).
+                if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
+                    continue;
+                }
                 if entry.path().is_dir() {
                     prune(&entry.path());
                 }
             }
         }
-        let _ = std::fs::remove_dir(path);
+        if holds_nothing(path) {
+            let _ = std::fs::remove_dir(path);
+        }
     }
     for folder in [
         ".chough/history",
@@ -1493,6 +1551,7 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             .flatten()
             .filter(|entry| entry.path().join("sessions").is_dir())
             .filter_map(|entry| entry.file_name().into_string().ok())
+            .filter(|folder| !crate::evidence::is_os_metadata(folder))
             .map(|folder| format!("{attachments}/{folder}/sessions"))
             .collect();
         rolled.sort();
@@ -1507,6 +1566,7 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
                     .filter(|entry| entry.path().is_file())
                     .filter_map(|entry| entry.file_name().into_string().ok())
                     .filter(|name| name.ends_with(".json"))
+                    .filter(|name| !crate::evidence::is_os_metadata(name))
                     .collect()
             })
             .unwrap_or_default();
@@ -1638,6 +1698,7 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
                     .flatten()
                     .filter_map(|entry| entry.file_name().into_string().ok())
                     .filter(|name| name.ends_with(".json"))
+                    .filter(|name| !crate::evidence::is_os_metadata(name))
                     .collect()
             })
             .unwrap_or_default();
@@ -2186,5 +2247,25 @@ mod tests {
         let mut two = Carried::default();
         two.written.push(file);
         assert!(one.absorb(two).is_err());
+    }
+
+    /// REQ-records-009 (#263): two names that differ only in case are one file only
+    /// where the file system says so. A folder that lists both holds two files, and a
+    /// target whose other spelling no longer opens stands alone.
+    #[test]
+    fn two_names_differing_only_in_case_are_one_file_only_when_the_folder_lists_one() {
+        let root = tempfile::tempdir().unwrap();
+        let old = root.path().join("INDEX.md");
+        let new = root.path().join("index.md");
+        std::fs::write(&old, "old").unwrap();
+        if new.exists() {
+            // A case-insensitive file system: one file under either spelling.
+            assert!(one_file_by_case(&new, &old));
+            return;
+        }
+        std::fs::write(&new, "other bytes").unwrap();
+        assert!(!one_file_by_case(&new, &old), "the folder lists both names");
+        std::fs::remove_file(&old).unwrap();
+        assert!(!one_file_by_case(&new, &old), "the other spelling is gone");
     }
 }

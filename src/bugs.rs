@@ -2103,6 +2103,8 @@ fn legacy_bugs(root: &Path) -> Result<Vec<(String, Legacy)>> {
         .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_file()))
         .filter_map(|entry| entry.file_name().into_string().ok())
         .filter(|name| name.ends_with(".json"))
+        // macOS metadata beside a 0.5.x bug is not one (REQ-records-015).
+        .filter(|name| !crate::evidence::is_os_metadata(name))
         .collect();
     names.sort();
     let mut bugs = vec![];

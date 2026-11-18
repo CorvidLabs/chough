@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-271",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "764c420437fd806e352512a184fccb78355014e4",
+  "contract_digest": "58f284b09466412f594f944d46b458c93fcb5b857c5984fad7fea736b6c3f988",
+  "execution_digest": "6b66de4d680fdb156d116fcfdec77aac489da7ce95c966133fdf9fe4ac2327f5",
+  "workspace_digest": "102f20cbffef56044200cce2c3efd7a3c8a6abc851b4907d81ee25187b95ffa2",
+  "timestamp": 1795028524,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve, merge when green",
+    "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #331 after the tester's PASS; the CHOUGH_SESSION-before-a-session polish goes in a follow-up t4c is filing",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}
