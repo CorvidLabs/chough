@@ -1,0 +1,60 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795027401,
+      "digest": "76321585d4e3aab2655db0c5f445ab1c0a47140ba5569b8765371e37b8fe066f",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-298\": \"Both: Chough check now + SpecSync\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his choice of option (3) for #298, refusing before review when base..HEAD shows a change both open and archived in one commit, with the SpecSync preflight filed as CorvidLabs/spec-sync#1082; it follows his decision comment on #298, 'check before shipping'). Relayed and recorded by chough-fixer-t4g at 2026-11-18T18:43:20Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-298",
+        "title": "Fix 298",
+        "description": "fix 298",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.ship-refuses-a-corrupt-history.cases.toml",
+          "changelog.d/2026-11-18-fix-298.md",
+          "docs/cli.md",
+          "src/change.rs",
+          "tests/change.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "When a commit between the change's base commit and HEAD holds a change both open under .specsync/changes/<id>/ and archived under .specsync/archive/changes/<date>-<id>/, chough change ship refuses before it runs SpecSync's review or ship, naming the commit, the duplicated change and how to recover, with every file unchanged and no native step run; without such a commit the ship runs as before. The docs say the check is interim until SpecSync's preflight (CorvidLabs/spec-sync#1082)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the delta is frozen at approval. SpecSync owns terminal-evidence validity; this check is interim until its preflight (spec-sync#1082). No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "472ff3898414f344b4c1a0ced198bf6a6bce94eda7a43579e2bcd3507a9e180f"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-059": "d4a775d3be35f1fd19fd067264ddb554ba661613e3f53f3930a0c7fbed975d5f"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Both: Chough check now + SpecSync",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his choice of option (3) for #298, refusing before review when base..HEAD shows a change both open and archived in one commit, with the SpecSync preflight filed as CorvidLabs/spec-sync#1082; it follows his decision comment on #298, 'check before shipping'",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795042179,
+      "digest": "62ed1f359c41b106646dfcec76b53421226bdad5b8b3e0e7d39447ee46822a45",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

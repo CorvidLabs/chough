@@ -278,6 +278,34 @@ fn doctor_decision_fixes_need_a_reason_and_record_no_human_decision() {
         serde_json::json!([]),
         "{archived:#}"
     );
+    // #250: each withdrawn gate's Timeline entry carries the reason, in the archived
+    // story too, and doctor's JSON echoes it on the decisions it applied.
+    let story = fixture.read(&format!(
+        ".chough/archive/sessions/{}.md",
+        fixture.id_of("alpha")
+    ));
+    let closed_entry = story
+        .find("· gate-closed ·")
+        .unwrap_or_else(|| panic!("no gate-closed entry: {story}"));
+    let after = &story[closed_entry..];
+    let entry_end = after.find("\n- ").unwrap_or(after.len());
+    assert!(
+        after[..entry_end].contains("  - withdrawn: Superseded; ch-alpha is archived"),
+        "{}",
+        &after[..entry_end]
+    );
+    for finding in fixed["findings"].as_array().unwrap() {
+        let echoed = finding["decision_reason"].as_str();
+        if finding["decision"] == true {
+            assert_eq!(
+                echoed,
+                Some("Superseded; ch-alpha is archived"),
+                "{finding:#}"
+            );
+        } else {
+            assert_eq!(echoed, None, "{finding:#}");
+        }
+    }
     // Withdrawing a gate records no human decision.
     assert!(
         !archived["decisions"]
@@ -1015,6 +1043,52 @@ fn doctor_reports_merge_drivers_that_would_run_an_older_chough() {
     }
     let (_, report) = doctor(&fixture, &[]);
     assert!(outdated(&report).is_empty(), "{report:#}");
+}
+
+/// REQ-records-006, REQ-history-012 (#250, the tester's finding on #345): the reason a
+/// stale gate is withdrawn with is a written value. One that holds a credential is
+/// refused with nothing written, as `session close --reason` refuses it; with
+/// `--redact` it is written redacted, in the story and in doctor's JSON, never raw.
+#[cfg(unix)]
+#[test]
+fn a_stale_gate_reason_that_leaks_is_refused_or_redacted() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Native approval of ch-alpha",
+    ]);
+    finalized_change(&fixture, "alpha", "ch-alpha");
+    no_native_reads(&fixture);
+    let token = concat!("ghp_", "abcdefghijklmnopqrstuvwxyz0123456789");
+    let reason = format!("SYNTHETIC superseded, token {token}");
+    let before = fixture.read(&fixture.session_file_of("alpha"));
+
+    let refused = fixture.run(&["doctor", "--fix", "--reason", &reason]);
+    assert!(!refused.status.success());
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&refused.stdout),
+        String::from_utf8_lossy(&refused.stderr)
+    );
+    assert!(said.contains("refused:leak"), "{said}");
+    assert!(!said.contains(token), "{said}");
+    assert_eq!(fixture.read(&fixture.session_file_of("alpha")), before);
+    assert!(!fixture.exists(".chough/archive/sessions"));
+
+    let (code, fixed) = doctor(&fixture, &["--fix", "--redact", "--reason", &reason]);
+    assert_eq!(code, 0, "{fixed:#}");
+    let story = fixture.read(&format!(
+        ".chough/archive/sessions/{}.md",
+        fixture.id_of("alpha")
+    ));
+    assert!(!story.contains(token), "{story}");
+    assert!(
+        story.contains("  - withdrawn: SYNTHETIC superseded, token <redacted:"),
+        "{story}"
+    );
+    assert!(!fixed.to_string().contains(token), "{fixed:#}");
 }
 
 /// REQ-records-001, REQ-cli-055 (#265), TC-records-doctor-reports-conflict-markers-in-records:
