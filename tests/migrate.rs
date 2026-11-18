@@ -1848,6 +1848,9 @@ fn migrate_skips_macos_metadata_beside_0_5_records() {
         std::fs::create_dir_all(full.parent().unwrap()).unwrap();
         std::fs::write(full, apple_double).unwrap();
     }
+    // A metadata folder holding only an empty folder (#321 review P3).
+    let metadata_folder = ".chough/history/._metadata-folder/empty-child";
+    std::fs::create_dir_all(fixture.root().join(metadata_folder)).unwrap();
     let plan = fixture.ok(&["migrate", "--json"]);
     assert_eq!(plan["plan_digest"], digest.as_str(), "{plan:#}");
     assert_eq!(plan["unaccounted"], serde_json::json!([]), "{plan:#}");
@@ -1861,6 +1864,10 @@ fn migrate_skips_macos_metadata_beside_0_5_records() {
             "{path} was removed by the migration"
         );
     }
+    assert!(
+        fixture.root().join(metadata_folder).is_dir(),
+        "{metadata_folder} was removed by the migration"
+    );
     // The migrated tree reads with the metadata files still beside its records.
     for args in [&["session", "list"][..], &["bug", "list"][..]] {
         let output = fixture.run(args);

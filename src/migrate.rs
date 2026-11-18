@@ -1038,6 +1038,11 @@ fn prune_empty_folders(root: &Path) -> Result<()> {
     fn prune(path: &std::path::Path) {
         if let Ok(entries) = std::fs::read_dir(path) {
             for entry in entries.flatten() {
+                // A macOS metadata folder is neither entered nor removed, so the folder
+                // that holds it stays too (REQ-records-015, #321 review).
+                if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
+                    continue;
+                }
                 if entry.path().is_dir() {
                     prune(&entry.path());
                 }
