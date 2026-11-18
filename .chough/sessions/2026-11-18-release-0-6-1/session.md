@@ -5,7 +5,7 @@ aliases: [release-0-6-1]
 objective: "Prepare the Chough 0.6.1 patch release: version 0.6.1, the changelog assembled from changelog.d, the knowledge index rebuilt, and the release dry runs; stop before the tag"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-verify-lane-steps-on-release-0-6-1-at-7bb57a6-toolchain-fmt
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of release-0-6-1
-    holds: accept
-    drives: review
-    opened: 2026-11-18T17:31:03Z
+waiting_on_human: []
 run_consents: []
-next: Wait for Leif's implementation review of release-0-6-1; the tag and publish are his separate decisions
+next: Continue done
 title: Chough 0.6.1 release preparation
 summary:
   - "Version 0.6.1, the change log assembled from 36 fragments of merged changes, the knowledge index rebuilt, and two changelog tests fixed so they hold once a release removes the fragments. The release check and the publish dry run passed on macOS. The test step failed once on two of #324's evidence tests under heavy machine load and passed in two full reruns; that failure was not explained. Nothing is tagged or published; those are Leif's separate decisions."
@@ -47,6 +43,7 @@ Prepare the Chough 0.6.1 patch release: version 0.6.1, the changelog assembled f
 - 0xLeif decided "Scope approval of release-0-6-1": "Approve" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him: 'Chough 0.6.1 release prep (change release-0-6-1): set the version to 0.6.1, build CHANGELOG.md from the merged changes only, rebuild the knowledge index, and run the release dry runs. No code changes, no tag, no publish. Approve the scope?'; given to fable-t4b as the answer to the same question in Claude Code); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve release-0-6-1 as 0xLeif
 - 0xLeif decided "Scope approval of release-0-6-1": "Widen the release change" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him how the test-only fix to two tests in tests/changelog.rs should go in, with the option 'Widen the release change (you let t4b run send-back on release-0-6-1 this once, add tests/changelog.rs, fix the two tests, include #322 while it's at it; you approve the widened scope with this answer)'); recorded by fable-t4b; a relayed claim, not authenticated
 - 0xLeif decided "Scope approval of release-0-6-1, widened (native approval)": "Widen the release change" (Relayed by Leif's planning session (hc t4c) on 2026-11-18; the same answer as the gate closed just before, which was opened at build and so drove no native approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve release-0-6-1 as 0xLeif
+- 0xLeif decided "Implementation review of release-0-6-1": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after it read PR #326 for him and told him of the one-time failure of #324's tests); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review release-0-6-1 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -146,4 +143,20 @@ Prepare the Chough 0.6.1 patch release: version 0.6.1, the changelog assembled f
   - revision: 7bb57a609060fb2b53e672466bb689e431b75f5d
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T17:33:40Z · gate-closed · accept → accept · Implementation review of release-0-6-1 ^t-fe3356
+  - native_change: release-0-6-1
+  - revision: af993d0f4bfc7b842a57a1ba22cbb35bfdedf947
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after it read PR #326 for him and told him of the one-time failure of #324's tests
+    - recorded_by: fable-t4b
+    - native: specsync change review release-0-6-1
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T17:33:42Z · advance · accept → done · native:archived ^t-ddf2d6
+  - native_change: release-0-6-1
+  - gate: native:archived
+  - revision: af993d0f4bfc7b842a57a1ba22cbb35bfdedf947
   - by: fable (claude-fable-5-2, hc t4b)
