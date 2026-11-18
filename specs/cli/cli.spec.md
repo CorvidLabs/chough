@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 100
+version: 101
 status: active
 files:
   - src/main.rs
@@ -380,3 +380,4 @@ provider, runtime or hosted service.
 | 98 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
 | 99 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
 | 100 | 2026-11-15 | clarify-req-cli-001-init-preserves-bytes-acceptance: Clarify REQ-cli-001 init-preserves-bytes acceptance |
+| 101 | 2026-11-18 | a-blocking-bug-stops-only-a-session-it-is-related-to: A blocking bug stops only a session it is related to |

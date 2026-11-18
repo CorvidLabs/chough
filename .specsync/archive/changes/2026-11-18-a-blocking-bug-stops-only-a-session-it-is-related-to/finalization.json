@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "a-blocking-bug-stops-only-a-session-it-is-related-to",
+  "implementation_commit": "c08a9e3360abd993ba10932f35d0ef8ae78025d3",
+  "implementation_tree": "a79acdeefaddf7da04b78ff4ead10ac93cd1efaf",
+  "contract_digest": "94d2b007c62c0a41baf005d4e0d0f813b9f47fca1bc6b1a832897c2210800437",
+  "workspace_digest": "0ffcde14245bf0dae3d5e0792e823403c3a69b2cf90566a29ae28b083f28d35e",
+  "closing_digest": "816ace701f0d7c66680afd65258f6d7a7103be04a05632a37f160fd9fd06792f",
+  "review_digest": "0f0c8669e5d53571c81a65eef0ced968553829debd8b86cd52f97519bdad0215",
+  "finalization_digest": "3d639fb0aa96eebae9a2039b9bbf900c36d4a9dcc27c1e727c222db95f58d206",
+  "timestamp": 1794962182
+}
