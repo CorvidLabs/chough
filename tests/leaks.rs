@@ -617,6 +617,96 @@ fn a_hyphen_glued_token_is_refused_at_the_write_and_found_by_the_doctor() {
     assert_eq!(leaks[0]["match"], "token");
 }
 
+/// REQ-records-006, TC-records-sk-after-a-hyphen-is-not-a-key (#316): `sk-` after a
+/// hyphen continues a word, as in 0.6.0, so a bug whose generated ID holds `-sk-learn-…`
+/// is written, a 0.6.0 bug with such an ID still updates and gives the doctor no leak,
+/// and a distinctive token glued to a hyphen (#267) is still refused.
+#[test]
+fn a_slug_holding_sk_is_not_a_key_and_a_glued_token_still_is() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+
+    let output = run(
+        &fixture,
+        &[
+            "bug",
+            "add",
+            "--title",
+            "Fix flaky sk-learn tests in CI pipeline",
+            "--symptom",
+            "s",
+            "--trigger",
+            "t",
+            "--expected",
+            "e",
+            "--actual",
+            "a",
+            "--environment",
+            "local",
+        ],
+    );
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        output.status.success(),
+        "the sk-learn bug was refused: {said}"
+    );
+    assert!(
+        said.contains("-fix-flaky-sk-learn-tests-in-ci-pipeline"),
+        "{said}"
+    );
+
+    let upgraded = "2026-11-18-use-sk-learn-for-the-classifier-model";
+    fixture.bug_md(upgraded, "in-scope", "open", &[]);
+    fixture.git(&["add", "-A"]);
+    fixture.git(&["commit", "-qm", "a 0.6.0 bug and the sk-learn bug"]);
+    let output = run(
+        &fixture,
+        &[
+            "bug",
+            "update",
+            upgraded,
+            "--note",
+            "Pinned the sk-learn version",
+        ],
+    );
+    assert!(
+        output.status.success(),
+        "the 0.6.0 bug did not update: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    fixture.git(&["add", "-A"]);
+    fixture.git(&["commit", "-qm", "update the 0.6.0 bug"]);
+    let output = run(&fixture, &["doctor", "--leaks"]);
+    let said = String::from_utf8_lossy(&output.stdout).into_owned();
+    let report: serde_json::Value = serde_json::from_str(&said).unwrap();
+    let leaks: Vec<&serde_json::Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["kind"] == "leak")
+        .collect();
+    assert!(leaks.is_empty(), "{report:#}");
+
+    let glued = concat!("x-", "ghp_", "abcdefghij0123456789abcdefghij0123");
+    refused(
+        &fixture,
+        &[
+            "checkpoint",
+            "--decision",
+            &format!("decided: probe {glued}"),
+        ],
+        "decision",
+        "token",
+        concat!("ghp_", "abcdefghij0123456789"),
+    );
+}
+
 /// REQ-records-006, TC-records-a-file-or-design-path-passes-the-leak-guard (#268): a
 /// `checkpoint --file` or `--design` path is a value Chough writes into `session.md`, so
 /// a token in it refuses the write naming the field, with the token never echoed and
