@@ -5,7 +5,7 @@ aliases: [fix-265]
 objective: "A record body may not hold Git conflict markers: writes refuse naming the file, line and marker, and chough doctor reports committed records that hold them (REQ-records-001, #265)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -28,13 +28,9 @@ observations:
   - 2026-11-18-tc-records-migrate-refuses-conflict-markers-dd4e5d
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-265
-    holds: accept
-    drives: review
-    opened: 2026-11-18T19:15:13Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # A record body may not hold Git conflict markers: writes refuse naming the file, line and marker, and chough doctor reports committed records that hold them (REQ-records-001, #265)
 
@@ -50,6 +46,7 @@ A record body may not hold Git conflict markers: writes refuse naming the file, 
 
 - 0xLeif decided "Scope approval of fix-265": "Approve the scope. … Yes, within scope" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, in two answers: 'Approve the scope' (a record body may not hold git conflict markers; writes refused naming the file, line and marker; chough doctor reports committed records holding them; a new sentence in REQ-records-001), then 'Yes, within scope' to the doctor sentence in REQ-cli-055 beside REQ-records-001, counting ======= only between <<<<<<< and >>>>>>>, and migrate checking every planned file before writing any); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-265 as 0xLeif
 - 0xLeif decided "Re-approval of fix-265's rebased delta": "Re-approve" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #335 (#320) merged and changed REQ-cli-055, SpecSync refused fix-265's approved cli delta as approved against changed canonical text; the delta was rebased onto main's REQ-cli-055 with only #265's clause and acceptance line added, nothing else changed, and he re-approved it); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-265 as 0xLeif
+- 0xLeif decided "Implementation review of fix-265": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #336 after the tester's PASS; the follow-ups he decided are filed as #339); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-265 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -127,4 +124,20 @@ A record body may not hold Git conflict markers: writes refuse naming the file, 
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve fix-265
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T20:33:01Z · gate-closed · accept → accept · Implementation review of fix-265 ^t-d79806
+  - native_change: fix-265
+  - revision: 24ceadd679b7b240a7aed17abd0a54b350cbad78
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #336 after the tester's PASS; the follow-ups he decided are filed as #339
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-265
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T20:33:02Z · advance · accept → done · native:archived ^t-acc484
+  - native_change: fix-265
+  - gate: native:archived
+  - revision: 24ceadd679b7b240a7aed17abd0a54b350cbad78
   - by: chough-fixer (claude-opus-5-5, hc t4n)
