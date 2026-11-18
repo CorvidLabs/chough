@@ -5,7 +5,7 @@ aliases: [fix-272]
 objective: journal add holds the writer lock of REQ-cli-040, so parallel posts all reach the feed (#272)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: [src/journal.rs, tests/journal.rs]
 observations: [2026-11-18-tc-cli-journal-add-holds-the-writer-lock]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-272
-    holds: accept
-    drives: review
-    opened: 2026-11-18T00:36:42Z
+waiting_on_human: []
 run_consents: []
-next: "Wait for Leif's implementation review of fix-272 on PR #302; do not ship"
+next: Continue done
 title: journal add holds the writer lock
 summary:
   - chough journal add took no writer lock, so several adds at once left the feed missing posts (#272). It now holds the lock REQ-cli-040 already named for it. Two tests failed on main first; the verify lane passed on macOS at 3f3f95c. Linux and CI were not run locally.
@@ -46,6 +42,7 @@ journal add holds the writer lock of REQ-cli-040, so parallel posts all reach th
 - No requirement text changes: REQ-cli-040 already lists journal add as a writer that holds the lock, so this is --no-spec-change. library index is not in that list and is left alone.
 - Leif, 2026-11-17, in the task he gave Fable: 'implement only defects the existing contract already requires, open draft pull requests, and stop at every human gate.' The code and tests were written on that instruction before scope approval; Fable approves nothing.
 - 0xLeif decided "Scope approval of fix-272": "record my scope approval of fix-272, fix-267, fix-262 and fix-260 as 0xLeif" (Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-272 as 0xLeif
+- 0xLeif decided "Implementation review of fix-272": "pass all four, merge one at a time" (Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the four implementation review gates); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-272 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -101,4 +98,20 @@ journal add holds the writer lock of REQ-cli-040, so parallel posts all reach th
   - revision: 8abb5bb89b5244e72327e1ea6abfc7e66634ebe1
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T00:58:29Z · gate-closed · accept → accept · Implementation review of fix-272 ^t-8f472c
+  - native_change: fix-272
+  - revision: fd978ee5d0eaabe65f61c1bc574e3f3e537304c8
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: pass all four, merge one at a time
+    - where: Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the four implementation review gates
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-272
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T00:58:31Z · advance · accept → done · native:archived ^t-48814e
+  - native_change: fix-272
+  - gate: native:archived
+  - revision: fd978ee5d0eaabe65f61c1bc574e3f3e537304c8
   - by: fable (claude-fable-5-2, hc t4b)
