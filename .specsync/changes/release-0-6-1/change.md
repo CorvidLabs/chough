@@ -1,6 +1,6 @@
 ---
 id: release-0-6-1
-state: approved
+state: implementing
 type: operations
 base_commit: 975af07cc89912f9ea02d27c81fe87f046685eaa
 ---
