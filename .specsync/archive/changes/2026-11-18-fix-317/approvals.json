@@ -44,6 +44,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g, later 'fixer'), 2026-11-18: his answer to including bug add/update --observation (bugs.rs join_active_session, REQ-cli-040) in #317, added to his earlier 'File it, fixer's A list' approval of #317, with his choice 'Recreate the draft'",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795021393,
+      "digest": "7a1c8877c553d81e9a3cce59bf90b078e851beee011d0d98b67dffad6ead19b3",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
