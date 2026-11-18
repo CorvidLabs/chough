@@ -161,6 +161,9 @@ pub(crate) type Receipt = Vec<(String, String)>;
 pub(crate) struct ObservationHomes {
     pub(crate) entries: BTreeMap<String, String>,
     pub(crate) receipts: BTreeMap<String, Receipt>,
+    /// The archived story (its path) that holds each observation carried as a receipt,
+    /// when a story does; a receipt only a bug holds has none (#277).
+    pub(crate) stories: BTreeMap<String, String>,
 }
 
 impl ObservationHomes {
@@ -181,6 +184,33 @@ impl ObservationHomes {
             .get(id)
             .and_then(|map| map.iter().find(|(key, _)| key == "id"))
             .map_or_else(|| id.to_string(), |(_, name)| name.clone())
+    }
+
+    /// How a migrated bug's body names a 0.5.x observation (#277): a Markdown link,
+    /// relative to the bug's file in `.chough/bugs/`, to the open session's evidence
+    /// entry or to the archived story that holds its receipt. A receipt only the bug
+    /// itself holds is named and said to be the bug's own, and one carried nowhere
+    /// keeps its bare ID, which resolves as `removed`.
+    pub(crate) fn body_link(&self, id: &str) -> String {
+        let name = self.name(id);
+        let held = self.entries.get(id).or_else(|| self.stories.get(id));
+        match held.and_then(|path| path.strip_prefix(".chough/")) {
+            Some(path) => format!("[{name}](../{path})"),
+            None if self.receipts.contains_key(id) => format!("{name} (a receipt of this bug)"),
+            None => name,
+        }
+    }
+
+    /// Each of `ids` by [`ObservationHomes::body_link`], once, in order.
+    pub(crate) fn body_links(&self, ids: &[String]) -> Vec<String> {
+        let mut links: Vec<String> = vec![];
+        for id in ids {
+            let link = self.body_link(id);
+            if !links.contains(&link) {
+                links.push(link);
+            }
+        }
+        links
     }
 
     /// Each of `ids` by [`ObservationHomes::name`], once, in order.
@@ -1267,6 +1297,19 @@ fn plan(root: &Path) -> Result<Plan> {
     story_receipts(&mut carried, &homes, &observations)?;
     session_verified_links(&mut carried, &homes, &observations)?;
     observation_names(&mut carried, &homes, &observations)?;
+    // #277: a bug's body links a receipt to the archived story that holds it, the
+    // first in session order when several do.
+    let mut observations = observations;
+    for home in homes.values().filter(|home| home.archived) {
+        for id in &home.observations {
+            if observations.receipts.contains_key(id) {
+                observations
+                    .stories
+                    .entry(id.clone())
+                    .or_insert_with(|| format!(".chough/archive/sessions/{}.md", home.id));
+            }
+        }
+    }
     carried.absorb(bugs_0_5(root, &observations)?)?;
     // Knowledge runs last: its index.md is the one the tree has once every other
     // mapper's plan applies.
@@ -2156,6 +2199,7 @@ mod tests {
         let homes = ObservationHomes {
             entries: BTreeMap::from([("OBS-entry".into(), "elsewhere".into())]),
             receipts: BTreeMap::from([("OBS-carried".into(), carried_map.clone())]),
+            stories: BTreeMap::new(),
         };
         story_receipts(&mut carried, &sessions, &homes).unwrap();
         let written = carried

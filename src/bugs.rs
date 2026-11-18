@@ -2302,9 +2302,9 @@ pub(super) fn migrate_0_5(
             criteria: legacy.criteria.clone(),
             requirements: legacy.requirements.clone(),
             cases: legacy.cases.clone(),
-            // The Reported Log line keeps the IDs the report linked, as the notes' lines
-            // do; the front matter `evidence` is set below.
-            evidence: reported,
+            // The Reported Log line links what the report linked, as the notes' lines
+            // do (#277); the front matter `evidence` is set below.
+            evidence: homes.body_links(&reported),
             // t38n's round-4 F9: front matter names the carried entry or receipt, whose
             // alias keeps the 0.5.x ID.
             regression_baseline: legacy
@@ -2367,7 +2367,10 @@ pub(super) fn migrate_0_5(
             .map(|note| {
                 let mut text = note.text.clone();
                 if !note.observations.is_empty() {
-                    text.push_str(&format!("; evidence: {}", note.observations.join(", ")));
+                    text.push_str(&format!(
+                        "; evidence: {}",
+                        homes.body_links(&note.observations).join(", ")
+                    ));
                 }
                 log_line(note.at_unix_seconds, &text, None)
             })
@@ -3109,6 +3112,11 @@ mod tests {
         homes
             .receipts
             .insert("OBS-receipt".into(), receipt_map.clone());
+        // #277: the archived story that holds the receipt.
+        homes.stories.insert(
+            "OBS-receipt".into(),
+            ".chough/archive/sessions/2026-11-01-old-work.md".into(),
+        );
 
         assert_eq!(
             links_0_5(root).unwrap().get("BUG-0007"),
@@ -3228,7 +3236,9 @@ mod tests {
         assert_eq!(
             stored.log(),
             vec![
-                "- 2026-11-01T10:00:00Z · Reported (manual report); evidence: OBS-entry, OBS-receipt, OBS-gone",
+                // #277: each carried observation links the file that holds it, relative to
+                // the bug's own file; one that was removed keeps its bare 0.5.x ID.
+                "- 2026-11-01T10:00:00Z · Reported (manual report); evidence: [2026-11-01-entry](../sessions/2026-11-01-work/evidence/2026-11-01-entry.md), [2026-11-01-receipt](../archive/sessions/2026-11-01-old-work.md), OBS-gone",
                 "- 2026-11-01T10:01:40Z · status: open -> investigating. Seen again; evidence: OBS-later",
             ]
         );

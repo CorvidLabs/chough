@@ -1084,7 +1084,10 @@ vault content of earlier releases is removed after it is listed, and so are
 `.chough/transitions.jsonl`, `.chough/history/`, `.chough/pruned.jsonl`,
 `.chough/session.v1.json`, `.chough/artifacts/` other than files an open bug names, and
 shelved 0.5.x sessions. An ID whose record was removed without being carried resolves
-as `removed`, naming the receipt, never as current or passed.
+as `removed`, naming the receipt, never as current or passed. A migrated bug's Log names each carried
+observation as a link, relative to the bug's file, to the open session's entry or to
+the archived story that holds its receipt; a receipt only the bug holds is named `(a
+receipt of this bug)`, and one that was removed keeps its 0.5.x ID.
 
 Every file the migration writes passes the leak check with redaction, so no home
 folder path, user name or credential survives in a rewritten record. Git history is not
