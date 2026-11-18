@@ -588,6 +588,8 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
             "schema": 2,
             "stage": checkpoint.stage,
             "native_change": checkpoint.native_change,
+            // #361: why the session needs no native change, once it said so.
+            "no_native_change": checkpoint.no_native_change,
             "gate": assessment.gate.as_ref().map(|(target, gate)| json!({"to": target, "allowed": gate.allowed, "label": gate.label, "detail": gate.detail})),
             "valid_transitions": stage::valid_transitions(checkpoint),
             "awaiting_human": checkpoint.awaiting_human,
@@ -1172,6 +1174,8 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "iteration": checkpoint.stage.iteration,
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
+        // REQ-cli-016 (#361): how many installed skill files are an earlier release's.
+        "skill_outdated": skill::known_outdated(root).map_or(0, |files| files.len()),
         "native_check": native_check::view(root, change.as_deref(), summary)?,
         "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,
@@ -1264,6 +1268,13 @@ fn next_text(view: &Value) -> String {
     // REQ-cli-069: a merge or rebase in progress shows right below the objective.
     if let Some(git) = view["git_operation"]["text"].as_str() {
         lines.push(format!("Git: {git}"));
+    }
+    // REQ-cli-016 (#361): one line while any installed skill file is an earlier release's.
+    if view["skill_outdated"]
+        .as_u64()
+        .is_some_and(|count| count > 0)
+    {
+        lines.push("Skill files are outdated: run `chough skill update`".into());
     }
     let stage = &view["stage"];
     if stage.is_null() {

@@ -53,6 +53,7 @@ enum Kind {
     MergeDriverOutdated,
     ConflictMarkers,
     GitOperation,
+    SkillOutdated,
 }
 
 impl Kind {
@@ -74,6 +75,7 @@ impl Kind {
             Self::MergeDriverOutdated => "merge_driver_outdated",
             Self::ConflictMarkers => "conflict_markers",
             Self::GitOperation => "git_operation",
+            Self::SkillOutdated => "skill_outdated",
         }
     }
 }
@@ -1193,7 +1195,30 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     found.extend(merge_driver_outdated(root));
     found.extend(conflict_marker_findings(root, &files)?);
     found.extend(git_operation_finding(root));
+    found.extend(skill_outdated(root));
     Ok(found)
+}
+
+/// REQ-cli-016 (#361): one finding per installed skill file that is byte-identical to a
+/// known earlier bundle, naming `chough skill update`. Doctor does not update the skill
+/// itself, and a file a person edited is not reported.
+fn skill_outdated(root: &Path) -> Vec<Finding> {
+    crate::skill::known_outdated(root)
+        .unwrap_or_default()
+        .into_iter()
+        .map(|path| {
+            let mut finding = Finding::new(
+                Kind::SkillOutdated,
+                &path,
+                "chough skill update".into(),
+                false,
+            );
+            finding.blocked = Some(format!(
+                "{path} is an earlier release's copy; `chough skill update` replaces it, and doctor never writes the skill"
+            ));
+            finding
+        })
+        .collect()
 }
 
 /// The session findings, in fix order: stale pointer, finished sessions, unfinished
@@ -1415,6 +1440,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         | Kind::Oversize
         | Kind::Unreadable
         | Kind::MergeDriverOutdated
+        | Kind::SkillOutdated
         | Kind::ConflictMarkers
         | Kind::GitOperation => {
             bail!("{} has no fix", finding.kind.name())

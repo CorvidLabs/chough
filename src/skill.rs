@@ -844,6 +844,26 @@ pub(super) fn update_advice(root: &Path) -> Result<Option<String>> {
     )))
 }
 
+/// REQ-cli-016 (#361): each installed skill file that is byte-identical to a known
+/// earlier bundle, project-relative, once however many hosts share its directory. A
+/// file a person edited, a missing one and a current one are not listed.
+pub(super) fn known_outdated(root: &Path) -> Result<Vec<String>> {
+    let mut found = vec![];
+    let mut seen = std::collections::BTreeSet::new();
+    for host in installed_hosts(root, vec![])? {
+        let base = directory(&host)?;
+        if !seen.insert(base.clone()) {
+            continue;
+        }
+        for (name, content) in BUNDLE {
+            if file_state(root, &base, name, content)? == "known-outdated" {
+                found.push(format!("{base}/{name}"));
+            }
+        }
+    }
+    Ok(found)
+}
+
 fn report(root: &Path, hosts: &[String], update: bool) -> Result<Value> {
     let mut reports = vec![];
     for host in hosts {

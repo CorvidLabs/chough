@@ -4372,3 +4372,81 @@ fn spec_files_merge_through_specsync_s_driver_in_this_repository() {
         "AGENTS.md names the one-time driver setup"
     );
 }
+
+/// REQ-cli-016 (#361), TC-cli-doctor-and-next-name-skill-update-for-outdated-files:
+/// while an installed skill file is byte-identical to a known earlier bundle, `chough
+/// doctor` reports it as `skill_outdated`, naming `chough skill update`, and `chough
+/// next` shows one line saying so. A current copy and a file a person edited give
+/// neither, and `chough skill update` clears both. `chough status` carries
+/// `no_native_change` once the session recorded it.
+#[test]
+fn doctor_and_next_say_when_skill_files_are_known_outdated() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let raw = |args: &[&str]| -> String {
+        let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(args)
+            .output()
+            .unwrap();
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let outdated = || -> Vec<Value> {
+        let report: Value = serde_json::from_str(&raw(&["doctor"])).unwrap();
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "skill_outdated")
+            .cloned()
+            .collect()
+    };
+    let line = "Skill files are outdated: run `chough skill update`";
+    assert!(outdated().is_empty());
+    assert!(!raw(&["next"]).contains(line));
+
+    let file = ".agents/skills/chough-workflow/references/stages.md";
+    let installed = root.join(file);
+    fs::write(&installed, STAGES_AT_F19823D).unwrap();
+    let found = outdated();
+    assert_eq!(found.len(), 1, "{found:#?}");
+    assert_eq!(found[0]["target"], file);
+    assert_eq!(found[0]["decision"], false);
+    assert!(
+        found[0]["fix"]
+            .as_str()
+            .unwrap()
+            .contains("chough skill update"),
+        "{found:#?}"
+    );
+    assert!(raw(&["next"]).contains(line));
+    let next: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(next["skill_outdated"], 1, "{next}");
+
+    // A file a person edited is theirs: it is not reported as outdated.
+    fs::write(&installed, "my own notes\n").unwrap();
+    assert!(outdated().is_empty());
+    assert!(!raw(&["next"]).contains(line));
+
+    // The update clears the finding and the line.
+    fs::write(&installed, STAGES_AT_F19823D).unwrap();
+    chough(root, &["skill", "update"]);
+    assert!(outdated().is_empty());
+    assert!(!raw(&["next"]).contains(line));
+
+    chough(
+        root,
+        &[
+            "checkpoint",
+            "--no-native-change",
+            "SYNTHETIC planning only",
+        ],
+    );
+    let status = raw(&["status"]);
+    assert!(
+        status.contains("\"no_native_change\": \"SYNTHETIC planning only\""),
+        "{status}"
+    );
+}

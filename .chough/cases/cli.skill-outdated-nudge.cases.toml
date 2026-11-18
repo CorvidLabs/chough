@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #361: after a binary upgrade nothing said the installed skill files were an
+# earlier release's.
+
+[[case]]
+id = "TC-cli-doctor-and-next-name-skill-update-for-outdated-files"
+title = "While an installed skill file is an earlier release's copy, doctor reports it as skill_outdated and next shows one line, both naming chough skill update; a current or edited file gives neither"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-12"]
+requirements = ["REQ-cli-016"]
+paths = ["src/skill.rs", "src/doctor.rs", "src/main.rs", "tests/package.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/package.rs::doctor_and_next_say_when_skill_files_are_known_outdated passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "package"
+test = "doctor_and_next_say_when_skill_files_are_known_outdated"

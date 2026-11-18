@@ -1,0 +1,57 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795045210,
+      "digest": "82b21588a0a0af12e631ee8171380a057fafec02499ae802082d9997e86b5812",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-361\": \"doctor and next\" (GitHub issue #361, which records Leif's decision of 2026-11-18 (chough doctor reports each known-outdated skill file naming chough skill update, chough next shows one line, and status JSON carries no_native_change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval). Relayed and recorded by fable-t4b at 2026-11-18T23:40:10Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-361",
+        "title": "Fix 361",
+        "description": "fix 361",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.skill-outdated-nudge.cases.toml",
+          "changelog.d/2026-11-18-fix-361.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/doctor.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "While an installed skill file is byte-identical to a known earlier bundle, chough doctor reports it as skill_outdated, naming the file and chough skill update, not a decision, and chough next shows the line 'Skill files are outdated: run chough skill update' and skill_outdated as the count; a current, missing or edited file gives neither, and chough skill update clears both. chough status carries no_native_change once the session recorded it."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lessons apply: human gates are plain text in tasks.md and the delta is frozen at approval. Doctor writes no skill file (REQ-cli-016 keeps updates to chough skill update), and next reads only the installed copy's files.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "9f529780411d04e2334a97ac6b06786998b1d470d447a4e2889ed23732351b74"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-016": "6e395768b4fa4e4d1cdd4aa94f85a1fb1c1417a1e8bcf8f020c92ab73363c23d"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "doctor and next",
+        "where": "GitHub issue #361, which records Leif's decision of 2026-11-18 (chough doctor reports each known-outdated skill file naming chough skill update, chough next shows one line, and status JSON carries no_native_change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ],
+  "reopenings": []
+}
