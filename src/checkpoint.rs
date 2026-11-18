@@ -708,6 +708,15 @@ pub(super) fn evidence_links(
 
 /// Save the checkpoint and its queued Timeline entries in one atomic replace; the
 /// checkpoint then holds the record written and no queued entry.
+/// Check, with nothing written, that `session` would save as [`save_checkpoint`] saves
+/// it: the same links, validation, rendering and bound (#343 review). The error says why
+/// it would not.
+pub(super) fn check_save(root: &Path, session: &Checkpoint) -> Result<()> {
+    let mut session = session.clone();
+    session.evidence_links = evidence_links(root, &session);
+    render_checkpoint(&session).map(|_| ())
+}
+
 pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<()> {
     lock_checkpoint(root)?;
     remove_orphaned_session_temps(root)?;
