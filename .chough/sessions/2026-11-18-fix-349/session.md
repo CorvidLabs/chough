@@ -5,7 +5,7 @@ aliases: [fix-349]
 objective: "An archived story's What was verified line shows each entry's limitations beside its claim (REQ-history-006, #349 part 1)"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: [src/sessions.rs, tests/evidence.rs]
 observations: [2026-11-18-tc-history-a-storys-verified-line-shows-the-entrys-limitations]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-349
+    holds: accept
+    drives: review
+    opened: 2026-11-18T22:52:24Z
 run_consents: []
-next: Continue test
+next: Wait for the tester's check and Leif's implementation review of fix-349
 ---
 # An archived story's What was verified line shows each entry's limitations beside its claim (REQ-history-006, #349 part 1)
 
@@ -80,4 +84,15 @@ An archived story's What was verified line shows each entry's limitations beside
   - native_change: fix-349
   - gate: native:approved
   - revision: 235c3bfb063e835f67c4aae12f873ceac4074be7
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T22:52:24Z · advance · test → accept · native:verifying ^t-9f3d0e
+  - native_change: fix-349
+  - gate: native:verifying
+  - revision: ce50f931a83d31f512e0ed8f07b05a3430478265
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T22:52:24Z · gate-opened · accept → accept · Implementation review of fix-349 ^t-6a3636
+  - native_change: fix-349
+  - revision: ce50f931a83d31f512e0ed8f07b05a3430478265
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
