@@ -77,6 +77,9 @@ pub(super) fn run(root: &Path, command: JournalCommand) -> Result<()> {
             links: given_links,
             record,
         } => {
+            // REQ-cli-040 (#272): a post and the feed rebuilt from every post are one
+            // save, so a concurrent `journal add` rebuilds from the latest posts.
+            crate::sessions::lock_project(root)?;
             let dir = crate::library::enabled_dir(root)?;
             ensure!(
                 body.len() <= BODY_LIMIT,

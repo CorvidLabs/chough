@@ -1,0 +1,68 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794871189,
+      "digest": "53eca328ef6947271c516ea6a2b628f80ef50dd5983679b0d76e6ab9d988ae8a",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-docs\": \"make a PR and keep improving this and then make sure that we update all the documents and all everything's accurate\" (Grok session on 2026-11-16, relayed by grok-t1w). Relayed and recorded by grok-t1w at 2026-11-16T23:19:48Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-docs",
+        "title": "Fix docs",
+        "description": "fix docs",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/stages.md",
+          "AGENTS.md",
+          "changelog.d/2026-11-16-fix-docs.md",
+          "docs/architecture.md",
+          "docs/ci.md",
+          "docs/exercises/feature-bug-loop.md",
+          "docs/integrations.md",
+          "docs/lifecycle.md",
+          "docs/verification.md",
+          "docs/walkthrough.md",
+          "integrations/claude-code/hc-template.md",
+          "integrations/codex/hc-template.md",
+          "integrations/grok/hc-template.md",
+          "integrations/kimi/hc-template.md",
+          "integrations/local/hc-template.md",
+          "integrations/templates.toml",
+          "skills/chough-workflow/references/stages.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "FLOW-18 already requires the docs, skill and diagrams to say what current main does. This change corrects drifted sentences and does not change requirement text.",
+        "acceptance_criteria": [
+          "The drifted sentences match current main, the fast path keeps its frozen steps inside 32 lines, and each changed host template's newest digest is that file's SHA-256."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "FLOW-18. The docs, skill and diagrams say what current main does. No requirement text changes.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "make a PR and keep improving this and then make sure that we update all the documents and all everything's accurate",
+        "where": "Grok session on 2026-11-16, relayed by grok-t1w",
+        "recorded_by": "grok-t1w"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794925417,
+      "digest": "bf3ac4852848507369d29daef75ebfb7987a920d5b5394300d26c9fccb1f29ae",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

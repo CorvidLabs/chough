@@ -145,8 +145,9 @@ The verdict is one of three:
 
 If GitHub cannot be read in full, or a bug record cannot be read, the check exits 2
 and gives no verdict. `--require-clean` exits 1 unless the verdict is `clean`. A day
-counts only when one main run passed both Product jobs. Until CI also runs once a day
-on main (REQ-cli-064), a day with no merge to main restarts the window.
+counts only when one main run passed both Product jobs. That run may be a push, the
+daily schedule at 05:23 UTC, or a `workflow_dispatch` (REQ-cli-064). A day with no
+such green run restarts the window.
 
 To keep proof of a run, save the input as well. Running the script directly prints
 only the receipt, while `fledge run` adds its own lines around it. A saved input

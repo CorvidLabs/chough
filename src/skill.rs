@@ -500,6 +500,12 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/stages.md",
         "dd6b1fcdbec31f75afbb0c89211d6490782fb9da20c1f0ab72690b1dbf54a1c6",
     ),
+    // Main 0fd9fd22, the stages.md this branch replaced. A pristine install of that
+    // copy is known-outdated, so `chough skill update` replaces it (REQ-cli-016).
+    (
+        "references/stages.md",
+        "36522cbfa49c0d29b2505c552ff15d3743b9bca7c5985db0fb002d6b61974727",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

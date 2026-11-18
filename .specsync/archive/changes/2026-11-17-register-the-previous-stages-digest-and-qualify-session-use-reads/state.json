@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "register-the-previous-stages-digest-and-qualify-session-use-reads",
+  "slug": "register-the-previous-stages-digest-and-qualify-session-use-reads",
+  "title": "Register the previous stages digest and qualify session-use reads",
+  "description": "Register the previous stages digest and qualify session-use reads",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "ab0d421149f12d9ad2984c833cfe1d9346d3989e",
+  "created_at": 1794926653,
+  "updated_at": 1794926988,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/skill.rs",
+    "tests/docs.rs",
+    "tests/fixtures/stages-at-0fd9fd22.md",
+    "docs/architecture.md",
+    "changelog.d/2026-11-17-register-previous-stages.md",
+    ".chough/cases/cli.previous-stages.cases.toml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "FLOW-18 already requires the docs and skill to say what current main does. REQ-cli-016 already updates a file byte-identical to a known earlier bundle and leaves an edited copy. This change registers main 0fd9fd22's stages.md digest and qualifies one architecture sentence. No requirement text changes.",
+  "acceptance_criteria": [
+    "A pristine copy of the workflow stages file from main 0fd9fd22 is known-outdated and chough skill update replaces it with the current bundle. An edited copy of that file stays byte-identical. docs/architecture.md says an exact open session ID is returned without reading another session, a bare key or alias reads each open session, and a name that matches none also reads archived stories."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "SpecSync change check refuses while tasks.md has unchecked boxes, so human gates stay plain text. The skill-release corpus inventory rejects a new blob under tests/fixtures/skill-releases/blobs. Meaningful paths need this change archived before the pull request audit.",
+    "public_contract": "no"
+  }
+}

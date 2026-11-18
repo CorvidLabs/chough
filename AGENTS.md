@@ -35,6 +35,18 @@ the same checkpoint (DRIVE-3, DRIVE-12):
 - Add a change's changelog entry as a fragment of its own,
   `changelog.d/<YYYY-MM-DD>-<change-id>.md`, not in `CHANGELOG.md`; a release assembles
   the fragments into `CHANGELOG.md` with `fledge run changelog` (#290).
+
+For a local or small-context agent, including Flint, Nemotron, Ripple, and every host
+template under `integrations/`:
+
+- Before any edit, run `chough session list`, then `chough next --environment local`, and do the `Run:` line.
+- For a bug fix or small feature in one module, read only the fast path in `skills/chough-workflow/references/stages.md` and the one reference `chough next` names.
+- The session key is `fix-<issue>`. The change description is `fix <issue>`, not a sentence. Use an existing HI id. Do not invent one. A `REQ-` id goes on `--requirement` only.
+- Use `chough change new`, `answer`, `check`, `status` and `ship`. Do not run `specsync change approve`, `review`, `reopen` or `send-back`. Declare every path, including tests, before the first product edit.
+- Stop at intent, scope approval and implementation review. Open a gate with `chough checkpoint --awaiting-human`. Close it with `--close-gate` only with words the human gave you.
+- Before the review: `chough change check <id> --no-commit` when the delta changes requirements, `chough cases run`, open the review gate, commit the source with `.chough/`, then `chough change check <id>`, which commits the verification. Add the changelog fragment in that same work. End every file with a trailing newline.
+- A `refused:` message is the answer. Run the command it names, or stop and report it. Do not hand-edit a session, the Timeline, an archive or an approval. If `chough <command> --help` does not show a flag, it does not exist.
+- Do not push, open or merge a pull request, or release, unless the task says so. Wait on another agent with the harness's wait. Do not sleep in a loop. A review ends with a line that is exactly `Verdict: pass` or `Verdict: block`.
 - Add a change's cases in a file of its own,
   `.chough/cases/<module>.<change-topic>.cases.toml`, not in the shared module file.
 - Set up Chough's two merge drivers once per clone:
