@@ -18,7 +18,9 @@ cases:
   - TC-records-a-receipt-name-taken-after-the-preview-refuses-before-any-write
 design: []
 files: [src/migrate.rs, tests/migrate.rs, docs/cli.md]
-observations: []
+observations:
+  - 2026-11-18-tc-records-a-second-same-day-migration-names-its-own-receipt
+  - 2026-11-18-tc-records-a-receipt-name-taken-after-the-preview-refuses
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -40,6 +42,9 @@ A second same-day migration names its receipt with a deterministic suffix that i
 - 0xLeif decided "Scope approval of fix-264": "suffix and check first. A second same-day migration plan names its receipt with a deterministic suffix (...-from-0-5-2.md), part of the plan and its digest, and --apply checks every target before it writes anything, so a refusal never leaves a partial write." (Leif's decision comment on GitHub issue #264, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-264 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test migrate -- --exact a_second_same_day_migration_names_its_own_receipt for TC-records-a-second-same-day-migration-names-its-own-receipt: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-second-same-day-migration-names-its-own-receipt.md)
+- [Ran cargo test --locked --test migrate -- --exact a_receipt_name_taken_after_the_preview_refuses_before_any_write for TC-records-a-receipt-name-taken-after-the-preview-refuses-before-any-write: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-receipt-name-taken-after-the-preview-refuses.md)
 
 ## Open threads
 
