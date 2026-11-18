@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795015393,
+      "digest": "f87857ad9326f9cf69314a8649421c28a01b43132ad302227a4add1b3e50019f",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-263\": \"Approve (Recommended)\" (Claude Code session with Fable, 2026-11-18, answer to the interview question 'fix-263 (draft PR #312) ... Do you approve the scope?'). Relayed and recorded by fable-t4b at 2026-11-18T15:23:12Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-263",
+        "title": "Fix 263",
+        "description": "fix 263",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.migrate-case-colliding-target.cases.toml",
+          "changelog.d/2026-11-18-fix-263.md",
+          "src/migrate.rs",
+          "tests/migrate_knowledge.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-records-009 already says the apply refuses, writing nothing more, when a file it would write already exists with other bytes, and removes the 0.5.x files only after every write is read back. The pre-write check skipped a target that differs only in case from a removed file, so on a case-sensitive file system a separate knowledge/index.md passed it. Only the check and its test change.",
+        "acceptance_criteria": [
+          "On a case-sensitive file system, when knowledge/index.md already exists with other bytes beside the 0.5.x knowledge/INDEX.md, chough migrate --apply exits non-zero with refused:target-exists naming knowledge/index.md, and no file is written, removed or changed, so no receipt exists. On a case-insensitive file system, where the two names are one file, the apply still migrates as before."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve (Recommended)",
+        "where": "Claude Code session with Fable, 2026-11-18, answer to the interview question 'fix-263 (draft PR #312) ... Do you approve the scope?'",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795029943,
+      "digest": "4e0be503400914ac47e17297f6c4d5af7fd6bda80fba2af2de6a5e5352e5b9ab",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

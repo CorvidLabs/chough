@@ -895,8 +895,8 @@ fn session_folder(fixture: &Fixture) -> String {
 /// REQ-cli-040 (#317), TC-cli-evidence-writers-reread-under-the-lock: `evidence add`
 /// reads the session it changes under the project's writer lock, so an update another
 /// writer saves while it waits for the lock survives its save. The test holds the lock,
-/// lets `evidence add` write its entry and block, changes the session's next action as
-/// another writer would, and then releases the lock.
+/// lets `evidence add` block on it (before it writes anything, #325), changes the
+/// session's next action as another writer would, and then releases the lock.
 #[cfg(unix)]
 #[test]
 fn evidence_add_rereads_the_session_under_the_writer_lock() {
@@ -919,21 +919,9 @@ fn evidence_add_rereads_the_session_under_the_writer_lock() {
     let args = add_args("SYNTHETIC entry saved after the wait");
     let args: Vec<&str> = args.iter().map(String::as_str).collect();
     let mut add = spawnable(&fixture, &args).spawn().unwrap();
-    // The entry is written by create-new before the session save waits for the lock.
-    let evidence = fixture.root().join(&folder).join("evidence");
-    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
-    while fs::read_dir(&evidence).map_or(0, |entries| entries.count()) == 0 {
-        assert!(
-            std::time::Instant::now() < deadline,
-            "evidence add wrote no entry"
-        );
-        assert!(
-            add.try_wait().unwrap().is_none(),
-            "evidence add ended early"
-        );
-        std::thread::sleep(std::time::Duration::from_millis(25));
-    }
-    std::thread::sleep(std::time::Duration::from_millis(500));
+    // The evidence save takes the lock before it writes anything (#325), so it is
+    // blocked well within this second.
+    std::thread::sleep(std::time::Duration::from_millis(1_000));
     assert!(
         add.try_wait().unwrap().is_none(),
         "evidence add did not wait for the writer lock"
@@ -1125,4 +1113,64 @@ fn bug_add_holds_the_writer_lock_and_keeps_another_writers_update() {
         1,
         "the bug did not join the session:\n{text}"
     );
+}
+
+/// REQ-cli-040 (#325), TC-cli-a-busy-evidence-add-leaves-nothing: `evidence add` takes
+/// the project's writer lock before it writes anything, so while another process holds
+/// the lock it writes no entry, its `refused:checkpoint-busy` after the wait leaves every
+/// file unchanged, and a rerun once the lock is free records one entry, not two.
+#[cfg(unix)]
+#[test]
+fn a_busy_evidence_add_writes_nothing_and_refuses_with_nothing_saved() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let folder = session_folder(&fixture);
+    let evidence = fixture.root().join(&folder).join("evidence");
+    let entries = || fs::read_dir(&evidence).map_or(0, |entries| entries.count());
+    let lock_path = common::checkpoint_lock_path(fixture.root()).unwrap();
+    fs::create_dir_all(lock_path.parent().unwrap()).unwrap();
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let before = fs::read_to_string(fixture.root().join(&folder).join("session.md")).unwrap();
+
+    let args = add_args("SYNTHETIC entry while the lock is held");
+    let args: Vec<&str> = args.iter().map(String::as_str).collect();
+    let mut add = spawnable(&fixture, &args).spawn().unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(1_000));
+    assert!(
+        add.try_wait().unwrap().is_none(),
+        "evidence add did not wait for the writer lock"
+    );
+    assert_eq!(
+        entries(),
+        0,
+        "an entry was written before the lock was taken"
+    );
+
+    let output = add.wait_with_output().unwrap();
+    let said = String::from_utf8_lossy(&output.stderr);
+    assert!(!output.status.success(), "evidence add was saved: {said}");
+    assert!(said.contains("refused:checkpoint-busy"), "{said}");
+    assert_eq!(entries(), 0, "the refused evidence add left its entry");
+    assert_eq!(
+        fs::read_to_string(fixture.root().join(&folder).join("session.md")).unwrap(),
+        before
+    );
+
+    <fs::File as fs4::FileExt>::unlock(&lock).unwrap();
+    let output = spawnable(&fixture, &args).output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(entries(), 1, "the rerun did not record exactly one entry");
 }
