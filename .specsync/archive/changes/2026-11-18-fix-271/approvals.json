@@ -53,6 +53,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his decision comment on CorvidLabs/chough#271 ('pin per shell': CHOUGH_SESSION plus --session on every write command, hc launches set the variable), then 'Approve' for the REQ-cli-037 wording shown to him in plain words, and 'Yes, same PR' for updating the five versioned hc templates in integrations/ to export CHOUGH_SESSION",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795028532,
+      "digest": "f3dbaa2afcfbd58773b29c57470ae8af8a6f222bf3d89172fca7a56bef529b78",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
