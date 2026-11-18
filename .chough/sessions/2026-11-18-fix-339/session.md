@@ -46,6 +46,7 @@ Conflict-marker follow-ups: markers in fenced code blocks don't count, a stray =
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-339": "exempt markers inside fenced code blocks, catch a stray =======, case TOML findings, and the migrate message naming the 0.5.x source … Warn only" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his decisions on the #336 follow-ups filed as CorvidLabs/chough#339, his scope approval for that issue; then for item 2 'Warn only': a lone line of exactly seven '=' with no <<<<<<< or >>>>>>> around it is reported by doctor as 'possible leftover conflict separator at line N', and writes are never refused for it); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339 as 0xLeif
+- 0xLeif decided "Re-approval of fix-339 for the tester's four findings": "Fix first" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, after the tester's PASS of #356 with notes, within his #339 scope: (a) a code fence never hides a conflict in the Timeline or Receipts sections Chough writes; (b) in a case definition, markers count only when it does not parse as TOML; (c) fences follow CommonMark: a fence that never closes hides nothing, and a backtick line whose tag holds a backtick is not a fence; (d) the migrate preview offers no apply command when the apply would refuse); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339 as 0xLeif
 
 ## What was verified
 
@@ -104,4 +105,21 @@ Conflict-marker follow-ups: markers in fenced code blocks don't count, a stray =
   - revision: af8ca8901b2a23affcd40ac74865d99637448346
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:06:31Z · gate-opened · accept → accept · Re-approval of fix-339 for the tester's four findings ^t-7ed238
+  - native_change: fix-339
+  - revision: e2a97848ca8aa96b2de45665b3eff1e8d032b5c5
+  - holds: accept
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:06:31Z · gate-closed · accept → accept · Re-approval of fix-339 for the tester's four findings ^t-fd9b90
+  - native_change: fix-339
+  - revision: e2a97848ca8aa96b2de45665b3eff1e8d032b5c5
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Fix first
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, after the tester's PASS of #356 with notes, within his #339 scope: (a) a code fence never hides a conflict in the Timeline or Receipts sections Chough writes; (b) in a case definition, markers count only when it does not parse as TOML; (c) fences follow CommonMark: a fence that never closes hides nothing, and a backtick line whose tag holds a backtick is not a fence; (d) the migrate preview offers no apply command when the apply would refuse
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve fix-339
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)

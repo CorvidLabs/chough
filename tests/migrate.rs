@@ -1912,6 +1912,9 @@ fn migrate_refuses_a_plan_whose_files_would_hold_conflict_markers() {
         text.contains("The apply refuses now (refused:conflict-markers)") && text.contains(entry),
         "{text}"
     );
+    // A plan the apply would refuse is not offered to apply.
+    assert!(text.contains("Plan digest:"), "{text}");
+    assert!(!text.contains("Apply this plan"), "{text}");
     let before = files(fixture.root());
     let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
     assert!(refused.contains("refused:conflict-markers"), "{refused}");

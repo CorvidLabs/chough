@@ -39,3 +39,39 @@ expected = ["tests/doctor.rs::doctor_warns_of_a_lone_conflict_separator_without_
 adapter = "cargo-test"
 test_target = "doctor"
 test = "doctor_warns_of_a_lone_conflict_separator_without_failing"
+
+[[case]]
+id = "TC-records-a-fence-hides-a-conflict-only-when-closed"
+title = "A code fence that never closes, or a backtick line whose tag holds a backtick, hides no conflict after it, and the write is refused naming the line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::a_fence_hides_a_conflict_only_when_it_is_one_and_closes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "a_fence_hides_a_conflict_only_when_it_is_one_and_closes"
+
+[[case]]
+id = "TC-records-a-conflict-in-chough-s-own-sections-is-a-marker"
+title = "A conflict inside an archived story's Timeline or fenced Receipts block is a conflict_markers finding for each marker line; a fenced example in the Goal stays exempt"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/doctor.rs", "src/records.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_reports_a_conflict_inside_chough_s_own_fenced_sections passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_reports_a_conflict_inside_chough_s_own_fenced_sections"

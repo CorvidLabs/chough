@@ -712,11 +712,17 @@ fn preview_text(view: &Value) -> String {
         ));
     }
     out.push_str(&format!(
-        "\nReceipt: {}\nPlan digest: {}\nApply this plan with the human's consent:\n  {}\n",
+        "\nReceipt: {}\nPlan digest: {}\n",
         text(&view["receipt"]),
-        text(&view["plan_digest"]),
-        text(&view["apply"])
+        text(&view["plan_digest"])
     ));
+    // #339: a plan the apply would refuse is not offered to apply.
+    if !view["apply_refused"].is_object() {
+        out.push_str(&format!(
+            "Apply this plan with the human's consent:\n  {}\n",
+            text(&view["apply"])
+        ));
+    }
     out
 }
 

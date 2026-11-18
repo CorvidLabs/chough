@@ -3001,3 +3001,36 @@ fn cases_check_names_a_conflict_marker_in_a_definition() {
         "{refused}"
     );
 }
+
+/// REQ-cli-009, REQ-cli-055 (#339): a case definition that parses as TOML may quote a
+/// conflict marker inside a string, as before #339; markers count only in a definition
+/// Git left unparsable. `cases check` accepts it, and doctor reports no conflict in it.
+#[cfg(unix)]
+#[test]
+fn a_valid_case_definition_may_quote_a_marker_in_a_string() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    let file = ".chough/cases/cli.cases.toml";
+    let text = format!(
+        "{HEADER}{}",
+        case("TC-cli-0001", "functional", "REQ-cli-001", "")
+    )
+    .replace(
+        "expected = [\"It is right\", \"It is clear\"]",
+        "expected = [\"\"\"the output\n<<<<<<< HEAD\n=======\n>>>>>>> other\"\"\"]",
+    );
+    assert!(text.contains("\n<<<<<<< HEAD\n"), "{text}");
+    fixture.write(file, &text);
+    assert_eq!(fixture.ok(&["cases", "check"])["valid"], true);
+    fixture.commit("a case quoting a conflict marker");
+    let output = fixture.run(&["doctor"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let about: Vec<&Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["target"] == file)
+        .collect();
+    assert!(about.is_empty(), "{report:#}");
+}

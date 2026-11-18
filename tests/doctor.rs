@@ -1116,3 +1116,39 @@ fn doctor_warns_of_a_lone_conflict_separator_without_failing() {
         "an advisory finding changed doctor's exit: {report:#}"
     );
 }
+
+/// REQ-records-001, REQ-cli-055 (#339), TC-records-a-conflict-in-chough-s-own-sections-is-a-marker:
+/// a code fence hides no conflict in a section Chough writes itself, an archived story's
+/// `## Timeline` or its fenced `## Receipts` block, so a real conflict there is a
+/// `conflict_markers` finding for each marker line, while a fenced example in the Goal
+/// stays exempt.
+#[test]
+fn doctor_reports_a_conflict_inside_chough_s_own_fenced_sections() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let story = ".chough/archive/sessions/2026-01-01-old.md";
+    let text = "---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\n## Goal\n\n```\n<<<<<<< HEAD\n```\n\n## Timeline\n\n```\n<<<<<<< HEAD\n- one\n=======\n- two\n>>>>>>> branch\n```\n\n## Receipts\n\n```yaml\nreceipts:\n<<<<<<< HEAD\n  - claim: ours\n=======\n  - claim: theirs\n>>>>>>> branch\n```\n";
+    fixture.write(story, text);
+    fixture.commit("an old story conflicted in Chough's own sections");
+    let timeline = text.lines().position(|line| line == "## Timeline").unwrap();
+    let expected: Vec<u64> = text
+        .lines()
+        .enumerate()
+        .filter(|(index, line)| {
+            *index > timeline
+                && (line.starts_with("<<<<<<<")
+                    || line.starts_with(">>>>>>>")
+                    || *line == "=======")
+        })
+        .map(|(index, _)| index as u64 + 1)
+        .collect();
+    assert_eq!(expected.len(), 6);
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let lines: Vec<u64> = of_kind(&report, "conflict_markers")
+        .iter()
+        .filter(|finding| finding["target"] == story)
+        .map(|finding| finding["line"].as_u64().unwrap())
+        .collect();
+    assert_eq!(lines, expected, "{report:#}");
+}

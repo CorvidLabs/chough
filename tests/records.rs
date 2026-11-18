@@ -1412,3 +1412,41 @@ fn a_fenced_example_and_a_lone_separator_both_save() {
             .contains("Ship alpha\n=======\nShip beta\n")
     );
 }
+
+/// REQ-records-001 (#339), TC-records-a-fence-hides-a-conflict-only-when-closed: a code
+/// fence that never closes hides no conflict after it, and a line of three backticks
+/// whose tag holds a backtick, which CommonMark does not read as a fence, hides none
+/// either, so the next write is refused as `refused:conflict-markers`, naming the line,
+/// with the file unchanged.
+#[test]
+fn a_fence_hides_a_conflict_only_when_it_is_one_and_closes() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let file = fixture.session_file();
+    let good = fixture.read(&file);
+    let conflict = "<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> other\n";
+    for quoted in [
+        format!("```text\n{conflict}"),
+        format!("```rust``` is the tag\n{conflict}```\n"),
+    ] {
+        let bad = good.replacen(
+            "## Goal\n\nShip alpha\n",
+            &format!("## Goal\n\nShip alpha\n\n{quoted}"),
+            1,
+        );
+        assert_ne!(bad, good);
+        let line = bad.lines().position(|line| line == "<<<<<<< HEAD").unwrap() + 1;
+        fixture.write(&file, &bad);
+        let refused = fixture.fails(&["checkpoint", "--decision", "never written"]);
+        assert!(
+            refused.contains("refused:conflict-markers"),
+            "{quoted}: {refused}"
+        );
+        assert!(
+            refused.contains(&format!("line {line}")),
+            "{quoted}: {refused}"
+        );
+        assert_eq!(fixture.read(&file), bad, "a refused write changed the file");
+    }
+}

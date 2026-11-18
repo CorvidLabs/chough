@@ -243,23 +243,98 @@ pub(super) fn valid_change_id(value: &str) -> bool {
 /// Every Git conflict marker in a record's body, each with its 1-based line in the file
 /// and the line (REQ-records-001, #265, #339). The body is what follows the front
 /// matter's closing `---`. A line starting `<<<<<<<` or `>>>>>>>` is a marker, and a line
-/// of `=======` is one inside a conflict. A marker inside a fenced code block, quoting an
-/// example or tool output, does not count.
+/// of `=======` is one inside a conflict. A marker inside a closed fenced code block,
+/// quoting an example or tool output, does not count, except in a section Chough writes.
 pub(super) fn conflict_markers(text: &str) -> Vec<(usize, String)> {
     scan_conflicts(text, true).0
 }
 
 /// Every Git conflict marker in a TOML case definition (#339), by the same rule as
-/// [`conflict_markers`], with no front matter or code fences to skip.
+/// [`conflict_markers`], with no front matter or code fences to skip. A definition that
+/// parses as TOML holds none: a marker line there is quoted in a string.
 pub(super) fn conflict_markers_in_toml(text: &str) -> Vec<(usize, String)> {
-    scan_conflicts(text, false).0
+    toml_conflicts(text).0
 }
 
 /// The 1-based lines of each lone `=======` outside a conflict and outside a code fence
 /// (#339): possibly left by a half-resolved conflict, possibly a heading underline, so
 /// `chough doctor` warns of it and no write is refused for it.
-pub(super) fn lone_separators(text: &str, markdown: bool) -> Vec<usize> {
-    scan_conflicts(text, markdown).1
+pub(super) fn lone_separators(text: &str) -> Vec<usize> {
+    scan_conflicts(text, true).1
+}
+
+/// The lone `=======` lines of a TOML case definition that does not parse (#339).
+pub(super) fn lone_separators_in_toml(text: &str) -> Vec<usize> {
+    toml_conflicts(text).1
+}
+
+/// The conflicts of a TOML case definition: none when it parses as TOML (#339).
+fn toml_conflicts(text: &str) -> (Vec<(usize, String)>, Vec<usize>) {
+    if text.parse::<toml::Table>().is_ok() {
+        return (vec![], vec![]);
+    }
+    scan_conflicts(text, false)
+}
+
+/// The sections Chough writes itself, an archived story's `## Receipts` block and a
+/// session's `## Timeline`, where a code fence never hides a conflict (#339).
+const GENERATED_SECTIONS: [&str; 2] = [crate::markdown::RECEIPTS, crate::session_md::TIMELINE];
+
+/// The mark and length of the code fence `line` opens, as CommonMark reads one: at most
+/// three spaces, then three or more backticks or tildes, and after backticks an info
+/// string with no backtick.
+fn fence_opener(line: &str) -> Option<(char, usize)> {
+    let trimmed = line.trim_start_matches(' ');
+    if line.len() - trimmed.len() > 3 {
+        return None;
+    }
+    let mark = trimmed
+        .chars()
+        .next()
+        .filter(|mark| *mark == '`' || *mark == '~')?;
+    let run = trimmed.chars().take_while(|c| *c == mark).count();
+    (run >= 3 && (mark == '~' || !trimmed[run..].contains('`'))).then_some((mark, run))
+}
+
+/// Whether `line` closes a code fence of `mark` opened `length` long.
+fn closes_fence(line: &str, (mark, length): (char, usize)) -> bool {
+    let trimmed = line.trim_start_matches(' ');
+    let run = trimmed.chars().take_while(|c| *c == mark).count();
+    line.len() - trimmed.len() <= 3 && run >= length && trimmed[run..].trim().is_empty()
+}
+
+/// For each of `lines`, whether it is part of a closed code fence, from `start` on and
+/// outside Chough's own sections (#339). A fence that never closes hides nothing, unlike
+/// CommonMark, where it runs to the end, and a heading of Chough's own sections ends the
+/// search for a close.
+fn fenced(lines: &[&str], start: usize) -> Vec<bool> {
+    let generated = |line: &str| {
+        GENERATED_SECTIONS
+            .iter()
+            .any(|name| line.trim_end().strip_prefix("## ") == Some(name))
+    };
+    let mut fenced = vec![false; lines.len()];
+    let mut in_generated = false;
+    let mut index = start;
+    while index < lines.len() {
+        let line = lines[index];
+        if line.starts_with("# ") || line.starts_with("## ") {
+            in_generated = generated(line);
+        } else if !in_generated && let Some(fence) = fence_opener(line) {
+            let close = lines[index + 1..]
+                .iter()
+                .position(|later| generated(later) || closes_fence(later, fence))
+                .map(|at| index + 1 + at)
+                .filter(|at| !generated(lines[*at]));
+            if let Some(close) = close {
+                fenced[index..=close].fill(true);
+                index = close + 1;
+                continue;
+            }
+        }
+        index += 1;
+    }
+    fenced
 }
 
 /// The conflict markers of `text` and the lines of its lone `=======` separators.
@@ -276,35 +351,17 @@ fn scan_conflicts(text: &str, markdown: bool) -> (Vec<(usize, String)>, Vec<usiz
             .position(|line| *line == "---")
             .map_or(lines.len(), |at| at + 2);
     }
+    let fenced = if markdown {
+        fenced(&lines, start)
+    } else {
+        vec![false; lines.len()]
+    };
     let mut open = false;
-    // The open code fence's character and length, while inside one.
-    let mut fence: Option<(char, usize)> = None;
     let mut found = vec![];
     let mut lone = vec![];
     for (index, &line) in lines.iter().enumerate().skip(start) {
-        if markdown {
-            let trimmed = line.trim_start_matches(' ');
-            let run_of = |mark: char| trimmed.chars().take_while(|c| *c == mark).count();
-            let opener = trimmed
-                .chars()
-                .next()
-                .filter(|mark| (*mark == '`' || *mark == '~') && line.len() - trimmed.len() <= 3)
-                .map(|mark| (mark, run_of(mark)))
-                .filter(|(_, run)| *run >= 3);
-            match (fence, opener) {
-                (None, Some(opened)) => {
-                    fence = Some(opened);
-                    continue;
-                }
-                (Some((mark, length)), Some((closing, run)))
-                    if closing == mark && run >= length && trimmed[run..].trim().is_empty() =>
-                {
-                    fence = None;
-                    continue;
-                }
-                (Some(_), _) => continue,
-                (None, None) => {}
-            }
+        if fenced[index] {
+            continue;
         }
         let marker = if line.starts_with("<<<<<<<") {
             open = true;

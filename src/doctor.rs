@@ -752,7 +752,12 @@ fn conflict_marker_findings(root: &Path, files: &[String]) -> Result<Vec<Finding
             found.push(finding);
         }
         // A lone `=======` may be a heading underline, so it is a warning only (#339).
-        for line in crate::records::lone_separators(&text, !case_definition) {
+        let lone = if case_definition {
+            crate::records::lone_separators_in_toml(&text)
+        } else {
+            crate::records::lone_separators(&text)
+        };
+        for line in lone {
             let mut finding = Finding::new(
                 Kind::PossibleConflictSeparator,
                 path,
