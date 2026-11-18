@@ -41,6 +41,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, his answer on how to handle the #316 regression, with t4c's instruction to record it as his scope approval for this change",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795017636,
+      "digest": "c1189ad130ef46a5dbb267bf04086efe41e69699bce0cfc7c90d2835d77d67a4",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
