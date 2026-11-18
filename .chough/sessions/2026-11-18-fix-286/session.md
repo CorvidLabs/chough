@@ -5,7 +5,7 @@ aliases: [fix-286]
 objective: "An archived story's receipts keep each evidence entry's criteria, requirements and limitations (REQ-history-006, #286)"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: [src/evidence.rs, src/evidence_migrate.rs, tests/evidence.rs]
 observations: [2026-11-18-tc-history-a-receipt-keeps-its-entrys-criteria-requirements]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-286
+    holds: accept
+    drives: review
+    opened: 2026-11-18T19:58:46Z
 run_consents: []
-next: Continue test
+next: Wait for the tester's check and Leif's implementation review of fix-286
 ---
 # An archived story's receipts keep each evidence entry's criteria, requirements and limitations (REQ-history-006, #286)
 
@@ -80,4 +84,15 @@ An archived story's receipts keep each evidence entry's criteria, requirements a
   - native_change: fix-286
   - gate: native:approved
   - revision: 9dd28de28015ce6f873e237044cc9650e74a3712
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T19:58:46Z · advance · test → accept · native:verifying ^t-fa36dd
+  - native_change: fix-286
+  - gate: native:verifying
+  - revision: 3978e527802d479546a9a3a057ca24213d0acbfe
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T19:58:46Z · gate-opened · accept → accept · Implementation review of fix-286 ^t-14945e
+  - native_change: fix-286
+  - revision: 3978e527802d479546a9a3a057ca24213d0acbfe
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
