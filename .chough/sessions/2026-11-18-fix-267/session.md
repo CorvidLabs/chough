@@ -28,6 +28,9 @@ waiting_on_human:
     opened: 2026-11-18T00:36:59Z
 run_consents: []
 next: "Wait for Leif's implementation review of fix-267 on PR #303; do not ship"
+title: A credential glued to a hyphen is a leak
+summary:
+  - A token right after a hyphen, as in x-ghp_..., passed the leak guard and the doctor (#267). A hyphen is now a boundary at both matcher sites, as REQ-records-006 already required. Two tests failed on main first; the verify lane passed on macOS at dd4ed17, before main was merged in.
 ---
 # A credential glued to a hyphen, as in a slug or run name, is refused as a leak like any other (REQ-records-006, #267)
 
