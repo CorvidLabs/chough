@@ -7,11 +7,10 @@
   "title": "Fix 250",
   "description": "fix 250",
   "kind": "bug_fix",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "approved",
   "base_commit": "e47b4cfaabe2e68fd02246be01fb7e8e256fe00b",
   "created_at": 1795032434,
-  "updated_at": 1795032922,
+  "updated_at": 1795034460,
   "affected_specs": [
     "history",
     "cli",

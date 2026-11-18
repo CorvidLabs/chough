@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 106
+version: 105
 status: active
 files:
   - src/main.rs
@@ -385,4 +385,3 @@ provider, runtime or hosted service.
 | 103 | 2026-11-18 | fix-271: Fix 271 |
 | 104 | 2026-11-18 | fix-266: Fix 266 |
 | 105 | 2026-11-18 | fix-320: Fix 320 |
-| 106 | 2026-11-18 | fix-250: Fix 250 |

@@ -1,6 +1,6 @@
 ---
 id: fix-250
-state: implementing
+state: approved
 type: bug_fix
 base_commit: e47b4cfaabe2e68fd02246be01fb7e8e256fe00b
 ---

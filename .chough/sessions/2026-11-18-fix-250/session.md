@@ -42,6 +42,7 @@ When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-250": "record it on each gate. When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason in the person's words, and doctor's JSON echoes it back. REQ-history-012 gets that sentence." (Leif's decision comment on GitHub issue #250, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-250 as 0xLeif
+- 0xLeif decided "Scope approval of fix-250, rewritten onto main (native approval)": "Yes: send back once + re-approve" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him whether fable-t4b may run the send-back on fix-250 this once and whether he re-approves the same scope: the reason on each withdrawn gate's gate-closed entry, echoed in doctor's JSON; only REQ-history-012, REQ-cli-030 and REQ-records-004 change; the REQ-history-002 list edit removed); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-250 as 0xLeif
 
 ## What was verified
 
@@ -98,4 +99,32 @@ When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline
   - revision: a1d1118d283038341d73ac2cdcafdae736eaeaae
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:40:59Z · gate-opened · accept → accept · Scope approval of fix-250, rewritten onto main (native approval) ^t-69fd07
+  - native_change: fix-250
+  - revision: 1e941d6827b1352ddbfa2bfcbad6956864d08a27
+  - holds: accept
+  - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:40:59Z · direct-native-write · accept → accept · fix-250's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-377f13
+  - native_change: fix-250
+  - revision: 1e941d6827b1352ddbfa2bfcbad6956864d08a27
+  - direct_write:
+    - change: fix-250
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:40:59Z · gate-closed · accept → accept · Scope approval of fix-250, rewritten onto main (native approval) ^t-fd8f75
+  - native_change: fix-250
+  - revision: 1e941d6827b1352ddbfa2bfcbad6956864d08a27
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes: send back once + re-approve
+    - where: Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him whether fable-t4b may run the send-back on fix-250 this once and whether he re-approves the same scope: the reason on each withdrawn gate's gate-closed entry, echoed in doctor's JSON; only REQ-history-012, REQ-cli-030 and REQ-records-004 change; the REQ-history-002 list edit removed
+    - recorded_by: fable-t4b
+    - native: specsync change approve fix-250
+    - actor: 0xLeif
   - by: fable (claude-fable-5-2, hc t4b)

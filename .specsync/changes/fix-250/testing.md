@@ -23,4 +23,4 @@ the story and in doctor's JSON. It fails without the leak guard.
 | Requirement | Evidence |
 |---|---|
 | REQ-history-012 | the test above and the case in `.chough/cases/history.stale-gate-reason.cases.toml` |
-| REQ-history-002, REQ-cli-030, REQ-records-004 | the same test: the entry is written and read back with its `withdrawn` field |
+| REQ-cli-030, REQ-records-004 | the same test: the entry is written and read back with its `withdrawn` field |
