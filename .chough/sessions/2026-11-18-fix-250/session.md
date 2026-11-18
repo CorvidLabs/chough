@@ -30,6 +30,9 @@ waiting_on_human:
     opened: 2026-11-18T20:15:19Z
 run_consents: []
 next: Wait for the tester's check and Leif's implementation review of fix-250
+title: A stale gate that doctor withdraws keeps the reason
+summary:
+  - chough doctor --fix --reason withdrew stale gates and wrote the reason nowhere (#250). Each withdrawn gate's gate-closed Timeline entry now holds it as its withdrawn field, so the archived story carries it, and doctor's JSON echoes it as decision_reason. The reason passes the leak guard before anything is written. Two tests failed first; the verify lane passed on macOS after main was merged in, with the tests run after the deltas were materialized, and tester2 passed the recheck. The change was sent back once to rewrite its deltas onto main. Linux was not run locally.
 ---
 # When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason, and doctor's JSON echoes it (REQ-history-012, #250)
 

@@ -122,6 +122,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him whether fable-t4b may run the send-back on fix-250 this once and whether he re-approves the same scope: the reason on each withdrawn gate's gate-closed entry, echoed in doctor's JSON; only REQ-history-012, REQ-cli-030 and REQ-records-004 change; the REQ-history-002 list edit removed",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795036876,
+      "digest": "7efe5b6cd3005ab5f66f14c0526d1355ea79384a1c7dfd09362d6f88b829df86",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
