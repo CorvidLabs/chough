@@ -353,13 +353,33 @@ fn tracked_text(root: &Path, path: &str) -> Option<String> {
     String::from_utf8(std::fs::read(full).ok()?).ok()
 }
 
+/// The text the leak scan reads from a tracked file: a macOS metadata file's bytes with
+/// each invalid UTF-8 sequence replaced, since a binary AppleDouble `._*` file can hold
+/// a leak in its extended attributes (REQ-cli-068); any other file only when it is valid
+/// UTF-8, as before, so no other binary file, such as a screenshot, is read as text.
+/// Nothing is ever written from it.
+fn leak_scan_text(root: &Path, path: &str) -> Option<String> {
+    let metadata = path
+        .rsplit('/')
+        .next()
+        .is_some_and(crate::evidence::is_os_metadata);
+    if !metadata {
+        return tracked_text(root, path);
+    }
+    let full = local_path(root, path).ok()?;
+    if !std::fs::symlink_metadata(&full).ok()?.is_file() {
+        return None;
+    }
+    Some(String::from_utf8_lossy(&std::fs::read(full).ok()?).into_owned())
+}
+
 /// Each leak in the files Git tracks under `.chough/` and the knowledge directory: the
 /// file, the line and the kind, never the text (REQ-records-006).
 fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
     let local = crate::leaks::Local::current();
     let mut found = vec![];
     for path in files {
-        let Some(text) = tracked_text(root, path) else {
+        let Some(text) = leak_scan_text(root, path) else {
             continue;
         };
         // REQ-records-006: a temporary path in a case definition is a deliberate test
@@ -579,8 +599,13 @@ const SESSION_SCREENSHOTS_BOUND: u64 = 2_097_152;
 /// The bound of a generated knowledge file (REQ-cli-044).
 const KNOWLEDGE_BOUND: u64 = 65_536;
 
-/// A tracked file's bound, by where it lives, and whether it is a screenshot.
+/// A tracked file's bound, by where it lives, and whether it is a screenshot. macOS
+/// metadata in `.chough/` is not a record, so it has none and is never reported as
+/// `unreadable` or `oversize` (REQ-cli-068); the leak scan still reads it.
 fn bound_of(path: &str, knowledge: &str) -> Option<(u64, bool)> {
+    if path.starts_with(".chough/") && path.split('/').any(crate::evidence::is_os_metadata) {
+        return None;
+    }
     let image = [".png", ".jpg", ".jpeg"]
         .iter()
         .any(|extension| path.to_ascii_lowercase().ends_with(extension));
@@ -1246,8 +1271,14 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
             // `--redact` replaces each match in the file in place; a file an earlier
             // finding already redacted has nothing left to replace.
             let path = local_path(root, &finding.target)?;
+            // A file that is not valid UTF-8, such as a binary AppleDouble `._*` file,
+            // is reported but never rewritten: writing back decoded text would corrupt
+            // it (REQ-cli-068).
             let Some(text) = tracked_text(root, &finding.target) else {
-                bail!("{} is not a readable text file", finding.target);
+                bail!(
+                    "{} is not valid UTF-8, so doctor leaves it unchanged; remove it by hand, for example with `git rm`",
+                    finding.target
+                );
             };
             let (redacted, count) = crate::leaks::redact(crate::leaks::Local::current(), &text);
             if count > 0 {
