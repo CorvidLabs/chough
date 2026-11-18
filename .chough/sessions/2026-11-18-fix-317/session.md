@@ -21,6 +21,8 @@ observations:
   - 2026-11-18-tc-cli-bug-add-holds-the-writer-lock
   - 2026-11-18-tc-cli-evidence-writers-reread-under-the-lock-310eeb
   - 2026-11-18-tc-cli-bug-add-holds-the-writer-lock-cd5e75
+  - 2026-11-18-tc-cli-evidence-writers-reread-under-the-lock-073ee6
+  - 2026-11-18-tc-cli-bug-add-holds-the-writer-lock-5d0dbd
 bugs: []
 blockers: []
 waiting_on_human:
@@ -54,6 +56,8 @@ evidence add, cases run and cases record re-read session.md under the writer loc
 - [Ran cargo test --locked --test evidence -- --exact bug_add_holds_the_writer_lock_and_keeps_another_writers_update for TC-cli-bug-add-holds-the-writer-lock: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-holds-the-writer-lock.md)
 - [Ran cargo test --locked --test evidence -- --exact evidence_add_rereads_the_session_under_the_writer_lock for TC-cli-evidence-writers-reread-under-the-lock: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-evidence-writers-reread-under-the-lock-310eeb.md)
 - [Ran cargo test --locked --test evidence -- --exact bug_add_holds_the_writer_lock_and_keeps_another_writers_update for TC-cli-bug-add-holds-the-writer-lock: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-holds-the-writer-lock-cd5e75.md)
+- [Ran cargo test --locked --test evidence -- --exact evidence_add_rereads_the_session_under_the_writer_lock for TC-cli-evidence-writers-reread-under-the-lock: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-evidence-writers-reread-under-the-lock-073ee6.md)
+- [Ran cargo test --locked --test evidence -- --exact bug_add_holds_the_writer_lock_and_keeps_another_writers_update for TC-cli-bug-add-holds-the-writer-lock: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-holds-the-writer-lock-5d0dbd.md)
 
 ## Open threads
 
