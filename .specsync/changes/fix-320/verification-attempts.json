@@ -57,6 +57,25 @@
         "REQ-cli-055",
         "REQ-history-012"
       ]
+    },
+    {
+      "timestamp": 1795029960,
+      "commit": "5456d07b7790c84b8c2019c16fcee8ca9541d9ae",
+      "contract_digest": "a396b3a4bbca478256cf3afa4675e470f850211fdf55ef62e837f807106ac5f7",
+      "execution_digest": "48dfdd9521371526d1f6f884550cd2fc80c4997333c5d34c2a5246f75e96dbb3",
+      "workspace_digest": "1cf193d84b6bc6bb35818194e6315d5a92894a8a61e1bbbf31c4b905d75255e3",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-055",
+        "REQ-history-012"
+      ]
     }
   ]
 }
