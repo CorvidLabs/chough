@@ -5,7 +5,7 @@ aliases: [fix-281]
 objective: A session can record that it needs no native change, with a reason, and then advance to done and archive with outcome done; its human gates still need a person (#281)
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: [src/stage.rs, src/checkpoint.rs, src/session_md.rs, tests/stages.rs]
 observations: [2026-11-18-tc-cli-a-session-that-needs-no-native-change-reaches-done]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-281
+    holds: accept
+    drives: review
+    opened: 2026-11-18T20:23:40Z
 run_consents: []
-next: Continue test
+next: Wait for the tester's check and Leif's implementation review of fix-281
 ---
 # A session can record that it needs no native change, with a reason, and then advance to done and archive with outcome done; its human gates still need a person (#281)
 
@@ -80,4 +84,15 @@ A session can record that it needs no native change, with a reason, and then adv
   - native_change: fix-281
   - gate: native:approved
   - revision: 66efea4dd777077ef9bbd412cf0fac8f7ea93b41
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:23:40Z · advance · test → accept · native:verifying ^t-f319dd
+  - native_change: fix-281
+  - gate: native:verifying
+  - revision: 2c3dda8773f762f9f21694709986b13391610fcd
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:23:40Z · gate-opened · accept → accept · Implementation review of fix-281 ^t-1bde5d
+  - native_change: fix-281
+  - revision: 2c3dda8773f762f9f21694709986b13391610fcd
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
