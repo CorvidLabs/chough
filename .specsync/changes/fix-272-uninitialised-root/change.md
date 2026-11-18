@@ -1,6 +1,6 @@
 ---
 id: fix-272-uninitialised-root
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 7aed03f6993eef37826de783c84ccb4d9ab52648
 ---

@@ -1,0 +1,16 @@
+{
+  "timestamp": 1794967742,
+  "commit": "f61397123f38dee001a21eaec34c871378b268e9",
+  "contract_digest": "7669aa320c402942eae2e283a409771a9c571968874bae42d6b5d8f0b7c60684",
+  "execution_digest": "1c6967aedc9296eb0c2c8e8f0e55e57c78d948c1f283c1ee9207be3fcb82b494",
+  "workspace_digest": "98ea2837fb84b07a3f479380441ce7304ec37f068b0f20e347ab330c665a6490",
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec records",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}
