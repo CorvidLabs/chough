@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-272",
+  "slug": "fix-272",
+  "title": "Fix 272",
+  "description": "fix 272",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "8abb5bb89b5244e72327e1ea6abfc7e66634ebe1",
+  "created_at": 1794962105,
+  "updated_at": 1794963490,
+  "affected_specs": [
+    "records"
+  ],
+  "affected_paths": [
+    "src/journal.rs",
+    "tests/journal.rs",
+    ".chough/cases/cli.journal-lock.cases.toml",
+    "changelog.d/2026-11-18-fix-272.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-cli-040 already names journal add among the commands that hold the writer lock; only the code and its test change.",
+  "acceptance_criteria": [
+    "While another process holds .chough/local/checkpoint.lock, chough journal add waits and writes no post; once the lock is released it writes its post and a feed that lists it. chough library index --check passes after concurrent journal adds."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-272",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "3f3f95ce600e482aeead54a0a14a75f3232ddcfc",
+  "contract_digest": "7f2444e8f8a0da31681eb9f1f68603225260bac844b0b14fc9ff4851357c6344",
+  "execution_digest": "cf1ac9f9deab84322a348a222393d1ca5596137c99b58e4a8966dbd2eb5600bd",
+  "workspace_digest": "eb1c1e6dc8d8b26874e1b6073633985ae55e59bf13abb055eb5f45a50096099d",
+  "timestamp": 1794963479,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "pass all four, merge one at a time",
+    "where": "Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the four implementation review gates",
+    "recorded_by": "fable-t4b"
+  }
+}
