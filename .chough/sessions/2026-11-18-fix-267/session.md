@@ -5,7 +5,7 @@ aliases: [fix-267]
 objective: "A credential glued to a hyphen, as in a slug or run name, is refused as a leak like any other (REQ-records-006, #267)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-records-a-hyphen-glued-token-is-a-leak-aa5529
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-267
-    holds: accept
-    drives: review
-    opened: 2026-11-18T00:36:59Z
+waiting_on_human: []
 run_consents: []
-next: "Wait for Leif's implementation review of fix-267 on PR #303; do not ship"
+next: Continue done
 title: A credential glued to a hyphen is a leak
 summary:
   - A token right after a hyphen, as in x-ghp_..., passed the leak guard and the doctor (#267). A hyphen is now a boundary at both matcher sites, as REQ-records-006 already required. Two tests failed on main first; the verify lane passed on macOS at dd4ed17, before main was merged in.
@@ -48,6 +44,7 @@ A credential glued to a hyphen, as in a slug or run name, is refused as a leak l
 - No requirement text changes: REQ-records-006 already refuses a credential token form in every value, so this is --no-spec-change. A hyphen before a token prefix becomes a boundary in both matcher call sites (the prefixed forms and the AWS key form); a letter, digit or underscore still continues a word. #268 is parked and untouched.
 - Leif, 2026-11-17, in the task he gave Fable: 'implement only defects the existing contract already requires, open draft pull requests, and stop at every human gate.' The code and tests were written on that instruction before scope approval; Fable approves nothing.
 - 0xLeif decided "Scope approval of fix-267": "record my scope approval of fix-272, fix-267, fix-262 and fix-260 as 0xLeif" (Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-267 as 0xLeif
+- 0xLeif decided "Implementation review of fix-267": "pass all four, merge one at a time" (Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the four implementation review gates); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-267 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -104,4 +101,20 @@ A credential glued to a hyphen, as in a slug or run name, is refused as a leak l
   - revision: 8abb5bb89b5244e72327e1ea6abfc7e66634ebe1
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T01:07:16Z · gate-closed · accept → accept · Implementation review of fix-267 ^t-cb5013
+  - native_change: fix-267
+  - revision: a7d97ff4eec9de83a268cecc50d561cd9e34a2c6
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: pass all four, merge one at a time
+    - where: Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the four implementation review gates
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-267
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T01:07:17Z · advance · accept → done · native:archived ^t-3e89df
+  - native_change: fix-267
+  - gate: native:archived
+  - revision: a7d97ff4eec9de83a268cecc50d561cd9e34a2c6
   - by: fable (claude-fable-5-2, hc t4b)
