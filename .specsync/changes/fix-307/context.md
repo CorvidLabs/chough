@@ -22,4 +22,10 @@ module with recorded lessons). The report already lists every question SpecSync
 asks, so the new finding only says that declaring the module can add questions;
 the next report lists them.
 
+SpecSync 6.3.0 refuses only for an affected path that is an existing file, a
+production source (not under a test or fixture folder), with no declared owner.
+A folder path such as `src/` and a test file such as `tests/cli.rs` are
+accepted, so the report does not name them. The first scope of this change named
+them too; it was sent back on 2026-11-18 and corrected.
+
 This change is built on `feat/change-ready` (ea159cf), which is not on `main`.

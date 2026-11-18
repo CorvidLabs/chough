@@ -17,7 +17,7 @@ fix 307
 
 ## Acceptance Criteria
 
-- A change whose affected path is listed in a spec's files: while that module is not in affected_specs makes chough change ready exit 1, naming the module, the paths it owns and the affected_specs answer that declares it; a path no spec lists is not named; with the module declared the report has no finding and exits 0.
+- A change with an affected path that is an existing file outside test and fixture folders, listed in a spec's files: while no declared module lists it, makes chough change ready exit 1, naming the module, the paths it owns and the affected_specs answer that declares it; a folder, a test file, a file that does not exist yet and a path no spec lists are not named; with the module declared the report has no finding and exits 0.
 
 ## No-spec Rationale
 

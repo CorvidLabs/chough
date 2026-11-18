@@ -1,4 +1,69 @@
 {
-  "approvals": [],
-  "reopenings": []
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795013123,
+      "digest": "38b224944f8c52cbfb3616cd8e6206940181cd8e402ba0629d69c93147cd5c27",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-307\": \"Approve (Recommended)\" (Claude Code session with Fable, 2026-11-18, answer to the interview question 'Do you approve the scope of fix-307?'). Relayed and recorded by fable-t4b at 2026-11-18T14:45:22Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-307",
+        "title": "Fix 307",
+        "description": "fix 307",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.ready-owning-module.cases.toml",
+          "changelog.d/2026-11-18-fix-307.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/ready.rs",
+          "tests/ready.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A change whose affected path is listed in a spec's files: while that module is not in affected_specs makes chough change ready exit 1, naming the module, the paths it owns and the affected_specs answer that declares it; a path no spec lists is not named; with the module declared the report has no finding and exits 0."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lessons on native tasks apply: human gates are plain text in tasks.md, not checkboxes, and the delta is frozen at approval, so it is complete before the scope gate. REQ-cli-067 keeps ready read-only: the new finding reads spec front matter and writes nothing.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "593ed32314a61a5d9c6274dc86ab5b1f5b07fa8aff8c5d2c9a3696089b5d0beb"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-067": "8e6b0d7bf88cb5e4eeee17b69ea62e0b82647468768a5811f0448f61719fbf6e"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve (Recommended)",
+        "where": "Claude Code session with Fable, 2026-11-18, answer to the interview question 'Do you approve the scope of fix-307?'",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "fix-307",
+      "actor": "0xLeif",
+      "reason": "The approved REQ-cli-067 entry named a module for a file under an affected folder and for test files; SpecSync's approval refuses only an existing file outside test and fixture folders. Leif chose 'You run it this once' in the Claude Code session with Fable on 2026-11-18; run by fable-t4b.",
+      "timestamp": 1795013319,
+      "from_state": "approved",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": false
+    }
+  ]
 }
