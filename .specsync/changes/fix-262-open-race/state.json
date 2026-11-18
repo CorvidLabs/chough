@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "fix-262-open-race",
   "slug": "fix-262-open-race",
   "title": "Fix 262 open race",
   "description": "fix 262 open race",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "caa6ee65a46ec3f4798e0a64c22bb263d062814a",
   "created_at": 1794966916,
-  "updated_at": 1794966918,
+  "updated_at": 1794967551,
   "affected_specs": [
     "cli",
     "history"
