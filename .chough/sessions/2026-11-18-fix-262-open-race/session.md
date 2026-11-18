@@ -16,7 +16,9 @@ requirements: [REQ-history-006]
 cases: [TC-history-a-fifo-at-the-open-is-refused-without-blocking]
 design: []
 files: [src/records.rs, src/sessions.rs]
-observations: [2026-11-18-tc-history-a-fifo-at-the-open-is-refused-without-blocking]
+observations:
+  - 2026-11-18-tc-history-a-fifo-at-the-open-is-refused-without-blocking
+  - 2026-11-18-tc-history-a-fifo-at-the-open-is-refused-without-blocking-82318a
 bugs: []
 blockers: []
 waiting_on_human:
@@ -46,6 +48,7 @@ No reader can block on a FIFO swapped in between the regular-file check and the 
 ## What was verified
 
 - [Ran cargo test --locked --bin chough -- --exact records::tests::a_fifo_at_the_moment_of_the_open_is_refused_without_blocking for TC-history-a-fifo-at-the-open-is-refused-without-blocking: passed (exit 0).](evidence/2026-11-18-tc-history-a-fifo-at-the-open-is-refused-without-blocking.md)
+- [Ran cargo test --locked --bin chough -- --exact records::tests::a_fifo_at_the_moment_of_the_open_is_refused_without_blocking for TC-history-a-fifo-at-the-open-is-refused-without-blocking: passed (exit 0).](evidence/2026-11-18-tc-history-a-fifo-at-the-open-is-refused-without-blocking-82318a.md)
 
 ## Open threads
 
