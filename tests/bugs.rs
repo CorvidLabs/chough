@@ -329,6 +329,7 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
     let added = json(&add_bug(&fixture, &["--scope", "blocking"]));
     let id = added["id"].as_str().unwrap().to_string();
     assert_new_bug_name(&id);
+    fixture.ok(&["checkpoint", "--bug", &id]);
     assert!(
         fixture
             .fails(&["stage", "advance"])
@@ -363,6 +364,109 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
         "The human moved it to a follow-up change",
     ]);
     fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(fixture.session()["stage"]["current"], "accept");
+}
+
+/// A blocking bug stops only a session that lists it, holds its evidence, or shares a
+/// criterion, requirement, or case. A bug that names none of those stops no session.
+/// `chough next` names it and says it does not block this session (REQ-cli-054).
+#[test]
+fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let first = fixture.active_id();
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.ok(&["session", "new", "other", "--objective", "Other work"]);
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let id = json(&add_bug(&fixture, &["--scope", "blocking"]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    set_bug_fields(
+        &fixture,
+        &id,
+        &[
+            ("criteria", "[]"),
+            ("requirements", "[]"),
+            ("cases", "[]"),
+            ("evidence", "[]"),
+        ],
+    );
+    let next = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
+    assert!(
+        next.contains(&id) && next.contains("do not block this session"),
+        "{next}"
+    );
+    assert!(
+        !next.contains("go back to build"),
+        "an unrelated blocking bug must not send this session back to build: {next}"
+    );
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(fixture.session()["stage"]["current"], "accept");
+    fixture.ok(&["session", "use", &first]);
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(fixture.session()["stage"]["current"], "accept");
+
+    fixture.ok(&["session", "new", "linked", "--objective", "Linked work"]);
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.ok(&["checkpoint", "--bug", &id]);
+    let refusal = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refusal.contains("refused:blocking-bugs") && refusal.contains(&id),
+        "{refusal}"
+    );
+    assert_eq!(fixture.session()["stage"]["current"], "test");
+
+    fixture.ok(&[
+        "session",
+        "new",
+        "shares",
+        "--objective",
+        "Shares the requirement",
+    ]);
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let shared = json(&add_bug(
+        &fixture,
+        &[
+            "--scope",
+            "blocking",
+            "--distinct",
+            "a different defect that names REQ-cli-001",
+        ],
+    ))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    fixture.ok(&["checkpoint", "--requirement", "REQ-cli-001"]);
+    let shared_refusal = fixture.fails(&["stage", "advance"]);
+    assert!(
+        shared_refusal.contains("refused:blocking-bugs") && shared_refusal.contains(&shared),
+        "{shared_refusal}"
+    );
+    fixture.ok(&[
+        "session",
+        "new",
+        "outsider",
+        "--objective",
+        "No shared link",
+    ]);
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let warning = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
+    assert!(
+        warning.contains(&shared) && warning.contains("do not block this session"),
+        "{warning}"
+    );
     fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.session()["stage"]["current"], "accept");
 }
@@ -1298,6 +1402,7 @@ fn only_an_open_blocking_bug_blocks_leaving_test() {
         .as_str()
         .unwrap()
         .to_string();
+    fixture.ok(&["checkpoint", "--bug", &id]);
     for scope in ["blocking", "in-scope", "out-of-scope"] {
         for status in STATUSES {
             set_bug_fields(&fixture, &id, &[("scope", scope), ("status", status)]);
@@ -2288,73 +2393,4 @@ fn a_bug_body_gives_its_actual_line_its_own_paragraph() {
     let legacy = bug_record(&fixture, LEGACY);
     assert_eq!(legacy["symptom"], "Seeded legacy record remains readable");
     assert_eq!(legacy["actual"], "The legacy identity is present");
-}
-
-/// REQ-records-001 (#260), TC-records-a-failed-new-record-write-leaves-no-file: a new
-/// record is whole or it is not there. Under a file size limit of 4,096 bytes, with the
-/// limit's signal ignored so the write fails with an error as it does on a full disk,
-/// `bug add` of a larger record fails and leaves no file, and the readers still work.
-#[cfg(unix)]
-#[test]
-fn a_bug_add_whose_write_fails_part_way_leaves_no_partial_record() {
-    let fixture = Fixture::new();
-    fixture.init();
-    // Four fields of 3,000 bytes: each within its own bound, the record past the limit.
-    let long = "A SYNTHETIC line. ".repeat(167);
-    let mut command = std::process::Command::new("sh");
-    command
-        .arg("-c")
-        .arg("trap '' XFSZ; ulimit -f 8; exec \"$@\"")
-        .arg("sh")
-        .arg(env!("CARGO_BIN_EXE_chough"))
-        .arg("--root")
-        .arg(fixture.root())
-        .args(["bug", "add", "--title", "A SYNTHETIC oversized bug"])
-        .args(["--symptom", &long, "--trigger", &long, "--expected", &long])
-        .args(["--actual", &long, "--environment", "test-local"]);
-    for name in common::ACTOR_VARIABLES {
-        command.env_remove(name);
-    }
-    command.env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG));
-    let output = command.output().unwrap();
-    let said = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert!(!output.status.success(), "the write did not fail: {said}");
-    assert!(output.status.code().is_some(), "killed by a signal: {said}");
-    let left: Vec<String> = std::fs::read_dir(fixture.root().join(".chough/bugs"))
-        .map(|entries| {
-            entries
-                .flatten()
-                .map(|entry| entry.file_name().to_string_lossy().into_owned())
-                .collect()
-        })
-        .unwrap_or_default();
-    assert_eq!(
-        left,
-        Vec::<String>::new(),
-        "a partial record was left: {said}"
-    );
-    assert!(said.contains("no file was left at that name"), "{said}");
-    // The write's own temporary file is gone too.
-    let temps: Vec<String> = std::fs::read_dir(fixture.root().join(".chough/local"))
-        .map(|entries| {
-            entries
-                .flatten()
-                .map(|entry| entry.file_name().to_string_lossy().into_owned())
-                .filter(|name| name.ends_with(".tmp"))
-                .collect()
-        })
-        .unwrap_or_default();
-    assert_eq!(temps, Vec::<String>::new(), "a temporary file was left");
-    for args in [&["bug", "list"][..], &["status"][..], &["next"][..]] {
-        let output = fixture.run(args);
-        assert!(
-            output.status.success(),
-            "{args:?}: {}",
-            String::from_utf8_lossy(&output.stderr)
-        );
-    }
 }

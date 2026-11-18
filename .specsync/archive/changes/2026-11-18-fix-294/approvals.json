@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795018205,
+      "digest": "fc0f145d7f04d83aea0c1a8adb95009dffe82ae49d757a8a41138ffac3089c95",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-294\": \"Approve all three\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, in answer to: Approve the scope for all three A-list fixes: #268 (checkpoint --file/--design skip the write-time leak guard), #274 (feature-bug-loop example: no pipefail), #294 (test-only: the gate summary Change line)?). Relayed and recorded by chough-fixer-t4g at 2026-11-18T16:10:04Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-294",
+        "title": "Fix 294",
+        "description": "fix 294",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.gate-summary-change-line.cases.toml",
+          "changelog.d/2026-11-18-fix-294.md",
+          "tests/gates.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-cli-061 already says a gate's summary names its change as Change: <id> - <title> (<state>) with no em dash; only a test, its case and a changelog fragment are added, and src/gates.rs is unchanged.",
+        "acceptance_criteria": [
+          "A test opens a gate on a session whose native change is recorded and asserts that chough gate list prints the summary line Change: <id> - <title> (<state>) and that the summary holds no em dash; it fails when the em dash returns to src/gates.rs. src/gates.rs is unchanged."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve all three",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, in answer to: Approve the scope for all three A-list fixes: #268 (checkpoint --file/--design skip the write-time leak guard), #274 (feature-bug-loop example: no pipefail), #294 (test-only: the gate summary Change line)?",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795021806,
+      "digest": "2e7c58cd85c6319c4c6fafb265e07edf85c2673590d0c53fd39da1330e92e6d8",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

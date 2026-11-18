@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-314-folders",
+  "implementation_commit": "38f22e1b7c7da51325d3afa78415ad88832b641e",
+  "implementation_tree": "cb034b2fd711d997ee8994c57c631b3f9d6656e4",
+  "contract_digest": "e0d2e1c157fd5c1b2d6ee53ae3f26536a23a417fa38a551563a9d0baba206484",
+  "workspace_digest": "94879b929d2f6e44181cfa3a263b88f8ef10c5f8aea4181632a0899a75f815e5",
+  "closing_digest": "d60e8d442d5390db95451e4bb6c41f83b9407083d495385d7ed3519038dc3280",
+  "review_digest": "88584e9cb9251702e785409be4349238649abf70476e05d8a7729071a87da8a4",
+  "finalization_digest": "c4091c1140bb5974194e55d8e911716aaff9cc5368552495b94652bd10e64b29",
+  "timestamp": 1795026282
+}

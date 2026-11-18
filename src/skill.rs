@@ -506,6 +506,15 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/stages.md",
         "36522cbfa49c0d29b2505c552ff15d3743b9bca7c5985db0fb002d6b61974727",
     ),
+    // Main 8abb5bb, before a blocking bug was limited to the session it is related to.
+    (
+        "references/stages.md",
+        "ab21a76a1f12aade6398112b1611d1165fb22c4beb528ffa5d6735b4f6efd997",
+    ),
+    (
+        "references/bugs.md",
+        "a81ae65f51ded7a9e09901f21b881ae47a1652e7722298df8d9d0470ccc876c1",
+    ),
 ];
 
 /// Host names and project skill directories, matching the CorvidLabs skills installer.

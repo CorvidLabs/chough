@@ -1,0 +1,55 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795017961,
+      "digest": "57faf2fd8ca83668ab85fceccce542aa544eb446650d8fed72e5ec2fc8eaec03",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-274\": \"Approve all three\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, in answer to: Approve the scope for all three A-list fixes: #268 (checkpoint --file/--design skip the write-time leak guard), #274 (feature-bug-loop example: no pipefail), #294 (test-only: the gate summary Change line)?). Relayed and recorded by chough-fixer-t4g at 2026-11-18T16:06:01Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-274",
+        "title": "Fix 274",
+        "description": "fix 274",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.example-stops-at-a-refused-command.cases.toml",
+          "changelog.d/2026-11-18-fix-274.md",
+          "examples/feature-bug-loop.sh",
+          "tests/cli.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "No requirement covers how the example script fails; it is a test harness for the verify lane. Only the script, its test, a case and a changelog fragment change.",
+        "acceptance_criteria": [
+          "When a chough or SpecSync command whose JSON examples/feature-bug-loop.sh reads with jq fails or is refused, such as chough bug update --status verified, the example stops at that command with a non-zero exit and that command's error, and runs no later step. No such command's output is piped straight into jq. A run whose commands all succeed passes as before."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve all three",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, in answer to: Approve the scope for all three A-list fixes: #268 (checkpoint --file/--design skip the write-time leak guard), #274 (feature-bug-loop example: no pipefail), #294 (test-only: the gate summary Change line)?",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795020884,
+      "digest": "62c49fad5583b3d1880373c431f9e0bab80846637b9fd6c95063fbf0827b5c30",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

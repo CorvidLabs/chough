@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-294",
+  "slug": "fix-294",
+  "title": "Fix 294",
+  "description": "fix 294",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "66543c2bf509627ec2a165414acae0bc8ab59c4a",
+  "created_at": 1795018185,
+  "updated_at": 1795021807,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/gates.rs",
+    ".chough/cases/cli.gate-summary-change-line.cases.toml",
+    "changelog.d/2026-11-18-fix-294.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-cli-061 already says a gate's summary names its change as Change: <id> - <title> (<state>) with no em dash; only a test, its case and a changelog fragment are added, and src/gates.rs is unchanged.",
+  "acceptance_criteria": [
+    "A test opens a gate on a session whose native change is recorded and asserts that chough gate list prints the summary line Change: <id> - <title> (<state>) and that the summary holds no em dash; it fails when the em dash returns to src/gates.rs. src/gates.rs is unchanged."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

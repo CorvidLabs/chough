@@ -1810,3 +1810,71 @@ fn the_preview_names_the_sessions_doctor_reports_after_the_apply() {
         }
     }
 }
+
+/// REQ-records-015 (#314 review), TC-records-migrate-skips-macos-metadata: the
+/// `.DS_Store` and AppleDouble `._*` files macOS writes beside 0.5.x records, in
+/// `.chough/` and in the knowledge directory, are not records, so `chough migrate`
+/// neither reads, carries nor removes them: the preview gives the same plan digest as
+/// without them, that digest applies, and every one of them is still there after.
+#[test]
+fn migrate_skips_macos_metadata_beside_0_5_records() {
+    let fixture = migrate_project("adopted", &[(".chough/bugs/BUG-0001.json", LEGACY_BUG)]);
+    let digest = fixture.ok(&["migrate", "--json"])["plan_digest"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let apple_double: &[u8] = b"\x00\x05\x16\x07\x00\x02\x00\x00Mac OS X        \x00\x02\xff\xfe";
+    let metadata = [
+        ".chough/.DS_Store",
+        ".chough/bugs/.DS_Store",
+        ".chough/bugs/._BUG-0001.json",
+        ".chough/sessions/.DS_Store",
+        ".chough/sessions/._open-one.json",
+        ".chough/sessions/archive/._archived-2.json",
+        ".chough/sessions/open-two.inbox/._INB-0590e45a5d1e2245e91e1121.json",
+        ".chough/history/.DS_Store",
+        ".chough/history/cycles/CYC-5a72dc37cbbdb146702c0e2a/._EVT-ce87b276f18c71b7feab3cfb.json",
+        ".chough/evidence/.DS_Store",
+        ".chough/evidence/._OBS-1.json",
+        "knowledge/.DS_Store",
+        "knowledge/._INDEX.md",
+        "knowledge/._rules.md",
+        "knowledge/sessions/._archived-2.md",
+        "knowledge/intent/._widget.md",
+        "knowledge/modules/._widget.md",
+    ];
+    for path in metadata {
+        let full = fixture.root().join(path);
+        std::fs::create_dir_all(full.parent().unwrap()).unwrap();
+        std::fs::write(full, apple_double).unwrap();
+    }
+    // A metadata folder holding only an empty folder (#321 review P3).
+    let metadata_folder = ".chough/history/._metadata-folder/empty-child";
+    std::fs::create_dir_all(fixture.root().join(metadata_folder)).unwrap();
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(plan["plan_digest"], digest.as_str(), "{plan:#}");
+    assert_eq!(plan["unaccounted"], serde_json::json!([]), "{plan:#}");
+    let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    // Nothing removed them, not even with a folder the migration emptied of its 0.5.x
+    // records: macOS's rmdir would delete orphaned `._*` files along with it.
+    for path in metadata {
+        assert!(
+            fixture.root().join(path).is_file(),
+            "{path} was removed by the migration"
+        );
+    }
+    assert!(
+        fixture.root().join(metadata_folder).is_dir(),
+        "{metadata_folder} was removed by the migration"
+    );
+    // The migrated tree reads with the metadata files still beside its records.
+    for args in [&["session", "list"][..], &["bug", "list"][..]] {
+        let output = fixture.run(args);
+        assert!(
+            output.status.success(),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}

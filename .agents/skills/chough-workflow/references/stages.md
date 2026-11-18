@@ -115,10 +115,10 @@ observations and evidence named in the refresh list must be redone by their owne
 - Outputs: evidence entries in the session's `evidence/` folder (raw logs stay local and in CI), bugs for failures.
 - Roles and tools: QA; `chough cases run/record`; browser for design QA.
 - Completion evidence: selected cases observed; failures captured; omissions explained.
-- Approval: none; blocking bugs send work back to build.
+- Approval: none; a blocking bug related to this session sends work back to build. An unrelated blocking bug is named and does not stop the session.
 - Questions: whether a gap is a product decision rather than a defect.
 - Checkpoint: case and observation references, open bugs, test debt.
-- Transitions: advance to accept (refused while blocking bugs are open); back to build.
+- Transitions: advance to accept (refused while a blocking bug related to this session is open); back to build. An unrelated blocking bug does not refuse the move.
 
 ## accept
 
@@ -149,7 +149,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## bugs
 
 - Side stage for reproducing, classifying, deduplicating and recording a defect locally.
-- Returns to its caller; blocking bugs send the main flow back to build.
+- Returns to its caller; a blocking bug related to this session sends the main flow back to build. An unrelated one is named and does not.
 
 ## validate
 

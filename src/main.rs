@@ -52,6 +52,11 @@ struct Cli {
     /// credential in a committed record, instead of refusing the write (REQ-records-006).
     #[arg(long, global = true)]
     redact: bool,
+    /// The session this command reads and writes, by ID, alias or bare slug, whatever the
+    /// shared active-session pointer says; `CHOUGH_SESSION` sets it for a whole shell. The
+    /// pointer never moves (REQ-cli-037). `init` and `inbox add` keep their own --session.
+    #[arg(long, global = true)]
+    session: Option<String>,
     #[command(subcommand)]
     command: Commands,
 }
@@ -240,6 +245,28 @@ fn main() -> Result<()> {
     } else {
         migrate::ensure_migrated(&root)?;
     }
+    // REQ-cli-037 (#271): a shell pins its session with --session or CHOUGH_SESSION, so
+    // each agent writes to its own session whatever the shared pointer says. The commands
+    // that set or name a session themselves are left alone.
+    let requested = cli.session.clone().or_else(|| {
+        std::env::var("CHOUGH_SESSION")
+            .ok()
+            .filter(|value| !value.trim().is_empty())
+    });
+    if let Some(name) = requested
+        && !matches!(
+            &cli.command,
+            Commands::Init { .. }
+                | Commands::Session { .. }
+                | Commands::Migrate(_)
+                | Commands::Skill { .. }
+                | Commands::Inbox {
+                    command: sessions::InboxCommand::Add { .. }
+                }
+        )
+    {
+        pin_session(&root, &name)?;
+    }
     match cli.command {
         Commands::Init {
             objective,
@@ -422,6 +449,7 @@ struct Assessment {
     deltas: Option<String>,
     open_bugs: Vec<Value>,
     blocking: Vec<String>,
+    unrelated_blocking: Vec<String>,
 }
 
 fn assess(root: &Path) -> Result<Assessment> {
@@ -432,7 +460,13 @@ fn assess(root: &Path) -> Result<Assessment> {
     let change = checkpoint.and_then(|checkpoint| checkpoint.native_change.as_deref());
     let native = native_read(root, change)?;
     let open_bugs = bugs::open_backlog(root)?;
-    let blocking = bugs::open_blocking(root)?;
+    let (blocking, unrelated_blocking) = match checkpoint {
+        Some(checkpoint) => {
+            let found = bugs::open_blocking(root, checkpoint)?;
+            (found.stops, found.warns)
+        }
+        None => (Vec::new(), Vec::new()),
+    };
     let history_read = checkpoint.map(|checkpoint| {
         history::selected(
             checkpoint,
@@ -454,7 +488,14 @@ fn assess(root: &Path) -> Result<Assessment> {
         ),
         Some(checkpoint) => {
             let state = stage::native_state_from(root, change, native.as_ref())?;
-            let (gate, action) = stage::assess(root, checkpoint, &state, &blocking, history_read.as_ref());
+            let (gate, action) = stage::assess(
+                root,
+                checkpoint,
+                &state,
+                &blocking,
+                &unrelated_blocking,
+                history_read.as_ref(),
+            );
             (gate, action, Some(stage::delta_summary(root, change, &state)))
         }
     };
@@ -476,6 +517,7 @@ fn assess(root: &Path) -> Result<Assessment> {
         deltas,
         open_bugs,
         blocking,
+        unrelated_blocking,
     })
 }
 
@@ -596,6 +638,7 @@ fn status(root: &Path, environment: Option<&str>) -> Result<Value> {
         "environment": environment,
         "open_bugs": assessment.open_bugs,
         "blocking_bugs": assessment.blocking,
+        "unrelated_blocking_bugs": assessment.unrelated_blocking,
         "human_approval": "unknown; Chough does not authenticate human identity or approval",
         "delivery": "unknown; a recorded observation does not establish deployment or release",
     }))
@@ -941,6 +984,20 @@ fn lessons(root: &Path, modules: &[String]) -> Result<Value> {
 /// The command that opens the next session, as the move into done names it.
 const NEW_SESSION: &str = "chough session new <key> --objective \"<outcome>\"";
 
+/// Pin the session `name` names for this command (REQ-cli-037): an open session by ID,
+/// alias or bare slug, as `chough session use` resolves it, which every read and write of
+/// the command then uses; the shared pointer is not touched. A name that is not an open
+/// session refuses before anything is read or written.
+fn pin_session(root: &Path, name: &str) -> Result<()> {
+    let id = sessions::resolve_open(root, name).map_err(|error| {
+        anyhow::anyhow!(
+            "refused:session-not-open: {name}, named by --session or CHOUGH_SESSION, is not an open session ({error:#}); run `chough session list` for the open ones; nothing was written"
+        )
+    })?;
+    sessions::pin(root, &sessions::session_file(&id));
+    Ok(())
+}
+
 /// The next view with no open session, the normal state after the move into done
 /// archives one (REQ-cli-021, REQ-history-006): that no session is open and the command
 /// that opens the next one, as text or compact JSON, with no session to read.
@@ -1074,6 +1131,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "blockers": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.blockers).iter()),
         "open_questions": listed(checkpoint.map_or(&empty, |checkpoint| &checkpoint.open_questions).iter()),
         "blocking_bugs": listed(assessment.blocking.iter()),
+        "unrelated_blocking_bugs": listed(assessment.unrelated_blocking.iter()),
         "other_open_bugs": assessment.open_bugs.len().saturating_sub(assessment.blocking.len()),
         "observations": {
             "needs_attention_total": attention.rows.len(),
@@ -1284,6 +1342,25 @@ fn next_text(view: &Value) -> String {
             ids.join(", ")
         )
     });
+    let unrelated = &view["unrelated_blocking_bugs"];
+    let unrelated_ids: Vec<String> = unrelated["items"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(text)
+        .collect();
+    let unrelated_total = unrelated["total"].as_u64().unwrap_or(0);
+    if unrelated_total > 0 {
+        let more = if unrelated_total > unrelated_ids.len() as u64 {
+            ", ..."
+        } else {
+            ""
+        };
+        lines.push(format!(
+            "Other blocking bugs: {}{more} (do not block this session)",
+            unrelated_ids.join(", ")
+        ));
+    }
     let observations = &view["observations"];
     let total = observations["needs_attention_total"].as_u64().unwrap_or(0);
     let items = observations["items"]

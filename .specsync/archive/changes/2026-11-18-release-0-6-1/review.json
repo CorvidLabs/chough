@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "release-0-6-1",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "81f03326619f3859f1eefd79416cbd5505c15f33",
+  "contract_digest": "a4bbb17ea33731e74250d13fe75794f7b75e5ed442656775af64fde829bb9202",
+  "execution_digest": "37784b59feaf06078bb53c2e7a1049071c61dcb159d5ee465c2de8c60420bcce",
+  "workspace_digest": "d68341697e30666976b2ccc4b6f17b5d02706f3414c5a5f56b29e9fab6bd8dd9",
+  "timestamp": 1795023170,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve, merge when green",
+    "where": "Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after it read PR #326 for him and told him of the one-time failure of #324's tests",
+    "recorded_by": "fable-t4b"
+  }
+}

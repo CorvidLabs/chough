@@ -6,6 +6,166 @@ All notable changes to Chough are recorded here. The format follows
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-18
+
+- A test now checks the gate summary's change line, `Change: <id> - <title> (<state>)`,
+  with a plain dash and no em dash, so the em dash #278 removed can't come back
+  unnoticed (#294, REQ-cli-061).
+- `chough evidence add`, `cases run` and `cases record` now read the session under the
+  project's writer lock before they add their observation reference, so an update
+  another writer saves meanwhile is kept. Before, they read `session.md` first and
+  saved that stale copy, so parallel writers silently lost decisions and observation
+  references. `cases run` still runs its case without holding the lock (#317,
+  REQ-cli-040).
+- A slug holding `-sk-`, such as the bug ID Chough makes from "Fix flaky sk-learn
+  tests in CI pipeline", is no longer read as a model-provider key: `sk-` after a
+  hyphen continues a word again, as in 0.6.0. New bugs with such titles are written,
+  and 0.6.0 bugs with such IDs update and pass `chough doctor --leaks`. `sk-` at the
+  start of a value or after a space is still refused, and the distinctive forms
+  (`ghp_` and the other GitHub forms, `glpat-`, `xoxb-`, `AKIA`) stay refused after a
+  hyphen (#316, a regression from #267's fix, REQ-records-006).
+- The new-record writer added for #260 earlier in this cycle is reverted. It linked a
+  temporary file to the record's name, so `chough init`, `bug add`, `journal add` and
+  `session new` failed on file systems without hard links such as exFAT (#313), and
+  writers running at the same time could lose their temporary files. A new record is
+  written as in 0.6.0 again. #260 is open again and is redone in 0.6.2.
+- The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) now stops
+  at a refused `chough` or SpecSync command, with that command's error. Before, it
+  piped their JSON straight into `jq` without `pipefail`, so a refusal such as a
+  refused `bug update --status verified` let it carry on and fail a step later. It now
+  captures each command's output before `jq` reads it, since `set -o pipefail` is not
+  in every `sh` (#274).
+- `chough journal add` now holds the writer lock in a project with no `.chough/`
+  directory too. It writes there with default preferences, and the first fix for #272
+  took no lock on that path, so parallel adds could still leave the feed missing a
+  post (review of #302, REQ-cli-040).
+- `chough journal add` now holds the project's writer lock while it writes its post and
+  rebuilds the feed and the index, as REQ-cli-040 already said it does. Several
+  `journal add` commands run at once no longer leave `knowledge/journal/feed.xml`
+  missing posts, so `chough library index --check` passes after them (#272).
+- Every reference `chough checkpoint` records now passes the leak check before the
+  write, like every other value Chough records. A `--file` or `--design` path holding
+  a credential, an email or a user name refuses as `refused:leak` naming the field,
+  and `--redact` stores it redacted. A `--criterion`, `--requirement`, `--case`,
+  `--observation` or `--native-change` ID holding one refuses even under `--redact`,
+  since an ID can't keep its form redacted. In a session that already holds such a
+  value, `evidence add`, `cases run` and `cases record` refuse before they write
+  anything. Before, such values were committed to `session.md` and only
+  `chough doctor` found them afterwards (#268, REQ-records-006).
+- The leak check now finds a credential that directly follows a hyphen, such as
+  `x-ghp_…` in a session key, a decision or a raw log name, and `chough doctor` reports
+  one already committed. Before, a hyphen in front hid the token from both, while the
+  same token after a space, colon or dot was refused (#267, REQ-records-006).
+- The record reader now opens a file without blocking and checks on the opened file
+  that it is a regular one. Before, it checked the path and then opened it, so a file
+  replaced with a FIFO in between still blocked the reader. `chough session shelve`
+  reads through the same open (review of #305, #262).
+- A FIFO or other non-regular file in a record's place no longer blocks a reader.
+  `chough status` and `chough next` skip such an entry in `.chough/bugs/`, as
+  `chough bug list` already did. A session whose `session.md` is one is listed by
+  `chough session list` as not readable, with the reason and the recovery
+  `chough session shelve <id>`, instead of vanishing from the list, and the shelve
+  moves the folder without reading it (#262, REQ-history-006).
+- A blocking bug stops only a session that lists it, holds its evidence, or shares a
+  criterion, requirement, or case. Other sessions are warned by name, and a blocking
+  bug that names nothing stops no session (#304).
+- `chough skill update` replaces a pristine copy of the workflow stages file from main 0fd9fd22, and the architecture note says which session files `session use` reads (FLOW-18).
+- `chough help --help` now prints the top-level help and exits 0, and `chough help
+  <command>` prints that command's help, so the CLI reference a user reads is the one
+  Chough actually lists; `chough checkpoint --help` now prints clap help text for the
+  eleven list-valued flags (`--criterion`, `--requirement`, `--case`, `--design`,
+  `--file`, `--observation`, `--bug`, `--decision`, `--question`, `--completed`,
+  `--blocker`), and `docs/cli.md` documents the `migrate --json`, `doctor --leaks`,
+  `stage help` and top-level `chough help` commands the reference missed (#301, REQ-cli-057,
+  DRIVE-17).
+- This repository routes `specs/**/*.spec.md` and `specs/**/requirements.md` to
+  SpecSync's ancestor-aware merge driver, so two branches that each bump a module's
+  version and Change Log merge locally without a hand-resolved conflict. `AGENTS.md`
+  names the one-time `specsync merge --install` (#291, DRIVE-12).
+- The docs, the workflow fast path, and the five host templates now say what current main does, including write-time checks, the daily CI run, journal posts only when the librarian is on, and the short rules a local agent follows (FLOW-18).
+- The knowledge index and feed (`knowledge/index.md`, `knowledge/journal/feed.xml`) are
+  rebuilt and checked once, at release, not at each move into done or in each pull
+  request, so open pull requests no longer conflict on them (#289, REQ-cli-043,
+  REQ-cli-047). The move into done writes its journal post and reports the index
+  `deferred`; no verify, CI or pull request lane runs `chough library index --check`.
+  `fledge run release-check` rebuilds the index on the release preparation branch, fails
+  until the rebuild is committed, then runs the strict check. Between releases the index
+  on main lags its sources.
+- A closed session's archived story writes its What was verified receipt lines with
+  ` - ` between the claim and the command or the first fingerprint digits, and a gate
+  summary names its change as `Change: <id> - <title>`, so Chough's own records no
+  longer carry an em dash that fails the CorvidLabs prose lints (#278, REQ-history-006,
+  REQ-cli-061). Stories archived earlier are not rewritten: the journal reads a claim
+  from either join (REQ-records-011).
+- `chough init` still adds a missing skill file without touching its neighbors, and a
+  session whose files were edited since init stays byte-identical on a later init.
+  Init never removes or rewrites a file the user or a previous run created
+  (REQ-cli-001).
+- Chough's change log adds one fragment per change, `changelog.d/<YYYY-MM-DD>-<change-id>.md`, holding
+  that change's bullets, instead of editing the `CHANGELOG.md` Unreleased section, and a
+  release task that assembles the fragments into the release heading and removes them, so
+  two open changes no longer edit the same `CHANGELOG.md` section (#290, LIFE-16).
+- A relayed gate close's native approval or review, including the review `chough change
+  ship` runs, passes the relay to SpecSync 6.3.0 as `--words`, `--where` and
+  `--recorded-by`, so SpecSync's approval and review records hold the relayed decision
+  (#249, REQ-records-008). Each value is passed joined to its flag (`--words=<words>`), so
+  relay text that starts with `-`, which Chough's own flags accept, is not read as a flag.
+  SpecSync 6.3.0 then records such a change at workflow version 3, which SpecSync
+  6.2.x refuses, so every checkout and CI job of a project that uses it needs 6.3.0.
+- `fledge run flake-window` computes the 1.0 flake window from CI history (REQ-cli-062,
+  #217). It reads the CI workflow's runs and jobs, the issues labelled `flake` and
+  `.chough/bugs/`, writes nothing, and prints a JSON receipt: `clean`, `running` (with
+  the latest restart and when the window can first be clean) or `blocked`. A red or
+  partly skipped main run, any rerun, a filed flake and a day without a green main run
+  on both macOS and Linux restart the window. It exits 2 when GitHub cannot be read in
+  full. Its fixtures run in the `CI gate fixtures` job.
+- `integrations/` ships optional, versioned example hc templates for Claude Code,
+  Codex, Kimi, Grok and a local agent, the local one unqualified until #220
+  (REQ-cli-065, #219). Each has hc's three front-matter keys, resumes with
+  `chough next`, loads the skill file its own `chough init` creates and holds no local
+  path. `integrations/templates.toml` lists each template's status and an ordered list
+  of its versions with their SHA-256, and a README says Chough has no runtime
+  dependency on hc, Herdr or Rune.
+- The workflow skill's stage contract opens with a fast path for a routine change: a
+  bounded first read, the session and native-change commands in order, a delta for every
+  affected spec, a stop at each human gate, an early first edit and the checks, so a
+  local or small-context agent edits early instead of surveying the repository. SKILL.md
+  routes to it, and an installed copy of the previous bundle updates to it (LIFE-22).
+- CI also runs once a day on main at 05:23 UTC, so the flake window sees macOS and
+  Linux every day even when nothing merges. On a scheduled run the `SpecSync Archive`
+  jobs take the run's own commit as their trusted base, since the event has neither a
+  pull request base nor a previous commit (REQ-cli-064, #217).
+- A host-matrix harness in `tools/host-matrix/` drives one scripted Chough cycle per
+  agent host, one fresh host run per turn, in a throwaway copy of the shipping sample.
+  It stands in for every human gate only as `SIMULATED-host-matrix-not-a-human` and
+  judges the result only from the files, Git and native status. Its self-test runs a
+  scripted stand-in host with no model, and hosted CI runs it on Ubuntu and macOS. Real
+  host adapters follow (REQ-cli-066, #218).
+- `chough migrate`'s preview and the receipt's `## Follow-up` also name what `chough doctor` will report on the migrated tree, from doctor's own session check run on the planned records: the finished sessions `chough doctor --fix` archives, and each session whose open human gates are on an archived native change, with each gate's text and the decision it needs, `chough doctor --fix --reason` (#246, REQ-records-009, REQ-cli-055).
+- The verify lane's feature-and-bug exercise (`examples/feature-bug-loop.sh`) waits until the clock is past the failing run's recorded second before rerunning the fixed case, so on a fast runner the bug's `verified` status is no longer refused for a pass in the same second (#247). REQ-cli-012's same-second rule is unchanged.
+- Record polish: a bug's actual behaviour is its own `Actual:` paragraph under What
+  happened; `chough migrate` names each carried entry or receipt in front matter, its
+  0.5.x ID kept as the alias, so `chough next` lists the new names; a fresh project's
+  `.chough/README.md` no longer lists `artifacts/`; and the README's init paragraph
+  names each host's skill directory in one sentence.
+- The intent gate summary in `chough gate list` gives each criterion the session references by ID with its sentence from the `hi/` file that holds it, and no diff line, and each delta at a scope gate says which requirement IDs it adds and which it modifies instead of "adds or modifies" (REQ-cli-061).
+- `chough library index` links no rule, skill, decision or policy file that Git ignores, such as a host's skill copy under an ignored `.grok/`, so `knowledge/index.md` is the same in a working tree and a fresh clone, and `library index --check` passes there (#245, REQ-cli-043).
+- `chough next` with no open session, the normal state after done, says so, names `chough session new <key>` and exits 0 instead of failing, while `chough status` still refuses; `chough timing` says elapsed wall-clock once, in its header, with no gate-wait, case run or fix-time line repeating it, and its native note no longer reads "read read-only" (REQ-cli-021, REQ-history-006, REQ-reporting-001).
+- At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).
+- `chough change ship` prints SpecSync's output, then a short text summary of at most 12
+  lines naming the review, the ship, the gate close and the move into done, in place of
+  the gate close's long JSON report and the move's summary; when the summary is longer,
+  its last line names how many lines were dropped and points at `--json`, which prints
+  every step's full report (REQ-cli-059, #276).
+- The leak check no longer refuses an ordinary word that equals a short all-letter host
+  name: such a name is a leak only inside a path or a URL or as `<user>@<host>`, while a
+  host name of 8 or more characters, or holding a digit, a hyphen or a dot, is still
+  refused anywhere, in writes and in `chough doctor` alike (REQ-records-006).
+- The leak check now flags an scp-style remote path, `host:/path`, as the host name and
+  the path it carries: a home or system root after the colon refuses as a path leak, and
+  the host part counts as the local host name when it matches, in writes and in
+  `chough doctor` alike (REQ-records-006, #275).
+
 ## [0.6.0] - 2026-11-12
 
 ### Human-first records (breaking)
@@ -1027,6 +1187,7 @@ Release steps are in [docs/releasing.md](docs/releasing.md).
 
 See [Known limitations](README.md#known-limitations) in the README.
 
+[0.6.1]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.1
 [0.6.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.6.0
 [0.5.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.5.0
 [0.4.0]: https://github.com/CorvidLabs/chough/releases/tag/v0.4.0
