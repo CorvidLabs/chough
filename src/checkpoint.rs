@@ -89,6 +89,10 @@ pub(super) struct Checkpoint {
     pub(super) stage: StageState,
     #[serde(default)]
     pub(super) native_change: Option<String>,
+    /// Why this session's work needs no native change, when it recorded that
+    /// (REQ-cli-007, #281); never set together with `native_change`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) no_native_change: Option<String>,
     #[serde(default)]
     pub(super) references: References,
     #[serde(default)]
@@ -181,6 +185,7 @@ pub(super) fn new_checkpoint(
             iteration: 1,
         },
         native_change: None,
+        no_native_change: None,
         references: References::default(),
         decisions: vec![],
         open_questions: vec![],
@@ -564,6 +569,11 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
     count += guard(local, "objective", &mut session.objective)?;
     count += guard(local, "intent_scope", &mut session.intent_scope)?;
     count += guard(local, "next", &mut session.next_action)?;
+    // REQ-records-006 (#281): the reason a session needs no native change is a written
+    // value like the others.
+    if let Some(reason) = &mut session.no_native_change {
+        count += guard(local, "no_native_change", reason)?;
+    }
     for (name, list) in [
         ("decision", &mut session.decisions),
         ("completed", &mut session.completed),
@@ -738,6 +748,10 @@ pub(super) struct CheckpointArgs {
     summary: Option<String>,
     #[arg(long)]
     native_change: Option<String>,
+    /// Record that this session's work needs no native change, with the reason, so its
+    /// stage moves are not refused for lacking one. Human gates still hold.
+    #[arg(long, value_name = "REASON", allow_hyphen_values = true)]
+    no_native_change: Option<String>,
     /// A human decision the session recorded; repeat the flag for each one.
     #[arg(long = "decision")]
     decisions: Vec<String>,
@@ -1343,6 +1357,7 @@ impl CheckpointArgs {
             title,
             summary,
             native_change,
+            no_native_change,
             decisions,
             questions,
             resolved,
@@ -1380,6 +1395,7 @@ impl CheckpointArgs {
             && title.is_none()
             && summary.is_none()
             && native_change.is_none()
+            && no_native_change.is_none()
             && answer.is_none()
             && close_gate.is_none()
             && decided_by.is_none()
@@ -1558,6 +1574,23 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         );
         ensure_native_change_known(root, &change)?;
         session.native_change = Some(change);
+        // A session with a native change no longer says it needs none (#281).
+        session.no_native_change = None;
+        changed = true;
+    }
+    if let Some(reason) = args.no_native_change {
+        let reason = reason.trim().to_string();
+        ensure!(
+            !reason.is_empty(),
+            "--no-native-change needs a reason: say why this session's work needs no native change"
+        );
+        ensure_text("no_native_change", &reason)?;
+        if let Some(change) = &session.native_change {
+            bail!(
+                "refused: the session records native change {change}, so it cannot also record that it needs none; nothing was saved."
+            );
+        }
+        session.no_native_change = Some(reason);
         changed = true;
     }
     // Clears run before additions, so entries given in the same call are kept.
