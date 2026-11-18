@@ -1,0 +1,66 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795026348,
+      "digest": "58f284b09466412f594f944d46b458c93fcb5b857c5984fad7fea736b6c3f988",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-271\": \"Approve\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his decision comment on CorvidLabs/chough#271 ('pin per shell': CHOUGH_SESSION plus --session on every write command, hc launches set the variable), then 'Approve' for the REQ-cli-037 wording shown to him in plain words, and 'Yes, same PR' for updating the five versioned hc templates in integrations/ to export CHOUGH_SESSION). Relayed and recorded by chough-fixer-t4g at 2026-11-18T18:25:48Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-271",
+        "title": "Fix 271",
+        "description": "fix 271",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.session-pin.cases.toml",
+          "changelog.d/2026-11-18-fix-271.md",
+          "docs/cli.md",
+          "integrations/claude-code/hc-template.md",
+          "integrations/codex/hc-template.md",
+          "integrations/grok/hc-template.md",
+          "integrations/kimi/hc-template.md",
+          "integrations/local/hc-template.md",
+          "integrations/templates.toml",
+          "src/main.rs",
+          "tests/session_pin.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With two open sessions and the pointer on one, chough evidence add --session <other>, and the same command with CHOUGH_SESSION=<other>, record into the other session and leave the pointer unchanged, and chough next --session <other> shows that session. A --session or CHOUGH_SESSION naming an archived or unknown session refuses with every file unchanged. chough init --session and chough inbox add --session keep their meaning, and session new and session use ignore CHOUGH_SESSION. The five versioned hc templates in integrations/ tell the agent to export CHOUGH_SESSION for its session."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the delta is frozen at approval. An hc template change appends a new version entry to integrations/templates.toml and never edits a listed one (REQ-cli-065). No other lesson or principle constrains it.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "f66ab65d741e6af00b0c42a65767dba22935d8513db8ff79ce913d8a9158dbd8"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-037": "27d97b8740822d40fdc3fd98b1ed6168269ad6f7e3c85806f76902499d7f85fc"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his decision comment on CorvidLabs/chough#271 ('pin per shell': CHOUGH_SESSION plus --session on every write command, hc launches set the variable), then 'Approve' for the REQ-cli-037 wording shown to him in plain words, and 'Yes, same PR' for updating the five versioned hc templates in integrations/ to export CHOUGH_SESSION",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795028532,
+      "digest": "f3dbaa2afcfbd58773b29c57470ae8af8a6f222bf3d89172fca7a56bef529b78",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

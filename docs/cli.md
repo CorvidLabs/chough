@@ -820,6 +820,20 @@ through a command does not redirect its save. `chough init --objective <text>` c
 the first session as `session new` would, keyed by `--session <key>` or the
 objective's slug, and `chough init` alone creates none.
 
+Several agents in one worktree each pin their own session (REQ-cli-037, #271). Every
+command takes `--session <id>`, before or after its subcommand, and without it reads the
+`CHOUGH_SESSION` environment variable. Either one names the session the command reads
+and writes, by ID, alias or bare slug as `chough session use` resolves them, whatever
+the pointer says. The pointer itself never moves. A name that is not an open session,
+unknown or archived, refuses as `refused:session-not-open`, naming `chough session
+list`, with nothing written. Three kinds of command are left as they were:
+`chough init --session <key>` still names the first session's key, `chough inbox add
+--session` still names the session it appends to, and the `chough session` commands
+(`new`, `use`, `list`, `close`, `shelve`) ignore the variable, since they set or name a
+session themselves. The example hc templates in `integrations/` tell each agent to
+export `CHOUGH_SESSION` for its session, or to pass `--session` where its shell keeps
+no variables between commands.
+
 ### Doctor
 
 `chough doctor` finds the Chough debt that stops a fresh worktree from entering Chough

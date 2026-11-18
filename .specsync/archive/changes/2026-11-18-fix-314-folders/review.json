@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-314-folders",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "38f22e1b7c7da51325d3afa78415ad88832b641e",
+  "contract_digest": "e0d2e1c157fd5c1b2d6ee53ae3f26536a23a417fa38a551563a9d0baba206484",
+  "execution_digest": "3261163a16929f28108f8d8ee0344c5be5d61d38d87b20660c304bad4ddf8360",
+  "workspace_digest": "94879b929d2f6e44181cfa3a263b88f8ef10c5f8aea4181632a0899a75f815e5",
+  "timestamp": 1795026274,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Fix it in #321 first",
+    "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his [P3] review thread on #321, with the instruction to fix it in a small follow-up change on #321's branch, run the verify lane, ship and push, the tester glancing at it before he resolves the thread",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}
