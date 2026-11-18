@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "revert-306",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "62cf3cc4b160968508c38e86124449659d939ba6",
+  "contract_digest": "6276b8772d0b4dfb8867081839a583bfc176d983d3916e08a2fe9caaa2f2e9e0",
+  "execution_digest": "ceec5d7cdf07e73ed56f0cd1a05c79e29904c6e1aa5d76208f3aaeb97999ee73",
+  "workspace_digest": "6f9281a4d5c968aa48b357769c28b6fd3bd3d193e311006da7c4c0de94403316",
+  "timestamp": 1795020354,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve, merge when green",
+    "where": "Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after the tester's PASS on PR #323",
+    "recorded_by": "fable-t4b"
+  }
+}

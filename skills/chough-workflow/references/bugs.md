@@ -57,8 +57,11 @@ what you searched and its limits.
 
 ## Scope decides the next step
 
-- `blocking`: the acceptance-relevant behavior is wrong. `chough stage advance` from
-  test refuses while it is open; go back to build, fix, and rerun the focused cases.
+- `blocking`: the acceptance-relevant behavior is wrong. It stops a session leaving
+  test only when that session lists it, its evidence names that session, or they share
+  a criterion, requirement, or case. `chough next` names any other open blocking bug
+  and says it does not block this session. A blocking bug that names nothing stops no
+  session. For a session it does stop, go back to build, fix, and rerun the focused cases.
 - `in-scope`: fix within the approved scope when practical.
 - `out-of-scope`: keep it visible in the backlog for later work. It does not expand
   the current change.
