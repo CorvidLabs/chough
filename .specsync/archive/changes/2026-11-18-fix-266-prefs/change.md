@@ -1,6 +1,6 @@
 ---
 id: fix-266-prefs
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 968172b73473b5f9149355b47bb9a59a7ea48d17
 ---

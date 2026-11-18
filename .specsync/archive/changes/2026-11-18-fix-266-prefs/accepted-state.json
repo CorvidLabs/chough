@@ -7,11 +7,11 @@
   "title": "Fix 266 prefs",
   "description": "fix 266 prefs",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "968172b73473b5f9149355b47bb9a59a7ea48d17",
   "created_at": 1795030472,
-  "updated_at": 1795030592,
+  "updated_at": 1795031022,
   "affected_specs": [
     "cli"
   ],

@@ -40,6 +40,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his own P2 review thread on #330 ('Cover preference writers before relying on this lock as the merge guard … regress pref set/unset'): a small follow-up native change on #330's branch in which pref set and pref unset take the writer lock, with a regression test red first",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795031022,
+      "digest": "b4406f90924c619d83940a29b6a1c3061e2df44f8112de67f0fac722bbadeb8e",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
