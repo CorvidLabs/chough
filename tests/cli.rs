@@ -2811,8 +2811,8 @@ fn exercise_rerun_waits_past_the_failing_runs_second_before_verifying() {
         .env("CHOUGH_ENVIRONMENT", "exercise-local")
         .output()
         .unwrap();
-    // The script pipes `bug update` into jq, so a refused update does not stop it; the
-    // bug's status says whether the rerun verified it.
+    // A refused update stops the script (#274), and the bug's status says whether the
+    // rerun verified it.
     let said = format!(
         "{}{}",
         String::from_utf8_lossy(&out.stdout),
@@ -2824,6 +2824,109 @@ fn exercise_rerun_waits_past_the_failing_runs_second_before_verifying() {
         shown["bug"]["status"], "verified",
         "the rerun did not verify the bug:\n{said}"
     );
+}
+
+/// The section of the exercise between `# <name>: begin` and `# <name>: end`.
+fn exercise_section(script: &str, name: &str) -> String {
+    let begin = script
+        .find(&format!("# {name}: begin\n"))
+        .unwrap_or_else(|| panic!("no {name} section"));
+    let end = script
+        .find(&format!("# {name}: end\n"))
+        .unwrap_or_else(|| panic!("no end to the {name} section"));
+    script[begin..end].to_string()
+}
+
+/// Issue #274, TC-cli-exercise-stops-at-a-refused-command: the exercise stops at a
+/// refused command, with its error, instead of a step later. This runs the script's own
+/// helpers and its rerun-and-verify lines with a stand-in `chough` whose `bug update` is
+/// refused; nothing after the refusal may run.
+#[cfg(unix)]
+#[test]
+fn exercise_stops_at_a_refused_bug_update() {
+    let script = fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/feature-bug-loop.sh"),
+    )
+    .unwrap();
+    let dir = TempDir::new().unwrap();
+    let stand_in = dir.path().join("chough");
+    fs::write(
+        &stand_in,
+        "#!/bin/sh\ncase \"$1 $2\" in\n\
+         \"next \"*) printf '{\"last_failure\":{\"observed_at_unix_seconds\":0}}\\n' ;;\n\
+         \"cases run\") printf '{\"outcome\":\"passed\",\"observation\":\"obs-%s\"}\\n' \"$3\" ;;\n\
+         \"bug update\") echo 'Error: refused:synthetic-refusal of bug update' >&2; exit 1 ;;\n\
+         *) echo \"unexpected: $*\" >&2; exit 9 ;;\n\
+         esac\n",
+    )
+    .unwrap();
+    let mut permissions = fs::metadata(&stand_in).unwrap().permissions();
+    std::os::unix::fs::PermissionsExt::set_mode(&mut permissions, 0o755);
+    fs::set_permissions(&stand_in, permissions).unwrap();
+    let body = format!(
+        "set -eu\n{}bug='2026-11-18-synthetic-bug'\n{}echo REACHED-AFTER-THE-RERUN\n",
+        exercise_section(&script, "helpers"),
+        exercise_section(&script, "rerun after the fix")
+    );
+    let out = Command::new("sh")
+        .args(["-c", &body, "feature-bug-loop.sh"])
+        .current_dir(dir.path())
+        .env("CHOUGH", &stand_in)
+        .env("CHOUGH_ENVIRONMENT", "exercise-local")
+        .output()
+        .unwrap();
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        !out.status.success(),
+        "the exercise went on after a refused bug update:\n{stdout}{stderr}"
+    );
+    assert!(
+        stderr.contains("refused:synthetic-refusal of bug update"),
+        "the refusal's own error is missing:\n{stderr}"
+    );
+    assert!(
+        !stdout.contains("REACHED-AFTER-THE-RERUN"),
+        "a later line ran:\n{stdout}"
+    );
+}
+
+/// Issue #274: no line of the exercise pipes a `chough` or SpecSync command's output
+/// straight into `jq`, where the pipeline's status would be `jq`'s and a refusal would
+/// not stop the script; `set -o pipefail` is not in every `sh`.
+#[test]
+fn exercise_pipes_no_command_output_straight_into_jq() {
+    let script = fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/feature-bug-loop.sh"),
+    )
+    .unwrap();
+    // Join continued lines, and lines that end in a pipe, into logical lines.
+    let mut logical: Vec<String> = vec![];
+    let mut current = String::new();
+    for line in script.lines() {
+        let trimmed = line.trim();
+        if let Some(head) = trimmed.strip_suffix('\\') {
+            current.push_str(head);
+            current.push(' ');
+        } else if trimmed.ends_with('|') {
+            current.push_str(trimmed);
+            current.push(' ');
+        } else {
+            current.push_str(trimmed);
+            logical.push(std::mem::take(&mut current));
+        }
+    }
+    let piped: Vec<&String> = logical
+        .iter()
+        .filter(|line| line.contains("| jq") || line.contains("|jq"))
+        .filter(|line| {
+            line.starts_with("$chough ")
+                || line.starts_with("specsync ")
+                || line.contains("$($chough ")
+                || line.contains("$(specsync ")
+        })
+        .collect();
+    assert!(piped.is_empty(), "piped straight into jq: {piped:#?}");
 }
 
 /// Issue #83 (DRIVE-11): the writer lock lives in the project, so a writer started with

@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #274: examples/feature-bug-loop.sh piped chough's JSON into jq under set -eu
+# without pipefail, so a refused command did not stop it and the failure surfaced a
+# step later (CI run 43357893936).
+
+[[case]]
+id = "TC-cli-exercise-stops-at-a-refused-command"
+title = "The example's rerun lines, with a stand-in chough whose bug update is refused, stop at that refusal with its error and run no later line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-19"]
+requirements = ["REQ-cli-012"]
+paths = ["examples/feature-bug-loop.sh", "tests/cli.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cli.rs::exercise_stops_at_a_refused_bug_update passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "exercise_stops_at_a_refused_bug_update"

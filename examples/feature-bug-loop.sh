@@ -43,6 +43,12 @@ last_observation=""
 step() { printf '\n== %s\n' "$*"; }
 fail() { printf 'EXERCISE FAILED: %s\n' "$*" >&2; exit 1; }
 need() { command -v "$1" >/dev/null 2>&1 || fail "missing required tool: $1"; }
+# Run a command and keep its standard output in $out. A pipeline's status is its last
+# command's and `set -o pipefail` is not in every sh, so a command whose JSON jq reads
+# runs here first: a refused one stops the exercise where it happens (#274).
+capture() {
+    out=$("$@") || fail "refused or failed: $1 $2 $3"
+}
 expect_refusal() {
     label=$1 pattern=$2
     shift 2
@@ -64,8 +70,8 @@ run_case() {
 # runner the rerun after the fix can land in the failing run's second (#247), so it
 # first waits until the clock is past the latest failure's recorded second.
 wait_past_last_failure() {
-    failed_at=$($chough next --environment "$env_name" --json |
-        jq -r '.last_failure.observed_at_unix_seconds // empty')
+    capture $chough next --environment "$env_name" --json
+    failed_at=$(printf '%s' "$out" | jq -r '.last_failure.observed_at_unix_seconds // empty')
     [ -n "$failed_at" ] || fail "no recorded failure to wait past"
     while [ "$(date -u +%s)" -le "$failed_at" ]; do sleep 1; done
 }
@@ -107,12 +113,13 @@ commit "Seed the shipping sample"
 $chough stage advance --note "SIMULATED: the exercise approves the sample intent; no human decided" >/dev/null
 
 step "Design: nothing visual changes, so the stage is skipped with a reason"
-$chough stage skip --json --reason "Fee calculation only; no visuals or interactions change" |
-    jq -r '.applied | "\(.from) -> \(.to) (\(.kind))"'
+capture $chough stage skip --json --reason "Fee calculation only; no visuals or interactions change"
+printf '%s' "$out" | jq -r '.applied | "\(.from) -> \(.to) (\(.kind))"'
 
 step "Plan: a native SpecSync change, and the scope gate before build"
-id=$(specsync change new "Free shipping at the threshold" --spec shipping \
-    --path src/lib.rs --path tests/ --json | jq -r .change.id)
+capture specsync change new "Free shipping at the threshold" --spec shipping \
+    --path src/lib.rs --path tests/ --json
+id=$(printf '%s' "$out" | jq -r .change.id)
 specsync change answer "$id" acceptance_criteria \
     '["An order of exactly 5000 cents ships free", "An order under 5000 cents pays the standard fee"]' --json >/dev/null
 specsync change answer "$id" public_contract yes --json >/dev/null
@@ -122,7 +129,8 @@ remaining=$(specsync change answer "$id" architecture_risk no --json)
 if printf '%s' "$remaining" | jq -e '.questions | map(.id) | index("constraints")' >/dev/null; then
     specsync change answer "$id" constraints none --json >/dev/null
 fi
-for selected in $(specsync change status "$id" --json | jq -r '.change.selected_artifacts[]'); do
+capture specsync change status "$id" --json
+for selected in $(printf '%s' "$out" | jq -r '.change.selected_artifacts[]'); do
     case "$selected" in
     plan) artifact plan <<'EOF'
 # Plan
@@ -202,7 +210,8 @@ expect_refusal "advancing while the scope decision is open" "refused:awaiting-hu
 specsync change approve "$id" --actor "SIMULATED-sample-approver-not-a-human" >/dev/null
 $chough checkpoint --clear-awaiting-human \
     --decision "Scope of $id approved by a SIMULATED actor in this sample; not a human decision" >/dev/null
-$chough stage advance --json | jq -r '"plan -> build, gate \(.applied.gate)"'
+capture $chough stage advance --json
+printf '%s' "$out" | jq -r '"plan -> build, gate \(.applied.gate)"'
 
 step "Build: implement the feature with its boundary tests"
 cp patches/lib.v1.rs src/lib.rs
@@ -224,17 +233,19 @@ run_case TC-shipping-0002 passed
 run_case TC-shipping-0003 passed
 
 step "Bug: reproduce, search, record locally, and refuse a duplicate"
-$chough bug search "order of exactly fifty dollars is charged shipping" --case TC-shipping-0001 |
-    jq -r '"existing matches: \(.matches | length)"'
-bug=$($chough bug add --title "Shipping charged at exactly the free threshold" \
+capture $chough bug search "order of exactly fifty dollars is charged shipping" --case TC-shipping-0001
+printf '%s' "$out" | jq -r '"existing matches: \(.matches | length)"'
+capture $chough bug add --title "Shipping charged at exactly the free threshold" \
     --symptom "An order of exactly 5000 cents is charged the standard fee" \
     --trigger "Order total equal to FREE_SHIPPING_FROM_CENTS" \
     --expected "Fee of 0 (CHECKOUT-1)" --actual "Fee of 499" \
     --environment "$env_name" --criterion CHECKOUT-1 --requirement REQ-shipping-002 \
     --case TC-shipping-0001 --observation "$failed_observation" \
     --step "chough cases run TC-shipping-0001 --environment $env_name" \
-    --classification product-defect --scope blocking | jq -r .id)
-printf 'recorded %s: %s\n' "$bug" "$($chough bug show "$bug" | jq -r .verification)"
+    --classification product-defect --scope blocking
+bug=$(printf '%s' "$out" | jq -r .id)
+capture $chough bug show "$bug"
+printf 'recorded %s: %s\n' "$bug" "$(printf '%s' "$out" | jq -r .verification)"
 expect_refusal "a duplicate report" "similar bugs exist" $chough bug add \
     --title "Shipping charged at exactly the free threshold" \
     --symptom "An order of exactly 5000 cents is charged the standard fee" \
@@ -253,7 +264,8 @@ if [ "$mode" = "prepare-cold-start" ]; then
 fi
 
 step "Back to build: fix the boundary and retest the focused cases"
-$chough stage back --json --to build --reason "$bug blocks acceptance" | jq -r '.applied.refresh[]'
+capture $chough stage back --json --to build --reason "$bug blocks acceptance"
+printf '%s' "$out" | jq -r '.applied.refresh[]'
 cp patches/lib.v2.rs src/lib.rs
 commit "Ship free at exactly the threshold ($bug)"
 specsync change check "$id" --commit >/dev/null
@@ -264,14 +276,16 @@ run_case TC-shipping-0001 passed
 fixed_observation=$last_observation
 run_case TC-shipping-0002 passed
 run_case TC-shipping-0003 passed
-$chough bug update "$bug" --status verified --observation "$fixed_observation" \
-    --note "Boundary fixed; TC-shipping-0001 passes" | jq -r '"\(.bug.id): \(.bug.status), \(.verification)"'
+capture $chough bug update "$bug" --status verified --observation "$fixed_observation" \
+    --note "Boundary fixed; TC-shipping-0001 passes"
+printf '%s' "$out" | jq -r '"\(.bug.id): \(.bug.status), \(.verification)"'
 # rerun after the fix: end
 
 step "Accept: only a human review and native archive can close this"
 $chough stage advance >/dev/null
 expect_refusal "leaving accept before review and archive" "refused:native-verifying" $chough stage advance
-$chough next --environment "$env_name" --json | jq -r '.next_valid_action.action'
+capture $chough next --environment "$env_name" --json
+printf '%s' "$out" | jq -r '.next_valid_action.action'
 
 step "Archive-first closeout: finish locally, then push for CI (#122)"
 # The hosted Archive gate (.github/scripts/check-specsync-archive.py) refuses while a
@@ -287,7 +301,8 @@ specsync change review "$id" --reviewer "SIMULATED-sample-reviewer-not-a-human" 
 specsync change finalize "$id" >/dev/null
 $chough checkpoint --clear-awaiting-human \
     --decision "Implementation of $id reviewed by a SIMULATED actor in this sample; not a human decision" >/dev/null
-$chough stage advance --json --note "SIMULATED review recorded; change archived" | jq -r '.applied | "\(.from) -> \(.to)"'
+capture $chough stage advance --json --note "SIMULATED review recorded; change archived"
+printf '%s' "$out" | jq -r '.applied | "\(.from) -> \(.to)"'
 commit "Close out $id"
 python3 "$inspector" --root "$work" --base "$seed" | head -1
 printf 'Archived and committed before any CI: now push and observe CI at this tip.\n'
