@@ -2238,6 +2238,33 @@ fn migration_suffix(old: &str) -> String {
     format!("{:x}", Sha256::digest(old.as_bytes()))[..6].to_string()
 }
 
+/// How a migrated bug's body names a 0.5.x observation (#277): a Markdown link,
+/// relative to the bug's file in `.chough/bugs/`, to the open session's evidence entry
+/// or to the archived story that holds its receipt. A receipt only the bug itself holds
+/// is named and said to be the bug's own, and one carried nowhere keeps its bare ID,
+/// which resolves as `removed`.
+fn body_link(homes: &crate::migrate::ObservationHomes, id: &str) -> String {
+    let name = homes.name(id);
+    let held = homes.entries.get(id).or_else(|| homes.stories.get(id));
+    match held.and_then(|path| path.strip_prefix(".chough/")) {
+        Some(path) => format!("[{name}](../{path})"),
+        None if homes.receipts.contains_key(id) => format!("{name} (a receipt of this bug)"),
+        None => name,
+    }
+}
+
+/// Each of `ids` by [`body_link`], once, in order.
+fn body_links(homes: &crate::migrate::ObservationHomes, ids: &[String]) -> Vec<String> {
+    let mut links: Vec<String> = vec![];
+    for id in ids {
+        let link = body_link(homes, id);
+        if !links.contains(&link) {
+            links.push(link);
+        }
+    }
+    links
+}
+
 /// Migration hook 4 (REQ-records-009): each 0.5.x bug as the Markdown bug `bug add`
 /// writes, named by its creation date and title, its 0.5.x ID an alias. Every field,
 /// note and status change carries over with its original time. Each linked observation
@@ -2304,7 +2331,7 @@ pub(super) fn migrate_0_5(
             cases: legacy.cases.clone(),
             // The Reported Log line links what the report linked, as the notes' lines
             // do (#277); the front matter `evidence` is set below.
-            evidence: homes.body_links(&reported),
+            evidence: body_links(homes, &reported),
             // t38n's round-4 F9: front matter names the carried entry or receipt, whose
             // alias keeps the 0.5.x ID.
             regression_baseline: legacy
@@ -2369,7 +2396,7 @@ pub(super) fn migrate_0_5(
                 if !note.observations.is_empty() {
                     text.push_str(&format!(
                         "; evidence: {}",
-                        homes.body_links(&note.observations).join(", ")
+                        body_links(homes, &note.observations).join(", ")
                     ));
                 }
                 log_line(note.at_unix_seconds, &text, None)

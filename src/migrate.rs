@@ -186,33 +186,6 @@ impl ObservationHomes {
             .map_or_else(|| id.to_string(), |(_, name)| name.clone())
     }
 
-    /// How a migrated bug's body names a 0.5.x observation (#277): a Markdown link,
-    /// relative to the bug's file in `.chough/bugs/`, to the open session's evidence
-    /// entry or to the archived story that holds its receipt. A receipt only the bug
-    /// itself holds is named and said to be the bug's own, and one carried nowhere
-    /// keeps its bare ID, which resolves as `removed`.
-    pub(crate) fn body_link(&self, id: &str) -> String {
-        let name = self.name(id);
-        let held = self.entries.get(id).or_else(|| self.stories.get(id));
-        match held.and_then(|path| path.strip_prefix(".chough/")) {
-            Some(path) => format!("[{name}](../{path})"),
-            None if self.receipts.contains_key(id) => format!("{name} (a receipt of this bug)"),
-            None => name,
-        }
-    }
-
-    /// Each of `ids` by [`ObservationHomes::body_link`], once, in order.
-    pub(crate) fn body_links(&self, ids: &[String]) -> Vec<String> {
-        let mut links: Vec<String> = vec![];
-        for id in ids {
-            let link = self.body_link(id);
-            if !links.contains(&link) {
-                links.push(link);
-            }
-        }
-        links
-    }
-
     /// Each of `ids` by [`ObservationHomes::name`], once, in order.
     pub(crate) fn names(&self, ids: &[String]) -> Vec<String> {
         let mut names: Vec<String> = vec![];
