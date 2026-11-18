@@ -580,11 +580,11 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         ("bug", &session.bugs),
     ] {
         for value in list {
-            check_id(local, name, value)?;
+            check_id(local, &session.meta.id, name, value)?;
         }
     }
     if let Some(change) = &session.native_change {
-        check_id(local, "native_change", change)?;
+        check_id(local, &session.meta.id, "native_change", change)?;
     }
     for alias in &mut session.meta.aliases {
         count += guard(local, "alias", alias)?;
@@ -617,7 +617,7 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
 /// Refuse an ID reference that leaks, under `--redact` too (REQ-records-006, #268): an
 /// ID keeps its ID form, which `<redacted:<kind>>` would break, so the only fix is to
 /// remove it. Names the field and the kinds, never the text.
-fn check_id(local: &crate::leaks::Local, field: &str, value: &str) -> Result<()> {
+fn check_id(local: &crate::leaks::Local, session: &str, field: &str, value: &str) -> Result<()> {
     let found = crate::leaks::find(local, value);
     if found.is_empty() {
         return Ok(());
@@ -626,7 +626,7 @@ fn check_id(local: &crate::leaks::Local, field: &str, value: &str) -> Result<()>
     kinds.sort_unstable();
     kinds.dedup();
     bail!(
-        "refused:leak: {field} holds {}; an ID cannot be redacted, so remove it; nothing was written",
+        "refused:leak: {field} holds {}; an ID cannot be redacted, so remove it from this command, or, when the session already holds it, set the session aside with `chough session shelve {session}` and continue in `chough session new <key>` (#320); nothing was written",
         kinds.join(", ")
     )
 }

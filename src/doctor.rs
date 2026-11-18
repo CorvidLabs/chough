@@ -209,6 +209,11 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
         // REQ-records-006: a temporary path in a case definition is a deliberate test
         // setting, not a leak; everything else in it is checked as anywhere else.
         let case_definition = path.starts_with(".chough/cases/") && path.ends_with(".cases.toml");
+        let ids = if path.ends_with(".md") {
+            id_lines(&text)
+        } else {
+            Default::default()
+        };
         for (number, line) in text.lines().enumerate() {
             let matches = if case_definition {
                 crate::leaks::find_in_case_definition(local, line)
@@ -226,11 +231,113 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
                     false,
                 );
                 finding.detail = Some(json!({"line": number + 1, "match": kind}));
+                // REQ-history-012 (#320): an ID is never redacted; the finding names
+                // the recovery instead.
+                if ids.contains(&number) {
+                    let recovery = id_leak_recovery(path);
+                    finding.fix = format!("none: {recovery}");
+                    finding.blocked = Some(format!(
+                        "line {} gives an ID, which `--redact` never rewrites since a redacted ID no longer reads; {recovery}",
+                        number + 1
+                    ));
+                }
                 found.push(finding);
             }
         }
     }
     found
+}
+
+/// Front matter keys whose values are a record's ID or IDs it references (REQ-records-003).
+/// A leak on such a line is never redacted, since a redacted ID no longer reads
+/// (REQ-history-012, #320).
+const ID_KEYS: [&str; 12] = [
+    "id",
+    "aliases",
+    "native_change",
+    "criteria",
+    "requirements",
+    "cases",
+    "observations",
+    "bugs",
+    "evidence",
+    "related",
+    "duplicate_of",
+    "case",
+];
+
+/// The zero-based numbers of `text`'s front matter lines that give an ID: a line whose
+/// key is an ID key, a block-list item under one, and an ID key inside a list of maps.
+fn id_lines(text: &str) -> std::collections::BTreeSet<usize> {
+    let mut ids = std::collections::BTreeSet::new();
+    let mut lines = text.lines().enumerate();
+    if !matches!(lines.next(), Some((_, "---"))) {
+        return ids;
+    }
+    let key_of = |line: &str| line.split_once(':').map(|(key, _)| key.trim().to_string());
+    let mut under_id_key = false;
+    for (number, line) in lines {
+        if line == "---" {
+            break;
+        }
+        let continued = line.starts_with(' ') || line.starts_with('-');
+        if !continued {
+            under_id_key = key_of(line).is_some_and(|key| ID_KEYS.contains(&key.as_str()));
+            if under_id_key {
+                ids.insert(number);
+            }
+            continue;
+        }
+        let item = line.trim_start().trim_start_matches("- ");
+        let inner_id = key_of(item).is_some_and(|key| ID_KEYS.contains(&key.as_str()));
+        if under_id_key || inner_id {
+            ids.insert(number);
+        }
+    }
+    ids
+}
+
+/// What to do about a leak in an ID of the record at `path`, which `--redact` never
+/// rewrites (#320): shelve a session, otherwise remove it in a reviewed hand edit.
+fn id_leak_recovery(path: &str) -> String {
+    match path.split('/').collect::<Vec<_>>().as_slice() {
+        [".chough", "sessions", id, "session.md"] => format!(
+            "set the session aside with `chough session shelve {id}` and continue in `chough session new <key>`"
+        ),
+        _ => "remove it from the record in a reviewed hand edit".to_string(),
+    }
+}
+
+/// `text` with its leaks redacted, except on the front matter lines in `keep`: the body
+/// as a whole, so a block that spans lines is found, and each other front matter line.
+fn redact_except(text: &str, keep: &std::collections::BTreeSet<usize>) -> (String, usize) {
+    let local = crate::leaks::Local::current();
+    if keep.is_empty() {
+        return crate::leaks::redact(local, text);
+    }
+    let lines: Vec<&str> = text.split_inclusive('\n').collect();
+    let close = lines
+        .iter()
+        .enumerate()
+        .skip(1)
+        .find(|(_, line)| line.trim_end_matches(['\n', '\r']) == "---")
+        .map(|(number, _)| number)
+        .unwrap_or(lines.len().saturating_sub(1));
+    let mut out = String::with_capacity(text.len());
+    let mut count = 0;
+    for (number, line) in lines.iter().enumerate().take(close + 1) {
+        if number == 0 || number == close || keep.contains(&number) {
+            out.push_str(line);
+        } else {
+            let (redacted, found) = crate::leaks::redact(local, line);
+            count += found;
+            out.push_str(&redacted);
+        }
+    }
+    let body: String = lines.iter().skip(close + 1).copied().collect();
+    let (body, found) = crate::leaks::redact(local, &body);
+    out.push_str(&body);
+    (out, count + found)
 }
 
 /// The ID of a Timeline entry, from its `^t-xxxxxx` anchor, or its position.
@@ -1091,11 +1198,21 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
             let Some(text) = tracked_text(root, &finding.target) else {
                 bail!("{} is not a readable text file", finding.target);
             };
-            let (redacted, count) = crate::leaks::redact(crate::leaks::Local::current(), &text);
+            // REQ-history-012 (#320): a record's ID lines are never rewritten; its other
+            // lines still are, whichever of its findings comes first.
+            let ids = if finding.target.ends_with(".md") {
+                id_lines(&text)
+            } else {
+                Default::default()
+            };
+            let (redacted, count) = redact_except(&text, &ids);
             if count > 0 {
                 crate::records::write_replace(root, &finding.target, &redacted)?;
             }
             ensure!(path.is_file(), "{} is gone", finding.target);
+            if let Some(blocked) = &finding.blocked {
+                bail!("{blocked}");
+            }
         }
         Kind::StalePointer => {
             let path = local_path(root, sessions::POINTER)?;
