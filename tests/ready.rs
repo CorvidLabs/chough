@@ -398,3 +398,57 @@ fn a_missing_specsync_names_the_install_command() {
     assert_eq!(fixture.read(".specsync/hashes.json"), hashes);
     assert_eq!(porcelain(&fixture), before);
 }
+
+/// REQ-cli-067 (#307), TC-cli-change-ready-undeclared-owning-module: SpecSync's
+/// approval refuses a change whose affected path is listed in a spec's `files:` while
+/// that module is not in `affected_specs`. The report names each such module with the
+/// paths it owns and the full `affected_specs` answer, and says that declaring it can
+/// add interview questions; a path no spec lists is not named.
+#[test]
+fn a_path_whose_owning_module_is_not_declared_is_named() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    fixture.write(
+        "specs/cli/cli.spec.md",
+        "---\nmodule: cli\nversion: 1\nstatus: active\nfiles:\n  - src/main.rs\n  - src/checkpoint.rs\n  - src/stage.rs\n---\n\n# CLI\n",
+    );
+    fixture.write(
+        "specs/records/records.spec.md",
+        "---\nmodule: records\nversion: 1\nstatus: active\nfiles:\n  - src/journal.rs\n---\n\n# Records\n",
+    );
+    fixture.commit("specs");
+    let base = head(&fixture);
+    let paths = ["src/checkpoint.rs", "src/main.rs", "notes/plan.md"];
+    let undeclared = "cli owns src/checkpoint.rs,src/main.rs and is not in affected_specs; declaring it can add interview questions";
+    write_change(&fixture, &base, "draft", &paths, true);
+    std::fs::remove_file(
+        fixture
+            .root()
+            .join(format!(".specsync/changes/{ID}/deltas/cli.md")),
+    )
+    .unwrap();
+    assert_report(
+        &fixture,
+        &[(
+            undeclared,
+            "chough change answer demo affected_specs \"cli\"",
+        )],
+    );
+    // An approved change cannot be answered: it goes back to its author.
+    write_change(&fixture, &base, "approved", &paths, true);
+    std::fs::remove_file(
+        fixture
+            .root()
+            .join(format!(".specsync/changes/{ID}/deltas/cli.md")),
+    )
+    .unwrap();
+    assert_report(
+        &fixture,
+        &[(
+            undeclared,
+            "specsync change send-back demo --actor <name> --reason \"declare cli in affected_specs\"",
+        )],
+    );
+    // With the owning module declared, nothing is missing.
+    write_change(&fixture, &base, "draft", &paths, false);
+    assert_report(&fixture, &[]);
+}

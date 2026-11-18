@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "fix-307",
+  "slug": "fix-307",
+  "title": "Fix 307",
+  "description": "fix 307",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "ea159cfef2259a81d1855371d351d543a0d833a4",
+  "created_at": 1795012910,
+  "updated_at": 1795012985,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/ready.rs",
+    "tests/ready.rs",
+    "docs/cli.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    ".chough/cases/cli.ready-owning-module.cases.toml",
+    "changelog.d/2026-11-18-fix-307.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A change whose affected path is listed in a spec's files: while that module is not in affected_specs makes chough change ready exit 1, naming the module, the paths it owns and the affected_specs answer that declares it; a path no spec lists is not named; with the module declared the report has no finding and exits 0."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lessons on native tasks apply: human gates are plain text in tasks.md, not checkboxes, and the delta is frozen at approval, so it is complete before the scope gate. REQ-cli-067 keeps ready read-only: the new finding reads spec front matter and writes nothing.",
+    "public_contract": "yes"
+  }
+}
