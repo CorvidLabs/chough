@@ -16,7 +16,9 @@ requirements: [REQ-cli-037]
 cases: [TC-cli-a-pinned-shell-writes-its-own-session]
 design: []
 files: []
-observations: [2026-11-18-tc-cli-a-pinned-shell-writes-its-own-session]
+observations:
+  - 2026-11-18-tc-cli-a-pinned-shell-writes-its-own-session
+  - 2026-11-18-tc-cli-a-pinned-shell-writes-its-own-session-d91946
 bugs: []
 blockers: []
 waiting_on_human:
@@ -45,6 +47,7 @@ Each shell pins its session with --session or CHOUGH_SESSION, whatever the share
 ## What was verified
 
 - [Ran cargo test --locked --test session_pin -- --exact a_pinned_shell_writes_its_own_session_whatever_the_pointer_says for TC-cli-a-pinned-shell-writes-its-own-session: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-pinned-shell-writes-its-own-session.md)
+- [Ran cargo test --locked --test session_pin -- --exact a_pinned_shell_writes_its_own_session_whatever_the_pointer_says for TC-cli-a-pinned-shell-writes-its-own-session: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-pinned-shell-writes-its-own-session-d91946.md)
 
 ## Open threads
 
