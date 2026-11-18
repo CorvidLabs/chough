@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-262",
+  "slug": "fix-262",
+  "title": "Fix 262",
+  "description": "fix 262",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "8abb5bb89b5244e72327e1ea6abfc7e66634ebe1",
+  "created_at": 1794962148,
+  "updated_at": 1794964526,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "src/evidence.rs",
+    "src/sessions.rs",
+    "tests/special_files.rs",
+    ".chough/cases/history.non-regular-files.cases.toml",
+    "changelog.d/2026-11-18-fix-262.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-history-006 already says a session that cannot be read is listed with the reason and the shelve recovery and stops no other command; only the readers and their tests change.",
+  "acceptance_criteria": [
+    "With a FIFO named like a bug record in .chough/bugs/, chough status, chough next and chough bug list each exit 0 without blocking. With a FIFO in place of an open session's session.md, chough session list reports that session as not readable with a reason and the recovery chough session shelve <id>, another session's commands still work, and chough session shelve <id> moves the folder without blocking."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

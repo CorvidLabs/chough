@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-262-open-race",
+  "slug": "fix-262-open-race",
+  "title": "Fix 262 open race",
+  "description": "fix 262 open race",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "caa6ee65a46ec3f4798e0a64c22bb263d062814a",
+  "created_at": 1794966916,
+  "updated_at": 1794982260,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "src/sessions.rs",
+    "tests/special_files.rs",
+    ".chough/cases/history.non-regular-files-open.cases.toml",
+    "changelog.d/2026-11-18-fix-262-open-race.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-history-006 already says a session that cannot be read stops no other command; this closes a window in the reader added for #262. Only the readers and their tests change.",
+  "acceptance_criteria": [
+    "The bounded record reader opens a path without blocking and checks on the opened handle that it is a regular file, so a FIFO at the path at the moment of the open is refused at once; chough session shelve reads session.md and each listed file through the same non-blocking open."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

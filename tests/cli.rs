@@ -3521,3 +3521,58 @@ fn context_gives_the_timeline_and_open_bugs_as_markdown() {
         );
     }
 }
+
+/// `chough help --help` prints the top-level help and exits 0.
+#[test]
+fn help_help_prints_the_top_level_help_and_exits_zero() {
+    let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+        .args(["help", "--help"])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "stderr: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("Usage: chough"), "{stdout}");
+}
+
+/// `chough checkpoint --help` prints help text for each of the eleven list-valued flags.
+#[test]
+fn checkpoint_help_names_the_eleven_list_valued_flags() {
+    let fixture = Fixture::new();
+    let output = fixture.run(&["checkpoint", "--help"]);
+    assert!(
+        output.status.success(),
+        "stderr: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    // Each flag's line in the long help is followed by its description; before #301 these
+    // eleven flags printed none, so the next line was the following flag.
+    let lines: Vec<&str> = stdout.lines().collect();
+    for flag in [
+        "--criterion",
+        "--requirement",
+        "--case",
+        "--design",
+        "--file",
+        "--observation",
+        "--bug",
+        "--decision",
+        "--question",
+        "--completed",
+        "--blocker",
+    ] {
+        let at = lines
+            .iter()
+            .position(|line| line.trim_start().starts_with(&format!("{flag} ")))
+            .unwrap_or_else(|| panic!("checkpoint --help does not name {flag}:\n{stdout}"));
+        let next = lines.get(at + 1).map(|line| line.trim()).unwrap_or("");
+        assert!(
+            !next.is_empty() && !next.starts_with('-'),
+            "checkpoint --help prints no description for {flag}:\n{stdout}"
+        );
+    }
+}

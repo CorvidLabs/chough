@@ -249,9 +249,12 @@ pub(super) fn open_ids(root: &Path) -> Result<Vec<String>> {
         let Some(id) = entry.file_name().to_str().map(str::to_string) else {
             continue;
         };
+        // A `session.md` that is not a regular file, such as a FIFO, still makes the
+        // folder a session: one that cannot be read, which `session list` reports with
+        // the reason and the recovery instead of dropping it (REQ-history-006, #262).
         if entry.file_type()?.is_dir()
             && valid_change_id(&id)
-            && local_path(root, &session_file(&id))?.is_file()
+            && local_path(root, &session_file(&id))?.exists()
             && !local_path(root, &archive_file(&id))?.exists()
         {
             ids.push(id);
@@ -411,7 +414,9 @@ fn active(root: &Path) -> Result<String> {
                 "the active session {id} is archived; run `chough session use <id>` or `chough session new <key>`"
             );
         }
-        if local_path(root, &session_file(&id))?.is_file() {
+        // A record that is there but is not a regular file is a session that cannot be
+        // read, not a missing one: its reader refuses it with the recovery (#262).
+        if local_path(root, &session_file(&id))?.exists() {
             return Ok(id);
         }
         bail!(
@@ -1292,13 +1297,15 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
 /// The name of the note shelving writes inside the shelved folder (REQ-history-006).
 const SHELVED_NOTE: &str = "shelved.md";
 
-/// One entry of a shelved folder: a file's size and SHA-256, or a symbolic link, which is
-/// listed and not followed.
-type ShelvedFile = (String, Option<(u64, String)>);
+/// One entry of a shelved folder: a file's size and SHA-256, or what else it is: a
+/// symbolic link, which is listed and not followed, or another non-regular file, such
+/// as a FIFO, which is listed and not read (#262).
+type ShelvedFile = (String, Result<(u64, String), &'static str>);
 
 /// Every file under `dir`, folder-relative and sorted (REQ-history-006).
 fn shelved_files(dir: &Path, relative: &str, out: &mut Vec<ShelvedFile>) -> Result<()> {
     use sha2::{Digest, Sha256};
+    use std::io::Read as _;
     let mut entries: Vec<fs::DirEntry> = fs::read_dir(dir)?.collect::<Result<_, _>>()?;
     entries.sort_by_key(fs::DirEntry::file_name);
     for entry in entries {
@@ -1312,11 +1319,18 @@ fn shelved_files(dir: &Path, relative: &str, out: &mut Vec<ShelvedFile>) -> Resu
         if kind.is_dir() {
             shelved_files(&entry.path(), &path, out)?;
         } else if kind.is_file() {
-            let bytes = fs::read(entry.path()).with_context(|| format!("reading {path}"))?;
+            // Through the non-blocking open: the entry may have changed since it was
+            // listed (#262, review of #305).
+            let mut bytes = vec![];
+            crate::records::open_regular(&entry.path())
+                .and_then(|mut file| Ok(file.read_to_end(&mut bytes)?))
+                .with_context(|| format!("reading {path}"))?;
             let sha256 = format!("{:x}", Sha256::digest(&bytes));
-            out.push((path, Some((bytes.len() as u64, sha256))));
+            out.push((path, Ok((bytes.len() as u64, sha256))));
+        } else if kind.is_symlink() {
+            out.push((path, Err("a symbolic link, not followed")));
         } else {
-            out.push((path, None));
+            out.push((path, Err("not a regular file, not read")));
         }
     }
     Ok(())
@@ -1341,7 +1355,15 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
         !from.join(SHELVED_NOTE).exists(),
         "{source}/{SHELVED_NOTE} would become {note}, which shelving writes; it never replaces a file, so nothing was moved"
     );
-    let session_bytes = fs::read(from.join("session.md")).unwrap_or_default();
+    // Never block on a `session.md` that is not a regular file, such as a FIFO (#262).
+    use std::io::Read as _;
+    let session_path = from.join("session.md");
+    let mut session_bytes = vec![];
+    if let Ok(mut file) = crate::records::open_regular(&session_path)
+        && file.read_to_end(&mut session_bytes).is_err()
+    {
+        session_bytes.clear();
+    }
     let readable = session_bytes.len() as u64 <= checkpoint::SESSION_LIMIT
         && String::from_utf8(session_bytes.clone())
             .ok()
@@ -1361,15 +1383,15 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
     shelved_files(&from, "", &mut files)?;
     let total: u64 = files
         .iter()
-        .filter_map(|(_, file)| Some(file.as_ref()?.0))
+        .filter_map(|(_, file)| Some(file.as_ref().ok()?.0))
         .sum();
     let mut body = format!(
         "# Shelved session {key}\n\nMoved unparsed and byte for byte from `{source}`: {reason}. No reader scans this folder.\n\n## Files\n\n"
     );
     for (path, file) in &files {
         match file {
-            Some((size, sha256)) => body.push_str(&format!("- `{path}` {size} bytes {sha256}\n")),
-            None => body.push_str(&format!("- `{path}` a symbolic link, not followed\n")),
+            Ok((size, sha256)) => body.push_str(&format!("- `{path}` {size} bytes {sha256}\n")),
+            Err(kind) => body.push_str(&format!("- `{path}` {kind}\n")),
         }
     }
     let mut record = crate::markdown::Record::new(&body);

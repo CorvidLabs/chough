@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794967551,
+      "digest": "7669aa320c402942eae2e283a409771a9c571968874bae42d6b5d8f0b7c60684",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-272-uninitialised-root\": \"approve all three, record as 0xLeif\" (Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the gates on #308, #305 and #306). Relayed and recorded by fable-t4b at 2026-11-18T02:05:50Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-272-uninitialised-root",
+        "title": "Fix 272 uninitialised root",
+        "description": "fix 272 uninitialised root",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.journal-lock-uninitialised.cases.toml",
+          "changelog.d/2026-11-18-fix-272-uninitialised-root.md",
+          "src/journal.rs",
+          "tests/journal.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-cli-040 already names journal add among the commands that hold the writer lock, with no exception for a project that has no .chough directory yet; only the code and its tests change.",
+        "acceptance_criteria": [
+          "In a project with no .chough directory, chough journal add takes the writer lock .chough/local/checkpoint.lock before it writes, and twelve journal add commands run at once leave a feed that lists all twelve posts, with chough library index --check passing."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "approve all three, record as 0xLeif",
+        "where": "Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the gates on #308, #305 and #306",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794981545,
+      "digest": "01eca1268e8986d508a171392ccdf890abef3e753cb6b4191d9a91e588cf98e6",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
