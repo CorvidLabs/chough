@@ -48,6 +48,13 @@
         "where": "Leif's decision comment on GitHub issue #264, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795031813,
+      "digest": "1b96c4d1b861a6df29c8d7a31f124af0d819e8c6186dbb1cafee017312ad3440",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

@@ -32,6 +32,9 @@ waiting_on_human:
     opened: 2026-11-18T19:40:31Z
 run_consents: []
 next: Wait for the tester's check and Leif's implementation review of fix-264
+title: A second same-day migration names its own receipt
+summary:
+  - A second chough migrate on one day wrote its session folder and then refused on the first receipt's name (#264). The plan now names its receipt, with a -<n> suffix while the name is taken by another plan, as part of its digest, and the apply checks the receipt with every other target before writing. Two tests failed on main first; the verify lane passed on macOS after main (275fe4d) was merged in, and tester2 passed it on macOS and in the Linux container. Every migrate plan digest changes with this change.
 ---
 # A second same-day migration names its receipt with a deterministic suffix that is part of the plan and its digest, and migrate --apply checks every target before it writes anything (REQ-records-009, #264)
 
