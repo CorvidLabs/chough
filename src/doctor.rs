@@ -919,10 +919,100 @@ pub(super) struct Exclusions {
     /// overlaps either, and a whole-repository `source_dirs` counts the skill bundle
     /// `chough init` installs as uncovered source.
     pub(super) whole_repo: Vec<String>,
+    /// With `source_dirs` covering the repository, a file a spec covers that sits at the
+    /// repository root, so there is no code folder to narrow to (#354), if any.
+    pub(super) root_code: Option<String>,
+    /// The skill bundle's and Chough's top folders that `exclude_dirs` does not list yet,
+    /// for that case: excluding them keeps them out of SpecSync's coverage (#279).
+    pub(super) unexcluded: Vec<String>,
 }
 
 /// SpecSync's native configuration, whose `source_dirs` Chough reads and never writes.
 const SPECSYNC_CONFIG: &str = ".specsync/config.toml";
+
+/// A file a SpecSync spec covers that sits at the repository root, read from the
+/// `files:` lists of the specs under `specs_dir` (#354): with one, there is no code
+/// folder to narrow `source_dirs` to.
+fn root_code(root: &Path) -> Option<String> {
+    let config = crate::records::read_native_text(&local_path(root, SPECSYNC_CONFIG).ok()?).ok()?;
+    let config: toml::Value = toml::from_str(&config).ok()?;
+    let specs = config
+        .get("specs_dir")
+        .and_then(toml::Value::as_str)
+        .unwrap_or("specs")
+        .trim_end_matches('/')
+        .to_string();
+    let mut pending = vec![local_path(root, &specs).ok()?];
+    let mut found: Vec<String> = vec![];
+    while let Some(dir) = pending.pop() {
+        let Ok(entries) = std::fs::read_dir(&dir) else {
+            continue;
+        };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                pending.push(path);
+                continue;
+            }
+            if !path.to_string_lossy().ends_with(".spec.md") {
+                continue;
+            }
+            let Ok(text) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            let front = text
+                .strip_prefix("---\n")
+                .and_then(|rest| rest.split_once("\n---\n"))
+                .map(|(front, _)| front)
+                .unwrap_or_default();
+            let mut in_files = false;
+            for line in front.lines() {
+                if !line.starts_with(' ') && !line.starts_with('-') {
+                    in_files = line.trim_end() == "files:";
+                    continue;
+                }
+                if in_files && let Some(file) = line.trim_start().strip_prefix("- ") {
+                    let file = file.trim().trim_matches('"');
+                    if !file.is_empty() && !file.contains('/') {
+                        found.push(file.to_string());
+                    }
+                }
+            }
+        }
+    }
+    found.sort();
+    found.into_iter().next()
+}
+
+/// `.chough` and the top folder of each installed skill bundle, as `exclude_dirs` names
+/// them, that `exclude_dirs` in SpecSync's config does not list yet (#279, #354).
+fn unexcluded(root: &Path) -> Vec<String> {
+    let excluded: Vec<String> =
+        crate::records::read_native_text(&local_path(root, SPECSYNC_CONFIG).unwrap_or_default())
+            .ok()
+            .and_then(|text| toml::from_str::<toml::Value>(&text).ok())
+            .and_then(|config| config.get("exclude_dirs").cloned())
+            .and_then(|dirs| dirs.as_array().cloned())
+            .unwrap_or_default()
+            .iter()
+            .filter_map(|dir| {
+                dir.as_str()
+                    .map(|dir| dir.trim_end_matches('/').to_string())
+            })
+            .collect();
+    let mut folders = vec![".chough".to_string()];
+    for (_, skills) in crate::skill::HOSTS {
+        let top = skills.split('/').next().unwrap_or_default().to_string();
+        let installed =
+            local_path(root, &format!("{skills}/chough-workflow")).is_ok_and(|path| path.is_dir());
+        if installed && !folders.contains(&top) {
+            folders.push(top);
+        }
+    }
+    folders.retain(|folder| !excluded.contains(folder));
+    folders.sort();
+    folders
+}
 
 /// Whether a SpecSync path entry names the repository root.
 fn is_root(entry: &str) -> bool {
@@ -947,6 +1037,31 @@ impl Exclusions {
     /// The advice `chough doctor` and `chough init` give while a record prefix is not
     /// listed exactly, or None when all three are.
     pub(super) fn advice(&self) -> Option<String> {
+        // REQ-records-014 (#354): with the specified code at the repository root there
+        // is no folder to narrow to, so the advice is to exclude the skill bundle and
+        // Chough's folder, and that the list needs the code in a folder or SpecSync's fix.
+        if let Some(example) = &self.root_code
+            && (self.no_policy || !self.missing.is_empty() || !self.unexcluded.is_empty())
+        {
+            let mut advice = format!(
+                "source_dirs = [\".\"] in {SPECSYNC_CONFIG} covers the whole repository, and the code SpecSync specifies sits at its root (for example {example}), so there is no code folder to narrow source_dirs to."
+            );
+            if !self.unexcluded.is_empty() {
+                advice.push_str(&format!(
+                    " Add {} to exclude_dirs in {SPECSYNC_CONFIG}, so SpecSync no longer counts the skill bundle `chough init` installs and Chough's records as uncovered source.",
+                    self.unexcluded.join(", ")
+                ));
+            }
+            if !self.no_policy && !self.missing.is_empty() {
+                advice.push_str(&format!(
+                    " Listing {} in verification_ignored_paths in {SDD_POLICY} needs the code moved into a folder, since SpecSync refuses an entry that overlaps source_dirs [\".\"], or SpecSync's fix, CorvidLabs/spec-sync#1083.",
+                    self.missing.join(", ")
+                ));
+            }
+            advice
+                .push_str(" Each is an ordinary reviewed change, and Chough writes neither file.");
+            return Some(advice);
+        }
         // REQ-records-014 (#251, #279): while SpecSync covers the whole repository, the
         // list is refused as overlapping, so the advice is to narrow first.
         if !self.whole_repo.is_empty() && (self.no_policy || !self.missing.is_empty()) {
@@ -1044,6 +1159,8 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
         missing: vec![],
         broader: vec![],
         whole_repo: vec![],
+        root_code: None,
+        unexcluded: vec![],
     };
     // `source_dirs` lives in SpecSync's config; an unreadable one is SpecSync's to report.
     if let Ok(path) = local_path(root, SPECSYNC_CONFIG)
@@ -1057,6 +1174,10 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
         found
             .whole_repo
             .push(format!("source_dirs = [\".\"] in {SPECSYNC_CONFIG}"));
+        found.root_code = root_code(root);
+        if found.root_code.is_some() {
+            found.unexcluded = unexcluded(root);
+        }
     }
     let path = match local_path(root, SDD_POLICY) {
         Ok(path) => path,
@@ -1123,7 +1244,20 @@ fn records_in_verification(root: &Path) -> Option<Finding> {
     } else {
         exclusions.missing.join(", ")
     };
-    let fix = if exclusions.whole_repo.is_empty() {
+    let fix = if let Some(example) = &exclusions.root_code {
+        // #354: no code folder to narrow to.
+        let exclude = if exclusions.unexcluded.is_empty() {
+            String::new()
+        } else {
+            format!(
+                "add {} to exclude_dirs in {SPECSYNC_CONFIG} in a reviewed change; ",
+                exclusions.unexcluded.join(", ")
+            )
+        };
+        format!(
+            "{exclude}listing {entries} in verification_ignored_paths needs the code at the repository root (such as {example}) moved into a folder, or CorvidLabs/spec-sync#1083"
+        )
+    } else if exclusions.whole_repo.is_empty() {
         format!("add {entries} to verification_ignored_paths in {SDD_POLICY} in a reviewed change")
     } else {
         format!(
@@ -1138,6 +1272,8 @@ fn records_in_verification(root: &Path) -> Option<Finding> {
     finding.detail = Some(json!({
         "missing": exclusions.missing,
         "whole_repo": exclusions.whole_repo,
+        "root_code": exclusions.root_code,
+        "unexcluded": exclusions.unexcluded,
         "specsync": format!("{EXCLUSIONS_SINCE} and later"),
         "advice": advice,
     }));

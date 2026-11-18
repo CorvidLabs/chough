@@ -11,3 +11,5 @@ artifact: testing
 3. Once both are narrowed, the advice is the list again.
 
 Both files stay byte-identical throughout. Case `TC-records-a-whole-repository-specsync-gets-the-narrowing-advice` binds the test.
+
+`tests/doctor.rs::root_level_code_gets_the_exclude_advice_instead_of_narrowing` (#354), red before this addition: a spec covering `generate.py` and `config.yaml` at the root gets the exclude advice and spec-sync#1083, with no folder to narrow to. Once those folders are excluded, only the list's part is left.

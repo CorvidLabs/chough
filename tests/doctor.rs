@@ -1217,3 +1217,72 @@ fn doctor_reports_conflict_markers_in_committed_records_only() {
         assert_eq!(finding["status"], "skipped", "{fixed:#}");
     }
 }
+
+/// REQ-records-014 (#354): when the code SpecSync specifies sits at the repository root,
+/// as in NFTMix, there is no folder to narrow `source_dirs` to. `chough init` and `chough
+/// doctor` advise adding the skill bundle's and Chough's folders to `exclude_dirs`,
+/// which keeps them out of coverage (#279), and say the ignored list needs the code moved
+/// into a folder or SpecSync's fix, CorvidLabs/spec-sync#1083. Once those folders are
+/// excluded, only the list's part is left. Neither file is ever written.
+#[test]
+fn root_level_code_gets_the_exclude_advice_instead_of_narrowing() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    let config = "specs_dir = \"specs\"\nsource_dirs = [\".\"]\nexclude_dirs = []\n";
+    fixture.write(".specsync/config.toml", config);
+    fixture.write(
+        "specs/app/app.spec.md",
+        "---\nmodule: app\nfiles:\n  - generate.py\n  - config.yaml\n---\n\n# App\n",
+    );
+    fixture.write(".specsync/sdd.json", &policy(&[]));
+    let init = fixture.ok(&[
+        "init",
+        "--objective",
+        "SYNTHETIC objective",
+        "--intent-scope",
+        "LIFE",
+    ]);
+    let advice = init["records_in_verification"].as_str().unwrap_or_default();
+    assert!(
+        advice.contains("sits at its root (for example config.yaml)")
+            && advice.contains("no code folder to narrow source_dirs to")
+            && advice.contains(".chough")
+            && advice.contains("to exclude_dirs in .specsync/config.toml")
+            && advice.contains("needs the code moved into a folder")
+            && advice.contains("CorvidLabs/spec-sync#1083")
+            && !advice.contains("for example [\"src\"]"),
+        "{init:#}"
+    );
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let finding = exclusions_finding(&report).expect("a records_in_verification finding");
+    assert!(
+        finding["fix"].as_str().is_some_and(
+            |fix| fix.contains("exclude_dirs") && fix.contains("CorvidLabs/spec-sync#1083")
+        ),
+        "{finding:#}"
+    );
+    assert_eq!(finding["root_code"], "config.yaml", "{finding:#}");
+
+    let excluded = finding["unexcluded"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    let names: Vec<String> = excluded
+        .iter()
+        .filter_map(|dir| dir.as_str().map(|dir| format!("\"{dir}\"")))
+        .collect();
+    let narrowed_config = format!(
+        "specs_dir = \"specs\"\nsource_dirs = [\".\"]\nexclude_dirs = [{}]\n",
+        names.join(", ")
+    );
+    fixture.write(".specsync/config.toml", &narrowed_config);
+    let (_, report) = doctor(&fixture, &[]);
+    let advice = exclusions_finding(&report).expect("a finding")["advice"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    assert!(!advice.contains("to exclude_dirs"), "{advice}");
+    assert!(advice.contains("CorvidLabs/spec-sync#1083"), "{advice}");
+    assert_eq!(fixture.read(".specsync/config.toml"), narrowed_config);
+}
