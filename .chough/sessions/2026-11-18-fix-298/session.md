@@ -19,6 +19,7 @@ files: []
 observations:
   - 2026-11-18-tc-cli-ship-refuses-a-corrupt-history
   - 2026-11-18-tc-cli-ship-refuses-a-corrupt-history-00abbb
+  - 2026-11-18-tc-cli-ship-refuses-a-corrupt-history-52fedb
 bugs: []
 blockers: []
 waiting_on_human:
@@ -49,6 +50,7 @@ chough change ship refuses before review when the change's history holds a chang
 
 - [Ran cargo test --locked --test change -- --exact ship_refuses_a_history_with_a_change_both_open_and_archived for TC-cli-ship-refuses-a-corrupt-history: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-ship-refuses-a-corrupt-history.md)
 - [Ran cargo test --locked --test change -- --exact ship_refuses_a_history_with_a_change_both_open_and_archived for TC-cli-ship-refuses-a-corrupt-history: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-ship-refuses-a-corrupt-history-00abbb.md)
+- [Ran cargo test --locked --test change -- --exact ship_refuses_a_history_with_a_change_both_open_and_archived for TC-cli-ship-refuses-a-corrupt-history: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-ship-refuses-a-corrupt-history-52fedb.md)
 
 ## Open threads
 
