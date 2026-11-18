@@ -16,7 +16,9 @@ requirements: [REQ-cli-012, REQ-cli-054]
 cases: [TC-cli-bug-add-joins-the-active-session]
 design: []
 files: []
-observations: [2026-11-18-tc-cli-bug-add-joins-the-active-session-f05d70]
+observations:
+  - 2026-11-18-tc-cli-bug-add-joins-the-active-session-f05d70
+  - 2026-11-18-tc-cli-bug-add-joins-the-active-session-3e5107
 bugs: []
 blockers: []
 waiting_on_human:
@@ -44,6 +46,7 @@ chough bug add while a session is active relates the new bug to that session, so
 ## What was verified
 
 - [Ran cargo test --locked --test bugs -- --exact a_blocking_bug_added_in_a_session_stops_it for TC-cli-bug-add-joins-the-active-session: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-joins-the-active-session-f05d70.md)
+- [Ran cargo test --locked --test bugs -- --exact a_blocking_bug_added_in_a_session_stops_it for TC-cli-bug-add-joins-the-active-session: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-bug-add-joins-the-active-session-3e5107.md)
 
 ## Open threads
 
