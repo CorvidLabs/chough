@@ -41,6 +41,7 @@ use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 /// One 0.6.0 file the migration writes, create-new.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -370,6 +371,8 @@ struct Plan {
     kept: BTreeMap<String, String>,
     /// Every file the apply writes, text (redacted) and binary, by path.
     files: Vec<Planned>,
+    /// The receipt the apply writes, named when the plan is built (REQ-records-009).
+    receipt: String,
     redactions: Vec<Redaction>,
     follow_ups: Vec<String>,
 }
@@ -415,6 +418,7 @@ impl Plan {
             "sources": self.sources,
             "becomes": self.becomes(),
             "writes": written,
+            "receipt": self.receipt,
             "redactions": self.redactions,
             "removed": self.carried.removed,
             "kept": self.kept,
@@ -456,8 +460,7 @@ const NOTHING_TO_MIGRATE: &str =
     "no 0.5.x record is left, so there is nothing to migrate and no plan digest to apply";
 
 pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
-    let plan = plan(root)?;
-    let digest = plan.digest();
+    let (plan, digest) = plan_with_a_free_receipt(root)?;
     match args.apply {
         // REQ-records-009: on a tree with no 0.5.x record the preview says there is
         // nothing to migrate and gives no plan digest, as the apply there reports
@@ -504,6 +507,27 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
         }
         Some(wanted) => apply(root, &plan, &digest, &wanted, args.consent.as_deref()),
     }
+}
+
+/// Build the plan under the first receipt name that is free for it (REQ-records-009,
+/// #264): `<date>-from-0-5.md`, then `<date>-from-0-5-2.md` and so on. A name is free
+/// when no file holds it, or when the receipt there is this plan's own, left by an
+/// interrupted apply. The name is part of the plan, so each candidate has its own
+/// digest, and the same tree always gives the same name and digest.
+fn plan_with_a_free_receipt(root: &Path) -> Result<(Plan, String)> {
+    for ordinal in 1..=RECEIPT_ORDINALS {
+        RECEIPT_ORDINAL.store(ordinal, Ordering::Relaxed);
+        let plan = plan(root)?;
+        let digest = plan.digest();
+        let taken = std::fs::read_to_string(local_path(root, &plan.receipt)?)
+            .is_ok_and(|existing| !existing.contains(&format!("plan_digest: {digest}")));
+        if !taken || plan.sources.is_empty() {
+            return Ok((plan, digest));
+        }
+    }
+    bail!(
+        "refused:receipt-names: {RECEIPT_ORDINALS} migration receipts already exist for today, so nothing was written. Run `chough migrate` again tomorrow (UTC)."
+    )
 }
 
 /// The preview as text, for the person who consents to it (REQ-records-009, F12b): the
@@ -642,7 +666,8 @@ fn preview_text(view: &Value) -> String {
         ));
     }
     out.push_str(&format!(
-        "\nPlan digest: {}\nApply this plan with the human's consent:\n  {}\n",
+        "\nReceipt: {}\nPlan digest: {}\nApply this plan with the human's consent:\n  {}\n",
+        text(&view["receipt"]),
         text(&view["plan_digest"]),
         text(&view["apply"])
     ));
@@ -728,7 +753,16 @@ fn apply(
     }
     // The receipt is known before anything is written: one over its own bound refuses
     // here, writing nothing (REQ-records-001, REQ-records-009).
-    let receipt = receipt_path()?;
+    let receipt = plan.receipt.clone();
+    // Every target is checked before any write (#264): a receipt of that name for
+    // another plan, which only another writer could have put there since the plan was
+    // built, refuses here and not after the 0.6.0 files are written.
+    if let Ok(existing) = std::fs::read_to_string(local_path(root, &receipt)?) {
+        ensure!(
+            existing.contains(&format!("plan_digest: {digest}")),
+            "refused:target-exists: {receipt} already exists for another plan, so nothing was written.\nRun `chough migrate` to preview the current plan, then apply its digest."
+        );
+    }
     let receipt_text = receipt_record(plan, digest, &consent, &removals, root).map_err(|error| {
         anyhow::anyhow!(
             "refused:receipt-bound: the migration receipt would exceed its {} byte bound, so nothing was written: {error:#}",
@@ -1369,6 +1403,7 @@ fn plan(root: &Path) -> Result<Plan> {
         carried,
         kept,
         files,
+        receipt: receipt_path()?,
         redactions,
         follow_ups,
     })
@@ -1450,11 +1485,24 @@ fn redact(local: &Local, written: &mut Written) -> Result<Vec<Redaction>> {
 /// The migration receipt's path, fixed when the plan is built: an apply on another UTC
 /// day rebuilds a plan with another digest and asks for a fresh preview.
 pub(crate) fn receipt_path() -> Result<String> {
+    let suffix = match RECEIPT_ORDINAL.load(Ordering::Relaxed) {
+        0 | 1 => String::new(),
+        ordinal => format!("-{ordinal}"),
+    };
     Ok(format!(
-        ".chough/archive/migrations/{}-from-0-5.md",
+        ".chough/archive/migrations/{}-from-0-5{suffix}.md",
         crate::identity::utc_date(crate::records::now()?)
     ))
 }
+
+/// Which same-day receipt name the plan being built uses: 1 is `<date>-from-0-5.md`,
+/// and 2 and later add `-<n>` (REQ-records-009, #264). Set by
+/// [`plan_with_a_free_receipt`] before each build, and read by everything that names
+/// the receipt, so the plan, its digest and the receipt agree.
+static RECEIPT_ORDINAL: AtomicU32 = AtomicU32::new(1);
+
+/// How many receipts one UTC day can hold.
+const RECEIPT_ORDINALS: u32 = 99;
 
 /// A deterministic six-hex-digit suffix or entry ID from `seed`, so the plan an apply
 /// rebuilds has the previewed digest (REQ-records-009).

@@ -1,0 +1,61 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795030560,
+      "digest": "bfc93eb6a5127a3c8a9e83c59c921ac93473fbfbbb41f38c4c96be2a59196ec0",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-264\": \"suffix and check first. A second same-day migration plan names its receipt with a deterministic suffix (...-from-0-5-2.md), part of the plan and its digest, and --apply checks every target before it writes anything, so a refusal never leaves a partial write.\" (Leif's decision comment on GitHub issue #264, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval). Relayed and recorded by fable-t4b at 2026-11-18T19:36:00Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-264",
+        "title": "Fix 264",
+        "description": "fix 264",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.migrate-same-day-receipt.cases.toml",
+          "changelog.d/2026-11-18-fix-264.md",
+          "docs/cli.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/migrate.rs",
+          "tests/migrate.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A second migration on one day names its receipt <date>-from-0-5-2.md in the preview, as JSON and as text, with the name part of the plan's digest; its apply writes that receipt, leaves the first receipt byte for byte and removes the 0.5.x record. When another plan's receipt takes the previewed name after the preview, the apply refuses with every file unchanged. An interrupted apply still completes under its own receipt name."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "records": "fd07cfbc179ee5782db7e7dc821e32ae7f7d896aa813aed428a9dd6ef08dd8c1"
+      },
+      "approved_delta_bases": {
+        "records: REQUIREMENT REQ-records-009": "7cc9984e89b0a01a21211411a847c8b6be105925df09c290a60dad4eb764c7f5"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "suffix and check first. A second same-day migration plan names its receipt with a deterministic suffix (...-from-0-5-2.md), part of the plan and its digest, and --apply checks every target before it writes anything, so a refusal never leaves a partial write.",
+        "where": "Leif's decision comment on GitHub issue #264, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795031813,
+      "digest": "1b96c4d1b861a6df29c8d7a31f124af0d819e8c6186dbb1cafee017312ad3440",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
