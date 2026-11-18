@@ -13,10 +13,17 @@ native_change: fix-268
 pr: ""
 criteria: [LIFE-26]
 requirements: [REQ-records-006]
-cases: [TC-records-a-file-or-design-path-passes-the-leak-guard]
+cases:
+  - TC-records-a-file-or-design-path-passes-the-leak-guard
+  - TC-records-an-id-reference-passes-the-leak-guard
+  - TC-records-evidence-add-in-a-leaking-session-writes-nothing
 design: []
 files: []
-observations: [2026-11-18-tc-records-a-file-or-design-path-passes-the-leak-guard]
+observations:
+  - 2026-11-18-tc-records-a-file-or-design-path-passes-the-leak-guard
+  - 2026-11-18-tc-records-a-file-or-design-path-passes-the-leak-guard-3c5e8e
+  - 2026-11-18-tc-records-an-id-reference-passes-the-leak-guard
+  - 2026-11-18-tc-records-evidence-add-in-a-leaking-session-writes-nothing
 bugs: []
 blockers: []
 waiting_on_human:
@@ -36,6 +43,7 @@ checkpoint --file and --design values pass the write-time leak guard (REQ-record
 ## Where it stands
 
 - Failing test first: a_token_in_a_file_or_design_path_is_refused_at_the_write failed on main (the --file write was saved); the guard now checks the files and design references and it passes
+- Tester findings on #315: ID references were not guarded and evidence add left its entry in a leaking session; both now refuse before writing, red first on the branch, green with the fix; merged main at 66543c2
 
 ## Decisions and why
 
@@ -45,6 +53,9 @@ checkpoint --file and --design values pass the write-time leak guard (REQ-record
 ## What was verified
 
 - [Ran cargo test --locked --test leaks -- --exact a_token_in_a_file_or_design_path_is_refused_at_the_write for TC-records-a-file-or-design-path-passes-the-leak-guard: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-file-or-design-path-passes-the-leak-guard.md)
+- [Ran cargo test --locked --test leaks -- --exact a_token_in_a_file_or_design_path_is_refused_at_the_write for TC-records-a-file-or-design-path-passes-the-leak-guard: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-file-or-design-path-passes-the-leak-guard-3c5e8e.md)
+- [Ran cargo test --locked --test leaks -- --exact a_token_in_an_id_reference_is_refused_even_under_redact for TC-records-an-id-reference-passes-the-leak-guard: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-an-id-reference-passes-the-leak-guard.md)
+- [Ran cargo test --locked --test leaks -- --exact evidence_add_in_a_session_holding_a_leak_writes_nothing for TC-records-evidence-add-in-a-leaking-session-writes-nothing: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-evidence-add-in-a-leaking-session-writes-nothing.md)
 
 ## Open threads
 
