@@ -5,7 +5,7 @@ aliases: [readiness-report-before-change-approval]
 objective: One read-only command lists everything still missing before a change is approved, and names the command that fixes each piece (DRIVE-29).
 intent_scope: DRIVE
 modules: [cli]
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -29,9 +29,13 @@ observations:
   - 2026-11-18-tc-cli-change-ready-fast-path
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of readiness-report-before-change-approval
+    holds: accept
+    drives: review
+    opened: 2026-11-18T15:00:11Z
 run_consents: []
-next: Commit the branch, merge main, then prove the command with local agents before a draft pull request.
+next: Wait for Leif's implementation review of readiness-report-before-change-approval
 ---
 # One read-only command lists everything still missing before a change is approved, and names the command that fixes each piece (DRIVE-29).
 
@@ -47,6 +51,7 @@ One read-only command lists everything still missing before a change is approved
 
 - Leif chose Capture as written for DRIVE-29 in chat on 2026-11-14. The sentence is the readiness command before approval.
 - 0xLeif decided "Scope approval of readiness-report-before-change-approval": "Approve this scope (Recommended)" (Grok chat, 2026-11-14, choosing the option Approve this scope for this change's scope question. Relayed by grok (hc t1w).); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
+- fable-t4b took this session over on Leif's choice 'You take it over' (Claude Code session, 2026-11-18): merged main, moved the changelog entry to changelog.d, renumbered the cli change log row to 101. The planned local-agent proof was not run; the command was used for real on fix-263 and fix-307 instead
 
 ## What was verified
 
@@ -96,3 +101,19 @@ One read-only command lists everything still missing before a change is approved
   - gate: native:approved
   - revision: cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8
   - by: unknown agent (hc t1w)
+- 2026-11-18T14:59:55Z · advance · build → test · native:verifying ^t-25f1a1
+  - native_change: readiness-report-before-change-approval
+  - gate: native:verifying
+  - revision: f659d73d58d8bd642a2e99de2741c0ba05d109a4
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T14:59:55Z · advance · test → accept · native:verifying ^t-b35093
+  - native_change: readiness-report-before-change-approval
+  - gate: native:verifying
+  - revision: f659d73d58d8bd642a2e99de2741c0ba05d109a4
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T15:00:11Z · gate-opened · accept → accept · Implementation review of readiness-report-before-change-approval ^t-426955
+  - native_change: readiness-report-before-change-approval
+  - revision: f659d73d58d8bd642a2e99de2741c0ba05d109a4
+  - holds: accept
+  - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
