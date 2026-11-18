@@ -51,6 +51,7 @@ enum Kind {
     RecordsInVerification,
     MergeDrivers,
     MergeDriverOutdated,
+    GitOperation,
 }
 
 impl Kind {
@@ -70,6 +71,7 @@ impl Kind {
             Self::RecordsInVerification => "records_in_verification",
             Self::MergeDrivers => "merge_drivers",
             Self::MergeDriverOutdated => "merge_driver_outdated",
+            Self::GitOperation => "git_operation",
         }
     }
 }
@@ -168,6 +170,160 @@ fn git(root: &Path, arguments: &[&str]) -> Option<Vec<u8>> {
     output.status.success().then_some(output.stdout)
 }
 
+/// A Git merge or rebase in progress, or unmerged paths left by one (REQ-cli-069).
+#[derive(Clone)]
+pub(super) struct GitOperation {
+    /// `merge`, `rebase`, `cherry-pick` or `revert`, or None when Git only reports
+    /// unmerged paths, as after a conflicted `git stash pop`.
+    operation: Option<&'static str>,
+    /// Every unmerged path, project-relative and sorted.
+    unmerged: Vec<String>,
+}
+
+/// How many unmerged paths a view or a refusal names.
+const UNMERGED_SHOWN: usize = 10;
+
+impl GitOperation {
+    /// The unmerged paths under `.chough/`.
+    fn chough_unmerged(&self) -> Vec<&str> {
+        self.unmerged
+            .iter()
+            .map(String::as_str)
+            .filter(|path| path.starts_with(".chough/"))
+            .collect()
+    }
+
+    /// Whether a path under `.chough/` is unmerged, so writes refuse.
+    pub(super) fn blocks_writes(&self) -> bool {
+        !self.chough_unmerged().is_empty()
+    }
+
+    fn what(&self) -> &'static str {
+        match self.operation {
+            Some("merge") => "a git merge is in progress",
+            Some("rebase") => "a git rebase is in progress",
+            Some("cherry-pick") => "a git cherry-pick is in progress",
+            Some(_) => "a git revert is in progress",
+            None => "git reports unmerged paths",
+        }
+    }
+
+    fn named(paths: &[&str]) -> String {
+        let shown: Vec<&str> = paths.iter().take(UNMERGED_SHOWN).copied().collect();
+        let more = paths.len().saturating_sub(shown.len());
+        if more > 0 {
+            format!("{} and {more} more", shown.join(", "))
+        } else {
+            shown.join(", ")
+        }
+    }
+
+    /// One line: what is in progress, the unmerged paths under `.chough/`, and what to do.
+    pub(super) fn text(&self) -> String {
+        let chough = self.chough_unmerged();
+        let others = self.unmerged.len() - chough.len();
+        let mut text = self.what().to_string();
+        if !chough.is_empty() {
+            text.push_str(&format!(
+                ", with {} unmerged under .chough/: {}",
+                chough.len(),
+                Self::named(&chough)
+            ));
+        } else if others > 0 {
+            text.push_str(&format!(", with {others} unmerged outside .chough/"));
+        }
+        text.push_str("; finish or abort it first");
+        text
+    }
+
+    /// The JSON `next`, `status` and `doctor` give it.
+    pub(super) fn view(&self) -> Value {
+        let chough = self.chough_unmerged();
+        json!({
+            "operation": self.operation,
+            "unmerged": chough.iter().take(UNMERGED_SHOWN).collect::<Vec<_>>(),
+            "unmerged_total": chough.len(),
+            "unmerged_outside_total": self.unmerged.len() - chough.len(),
+            "text": self.text(),
+        })
+    }
+}
+
+/// The merge or rebase in progress in the project's Git work tree, read once per
+/// process; None outside a work tree or when there is nothing to report (REQ-cli-069).
+pub(super) fn git_operation(root: &Path) -> Option<GitOperation> {
+    static READ: std::sync::OnceLock<Option<GitOperation>> = std::sync::OnceLock::new();
+    READ.get_or_init(|| read_git_operation(root)).clone()
+}
+
+fn read_git_operation(root: &Path) -> Option<GitOperation> {
+    let dir = git(root, &["rev-parse", "--absolute-git-dir"])?;
+    let dir = std::path::PathBuf::from(String::from_utf8_lossy(&dir).trim());
+    // A rebase is in progress while its folder is there, as `git status` reads it: Git
+    // can leave `REBASE_HEAD` behind after a rebase has finished (#330 review).
+    let operation = if dir.join("MERGE_HEAD").is_file() {
+        Some("merge")
+    } else if dir.join("rebase-merge").is_dir() || dir.join("rebase-apply").is_dir() {
+        Some("rebase")
+    } else if dir.join("CHERRY_PICK_HEAD").is_file() {
+        Some("cherry-pick")
+    } else if dir.join("REVERT_HEAD").is_file() {
+        Some("revert")
+    } else {
+        None
+    };
+    // `<mode> <object> <stage>\t<path>`, one entry per stage of each unmerged path.
+    let listed = git(root, &["ls-files", "-u", "-z"]).unwrap_or_default();
+    let unmerged: std::collections::BTreeSet<String> = listed
+        .split(|byte| *byte == 0)
+        .filter_map(|entry| {
+            let tab = entry.iter().position(|byte| *byte == b'\t')?;
+            Some(String::from_utf8_lossy(&entry[tab + 1..]).into_owned())
+        })
+        .filter(|path| !path.is_empty())
+        .collect();
+    if operation.is_none() && unmerged.is_empty() {
+        return None;
+    }
+    Some(GitOperation {
+        operation,
+        unmerged: unmerged.into_iter().collect(),
+    })
+}
+
+/// Refuse a write while a path under `.chough/` is unmerged, naming the paths, before
+/// anything is written (REQ-cli-069).
+pub(super) fn refuse_if_unmerged(root: &Path) -> Result<()> {
+    let Some(git) = git_operation(root) else {
+        return Ok(());
+    };
+    let paths = git.chough_unmerged();
+    if paths.is_empty() {
+        return Ok(());
+    }
+    bail!(
+        "refused:unmerged: {}, so Chough writes none of its records: {} under .chough/ {} unmerged ({}). Finish or abort the Git operation first (`git status` names its next step), then run the command again; nothing was written",
+        git.what(),
+        paths.len(),
+        if paths.len() == 1 { "is" } else { "are" },
+        GitOperation::named(&paths)
+    )
+}
+
+/// The `git_operation` finding: a merge or rebase in progress, which has no Chough fix.
+fn git_operation_finding(root: &Path) -> Option<Finding> {
+    let git = git_operation(root)?;
+    let mut finding = Finding::new(
+        Kind::GitOperation,
+        git.operation.unwrap_or("unmerged"),
+        "none: finish the Git operation (resolve the conflicts, then commit or continue it) or abort it (`git merge --abort`, `git rebase --abort`, `git cherry-pick --abort`, `git revert --abort`, or after a conflicted `git stash pop`, `git checkout -- <path>` or `git reset`), then run chough doctor again".into(),
+        false,
+    );
+    finding.blocked = Some(git.text());
+    finding.detail = Some(git.view());
+    Some(finding)
+}
+
 /// NUL-separated Git output as paths.
 fn paths_of(output: Option<Vec<u8>>) -> Vec<String> {
     output
@@ -229,6 +385,11 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
         // REQ-records-006: a temporary path in a case definition is a deliberate test
         // setting, not a leak; everything else in it is checked as anywhere else.
         let case_definition = path.starts_with(".chough/cases/") && path.ends_with(".cases.toml");
+        let ids = if path.ends_with(".md") {
+            id_lines(&text)
+        } else {
+            Default::default()
+        };
         for (number, line) in text.lines().enumerate() {
             let matches = if case_definition {
                 crate::leaks::find_in_case_definition(local, line)
@@ -246,11 +407,115 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
                     false,
                 );
                 finding.detail = Some(json!({"line": number + 1, "match": kind}));
+                // REQ-history-012 (#320): an ID is never redacted; the finding names
+                // the recovery instead.
+                if ids.contains(&number) {
+                    let recovery = id_leak_recovery(path);
+                    finding.fix = format!("none: {recovery}");
+                    finding.blocked = Some(format!(
+                        "line {} gives an ID, which `--redact` never rewrites since a redacted ID no longer reads; {recovery}",
+                        number + 1
+                    ));
+                }
                 found.push(finding);
             }
         }
     }
     found
+}
+
+/// Front matter keys whose values are a record's ID or IDs it references (REQ-records-003).
+/// A leak on such a line is never redacted, since a redacted ID no longer reads
+/// (REQ-history-012, #320).
+const ID_KEYS: [&str; 14] = [
+    "id",
+    "aliases",
+    "native_change",
+    "modules",
+    "criteria",
+    "requirements",
+    "cases",
+    "observations",
+    "bugs",
+    "evidence",
+    "related",
+    "duplicate_of",
+    "regression_baseline",
+    "case",
+];
+
+/// The zero-based numbers of `text`'s front matter lines that give an ID: a line whose
+/// key is an ID key, a block-list item under one, and an ID key inside a list of maps.
+fn id_lines(text: &str) -> std::collections::BTreeSet<usize> {
+    let mut ids = std::collections::BTreeSet::new();
+    let mut lines = text.lines().enumerate();
+    if !matches!(lines.next(), Some((_, "---"))) {
+        return ids;
+    }
+    let key_of = |line: &str| line.split_once(':').map(|(key, _)| key.trim().to_string());
+    let mut under_id_key = false;
+    for (number, line) in lines {
+        if line == "---" {
+            break;
+        }
+        let continued = line.starts_with(' ') || line.starts_with('-');
+        if !continued {
+            under_id_key = key_of(line).is_some_and(|key| ID_KEYS.contains(&key.as_str()));
+            if under_id_key {
+                ids.insert(number);
+            }
+            continue;
+        }
+        let item = line.trim_start().trim_start_matches("- ");
+        let inner_id = key_of(item).is_some_and(|key| ID_KEYS.contains(&key.as_str()));
+        if under_id_key || inner_id {
+            ids.insert(number);
+        }
+    }
+    ids
+}
+
+/// What to do about a leak in an ID of the record at `path`, which `--redact` never
+/// rewrites (#320): shelve a session, otherwise remove it in a reviewed hand edit.
+fn id_leak_recovery(path: &str) -> String {
+    match path.split('/').collect::<Vec<_>>().as_slice() {
+        [".chough", "sessions", id, "session.md"] => format!(
+            "set the session aside with `chough session shelve {id}` and continue in `chough session new <key>`"
+        ),
+        _ => "remove it from the record in a reviewed hand edit".to_string(),
+    }
+}
+
+/// `text` with its leaks redacted, except on the front matter lines in `keep`: the body
+/// as a whole, so a block that spans lines is found, and each other front matter line.
+fn redact_except(text: &str, keep: &std::collections::BTreeSet<usize>) -> (String, usize) {
+    let local = crate::leaks::Local::current();
+    if keep.is_empty() {
+        return crate::leaks::redact(local, text);
+    }
+    let lines: Vec<&str> = text.split_inclusive('\n').collect();
+    let close = lines
+        .iter()
+        .enumerate()
+        .skip(1)
+        .find(|(_, line)| line.trim_end_matches(['\n', '\r']) == "---")
+        .map(|(number, _)| number)
+        .unwrap_or(lines.len().saturating_sub(1));
+    let mut out = String::with_capacity(text.len());
+    let mut count = 0;
+    for (number, line) in lines.iter().enumerate().take(close + 1) {
+        if number == 0 || number == close || keep.contains(&number) {
+            out.push_str(line);
+        } else {
+            let (redacted, found) = crate::leaks::redact(local, line);
+            count += found;
+            out.push_str(&redacted);
+        }
+    }
+    let body: String = lines.iter().skip(close + 1).copied().collect();
+    let (body, found) = crate::leaks::redact(local, &body);
+    out.push_str(&body);
+    (out, count + found)
 }
 
 /// The ID of a Timeline entry, from its `^t-xxxxxx` anchor, or its position.
@@ -885,6 +1150,7 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     found.extend(records_in_verification(root));
     found.extend(merge_drivers(root)?);
     found.extend(merge_driver_outdated(root));
+    found.extend(git_operation_finding(root));
     Ok(found)
 }
 
@@ -1106,7 +1372,8 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         | Kind::AliasConflict
         | Kind::Oversize
         | Kind::Unreadable
-        | Kind::MergeDriverOutdated => {
+        | Kind::MergeDriverOutdated
+        | Kind::GitOperation => {
             bail!("{} has no fix", finding.kind.name())
         }
         Kind::Leak => {
@@ -1122,11 +1389,21 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
                     finding.target
                 );
             };
-            let (redacted, count) = crate::leaks::redact(crate::leaks::Local::current(), &text);
+            // REQ-history-012 (#320): a record's ID lines are never rewritten; its other
+            // lines still are, whichever of its findings comes first.
+            let ids = if finding.target.ends_with(".md") {
+                id_lines(&text)
+            } else {
+                Default::default()
+            };
+            let (redacted, count) = redact_except(&text, &ids);
             if count > 0 {
                 crate::records::write_replace(root, &finding.target, &redacted)?;
             }
             ensure!(path.is_file(), "{} is gone", finding.target);
+            if let Some(blocked) = &finding.blocked {
+                bail!("{blocked}");
+            }
         }
         Kind::StalePointer => {
             let path = local_path(root, sessions::POINTER)?;

@@ -345,6 +345,8 @@ pub(super) fn read_session(root: &Path) -> Result<Session> {
 /// written before #268, refuses here too, so no entry is written for a save that cannot
 /// happen (REQ-records-006).
 pub(super) fn observation_room(root: &Path) -> Result<()> {
+    // REQ-cli-069: refused before the entry is written, while `.chough/` is mid-conflict.
+    crate::doctor::refuse_if_unmerged(root)?;
     let Session::V2(session) = read_session(root)?;
     if session.observations.len() >= MAX_OBSERVATIONS {
         bail!(observations_full(root, session.observations.len(), 1)?);
@@ -404,11 +406,27 @@ static HELD_LOCKS: Mutex<Vec<(PathBuf, fs::File)>> = Mutex::new(Vec::new());
 /// temps left by killed writers once it holds the lock (issue 64), so a read-only
 /// command that takes the lock leaves them in place. `init` takes no lock: it writes a new session that must not
 /// exist yet, so the first writer after it creates the lock file.
+/// Whether this command only reads (REQ-cli-069). Such a command may take the writer
+/// lock to read a consistent checkpoint, but writes nothing, so a merge or rebase in
+/// progress does not refuse it.
+static READS_ONLY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Mark this command as one that only reads (REQ-cli-069).
+pub(super) fn reads_only() {
+    READS_ONLY.store(true, std::sync::atomic::Ordering::Relaxed);
+}
+
 pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
     let path = checkpoint_lock_path(root)?;
     let mut held = HELD_LOCKS.lock().unwrap_or_else(PoisonError::into_inner);
     if held.iter().any(|(locked, _)| *locked == path) {
         return Ok(());
+    }
+    // REQ-cli-069: every record writer takes this lock before it writes, so a path
+    // under `.chough/` left unmerged by a merge or rebase refuses the write here; a
+    // command that only reads, though it takes the lock to read, still runs.
+    if !READS_ONLY.load(std::sync::atomic::Ordering::Relaxed) {
+        crate::doctor::refuse_if_unmerged(root)?;
     }
     let file = match OpenOptions::new()
         .read(true)
@@ -580,11 +598,11 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         ("bug", &session.bugs),
     ] {
         for value in list {
-            check_id(local, name, value)?;
+            check_id(local, &session.meta.id, name, value)?;
         }
     }
     if let Some(change) = &session.native_change {
-        check_id(local, "native_change", change)?;
+        check_id(local, &session.meta.id, "native_change", change)?;
     }
     for alias in &mut session.meta.aliases {
         count += guard(local, "alias", alias)?;
@@ -617,7 +635,7 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
 /// Refuse an ID reference that leaks, under `--redact` too (REQ-records-006, #268): an
 /// ID keeps its ID form, which `<redacted:<kind>>` would break, so the only fix is to
 /// remove it. Names the field and the kinds, never the text.
-fn check_id(local: &crate::leaks::Local, field: &str, value: &str) -> Result<()> {
+fn check_id(local: &crate::leaks::Local, session: &str, field: &str, value: &str) -> Result<()> {
     let found = crate::leaks::find(local, value);
     if found.is_empty() {
         return Ok(());
@@ -626,7 +644,7 @@ fn check_id(local: &crate::leaks::Local, field: &str, value: &str) -> Result<()>
     kinds.sort_unstable();
     kinds.dedup();
     bail!(
-        "refused:leak: {field} holds {}; an ID cannot be redacted, so remove it; nothing was written",
+        "refused:leak: {field} holds {}; an ID cannot be redacted, so remove it from this command, or, when the session already holds it, set the session aside with `chough session shelve {session}` and continue in `chough session new <key>` (#320); nothing was written",
         kinds.join(", ")
     )
 }
@@ -1312,6 +1330,92 @@ fn closed_gate_next_action(gate: &str, closed: Closed, change: Option<&str>) -> 
         name.push(character);
     }
     format!("{head}{name}{tail}")
+}
+
+impl CheckpointArgs {
+    /// Whether this call only shows the checkpoint and changes nothing (REQ-cli-069), so
+    /// it still runs while `.chough/` is mid-conflict. The destructuring names every
+    /// field, so a new one cannot be left out of this test unnoticed.
+    pub(super) fn only_shows(&self) -> bool {
+        let Self {
+            objective,
+            next_action,
+            title,
+            summary,
+            native_change,
+            decisions,
+            questions,
+            resolved,
+            answer,
+            completed,
+            remove_completed,
+            blockers,
+            clear_blockers,
+            awaiting_human,
+            clear_awaiting_human,
+            close_gate,
+            decided_by,
+            words,
+            place,
+            recorded_by,
+            verdict,
+            no_native,
+            native_ran,
+            native_command,
+            native_actor,
+            holds,
+            drives,
+            summary_digest,
+            list,
+            criteria,
+            requirements,
+            cases,
+            design,
+            files,
+            observations,
+            bugs,
+        } = self;
+        objective.is_none()
+            && next_action.is_none()
+            && title.is_none()
+            && summary.is_none()
+            && native_change.is_none()
+            && answer.is_none()
+            && close_gate.is_none()
+            && decided_by.is_none()
+            && words.is_none()
+            && place.is_none()
+            && recorded_by.is_none()
+            && verdict.is_none()
+            && native_ran.is_none()
+            && native_command.is_none()
+            && native_actor.is_none()
+            && holds.is_none()
+            && drives.is_none()
+            && summary_digest.is_none()
+            && list.is_none()
+            && !clear_blockers
+            && !clear_awaiting_human
+            && !no_native
+            && [
+                decisions,
+                questions,
+                resolved,
+                completed,
+                remove_completed,
+                blockers,
+                awaiting_human,
+                criteria,
+                requirements,
+                cases,
+                design,
+                files,
+                observations,
+                bugs,
+            ]
+            .iter()
+            .all(|list| list.is_empty())
+    }
 }
 
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
