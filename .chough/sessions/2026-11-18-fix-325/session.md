@@ -16,7 +16,9 @@ requirements: [REQ-cli-040]
 cases: [TC-cli-a-busy-evidence-add-leaves-nothing]
 design: []
 files: []
-observations: [2026-11-18-tc-cli-a-busy-evidence-add-leaves-nothing]
+observations:
+  - 2026-11-18-tc-cli-a-busy-evidence-add-leaves-nothing
+  - 2026-11-18-tc-cli-a-busy-evidence-add-leaves-nothing-583391
 bugs: []
 blockers: []
 waiting_on_human:
@@ -44,6 +46,7 @@ A refused:checkpoint-busy evidence add leaves nothing behind, so a rerun does no
 ## What was verified
 
 - [Ran cargo test --locked --test evidence -- --exact a_busy_evidence_add_writes_nothing_and_refuses_with_nothing_saved for TC-cli-a-busy-evidence-add-leaves-nothing: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-busy-evidence-add-leaves-nothing.md)
+- [Ran cargo test --locked --test evidence -- --exact a_busy_evidence_add_writes_nothing_and_refuses_with_nothing_saved for TC-cli-a-busy-evidence-add-leaves-nothing: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-busy-evidence-add-leaves-nothing-583391.md)
 
 ## Open threads
 
