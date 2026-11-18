@@ -74,7 +74,7 @@ example by an older Chough, is refused the same way. See [Migration](#migration)
 
 ## Commands
 
-Chough prints its help with the usual `--help`, `-h` and `-V` flags on every command, and the top-level `chough help --help` prints this reference while `chough help <command>` prints that command's help; the rows below name every command the helper lists and every flag it accepts.
+Chough prints its help with the usual `--help`, `-h` and `-V` flags on every command, and the top-level `chough help --help` prints the top-level help, as `chough --help` does, while `chough help <command>` prints that command's help; the rows below name every command the helper lists and every flag it accepts.
 
 | Command | Behavior |
 |---|---|
@@ -101,7 +101,7 @@ Chough prints its help with the usual `--help`, `-h` and `-V` flags on every com
 | `session new\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions in their own folders, setting aside an unreadable one, and the subagent inbox. Starting or switching work never touches another session. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--leaks]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. `--leaks` reports only the `leak` and `oversize` findings, changes nothing and exits 1 on any, for the verify lane's `leaks` step. See [Doctor](#doctor). |
 | `gate list\|record` | Numbers the open human gates, each with a one-screen summary and its digest, and records one relayed reply for listed gates only, with `--verdict` or `--no-native` for a gate that drives a native step. See [Gate lists](#gate-lists). |
-| `change new\|answer\|check\|status\|ship` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged; `ship` checks first, runs the human's review when the gate drives one, ships, then closes the review gate with its relay and moves to done. Before build, the workflow asks whether the change is ready: its approved intent, acceptance criteria and spec deltas are in sync and nothing is missing. See [SpecSync change steps](#specsync-change-steps). |
+| `change new\|answer\|check\|status\|ship` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged; `ship` checks first, runs the human's review when the gate drives one, ships, then closes the review gate with its relay and moves to done. See [SpecSync change steps](#specsync-change-steps). |
 
 ## Backfilled moves
 
@@ -1102,7 +1102,6 @@ through `chough` alone (REQ-cli-057, REQ-cli-059, DRIVE-20):
 | `chough change check <id>` | `specsync change check <id> --commit` |
 | `chough change check <id> --no-commit` | `specsync change check <id>` |
 | `chough change status [<id>]` | `specsync change status [<id>] --json` |
-| `chough change ready <id>` | The workflow's readiness step for a change: its approved intent, acceptance criteria and spec deltas are in sync, with nothing missing before build. |
 
 Each runs in the `--root` directory with the `specsync` on `PATH`, the one Chough's
 native reads use. SpecSync's standard output, standard error and exit code pass through

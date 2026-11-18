@@ -34,6 +34,7 @@ Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-301": "approved" (Claude Code chat (hc t28), 2026-11-17, in reply to the #301 scope summary (docs/cli.md rows, help text for all 11 checkpoint flags, help --help exits 0, changelog fragment)); recorded by claude-code (hc t28); a relayed claim, not authenticated; ran specsync change approve fix-301 as 0xLeif
+- 0xLeif, Claude Code chat (hc t28), 2026-11-17: "drop change ready from #301". main has no chough change ready command, so docs/cli.md does not add it; the approved acceptance criteria's change ready clause is out of scope. Recorded by claude-code (hc t28).
 
 ## What was verified
 
