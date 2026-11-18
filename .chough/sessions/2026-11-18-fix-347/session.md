@@ -18,7 +18,9 @@ cases:
   - TC-cli-doctor-relinks-a-bugs-evidence-after-archiving
 design: []
 files: [src/bugs.rs, src/doctor.rs, tests/bugs.rs]
-observations: []
+observations:
+  - 2026-11-18-tc-cli-a-new-bugs-log-links-its-evidence
+  - 2026-11-18-tc-cli-doctor-relinks-a-bugs-evidence-after-archiving
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -40,6 +42,9 @@ A new bug's Log links its evidence with relative links, and chough doctor report
 - 0xLeif decided "Scope approval of fix-347": "both" (GitHub issue #347, which records 'Leif chose both' on 2026-11-18 for its two follow-ups (new bugs get real links; links follow archiving, by repointing or by doctor reporting and fixing); his planning session (hc t4c) relayed it to fable-t4b as his scope approval and asked for the smaller honest option on the second, which is the doctor fix); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-347 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test bugs -- --exact a_new_bugs_log_links_its_evidence_relative_to_the_bug for TC-cli-a-new-bugs-log-links-its-evidence: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-new-bugs-log-links-its-evidence.md)
+- [Ran cargo test --locked --test bugs -- --exact doctor_relinks_a_bugs_evidence_after_its_session_is_archived for TC-cli-doctor-relinks-a-bugs-evidence-after-archiving: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-doctor-relinks-a-bugs-evidence-after-archiving.md)
 
 ## Open threads
 
