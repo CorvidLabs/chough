@@ -26,6 +26,9 @@ waiting_on_human:
     opened: 2026-11-18T00:36:42Z
 run_consents: []
 next: "Wait for Leif's implementation review of fix-272 on PR #302; do not ship"
+title: journal add holds the writer lock
+summary:
+  - chough journal add took no writer lock, so several adds at once left the feed missing posts (#272). It now holds the lock REQ-cli-040 already named for it. Two tests failed on main first; the verify lane passed on macOS at 3f3f95c. Linux and CI were not run locally.
 ---
 # journal add holds the writer lock of REQ-cli-040, so parallel posts all reach the feed (#272)
 
