@@ -452,6 +452,10 @@ fn active_session(root: &Path) -> Result<String> {
 /// in What was verified (REQ-records-004). Returns the entry's path.
 pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Result<String> {
     validate_record(evidence, &evidence.id)?;
+    // REQ-cli-040 (#325): take the writer lock before anything is written, so a busy
+    // lock refuses with nothing saved and a rerun does not duplicate the entry. A case
+    // has already run by now, so it never runs under the lock; the save keeps it.
+    crate::checkpoint::lock_for_update(root)?;
     // The entry adds a reference, so a session at its observation bound refuses it
     // before anything is written (REQ-cli-032).
     crate::checkpoint::observation_room(root)?;

@@ -846,7 +846,7 @@ native read, and never records a human decision, approval, review or consent.
 | Kind | What it finds | Fix |
 |---|---|---|
 | `unmigrated` | 0.5.x records, such as `.chough/session.json` (REQ-records-010); the finding lists up to 20 of their `paths` and the `total` | Names `chough migrate`; doctor never migrates. The session findings below wait until the tree is migrated |
-| `leak` | A file Git tracks under `.chough/` or the knowledge directory that matches the leak patterns of REQ-records-006, one finding per `line` and `match` (the kind), never the text | `chough doctor --fix --redact` replaces each match with `<redacted:<kind>>` in place; `--fix` alone skips it. Not a decision |
+| `leak` | A file Git tracks under `.chough/` or the knowledge directory that matches the leak patterns of REQ-records-006, one finding per `line` and `match` (the kind), never the text | `chough doctor --fix --redact` replaces each match with `<redacted:<kind>>` in place; `--fix` alone skips it. Not a decision. An ID is never rewritten, since a redacted ID no longer reads (#320): a match on a front matter line that gives a record's `id`, its aliases or an ID it references keeps its line byte for byte, its finding stays `skipped` and names the recovery, `chough session shelve <id>` for a session record and a reviewed hand edit otherwise, while the record's other matches are still redacted. A session's `modules` and a bug's `regression_baseline` are ID lines too. A Markdown link in a record's body to a file whose name holds a match is redacted with the rest of the body, so that link no longer resolves; the record still reads, and the file keeps its name. A save refused for such an ID names the same recovery |
 | `stale_pointer` | The active pointer names a missing or archived session | Remove the pointer |
 | `finished_session` | An open session at done, or with its native change archived on HEAD | Archive it into its story; one with unfolded inbox entries is skipped, naming `chough inbox fold` |
 | `unfinished_archive` | A session folder whose story exists and that still holds files | Remove each file whose bytes are committed at HEAD; otherwise skipped, naming the commit to make |
@@ -856,9 +856,11 @@ native read, and never records a human decision, approval, review or consent.
 | `alias_conflict` | An ID that is the `id` or an alias of two records of one kind (REQ-records-003); `records` names both | None: decide which record keeps it |
 | `oversize` | A committed record, evidence entry or screenshot over its bound, or a session's screenshots over 2,097,152 bytes in all (REQ-records-001, -005, -013), with its `bytes` and `bound` | None |
 | `unreadable` | A committed Chough record under `.chough/` that its reader refuses, such as front matter outside the subset, so `status` and `next` refuse the project (REQ-history-012); `error` names the file, the line and the rule. A record over its bound is `oversize` instead | None: fix the line by hand in a reviewed change, or set an open session aside with `chough session shelve <id>` |
+| `conflict_markers` | A Git conflict marker in the body of a committed record (REQ-records-001, #265): a line starting `<<<<<<<` or `>>>>>>>`, or a `=======` line between them (a heading underline outside a conflict is not one). One finding per marker line, with its `line` and `marker`. Only records are read, not case definitions, READMEs or the generated knowledge index. Chough refuses to write a record whose body holds one, as `refused:conflict-markers` naming the file, the line and the marker, and `chough migrate --apply` checks every file it would write before writing any | None: resolve the conflict in the record by hand in a reviewed change, then run `chough doctor` again |
 | `records_in_verification` | `.specsync/sdd.json` exists and its `verification_ignored_paths` lacks `.chough/sessions/`, `.chough/archive/` or `.chough/bugs/` (REQ-records-014) | Never fixed: Chough never writes the policy. The finding adds `missing` (the entries to add), `specsync` (`6.1.2 and later`, the releases that honour the list) and `advice`: adding them is an ordinary reviewed change to `.specsync/sdd.json`. A broader entry such as `.chough/` gets the advice to list the three folders instead. `chough init` prints the same advice as `records_in_verification` |
 | `merge_drivers` | In a Git work tree, a clone whose Git config has no command for `merge.chough-bug.driver` or `merge.chough-generated.driver`, as a fresh clone has none, or a `.gitattributes` that lacks one of Chough's merge lines (REQ-cli-047); one finding, with `missing_drivers` and `missing_lines` | `chough doctor --fix` sets the missing drivers in the clone's local config. It never writes `.gitattributes`, so a missing line keeps the finding `skipped`, naming the lines: `chough init` appends exactly those, then commit the file |
 | `merge_driver_outdated` | The merge drivers are set, and the `chough` they run, found through `PATH` as Git finds it (Git runs `<program> --version` in its shell), is missing or reports a version older than the running Chough, so a merge would run older code on these records; one finding naming the drivers, `running_version`, `path_version` (null when missing) and `install`. A driver set to another program is not checked | None: Chough never installs itself. Install the running version where Git finds it, `cargo install chough --locked` as in the README's Install section, then run `chough doctor` again |
+| `git_operation` | A Git operation is in progress, or Git reports unmerged paths (REQ-cli-069). A merge is read from `MERGE_HEAD`; a rebase from a `rebase-merge` or `rebase-apply` folder, as `git status` reads it, since Git can leave `REBASE_HEAD` behind after a rebase finishes; a cherry-pick or revert from `CHERRY_PICK_HEAD` or `REVERT_HEAD`. One finding whose target is `merge`, `rebase`, `cherry-pick`, `revert` or `unmerged`, with the unmerged paths under `.chough/` (at most 10, with their total). While any of them is unmerged, every command that writes a Chough record refuses as `refused:unmerged`, `chough next` and `chough status` give only the operation and its next step, and commands that only read (`context`, `stage show`, a bare `checkpoint`) still run | None: finish the operation (resolve the conflicts, then commit or continue it) or abort it (`git merge --abort`, `git rebase --abort`, `git cherry-pick --abort`, `git revert --abort`, or after a conflicted `git stash pop`, `git checkout -- <path>` or `git reset`), then run `chough doctor` again |
 
 - **No flag or `--dry-run`:** reports every finding as `found` and changes nothing.
 - **`--fix`:** applies the fixes in the order of the table. It applies a decision fix
@@ -992,6 +994,8 @@ any refusal the apply would give now, then the plan digest and the apply command
 - `sources`: each 0.5.x file with its SHA-256;
 - `becomes`: each 0.5.x file with the 0.6.0 files it becomes;
 - `writes`: each 0.6.0 file it would write;
+- `receipt`: the receipt the apply writes, named when the plan is built and so part of
+  its digest;
 - `redactions`: every value it would redact, by file, field and kind;
 - `removed`: every file it would remove without carrying it, with why;
 - `kept`: each open bug's fixture under `.chough/artifacts/`, kept byte for byte, with
@@ -1027,10 +1031,14 @@ another record. Before writing anything, `--apply` refuses:
 | `refused:change-open` | A native change in the project is not archived, named; the upgrade never runs while a change is open |
 | `refused:no-consent` | Neither `--consent` nor a standing `migration` preference gives the human's consent |
 | `refused:uncommitted` | A 0.5.x file it would remove differs from its bytes at HEAD or is untracked, named, so Git holds every byte it removes |
-| `refused:target-exists` | A file it would write already exists with other bytes |
+| `refused:target-exists` | A file it would write, the receipt included, already exists with other bytes; every target is checked before any is written |
 
 It then writes the 0.6.0 tree by create-new only, reads each file back and compares
-its digest, and writes the receipt `.chough/archive/migrations/<date>-from-0-5.md`:
+its digest, and writes the receipt the plan names as `receipt`,
+`.chough/archive/migrations/<date>-from-0-5.md`. A second migration on the same day,
+for a 0.5.x record written into an already migrated tree, names
+`<date>-from-0-5-2.md` (then `-3`, and so on), keeps the first receipt as it is, and
+its name is part of the plan's digest. The receipt lists
 every file before and after with its path, size and SHA-256, the redactions by file,
 field and kind, every removed file with why and the commit that holds it, and the
 old-to-new ID map, with `none` under any section that has nothing to list. Every
@@ -1084,7 +1092,10 @@ vault content of earlier releases is removed after it is listed, and so are
 `.chough/transitions.jsonl`, `.chough/history/`, `.chough/pruned.jsonl`,
 `.chough/session.v1.json`, `.chough/artifacts/` other than files an open bug names, and
 shelved 0.5.x sessions. An ID whose record was removed without being carried resolves
-as `removed`, naming the receipt, never as current or passed.
+as `removed`, naming the receipt, never as current or passed. A migrated bug's Log names each carried
+observation as a link, relative to the bug's file, to the open session's entry or to
+the archived story that holds its receipt; a receipt only the bug holds is named `(a
+receipt of this bug)`, and one that was removed keeps its 0.5.x ID.
 
 Every file the migration writes passes the leak check with redaction, so no home
 folder path, user name or credential survives in a rewritten record. Git history is not
@@ -1521,6 +1532,7 @@ stage on that response, and shows:
 | `lessons` | `{"sources": {"total", "items": [{"module", "path", "section_line", "note"}]}, "archived_bundles": {"total", "items": [<path>], "note"?}}`: for each checkpoint module (at most 10, in checkpoint order), `specs/<module>/<module>.3md` when present, otherwise `specs/<module>/context.md` with the 1-based line of its first line that is exactly `## Lessons` (`note` is `null` when a source is found, otherwise `no Lessons section`, `missing` or `cannot be read: <error>`, for example for a symlinked module directory); and, for the archives the librarian counts (not hidden, a UTF-8 name, and a readable `finalization.json` whose `change_id` the directory name ends with), each one's `lesson-bundle.md` path, newest first by recorded finalization timestamp then directory name, at most 3, the same three `knowledge/index.md` links; an archive without a bundle is shown as `<path> (missing)`, `total` counts those archives, and an unreadable timestamp sorts oldest; when the archives cannot be read, for example because an archive directory is a symlink, no bundle is listed, `total` is 0 and `note` is `cannot be read: <error>`, the same error `chough library index` refuses with (`note` is absent otherwise) |
 | `knowledge` | `{"librarian", "dir", "index"}`: the librarian preference, the knowledge directory, and `<dir>/index.md` when the librarian is on and the index exists, otherwise `null` |
 | `chough_writes` | `{"state", "text", "missing", "policy"}`: when Chough's own records are safe to write (REQ-records-014). `any-point` while `.specsync/sdd.json` leaves `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` out of verification (or there is no policy): they may be written and committed at any point of the native order. `commit-first` otherwise: commit them before `specsync change check --commit` and write nothing under `.chough/` until finalize; `missing` names the entries. The text form prints it as a `Chough writes:` line |
+| `git_operation` | `{"operation", "unmerged", "unmerged_total", "unmerged_outside_total", "text"}`, or null: a Git merge, rebase, cherry-pick or revert in progress, or unmerged paths (REQ-cli-069). The text form prints it as a `Git:` line below the objective. While a path under `.chough/` is unmerged, `next` and `status` read no record and give only this, with finishing or aborting the operation as the next action, and every write refuses as `refused:unmerged` |
 | `environment`, `full_view`, `truncated` | The requested environment, `chough status`, and whether entries were dropped |
 
 The text form (the default) carries the same fields as short lines. SpecSync's own next

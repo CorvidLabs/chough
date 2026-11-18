@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-320",
+  "slug": "fix-320",
+  "title": "Fix 320",
+  "description": "fix 320",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "cef86e2622a2a908856b0c2cf11b29d3c1d3e472",
+  "created_at": 1795027170,
+  "updated_at": 1795032318,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/checkpoint.rs",
+    "src/doctor.rs",
+    "tests/leaks.rs",
+    "docs/cli.md",
+    ".chough/cases/cli.leaking-id-recovery.cases.toml",
+    "changelog.d/2026-11-18-fix-320.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A save refused because a criterion, requirement, case, observation, bug or native change reference holds a leak names the recovery, chough session shelve <session id>, beside removing the value. A committed session record whose case reference holds a token gives a leak finding naming chough session shelve <id>, and chough doctor --fix --redact leaves that ID unchanged with the finding skipped, so the session still reads, while it still redacts a leak on an ordinary line of the same record."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the deltas are frozen at approval. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}
