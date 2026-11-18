@@ -1,0 +1,58 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795042488,
+      "digest": "ca952a6f1bb7a90c193e96a2e1b11e22b57662b2b3849a905f741cec0864fa40",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-351\": \"yes, both\" (Leif's decision of 2026-11-18 recorded in GitHub issue #351 (the skill explains chough checkpoint --no-native-change, and chough next offers both paths when a move is refused for lacking a native change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval). Relayed and recorded by fable-t4b at 2026-11-18T22:54:48Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-351",
+        "title": "Fix 351",
+        "description": "fix 351",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/",
+          ".chough/cases/cli.next-offers-no-native-change.cases.toml",
+          "changelog.d/2026-11-18-fix-351.md",
+          "skills/chough-workflow/",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/stage.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/skill_releases.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With SpecSync configured and no native change recorded, a refused stage move and chough next, as JSON and as text, name both chough checkpoint --native-change <id> and chough checkpoint --no-native-change \"<reason>\"; next's command stays specsync change new; the workflow skill's lifecycle reference explains the flag in the canonical and the installed copy."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lessons apply: human gates are plain text in tasks.md, the delta is frozen at approval, and a skill edit refreshes the release manifest digest and its pinned hash in the same change.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "cb5e795f5892b8c29800a7e06b77d3b5e3fe5535bb038cfcb674cd6e4a6a44bd"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-021": "88f2b970c920a45eb9eaed1de662869f7cff8ec66919d1c43785a8c23903e6e9"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "yes, both",
+        "where": "Leif's decision of 2026-11-18 recorded in GitHub issue #351 (the skill explains chough checkpoint --no-native-change, and chough next offers both paths when a move is refused for lacking a native change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ],
+  "reopenings": []
+}

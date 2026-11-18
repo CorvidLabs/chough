@@ -581,7 +581,7 @@ pub(super) fn gate_for_state(
         NativeState::NoChange => refused(
             "refused:no-native-change".into(),
             format!(
-                "{purpose} needs the native change: record it with `chough checkpoint --native-change <id>`."
+                "{purpose} needs the native change: record it with `chough checkpoint --native-change <id>`, or, when this work needs none (planning, docs or issues, say), record why with `chough checkpoint --no-native-change \"<reason>\"`."
             ),
         ),
         NativeState::Unknown(reason) => refused(

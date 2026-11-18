@@ -48,7 +48,11 @@ release → done). It refuses when status is missing, cannot be decoded or repor
 invalid approval or a correction reported invalid (`correction_valid` false), when no
 native change is recorded in the checkpoint (`refused:no-native-change`; record one
 with `chough checkpoint --native-change <id>`), and when `.specsync/sdd.json` is not a
-valid SpecSync policy. Two cases are not gated at all: with no SpecSync configuration
+valid SpecSync policy. Work that needs no native change, such as planning, docs or
+issues, says so instead: `chough checkpoint --no-native-change "<reason>"` records
+why, the session's moves then read `ungated:no-native-change-required`, and it
+advances to done and is archived with outcome `done`. A human gate still holds until
+a person closes it, and the flag is refused while a native change is recorded. Two cases are not gated at all: with no SpecSync configuration
 the gate reads `ungated:not-configured`, and with no `.specsync/sdd.json` or one with
 `"enabled": false` it reads `ungated:sdd-disabled`. A stage move never runs `approve`,
 `review` or `finalize`. Those native writers run in one of two ways, and the records
