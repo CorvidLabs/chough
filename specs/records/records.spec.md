@@ -1,6 +1,6 @@
 ---
 module: records
-version: 10
+version: 11
 status: active
 files:
   - src/markdown.rs
@@ -215,3 +215,4 @@ use this one for every record they write.
 | 9 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
 | 10 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
 | 10 | 2026-11-18 | fix-314: Fix 314 |
+| 11 | 2026-11-18 | fix-265: Fix 265 |
