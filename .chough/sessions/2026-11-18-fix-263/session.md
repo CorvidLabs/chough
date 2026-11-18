@@ -16,7 +16,7 @@ requirements: [REQ-records-009]
 cases: [TC-records-migrate-refuses-a-separate-case-colliding-target]
 design: []
 files: [src/migrate.rs, tests/migrate_knowledge.rs]
-observations: []
+observations: [2026-11-18-tc-records-migrate-refuses-a-separate-case-colliding-target]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -39,6 +39,8 @@ migrate --apply refuses before writing when a planned target that differs only i
 - 0xLeif decided "Scope approval of fix-263": "Approve (Recommended)" (Claude Code session with Fable, 2026-11-18, answer to the interview question 'fix-263 (draft PR #312) ... Do you approve the scope?'); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-263 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test migrate_knowledge -- --exact a_separate_file_at_a_case_colliding_target_refuses_before_any_write for TC-records-migrate-refuses-a-separate-case-colliding-target: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-migrate-refuses-a-separate-case-colliding-target.md)
 
 ## Open threads
 
