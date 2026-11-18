@@ -5,7 +5,7 @@ aliases: [fix-264]
 objective: "A second same-day migration names its receipt with a deterministic suffix that is part of the plan and its digest, and migrate --apply checks every target before it writes anything (REQ-records-009, #264)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -25,13 +25,9 @@ observations:
   - 2026-11-18-tc-records-a-receipt-name-taken-after-the-preview-refuses-e7c049
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-264
-    holds: accept
-    drives: review
-    opened: 2026-11-18T19:40:31Z
+waiting_on_human: []
 run_consents: []
-next: Wait for the tester's check and Leif's implementation review of fix-264
+next: Continue done
 title: A second same-day migration names its own receipt
 summary:
   - A second chough migrate on one day wrote its session folder and then refused on the first receipt's name (#264). The plan now names its receipt, with a -<n> suffix while the name is taken by another plan, as part of its digest, and the apply checks the receipt with every other target before writing. Two tests failed on main first; the verify lane passed on macOS after main (275fe4d) was merged in, and tester2 passed it on macOS and in the Linux container. Every migrate plan digest changes with this change.
@@ -49,6 +45,7 @@ A second same-day migration names its receipt with a deterministic suffix that i
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-264": "suffix and check first. A second same-day migration plan names its receipt with a deterministic suffix (...-from-0-5-2.md), part of the plan and its digest, and --apply checks every target before it writes anything, so a refusal never leaves a partial write." (Leif's decision comment on GitHub issue #264, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-264 as 0xLeif
+- 0xLeif decided "Implementation review of fix-264": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's PASS on PR #340); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-264 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -107,4 +104,20 @@ A second same-day migration names its receipt with a deterministic suffix that i
   - revision: 5c42647abeab7dcdaa6311a3c953947ed208290d
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T19:57:21Z · gate-closed · accept → accept · Implementation review of fix-264 ^t-2b3614
+  - native_change: fix-264
+  - revision: 0c93d6df5432724dae2ac8824439dc9c385f86bb
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's PASS on PR #340
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-264
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T19:57:22Z · advance · accept → done · native:archived ^t-d8e1c5
+  - native_change: fix-264
+  - gate: native:archived
+  - revision: 0c93d6df5432724dae2ac8824439dc9c385f86bb
   - by: fable (claude-fable-5-2, hc t4b)
