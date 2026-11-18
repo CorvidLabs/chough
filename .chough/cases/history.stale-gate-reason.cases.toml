@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "history"
+
+# GitHub #250: doctor --fix --reason withdrew stale gates and recorded the reason nowhere.
+
+[[case]]
+id = "TC-history-a-withdrawn-stale-gate-keeps-doctors-reason"
+title = "When doctor --fix --reason withdraws a stale gate, its gate-closed Timeline entry in the archived story holds the reason and doctor's JSON echoes it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/checkpoint.rs", "src/stage.rs", "src/session_md.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_decision_fixes_need_a_reason_and_record_no_human_decision passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_decision_fixes_need_a_reason_and_record_no_human_decision"

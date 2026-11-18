@@ -368,6 +368,10 @@ pub(super) struct Transition {
     /// On a `correction` entry, the entry it corrects, as `^t-xxxxxx` (REQ-history-015).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) corrects: Option<String>,
+    /// On a `gate-closed` entry of a gate `chough doctor --fix --reason` withdrew, that
+    /// reason in the person's words (REQ-history-012, #250).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) withdrawn: Option<String>,
 }
 
 /// An append-only correction of an earlier entry (REQ-history-015); it starts and ends
@@ -1726,6 +1730,7 @@ fn log_transition_at(
         holds: None,
         drives: None,
         corrects: None,
+        withdrawn: None,
     };
     validate_records(&transition)?;
     // REQ-cli-060 (DRIVE-21): a stage move, and a gate close with a relayed decision
@@ -1751,6 +1756,7 @@ fn log_transition_at(
                 holds: None,
                 drives: None,
                 corrects: None,
+                withdrawn: None,
             };
             validate_records(&event)?;
             append_transition(root, session, event)?;
