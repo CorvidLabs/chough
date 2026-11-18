@@ -36,6 +36,24 @@
       "requirement_ids": [
         "REQ-cli-037"
       ]
+    },
+    {
+      "timestamp": 1795035633,
+      "commit": "c82741474b92bb0aa3fe570514e9cc77844328eb",
+      "contract_digest": "c8313c9cc282704ba619d42fb843fdc3f64008828722b5205aea26b70fd03261",
+      "execution_digest": "3c6847484c07a11413a81baa63ef34d4135c096e6f2f9b5791415b35df339d57",
+      "workspace_digest": "d16aaa1c954f0261ec8051693621e75953dfdf7e093fffc1a0901c484da4fd29",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-037"
+      ]
     }
   ]
 }
