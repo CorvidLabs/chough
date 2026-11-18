@@ -16,7 +16,10 @@ knowledge index with `fledge run release-check` and commit what it changes.
 ## Out of scope
 
 The tag, `cargo publish`, the GitHub release, the clean-install observation and
-the roadmap row. No code, test, spec or skill change. No fragment of an unmerged
+the roadmap row. No code, spec or skill change. The one test change is to two tests in
+`tests/changelog.rs` that read the live fragments in `changelog.d/` and so fail once a
+release assembles them: one also reads the released section, the other reads fixture
+copies under `tests/fixtures/changelog/`. No fragment of an unmerged
 pull request.
 
 ## Steps
