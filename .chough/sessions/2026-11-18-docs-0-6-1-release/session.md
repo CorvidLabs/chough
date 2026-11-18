@@ -5,7 +5,7 @@ aliases: [docs-0-6-1-release]
 objective: The roadmap's delivered table has the 0.6.1 release row, and the README no longer says 0.6.0 is not released yet
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: [README.md, docs/roadmap-1.0.md]
 observations: [2026-11-18-after-cargo-publish-locked-from-tag-v0-6-1-cef86e2-ended-with]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of docs-0-6-1-release
+    holds: accept
+    drives: review
+    opened: 2026-11-18T18:00:18Z
 run_consents: []
-next: Continue test
+next: Wait for Leif's implementation review of docs-0-6-1-release
 ---
 # The roadmap's delivered table has the 0.6.1 release row, and the README no longer says 0.6.0 is not released yet
 
@@ -80,4 +84,15 @@ The roadmap's delivered table has the 0.6.1 release row, and the README no longe
   - native_change: docs-0-6-1-release
   - gate: native:approved
   - revision: 28b55ce1555d7bf9dc6a336143c0bf3e25534640
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T18:00:18Z · advance · test → accept · native:verifying ^t-665f6d
+  - native_change: docs-0-6-1-release
+  - gate: native:verifying
+  - revision: 73d3c62bfbf14a4f5da6e299ed3c15469e4693b3
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T18:00:18Z · gate-opened · accept → accept · Implementation review of docs-0-6-1-release ^t-e7b628
+  - native_change: docs-0-6-1-release
+  - revision: 73d3c62bfbf14a4f5da6e299ed3c15469e4693b3
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
