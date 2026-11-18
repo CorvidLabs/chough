@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "this-repository-routes-spec-files-to-specsync-s-merge-driver-291",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "bd2c14259d78b7c5a5e705a87e39550feef53a61",
+  "contract_digest": "bdc4129389ab836360d6d18bb72514f93cbf2836e866a4fe6862d6e5ba02451e",
+  "execution_digest": "c90f7edcfd890225609eb904053e8c7c722189873a891f66c0d3871723a7ca35",
+  "workspace_digest": "1fc95a33153dc81509f57fbfc20e717500346b00821e2b3483b0c94ea2afdde2",
+  "timestamp": 1794799443,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "finish them up",
+    "where": "Grok session on 2026-11-16, relayed by grok-t1w",
+    "recorded_by": "grok-t1w"
+  }
+}

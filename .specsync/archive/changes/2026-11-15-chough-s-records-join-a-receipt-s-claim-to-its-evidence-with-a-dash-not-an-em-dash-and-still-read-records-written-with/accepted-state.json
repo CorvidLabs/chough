@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with",
+  "slug": "chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with",
+  "title": "Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278)",
+  "description": "Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278)",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8",
+  "created_at": 1794711154,
+  "updated_at": 1794714322,
+  "affected_specs": [
+    "history",
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/sessions.rs",
+    "src/journal.rs",
+    "src/gates.rs",
+    "tests/sessions.rs",
+    "tests/migrate_evidence.rs",
+    "tests/journal.rs",
+    ".chough/cases/history.archived-stories.cases.toml",
+    "CHANGELOG.md",
+    "docs/cli.md",
+    "specs/history/requirements.md",
+    "specs/records/requirements.md",
+    "specs/cli/requirements.md",
+    "specs/history/history.spec.md",
+    "specs/records/records.spec.md",
+    "specs/cli/cli.spec.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "An archived or migrated story's What was verified line and a gate summary's Change line hold no em dash: each joins with ' - ',A journal post derived from a story archived with the earlier ' — ' join still gives the line's claim alone and copies no evidence ID"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Stories archived before this change are never rewritten: readers accept both joins",
+    "public_contract": "yes"
+  }
+}

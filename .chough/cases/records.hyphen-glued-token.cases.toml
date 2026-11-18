@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #267: a credential glued to a hyphen (x-ghp_...), the shape a slug or a CI run
+# name gives it, passed the write guard and the doctor and was committed byte for byte.
+
+[[case]]
+id = "TC-records-a-hyphen-glued-token-is-a-leak"
+title = "A token form that directly follows a hyphen refuses a decision and a session key as refused:leak with every file unchanged, and chough doctor --leaks reports it in a committed file as a token leak"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::a_hyphen_glued_token_is_refused_at_the_write_and_found_by_the_doctor passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "a_hyphen_glued_token_is_refused_at_the_write_and_found_by_the_doctor"

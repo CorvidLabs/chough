@@ -586,7 +586,7 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
         ("build", "build"),
     ];
     let mut problems = vec![];
-    for step in steps {
+    for &step in &steps {
         match words.iter().find(|(task, _)| *task == step) {
             None => problems.push(format!(
                 "fledge.toml verify step `{step}` has no README wording in this check; add it here and to README.md"
@@ -595,6 +595,14 @@ fn readme_verify_lane_list_names_every_fledge_verify_step() {
                 "README.md Tested platforms: the verify lane list ({list}) does not name `{step}` (\"{word}\")"
             )),
             Some(_) => {}
+        }
+    }
+    // A task the lane no longer runs (the knowledge check left it in #289) is not named.
+    for (task, word) in words {
+        if !steps.contains(&task) && list.contains(word) {
+            problems.push(format!(
+                "README.md Tested platforms: the verify lane list ({list}) names `{task}` (\"{word}\"), which the verify lane does not run"
+            ));
         }
     }
     assert!(problems.is_empty(), "{}", problems.join("\n"));
@@ -1132,6 +1140,75 @@ fn skill_files_from_main_615b587b_are_known_outdated_and_edited_copies_stay() {
     assert_eq!(state(&status(edited_root), "SKILL.md"), "edited");
     chough(Some(edited_root), &["skill", "update"]);
     assert_eq!(fs::read_to_string(&edited).unwrap(), content);
+}
+
+/// FR-docs-6 (REQ-cli-016, FLOW-18): the stages file main shipped at 0fd9fd22 is a
+/// known earlier bundle, so skill update replaces a pristine copy and keeps an edit.
+/// The architecture note names the reads `session use` actually makes.
+#[test]
+fn stages_from_main_0fd9fd22_update_and_an_edited_copy_stays() {
+    let fixture = read("tests/fixtures/stages-at-0fd9fd22.md");
+    assert_eq!(
+        format!("{:x}", Sha256::digest(fixture.as_bytes())),
+        "36522cbfa49c0d29b2505c552ff15d3743b9bca7c5985db0fb002d6b61974727"
+    );
+    let current = read("skills/chough-workflow/references/stages.md");
+    assert_ne!(fixture, current);
+
+    let state = |status: &Value| {
+        status["hosts"][0]["files"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|entry| entry["file"] == "references/stages.md")
+            .expect("references/stages.md missing")["state"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    let status = |root: &Path| -> Value {
+        serde_json::from_str(&chough(Some(root), &["skill", "status"])).unwrap()
+    };
+
+    let project = initialized_project();
+    let root = project.path();
+    let installed = root.join(".agents/skills/chough-workflow/references/stages.md");
+    fs::write(&installed, &fixture).unwrap();
+    assert_eq!(state(&status(root)), "known-outdated");
+    chough(Some(root), &["skill", "update"]);
+    assert_eq!(state(&status(root)), "current");
+    assert_eq!(fs::read_to_string(&installed).unwrap(), current);
+
+    let edited_project = initialized_project();
+    let edited_root = edited_project.path();
+    let edited = edited_root.join(".agents/skills/chough-workflow/references/stages.md");
+    let note = format!("{fixture}\nA local note.\n");
+    fs::write(&edited, &note).unwrap();
+    assert_eq!(state(&status(edited_root)), "edited");
+    let update: Value =
+        serde_json::from_str(&chough(Some(edited_root), &["skill", "update"])).unwrap();
+    let action = update["hosts"][0]["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|entry| entry["file"] == "references/stages.md")
+        .expect("references/stages.md missing")["action"]
+        .as_str()
+        .unwrap();
+    assert_eq!(action, "preserved-edit");
+    assert_eq!(fs::read_to_string(&edited).unwrap(), note);
+    assert_eq!(state(&status(edited_root)), "edited");
+
+    let architecture = read("docs/architecture.md");
+    assert!(
+        !architecture.contains("`session use` reads only the session it activates."),
+        "the unconditional read claim is still there"
+    );
+    assert!(architecture.contains(
+        "`session use` of an exact open session ID returns that ID without reading another"
+    ));
+    assert!(architecture.contains("A bare key or alias reads each open session"));
+    assert!(architecture.contains("also reads archived stories"));
 }
 
 /// `skills/chough-workflow/SKILL.md` as main shipped it at 615b587b.

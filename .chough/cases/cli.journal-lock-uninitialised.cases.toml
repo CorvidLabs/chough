@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# Review of #302: journal add took no writer lock in a project with no .chough directory,
+# where it also writes, so parallel adds there could still leave the feed missing posts.
+
+[[case]]
+id = "TC-cli-journal-add-holds-the-writer-lock-with-no-chough-directory"
+title = "In a project with no .chough directory, chough journal add takes the writer lock, creating .chough/local/checkpoint.lock, and a later add waits while another process holds it"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-11"]
+requirements = ["REQ-cli-040"]
+paths = ["src/journal.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::journal_add_takes_the_writer_lock_in_a_project_with_no_chough_directory passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "journal_add_takes_the_writer_lock_in_a_project_with_no_chough_directory"

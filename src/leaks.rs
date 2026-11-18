@@ -476,6 +476,13 @@ fn token_byte(byte: u8) -> bool {
     byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')
 }
 
+/// Whether `byte` before a token prefix makes the prefix the middle of a word, so no
+/// token starts there. A hyphen does not: a slug, an ID or a CI run name glues a token
+/// to one, as `x-ghp_…`, and it is still a token (REQ-records-006, #267).
+fn word_byte(byte: u8) -> bool {
+    byte.is_ascii_alphanumeric() || byte == b'_'
+}
+
 /// A token prefix, the fewest bytes that follow it, and which bytes may follow.
 type TokenForm = (&'static str, usize, fn(u8) -> bool);
 
@@ -499,7 +506,7 @@ fn tokens(value: &str, all: &mut Vec<Match>) {
     ];
     for (prefix, minimum, allowed) in forms {
         for (start, _) in value.match_indices(prefix) {
-            if start > 0 && token_byte(bytes[start - 1]) {
+            if start > 0 && word_byte(bytes[start - 1]) {
                 continue;
             }
             let end = run(bytes, start + prefix.len(), allowed);
@@ -517,7 +524,7 @@ fn tokens(value: &str, all: &mut Vec<Match>) {
             let end = run(bytes, start + prefix.len(), |byte| {
                 byte.is_ascii_uppercase() || byte.is_ascii_digit()
             });
-            if (start == 0 || !token_byte(bytes[start - 1])) && end - start == 20 {
+            if (start == 0 || !word_byte(bytes[start - 1])) && end - start == 20 {
                 all.push(Match {
                     kind: Kind::Token,
                     start,
@@ -774,6 +781,28 @@ mod tests {
             for found in find(&local(), value) {
                 assert!(!error.contains(&value[found.start..found.end]), "{error}");
             }
+        }
+    }
+
+    /// REQ-records-006 (#267): a hyphen before a token form is a boundary, as a slug,
+    /// an ID or a CI run name glues one; a letter, digit or underscore still continues
+    /// a word.
+    #[test]
+    fn a_token_glued_to_a_hyphen_is_found() {
+        for value in [
+            concat!("probe x-", "ghp_", "abcdefghij0123456789abcdefghij0123"),
+            concat!("run-", "glp", "at-abcdefghijklmnopqrstuvwx"),
+            concat!("ci-", "AKIA", "ABCDEFGHIJKLMNOP"),
+        ] {
+            assert_eq!(kinds(value), ["token"], "{value:?}");
+            assert!(check(&local(), "summary", value).is_err(), "{value:?}");
+        }
+        for value in [
+            concat!("probe x", "ghp_", "abcdefghij0123456789abcdefghij0123"),
+            concat!("probe x_", "ghp_", "abcdefghij0123456789abcdefghij0123"),
+            concat!("ciX", "AKIA", "ABCDEFGHIJKLMNOP"),
+        ] {
+            assert_eq!(kinds(value), Vec::<&str>::new(), "{value:?}");
         }
     }
 

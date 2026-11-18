@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "c6b6e3a8f11b71ebf991906445aa93667bc4cb3c",
+      "contract_digest": "776bd435417d745684b63505c96a95495b50dbe4390d284b6f4b315363db5a3d",
+      "execution_digest": "b7d82ac1d57bea316c00745b0cc331607bb6aa4f62b2c154deda3459330474d3",
+      "workspace_digest": "f839189cc27e5399d10068c7cebf9373c4c6633ca4383722c169ca3aa085c3c1",
+      "timestamp": 1794777593,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "yes I accept #289",
+        "where": "Claude Code chat (hc t28), 2026-11-15, on the #289 implementation review (gate list ccf24edda81a, PR #297)",
+        "recorded_by": "claude-code (hc t28)"
+      }
+    }
+  ]
+}

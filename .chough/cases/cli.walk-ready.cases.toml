@@ -1,0 +1,22 @@
+# REQ-cli-001 preservation. The first run of this case was `echo preserves`, a demo
+# smoke receipt kept on the archived story. This binding is the behavioral check.
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-walk-ready-init-preserves"
+title = "Init preserves edited session and skill bytes and adds missing bundles"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-4", "LIFE-6"]
+requirements = ["REQ-cli-001"]
+paths = ["specs/cli/requirements.md", "tests/cli.rs", ".chough/cases/cli.walk-ready.cases.toml"]
+environments = ["local-macos-arm64"]
+artifacts = ["test-log"]
+expected = ["Repeated init leaves an edited session byte-identical and adds a missing bundle file without rewriting an edited neighbor."]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cli"
+test = "init_preserves_user_files_and_installs_a_complete_skill"

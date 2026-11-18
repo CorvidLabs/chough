@@ -77,6 +77,11 @@ pub(super) fn run(root: &Path, command: JournalCommand) -> Result<()> {
             links: given_links,
             record,
         } => {
+            // REQ-cli-040 (#272): a post and the feed rebuilt from every post are one
+            // save, so a concurrent `journal add` rebuilds from the latest posts. The
+            // lock is taken even with no `.chough/` yet: `journal add` writes in such a
+            // project too, where `sessions::lock_project` would take none.
+            crate::checkpoint::lock_checkpoint(root)?;
             let dir = crate::library::enabled_dir(root)?;
             ensure!(
                 body.len() <= BODY_LIMIT,
@@ -461,10 +466,26 @@ fn first_paragraph(record: &Record, heading: &str) -> String {
         .unwrap_or_default()
 }
 
-/// The claim of a What was verified line: the text before a receipt line's ` — ` and its
-/// command, so a post never copies an evidence ID into the vault (REQ-cli-044).
+/// The claim of a What was verified line: the text before the join of a receipt line,
+/// so a post never copies an evidence ID into the vault (REQ-cli-044, REQ-records-011).
+/// The join is ` - `, or ` — ` in a story archived before Chough joined with a dash, and
+/// it is followed by the backticked command or the 12 fingerprint digits
+/// (REQ-history-006), so a ` - ` inside the claim is not taken for it.
 fn claim_of(line: &str) -> String {
-    line.split(" — ").next().unwrap_or(line).to_string()
+    let joins_evidence = |rest: &str| {
+        let word = rest.split(' ').next().unwrap_or_default();
+        rest.starts_with('`') || (word.len() == 12 && word.bytes().all(|b| b.is_ascii_hexdigit()))
+    };
+    let end = [" - ", " — "]
+        .into_iter()
+        .flat_map(|separator| {
+            line.match_indices(separator)
+                .filter(|(at, _)| joins_evidence(&line[at + separator.len()..]))
+                .map(|(at, _)| at)
+        })
+        .min()
+        .unwrap_or(line.len());
+    line[..end].to_string()
 }
 
 /// `text` as one plain line: Markdown links become their text, so a link relative to the
@@ -808,6 +829,28 @@ pub(super) fn feed(posts: &[Post]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// #278, REQ-records-011: a What was verified line gives its claim alone, whether it
+    /// joins its evidence with ` - ` or with the ` — ` of a story archived before that join.
+    #[test]
+    fn a_claim_is_read_from_either_join() {
+        let claim = "SYNTHETIC archived proof";
+        let dash = format!("{claim} - `cargo test` 0123456789ab ^ev-1");
+        let em_dash = format!("{claim} — `cargo test` 0123456789ab ^ev-1");
+        assert_eq!(claim_of(&dash), claim);
+        assert_eq!(claim_of(&em_dash), claim);
+        assert_eq!(claim_of(claim), claim);
+        // A claim holding ` - ` is kept whole, with either join, after a command or digits.
+        let claim = "fixed the parser - the second pass";
+        for line in [
+            format!("{claim} - abcdef012345 ^ev-1"),
+            format!("{claim} — abcdef012345 ^ev-1"),
+            format!("{claim} - `cargo test` abcdef012345 ^ev-1"),
+            format!("{claim} — `cargo test` ^ev-1"),
+        ] {
+            assert_eq!(claim_of(&line), claim, "{line}");
+        }
+    }
 
     #[test]
     fn a_long_paragraph_is_cut_at_a_sentence_end() {
