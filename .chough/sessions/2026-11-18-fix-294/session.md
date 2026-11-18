@@ -5,7 +5,7 @@ aliases: [fix-294]
 objective: "A test asserts the gate summary's Change line separator, with no em dash (REQ-cli-061, #294)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-18-tc-cli-gate-summary-names-its-change-with-a-plain-dash-10dab0
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-294
-    holds: accept
-    drives: review
-    opened: 2026-11-18T16:11:04Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # A test asserts the gate summary's Change line separator, with no em dash (REQ-cli-061, #294)
 
@@ -44,6 +40,7 @@ A test asserts the gate summary's Change line separator, with no em dash (REQ-cl
 
 - Test-only: REQ-cli-061 already names the plain-dash Change line and src/gates.rs already writes it, so no requirement or product code changes. The test's guard is shown by failing against a local, uncommitted em-dash edit of src/gates.rs.
 - 0xLeif decided "Scope approval of fix-294": "Approve all three" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, in answer to: Approve the scope for all three A-list fixes: #268 (checkpoint --file/--design skip the write-time leak guard), #274 (feature-bug-loop example: no pipefail), #294 (test-only: the gate summary Change line)?); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-294 as 0xLeif
+- 0xLeif decided "Implementation review of fix-294": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #322 after the tester's PASS); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-294 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -102,3 +99,19 @@ A test asserts the gate summary's Change line separator, with no em dash (REQ-cl
   - holds: accept
   - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4g)
+- 2026-11-18T17:10:30Z · gate-closed · accept → accept · Implementation review of fix-294 ^t-ab2fe8
+  - native_change: fix-294
+  - revision: f7856907b438ac1fb5115227af1f574a644f6be1
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #322 after the tester's PASS
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-294
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T17:10:31Z · advance · accept → done · native:archived ^t-193fcb
+  - native_change: fix-294
+  - gate: native:archived
+  - revision: f7856907b438ac1fb5115227af1f574a644f6be1
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
