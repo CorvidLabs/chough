@@ -5,7 +5,7 @@ aliases: [blocking-bug-session]
 objective: A blocking bug stops only a session it is related to
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-cli-bug-only-open-blocking-blocks
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of a-blocking-bug-stops-only-a-session-it-is-related-to
-    holds: accept
-    drives: review
-    opened: 2026-11-18T00:33:40Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: A blocking bug stops only its session
 summary:
   - A blocking bug stops a session only when that session lists it, its evidence names the session, or they share a criterion, requirement, or case. Other sessions are warned by name. A bug that names nothing stops no session.
@@ -45,6 +41,7 @@ A blocking bug stops only a session it is related to
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of a blocking bug stops only a session it is related to": "i approve" (reply in this chat on 2026-11-18 to the blocking-bug rule); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve a-blocking-bug-stops-only-a-session-it-is-related-to as 0xLeif
+- 0xLeif decided "Implementation review of a-blocking-bug-stops-only-a-session-it-is-related-to": "i approve" (reply in this chat to the implementation review); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change review a-blocking-bug-stops-only-a-session-it-is-related-to as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -101,4 +98,22 @@ A blocking bug stops only a session it is related to
   - revision: 7bb2ffc7a8579bd0d69f47b0040d03d9ea36d8c3
   - holds: accept
   - drives: review
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-18T00:36:39Z · gate-closed · accept → accept · Implementation review of a-blocking-bug-stops-only-a-session-it-is-related-to ^t-064943
+  - native_change: a-blocking-bug-stops-only-a-session-it-is-related-to
+  - revision: becc44ec2bcdeb7dca08df51b11e99900ae55049
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: i approve
+    - where: reply in this chat to the implementation review
+    - recorded_by: grok-t1w
+    - summary_digest: f78ad202476dc469ed9bab80f7d8c76e0885071ef5fb61912783bb03ffaba12c
+    - list: 8f34b6bbd278
+    - native: specsync change review a-blocking-bug-stops-only-a-session-it-is-related-to
+    - actor: 0xLeif
+  - by: grok-t1w (grok, hc t1w)
+- 2026-11-18T00:36:40Z · advance · accept → done · native:archived ^t-78b63e
+  - native_change: a-blocking-bug-stops-only-a-session-it-is-related-to
+  - gate: native:archived
+  - revision: becc44ec2bcdeb7dca08df51b11e99900ae55049
   - by: grok-t1w (grok, hc t1w)
