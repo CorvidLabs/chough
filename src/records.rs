@@ -386,8 +386,15 @@ pub(super) fn read_spec_file(path: &Path) -> Result<String> {
     Ok(std::fs::read_to_string(path)?)
 }
 
-/// Read a structured record within an explicit byte bound.
+/// Read a structured record within an explicit byte bound. A FIFO, device or directory
+/// in a record's place is refused before it is opened, since opening one can block for
+/// ever (#262).
 pub(super) fn read_bounded_record(path: &Path, limit: u64) -> Result<String> {
+    ensure!(
+        fs::metadata(path)?.is_file(),
+        "not a regular file: {}",
+        path.display()
+    );
     let file = File::open(path)?;
     let mut content = String::new();
     file.take(limit + 1).read_to_string(&mut content)?;
