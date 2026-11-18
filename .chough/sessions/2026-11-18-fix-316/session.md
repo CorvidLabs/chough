@@ -5,7 +5,7 @@ aliases: [fix-316]
 objective: "A slug with -sk- is not a model-provider key again, while the distinctive token forms stay refused after a hyphen (REQ-records-006, #316)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -19,13 +19,9 @@ files: []
 observations: [2026-11-18-tc-records-sk-after-a-hyphen-is-not-a-key]
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-316
-    holds: accept
-    drives: review
-    opened: 2026-11-18T15:47:43Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # A slug with -sk- is not a model-provider key again, while the distinctive token forms stay refused after a hyphen (REQ-records-006, #316)
 
@@ -41,6 +37,7 @@ A slug with -sk- is not a model-provider key again, while the distinctive token 
 
 - Leif chose to narrow #303's boundary rather than revert it: sk- goes back to 0.6.0's rule, where a hyphen before the prefix continues a word, and the distinctive forms (GitHub, glpat-, xox*-, AKIA/ASIA) keep the hyphen boundary. No requirement text changes; REQ-records-006 does not fix the byte before a prefix.
 - 0xLeif decided "Scope approval of fix-316": "Narrow it: not for sk-" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, his answer on how to handle the #316 regression, with t4c's instruction to record it as his scope approval for this change); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-316 as 0xLeif
+- 0xLeif decided "Implementation review of fix-316": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, his implementation review of #318 after the tester's PASS and t4c's read of the leaks.rs diff for him); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-316 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -96,4 +93,20 @@ A slug with -sk- is not a model-provider key again, while the distinctive token 
   - revision: 66543c2bf509627ec2a165414acae0bc8ab59c4a
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4g)
+- 2026-11-18T16:00:59Z · gate-closed · accept → accept · Implementation review of fix-316 ^t-adbf61
+  - native_change: fix-316
+  - revision: c91031762b3cf5dcf436d161c68a08e16a6b4bbc
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, his implementation review of #318 after the tester's PASS and t4c's read of the leaks.rs diff for him
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-316
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4g)
+- 2026-11-18T16:01:02Z · advance · accept → done · native:archived ^t-45e47b
+  - native_change: fix-316
+  - gate: native:archived
+  - revision: c91031762b3cf5dcf436d161c68a08e16a6b4bbc
   - by: chough-fixer (claude-opus-5-5, hc t4g)
