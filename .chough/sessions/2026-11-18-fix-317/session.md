@@ -5,7 +5,7 @@ aliases: [fix-317]
 objective: "evidence add, cases run and cases record re-read session.md under the writer lock, so parallel writers lose no update (REQ-cli-040, #317)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -25,13 +25,9 @@ observations:
   - 2026-11-18-tc-cli-bug-add-holds-the-writer-lock-5d0dbd
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-317
-    holds: accept
-    drives: review
-    opened: 2026-11-18T16:27:01Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # evidence add, cases run and cases record re-read session.md under the writer lock, so parallel writers lose no update (REQ-cli-040, #317)
 
@@ -49,6 +45,7 @@ evidence add, cases run and cases record re-read session.md under the writer loc
 - 0xLeif decided "Scope approval of fix-317": "File it, fixer's A list" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18: his choice for #317, given with his scope approval to take the lock before reading, with a failing parallel test first); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-317 as 0xLeif
 - Leif chose 'Recreate the draft' (relayed by hc t4c, 2026-11-18): the first fix-317 draft, approved earlier in this session, was never committed and did not declare src/bugs.rs, so it was removed and recreated with src/bugs.rs declared and the same rationale. bug add and bug update --observation are now in scope under REQ-cli-040, as a commit of their own. The earlier scope-approval entry in this Timeline belongs to the removed draft.
 - 0xLeif decided "Scope approval of fix-317, recreated with bug add and bug update": "Yes, include them" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g, later 'fixer'), 2026-11-18: his answer to including bug add/update --observation (bugs.rs join_active_session, REQ-cli-040) in #317, added to his earlier 'File it, fixer's A list' approval of #317, with his choice 'Recreate the draft'); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-317 as 0xLeif
+- 0xLeif decided "Implementation review of fix-317": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #324 after the tester's PASS alone and on top of #323); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-317 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -126,4 +123,20 @@ evidence add, cases run and cases record re-read session.md under the writer loc
   - revision: caa810e4ef02f64753c2d8ddb1bd0b61a9e2c25d
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T17:03:42Z · gate-closed · accept → accept · Implementation review of fix-317 ^t-f8f7cd
+  - native_change: fix-317
+  - revision: abfa9e58df65d0f1ba0db1738ae1ae9180c5a1c5
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #324 after the tester's PASS alone and on top of #323
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-317
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T17:03:44Z · advance · accept → done · native:archived ^t-0baea1
+  - native_change: fix-317
+  - gate: native:archived
+  - revision: abfa9e58df65d0f1ba0db1738ae1ae9180c5a1c5
   - by: chough-fixer (claude-opus-5-5, hc t4n)
