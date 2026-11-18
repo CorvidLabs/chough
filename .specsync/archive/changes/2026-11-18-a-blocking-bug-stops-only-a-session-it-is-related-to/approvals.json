@@ -65,6 +65,13 @@
         "where": "reply in this chat on 2026-11-18 to the blocking-bug rule",
         "recorded_by": "grok-t1w"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794962182,
+      "digest": "816ace701f0d7c66680afd65258f6d7a7103be04a05632a37f160fd9fd06792f",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
