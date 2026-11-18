@@ -1305,6 +1305,7 @@ type ShelvedFile = (String, Result<(u64, String), &'static str>);
 /// Every file under `dir`, folder-relative and sorted (REQ-history-006).
 fn shelved_files(dir: &Path, relative: &str, out: &mut Vec<ShelvedFile>) -> Result<()> {
     use sha2::{Digest, Sha256};
+    use std::io::Read as _;
     let mut entries: Vec<fs::DirEntry> = fs::read_dir(dir)?.collect::<Result<_, _>>()?;
     entries.sort_by_key(fs::DirEntry::file_name);
     for entry in entries {
@@ -1318,7 +1319,12 @@ fn shelved_files(dir: &Path, relative: &str, out: &mut Vec<ShelvedFile>) -> Resu
         if kind.is_dir() {
             shelved_files(&entry.path(), &path, out)?;
         } else if kind.is_file() {
-            let bytes = fs::read(entry.path()).with_context(|| format!("reading {path}"))?;
+            // Through the non-blocking open: the entry may have changed since it was
+            // listed (#262, review of #305).
+            let mut bytes = vec![];
+            crate::records::open_regular(&entry.path())
+                .and_then(|mut file| Ok(file.read_to_end(&mut bytes)?))
+                .with_context(|| format!("reading {path}"))?;
             let sha256 = format!("{:x}", Sha256::digest(&bytes));
             out.push((path, Ok((bytes.len() as u64, sha256))));
         } else if kind.is_symlink() {
@@ -1349,13 +1355,15 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
         !from.join(SHELVED_NOTE).exists(),
         "{source}/{SHELVED_NOTE} would become {note}, which shelving writes; it never replaces a file, so nothing was moved"
     );
-    // Never open a `session.md` that is not a regular file: a FIFO would block (#262).
+    // Never block on a `session.md` that is not a regular file, such as a FIFO (#262).
+    use std::io::Read as _;
     let session_path = from.join("session.md");
-    let session_bytes = if session_path.is_file() {
-        fs::read(&session_path).unwrap_or_default()
-    } else {
-        vec![]
-    };
+    let mut session_bytes = vec![];
+    if let Ok(mut file) = crate::records::open_regular(&session_path)
+        && file.read_to_end(&mut session_bytes).is_err()
+    {
+        session_bytes.clear();
+    }
     let readable = session_bytes.len() as u64 <= checkpoint::SESSION_LIMIT
         && String::from_utf8(session_bytes.clone())
             .ok()
