@@ -719,12 +719,18 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     if let Some((both, holding)) = found {
         let short = |commit: &str| commit[..commit.len().min(12)].to_string();
         let first = short(holding.last().map(String::as_str).unwrap_or_default());
-        let held = match holding.len() {
-            1 => "it is the only commit that holds it".to_string(),
-            count => format!("{count} commits from it to {} hold it", short(&holding[0])),
+        let (held, those) = match holding.len() {
+            1 => (
+                "it is the only commit that holds it".to_string(),
+                "that commit",
+            ),
+            count => (
+                format!("{count} commits from it to {} hold it", short(&holding[0])),
+                "those commits",
+            ),
         };
         bail!(
-            "refused:corrupt-history: commit {first} in this change's history brought in change `{both}` both open (.specsync/changes/{both}/state.json) and archived (under .specsync/archive/changes/), and {held}; SpecSync reads that as corrupt history, so the archive's terminal evidence would not authenticate and the ship would stop halfway; nothing ran. Rebuild the branch from the default branch without those commits (for example, start a new branch from it and bring over this change's own commits), then run `chough change check {id}` and the ship again. (Chough checks this until SpecSync's own preflight, CorvidLabs/spec-sync#1082, exists.)"
+            "refused:corrupt-history: commit {first} in this change's history brought in change `{both}` both open (.specsync/changes/{both}/state.json) and archived (under .specsync/archive/changes/), and {held}; SpecSync reads that as corrupt history, so the archive's terminal evidence would not authenticate and the ship would stop halfway; nothing ran. Rebuild the branch from the default branch without {those} (for example, start a new branch from it and bring over this change's own commits), then run `chough change check {id}` and the ship again. (Chough checks this until SpecSync's own preflight, CorvidLabs/spec-sync#1082, exists.)"
         );
     }
     Ok(())

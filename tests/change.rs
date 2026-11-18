@@ -1329,6 +1329,7 @@ fn ship_refuses_a_history_with_a_change_both_open_and_archived() {
         "the commit that brought it in is not named: {said}"
     );
     assert!(said.contains("2 commits"), "{said}");
+    assert!(said.contains("without those commits"), "{said}");
     assert!(said.contains("`old`"), "the change is not named: {said}");
     assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
     assert!(native_arguments(&fixture).is_empty(), "a native step ran");
