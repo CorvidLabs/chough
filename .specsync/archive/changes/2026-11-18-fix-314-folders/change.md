@@ -1,6 +1,6 @@
 ---
 id: fix-314-folders
-state: implementing
+state: archived
 type: bug_fix
 base_commit: b2a227e3aa07fed5bf465dca8c70a8c35c4476ca
 ---

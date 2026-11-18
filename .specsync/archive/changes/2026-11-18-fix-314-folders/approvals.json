@@ -41,6 +41,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his choice for his [P3] review thread on #321 ('Exclude metadata directories from recursive cleanup ... Skip is_os_metadata entries before recursing/removing and cover a ._* directory alongside the existing metadata-file regression'), approving a small follow-up change on #321's branch",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795026282,
+      "digest": "d60e8d442d5390db95451e4bb6c41f83b9407083d495385d7ed3519038dc3280",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
