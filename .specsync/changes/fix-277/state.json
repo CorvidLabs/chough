@@ -7,10 +7,11 @@
   "title": "Fix 277",
   "description": "fix 277",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "9dd28de28015ce6f873e237044cc9650e74a3712",
   "created_at": 1795031019,
-  "updated_at": 1795031183,
+  "updated_at": 1795031414,
   "affected_specs": [
     "cli",
     "records"
