@@ -317,6 +317,7 @@ fn both_forms_stay_within_the_cap_with_totals_for_large_records() {
     session["awaiting_human"] = json!(list("Gate"));
     session["blockers"] = json!(list("Blocker"));
     session["observations"] = json!([current_id, "2026-11-10-stale-000"]);
+    session["bugs"] = json!(["BUG-0001", "BUG-0002"]);
     session["next_action"] = json!("n".repeat(4_096));
     session["objective"] = json!("o".repeat(4_000));
     let session_text = write_session(&fixture, &session);
@@ -900,6 +901,8 @@ fn keeps_todays_action_when_something_else_applies() {
     // A blocking bug at test.
     let fixture = archived_at("test");
     fixture.bug_md("BUG-0001", "blocking", "open", &[]);
+    // A blocking bug stops only a session it is related to, so the session lists it.
+    fixture.ok(&["checkpoint", "--bug", "BUG-0001"]);
     let action = fixture.ok(&["next", "--json"])["next_valid_action"]["action"].clone();
     assert!(
         action

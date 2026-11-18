@@ -2202,6 +2202,7 @@ fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchange
         "blocking",
         "2026-01-01-other-1",
     );
+    fixture.ok(&["checkpoint", "--bug", "BUG-0002"]);
     let error = fixture.fails(&["stage", "advance"]);
     assert!(error.contains("refused:blocking-bugs"), "{error}");
     assert!(!error.contains("refused:unlinked-failure"), "{error}");
