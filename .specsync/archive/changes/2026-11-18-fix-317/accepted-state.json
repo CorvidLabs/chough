@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-317",
+  "slug": "fix-317",
+  "title": "Fix 317",
+  "description": "fix 317",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "66543c2bf509627ec2a165414acae0bc8ab59c4a",
+  "created_at": 1795019048,
+  "updated_at": 1795021393,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "src/bugs.rs",
+    "tests/evidence.rs",
+    ".chough/cases/cli.evidence-writers-lock.cases.toml",
+    "changelog.d/2026-11-18-fix-317.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-cli-040 already requires evidence add, cases record, bug add and bug update to hold the writer lock while they read what they change, and a command that first runs a case to re-read under the lock for its save; only the evidence save, the bug commands' session save and their tests change.",
+  "acceptance_criteria": [
+    "evidence add, cases run and cases record take the project's writer lock before they read session.md to add their observation reference, and save under it, so an update another writer saves while one of them waits is kept: with the lock held while evidence add waits and the checkpoint's next action changed meanwhile, the change survives the save. bug add and bug update with --observation do the same when they add the bug to the active session, so an update saved while bug add waits survives too. Ten checkpoint --decision and ten evidence add commands run in parallel keep all ten decisions and all ten observation references. cases run still runs its case without holding the lock."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). The writer lock must not be held while cases run runs its case, since a writer that waits 30 seconds refuses (REQ-cli-040). No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}
