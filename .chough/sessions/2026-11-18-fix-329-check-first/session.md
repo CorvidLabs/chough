@@ -5,7 +5,7 @@ aliases: [fix-329-check-first]
 objective: bug add checks that the active session can take another bug link before writing the bug, and refuses with nothing written (#343 review P2)
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -21,9 +21,13 @@ observations:
   - 2026-11-18-tc-cli-bug-add-joins-the-active-session-6ae083
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-329-check-first
+    holds: accept
+    drives: review
+    opened: 2026-11-18T23:21:05Z
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # bug add checks that the active session can take another bug link before writing the bug, and refuses with nothing written (#343 review P2)
 
@@ -76,4 +80,20 @@ bug add checks that the active session can take another bug link before writing 
   - native_change: fix-329-check-first
   - gate: native:approved
   - revision: 2e371c8855e4ea8ca965634b59c56c26b0329d06
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:20:54Z · advance · build → test · native:verifying ^t-d362a5
+  - native_change: fix-329-check-first
+  - gate: native:verifying
+  - revision: 5bf4ac67509f06b528373db43a61be9137bcf711
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:20:56Z · advance · test → accept · native:verifying ^t-d92e2d
+  - native_change: fix-329-check-first
+  - gate: native:verifying
+  - revision: 5bf4ac67509f06b528373db43a61be9137bcf711
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T23:21:05Z · gate-opened · accept → accept · Implementation review of fix-329-check-first ^t-ebb0c1
+  - native_change: fix-329-check-first
+  - revision: 5bf4ac67509f06b528373db43a61be9137bcf711
+  - holds: accept
+  - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4n)
