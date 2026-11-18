@@ -851,7 +851,7 @@ native read, and never records a human decision, approval, review or consent.
 | Kind | What it finds | Fix |
 |---|---|---|
 | `unmigrated` | 0.5.x records, such as `.chough/session.json` (REQ-records-010); the finding lists up to 20 of their `paths` and the `total` | Names `chough migrate`; doctor never migrates. The session findings below wait until the tree is migrated |
-| `leak` | A file Git tracks under `.chough/` or the knowledge directory that matches the leak patterns of REQ-records-006, one finding per `line` and `match` (the kind), never the text | `chough doctor --fix --redact` replaces each match with `<redacted:<kind>>` in place; `--fix` alone skips it. Not a decision |
+| `leak` | A file Git tracks under `.chough/` or the knowledge directory that matches the leak patterns of REQ-records-006, one finding per `line` and `match` (the kind), never the text | `chough doctor --fix --redact` replaces each match with `<redacted:<kind>>` in place; `--fix` alone skips it. Not a decision. An ID is never rewritten, since a redacted ID no longer reads (#320): a match on a front matter line that gives a record's `id`, its aliases or an ID it references keeps its line byte for byte, its finding stays `skipped` and names the recovery, `chough session shelve <id>` for a session record and a reviewed hand edit otherwise, while the record's other matches are still redacted. A session's `modules` and a bug's `regression_baseline` are ID lines too. A Markdown link in a record's body to a file whose name holds a match is redacted with the rest of the body, so that link no longer resolves; the record still reads, and the file keeps its name. A save refused for such an ID names the same recovery |
 | `stale_pointer` | The active pointer names a missing or archived session | Remove the pointer |
 | `finished_session` | An open session at done, or with its native change archived on HEAD | Archive it into its story; one with unfolded inbox entries is skipped, naming `chough inbox fold` |
 | `unfinished_archive` | A session folder whose story exists and that still holds files | Remove each file whose bytes are committed at HEAD; otherwise skipped, naming the commit to make |
@@ -998,6 +998,8 @@ any refusal the apply would give now, then the plan digest and the apply command
 - `sources`: each 0.5.x file with its SHA-256;
 - `becomes`: each 0.5.x file with the 0.6.0 files it becomes;
 - `writes`: each 0.6.0 file it would write;
+- `receipt`: the receipt the apply writes, named when the plan is built and so part of
+  its digest;
 - `redactions`: every value it would redact, by file, field and kind;
 - `removed`: every file it would remove without carrying it, with why;
 - `kept`: each open bug's fixture under `.chough/artifacts/`, kept byte for byte, with
@@ -1033,10 +1035,14 @@ another record. Before writing anything, `--apply` refuses:
 | `refused:change-open` | A native change in the project is not archived, named; the upgrade never runs while a change is open |
 | `refused:no-consent` | Neither `--consent` nor a standing `migration` preference gives the human's consent |
 | `refused:uncommitted` | A 0.5.x file it would remove differs from its bytes at HEAD or is untracked, named, so Git holds every byte it removes |
-| `refused:target-exists` | A file it would write already exists with other bytes |
+| `refused:target-exists` | A file it would write, the receipt included, already exists with other bytes; every target is checked before any is written |
 
 It then writes the 0.6.0 tree by create-new only, reads each file back and compares
-its digest, and writes the receipt `.chough/archive/migrations/<date>-from-0-5.md`:
+its digest, and writes the receipt the plan names as `receipt`,
+`.chough/archive/migrations/<date>-from-0-5.md`. A second migration on the same day,
+for a 0.5.x record written into an already migrated tree, names
+`<date>-from-0-5-2.md` (then `-3`, and so on), keeps the first receipt as it is, and
+its name is part of the plan's digest. The receipt lists
 every file before and after with its path, size and SHA-256, the redactions by file,
 field and kind, every removed file with why and the commit that holds it, and the
 old-to-new ID map, with `none` under any section that has nothing to list. Every

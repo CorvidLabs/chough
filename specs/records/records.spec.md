@@ -1,6 +1,6 @@
 ---
 module: records
-version: 11
+version: 12
 status: active
 files:
   - src/markdown.rs
@@ -205,6 +205,10 @@ use this one for every record they write.
 | Version | Date | Changes |
 |---------|------|---------|
 | 1 | 2026-11-11 | Created by the Chough 0.6.0 change (human-first records): the record layer, names and the leak guard; `src/identity.rs` and `tests/ids.rs` move here from cli |
+| 10 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
+| 10 | 2026-11-18 | fix-314: Fix 314 |
+| 11 | 2026-11-18 | fix-264: Fix 264 |
+| 12 | 2026-11-18 | fix-269: Fix 269 |
 | 2 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
 | 3 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
 | 4 | 2026-11-13 | 0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak: 0.6.1: the leak check does not read an ordinary word equal to a short host name as a host-name leak |
@@ -213,6 +217,3 @@ use this one for every record they write.
 | 7 | 2026-11-14 | the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275: The leak check flags an scp-style host path as the host name and the path it carries (#275) |
 | 8 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
 | 9 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
-| 10 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
-| 10 | 2026-11-18 | fix-314: Fix 314 |
-| 11 | 2026-11-18 | fix-269: Fix 269 |
