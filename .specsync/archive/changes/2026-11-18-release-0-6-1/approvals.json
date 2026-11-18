@@ -1,0 +1,110 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795020978,
+      "digest": "a299e355b35c9929e9513c032d92d54437dcdef132f6b6feca473916dceb3b16",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of release-0-6-1\": \"Approve\" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him: 'Chough 0.6.1 release prep (change release-0-6-1): set the version to 0.6.1, build CHANGELOG.md from the merged changes only, rebuild the knowledge index, and run the release dry runs. No code changes, no tag, no publish. Approve the scope?'; given to fable-t4b as the answer to the same question in Claude Code). Relayed and recorded by fable-t4b at 2026-11-18T16:56:14Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "release-0-6-1",
+        "title": "Release 0 6 1",
+        "description": "release 0 6 1",
+        "kind": "operations",
+        "affected_specs": [],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "Cargo.toml",
+          "changelog.d/",
+          "knowledge/"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A patch release changes no requirement text: the crate version becomes 0.6.1, the changelog fragments of merged changes are assembled into CHANGELOG.md, and the generated knowledge index is rebuilt.",
+        "acceptance_criteria": [
+          "Cargo.toml and Cargo.lock say 0.6.1; CHANGELOG.md has a 0.6.1 section holding every fragment of a change merged to main and changelog.d holds none of them; fledge run release-check passes; cargo publish --dry-run --locked succeeds. Nothing is tagged or published."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve",
+        "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him: 'Chough 0.6.1 release prep (change release-0-6-1): set the version to 0.6.1, build CHANGELOG.md from the merged changes only, rebuild the knowledge index, and run the release dry runs. No code changes, no tag, no publish. Approve the scope?'; given to fable-t4b as the answer to the same question in Claude Code",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795022307,
+      "digest": "a4bbb17ea33731e74250d13fe75794f7b75e5ed442656775af64fde829bb9202",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of release-0-6-1, widened (native approval)\": \"Widen the release change\" (Relayed by Leif's planning session (hc t4c) on 2026-11-18; the same answer as the gate closed just before, which was opened at build and so drove no native approval). Relayed and recorded by fable-t4b at 2026-11-18T17:18:27Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "release-0-6-1",
+        "title": "Release 0 6 1",
+        "description": "release 0 6 1",
+        "kind": "operations",
+        "affected_specs": [],
+        "affected_paths": [
+          "CHANGELOG.md",
+          "Cargo.lock",
+          "Cargo.toml",
+          "changelog.d/",
+          "knowledge/",
+          "tests/changelog.rs",
+          "tests/fixtures/changelog/"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "A patch release changes no requirement text: the crate version becomes 0.6.1, the changelog fragments of merged changes are assembled into CHANGELOG.md, and the generated knowledge index is rebuilt.",
+        "acceptance_criteria": [
+          "Cargo.toml and Cargo.lock say 0.6.1; CHANGELOG.md has a 0.6.1 section holding every fragment of a change merged to main and changelog.d holds none of them; fledge run release-check passes; cargo publish --dry-run --locked succeeds; the two changelog tests that read live fragments pass with changelog.d empty, from fixture copies and the released section. Nothing is tagged or published."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Widen the release change",
+        "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18; the same answer as the gate closed just before, which was opened at build and so drove no native approval",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795023181,
+      "digest": "2d02e2084b91692a9e5d5c31326cd82468c731de08c6fb77444cd6db29aa564b",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "release-0-6-1",
+      "actor": "0xLeif",
+      "reason": "Two tests in tests/changelog.rs read the live fragments in changelog.d and fail once the release change log is assembled; the scope gains tests/changelog.rs and fixture copies. Leif chose 'Widen the release change', relayed by his planning session (hc t4c) on 2026-11-18, allowing fable-t4b to run this send-back once.",
+      "timestamp": 1795022267,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true
+    }
+  ]
+}

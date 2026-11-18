@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "release-0-6-1",
+  "slug": "release-0-6-1",
+  "title": "Release 0 6 1",
+  "description": "release 0 6 1",
+  "kind": "operations",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "975af07cc89912f9ea02d27c81fe87f046685eaa",
+  "created_at": 1795020839,
+  "updated_at": 1795023183,
+  "affected_specs": [],
+  "affected_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "CHANGELOG.md",
+    "changelog.d/",
+    "knowledge/",
+    "tests/changelog.rs",
+    "tests/fixtures/changelog/"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "A patch release changes no requirement text: the crate version becomes 0.6.1, the changelog fragments of merged changes are assembled into CHANGELOG.md, and the generated knowledge index is rebuilt.",
+  "acceptance_criteria": [
+    "Cargo.toml and Cargo.lock say 0.6.1; CHANGELOG.md has a 0.6.1 section holding every fragment of a change merged to main and changelog.d holds none of them; fledge run release-check passes; cargo publish --dry-run --locked succeeds; the two changelog tests that read live fragments pass with changelog.d empty, from fixture copies and the released section. Nothing is tagged or published."
+  ],
+  "selected_artifacts": [
+    "context",
+    "plan",
+    "testing",
+    "design",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

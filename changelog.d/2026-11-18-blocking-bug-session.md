@@ -1,1 +1,0 @@
-A blocking bug stops only a session that lists it, holds its evidence, or shares a criterion, requirement, or case. Other sessions are warned by name, and a blocking bug that names nothing stops no session.

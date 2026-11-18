@@ -1,0 +1,1513 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1795021856,
+      "commit": "d8e5ad7b2fb1bef32cc7831bf9fba99d6983137a",
+      "contract_digest": "a299e355b35c9929e9513c032d92d54437dcdef132f6b6feca473916dceb3b16",
+      "execution_digest": "1eabe2e998a1c2ffff2f4026e98d50ce28b75090f4c2bc0f0a5c3fe9407ab6d8",
+      "workspace_digest": "afcd6225503229a1eaeef72dd2c99d066868e4f32b16e2f6752b55feab85f182",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795021858,
+      "commit": "1c28423996167f43bb48b000bae76d8ac6e4ad44",
+      "contract_digest": "a299e355b35c9929e9513c032d92d54437dcdef132f6b6feca473916dceb3b16",
+      "execution_digest": "1eabe2e998a1c2ffff2f4026e98d50ce28b75090f4c2bc0f0a5c3fe9407ab6d8",
+      "workspace_digest": "afcd6225503229a1eaeef72dd2c99d066868e4f32b16e2f6752b55feab85f182",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795022391,
+      "commit": "802f13e4f4e97e9b3d75e4e7efdcd2e51955b240",
+      "contract_digest": "a4bbb17ea33731e74250d13fe75794f7b75e5ed442656775af64fde829bb9202",
+      "execution_digest": "37784b59feaf06078bb53c2e7a1049071c61dcb159d5ee465c2de8c60420bcce",
+      "workspace_digest": "d68341697e30666976b2ccc4b6f17b5d02706f3414c5a5f56b29e9fab6bd8dd9",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795022393,
+      "commit": "9c23d69dc80230163d4ef09c3e5fc9f0499bf32f",
+      "contract_digest": "a4bbb17ea33731e74250d13fe75794f7b75e5ed442656775af64fde829bb9202",
+      "execution_digest": "37784b59feaf06078bb53c2e7a1049071c61dcb159d5ee465c2de8c60420bcce",
+      "workspace_digest": "d68341697e30666976b2ccc4b6f17b5d02706f3414c5a5f56b29e9fab6bd8dd9",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795023067,
+      "commit": "b2a0bde4dd6d90e8376bd1e423955893be01be20",
+      "contract_digest": "a4bbb17ea33731e74250d13fe75794f7b75e5ed442656775af64fde829bb9202",
+      "execution_digest": "37784b59feaf06078bb53c2e7a1049071c61dcb159d5ee465c2de8c60420bcce",
+      "workspace_digest": "d68341697e30666976b2ccc4b6f17b5d02706f3414c5a5f56b29e9fab6bd8dd9",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795023069,
+      "commit": "279f15b5b8f77d8b4ac57836f9ea76fc9359e18b",
+      "contract_digest": "a4bbb17ea33731e74250d13fe75794f7b75e5ed442656775af64fde829bb9202",
+      "execution_digest": "37784b59feaf06078bb53c2e7a1049071c61dcb159d5ee465c2de8c60420bcce",
+      "workspace_digest": "d68341697e30666976b2ccc4b6f17b5d02706f3414c5a5f56b29e9fab6bd8dd9",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    },
+    {
+      "timestamp": 1795023069,
+      "commit": "81f03326619f3859f1eefd79416cbd5505c15f33",
+      "contract_digest": "a4bbb17ea33731e74250d13fe75794f7b75e5ed442656775af64fde829bb9202",
+      "execution_digest": "37784b59feaf06078bb53c2e7a1049071c61dcb159d5ee465c2de8c60420bcce",
+      "workspace_digest": "d68341697e30666976b2ccc4b6f17b5d02706f3414c5a5f56b29e9fab6bd8dd9",
+      "acceptance_input_digest": "61340836ecdc649e64360ba42cf50aec5646c6b3856e5fa8078b9f884a91d62b",
+      "acceptance_manifest": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "path": "CHANGELOG.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7edaafe4b5d667f7b3e083f78571a3d9b6821bfcb6ce8fe6a598b61f24756012",
+            "entry_digest": "1d606305986e24f32ffd9a45425d95e66082ff894d06fbf26f0b297bca5b813f",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "Cargo.lock",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d054022a093c1e9a689cc0647a7eee1021cefcac0fbabbc0576c46ab309835f2",
+            "entry_digest": "eff19a2cf574d436038181dab1f48de7cbd8dea1de4f58674369495208c840bb",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "Cargo.toml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5f28d422a6f1b0bcbb8dc158946e244531b86b7515d52adfdbe96ad4d59d4813",
+            "entry_digest": "f24ea95d4006bef589c0eb9780778d8387ab6691ba65b6bb6f41036ce8f70a01",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/index.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "90469327fbeb0d07027aff22dc378def15fab58e50725a0cab491d5a1837624a",
+            "entry_digest": "6ffeeb9f7f9166d44849794368d53d26f119151ce1b9d44a920d223312e020e4",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-adopting-event-history-and-per-change-sessions-in-chough-s-own.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b99e5523ecf0c9e17c5e6392ff6b9e9a17b426f23a4f310c88d6ab08c155b5c0",
+            "entry_digest": "e880c59452dd3bb1c2633721ca28dd95667027cb539221f414c458d0f24898b7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-bound-the-knowledge-index-and-move-the-full-list-to-a-monthly.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "dc54bba260b36ea16ada3491e51b8c0589845c8fc57bab0cb07a59868762e38e",
+            "entry_digest": "311edec417871edecf38fe26604c98f9e6e5dc166a6bfce141c6b8340c14045b",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-done-clears-file-and-design-refs-archived-sessions-protect.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b558b926b92af6e30c9909e4c54c4e20dc62f257b5f2898a902675b3fa03bea5",
+            "entry_digest": "3dd8cebcebb93012906ad689c715679fda057b2fa276ae5383349f802e4f9b8c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-keep-another-writer-s-vault-copies-when-a-refused-trim-rolls.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9b3a809ce068bf0aad75be9caffbd059af971aa4d4ce7f368526969f61b958ec",
+            "entry_digest": "1581177ccdcc0a7a182b167f5215ac75e5b906938df8db6f226b0b3cbe8b6ed4",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-lessons-from-the-109-and-111-fixes-kept-for-cli-and-history.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "65b884b19574fc1a06a2020c9e2e277a9b80659c702c614d7202c498877fa3d3",
+            "entry_digest": "5a061802813c9ba18fed67fee523b25e18268f96a95cb04c3c8d54a329eb18c3",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-move-the-pinned-specsync-toolchain-to-6-2-0-114.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c31f3bf0aa34549eb5792a703231cf1b49f41b22959a31b3cd591f48218001d1",
+            "entry_digest": "e886aa46196a9ce5bd8310d90aac71d5a158eea88bf994eedc66a92d8b5fa644",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-no-conflicting-files-per-change-cases-index-check-bug-merge.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "defd259dfce768bcc409cc6661bdad198e51c9b4061d171fb46c04875108c61e",
+            "entry_digest": "ba95234209152521caffa69e42d6fa067991057307f17fd0a3ad9e11fab41cc0",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-prepare-the-chough-0-4-0-release.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0a15f00225ccbfe5140b0e8235d11f3a038676bd2912867d14d45f14489b935c",
+            "entry_digest": "9304d2e02e867828dd30b82d5cff27155e935f9464989319a81c820dc8ca131f",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-roadmap-marks-chough-0-4-0-as-published.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7fa5d8a46f91ccfcb6a0347baade3190056b88106c4c6f9ed83a33bc79f146dd",
+            "entry_digest": "0012a2da9659b65261d7473bde0f809ac93751b68d47b47dc88938713838b223",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-split-the-archive-history-walk-across-the-ci-shards-105.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "37ec8d0596b98714c17e6b4351504590e8874229dac22b7befd81d64b0b4654e",
+            "entry_digest": "113e26fe69b07f1ed3376ef4fc94ffdc4840dc740f1e3a3e56edde2689e4f6e3",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-stage-vault-copies-privately-so-a-failed-copy-deletes-nothing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f7bbbe060dc999f01f9f2c13d654b814b21dcad575bcec872d4524804cf11819",
+            "entry_digest": "7200ffdd3bde9620e71f3b0cd0dc88a55a2b7bf17b59b37e6f4ea74a9a4dcda1",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-05-union-merge-only-the-generated-knowledge-notes-112-review.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1eb214a3054fad190211308aad10431d0eb9cfa8d9cc3723d010e722011e4c16",
+            "entry_digest": "8f50d53bfbfad4641fad70434c7a96a0a75c7e056e1e6bba91fdacb85c0b37d7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-a-session-archives-itself-when-it-moves-into-done-155.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4b8731ca0b84b7dfae21e084b06905b9bf773fbad3c3e8954ddfb636adbb8622",
+            "entry_digest": "79b334757ad57246089b9e2c19069d8bb8fecd61569f82affa1076e59ca3f266",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-a-single-librarian-default-in-the-requirements-124.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4a6d157fd78811f910228e3a65f115416da9720b746e5b6b6bac5e6ee36fb09c",
+            "entry_digest": "c001f43e720aa737472140cd84704352977693457a20a86e91513e4bd7815506",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-advance-several-stages-on-one-native-read-with-stage-advance.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "77370900f8f75a7d199247338238432a04382928e960d34518600dae2ea37d53",
+            "entry_digest": "5dd9da4c2cbf4bf1e2d406587b9b06d4b480e8e0b55b5fa1b7d649b9bc230677",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-an-empty-change-directory-is-not-an-open-change-148.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "108724e1a031c5e62d07a93b1e6f0ae71025442cee31c795b2c355fe40f6e32a",
+            "entry_digest": "d1965b05361e6e40dffdda910c1d9fa0160c600f506b276afead2bbc81d6d5ff",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-archived-change-means-a-finished-session-abandoned-work-needs.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "29b20ff7c889cedc2af557dbf508ff4488bda98a40775aac17390eb5da9fc533",
+            "entry_digest": "9f1e885ff31987f3a2964d3af09a6c972ff47ad87ec4b2d984199805bf15a152",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-assert-the-eight-reader-ceiling-for-archive-validity-reads-137.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "bf980f20eacf71d66b8e9d71227d3611a0fd001051a526230ad123ca52ab783d",
+            "entry_digest": "8b2bb2a54320f243a7da3f3d2a46aecec28d9b65c208b13c8893d5307c4afe4a",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-changelog-file-the-77-sessions-entry-and-111-fix-under-0-4-0.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8dee241e049263cfa31d02fdff96dd8faadbb7240bb518f81846c74bd0571968",
+            "entry_digest": "93c273d5ec548a78ca07a1efde6b3dfe5db1fac55bce3f5f1bf8e1dcd6f578b9",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-chough-doctor-clear-the-debt-that-blocks-a-fresh-worktree.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b7c00a7955efc00b46f5a9a8cb48e474cbc10e3c7f76991142c7342b88fb3f3f",
+            "entry_digest": "f846677ea94c18938ed0ebf0c4acb64921ad5d944fd628f1c600358ad97b588f",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-evidence-for-a-project-in-a-git-subdirectory-170.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "46a81351601f41280f6d5f346401d415d35197a6533eabb00b7147fedf2f05ab",
+            "entry_digest": "72930ddd9b83f0bbfcbb2b22bb0131aa2fdc11faa37b6cc1022b44150fb757ce",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-fast-warm-next-and-status-in-archive-heavy-repos-32.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e01f87c81d24e707270e7ab59bffb2f954e257aaaa7ddc2d284ecfb7fb2111bd",
+            "entry_digest": "1d218dac14b9c8eea8379e111e42412596d3aa72b79308f5d7704d8d291083aa",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-install-test-scripts-as-fresh-files-so-they-never-go-busy-132.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9a87e3df43a94a4c65fa016c3d1f65eb8f2fc6bbf4363602b88e773692b272fa",
+            "entry_digest": "55137b09b79e2b4bef773bbe2a7624fc9801123ea4c8ee0ca7c51621895caa09",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-keep-five-archived-sessions-roll-older-ones-into-the-vault.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "97394a1dfc8c3208b586e6af54d50423c89536b471b9f3e7bb6be537e0b26155",
+            "entry_digest": "42145fad7426bef3d33af14cb36451cce33b230bcdeec1f05242a0a6fa4f9f4d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-keep-the-legacy-anchor-s-session-out-of-the-history-roll-up.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ae8f1d6885467c5d3fd51a12b010267cb9e3b573eb7965f46ffc13a3e5afd10d",
+            "entry_digest": "a2882e32e65c5595b7d723b927133ddabcf9271f1327c6d267023260c18ae78d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-let-generated-bug-notes-merge-by-union-128.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "da4f3f1ab896577ffcb5a53ab3fa30e2994452156cba3265ea65e8cc66d08e91",
+            "entry_digest": "9e28f58294b7c6435eb55ea8b2b728e5b40f1351afb2ca5ba7509c4cd9793384",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-make-the-readme-docs-skill-and-diagrams-match-main-flow-18.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "cec4613bd25ba7ed66aa25ad902129080064731aa380eb173366cafdddea9a87",
+            "entry_digest": "2e33246c4185e25b8dd9a480cce849f47eb4f2229887ad944705aef63d77f73c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-move-a-closed-bug-s-key-proof-into-the-vault-know-22.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8779844ad33fc09f507ad8c88a9a3692e52abc7ffc4fd210fda97af51ffb9e4e",
+            "entry_digest": "93aba4cd8d38a3975f9702bd39b47f154f3b1478f6f8cc386a40c8de2279de10",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-name-bug-merge-in-the-cli-reference-checked-against-help-173.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a4d4581995558a7f1ed3c5d2016bcdc8dd0a72aaf9d27566a08cd0babf97380b",
+            "entry_digest": "275b21c6d110f81d0dae5d7c4ca1d876b33ab472c080d077720822059538aa82",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-native-check-note-clears-only-for-safe-verifying-readiness-126.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2f456d2ad544d4d31f706d262f26ef1499fc800f457b4007ede034e73ba09416",
+            "entry_digest": "87cb77c9b0f5c643d8953adc6d327c238de1979e4f65bf95426f4580e069f31c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-one-command-to-rebuild-the-linux-test-environment-177.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4e06c89bdd9df6a8b8ed4734a976432918cb880f7f3e8d2c247470f0ddcc5062",
+            "entry_digest": "b5e4c3e5ef26713a49064778a91c7bbfb50b1b80a22c44d93168cb322c7b7ac7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-per-fixture-stall-tokens-keep-concurrent-test-runs-apart-144.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "061c948e86cd66dd730de2c1bb979dee51f11b465535a409c951de826ecdf99f",
+            "entry_digest": "9a4e91873da816b564756a6884d5801cda0c2053dcb64ee83d4c2131d1263d77",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-pin-every-history-and-inbox-bound-at-its-exact-value-154.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c2b4858928ebe205833ca71b00d948c8d69b5c115afb925f1d72cd90ad79667b",
+            "entry_digest": "7aaea1ea112d28e9a2b706e4dde32b628ac50dc9ec5e5a4a386b45763539addb",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-read-crlf-requirements-in-the-librarian-default-test-131.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "293230f6e28c1e726d8acc53ca263407c3e3fa59abd4f0dac2720d15e54ffc75",
+            "entry_digest": "d3186e834a1d782d62e63ab733773c75d0b14d7a354fd66561fe3161a14f673b",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-real-assertions-for-nine-criteria-that-had-none-138.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "244b715fb43db8fa109d5a823a6f5fe078ee001fb267a97d1108cc6258053546",
+            "entry_digest": "3d35218fe4045625be7fb12ae494c4053874e06f6233dae074edc3cb8c243885",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-record-relayed-human-decisions-as-claims-not-authentication.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8c771104b68a812e91016fdcb36b169bf12470d5f00afad081e93e7779541e5b",
+            "entry_digest": "cd12e4190de50207953f54e20deb8964b432050b5ab5db9d3185cf199817d5e7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-restore-a-test-brace-lost-merging-main-into-the-know-22-branch.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e9fc20ab02c05d285cbc08aba423bf6769115f06cc333e0266e612a02dacf409",
+            "entry_digest": "98611d5d18ab4593ac52401d81f7403d8be22139783108875b99572919b07219",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-rotate-the-retention-ledger-to-its-newest-100-entries-know-23.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ab7102b9f29595f17ab3a51753bbe037358a06a823238a01d5ddb49272b99b4e",
+            "entry_digest": "f2beb8e40d7f27f742b3a742707b0164376725b224aa9a83961a8afd98b4d3da",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-run-specsync-change-steps-through-chough-171.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2dfdbb99c96b11b077350a69f89f2e8fddb30b8666f2aa5877c3f4caf0915f2a",
+            "entry_digest": "4db8fc1d593b46645318c5647adfa383b5afb24fca06e61161f5b77f2fd86828",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-sessions-still-write-after-the-anchor-holder-is-rolled-up-141.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "97a7dd3adb07991e4459d545e8a5f158fce64f13b6fd02d4a5a15f1c0f9aa8ef",
+            "entry_digest": "6896f689723c36e221b2232f7258b42f71965cae4fbdfed66b27b1cbd706c607",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-size-ledger-shards-by-the-16-mib-ledger-bound-127.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a957cbf18e8ff63c49c3966f057ac72930c12fe3f2db4a59b5bb854b1cb0f0f8",
+            "entry_digest": "acc1e0e09be4fa4a5a117982945d7ad597e3c7f84209f10e9c5e00ec4152aaf2",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-size-the-checkpoint-from-measured-use-a-1-mib-cap-125.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3d7340e8f30e27c5bfb425a8d79bfe59322ac41f845ac9e7dc9ab2bc2ea0186e",
+            "entry_digest": "4e4cb52da9caae2a8a7688e2007e81efd5d841bdaec251d2a4cf8ad88b5ba8ad",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-support-macos-and-linux-with-windows-through-wsl-flow-17.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d7ac65f2b2ce8ea247e0de014c2ad39159e93adcc7ff1336db97e63ae47189b2",
+            "entry_digest": "cb8ba90d348af4770e749e7006d3ce93c6f313cbed5d06c61f2ac628e99010a7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-teach-the-archive-first-closeout-order-122.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b09cee7b06229a99360dbfc8b24c359243ae788b22171139c8372249a91d7fd9",
+            "entry_digest": "7bd90c58d4f33c9acbafce67000d3f98b5457590b28df85de8aed2b3a5e8a1a5",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-test-bug-classification-deduplication-and-reports-153.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "807659ac6f66266335f6e25751216f385e01f090484fc408dc093445abd77f50",
+            "entry_digest": "c60b1e1b1c844cd2c475f848edc6d20486d3b249c390067abd1d579c3879e31c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-tests-that-a-dry-run-never-stands-in-for-a-delivery-152.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "376ac1caf724c09177f427ad41690c5baa332c46c38231dee90e0bea7849ad7e",
+            "entry_digest": "9a6c7badd3a2ab1bf5aebc13a38a8d98435cc58edba7df3cc72dd19fed727742",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-timing-trace-test-fails-only-when-tracing-changes-the-report.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "673cd77142128f185746c66cb1b6c0da996e36536f0590bf2e2ec1e106c7b340",
+            "entry_digest": "b9abb9e0efe77ec6d57bb9d0ae5903de625f70ef0afe5cff90b66484ff8593cc",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-06-workflow-skill-names-stage-advance-to-in-its-transition-table.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "60dd880443a95f1a8b8c08ba6da20b731f035fc4a724a4e54b21e31ea5cf6e87",
+            "entry_digest": "acf5f752e78d960b724953172f52249d8c3c574d7bd1d7ffe466dbc16bdc9a48",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-add-chough-change-ship-closing-the-review-gate-after-ship-179.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e473338d8a5831676ba3f1e2bd2a0f921e36eb8c3528e6538a26d59217d4a0df",
+            "entry_digest": "2b506126524e217475a718c88ebfcc02cefaed27b7ced871554b426db0ad9422",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-add-chough-gate-list-one-screen-gate-summaries-with-digests.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ed3a09e973928793644576f4a0a84d873d9d6c10c6f1a5d84eecdea04250cbd3",
+            "entry_digest": "93f081ed43d8396ebff39aa9bb84e76b9834ca8bbe7ffd17bedbea16ea6e2347",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-chough-timing-skips-direct-writes-without-a-partial-report-189.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3adc05416dc6a9a15034a9949c191a27bbca4058f00f9caf5878c31f3ec0acf5",
+            "entry_digest": "dc9556361de66d30be8533d35e82b94797c8d2280f40b00c1bc77cbf5b7fa52c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-evidence-prune-fails-closed-and-restores-partial-removals-65.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2ae6dd679e2b5a72b9d72825e90d8a058415de06a00468600485a613a726610a",
+            "entry_digest": "74659a71a5cfba4cf2bea1848b65479a83b1b48db43d2f072626bb9931921d31",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-fix-pr-197-s-prune-capture-and-rollback-defects-issue-65.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "cb4d3a7c13ed12f4ddb91f0607ad5153f0d95cad9b200999a93ed94879afcfb2",
+            "entry_digest": "9d0fb1d92563cd094e610268a2a325ee35dec16eef7f2edc66a37333faa140c0",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-history-flags-direct-specsync-lifecycle-writes-183.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9219b3e11dd115901f4d37afcdac88ae1264bd6182a63d2a9518e734ff47e7da",
+            "entry_digest": "6b1520adb436ec5866c140e2cecbc608c1af0aa3a38e542f783cea06e6e0dca7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-library-index-check-passes-right-after-the-move-into-done-191.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "811c42cf3c2ec28f05f3e0c1498a7f3bf707fd60dbc8c0b8eae3d7c383604dde",
+            "entry_digest": "ff538727d4d6f84a79c63ed97141e968d2a9df224b50634c9948d43836d9a1f4",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-prepare-the-chough-0-5-0-release.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "db47af317da18d1e039f589f5fc349e3f737c30a400363526842730d4b89896f",
+            "entry_digest": "882e5983e69859fb41c758c53c1060248922bc5ad998ad00005fe9cfba510037",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-prototype-template-keeps-hidden-state-panels-hidden-58.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "71a0c01717869bb0bde573ec5d16b8f727871ba9affc2aa9a63a152db68510dc",
+            "entry_digest": "2bda94d6ea5f3395c5415ec15b6fbfeb66fa587dd1c33ab096e19515f9a16558",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-roadmap-marks-chough-0-5-0-as-published.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "482ba4317b8c363db406af9c892562efde5fcde0e771ee6853bdf370e1890329",
+            "entry_digest": "94a756c2b05e790a371f7dd84613be4c2b823ec3965b1d0fd8baf0b44043add5",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-07-zombie-aware-native-process-test-probes-187-132.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "67a6954473b8e1ac668e98949ef3e18b7c18009b7c2da97a6e3aacbb396be836",
+            "entry_digest": "6e642136d96e44c44d27975030a2f9fa441713912ce3e42878b5e7b165da6940",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-08-document-what-chough-automates-and-what-the-human-decides.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "43683dd6a46f4469848239e234e6a0bddcdd7d8b8f4f791979066fcaee634986",
+            "entry_digest": "763c34c50935559f0524674617c95fa202571154dd56f552862d633b7011bd16",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-09-read-diagnostic-input-inventories-without-touching-freshness.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "42144b587bcf86752d9d3934c64bf39cb65ae62511d4a023cd8a841521ff3e5a",
+            "entry_digest": "863504df1c2f79241cc28a5285c20a677cc3c3c39a3f55cfed73f476570d2b6f",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-09-recognize-pristine-skill-files-from-released-bundles-102.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9127402d0f0b3b4e4baac72f314bc1f603cbd2f4e26e21fdc647a6a2509f36ca",
+            "entry_digest": "2af001b0a0ea4abc2f4e4edf151cff534b2cb6dc049c9ef9fe48cb923f29b798",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-10-keep-gated-finished-sessions-open-on-session-use-and-new-181.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "12b15b9f8eb204628c02ee0c49177c076db5cc498c1f7e2df389f24a0fd45ff6",
+            "entry_digest": "a5afe1a6a8631e8e3435b32d4811b0cbda5e05d8c29f12fb3a85c843abea95a5",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-10-keep-observations-current-across-knowledge-index-rebuilds-136.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a69df5a8d1b57ab772affcb66d77d543bad924cac527a868344cf828cd4c3897",
+            "entry_digest": "9ba0bd1c8cda67a1e1fc9306958c471d6d9de843e9e3bd2c6a3e3a99fa5e2eb8",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-10-move-two-192-test-cases-into-their-own-files-196.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8ae70977370b1a1303af1d9ae33d20a3f14f75a6d207f1e6c470c7e24a99933d",
+            "entry_digest": "b3e7f4657cf04bbaf5e00d558c1792a42686c79d6cf52c064ccb77d6738836fa",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-10-refuse-new-sessions-when-the-adopted-legacy-log-is-missing-113.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8b96953410fbd7ce8305ad41e0b38410207dacbbe43c42dab084f78ce0cf5a10",
+            "entry_digest": "9cb22866ee46d93a96bcd622c4f80da231cc042beed1a2d8db4385c1699bec19",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-10-return-observation-and-case-ids-from-cases-record-and-evidence.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f121f496eb3188591050df39c624749a865c39e2a45f5f2e0278decd5a0d6f69",
+            "entry_digest": "785f2411f74c1d32cb6e10d426e28fa6be652b46b36e1e6462e3b5861617b633",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-12-chough-0-6-0-human-first-records.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1f52617c8d821ff7686e33f3bc6f71723e314bdb60408ac74e735ec7185fbeb1",
+            "entry_digest": "7d0d4342035d73b26eefa8d3a9205ff8608593f6ec54a252c98deb0938195c9c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-12-turn-the-mvp-interview-into-intent-and-a-1-0-roadmap.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7ac1383cd32df211fbe1c86715e10d319f3eaa64174e403aaef8e77b2d505f92",
+            "entry_digest": "35033c7ce3ac26d54d29f6d7619ca2d13840d6a3869b5185c1161fb2a44e2ee0",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-0-6-1-a-short-host-name-in-an-ordinary-word-is-not-a-leak.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "1d1da3cf9f5664e74b3ed95271a2fd9188e4c1171322d2460d24fb11e604360e",
+            "entry_digest": "27c1a544a68973490f30cce3e1549fdf20b8705a673eb49149b2f697caef3a87",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-0-6-1-at-the-observation-cap-writes-refuse-before-writing.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b2a3678f9dca7f5b3bff550d22a8ddd6efbd3d74f166a7a5f3d8a400dd9b2e9b",
+            "entry_digest": "a62dcc1209326af1cd2c9f89d15bee48fff5496f08b0c6f3357b2ca5032233ba",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-0-6-1-chough-change-ship-prints-a-short-summary.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "184d059c72c88b4d4a38dd6160ef89df679958685378bb97508990c20b2208ad",
+            "entry_digest": "a8fa6bd96dae3161e8f1f3c502001e69b3f57fe49c14708d895aefc69c93d1a2",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-0-6-1-next-with-no-open-session-exits-0-and-timing-says.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "bf27eb379ecd02bd2bedf3ff0b3c5c2818bc2809a4502ebaaf24c9defd5dc606",
+            "entry_digest": "50ba2a6b2ab98d59169db21199441aa24ccf8b48f65682630da7fe5d5d75be6c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e02f78bc7823d4f02aa0f75e56d53967c03b16e009bf9df25a85d744a1236e69",
+            "entry_digest": "d0168add454ba95a1b1445fe2c90b1dad0e0165198d7297c0a17ed730130cf8e",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-0-6-1-src-stage-rs-recorded-for-pr-4.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5baa5b7fe84ec874e1e7b738b14b6f4c2b569a50af11eb780e590f0dc4b00f59",
+            "entry_digest": "0f878a1349d5b1377c56aadd8d4a62a14ade10425f4ba4b74588396e25b8c2eb",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-0-6-1-the-intent-gate-summary-shows-what-is-approved.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "33dde5e2d387b4be7809a2f8d1b25aa0f9a1ff7a0e5002a42462a3a01d0d83a4",
+            "entry_digest": "b0183d6557a8a2a86181d4265b0e0367404405839de53314861264c806be4709",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-217-ci-also-runs-once-a-day-on-main.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d107cd3d09ce0caaaebc00d2706313414e4222cbf45d92d18396074242c73aee",
+            "entry_digest": "45cb047ba63c3f8c7c78006cbe26c9eceaac97dd2786811019cde0ac72b26075",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-217-seed-the-flake-tracker.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "a0c3efc891c7ed98d52b7f65b27897f8e589f63c71c7b4be95e9065fe560b7bc",
+            "entry_digest": "f0ad5bb55249b8a29c0411c0a6a5a2368710bdcad34514968532dab3c5656670",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-chough-0-6-0-marked-published-in-the-roadmap.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fe0c55e588f18dcdc544667c32723fd4fe7fa01ed5f38688845bdb4bfc949bf4",
+            "entry_digest": "b03f9e70f63f1bdc82d38242cf453e8db9f0ddf9be0478be6762247679e963e1",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-chough-0-6-0-release-prep-the-dogfood-cycle-and-four-fresh.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "334bf6e34cc621d78feec00956488255e605c6a4e1aa055de2c15edc7f076c2b",
+            "entry_digest": "b6dc18e432414c075c1d67081205641d227b91e197b506dfd2cfc796892af01a",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-fix-246-migrate-s-preview-names-what-doctor-will-report.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "faec445f355661108f91415bf2b0d1f388f7d4c3177f612bca4e5e7c22c68f91",
+            "entry_digest": "62ab608aa44176c4fbc4241524667a1a6e593f6b5d4cc68b5b2ed7c4260d5046",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-fix-247-the-example-waits-past-the-failing-run-s-second.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8aff06685aef1bbee1121b7fe740efc97df563306f13f7b251a1cab9f8b8cc55",
+            "entry_digest": "3948a916a5f242362b435bac33c343817c31208ae03da198ed825b589ef732ed",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-13-host-matrix-harness.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "fb36d8955de54ec79d1fe508e7a1129450866e5c0cb5b15d4ad9f0a05c4ff864",
+            "entry_digest": "e5d5890a58af5244afacfecd7570c070a605c99df7a4f4d792ec4b14fcfbb0bc",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "de49eed1c71a8be503063d67e0e0e7d94d518c12c4c85de946a4481193d06515",
+            "entry_digest": "b9bf368b32ee62d90fb7c3029f4b51bbffff0aca717b9c659da40c96ddecddc5",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-14-219-integrations-ships-versioned-example-hc-templates-for.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "6fef883b7bb5f47426fc90ee1f83bd274774c95d4225c1474e54de0dd4690d92",
+            "entry_digest": "47c89d1dc60780419e42d9a84ace6619cc1a987af6cb15e6ed18433c58307893",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-14-fix-245-the-index-links-no-source-git-ignores.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "914a91ca58bbafd600870a0b90bceed3b67c8fd0db1bfce819b3e6b8f6d983c2",
+            "entry_digest": "bc2082c7cf37094ff388d38dedeaf6cf0c1ab29fe98f42a485d9530a96464adf",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8eb36d0b430e390ac3f762791d33cda121726fc26f74570d1e3525d03fb7f213",
+            "entry_digest": "2036cf68a03b09364024dee093118aac850c85ce4fb6227e0436ec6c84f8c3a7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-14-give-agents-local-models-included.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d91fd28d46a9d2e132f867f8bbc99a6385969aafcff445ca8022fab7ee210a31",
+            "entry_digest": "ebef0bd26965be9d594ea8d71c405b27b98e83623e496601fafbef81268f132b",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-14-the-leak-check-reads-an-scp-style-host-path.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "45d600d39b9e068ca8d5f6f9b169c5c8f87d0a2f76259014d76a174e6a25b2e5",
+            "entry_digest": "c17649ed58ed894e01eb961f777c6dccb1609aea0e9366cae2316689b30f3edf",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-15-describe-the-current-objective-before-beginning-work.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "6ca3be81c0d2b639e84c99a0cbf8d6f20096244664e0a2940969b8db3460bd7c",
+            "entry_digest": "9d37eaf4c6cde3a0363f92d6d95a5d406e3129d9191624e735f92cd5a2b62b3a",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-15-fix-278-chough-s-records-join-a-receipt-s-claim-to-its.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8113a98ac0ebbe86e2a5ca5c2aa4c2e969a012982ab6095f441eeb0d383e488d",
+            "entry_digest": "ca9cd1852189be23ce4c3fbfb2d30fc514a8f33b72cb11c0d30c3a5bde6fb773",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-15-fix-289-rebuild-the-knowledge-index-at-release.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c773161c8d632962fcf871c00eaca8f32a548c0b1dea19cadc15404a061f2afd",
+            "entry_digest": "51894c59ac4f8f70a5e7320c5e5c49daa1b47c1d7d7b443dc5d94cc474d0c705",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-15-fix-290-each-change-adds-a-changelog-fragment.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e2f5f527b3234224ed45f1d8a81842d49593c709be9ad69321dd5927d392fe09",
+            "entry_digest": "af94218633c2330fe1c74b562460d1453ebf72bdbbaf6ed3b2cf90d3ba8063fa",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-16-spec-files-use-specsync-s-merge-driver.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0908dd37e92afbb5ad17dcbf39478378720f52457f8e3feedd045593e5ac9860",
+            "entry_digest": "8e14455e410b409c68066f8108a1e8f1a111bedeca146197eff26bec352a6e06",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-16-the-init-case-runs-the-real-preservation-test.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "3e62756add666d913625f81d4840a2cce8c26c50ae677ae6c96c8845f00381fc",
+            "entry_digest": "ccc14df787f6b5143ea814be0e023c9674bbb6dc3db369f72a2baa9d9d730348",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-17-docs-and-host-templates-match-current-main.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ce93ea7b90c24d541efa43a38b14d04ec330c28d912cc778603dd1672b9c5cf0",
+            "entry_digest": "e65fbd83b79d946890f670aa0d56282b3d63668cd35144d06384297c8ce50ba2",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-17-previous-stages-digest-updates-session-reads-qualified.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "d975aca491871b4ca1d2fccb65d1fe780bb4bd22ae63c7bfc29ae5495f7b16f8",
+            "entry_digest": "64fd11451f8cac06df9264592ec93356f922d0bcbd63527d9b3abf64e9f8f146",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-17-skill-release-pin-matches-the-edited-fast-path.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "6c00d4acabb97492014bba0bb8ff15dd9262a09afb19809e0c5accd64f69a711",
+            "entry_digest": "7f3a3aa8cd60da10c5c9fd6eaa38476893341c478fb8aa309d4e3e595f091955",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-a-blocking-bug-stops-only-its-session.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c1f6c276b5190ab1da9f8fb2fcead0e57b1fd4452bdc9824effa51404a0177b9",
+            "entry_digest": "288d9366e11b5ba872724314480fc7b317c5754e894d4302155b9f122cfcec1f",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-a-credential-glued-to-a-hyphen-is-a-leak.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "ff0ed2c7f09b0209f44b83e11be5d87ab18dd57cf96cc2755157e3180f57cde4",
+            "entry_digest": "22bb0594896aab42d291c5068c585c89a59c066440639e37e2425080d5173b34",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-a-fifo-in-a-record-s-place-blocks-no-reader.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "71ba3d40d6ecbb5719fa29cf2d252fba476f24af863d81c33d2e3df782fd5b9a",
+            "entry_digest": "7e1a6964030639092b545ef423daee3de7befbe5643b245246a38021273333bb",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-a-fifo-swapped-in-at-the-open-blocks-no-reader.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0de7375e563f8d743c980c0f475ef880e3e0a3800622e42d06580a5b932d42e1",
+            "entry_digest": "6c541e56a779d60a0d8f2b885c31b1676e5ad6c9acfea949904b0b83d2c7d17e",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-a-new-record-whose-write-fails-is-not-left-behind.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "08aab2858e1810e3c0e7dd2e536ba2971b5b7767521f2ff2b0750c971714c60a",
+            "entry_digest": "ba66463491142371d73e50f2fdbe15f4ee715c0d34df0714515d6559dc271279",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-a-slug-with-sk-is-not-a-model-provider-key-again.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "9227a9eee5ee2f6d2da3dadadc3d54010706100d504946ea9fde3d438ebe4e63",
+            "entry_digest": "ef5000aa602c91a4861b9a17158c5d43663538f98264cad4c6312a91c1d09ed7",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "55bcae8b3f56a477ac2588466e26cfc4efec64fa26b837543de9e0006587bce4",
+            "entry_digest": "e3fe681dc2b1e66a1d33e6d56e7c2f1b0f192c373024590f70f2bf5ff485e64d",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-checkpoint-file-and-design-values-pass-the-write-time-leak.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "0942b5eec42bbe3f0197abbd26570c3d27ae3e1267dd5a350b8de5cf8013402e",
+            "entry_digest": "2b79fcfccbca92617f9616661355ad83231d152d4de0d23376f2fe1da95f88af",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-docs-and-help-text-change-for-the-list-valued-checkpoint-flags.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "2c88b178eb13b35ff394c098ca2ebe985fd1462755c5adfdd0b1569883004469",
+            "entry_digest": "07ff8fb534878b72097b681442df7d4ccc9b2a83fbdf7676394194ac79b2b766",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "e06ecda4e3f01fd540da1853d51631113ad2b70644485bea49131c2335fc3414",
+            "entry_digest": "f5551b79c7c5c7692ec06f3d934345836cb3a64c423721b3966045b5d872f366",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-journal-add-holds-the-writer-lock-with-no-chough-directory.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5fe43d4fda86a8b30a923a2cfd683d2af8197a9834067514429fb6ecaf4648f4",
+            "entry_digest": "ad9fd6ed0fa9c7ddd3b6e1b675070682582715a257676c95d164d22d02047a2a",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-journal-add-holds-the-writer-lock.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "566ab843bdc3c56103836a80986d972d4afcc27cef00e787608f624bf89a4bfd",
+            "entry_digest": "8d98b53c90bdadd7d0756211f3aebe97649a9aa11dac26e6726be0c30c901130",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-revert-306-s-new-record-writer-for-0-6-1.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f7d1804b8daf0c9134a07f06d8bf915e95c8c5e97580c20ab2e79abaec73a2d6",
+            "entry_digest": "3ab4a9c90918d5acaaa0dcc32617da7640e7d42e37217516585323abc509e4ef",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/2026-11-18-the-feature-bug-loop-example-stops-at-a-refused-chough-or.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "db7a504b1b6a25d4ae93f7bd9c226fdfebe9993b237dfed12edd3ddaa0e39098",
+            "entry_digest": "ed642e93e7950ce502201345bea868d1a2c73a3724aef469bcc7017ab99f8982",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/journal/feed.xml",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b7e66beec85238f0bf0d76960beadeba74d05dc2cb9698bfe9d91270d08eb431",
+            "entry_digest": "db33fde7ccc7c997971b49a949bd3659fa4562b380a4e7ac8ca586749ad1ee9c",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/lessons/2026-11-12-build-test-targets-before-a-recorded-run.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8a9f87d3bc43957ca5d75ea31d422a78504368fb983792bff14222cccd970c6a",
+            "entry_digest": "add176b83e222a55ba089bea055d5784b4689fb1b6f401737de90f382e99d983",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/lessons/2026-11-12-macos-checks-a-new-executable-on-its-first-run.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f1114bd87f993f6eac9350658c6bcf4726fa1ae39bd8b6aa1c4c7c5d4ad3a5c2",
+            "entry_digest": "5f40f007a2efaa39a785aff407df00bb530ed446175e4b9a4695406cd253a9f2",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/lessons/2026-11-12-merge-main-back-with-ours-only-when-the-trees-match.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8b770747a3d89ee86c3e189066d3c7e372082836fcaf7973ec00142f8a1ff590",
+            "entry_digest": "4e199f46d7d6343a9fd84025ba724e2a486178658ecacf0b4e302fe4dee4f941",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "knowledge/lessons/2026-11-12-re-scoping-a-specsync-change.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "7a2f2c24070a1754d52387f9175f4abda8e6367e8594d4687eb086716d98b963",
+            "entry_digest": "35435153a64b18173c6a7a120f77063228f102abd30dc66f2624f3c08d2bd5b8",
+            "owners": [
+              "@exact:delivery"
+            ]
+          },
+          {
+            "path": "tests/changelog.rs",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "c623c651e4b60a23e251a63a2403b444f740107407afd946727ed18ced0db36c",
+            "entry_digest": "aad5ec443d733f8d49878364c79e7ffaa7d95dd1cf265008c2dd32981f2693cd",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/01-2026-11-14-the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "07c8af9203b3af54964837cda2a341b3855e23345c5bf8415e53d520cf618487",
+            "entry_digest": "8270ab6da5280fd11355ec8450e866870b34bf39bb340dc8cdb17127909e983b",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/02-2026-11-13-0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "936068fee9b2727edf05191ed3b728a239aca32ac6f71ac374bc5eadac4ce875",
+            "entry_digest": "88c8fc6281bd73ef58cb38fd375e6aa5994e14d64253128a072ea6f47b27593a",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/03-2026-11-14-fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "38f6a2d20d51de7112f5589c9cf4915698551e56e6d2050251f6b04fba6bdb10",
+            "entry_digest": "d9184e6d0aca45aac6d67c1c96afd06bd4174c8e52f1edee6aefcdd7a4407e75",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/04-2026-11-13-0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f0014bd36f82b4063e3e20110792944f92cb757f640eed6f2eb93e0d76fd8424",
+            "entry_digest": "c35edb032d79325b211d6e201d0d8df43c60364ccb545ef99242d024cac8ea81",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/05-2026-11-13-0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "140e3a12ba8bb28fbaa8f56b5594c6e12dd792f2cbb0b158705b70cdfd40e85a",
+            "entry_digest": "ce5df06d4d5de31abe1dea2febda6c6c2b08cda3050f8062b2e642d796a366c1",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/06-2026-11-14-fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "f022fac6f942d51b4dcb6a11a54e373586c97b9c55d9d6029105cebfd49353c9",
+            "entry_digest": "2a9da9a52a94352a3b61b704bf80b46449b2bf13cc8ec6df16d217df51b0ca5d",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/07-2026-11-13-0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "85b8ef5c03c19b17c8dea72a774df42dcbc62e45f11f43bb07e49b57f912f826",
+            "entry_digest": "42819b270e9e697f264ca3ca9daf1c5741baa4272fa00f996a1ed2376765de4a",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/08-2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "4c2c8cbaa771cca210e8fc8153007c9a0f66be50fed1466d780287968ca874de",
+            "entry_digest": "04c74adaad557af5c010a900b33225083b4dc780ab552e64b987b35a76a3ce09",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/09-2026-11-13-fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "5ede0ab628ec17bc2be41dc19f45cc2e6a8c9577c7d2c610e77d7d64cf376379",
+            "entry_digest": "8de540ff3424ce1e4263776e40beeed739719530950b7d3aab1562ba5ffc8a18",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/10-2026-11-13-fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "207817af4a701ab47997cc20b8082f89d6d179ecbfcf64a16d77db4bb35e9c92",
+            "entry_digest": "51ea2a9ab2a4ea29d14a2e945c02f57f6ea78611060b9536a5e836c9992a390c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/11-2026-11-13-host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "472a3bea92f9e8cf115f9338f7d53e7476801039a904b847f7e4feebf09bf3b6",
+            "entry_digest": "7cbf43f03c275a5db9fdac7728d991a987ac219fb2a9590463567546c72870a2",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/12-2026-11-13-217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "91ea721e39da5cc0d526928a6cdffbba4deb117974f6841c8c6e995a483098db",
+            "entry_digest": "fb9a82fee8c17aff57fdec443e38bc9cfac1fed898ea67b1bb5f6140e48cb5b1",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/13-2026-11-14-workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "13b7dd794c2a241c2e0b48e9be08eb6a8838ad74a63001657b23880f6686f589",
+            "entry_digest": "b80cab56f4889367081c35cfd6d12e86950af2ebda2afbce8a075ef0437c1c1d",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/14-2026-11-14-219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "37acde7ac26a23d909d8522c15d659decc492d413b715dbdbfc297d77f7c9fa1",
+            "entry_digest": "b996a957fb5c5fa3faa45228aef008f685629e8aa52e65bbda9978173a24a259",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/15-2026-11-14-217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "b9e1c8dde31376368b4196be9aade623302ce48e5552771986920d2b1a6190e0",
+            "entry_digest": "0e739d156d83f32d3dd37671b19d505727e92dc41ed20ae0688bfdd8f7c39d1c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/16-2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "8192f10299dfc97ab280de1efa66fa4d1c35c29f7e3834c73979899b055ae3b4",
+            "entry_digest": "bcc22115f5cf43d242914ceb5c0dccf1125076cf27429cc3264d0b743037561c",
+            "owners": [
+              "@exact:test"
+            ]
+          },
+          {
+            "path": "tests/fixtures/changelog/unreleased-at-289/2026-11-15-fix-278-receipt-dash.md",
+            "kind": "file",
+            "mode": 33188,
+            "payload_digest": "dff3775ed9c5624f1e397b3d49fbfa24eeac414f7b902f86f5bf497cf830c616",
+            "entry_digest": "8024e5a8cc29f8785b527f91fc409befd07a68412a33b4750b325a6a33e4c5c8",
+            "owners": [
+              "@exact:test"
+            ]
+          }
+        ]
+      },
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check (no spec in scope)",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": []
+    }
+  ]
+}
