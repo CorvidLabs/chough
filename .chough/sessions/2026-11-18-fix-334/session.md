@@ -16,7 +16,9 @@ requirements: [REQ-cli-037]
 cases: [TC-cli-a-pinned-session-before-any-session-names-session-new]
 design: []
 files: []
-observations: [2026-11-18-tc-cli-a-pinned-session-before-any-session-names-session-new]
+observations:
+  - 2026-11-18-tc-cli-a-pinned-session-before-any-session-names-session-new
+  - 2026-11-18-tc-cli-a-pinned-session-before-any-session-names-session-new-e75c32
 bugs: []
 blockers: []
 waiting_on_human:
@@ -44,6 +46,7 @@ With CHOUGH_SESSION or --session set and no session open yet, the refusal names 
 ## What was verified
 
 - [Ran cargo test --locked --test session_pin -- --exact a_pinned_session_before_any_session_names_session_new for TC-cli-a-pinned-session-before-any-session-names-session-new: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-pinned-session-before-any-session-names-session-new.md)
+- [Ran cargo test --locked --test session_pin -- --exact a_pinned_session_before_any_session_names_session_new for TC-cli-a-pinned-session-before-any-session-names-session-new: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-pinned-session-before-any-session-names-session-new-e75c32.md)
 
 ## Open threads
 
