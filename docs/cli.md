@@ -442,11 +442,11 @@ Its body gives `# <title>` and the paragraphs What happened (with the actual
 behaviour as its own `Actual:` paragraph when it differs from the symptom), Steps (led
 by `Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
 `## Log`, an append-only list with one dated entry per report,
-note, evidence link and status change. A Log entry names linked evidence as a link
-relative to the bug's file: `[<id>](../sessions/<session>/evidence/<id>.md)` for an
-open session's entry, `[<id>](../archive/sessions/<session>.md)` for a receipt an
-archived story holds, and the bare name for a receipt only the bug holds; the front
-matter keeps `<session>/<id>`. When a session is archived its entries leave with its
+note, evidence link and status change. A Log entry names linked evidence as a Markdown
+link relative to the bug's file, its text the evidence name: to
+`../sessions/<session>/evidence/<id>.md` for an open session's entry, to
+`../archive/sessions/<session>.md` for a receipt an archived story holds, and the bare
+name for a receipt only the bug holds; the front matter keeps `<session>/<id>`. When a session is archived its entries leave with its
 folder, and `chough doctor --fix` appends a Log entry linking the story
 (`stale_bug_links`). A person's edits to the paragraphs stay, and
 every earlier Log line stays byte-identical. Fix says `Not fixed yet.` until `bug
