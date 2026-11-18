@@ -5,7 +5,7 @@ aliases: [fix-262-open-race]
 objective: "No reader can block on a FIFO swapped in between the regular-file check and the open: the type is checked on the opened handle (REQ-history-006, review of #305)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-history-a-fifo-at-the-open-is-refused-without-blocking-82318a
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-262-open-race
-    holds: accept
-    drives: review
-    opened: 2026-11-18T02:11:26Z
+waiting_on_human: []
 run_consents: []
-next: Wait for Leif's implementation review of fix-262-open-race; read the PR's reviews first; do not ship
+next: Continue done
 title: A FIFO swapped in at the open blocks no reader
 summary:
   - "A record replaced by a FIFO between the file-type check and the open could still block session list and shelve (review finding on #305). Readers now open without blocking and check the opened handle. A unit test covers the open; the verify lane passed on macOS after main (347a005) was merged in. Linux was not run locally."
@@ -47,6 +43,7 @@ No reader can block on a FIFO swapped in between the regular-file check and the 
 - Leif, 2026-11-17, answering Fable's question on the agent review of #305: 'Fix first, then merge'. The reader opens without blocking and checks the opened handle; a second check after a blocking open was rejected because that open never returns.
 - No requirement text changes (--no-spec-change).
 - 0xLeif decided "Scope approval of fix-262-open-race": "approve all three, record as 0xLeif" (Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the gates on #308, #305 and #306); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-262-open-race as 0xLeif
+- 0xLeif decided "Implementation review of fix-262-open-race": "Pass (Recommended)" (Claude Code session with Fable, 2026-11-17, answer to the interview question 'Do you pass the implementation review of fix-262-open-race?' after the agent review passed fe205d5); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-262-open-race as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -103,4 +100,20 @@ No reader can block on a FIFO swapped in between the regular-file check and the 
   - revision: a58e0be0ed9dd3f03515697eb3a7a934f86c9b01
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T06:11:17Z · gate-closed · accept → accept · Implementation review of fix-262-open-race ^t-c9f9cd
+  - native_change: fix-262-open-race
+  - revision: 6cd3b6626f9d414043747df7d7a983e84bb2ecb7
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Pass (Recommended)
+    - where: Claude Code session with Fable, 2026-11-17, answer to the interview question 'Do you pass the implementation review of fix-262-open-race?' after the agent review passed fe205d5
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-262-open-race
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T06:11:18Z · advance · accept → done · native:archived ^t-5f5c40
+  - native_change: fix-262-open-race
+  - gate: native:archived
+  - revision: 6cd3b6626f9d414043747df7d7a983e84bb2ecb7
   - by: fable (claude-fable-5-2, hc t4b)
