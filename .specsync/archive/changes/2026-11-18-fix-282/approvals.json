@@ -95,6 +95,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #348 (fix-281) changed REQ-cli-007 on main, he re-approved fix-282's delta rebased onto main's text, keeping #348's --no-native-change sentence and adding only the --pr sentence and its acceptance criterion",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795045598,
+      "digest": "36de39460c854e3ca77e632710b530b9da080970eb0c96db1dd0236f9b8219e1",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
