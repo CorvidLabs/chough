@@ -21,6 +21,8 @@ files: [src/bugs.rs, src/doctor.rs, tests/bugs.rs]
 observations:
   - 2026-11-18-tc-cli-a-new-bugs-log-links-its-evidence
   - 2026-11-18-tc-cli-doctor-relinks-a-bugs-evidence-after-archiving
+  - 2026-11-18-tc-cli-a-new-bugs-log-links-its-evidence-27a1ae
+  - 2026-11-18-tc-cli-doctor-relinks-a-bugs-evidence-after-archiving-136a4e
 bugs: []
 blockers: []
 waiting_on_human:
@@ -49,6 +51,8 @@ A new bug's Log links its evidence with relative links, and chough doctor report
 
 - [Ran cargo test --locked --test bugs -- --exact a_new_bugs_log_links_its_evidence_relative_to_the_bug for TC-cli-a-new-bugs-log-links-its-evidence: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-new-bugs-log-links-its-evidence.md)
 - [Ran cargo test --locked --test bugs -- --exact doctor_relinks_a_bugs_evidence_after_its_session_is_archived for TC-cli-doctor-relinks-a-bugs-evidence-after-archiving: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-doctor-relinks-a-bugs-evidence-after-archiving.md)
+- [Ran cargo test --locked --test bugs -- --exact a_new_bugs_log_links_its_evidence_relative_to_the_bug for TC-cli-a-new-bugs-log-links-its-evidence: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-new-bugs-log-links-its-evidence-27a1ae.md)
+- [Ran cargo test --locked --test bugs -- --exact doctor_relinks_a_bugs_evidence_after_its_session_is_archived for TC-cli-doctor-relinks-a-bugs-evidence-after-archiving: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-doctor-relinks-a-bugs-evidence-after-archiving-136a4e.md)
 
 ## Open threads
 
