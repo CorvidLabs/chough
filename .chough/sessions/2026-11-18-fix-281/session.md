@@ -16,7 +16,7 @@ requirements: [REQ-cli-007]
 cases: [TC-cli-a-session-that-needs-no-native-change-reaches-done]
 design: []
 files: [src/stage.rs, src/checkpoint.rs, src/session_md.rs, tests/stages.rs]
-observations: []
+observations: [2026-11-18-tc-cli-a-session-that-needs-no-native-change-reaches-done]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +38,8 @@ A session can record that it needs no native change, with a reason, and then adv
 - 0xLeif decided "Scope approval of fix-281": "done without a change. A session can record that it needs no native change, with a reason, and then may advance to done and archive with outcome done. Its human gates still have to be closed by a person, as in any other session." (Leif's decision comment on GitHub issue #281, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-281 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test stages -- --exact a_session_that_needs_no_native_change_reaches_done_and_archives_as_done for TC-cli-a-session-that-needs-no-native-change-reaches-done: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-session-that-needs-no-native-change-reaches-done.md)
 
 ## Open threads
 
