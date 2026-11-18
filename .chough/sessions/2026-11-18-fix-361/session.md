@@ -16,7 +16,7 @@ requirements: [REQ-cli-016]
 cases: [TC-cli-doctor-and-next-name-skill-update-for-outdated-files]
 design: []
 files: [src/skill.rs, src/doctor.rs, src/main.rs, tests/package.rs]
-observations: []
+observations: [2026-11-18-tc-cli-doctor-and-next-name-skill-update-for-outdated-files]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +38,8 @@ chough doctor and chough next say when installed skill files are known-outdated 
 - 0xLeif decided "Scope approval of fix-361": "doctor and next" (GitHub issue #361, which records Leif's decision of 2026-11-18 (chough doctor reports each known-outdated skill file naming chough skill update, chough next shows one line, and status JSON carries no_native_change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-361 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test package -- --exact doctor_and_next_say_when_skill_files_are_known_outdated for TC-cli-doctor-and-next-name-skill-update-for-outdated-files: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-doctor-and-next-name-skill-update-for-outdated-files.md)
 
 ## Open threads
 
