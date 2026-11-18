@@ -6,7 +6,7 @@ artifact: design
 # Design
 
 `doctor::git_operation(root)` reads Git's state once per process:
-- the operation, found through `git rev-parse --git-dir` (so worktrees work): `MERGE_HEAD`, `REBASE_HEAD`, or a `rebase-merge` or `rebase-apply` folder;
+- the operation, found through `git rev-parse --git-dir` (so worktrees work): `MERGE_HEAD`, or a `rebase-merge` or `rebase-apply` folder, as `git status` reads a rebase, since Git can leave `REBASE_HEAD` behind after a rebase finishes (#330 review); `CHERRY_PICK_HEAD` and `REVERT_HEAD` are named too;
 - the unmerged paths under `.chough/`, from `git ls-files -u -z -- .chough`.
 
 It returns nothing outside a Git work tree or when there's nothing to report.

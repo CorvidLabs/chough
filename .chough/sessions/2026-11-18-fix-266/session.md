@@ -43,6 +43,7 @@ next, status and doctor warn during a git merge or rebase, and writes refuse whi
 
 - The rule is a new REQ-cli-069, with the doctor finding defined there beside REQ-history-012's, since #250 and #320 also change REQ-history-012. Writes are refused at the writer lock and before an evidence entry is written, so a refused writer leaves nothing; the merge drivers take no lock and still run.
 - 0xLeif decided "Scope approval of fix-266": "warn, and refuse .chough writes. next, status and doctor report an in-progress git merge or rebase (MERGE_HEAD, REBASE_HEAD, unmerged paths) with 'finish or abort it first'. Write commands refuse only while paths under .chough/ are unmerged." (Leif's decision comment on CorvidLabs/chough#266 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for this change); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-266 as 0xLeif
+- 0xLeif decided "Scope approval of fix-266 without REBASE_HEAD": "Let the fixer send it back once" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: he chose that the fixer run the send-back on fix-266 this once and drop REBASE_HEAD from REQ-cli-069 so the requirement matches the code, recorded as his approval of that one-line change (and the same words in the acceptance criteria)); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-266 as 0xLeif
 
 ## What was verified
 
@@ -99,4 +100,32 @@ next, status and doctor warn during a git merge or rebase, and writes refuse whi
   - revision: cef86e2622a2a908856b0c2cf11b29d3c1d3e472
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:11:12Z · gate-opened · accept → accept · Scope approval of fix-266 without REBASE_HEAD ^t-81b63a
+  - native_change: fix-266
+  - revision: 69f156a04f7a2b9e9d9f4be2bad63369043306f6
+  - holds: accept
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:11:12Z · direct-native-write · accept → accept · fix-266's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-fad036
+  - native_change: fix-266
+  - revision: 69f156a04f7a2b9e9d9f4be2bad63369043306f6
+  - direct_write:
+    - change: fix-266
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:11:12Z · gate-closed · accept → accept · Scope approval of fix-266 without REBASE_HEAD ^t-e27c72
+  - native_change: fix-266
+  - revision: 69f156a04f7a2b9e9d9f4be2bad63369043306f6
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Let the fixer send it back once
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: he chose that the fixer run the send-back on fix-266 this once and drop REBASE_HEAD from REQ-cli-069 so the requirement matches the code, recorded as his approval of that one-line change (and the same words in the acceptance criteria)
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve fix-266
+    - actor: 0xLeif
   - by: chough-fixer (claude-opus-5-5, hc t4n)
