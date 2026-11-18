@@ -1211,6 +1211,11 @@ fn queue_gate_events(
 /// words `chough doctor --fix --reason` was given (REQ-history-012, #250). Returns the
 /// withdrawn gates.
 pub(super) fn withdraw_gates(root: &Path, reason: &str) -> Result<Vec<String>> {
+    // REQ-records-006: the reason is a written value, so it is refused for a leak, or
+    // redacted under `--redact`, before anything is written, as `session close
+    // --reason` is.
+    let mut reason = reason.to_string();
+    crate::leaks::guard(crate::leaks::Local::current(), "reason", &mut reason)?;
     let mut session = read_checkpoint(root)?;
     let cleared = std::mem::take(&mut session.awaiting_human);
     if cleared.is_empty() {
@@ -1221,7 +1226,7 @@ pub(super) fn withdraw_gates(root: &Path, reason: &str) -> Result<Vec<String>> {
     queue_gate_events(root, &mut session, &current_stage, &cleared, &[], |_| None)?;
     for entry in session.pending.iter_mut().skip(queued) {
         if entry.kind == stage::GATE_CLOSED {
-            entry.withdrawn = Some(reason.to_string());
+            entry.withdrawn = Some(reason.clone());
         }
     }
     save_checkpoint(root, &mut session)?;

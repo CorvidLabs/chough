@@ -13,6 +13,11 @@ finding in doctor's JSON to give `decision_reason` and each other finding not
 to. It fails on main, where the entry has no such field. The test's existing
 checks stay: withdrawing records no human decision.
 
+`tests/doctor.rs::a_stale_gate_reason_that_leaks_is_refused_or_redacted` (added after
+the tester's finding on #345): a reason holding a credential is refused as
+`refused:leak` with nothing written, and with `--redact` it is written redacted in
+the story and in doctor's JSON. It fails without the leak guard.
+
 ## Requirement evidence
 
 | Requirement | Evidence |

@@ -1379,7 +1379,15 @@ pub(super) fn run(root: &Path, args: DoctorArgs) -> Result<bool> {
                     if found[index - 1].decision
                         && let Some(reason) = reason
                     {
-                        found[index - 1].decision_reason = Some(reason.to_string());
+                        // What was written: under `--redact` the reason is echoed as
+                        // redacted, never raw (REQ-records-006).
+                        let mut echoed = reason.to_string();
+                        let _ = crate::leaks::guard(
+                            crate::leaks::Local::current(),
+                            "reason",
+                            &mut echoed,
+                        );
+                        found[index - 1].decision_reason = Some(echoed);
                     }
                     // A withdrawn gate leaves a finished session, archived next.
                     if found[index - 1].kind == Kind::StaleGates {
