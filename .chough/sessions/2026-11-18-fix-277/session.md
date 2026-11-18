@@ -29,6 +29,9 @@ waiting_on_human:
     opened: 2026-11-18T19:55:31Z
 run_consents: []
 next: Wait for the tester's check and Leif's implementation review of fix-277
+title: A migrated bug's Log links each carried observation
+summary:
+  - A bug that chough migrate writes named its carried observations in its Log by bare 0.5.x ID (#277). The Log now links each to the open session's evidence entry or to the archived story that holds its receipt, relative to the bug's file; a receipt only the bug holds is named as its own. A new test failed on main first; the verify lane passed on macOS after main was merged in, and the tester passed it. Linux was not run locally.
 ---
 # A migrated bug's body links each carried observation to the file of the entry or story that holds it (REQ-records-009, #277)
 
