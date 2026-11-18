@@ -5,7 +5,7 @@ aliases: [fix-301]
 objective: Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (issue 301)
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of fix-301\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (issue 301)
 
@@ -86,4 +86,9 @@ Docs and help-text change for the list-valued checkpoint flags and docs/cli.md (
     - recorded_by: claude-code (hc t28)
     - native: specsync change approve fix-301
     - actor: 0xLeif
+  - by: claude-code (hc t28)
+- 2026-11-18T00:46:21Z · advance · plan → build · native:approved ^t-1c6703
+  - native_change: fix-301
+  - gate: native:approved
+  - revision: dbd66f050725910c4965b70e841b3c4a62451c2d
   - by: claude-code (hc t28)
