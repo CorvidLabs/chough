@@ -627,8 +627,8 @@ fn signal(_: &std::process::ExitStatus) -> Option<i32> {
 const HISTORY_LIMIT: usize = 1_000;
 
 /// Refuse a ship whose change history SpecSync would read as corrupt (REQ-cli-059, #298):
-/// a commit between the change's recorded base commit and HEAD that holds a change both
-/// open under `.specsync/changes/<id>/` and archived under
+/// a commit between the change's recorded base commit and HEAD that holds another change
+/// both open under `.specsync/changes/<id>/` and archived under
 /// `.specsync/archive/changes/<date>-<id>/`, as a merge of main can leave. SpecSync then
 /// reports the archive's terminal evidence as `corrupt-history`, but only after it has
 /// archived, so the ship would stop halfway.
@@ -687,7 +687,13 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
                 open.insert(folder.to_string());
             }
         }
-        if let Some(both) = open.intersection(&archived).next() {
+        // The change being shipped is left out: its own archive appears only when
+        // SpecSync ships it, and a history is poisoned by another change kept both open
+        // and archived, as a merge of main leaves (#298).
+        if let Some(both) = open
+            .intersection(&archived)
+            .find(|both| both.as_str() != id)
+        {
             bail!(
                 "refused:corrupt-history: commit {} in this change's history holds change `{both}` both open under .specsync/changes/{both}/ and archived under .specsync/archive/changes/, which SpecSync reads as corrupt history, so the archive's terminal evidence would not authenticate and the ship would stop halfway; nothing ran. Rebuild the branch from the default branch without that commit (for example, start a new branch from it and bring over this change's own commits), then run `chough change check {id}` and the ship again. (Chough checks this until SpecSync's own preflight, CorvidLabs/spec-sync#1082, exists.)",
                 &commit[..commit.len().min(12)]
