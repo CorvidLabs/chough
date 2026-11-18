@@ -159,6 +159,7 @@ pub(super) fn read(relative: &str, text: &str) -> Result<Checkpoint> {
         },
     };
     session.native_change = Some(field("native_change")).filter(|change| !change.is_empty());
+    session.no_native_change = Some(field("no_native_change")).filter(|reason| !reason.is_empty());
     session.references = References {
         criteria: record.list("criteria"),
         requirements: record.list("requirements"),
@@ -237,6 +238,14 @@ pub(super) fn render_with(
         "native_change",
         session.native_change.as_deref().unwrap_or(""),
     )?;
+    // REQ-cli-007 (#281): kept only once the session recorded it, so every other
+    // session reads as before.
+    match &session.no_native_change {
+        Some(reason) => record.set_scalar("no_native_change", reason)?,
+        None => {
+            record.remove("no_native_change");
+        }
+    }
     record.set_scalar("pr", &meta.pr)?;
     // REQ-records-011: the journal post's title and summary, kept only once the agent
     // gave them, so a session without them reads as before.
@@ -437,6 +446,7 @@ fn parse_head_with(head: &str, lenient: bool) -> Result<(Entry, bool)> {
                 holds: None,
                 drives: None,
                 corrects: None,
+                withdrawn: None,
             },
             native_change: None,
         },
@@ -624,6 +634,7 @@ fn apply_field(entry: &mut Entry, key: &str, value: String, parts: &[String]) ->
         "holds" => transition.holds = Some(value),
         "drives" => transition.drives = Some(value),
         "corrects" => transition.corrects = Some(value),
+        "withdrawn" => transition.withdrawn = Some(value),
         // A field a later Chough writes (`by`, corrections and so on) reads as unknown.
         _ => {}
     }
@@ -718,6 +729,9 @@ fn render_entry(transition: &Transition, native_change: Option<&str>, id: &str) 
     }
     if let Some(corrects) = &transition.corrects {
         field(&mut out, "corrects", corrects);
+    }
+    if let Some(withdrawn) = &transition.withdrawn {
+        field(&mut out, "withdrawn", withdrawn);
     }
     if let Some(actor) = &transition.actor {
         field(&mut out, "by", &actor.display());
@@ -990,6 +1004,7 @@ mod tests {
             holds: None,
             drives: None,
             corrects: None,
+            withdrawn: None,
         }
     }
 

@@ -500,6 +500,9 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
         "fingerprint",
         "case",
         "case_digest",
+        "criteria",
+        "requirements",
+        "limitations",
         "screenshot",
         "observed",
         "duration_seconds",
@@ -509,6 +512,21 @@ fn observations_become_entries_receipts_or_removals_and_every_old_id_resolves() 
             allowed.contains(&key.as_str()),
             "{key} on a receipt: {story_text}"
         );
+    }
+    // #286: a migrated receipt keeps what its observation was verified against.
+    let joined = |key: &str| -> String {
+        product[key]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|value| value.as_str().unwrap())
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+    assert!(!joined("criteria").is_empty(), "{product:#}");
+    assert_eq!(receipt["criteria"], joined("criteria"), "{story_text}");
+    if !joined("requirements").is_empty() {
+        assert_eq!(receipt["requirements"], joined("requirements"));
     }
     let bug_path = alias(&plan, &legacy_bug_id(&before, &bug));
     let bug_text = fixture.read(&bug_path);
