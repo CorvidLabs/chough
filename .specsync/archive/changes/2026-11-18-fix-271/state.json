@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-271",
+  "slug": "fix-271",
+  "title": "Fix 271",
+  "description": "fix 271",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "cef86e2622a2a908856b0c2cf11b29d3c1d3e472",
+  "created_at": 1795026178,
+  "updated_at": 1795028534,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "tests/session_pin.rs",
+    "docs/cli.md",
+    "integrations/claude-code/hc-template.md",
+    "integrations/codex/hc-template.md",
+    "integrations/grok/hc-template.md",
+    "integrations/kimi/hc-template.md",
+    "integrations/local/hc-template.md",
+    "integrations/templates.toml",
+    ".chough/cases/cli.session-pin.cases.toml",
+    "changelog.d/2026-11-18-fix-271.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With two open sessions and the pointer on one, chough evidence add --session <other>, and the same command with CHOUGH_SESSION=<other>, record into the other session and leave the pointer unchanged, and chough next --session <other> shows that session. A --session or CHOUGH_SESSION naming an archived or unknown session refuses with every file unchanged. chough init --session and chough inbox add --session keep their meaning, and session new and session use ignore CHOUGH_SESSION. The five versioned hc templates in integrations/ tell the agent to export CHOUGH_SESSION for its session."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the delta is frozen at approval. An hc template change appends a new version entry to integrations/templates.toml and never edits a listed one (REQ-cli-065). No other lesson or principle constrains it.",
+    "public_contract": "yes"
+  }
+}
