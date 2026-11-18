@@ -16,7 +16,7 @@ requirements: [REQ-history-006]
 cases: [TC-history-a-storys-verified-line-shows-the-entrys-limitations]
 design: []
 files: [src/sessions.rs, tests/evidence.rs]
-observations: []
+observations: [2026-11-18-tc-history-a-storys-verified-line-shows-the-entrys-limitations]
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +38,8 @@ An archived story's What was verified line shows each entry's limitations beside
 - 0xLeif decided "Scope approval of fix-349": "Part 1 now; 2 and 3 later" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, in answer to fable-t4b's scope question on #349: one small PR now for the story's What was verified line showing limitations; his decision 'yes' for that line is in issue #349); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-349 as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test evidence -- --exact a_story_receipt_carries_each_field_its_entry_knows for TC-history-a-storys-verified-line-shows-the-entrys-limitations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-storys-verified-line-shows-the-entrys-limitations.md)
 
 ## Open threads
 
