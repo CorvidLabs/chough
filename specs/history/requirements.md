@@ -91,7 +91,7 @@ Acceptance Criteria
 
 Doctor findings and fixes. `chough doctor` (REQ-cli-055) SHALL find this debt without a native read, and its fixes SHALL use Chough's own steps:
 - `unmigrated`: a 0.5.x record (REQ-records-010). The fix SHALL name `chough migrate` and SHALL NOT migrate.
-- `leak`: a committed record that matches REQ-records-006, with its file, line and kind and never the text. The fix SHALL name `chough doctor --fix --redact`, which SHALL redact the matches in place and is not a decision.
+- `leak`: a committed record that matches REQ-records-006, with its file, line and kind and never the text. The fix SHALL name `chough doctor --fix --redact`, which SHALL redact the matches in place and is not a decision, except a match in an ID, a front matter line that gives a record's `id`, its aliases or an ID it references (REQ-records-003): `--redact` SHALL never rewrite an ID, since a redacted ID no longer reads. That finding SHALL name the recovery instead, `chough session shelve <id>` for a session record and a reviewed hand edit for any other record, and SHALL stay `skipped` under `--fix --redact`, while the other matches of the same record are redacted.
 - `stale_pointer`: the active pointer names a session that is missing or archived. The fix SHALL remove the pointer.
 - `finished_session`: an open session that is finished (REQ-history-006) and has no open awaiting-human gate. The fix SHALL archive it. A session with unfolded inbox entries SHALL instead be `skipped`, naming `chough inbox fold`.
 - `unfinished_archive`: a session folder whose story exists and that still holds files. The fix SHALL remove each file whose bytes are committed at HEAD (REQ-records-012) and report the rest as `skipped`, naming the commit to make.
@@ -117,6 +117,7 @@ Acceptance Criteria
 - A committed evidence entry whose front matter holds a bare `- -c` block item reports `unreadable` naming the file and the line, and `--fix` leaves it byte-identical and the finding `skipped`.
 - A clone with neither merge driver set reports one `merge_drivers` finding naming `chough doctor --fix`, and `--fix` sets both. A `.gitattributes` missing a merge line is reported naming that line, and `--fix` leaves `.gitattributes` byte-identical and the finding `skipped`.
 - With both merge drivers set and a `chough` first on `PATH` that reports an older version, `chough doctor` reports one `merge_driver_outdated` finding naming both versions and exits 1; with the same version, or with no driver set, it reports none.
+- A committed session record whose `cases` reference holds a token, and whose Goal holds an email, gives a `leak` finding for each line; the one for the ID names `chough session shelve <id>`. `--fix --redact` redacts the email, leaves the ID line byte-identical with its finding `skipped`, and the session still reads.
 
 ### REQ-history-013
 
