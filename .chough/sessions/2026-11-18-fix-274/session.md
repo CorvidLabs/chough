@@ -16,7 +16,9 @@ requirements: [REQ-cli-012]
 cases: [TC-cli-exercise-stops-at-a-refused-command]
 design: []
 files: []
-observations: [2026-11-18-tc-cli-exercise-stops-at-a-refused-command]
+observations:
+  - 2026-11-18-tc-cli-exercise-stops-at-a-refused-command
+  - 2026-11-18-tc-cli-exercise-stops-at-a-refused-command-b55eaa
 bugs: []
 blockers: []
 waiting_on_human:
@@ -45,6 +47,7 @@ The feature-bug-loop example stops at a refused chough or SpecSync command, with
 ## What was verified
 
 - [Ran cargo test --locked --test cli -- --exact exercise_stops_at_a_refused_bug_update for TC-cli-exercise-stops-at-a-refused-command: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-exercise-stops-at-a-refused-command.md)
+- [Ran cargo test --locked --test cli -- --exact exercise_stops_at_a_refused_bug_update for TC-cli-exercise-stops-at-a-refused-command: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-exercise-stops-at-a-refused-command-b55eaa.md)
 
 ## Open threads
 
