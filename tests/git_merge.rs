@@ -223,3 +223,88 @@ fn a_merge_conflict_outside_chough_warns_without_refusing() {
         "decided: SYNTHETIC during a product merge",
     ]);
 }
+
+/// REQ-cli-069 (#330 review): a command that only reads still runs while a path under
+/// `.chough/` is unmerged, though it takes the writer lock to read: `context`, `stage
+/// show` and a bare `checkpoint`, while a write is still refused.
+#[test]
+fn read_only_commands_still_run_while_chough_is_unmerged() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("base");
+    let readme = ".chough/README.md";
+    let side = |text: &str| {
+        let mut body = fixture.read(readme);
+        body.push_str(&format!("\n{text}\n"));
+        fixture.write(readme, &body);
+    };
+    fixture.git(&["checkout", "-q", "-b", "other"]);
+    side("SYNTHETIC the other branch's note");
+    fixture.commit("other side");
+    fixture.git(&["checkout", "-q", "main"]);
+    side("SYNTHETIC this branch's note");
+    fixture.commit("our side");
+    let merge = Command::new("git")
+        .current_dir(fixture.root())
+        .args([
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+        ])
+        .args(["merge", "--no-edit", "other"])
+        .output()
+        .unwrap();
+    assert!(!merge.status.success(), "the merge did not conflict");
+
+    for args in [
+        &["context"][..],
+        &["context", "--json"][..],
+        &["stage", "show"][..],
+        &["checkpoint"][..],
+    ] {
+        let before = tree(fixture.root());
+        let output = fixture.run(args);
+        let text = said(&output);
+        assert!(output.status.success(), "{args:?} was refused: {text}");
+        assert!(!text.contains("refused:unmerged"), "{args:?}: {text}");
+        assert_eq!(tree(fixture.root()), before, "{args:?} changed a file");
+    }
+    let output = fixture.run(&["checkpoint", "--decision", "decided: SYNTHETIC mid-merge"]);
+    assert!(
+        said(&output).contains("refused:unmerged"),
+        "{}",
+        said(&output)
+    );
+}
+
+/// REQ-cli-069 (#330 review): a rebase is in progress while its `rebase-merge` or
+/// `rebase-apply` folder is there, as `git status` reads it; a `REBASE_HEAD` that Git
+/// left behind after the rebase finished is not one.
+#[test]
+fn a_finished_rebase_is_not_in_progress() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("base");
+    let head = Command::new("git")
+        .current_dir(fixture.root())
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .unwrap();
+    fs::write(fixture.root().join(".git/REBASE_HEAD"), &head.stdout).unwrap();
+    let next = fixture.run(&["next"]);
+    assert!(next.status.success(), "{}", said(&next));
+    assert!(!said(&next).contains("Git:"), "{}", said(&next));
+    assert!(doctor_git_findings(&fixture).is_empty());
+
+    fs::create_dir_all(fixture.root().join(".git/rebase-merge")).unwrap();
+    let next = fixture.run(&["next"]);
+    assert!(
+        said(&next).contains("a git rebase is in progress"),
+        "{}",
+        said(&next)
+    );
+    assert_eq!(doctor_git_findings(&fixture).len(), 1);
+}

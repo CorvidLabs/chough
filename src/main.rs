@@ -240,6 +240,19 @@ fn main() -> Result<()> {
     } else {
         migrate::ensure_migrated(&root)?;
     }
+    // REQ-cli-069: a command that only reads still runs while `.chough/` is
+    // mid-conflict, though it takes the writer lock to read.
+    if match &cli.command {
+        Commands::Context { .. } => true,
+        Commands::Stage {
+            command: stage::StageCommand::Show,
+            ..
+        } => true,
+        Commands::Checkpoint(args) => args.only_shows(),
+        _ => false,
+    } {
+        checkpoint::reads_only();
+    }
     match cli.command {
         Commands::Init {
             objective,
@@ -995,7 +1008,7 @@ fn merge_in_progress(git: &doctor::GitOperation) -> Value {
         "session": null,
         "git_operation": git.view(),
         "next_valid_action": {
-            "action": "Finish or abort the merge or rebase first; Chough reads and writes its records again once nothing under .chough/ is unmerged.",
+            "action": "Finish or abort the Git operation first; Chough reads and writes its records again once nothing under .chough/ is unmerged.",
             "reason": "Paths under .chough/ are unmerged, so Chough's records are mid-conflict and every write refuses.",
             "command": "git status",
         },

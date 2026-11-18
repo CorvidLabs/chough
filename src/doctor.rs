@@ -173,7 +173,8 @@ fn git(root: &Path, arguments: &[&str]) -> Option<Vec<u8>> {
 /// A Git merge or rebase in progress, or unmerged paths left by one (REQ-cli-069).
 #[derive(Clone)]
 pub(super) struct GitOperation {
-    /// `merge` or `rebase`, or None when Git only reports unmerged paths.
+    /// `merge`, `rebase`, `cherry-pick` or `revert`, or None when Git only reports
+    /// unmerged paths, as after a conflicted `git stash pop`.
     operation: Option<&'static str>,
     /// Every unmerged path, project-relative and sorted.
     unmerged: Vec<String>,
@@ -200,7 +201,9 @@ impl GitOperation {
     fn what(&self) -> &'static str {
         match self.operation {
             Some("merge") => "a git merge is in progress",
-            Some(_) => "a git rebase is in progress",
+            Some("rebase") => "a git rebase is in progress",
+            Some("cherry-pick") => "a git cherry-pick is in progress",
+            Some(_) => "a git revert is in progress",
             None => "git reports unmerged paths",
         }
     }
@@ -256,13 +259,16 @@ pub(super) fn git_operation(root: &Path) -> Option<GitOperation> {
 fn read_git_operation(root: &Path) -> Option<GitOperation> {
     let dir = git(root, &["rev-parse", "--absolute-git-dir"])?;
     let dir = std::path::PathBuf::from(String::from_utf8_lossy(&dir).trim());
+    // A rebase is in progress while its folder is there, as `git status` reads it: Git
+    // can leave `REBASE_HEAD` behind after a rebase has finished (#330 review).
     let operation = if dir.join("MERGE_HEAD").is_file() {
         Some("merge")
-    } else if dir.join("REBASE_HEAD").is_file()
-        || dir.join("rebase-merge").is_dir()
-        || dir.join("rebase-apply").is_dir()
-    {
+    } else if dir.join("rebase-merge").is_dir() || dir.join("rebase-apply").is_dir() {
         Some("rebase")
+    } else if dir.join("CHERRY_PICK_HEAD").is_file() {
+        Some("cherry-pick")
+    } else if dir.join("REVERT_HEAD").is_file() {
+        Some("revert")
     } else {
         None
     };
@@ -296,7 +302,7 @@ pub(super) fn refuse_if_unmerged(root: &Path) -> Result<()> {
         return Ok(());
     }
     bail!(
-        "refused:unmerged: {}, so Chough writes none of its records: {} under .chough/ {} unmerged ({}). Finish or abort the merge or rebase first (`git status` names its next step), then run the command again; nothing was written",
+        "refused:unmerged: {}, so Chough writes none of its records: {} under .chough/ {} unmerged ({}). Finish or abort the Git operation first (`git status` names its next step), then run the command again; nothing was written",
         git.what(),
         paths.len(),
         if paths.len() == 1 { "is" } else { "are" },
@@ -310,7 +316,7 @@ fn git_operation_finding(root: &Path) -> Option<Finding> {
     let mut finding = Finding::new(
         Kind::GitOperation,
         git.operation.unwrap_or("unmerged"),
-        "none: finish the merge or rebase (resolve and commit) or abort it (`git merge --abort`, `git rebase --abort`), then run chough doctor again".into(),
+        "none: finish the Git operation (resolve the conflicts, then commit or continue it) or abort it (`git merge --abort`, `git rebase --abort`, `git cherry-pick --abort`, `git revert --abort`, or after a conflicted `git stash pop`, `git checkout -- <path>` or `git reset`), then run chough doctor again".into(),
         false,
     );
     finding.blocked = Some(git.text());
