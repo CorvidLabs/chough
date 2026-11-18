@@ -47,6 +47,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his choice of option (3) for #298, refusing before review when base..HEAD shows a change both open and archived in one commit, with the SpecSync preflight filed as CorvidLabs/spec-sync#1082; it follows his decision comment on #298, 'check before shipping'",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795042179,
+      "digest": "62ed1f359c41b106646dfcec76b53421226bdad5b8b3e0e7d39447ee46822a45",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
