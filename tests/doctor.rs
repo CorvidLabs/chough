@@ -1038,7 +1038,8 @@ fn a_whole_repository_specsync_gets_the_narrowing_advice() {
     ]);
     let advice = init["records_in_verification"].as_str().unwrap_or_default();
     assert!(
-        advice.contains("source_dirs = [\".\"] in .specsync/config.toml covers the whole repository")
+        advice
+            .contains("source_dirs = [\".\"] in .specsync/config.toml covers the whole repository")
             && advice.contains("refuses a verification_ignored_paths entry")
             && advice.contains("skill bundle")
             && advice.contains("for example [\"src\"]")
@@ -1077,7 +1078,9 @@ fn a_whole_repository_specsync_gets_the_narrowing_advice() {
     let (_, report) = doctor(&fixture, &[]);
     let finding = exclusions_finding(&report).expect("a records_in_verification finding");
     assert!(
-        finding["fix"].as_str().is_some_and(|fix| fix.starts_with("add ")),
+        finding["fix"]
+            .as_str()
+            .is_some_and(|fix| fix.starts_with("add ")),
         "{finding:#}"
     );
     assert!(
