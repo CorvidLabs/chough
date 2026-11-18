@@ -231,8 +231,10 @@ fn a_reproduced_bug_is_deduplicated_and_keeps_added_evidence() {
     );
     let last = log(&fixture, &id).pop().unwrap();
     assert!(
-        last.contains(&format!("evidence: {session}/{repro_2}"))
-            && last.contains("Reported again from the mobile checkout"),
+        // #347: the Log links the entry, relative to the bug's file.
+        last.contains(&format!(
+            "evidence: [{repro_2}](../sessions/{session}/evidence/{repro_2}.md)"
+        )) && last.contains("Reported again from the mobile checkout"),
         "{last}"
     );
 
@@ -922,7 +924,11 @@ fn automatic_failure_capture_links_each_failure_by_its_session_qualified_id() {
     }
     assert!(
         record.contains("Additional failure from")
-            && record.contains(&format!("evidence: {}", links[1])),
+            // #347: the Log links the entry, relative to the bug's file.
+            && record.contains(&format!(
+                "evidence: [{bare}](../sessions/{session}/evidence/{bare}.md)",
+                bare = links[1].split_once('/').unwrap().1
+            )),
         "the appended failure's Log line does not name {}: {record}",
         links[1]
     );
@@ -2393,4 +2399,147 @@ fn a_bug_body_gives_its_actual_line_its_own_paragraph() {
     let legacy = bug_record(&fixture, LEGACY);
     assert_eq!(legacy["symptom"], "Seeded legacy record remains readable");
     assert_eq!(legacy["actual"], "The legacy identity is present");
+}
+
+/// REQ-cli-012 (#347), TC-cli-a-new-bugs-log-links-its-evidence: a new bug's Log names
+/// its evidence as a Markdown link, relative to the bug's own file, to the open
+/// session's entry, as a migrated bug's Log does; the link opens a file; a later
+/// `bug update --observation` links what it adds the same way; and the front matter
+/// keeps the `<session>/<evidence>` form.
+#[test]
+fn a_new_bugs_log_links_its_evidence_relative_to_the_bug() {
+    let fixture = ordered_bug(&[("first-failure", "failed", 100)]);
+    let id = only_bug_id(&fixture);
+    let session = fixture.active_id();
+    let path = format!(".chough/bugs/{id}.md");
+    let text = fixture.read(&path);
+    let stored = text
+        .lines()
+        .find_map(|line| line.strip_prefix("evidence: ["))
+        .and_then(|rest| rest.strip_suffix(']'))
+        .unwrap_or_else(|| panic!("no evidence in the front matter: {text}"))
+        .to_string();
+    let (in_session, first) = stored.split_once('/').expect("a session-qualified link");
+    assert_eq!(in_session, session, "{stored}");
+    let link =
+        |evidence: &str| format!("[{evidence}](../sessions/{session}/evidence/{evidence}.md)");
+    let reported = text
+        .lines()
+        .find(|line| line.contains("Reported ("))
+        .unwrap_or_else(|| panic!("no Reported line: {text}"));
+    assert!(
+        reported.contains(&format!("; evidence: {}", link(first))),
+        "{reported}"
+    );
+    assert!(
+        fixture
+            .root()
+            .join(".chough/bugs")
+            .join(format!("../sessions/{session}/evidence/{first}.md"))
+            .is_file()
+    );
+
+    let second = entry(&fixture, "seen-again", "failed", 200);
+    fixture.ok(&[
+        "bug",
+        "update",
+        &id,
+        "--observation",
+        &second,
+        "--note",
+        "Seen again",
+    ]);
+    let text = fixture.read(&path);
+    assert!(
+        text.contains(&format!("evidence: {}", link(&second))),
+        "{text}"
+    );
+    // The front matter keeps the stored form, however the list is laid out.
+    let front = text.split("\n---\n").next().unwrap();
+    for evidence in [first, second.as_str()] {
+        assert!(front.contains(&format!("{session}/{evidence}")), "{front}");
+    }
+    assert!(!front.contains("]("), "{front}");
+}
+
+/// REQ-history-012 (#347), TC-cli-doctor-relinks-a-bugs-evidence-after-archiving: when a
+/// session is archived, its evidence entries leave with its folder and live on as
+/// receipts of its story, so a bug's link to an entry goes stale. `chough doctor`
+/// reports the bug as `stale_bug_links`, naming the entry and the story; `--fix` appends
+/// one Log line that links the story, leaving every earlier line as it was; and the bug
+/// is then not reported again.
+#[test]
+fn doctor_relinks_a_bugs_evidence_after_its_session_is_archived() {
+    let fixture = ordered_bug(&[("first-failure", "failed", 100)]);
+    let id = only_bug_id(&fixture);
+    let session = fixture.active_id();
+    let path = format!(".chough/bugs/{id}.md");
+    let entry_name = "2026-11-10-first-failure";
+    let before = fixture.read(&path);
+    assert!(
+        before.contains(&format!(
+            "[{entry_name}](../sessions/{session}/evidence/{entry_name}.md)"
+        )),
+        "{before}"
+    );
+    fixture.commit("the bug and its evidence");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    assert!(!fixture.exists(&format!(
+        ".chough/sessions/{session}/evidence/{entry_name}.md"
+    )));
+
+    let report = |args: &[&str]| -> Value {
+        let mut all = vec!["doctor"];
+        all.extend_from_slice(args);
+        let output = fixture.run(&all);
+        serde_json::from_slice(&output.stdout).unwrap()
+    };
+    let stale = |report: &Value| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "stale_bug_links")
+            .cloned()
+            .collect()
+    };
+    let found = stale(&report(&[]));
+    assert_eq!(found.len(), 1, "{found:#?}");
+    assert_eq!(found[0]["target"], path.as_str());
+    assert_eq!(found[0]["status"], "found");
+    assert_eq!(found[0]["decision"], false);
+    assert_eq!(found[0]["links"][0]["entry"], entry_name);
+    assert_eq!(
+        found[0]["links"][0]["story"],
+        format!(".chough/archive/sessions/{session}.md")
+    );
+
+    let fixed = stale(&report(&["--fix"]));
+    assert_eq!(fixed[0]["status"], "fixed", "{fixed:#?}");
+    let after = fixture.read(&path);
+    let story_link = format!("[{entry_name}](../archive/sessions/{session}.md)");
+    assert!(
+        after.contains(&format!(
+            "Evidence now in its archived session: {story_link}"
+        )),
+        "{after}"
+    );
+    assert!(
+        fixture
+            .root()
+            .join(".chough/bugs")
+            .join(format!("../archive/sessions/{session}.md"))
+            .is_file()
+    );
+    // Append-only: every Log line the bug had is still there, in order.
+    let log = |text: &str| -> Vec<String> {
+        text.lines()
+            .skip_while(|line| *line != "## Log")
+            .filter(|line| line.starts_with("- "))
+            .map(str::to_string)
+            .collect()
+    };
+    assert_eq!(log(&after)[..log(&before).len()], log(&before)[..]);
+    assert_eq!(log(&after).len(), log(&before).len() + 1);
+    assert!(stale(&report(&[])).is_empty());
 }

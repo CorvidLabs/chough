@@ -53,6 +53,7 @@ enum Kind {
     MergeDriverOutdated,
     ConflictMarkers,
     GitOperation,
+    StaleBugLinks,
 }
 
 impl Kind {
@@ -74,6 +75,7 @@ impl Kind {
             Self::MergeDriverOutdated => "merge_driver_outdated",
             Self::ConflictMarkers => "conflict_markers",
             Self::GitOperation => "git_operation",
+            Self::StaleBugLinks => "stale_bug_links",
         }
     }
 }
@@ -1193,7 +1195,37 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     found.extend(merge_driver_outdated(root));
     found.extend(conflict_marker_findings(root, &files)?);
     found.extend(git_operation_finding(root));
+    if migrated {
+        found.extend(stale_bug_link_findings(root));
+    }
     Ok(found)
+}
+
+/// REQ-history-012 (#347): one finding per bug whose body links an evidence entry that
+/// left with its archived session; the fix appends a Log line linking the archived
+/// story, and rewrites nothing.
+fn stale_bug_link_findings(root: &Path) -> Vec<Finding> {
+    crate::bugs::stale_evidence_links(root)
+        .into_iter()
+        .map(|(path, stale)| {
+            let mut finding = Finding::new(
+                Kind::StaleBugLinks,
+                &path,
+                "chough doctor --fix".into(),
+                false,
+            );
+            finding.detail = Some(json!({
+                "links": stale
+                    .iter()
+                    .map(|(entry, session)| json!({
+                        "entry": entry,
+                        "story": format!(".chough/archive/sessions/{session}.md"),
+                    }))
+                    .collect::<Vec<_>>(),
+            }));
+            finding
+        })
+        .collect()
 }
 
 /// The session findings, in fix order: stale pointer, finished sessions, unfinished
@@ -1448,6 +1480,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
                 bail!("{blocked}");
             }
         }
+        Kind::StaleBugLinks => crate::bugs::relink_archived_evidence(root, &finding.target)?,
         Kind::StalePointer => {
             let path = local_path(root, sessions::POINTER)?;
             if path.exists() {

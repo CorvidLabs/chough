@@ -1,0 +1,61 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795043288,
+      "digest": "ae84c2b5c4c1554be62b4e2b8bd94a784ffa5c6ff803502f38e7495f7ec5ce77",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-347\": \"both\" (GitHub issue #347, which records 'Leif chose both' on 2026-11-18 for its two follow-ups (new bugs get real links; links follow archiving, by repointing or by doctor reporting and fixing); his planning session (hc t4c) relayed it to fable-t4b as his scope approval and asked for the smaller honest option on the second, which is the doctor fix). Relayed and recorded by fable-t4b at 2026-11-18T23:08:07Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-347",
+        "title": "Fix 347",
+        "description": "fix 347",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.bug-evidence-links.cases.toml",
+          "changelog.d/2026-11-18-fix-347.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/history/history.spec.md",
+          "specs/history/requirements.md",
+          "src/bugs.rs",
+          "src/doctor.rs",
+          "tests/bugs.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A new bug's Log names each piece of linked evidence as a Markdown link relative to the bug's file that opens the open session's entry, bug update and the automatic failure capture do the same, and the front matter keeps the stored form. After that session is archived, chough doctor reports the bug as stale_bug_links, naming the entry and the story, and --fix appends one Log entry linking the story with every earlier Log line unchanged; the bug is then not reported again."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "REQ-cli-012 keeps a bug's Log append-only, so a stale link is never rewritten; the fix appends. REQ-history-006 keeps archiving from touching any record but the session's own, so the relink is a doctor fix. Human gates are plain text in tasks.md, and the deltas are frozen at approval.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "21d3d7e7af98f146a33a57c3d24dec10eedb6c7dffc9f6a881eacef9cc65314c",
+        "history": "b38f8f08265d2cd4fcede89cf40ed93c857f2dec91a63c850e1d90d0dd0febd9"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-012": "1d5b2618146c3d51740926e65f2ae0fdc98e92e569cdbff627a3eada35f753f4",
+        "history: REQUIREMENT REQ-history-012": "bb16bc705047aca83b7fde26e7a13fc042eb2eb6ef877307377e1e8f978448a3"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "both",
+        "where": "GitHub issue #347, which records 'Leif chose both' on 2026-11-18 for its two follow-ups (new bugs get real links; links follow archiving, by repointing or by doctor reporting and fixing); his planning session (hc t4c) relayed it to fable-t4b as his scope approval and asked for the smaller honest option on the second, which is the doctor fix",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ],
+  "reopenings": []
+}

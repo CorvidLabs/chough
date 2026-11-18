@@ -821,6 +821,107 @@ fn check_evidence(evidence: &Evidence<'_>, bug: &Stored, ids: &[String]) -> Resu
 /// resolved to; so a later merge that brings a same-named entry in another session
 /// cannot make it ambiguous, and a dropped alias cannot break it (REQ-cli-023). Any
 /// other link is stored as given.
+/// REQ-history-012 (#347): the bugs whose body links an open session's evidence entry
+/// that is gone because its session was archived, each with those entries and the
+/// session whose archived story now holds them. An entry the bug's body already links
+/// to that story is left out, so a fixed bug is not found again.
+pub(super) fn stale_evidence_links(root: &Path) -> Vec<(String, Vec<(String, String)>)> {
+    const OPEN: &str = "](../sessions/";
+    let mut found = vec![];
+    for bug in read_all(root).unwrap_or_default() {
+        let text = bug.record.render();
+        let mut stale: Vec<(String, String)> = vec![];
+        for (at, _) in text.match_indices(OPEN) {
+            let rest = &text[at + OPEN.len()..];
+            let Some(target) = rest.find(')').map(|end| &rest[..end]) else {
+                continue;
+            };
+            let Some((session, entry)) = target.split_once("/evidence/") else {
+                continue;
+            };
+            let Some(entry) = entry.strip_suffix(".md") else {
+                continue;
+            };
+            let exists =
+                |relative: String| local_path(root, &relative).is_ok_and(|path| path.is_file());
+            let link = (entry.to_string(), session.to_string());
+            if !exists(format!(".chough/sessions/{session}/evidence/{entry}.md"))
+                && exists(format!(".chough/archive/sessions/{session}.md"))
+                && !text.contains(&story_link(entry, session))
+                && !stale.contains(&link)
+            {
+                stale.push(link);
+            }
+        }
+        if !stale.is_empty() {
+            found.push((bug.path.clone(), stale));
+        }
+    }
+    found
+}
+
+/// A Markdown link, relative to a bug's file, to the archived story of `session`, named
+/// as the evidence `entry` it holds as a receipt.
+fn story_link(entry: &str, session: &str) -> String {
+    format!("[{entry}](../archive/sessions/{session}.md)")
+}
+
+/// `chough doctor --fix` for a bug [`stale_evidence_links`] found: append one Log line
+/// that links each such entry to its archived story. The Log is append-only, so the
+/// earlier line keeps its link and the new one says where the evidence is now.
+pub(super) fn relink_archived_evidence(root: &Path, path: &str) -> Result<()> {
+    let Some((_, stale)) = stale_evidence_links(root)
+        .into_iter()
+        .find(|(bug, _)| bug == path)
+    else {
+        return Ok(());
+    };
+    let mut stored = read_all(root)?
+        .into_iter()
+        .find(|bug| bug.path == path)
+        .with_context(|| format!("{path} is gone"))?;
+    let links: Vec<String> = stale
+        .iter()
+        .map(|(entry, session)| story_link(entry, session))
+        .collect();
+    let at = now()?;
+    let text = format!("Evidence now in its archived session: {}", links.join(", "));
+    stored.record.append_to_section(
+        LOG,
+        &(log_line(at, &text, Actor::current().as_ref()) + "\n"),
+    )?;
+    stored.record.set_scalar("updated", &iso_time(at))?;
+    markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
+    Ok(())
+}
+
+/// A stored `<session>/<entry>` link as a Markdown link to that open session's entry,
+/// relative to the bug's file in `.chough/bugs/` (REQ-cli-012, #347).
+fn entry_link(stored: &str) -> Option<String> {
+    let (session, entry) = stored.split_once('/')?;
+    Some(format!(
+        "[{entry}](../sessions/{session}/evidence/{entry}.md)"
+    ))
+}
+
+/// How a bug's Log names one piece of linked evidence, given as the bug stores it
+/// (REQ-cli-012, #347): a link to the open session's entry; a link to the archived story
+/// that holds it as a receipt; otherwise its name, as for the bug's own receipt.
+fn log_link(evidence: &Evidence<'_>, bug: &Stored, stored: &str) -> String {
+    if let Some(link) = entry_link(stored) {
+        return link;
+    }
+    match evidence.find(bug, stored) {
+        Ok(Some(linked)) if linked.label == "story-receipt" => {
+            linked.place.split_once('/').map_or_else(
+                || stored.to_string(),
+                |(story, _)| format!("[{stored}](../archive/sessions/{story}.md)"),
+            )
+        }
+        _ => stored.to_string(),
+    }
+}
+
 fn stored_form(id: &str, linked: &Linked) -> String {
     if linked.label == "entry" {
         linked.place.clone()
@@ -984,6 +1085,9 @@ struct Draft {
     requirements: Vec<String>,
     cases: Vec<String>,
     evidence: Vec<String>,
+    /// How the Reported Log line names the evidence, when the caller resolved it;
+    /// otherwise each `<session>/<entry>` link is written as a link to that entry (#347).
+    log_evidence: Option<Vec<String>>,
     regression_baseline: Option<String>,
     fixture: Option<String>,
     environment: String,
@@ -1100,8 +1204,15 @@ fn draft_record(
     record.set_scalar("created", &iso_time(at))?;
     record.set_scalar("updated", &iso_time(at))?;
     let mut report = format!("Reported ({})", one_line(&draft.source));
-    if !draft.evidence.is_empty() {
-        report.push_str(&format!("; evidence: {}", draft.evidence.join(", ")));
+    let log_evidence = draft.log_evidence.clone().unwrap_or_else(|| {
+        draft
+            .evidence
+            .iter()
+            .map(|stored| entry_link(stored).unwrap_or_else(|| stored.clone()))
+            .collect()
+    });
+    if !log_evidence.is_empty() {
+        report.push_str(&format!("; evidence: {}", log_evidence.join(", ")));
     }
     let mut entries = vec![log_line(at, &report, actor)];
     entries.extend(draft.notes.iter().map(|note| log_line(at, note, actor)));
@@ -1321,8 +1432,9 @@ pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<Strin
         stored.record.set("evidence", Front::List(evidence))?;
         stored.record.set_scalar("updated", &iso_time(at))?;
         let text = format!(
-            "Additional failure from {}; evidence: {link}",
-            finding.source
+            "Additional failure from {}; evidence: {}",
+            finding.source,
+            log_link(&index, &stored, &link)
         );
         stored.record.append_to_section(
             LOG,
@@ -1352,6 +1464,7 @@ pub(super) fn capture_failure(root: &Path, finding: Finding<'_>) -> Result<Strin
             path: String::new(),
             record: Record::new(""),
         })],
+        log_evidence: None,
         regression_baseline: None,
         fixture: None,
         environment: finding.environment.into(),
@@ -1445,6 +1558,12 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         criteria: args.criteria,
         requirements: args.requirements,
         cases: args.cases,
+        log_evidence: Some(
+            links
+                .iter()
+                .map(|link| log_link(&evidence, &probe, link))
+                .collect(),
+        ),
         evidence: links,
         regression_baseline: args.regression_baseline,
         fixture: args.fixture,
@@ -1565,7 +1684,11 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     }
     stored.record.set("evidence", Front::List(linked))?;
     if !added.is_empty() {
-        changes.push(format!("evidence: {}", added.join(", ")));
+        let linked: Vec<String> = added
+            .iter()
+            .map(|link| log_link(&evidence, &stored, link))
+            .collect();
+        changes.push(format!("evidence: {}", linked.join(", ")));
     }
     if let Some(fix) = &args.fix {
         stored.record = with_paragraph(&stored.path, &stored.record, FIX, fix)?;
@@ -2331,7 +2454,8 @@ pub(super) fn migrate_0_5(
             cases: legacy.cases.clone(),
             // The Reported Log line links what the report linked, as the notes' lines
             // do (#277); the front matter `evidence` is set below.
-            evidence: body_links(homes, &reported),
+            evidence: vec![],
+            log_evidence: Some(body_links(homes, &reported)),
             // t38n's round-4 F9: front matter names the carried entry or receipt, whose
             // alias keeps the 0.5.x ID.
             regression_baseline: legacy
@@ -3394,6 +3518,7 @@ mod tests {
             requirements: vec![],
             cases: vec![],
             evidence: vec![],
+            log_evidence: None,
             regression_baseline: None,
             fixture: None,
             environment: "e".into(),
