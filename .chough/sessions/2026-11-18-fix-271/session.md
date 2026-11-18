@@ -5,7 +5,7 @@ aliases: [fix-271]
 objective: "Each shell pins its session with --session or CHOUGH_SESSION, whatever the shared pointer says (REQ-cli-037, #271)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-cli-a-pinned-shell-writes-its-own-session-d91946
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-271
-    holds: accept
-    drives: review
-    opened: 2026-11-18T18:31:58Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Each shell pins its session with --session or CHOUGH_SESSION, whatever the shared pointer says (REQ-cli-037, #271)
 
@@ -43,6 +39,7 @@ Each shell pins its session with --session or CHOUGH_SESSION, whatever the share
 
 - The per-shell option is a global --session, which clap leaves out of init and inbox add because they define their own --session, so both keep their meanings; CHOUGH_SESSION is read once in main beside it, and session new and session use ignore it. The pin resolves in sessions::active and never moves the pointer.
 - 0xLeif decided "Scope approval of fix-271": "Approve" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his decision comment on CorvidLabs/chough#271 ('pin per shell': CHOUGH_SESSION plus --session on every write command, hc launches set the variable), then 'Approve' for the REQ-cli-037 wording shown to him in plain words, and 'Yes, same PR' for updating the five versioned hc templates in integrations/ to export CHOUGH_SESSION); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-271 as 0xLeif
+- 0xLeif decided "Implementation review of fix-271": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #331 after the tester's PASS; the CHOUGH_SESSION-before-a-session polish goes in a follow-up t4c is filing); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-271 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -109,4 +106,20 @@ Each shell pins its session with --session or CHOUGH_SESSION, whatever the share
   - revision: cef86e2622a2a908856b0c2cf11b29d3c1d3e472
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:02:35Z · gate-closed · accept → accept · Implementation review of fix-271 ^t-2701c3
+  - native_change: fix-271
+  - revision: 13b502cbcf6384574d1411d6802f26a2e3898ee4
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #331 after the tester's PASS; the CHOUGH_SESSION-before-a-session polish goes in a follow-up t4c is filing
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-271
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-18T19:02:36Z · advance · accept → done · native:archived ^t-fd14db
+  - native_change: fix-271
+  - gate: native:archived
+  - revision: 13b502cbcf6384574d1411d6802f26a2e3898ee4
   - by: chough-fixer (claude-opus-5-5, hc t4n)
