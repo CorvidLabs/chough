@@ -281,7 +281,11 @@ pub(crate) fn legacy_paths(root: &Path) -> Result<Vec<String>> {
         };
         for entry in entries.flatten() {
             let name = entry.file_name().to_string_lossy().to_string();
-            if name.ends_with(".json") && entry.path().is_file() {
+            // macOS metadata beside a 0.5.x record is not one (REQ-records-015).
+            if name.ends_with(".json")
+                && !crate::evidence::is_os_metadata(&name)
+                && entry.path().is_file()
+            {
                 found.insert(format!("{folder}/{name}"));
             }
         }
@@ -308,12 +312,16 @@ fn accountable_paths(root: &Path) -> Result<Vec<String>> {
     Ok(found.into_iter().collect())
 }
 
-/// Every file under `relative`, as project-relative paths.
+/// Every file under `relative`, as project-relative paths, leaving out macOS metadata
+/// files and folders, which the migration neither carries nor removes (REQ-records-015).
 fn walk_files(root: &Path, relative: &str, found: &mut BTreeSet<String>) -> Result<()> {
     let Ok(entries) = std::fs::read_dir(local_path(root, relative)?) else {
         return Ok(());
     };
     for entry in entries.flatten() {
+        if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
+            continue;
+        }
         let name = format!("{relative}/{}", entry.file_name().to_string_lossy());
         let kind = entry.file_type()?;
         if kind.is_dir() {
@@ -999,10 +1007,17 @@ fn is_valid(state: &str) -> bool {
     matches!(state, "authenticated-history" | "exact" | "valid")
 }
 
+/// Whether the folder at `path` holds nothing at all. macOS's rmdir deletes orphaned
+/// AppleDouble `._*` files in a folder it removes, so a folder is removed only when this
+/// holds, and the migration never removes macOS metadata (REQ-records-015).
+fn holds_nothing(path: &Path) -> bool {
+    std::fs::read_dir(path).is_ok_and(|mut entries| entries.next().is_none())
+}
+
 /// Remove each folder a removal left empty, from the removed file's own folder up to,
 /// never including, the project root: a session rolled into the vault leaves no empty
-/// `knowledge/attachments/<folder>/sessions/` behind. A folder that still holds anything
-/// stays.
+/// `knowledge/attachments/<folder>/sessions/` behind. A folder that still holds anything,
+/// macOS metadata included, stays.
 fn prune_emptied<'a>(root: &Path, removed: impl Iterator<Item = &'a str>) {
     for path in removed {
         let mut folder = Path::new(path).parent();
@@ -1010,7 +1025,7 @@ fn prune_emptied<'a>(root: &Path, removed: impl Iterator<Item = &'a str>) {
             let Ok(local) = local_path(root, &relative.to_string_lossy()) else {
                 break;
             };
-            if std::fs::remove_dir(local).is_err() {
+            if !holds_nothing(&local) || std::fs::remove_dir(local).is_err() {
                 break;
             }
             folder = relative.parent();
@@ -1028,7 +1043,9 @@ fn prune_empty_folders(root: &Path) -> Result<()> {
                 }
             }
         }
-        let _ = std::fs::remove_dir(path);
+        if holds_nothing(path) {
+            let _ = std::fs::remove_dir(path);
+        }
     }
     for folder in [
         ".chough/history",
@@ -1493,6 +1510,7 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             .flatten()
             .filter(|entry| entry.path().join("sessions").is_dir())
             .filter_map(|entry| entry.file_name().into_string().ok())
+            .filter(|folder| !crate::evidence::is_os_metadata(folder))
             .map(|folder| format!("{attachments}/{folder}/sessions"))
             .collect();
         rolled.sort();
@@ -1507,6 +1525,7 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
                     .filter(|entry| entry.path().is_file())
                     .filter_map(|entry| entry.file_name().into_string().ok())
                     .filter(|name| name.ends_with(".json"))
+                    .filter(|name| !crate::evidence::is_os_metadata(name))
                     .collect()
             })
             .unwrap_or_default();
@@ -1638,6 +1657,7 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
                     .flatten()
                     .filter_map(|entry| entry.file_name().into_string().ok())
                     .filter(|name| name.ends_with(".json"))
+                    .filter(|name| !crate::evidence::is_os_metadata(name))
                     .collect()
             })
             .unwrap_or_default();
