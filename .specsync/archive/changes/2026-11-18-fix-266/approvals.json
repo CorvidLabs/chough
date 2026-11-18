@@ -1,0 +1,134 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795025835,
+      "digest": "7ecd5470a043a0105b4624b7708076adb77e72711c69bc62356d91b98aa3a5cb",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-266\": \"warn, and refuse .chough writes. next, status and doctor report an in-progress git merge or rebase (MERGE_HEAD, REBASE_HEAD, unmerged paths) with 'finish or abort it first'. Write commands refuse only while paths under .chough/ are unmerged.\" (Leif's decision comment on CorvidLabs/chough#266 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for this change). Relayed and recorded by chough-fixer-t4g at 2026-11-18T18:17:14Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-266",
+        "title": "Fix 266",
+        "description": "fix 266",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.git-merge-in-progress.cases.toml",
+          "changelog.d/2026-11-18-fix-266.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/main.rs",
+          "tests/git_merge.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "During a git merge or rebase (MERGE_HEAD, REBASE_HEAD or a rebase in progress), chough next and chough status print a line naming it and saying to finish or abort it first, and chough doctor reports a git_operation finding with no fix that names it and any unmerged paths. While a path under .chough/ is unmerged, a command that writes Chough's records refuses as refused:unmerged, naming the paths and saying to finish or abort the merge or rebase first, with every file unchanged; reads still work. With no merge or rebase in progress nothing changes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the delta is frozen at approval. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "bdcae68b7620ef1cd774a807f294c2ba2d6c0ef5411c782115b47ab2241dfcd4"
+      },
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "warn, and refuse .chough writes. next, status and doctor report an in-progress git merge or rebase (MERGE_HEAD, REBASE_HEAD, unmerged paths) with 'finish or abort it first'. Write commands refuse only while paths under .chough/ are unmerged.",
+        "where": "Leif's decision comment on CorvidLabs/chough#266 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for this change",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795029073,
+      "digest": "3fb9dcee1159ae91adb5ac6e222fb4050e805fe7c4e5c52405358c32fd529e6b",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-266 without REBASE_HEAD\": \"Let the fixer send it back once\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: he chose that the fixer run the send-back on fix-266 this once and drop REBASE_HEAD from REQ-cli-069 so the requirement matches the code, recorded as his approval of that one-line change (and the same words in the acceptance criteria)). Relayed and recorded by chough-fixer-t4g at 2026-11-18T19:11:12Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-266",
+        "title": "Fix 266",
+        "description": "fix 266",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.git-merge-in-progress.cases.toml",
+          "changelog.d/2026-11-18-fix-266.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/main.rs",
+          "tests/git_merge.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "During a git merge or rebase (MERGE_HEAD, or a rebase-merge or rebase-apply folder in the Git directory), chough next and chough status print a line naming it and saying to finish or abort it first, and chough doctor reports a git_operation finding with no fix that names it and any unmerged paths. While a path under .chough/ is unmerged, a command that writes Chough's records refuses as refused:unmerged, naming the paths and saying to finish or abort the merge or rebase first, with every file unchanged; reads still work. With no merge or rebase in progress nothing changes."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the delta is frozen at approval. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "d06e3bfc81ff467011ab3123f1b0d0fb11c078bc66d9f3431a363043815a73c0"
+      },
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Let the fixer send it back once",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: he chose that the fixer run the send-back on fix-266 this once and drop REBASE_HEAD from REQ-cli-069 so the requirement matches the code, recorded as his approval of that one-line change (and the same words in the acceptance criteria)",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795029851,
+      "digest": "9a8eda64f733c2a33a5f06ef66d9cd470ab94a2f66a3544a5711ef10bf75b5f9",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "fix-266",
+      "actor": "0xLeif",
+      "reason": "REQ-cli-069's approved text names REBASE_HEAD as a sign of a rebase in progress, but since the #330 review the code reads a rebase only from its rebase-merge or rebase-apply folder, as git status does, because Git can leave REBASE_HEAD behind after a rebase finishes. Leif chose 'Let the fixer send it back once' (relayed by his planning session, hc t4c, to chough-fixer, 2026-11-18) so the requirement matches the code; the send-back was run by chough-fixer-t4g on his word.",
+      "timestamp": 1795029044,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "cli",
+          "operation": "added",
+          "target": "requirement",
+          "key": "REQ-cli-069",
+          "content": "Git merge or rebase in progress. When Git reports a merge in progress (`MERGE_HEAD`), a rebase in progress (`REBASE_HEAD`, or a `rebase-merge` or `rebase-apply` folder in the Git directory) or unmerged paths, `chough next` and `chough status` SHALL say so in a line of their own, naming the operation and the unmerged paths under `.chough/` (at most 10, with their total) and saying to finish or abort it first, and SHALL give the same as `git_operation` in their JSON; `chough doctor` SHALL report it as a `git_operation` finding with no fix, naming the operation and those paths, beside the findings of REQ-history-012. While any path under `.chough/` is unmerged, every command that writes a Chough record (REQ-cli-040) SHALL refuse as `refused:unmerged`, naming those paths and saying to finish or abort the merge or rebase first, with every file unchanged; a command that only reads SHALL still run, and Chough's merge drivers, which write only the files Git hands them, SHALL still run. Outside a Git work tree, or with no merge or rebase in progress, nothing changes. Trace: DRIVE-17, DRIVE-11, DRIVE-3.\n\nAcceptance Criteria\n- During a merge that leaves a `.chough/` record conflicted, `chough next` and `chough status` exit 0 and name the merge and the path, `chough doctor` reports one `git_operation` finding naming them, and `chough checkpoint --decision`, `chough evidence add` and `chough bug add` refuse as `refused:unmerged` with every file unchanged.\n- During a merge whose only conflict is outside `.chough/`, `next`, `status` and `doctor` still name the merge, and a write succeeds.\n- Once the merge is committed or aborted, none of this appears."
+        }
+      ],
+      "applied_modules": [
+        "cli"
+      ]
+    }
+  ]
+}
