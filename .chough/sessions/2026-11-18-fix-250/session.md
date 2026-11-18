@@ -5,7 +5,7 @@ aliases: [fix-250]
 objective: "When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason, and doctor's JSON echoes it (REQ-history-012, #250)"
 intent_scope: ""
 modules: []
-stage: test
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -19,9 +19,13 @@ files: [src/doctor.rs, src/checkpoint.rs, src/stage.rs, src/session_md.rs, tests
 observations: [2026-11-18-tc-history-a-withdrawn-stale-gate-keeps-doctors-reason]
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-250
+    holds: accept
+    drives: review
+    opened: 2026-11-18T20:15:19Z
 run_consents: []
-next: Continue test
+next: Wait for the tester's check and Leif's implementation review of fix-250
 ---
 # When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason, and doctor's JSON echoes it (REQ-history-012, #250)
 
@@ -80,4 +84,15 @@ When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline
   - native_change: fix-250
   - gate: native:approved
   - revision: e47b4cfaabe2e68fd02246be01fb7e8e256fe00b
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:15:19Z · advance · test → accept · native:verifying ^t-6bdf3d
+  - native_change: fix-250
+  - gate: native:verifying
+  - revision: a1d1118d283038341d73ac2cdcafdae736eaeaae
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-18T20:15:19Z · gate-opened · accept → accept · Implementation review of fix-250 ^t-0f918d
+  - native_change: fix-250
+  - revision: a1d1118d283038341d73ac2cdcafdae736eaeaae
+  - holds: accept
+  - drives: review
   - by: fable (claude-fable-5-2, hc t4b)
