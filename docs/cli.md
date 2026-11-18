@@ -959,8 +959,9 @@ Each evidence entry the session holds becomes one map in the story's `receipts`,
 fenced YAML block of its last section, `## Receipts`, in observation-time order, oldest
 first, with its `id`, `aliases` (one value, comma and space separated), `claim`,
 `result`, `observed`, `command`, `revision`, `environment`, `content`, `fingerprint`,
-`raw_log`, `case`, `case_digest`, `duration_seconds`, `screenshot` and `actor` when
-present. Every reader (bug verification, evidence links, timing, doctor) takes the
+`raw_log`, `case`, `case_digest`, `criteria` and `requirements` (each one value,
+comma and space separated), `limitations` (one value, semicolon and space separated),
+`duration_seconds`, `screenshot` and `actor` when present. Every reader (bug verification, evidence links, timing, doctor) takes the
 receipts from that section, and from the front matter of a story written before it.
 What was verified gives the latest receipt of each case and every receipt bound to no
 case, one line each:
