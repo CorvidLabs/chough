@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "attempts": [
+    {
+      "timestamp": 1795066526,
+      "commit": "73cf8c7aaca29e4495ad0d6461db9f7b7fd64fb5",
+      "contract_digest": "",
+      "workspace_digest": "",
+      "passed": false,
+      "commands": [],
+      "requirement_ids": [],
+      "refusal": "tasks.md contains incomplete tasks: finish the 5 open tasks in `.specsync/changes/doctor-fix-safety/tasks.md` (line 8: \"#381: keep evidence the story does not hold and unfolded inbox entries; name the...\"; line 9: \"#377: remove macOS metadata at the archive finish.\"; line 10: \"#371: next names finishing the archive.\"; line 11: \"#374: front-matter conflicts; no timeline_rewritten for a redaction.\"; line 12: \"#402: a symlink-free, bounded spec walk.\") and mark each one `[x]`, then re-run `specsync change check doctor-fix-safety`"
+    },
+    {
+      "timestamp": 1795066540,
+      "commit": "73cf8c7aaca29e4495ad0d6461db9f7b7fd64fb5",
+      "contract_digest": "f9edc08a69220e33dcfe90cfb08d391c89e05fe5c25de091b21f36fd77e72694",
+      "execution_digest": "d66a258385d7305c6d6940b99908934ecb775a1f9bf91aa884deb35823529bad",
+      "workspace_digest": "68d7a39a4200c81972d864fdfe4960744d75d97572209c7e170c4fd8b2bcb64c",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-021",
+        "REQ-history-006",
+        "REQ-history-012",
+        "REQ-records-001",
+        "REQ-records-014"
+      ]
+    },
+    {
+      "timestamp": 1795066725,
+      "commit": "31f737eda8ac929f71922ea9a2b2f891661a575d",
+      "contract_digest": "f9edc08a69220e33dcfe90cfb08d391c89e05fe5c25de091b21f36fd77e72694",
+      "execution_digest": "d66a258385d7305c6d6940b99908934ecb775a1f9bf91aa884deb35823529bad",
+      "workspace_digest": "21a4a3cfd60c865e27f9c418024155415ab21507de42b06e4fe8185069bb0d3d",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec history --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-021",
+        "REQ-history-006",
+        "REQ-history-012",
+        "REQ-records-001",
+        "REQ-records-014"
+      ]
+    }
+  ]
+}

@@ -2185,7 +2185,10 @@ fn the_archive_finish_keeps_what_the_story_does_not_hold() {
     // REQ-cli-021: while only kept entries hold the folder, `next` names the way out
     // by hand after `doctor --fix`, not `doctor --fix` alone.
     let next = fixture.ok_text(&["next"]);
-    assert!(next.contains("move or drop by hand each entry it keeps"), "{next}");
+    assert!(
+        next.contains("move or drop by hand each entry it keeps"),
+        "{next}"
+    );
 
     // The way out by hand: move the evidence entry into an open session; add the inbox
     // entry's text again there and drop the kept copy. The archive then finishes and the
