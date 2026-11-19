@@ -1378,3 +1378,156 @@ fn ship_runs_with_a_leftover_file_of_an_archived_change() {
     assert!(output.status.success(), "the ship did not run: {said}");
     assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID], "{said}");
 }
+
+/// The full commit id of HEAD in `fixture`.
+fn head_of(fixture: &Fixture) -> String {
+    let output = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .unwrap();
+    String::from_utf8_lossy(&output.stdout).trim().to_string()
+}
+
+/// REQ-cli-059 (#400): the history check covers every commit from the change's base
+/// to HEAD, however many: a commit holding a change both open and archived, followed by
+/// 1,001 more commits, is still refused, with nothing run. A recorded base commit the
+/// repository does not hold is refused as `refused:history-unchecked`, never passed.
+#[test]
+fn ship_checks_the_whole_history_and_refuses_what_it_cannot_read() {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    std::fs::remove_dir_all(
+        fixture
+            .root()
+            .join(".specsync/archive/changes/2026-11-01-a5"),
+    )
+    .unwrap();
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    fixture.write(
+        ".specsync/changes/old/state.json",
+        "{\"id\": \"old\", \"state\": \"verifying\"}\n",
+    );
+    fixture.write(
+        ".specsync/archive/changes/2026-11-01-old/state.json",
+        "{\"id\": \"old\", \"state\": \"archived\"}\n",
+    );
+    fixture.commit("merge main, keeping both copies of old");
+    std::fs::remove_dir_all(fixture.root().join(".specsync/changes/old")).unwrap();
+    fixture.commit("drop the duplicate copy of old");
+    empty_commits(&fixture, 1001);
+    let record = format!(".chough/sessions/{}/session.md", fixture.active_id());
+    let before = fixture.read(&record);
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!output.status.success(), "the ship ran: {said}");
+    assert!(said.contains("refused:corrupt-history"), "{said}");
+    assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
+    assert_eq!(fixture.read(&record), before);
+
+    // A base commit the repository does not hold.
+    let fixture = shipping_session_at("accept");
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!(
+            "{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{}\"}}\n",
+            "3".repeat(40)
+        ),
+    );
+    fixture.commit("a5 with a base this clone lacks");
+    let before = fixture.read(&record_of(&fixture));
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!output.status.success(), "the ship ran: {said}");
+    assert!(said.contains("refused:history-unchecked"), "{said}");
+    assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
+    assert_eq!(fixture.read(&record_of(&fixture)), before);
+}
+
+/// Add `count` empty commits on the current branch in one `git fast-import` run.
+fn empty_commits(fixture: &Fixture, count: usize) {
+    use std::io::Write as _;
+    let branch = {
+        let output = std::process::Command::new("git")
+            .current_dir(fixture.root())
+            .args(["symbolic-ref", "HEAD"])
+            .output()
+            .unwrap();
+        String::from_utf8_lossy(&output.stdout).trim().to_string()
+    };
+    let mut stream = String::new();
+    for n in 0..count {
+        let message = format!("later {n}\n");
+        stream.push_str(&format!(
+            "commit {branch}\ncommitter Test <test@example.invalid> {} +0000\ndata {}\n{message}",
+            1_700_000_000 + n,
+            message.len()
+        ));
+        if n == 0 {
+            stream.push_str(&format!("from {}\n", head_of(fixture)));
+        }
+        stream.push('\n');
+    }
+    let mut child = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["fast-import", "--quiet", "--force"])
+        .stdin(std::process::Stdio::piped())
+        .spawn()
+        .unwrap();
+    child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(stream.as_bytes())
+        .unwrap();
+    assert!(child.wait().unwrap().success());
+}
+
+fn record_of(fixture: &Fixture) -> String {
+    format!(".chough/sessions/{}/session.md", fixture.active_id())
+}
+
+/// REQ-cli-059 (#369): with the pointer on another session, `chough change ship <id>
+/// --session <s>` closes the gate and moves the stage in `<s>`, and the pointer's
+/// session file is byte-identical.
+#[test]
+fn ship_closes_the_gate_and_moves_the_stage_in_the_pinned_session() {
+    let fixture = shipping_session_at("accept");
+    let shipping = fixture.active_id();
+    fixture.ok(&[
+        "session",
+        "new",
+        "SYNTHETIC-elsewhere",
+        "--objective",
+        "Other work",
+    ]);
+    let elsewhere = fixture.active_id();
+    assert_ne!(elsewhere, shipping);
+    fixture.commit("another session holds the pointer");
+    let other_file = format!(".chough/sessions/{elsewhere}/session.md");
+    let before = fixture.read(&other_file);
+    let mut args = vec!["--session", shipping.as_str()];
+    args.extend(ship_with(SHIP_ID, &review_relay()));
+    let output = fixture.run(&args);
+    assert!(
+        output.status.success(),
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let shipped = ship_session(&fixture);
+    assert_eq!(shipped["stage"]["current"], "done", "{shipped}");
+    assert_eq!(fixture.read(&other_file), before);
+}

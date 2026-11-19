@@ -484,13 +484,16 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     }
     steps.push(("chough stage advance --to done".into(), advance));
     let chough = std::env::current_exe()?;
+    // REQ-cli-059 (#369): the gate close and the move into done act on the session this
+    // command resolved, pinned or not, never on whatever the shared pointer says now.
+    let session = crate::sessions::id_of(&crate::sessions::checkpoint_path(root)?);
     for (index, (shown, arguments)) in steps.iter().enumerate() {
         let mut command = Command::new(&chough);
-        command
-            .arg("--root")
-            .arg(root)
-            .args(arguments)
-            .current_dir(root);
+        command.arg("--root").arg(root);
+        if let Some(session) = &session {
+            command.arg("--session").arg(session);
+        }
+        command.args(arguments).current_dir(root);
         let output = records::run_owned(&mut command, None)?;
         if !output.status.success() {
             if !args.json {
@@ -623,9 +626,6 @@ fn signal(_: &std::process::ExitStatus) -> Option<i32> {
     None
 }
 
-/// The most commits of a change's history the corrupt-history check reads.
-const HISTORY_LIMIT: usize = 1_000;
-
 /// Refuse a ship whose change history SpecSync would read as corrupt (REQ-cli-059, #298):
 /// a commit between the change's recorded base commit and HEAD that holds another change
 /// both open, `.specsync/changes/<id>/state.json`, and archived,
@@ -658,51 +658,72 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
             .success()
             .then(|| String::from_utf8_lossy(&output.stdout).into_owned())
     };
-    let Some(commits) = git(&["rev-list", &format!("{base}..HEAD")]) else {
+    // Outside a Git repository there is nothing to check.
+    if git(&["rev-parse", "--git-dir"]).is_none() {
         return Ok(());
+    }
+    let unchecked = |what: &str| {
+        anyhow::anyhow!(
+            "refused:history-unchecked: Git could not read {what}, so this change's history from its base commit {} to HEAD could not be checked and nothing ran.\nFetch the missing history (in a shallow clone, `git fetch --unshallow`) and run the ship again.",
+            &base[..base.len().min(12)]
+        )
     };
+    // REQ-cli-059 (#400): the whole range, however many commits.
+    let range = format!("{base}..HEAD");
+    let commits = git(&["rev-list", &range]).ok_or_else(|| unchecked(&range))?;
+    // One streaming call gives each commit's two folder trees, so commits that leave
+    // both folders as they were cost no further Git call.
+    let mut asked = String::new();
+    for commit in commits.lines() {
+        asked.push_str(&format!(
+            "{commit}:.specsync/changes\n{commit}:.specsync/archive/changes\n"
+        ));
+    }
+    let trees = records::run_owned(
+        Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(["cat-file", "--batch-check"]),
+        Some(asked.as_bytes()),
+    )
+    .ok()
+    .filter(|output| output.status.success())
+    .map(|output| String::from_utf8_lossy(&output.stdout).into_owned())
+    .ok_or_else(|| unchecked("the trees of the commits in that range"))?;
+    // A missing folder answers `<name> missing`; a present one `<tree id> tree <size>`.
+    let tree_ids: Vec<&str> = trees
+        .lines()
+        .map(|line| line.split_whitespace().next().unwrap_or_default())
+        .collect();
+    let mut by_trees: std::collections::HashMap<(String, String), Vec<String>> =
+        std::collections::HashMap::new();
     // Newest first, as `git rev-list` gives them: the change kept both ways, and every
     // commit in the window that holds it, so the refusal can name the one that brought
     // it in, as SpecSync's own reason does, and say how many hold it.
     let mut found: Option<(String, Vec<String>)> = None;
-    for commit in commits.lines().take(HISTORY_LIMIT) {
-        let Some(paths) = git(&[
-            "ls-tree",
-            "-r",
-            "--name-only",
-            commit,
-            "--",
-            ".specsync/changes",
-            ".specsync/archive/changes",
-        ]) else {
-            continue;
-        };
-        // SpecSync's rule counts a change's `state.json` on both sides, not any file: a
-        // leftover such as a `tasks.md` beside an archive is not a second state (#333).
-        let mut open = std::collections::BTreeSet::new();
-        let mut archived = std::collections::BTreeSet::new();
-        for path in paths.lines() {
-            let Some(folder) = path.strip_suffix("/state.json") else {
-                continue;
-            };
-            if let Some(folder) = folder.strip_prefix(".specsync/archive/changes/") {
-                // `<YYYY-MM-DD>-<id>`: the change ID follows the 11-byte date prefix.
-                if !folder.contains('/') && folder.len() > 11 && folder.as_bytes()[10] == b'-' {
-                    archived.insert(folder[11..].to_string());
-                }
-            } else if let Some(folder) = folder.strip_prefix(".specsync/changes/")
-                && !folder.contains('/')
-            {
-                open.insert(folder.to_string());
+    for (index, commit) in commits.lines().enumerate() {
+        let key = (
+            tree_ids
+                .get(index * 2)
+                .copied()
+                .unwrap_or_default()
+                .to_string(),
+            tree_ids
+                .get(index * 2 + 1)
+                .copied()
+                .unwrap_or_default()
+                .to_string(),
+        );
+        let both: Vec<String> = match by_trees.get(&key) {
+            Some(both) => both.clone(),
+            None => {
+                let both = changes_both_ways(&git, commit, id)
+                    .ok_or_else(|| unchecked(&format!("commit {commit}")))?;
+                by_trees.insert(key, both.clone());
+                both
             }
-        }
-        // The change being shipped is left out: its own archive appears only when
-        // SpecSync ships it, and a history is poisoned by another change kept both open
-        // and archived, as a merge of main leaves (#298).
-        let both: Vec<&String> = open
-            .intersection(&archived)
-            .filter(|both| both.as_str() != id)
-            .collect();
+        };
+        let both: Vec<&String> = both.iter().collect();
         match &mut found {
             None => {
                 if let Some(first) = both.first() {
@@ -734,6 +755,53 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
         );
     }
     Ok(())
+}
+
+/// The changes other than `id` that `commit` holds both open and archived, by their
+/// `state.json` on each side, as SpecSync counts them (#298, #333); None when Git
+/// cannot list that commit's tree.
+fn changes_both_ways(
+    git: &dyn Fn(&[&str]) -> Option<String>,
+    commit: &str,
+    id: &str,
+) -> Option<Vec<String>> {
+    let paths = git(&[
+        "ls-tree",
+        "-r",
+        "--name-only",
+        commit,
+        "--",
+        ".specsync/changes",
+        ".specsync/archive/changes",
+    ])?;
+    // SpecSync's rule counts a change's `state.json` on both sides, not any file: a
+    // leftover such as a `tasks.md` beside an archive is not a second state (#333).
+    let mut open = std::collections::BTreeSet::new();
+    let mut archived = std::collections::BTreeSet::new();
+    for path in paths.lines() {
+        let Some(folder) = path.strip_suffix("/state.json") else {
+            continue;
+        };
+        if let Some(folder) = folder.strip_prefix(".specsync/archive/changes/") {
+            // `<YYYY-MM-DD>-<id>`: the change ID follows the 11-byte date prefix.
+            if !folder.contains('/') && folder.len() > 11 && folder.as_bytes()[10] == b'-' {
+                archived.insert(folder[11..].to_string());
+            }
+        } else if let Some(folder) = folder.strip_prefix(".specsync/changes/")
+            && !folder.contains('/')
+        {
+            open.insert(folder.to_string());
+        }
+    }
+    // The change being shipped is left out: its own archive appears only when
+    // SpecSync ships it, and a history is poisoned by another change kept both open
+    // and archived, as a merge of main leaves (#298).
+    Some(
+        open.intersection(&archived)
+            .filter(|both| both.as_str() != id)
+            .cloned()
+            .collect(),
+    )
 }
 
 #[cfg(test)]
