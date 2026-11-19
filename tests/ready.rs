@@ -17,6 +17,17 @@ if [ "${1:-}" = change ] && [ "${2:-}" = show ]; then
 fi
 if [ "${1:-}" = check ]; then
   printf 'dirty\n' >.specsync/hashes.json
+  # Another process replacing the cache while the check runs (the review of #311).
+  case "${READY_TEST_CACHE:-}" in
+    regular)
+      printf 'SECOND_WRITER\n' >.specsync/second
+      mv .specsync/second .specsync/hashes.json
+      ;;
+    symlink)
+      rm .specsync/hashes.json
+      ln -s ../specs/cli/requirements.md .specsync/hashes.json
+      ;;
+  esac
   name=$(ls -1 .specsync/changes | head -n 1)
   cat ".specsync/changes/$name/check.json"
   exit 0
@@ -441,4 +452,49 @@ fn files_a_merge_brought_in_are_not_outside_the_declared_paths() {
             ),
         ],
     );
+}
+
+/// REQ-cli-067 (the review of #311): the report restores only the cache its own
+/// SpecSync runs wrote. A cache another process replaced meanwhile, by a regular file
+/// or by a symlink to a tracked file, stays as that process left it, nothing is written
+/// through the symlink, and the report says the cache was left.
+#[cfg(unix)]
+#[test]
+fn a_cache_replaced_while_the_report_runs_is_left_alone() {
+    // The fixture tracks its cache, so the replacement is also a changed file; the
+    // finding under test is this one.
+    let left = "- .specsync/hashes.json was replaced while this report ran, so it was left as it is now\n  Fix: `chough change ready demo`\n";
+    for kind in ["regular", "symlink"] {
+        let fixture = project(OLD_REQ, &["src/"]);
+        let output = fixture.run_with_env(&["change", "ready", ID], &[("READY_TEST_CACHE", kind)]);
+        let stdout = String::from_utf8(output.stdout).unwrap();
+        assert!(stdout.contains(left), "{kind}: {stdout}");
+        assert_eq!(output.status.code(), Some(1), "{kind}");
+        let cache = fixture.root().join(".specsync/hashes.json");
+        // The tracked file the symlink points to keeps its text either way.
+        assert_eq!(fixture.read("specs/cli/requirements.md"), OLD_REQ, "{kind}");
+        if kind == "regular" {
+            assert_eq!(std::fs::read_to_string(&cache).unwrap(), "SECOND_WRITER\n");
+        } else {
+            assert!(
+                std::fs::symlink_metadata(&cache)
+                    .unwrap()
+                    .file_type()
+                    .is_symlink(),
+                "the replacement symlink stays"
+            );
+        }
+    }
+}
+
+/// REQ-cli-067: with no cache before the report, the one SpecSync wrote is removed.
+#[test]
+fn a_cache_the_report_made_is_removed() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let cache = fixture.root().join(".specsync/hashes.json");
+    std::fs::remove_file(&cache).unwrap();
+    let output = fixture.run(&["change", "ready", ID]);
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert!(!stdout.contains("was replaced"), "{stdout}");
+    assert!(!cache.exists());
 }

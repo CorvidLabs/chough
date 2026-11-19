@@ -436,10 +436,14 @@ fn questions_from(id: &str, output: &Output) -> Vec<Finding> {
 
 fn export_findings(root: &Path, change: &Change) -> Vec<Finding> {
     let cache = root.join(".specsync/hashes.json");
-    let saved = fs::read(&cache).ok();
+    let before = Cache::observe(&cache);
+    let mut after = Cache::Absent;
     let mut findings = Vec::new();
     for module in &change.affected_specs {
-        let output = match specsync(root, &["check", "--spec", module, "--format", "json"]) {
+        let ran = specsync(root, &["check", "--spec", module, "--format", "json"]);
+        // What SpecSync left right after this run: the only state a restore may undo.
+        after = Cache::observe(&cache);
+        let output = match ran {
             Ok(output) => output,
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
                 findings.push(Finding {
@@ -493,7 +497,12 @@ fn export_findings(root: &Path, change: &Change) -> Vec<Finding> {
             });
         }
     }
-    restore_cache(&cache, saved.as_deref());
+    if !restore_cache(&cache, &before, &after) {
+        findings.push(Finding {
+            text: ".specsync/hashes.json was replaced while this report ran, so it was left as it is now".into(),
+            fix: format!("chough change ready {}", change.id),
+        });
+    }
     findings
 }
 
@@ -504,14 +513,92 @@ fn export_warning(warning: &str) -> Option<(&str, &str)> {
     (!symbol.is_empty() && !file.is_empty()).then_some((symbol, file))
 }
 
-fn restore_cache(path: &Path, saved: Option<&[u8]>) {
-    match saved {
-        Some(bytes) => {
-            let _ = fs::write(path, bytes);
+/// SpecSync's hash cache as one look found it, without following a symlink.
+#[derive(PartialEq)]
+enum Cache {
+    Absent,
+    /// A regular file: its device and inode, and its bytes.
+    Regular(u64, u64, Vec<u8>),
+    /// A symlink or anything else that is not a regular file. Never read or written.
+    Other,
+}
+
+impl Cache {
+    fn observe(path: &Path) -> Self {
+        match fs::symlink_metadata(path) {
+            Err(error) if error.kind() == io::ErrorKind::NotFound => return Self::Absent,
+            Ok(found) if found.file_type().is_file() => {}
+            _ => return Self::Other,
         }
-        None => {
-            let _ = fs::remove_file(path);
+        let Ok((file, device, inode)) = open_cache(path, false) else {
+            return Self::Other;
+        };
+        let mut bytes = Vec::new();
+        let mut file = file;
+        match io::Read::read_to_end(&mut file, &mut bytes) {
+            Ok(_) => Self::Regular(device, inode, bytes),
+            Err(_) => Self::Other,
         }
+    }
+}
+
+/// Open the cache itself, never what a symlink at its path points to, and say which
+/// file was opened.
+fn open_cache(path: &Path, write: bool) -> io::Result<(fs::File, u64, u64)> {
+    let mut options = fs::OpenOptions::new();
+    options.read(!write).write(write);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt as _;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK);
+    }
+    let file = options.open(path)?;
+    let found = file.metadata()?;
+    if !found.is_file() {
+        return Err(io::Error::other("not a regular file"));
+    }
+    #[cfg(unix)]
+    let identity = {
+        use std::os::unix::fs::MetadataExt as _;
+        (found.dev(), found.ino())
+    };
+    #[cfg(not(unix))]
+    let identity = (0, 0);
+    Ok((file, identity.0, identity.1))
+}
+
+/// Put the cache back as the report found it (REQ-cli-067), but only while it is still
+/// the file this report's own SpecSync runs wrote. A cache another process replaced
+/// meanwhile, by a regular file or a symlink, is theirs: it is left alone and the
+/// caller says so. False when it was left changed.
+///
+/// What is ours: with a cache before, the same file (device and inode) SpecSync
+/// rewrote in place; with none before, the file exactly as it was right after the last
+/// run. Another writer that rewrites the same file in place between two looks cannot
+/// be told from SpecSync and is not detected.
+fn restore_cache(path: &Path, before: &Cache, after: &Cache) -> bool {
+    let now = Cache::observe(path);
+    match (before, &now) {
+        // Never ours to touch: it was not a regular file when the report started.
+        (Cache::Other, _) => true,
+        (Cache::Absent, Cache::Absent) => true,
+        (Cache::Absent, now @ Cache::Regular(..)) => now == after && fs::remove_file(path).is_ok(),
+        (Cache::Absent, Cache::Other) => false,
+        (Cache::Regular(device, inode, bytes), Cache::Regular(now_device, now_inode, held)) => {
+            if (device, inode) != (now_device, now_inode) {
+                return false;
+            }
+            if held == bytes {
+                return true;
+            }
+            let Ok((mut file, opened_device, opened_inode)) = open_cache(path, true) else {
+                return false;
+            };
+            (opened_device, opened_inode) == (*device, *inode)
+                && file.set_len(0).is_ok()
+                && io::Write::write_all(&mut file, bytes).is_ok()
+        }
+        (Cache::Regular(..), _) => false,
     }
 }
 
