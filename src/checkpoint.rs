@@ -1198,23 +1198,39 @@ fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Optio
                 given.join(", "),
                 stage::CLOSE_GATE_COMMAND
             ),
+            // REQ-records-006 (#367): the gate a person typed is shown only when clean.
             RelayProblem::Incomplete(gate, missing) => anyhow::anyhow!(
-                "refused:relay-incomplete: closing gate \"{gate}\" on a human's behalf needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing was saved.\nRun `chough checkpoint --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+                "refused:relay-incomplete: closing gate \"{}\" on a human's behalf needs who decided, their words, where they said them and the recording agent; {} {} missing or blank, so nothing was saved.\nRun `chough checkpoint --close-gate \"{}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"`.",
+                crate::leaks::shown("gate", &gate),
                 missing.join(", "),
-                if missing.len() == 1 { "is" } else { "are" }
+                if missing.len() == 1 { "is" } else { "are" },
+                gate_to_type(&gate)
             ),
             RelayProblem::NotOpen(gate, closest) => anyhow::anyhow!(
-                "refused:gate-not-open: no open gate has the exact text \"{gate}\", so nothing was saved.{}\nRun `chough next` to list the open gates, then close one by its exact text.",
+                "refused:gate-not-open: no open gate has the exact text \"{}\", so nothing was saved.{}\nRun `chough next` to list the open gates, then close one by its exact text.",
+                crate::leaks::shown("gate", &gate),
                 closest
                     .map(|closest| format!(" Did you mean \"{closest}\"?"))
                     .unwrap_or_default()
             ),
             RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
-                "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{gate}\"` with the four values again.",
-                stage::RELAY_TEXT_LIMIT
+                "refused:relay-too-long: the decision for gate \"{}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing was saved.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `chough checkpoint --close-gate \"{}\"` with the four values again.",
+                crate::leaks::shown("gate", &gate),
+                stage::RELAY_TEXT_LIMIT,
+                gate_to_type(&gate)
             ),
         }
     })
+}
+
+/// The gate text a recovery command tells the person to type: the gate when it is clean,
+/// otherwise a `<gate>` placeholder, so the hint never repeats a value an error would not
+/// show (REQ-records-006, #367).
+fn gate_to_type(gate: &str) -> String {
+    match crate::leaks::unshowable(gate) {
+        None => gate.to_string(),
+        Some(_) => "<gate>".to_string(),
+    }
 }
 
 /// Queue a gate-closed entry for each of `cleared` and a gate-opened entry for each of
