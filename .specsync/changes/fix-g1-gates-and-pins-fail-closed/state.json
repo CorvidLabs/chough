@@ -10,13 +10,13 @@
   "state": "draft",
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795065230,
-  "updated_at": 1795065457,
+  "updated_at": 1795097042,
   "affected_specs": [
-    "cli"
+    "cli",
+    "history"
   ],
   "affected_paths": [
     "src/checkpoint.rs",
-    "src/session_md.rs",
     "src/change.rs",
     "src/sessions.rs",
     "src/main.rs",
@@ -29,7 +29,10 @@
     "changelog.d/",
     "specs/cli/requirements.md",
     "specs/cli/cli.spec.md",
-    ".chough/cases/"
+    "specs/history/requirements.md",
+    "specs/history/history.spec.md",
+    ".chough/cases/cli.gates-and-pins.cases.toml",
+    ".chough/cases/history.gates-and-pins.cases.toml"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
@@ -47,7 +50,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "no",
-    "constraints": "cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so every sentence was tried against the binary first; a new free-text value goes through the leak guard. File boundaries from the lead's plan: doctor.rs and the archive finish in sessions.rs belong to the fixer's batch and are not touched; the REQ-cli-057 part waits for #407.",
+    "constraints": "cli and history lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so every sentence was tried against the binary first; a new free-text value goes through the leak guard. File boundaries from the lead's plan: doctor.rs and the archive finish in sessions.rs belong to the fixer's batch and are not touched; the REQ-cli-057 part waits for #407.",
     "public_contract": "yes"
   }
 }

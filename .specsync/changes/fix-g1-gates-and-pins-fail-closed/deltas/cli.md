@@ -24,7 +24,6 @@ Acceptance Criteria
 - With two open sessions and the pointer on one, `chough evidence add --session <other>`, and the same command with `CHOUGH_SESSION=<other>`, record into the other session and leave the pointer unchanged, and `chough next --session <other>` shows that session.
 - A `--session` or `CHOUGH_SESSION` naming an archived or unknown session refuses with every file unchanged.
 - With `CHOUGH_SESSION` set in a project where no session is open, a command refuses naming `CHOUGH_SESSION` and `chough session new <key>` with every file unchanged, and with `--session` it names `--session`.
-- With the pointer on one session and `--session` or `CHOUGH_SESSION` naming another, `chough inbox list` lists the named session's entries and names that session.
 - `CHOUGH_SESSION=<a> chough session use <b>` makes `<b>` active and says on standard error that `CHOUGH_SESSION` still names `<a>`; with the variable unset it says nothing.
 - `chough session shelve <alias>` and `chough session shelve <bare slug>` shelve the session `chough session use` would make active for that key, a key that is one session's folder name and another's alias shelves the folder of that name, and a session whose record cannot be read is still shelved by its folder name or bare slug.
 

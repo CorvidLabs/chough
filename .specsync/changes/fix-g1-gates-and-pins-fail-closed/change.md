@@ -14,6 +14,7 @@ fix g1 gates and pins fail closed
 ## Affected Canonical Specs
 
 - `cli`
+- `history`
 
 ## Acceptance Criteria
 
