@@ -399,4 +399,4 @@ provider, runtime or hosted service.
 | 117 | 2026-11-18 | fix-339: Fix 339 |
 | 118 | 2026-11-19 | fix-361: Fix 361 |
 | 119 | 2026-11-19 | fix-347: Fix 347 |
-| 120 | 2026-11-19 | doctor-fix-safety: Doctor fix safety |
+| 120 | 2026-11-19 | leaks-and-output: Leaks and output |

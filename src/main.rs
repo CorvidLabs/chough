@@ -200,6 +200,40 @@ enum Commands {
     Doctor(Box<doctor::DoctorArgs>),
 }
 
+/// The command line, parsed. A usage error is printed as the argument parser words it,
+/// except that a value it quotes that holds a leak or a control character is named by
+/// what it holds, never shown (REQ-records-006, #367); help and version print as they do.
+fn parse_cli() -> Cli {
+    match Cli::try_parse() {
+        Ok(cli) => cli,
+        Err(error) if !error.use_stderr() => error.exit(),
+        Err(error) => {
+            eprint!("{}", usage_error_text(&error));
+            std::process::exit(error.exit_code());
+        }
+    }
+}
+
+/// A usage error as Chough prints it (REQ-records-006, #367): the parser's words, with a
+/// value it quotes that holds a leak or a control character replaced whole by what it
+/// holds, and anything else that would leak or act on the terminal masked.
+fn usage_error_text(error: &clap::Error) -> String {
+    use clap::error::{ContextKind, ContextValue};
+    let mut text = error.render().to_string();
+    for kind in [
+        ContextKind::InvalidValue,
+        ContextKind::InvalidArg,
+        ContextKind::InvalidSubcommand,
+    ] {
+        if let Some(ContextValue::String(value)) = error.get(kind)
+            && let Some(held) = leaks::unshowable(value)
+        {
+            text = text.replace(value.as_str(), &format!("<value holding {held}>"));
+        }
+    }
+    leaks::masked(&text)
+}
+
 fn main() -> Result<()> {
     // A stop then finds orphans of what Chough started (#81, Linux; no effect elsewhere).
     records::become_subreaper();
@@ -220,7 +254,7 @@ fn main() -> Result<()> {
         print!("{text}");
         return Ok(());
     }
-    let cli = Cli::parse();
+    let cli = parse_cli();
     leaks::set_redacting(cli.redact);
     let root = cli.root.canonicalize().context("project root must exist")?;
     ensure!(root.is_dir(), "project root must be a directory");
@@ -1055,26 +1089,36 @@ fn merge_in_progress(git: &doctor::GitOperation) -> Value {
 /// session refuses before anything is read or written.
 fn pin_session(root: &Path, name: &str, source: &str) -> Result<()> {
     let resolved = sessions::resolve_open(root, name);
+    // REQ-records-006 (#367): the name is shown only when it holds no leak and no control
+    // character; otherwise the refusal says what the option or variable holds.
+    let held = leaks::unshowable(name);
     // #334: with no session open at all, the way on is a new session, which `chough
     // session list` would not show. The detail still says when the named session is
     // archived, and an option is dropped where the variable is unset.
     if sessions::open_ids(root)?.is_empty() {
-        let detail = match &resolved {
-            Err(error) => format!(" ({error:#})"),
-            Ok(_) => String::new(),
-        };
         let leave = if source.starts_with("--") {
             "drop"
         } else {
             "unset"
         };
+        let names = match (&held, &resolved) {
+            (Some(held), _) => format!("{source} holds {held}, and no session is open"),
+            (None, Err(error)) => {
+                format!("{source} names {name}, but no session is open ({error:#})")
+            }
+            (None, Ok(_)) => format!("{source} names {name}, but no session is open"),
+        };
         bail!(
-            "refused:session-not-open: {source} names {name}, but no session is open{detail}; run `chough session new <key>` to start one, or {leave} {source}; nothing was written"
+            "refused:session-not-open: {names}; run `chough session new <key>` to start one, or {leave} {source}; nothing was written"
         );
     }
     let id = resolved.map_err(|error| {
+        let names = match &held {
+            Some(held) => format!("{source} holds {held}, so it names no open session"),
+            None => format!("{source} names {name}, which is not an open session ({error:#})"),
+        };
         anyhow::anyhow!(
-            "refused:session-not-open: {name}, named by {source}, is not an open session ({error:#}); run `chough session list` for the open ones; nothing was written"
+            "refused:session-not-open: {names}; run `chough session list` for the open ones; nothing was written"
         )
     })?;
     sessions::pin(root, &sessions::session_file(&id));
@@ -1958,5 +2002,89 @@ mod tests {
                 observation["record"]["id"]
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod usage_error_tests {
+    use super::{Cli, usage_error_text};
+    use clap::{CommandFactory, Parser};
+
+    /// Every command path below `command`, with the command itself.
+    fn commands(
+        command: &clap::Command,
+        path: Vec<String>,
+        out: &mut Vec<(Vec<String>, clap::Command)>,
+    ) {
+        out.push((path.clone(), command.clone()));
+        for sub in command.get_subcommands() {
+            if sub.get_name() == "help" {
+                continue;
+            }
+            let mut next = path.clone();
+            next.push(sub.get_name().to_string());
+            commands(sub, next, out);
+        }
+    }
+
+    /// REQ-records-006 (#367): every value slot of every command, given a value holding a
+    /// token and an escape sequence, and an unexpected argument holding them, gives a usage
+    /// error that Chough prints without either. The walk covers the whole command tree, so
+    /// a new command or option cannot bring the echo back.
+    #[test]
+    fn no_usage_error_shows_a_dirty_value() {
+        let dirty = concat!(
+            "q ghp_",
+            "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8",
+            " \u{1b}[31me"
+        );
+        let mut root = Cli::command();
+        root.build();
+        let mut all = vec![];
+        commands(&root, vec![], &mut all);
+        let mut errors = 0;
+        for (path, command) in &all {
+            let mut trials: Vec<Vec<String>> = vec![];
+            for arg in command.get_arguments() {
+                if !arg.get_action().takes_values() {
+                    continue;
+                }
+                let mut argv: Vec<String> = path.clone();
+                if arg.is_positional() {
+                    argv.push(dirty.to_string());
+                } else if let Some(long) = arg.get_long() {
+                    argv.push(format!("--{long}"));
+                    argv.push(dirty.to_string());
+                } else {
+                    continue;
+                }
+                trials.push(argv);
+            }
+            let mut unexpected = path.clone();
+            unexpected.push(format!("--{dirty}"));
+            trials.push(unexpected);
+            let mut stray = path.clone();
+            stray.push(dirty.to_string());
+            trials.push(stray);
+            for argv in trials {
+                let parsed = Cli::try_parse_from(
+                    std::iter::once("chough".to_string()).chain(argv.iter().cloned()),
+                );
+                let Err(error) = parsed else {
+                    continue;
+                };
+                if !error.use_stderr() {
+                    continue;
+                }
+                errors += 1;
+                let text = usage_error_text(&error);
+                assert!(!text.contains("ghp_"), "{argv:?} showed the token: {text}");
+                assert!(
+                    !text.contains('\u{1b}'),
+                    "{argv:?} printed the escape: {text:?}"
+                );
+            }
+        }
+        assert!(errors > 100, "only {errors} usage errors were checked");
     }
 }

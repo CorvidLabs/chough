@@ -114,4 +114,4 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 28 | 2026-11-18 | fix-269-post: Fix 269 post |
 | 29 | 2026-11-19 | fix-349: Fix 349 |
 | 30 | 2026-11-19 | fix-347: Fix 347 |
-| 31 | 2026-11-19 | doctor-fix-safety: Doctor fix safety |
+| 31 | 2026-11-19 | leaks-and-output: Leaks and output |

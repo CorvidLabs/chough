@@ -1,0 +1,20 @@
+profile = "chough-testing/1"
+module = "cli"
+
+[[case]]
+id = "TC-cli-doctor-names-a-conflict-marker-by-its-seven-characters"
+title = "doctor's conflict_markers finding for a marker line naming a token-holding branch or commit subject names only the seven-character marker"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-cli-055"]
+paths = ["src/records.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_conflict_marker_is_named_by_its_seven_characters passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_conflict_marker_is_named_by_its_seven_characters"

@@ -241,7 +241,7 @@ pub(super) fn valid_change_id(value: &str) -> bool {
 }
 
 /// Every Git conflict marker in a record's body, each with its 1-based line in the file
-/// and the line (REQ-records-001, #265, #339). The body is what follows the front
+/// and the marker's seven characters (REQ-records-001, #265, #339, #365). The body is what follows the front
 /// matter's closing `---`. A line starting `<<<<<<<` or `>>>>>>>` is a marker, and a line
 /// of `=======` is one inside a conflict. A marker inside a closed fenced code block,
 /// quoting an example or tool output, does not count, except in a section Chough writes.
@@ -391,6 +391,12 @@ fn fence_closes(lines: &[&str], start: usize) -> Vec<Option<usize>> {
     }
     closes
 }
+/// A conflict marker line named by its seven characters, never the rest of the line,
+/// which may carry a branch name or a commit subject (REQ-records-001, #365).
+fn marker_of(line: &str) -> String {
+    line.chars().take(7).collect()
+}
+
 /// The conflict markers of `text`, the lines of its lone `=======` separators and the
 /// marker lines inside its code fences.
 fn scan_conflicts(text: &str, markdown: bool) -> Scan {
@@ -429,7 +435,7 @@ fn scan_conflicts(text: &str, markdown: bool) -> Scan {
                 quoted && line == "======="
             };
             if marker {
-                scan.fenced.push((index + 1, line.to_string()));
+                scan.fenced.push((index + 1, marker_of(line)));
             }
             continue;
         }
@@ -447,7 +453,7 @@ fn scan_conflicts(text: &str, markdown: bool) -> Scan {
             open && line == "======="
         };
         if marker {
-            scan.markers.push((index + 1, line.to_string()));
+            scan.markers.push((index + 1, marker_of(line)));
         }
     }
     scan
