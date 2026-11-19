@@ -5,7 +5,7 @@ aliases: [fix-269-post]
 objective: "A closeout's journal post body opens with the current objective, and the archived story gets one line 'Objective at closeout: <objective>' when the objective changed after the Goal was filled; nothing is rewritten (REQ-records-011, REQ-history-006, #344 review)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -21,13 +21,9 @@ observations:
   - 2026-11-18-tc-records-a-changed-objective-is-in-the-post-and-one-story-129957
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-269-post
-    holds: accept
-    drives: review
-    opened: 2026-11-18T20:43:34Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # A closeout's journal post body opens with the current objective, and the archived story gets one line 'Objective at closeout: <objective>' when the objective changed after the Goal was filled; nothing is rewritten (REQ-records-011, REQ-history-006, #344 review)
 
@@ -43,6 +39,7 @@ A closeout's journal post body opens with the current objective, and the archive
 
 - 0xLeif decided "Scope approval of fix-269-post": "Fix first: post uses current … Add one line if changed" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answers on the tester's #344 finding, within his #269 scope: the journal post's body describes the current objective while the session's Goal keeps the filled-once text, as a small follow-up change on #344 declaring src/journal.rs and REQ-records-011; and at closeout, if the objective changed after the Goal was filled, the story gets one added line 'Objective at closeout: <current objective>', nothing rewritten); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-269-post as 0xLeif
 - 0xLeif decided "Re-approval of fix-269-post onto main's REQ-history-006": "Re-approve both" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #342 changed REQ-history-006 on main, he re-approved fix-269's and fix-269-post's deltas rebased onto main's REQ-records-004 and REQ-history-006, keeping #345's and #342's additions and adding only #344's own sentences and criteria); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-269-post as 0xLeif
+- 0xLeif decided "Implementation review of fix-269-post": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #344 for both fix-269 and fix-269-post after the tester's recheck PASS at 551f136); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-269-post as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -127,4 +124,20 @@ A closeout's journal post body opens with the current objective, and the archive
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve fix-269-post
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:08:37Z · gate-closed · accept → accept · Implementation review of fix-269-post ^t-9eb85f
+  - native_change: fix-269-post
+  - revision: 80bd335e16c69edb94cff018452eef1a3fc2ac58
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #344 for both fix-269 and fix-269-post after the tester's recheck PASS at 551f136
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-269-post
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:08:38Z · advance · accept → done · native:archived ^t-d6554f
+  - native_change: fix-269-post
+  - gate: native:archived
+  - revision: 80bd335e16c69edb94cff018452eef1a3fc2ac58
   - by: chough-fixer (claude-opus-5-5, hc t4n)
