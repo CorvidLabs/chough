@@ -1,6 +1,6 @@
 ---
 module: history
-version: 25
+version: 28
 status: active
 files:
   - src/history.rs
@@ -109,3 +109,6 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 24 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
 | 25 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
 | 25 | 2026-11-18 | fix-320: Fix 320 |
+| 26 | 2026-11-18 | fix-286: Fix 286 |
+| 27 | 2026-11-18 | fix-250: Fix 250 |
+| 28 | 2026-11-18 | fix-269-post: Fix 269 post |

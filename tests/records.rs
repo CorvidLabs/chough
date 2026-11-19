@@ -1035,9 +1035,13 @@ fn names_are_date_and_slug_with_aliases() {
     assert!(fixture.read(&path).contains("SYNTHETIC note"));
     // Linked by the old ID: the checkpoint resolves it, as it refuses an unknown one.
     fixture.ok(&["checkpoint", "--bug", "BUG-0012"]);
-    let linked = front(&fixture.read(&fixture.session_file()))["bugs"].clone();
+    // The session already lists the bug `bug add` filed in it (#329), so read the list
+    // from the checkpoint rather than from one front matter line.
+    let linked = fixture.session()["bugs"].clone();
     assert!(
-        items(&linked).iter().any(|bug| bug == "BUG-0012"),
+        linked
+            .as_array()
+            .is_some_and(|bugs| bugs.iter().any(|bug| bug == "BUG-0012")),
         "{linked}"
     );
     // An alias two bugs hold is refused by bug show.
@@ -1332,6 +1336,73 @@ fn a_fresh_projects_reading_guide_names_no_folder_kept_from_0_5() {
     let readme = fixture.read(".chough/README.md");
     assert!(!readme.contains("artifacts/"), "{readme}");
     assert!(!readme.contains("kept from Chough 0.5.x"), "{readme}");
+}
+
+/// REQ-records-004 (#269), TC-records-the-default-goal-is-filled-once: `session new`
+/// without an objective writes a placeholder as the story's title and Goal; the first
+/// `checkpoint --objective` fills both with the objective, and a later one rewrites
+/// neither, since the Goal is then the person's to edit.
+#[test]
+fn a_default_goal_is_filled_once_by_the_objective() {
+    const PLACEHOLDER: &str = "Describe the current objective before beginning work.";
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "plain"]);
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    assert!(text.contains(&format!("\n# {PLACEHOLDER}\n")), "{text}");
+    assert!(
+        text.contains(&format!("## Goal\n\n{PLACEHOLDER}\n")),
+        "{text}"
+    );
+
+    fixture.ok(&["checkpoint", "--objective", "Add a shout flag to greet.py"]);
+    let text = fixture.read(&file);
+    assert!(!text.contains(PLACEHOLDER), "{text}");
+    assert!(
+        text.contains("\n# Add a shout flag to greet.py\n"),
+        "{text}"
+    );
+    assert!(
+        text.contains("## Goal\n\nAdd a shout flag to greet.py\n"),
+        "{text}"
+    );
+
+    fixture.ok(&["checkpoint", "--objective", "Something else entirely"]);
+    let text = fixture.read(&file);
+    assert!(
+        text.contains("## Goal\n\nAdd a shout flag to greet.py\n"),
+        "{text}"
+    );
+    assert!(
+        text.contains("\n# Add a shout flag to greet.py\n"),
+        "{text}"
+    );
+}
+
+/// REQ-records-004 (#269): a Goal a person wrote over the placeholder is kept byte for
+/// byte when the objective is set; only a title still holding the placeholder is filled.
+#[test]
+fn a_goal_a_person_wrote_is_never_filled() {
+    const PLACEHOLDER: &str = "Describe the current objective before beginning work.";
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "plain"]);
+    let file = fixture.session_file();
+    let text = fixture.read(&file).replacen(
+        &format!("## Goal\n\n{PLACEHOLDER}\n"),
+        "## Goal\n\nMy own words about the goal.\n",
+        1,
+    );
+    fixture.write(&file, &text);
+    fixture.ok(&["checkpoint", "--objective", "Add a shout flag to greet.py"]);
+    let text = fixture.read(&file);
+    assert!(
+        text.contains("## Goal\n\nMy own words about the goal.\n"),
+        "{text}"
+    );
+    assert!(
+        text.contains("\n# Add a shout flag to greet.py\n"),
+        "{text}"
+    );
 }
 
 /// REQ-records-001 (#265), TC-records-a-conflict-marker-write-is-refused: a session whose

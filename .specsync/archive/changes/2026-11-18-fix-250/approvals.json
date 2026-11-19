@@ -1,0 +1,180 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795032564,
+      "digest": "cbcd45de53889e956bb9ac59af05cf9f6e4d5680277d0b91624ef0a639ea65ea",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-250\": \"record it on each gate. When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason in the person's words, and doctor's JSON echoes it back. REQ-history-012 gets that sentence.\" (Leif's decision comment on GitHub issue #250, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval). Relayed and recorded by fable-t4b at 2026-11-18T20:09:24Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-250",
+        "title": "Fix 250",
+        "description": "fix 250",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.stale-gate-reason.cases.toml",
+          "changelog.d/2026-11-18-fix-250.md",
+          "docs/cli.md",
+          "specs/cli/requirements.md",
+          "specs/history/requirements.md",
+          "specs/records/requirements.md",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/history.rs",
+          "src/session_md.rs",
+          "src/stage.rs",
+          "tests/doctor.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "After chough doctor --fix --reason withdraws a stale gate, that gate's gate-closed Timeline entry in the archived story holds the reason as its withdrawn field, in the person's words; doctor's JSON gives decision_reason on each decision finding it fixed and on no other finding; withdrawing still records no human decision."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes, and the deltas are frozen at approval. REQ-history-002 keeps the Timeline append-only: the field is written with the entry, never added to an existing one.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "3fbb8a8911ebdf993d9aa03aff3ff2ae36d06cdc950288a6905be5000215b3cf",
+        "history": "ea1aa176da5ba7b24486343c053387daf458187171c82fdf429d8749ac0146aa",
+        "records": "80f169ab3aa382727cf315e7c1c623da9fce59630ed79a46c72f4b3dbae9d947"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-030": "26e0acb72838f8f7f69eec60a0c7d3a4fff36f33c310f1fc44a1469e92d139cb",
+        "history: REQUIREMENT REQ-history-002": "a8e9a8631d71744e4f20cedfa8b1a564f22b866d9d22e224f6c995e5495ada8e",
+        "history: REQUIREMENT REQ-history-012": "f11b1f06e5688534149cee8eb00fc07c734f376942f39dd6fc1790c568e14321",
+        "records: REQUIREMENT REQ-records-004": "758b168c55f79b3d7213e35643f2a54acc2ae346ad0d969f8aa85765875e8bca"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "record it on each gate. When doctor --fix --reason withdraws stale gates, each withdrawn gate's Timeline entry and the archived story carry the reason in the person's words, and doctor's JSON echoes it back. REQ-history-012 gets that sentence.",
+        "where": "Leif's decision comment on GitHub issue #250, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795034460,
+      "digest": "cbcd45de53889e956bb9ac59af05cf9f6e4d5680277d0b91624ef0a639ea65ea",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-250, rewritten onto main (native approval)\": \"Yes: send back once + re-approve\" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him whether fable-t4b may run the send-back on fix-250 this once and whether he re-approves the same scope: the reason on each withdrawn gate's gate-closed entry, echoed in doctor's JSON; only REQ-history-012, REQ-cli-030 and REQ-records-004 change; the REQ-history-002 list edit removed). Relayed and recorded by fable-t4b at 2026-11-18T20:40:59Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-250",
+        "title": "Fix 250",
+        "description": "fix 250",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.stale-gate-reason.cases.toml",
+          "changelog.d/2026-11-18-fix-250.md",
+          "docs/cli.md",
+          "specs/cli/requirements.md",
+          "specs/history/requirements.md",
+          "specs/records/requirements.md",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/history.rs",
+          "src/session_md.rs",
+          "src/stage.rs",
+          "tests/doctor.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "After chough doctor --fix --reason withdraws a stale gate, that gate's gate-closed Timeline entry in the archived story holds the reason as its withdrawn field, in the person's words; doctor's JSON gives decision_reason on each decision finding it fixed and on no other finding; withdrawing still records no human decision."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes, and the deltas are frozen at approval. REQ-history-002 keeps the Timeline append-only: the field is written with the entry, never added to an existing one.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "3fbb8a8911ebdf993d9aa03aff3ff2ae36d06cdc950288a6905be5000215b3cf",
+        "history": "3bfe9a0c0489df881072e1281972031c5b8d137014e0578d246807fbcf2808e5",
+        "records": "e457d0e6ccb266817445ab1aa50f174f0b0e5b52b8c56efe7ee3eb571ee1c3f4"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-030": "26e0acb72838f8f7f69eec60a0c7d3a4fff36f33c310f1fc44a1469e92d139cb",
+        "history: REQUIREMENT REQ-history-012": "fc0fd4c446d468cd8408393d357666543fc4434828d77f713ad7755457a8dfb5",
+        "records: REQUIREMENT REQ-records-004": "758b168c55f79b3d7213e35643f2a54acc2ae346ad0d969f8aa85765875e8bca"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes: send back once + re-approve",
+        "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him whether fable-t4b may run the send-back on fix-250 this once and whether he re-approves the same scope: the reason on each withdrawn gate's gate-closed entry, echoed in doctor's JSON; only REQ-history-012, REQ-cli-030 and REQ-records-004 change; the REQ-history-002 list edit removed",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795036876,
+      "digest": "7efe5b6cd3005ab5f66f14c0526d1355ea79384a1c7dfd09362d6f88b829df86",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "fix-250",
+      "actor": "0xLeif",
+      "reason": "Main's #320 changed REQ-history-012 after this delta was approved, and the delta's edit to REQ-history-002 breaks the wording pin in tests/spec_split.rs. The delta is rewritten onto the current text without the REQ-history-002 edit. Leif answered 'Yes: send back once + re-approve', relayed by his planning session (hc t4c) on 2026-11-18; run by fable-t4b.",
+      "timestamp": 1795034419,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "history",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-history-002",
+          "content": "Append-only timeline. Each session's transitions SHALL be recorded as entries of the `## Timeline` section of its `session.md` (REQ-records-004), and those entries, carried into the archived story at finish, SHALL be the session's only transition history: no event file, cycle directory, cursor or transitions log SHALL be written. Each entry SHALL be one list item, `- <time> · <kind> · <from> → <to> · <text> ^<entry id>`, where `<time>` is the UTC time to the second in ISO 8601, `<kind>` is a transition kind (`start`, `advance`, `iterate`, `back`, `reset`, `pause`, `resume`, `skip`, `enter`, `return`, `gate-opened`, `gate-closed`, `direct-native-write`, `correction`), `<text>` is the reason, gate or note, and `<entry id>` is `t-` and 6 lowercase hexadecimal digits from fresh random bits, unique in the file. Its structured fields SHALL follow as indented `- <key>: <value>` lines, plain text and never JSON: a field with parts, such as `relayed_by` and `direct_write`, SHALL be a `- <key>:` line with one `- <part>: <value>` line per part indented under it, and a list of parts one level further; a value that holds a line break, or starts or ends with a space or a `\"`, SHALL be written as a JSON string, and Chough SHALL still read the JSON value of an entry written before this rule. The fields are `by` for the actor (REQ-records-007), `native_change` when one is recorded, and the fields of REQ-history-005, REQ-history-010, REQ-history-012, REQ-history-013, REQ-history-014 and REQ-history-015. `chough init` and `chough session new` SHALL each append one `start` entry, whose `<from>` and `<to>` are the stage the session starts in and whose text is its objective or key, and `chough timing` SHALL read it as the start of that stage's first segment. The entry and the checkpoint change it goes with SHALL be written in the same atomic replace of `session.md`, so a refused or failed save leaves neither. Chough SHALL only append entries: it SHALL never edit, reorder or remove an existing entry line, and an entry ID SHALL never be reused in its file. A timeline entry is what other requirements call a transition, and the session file's Timeline is what they call its transition log. `chough doctor` SHALL report a session or story whose Timeline at HEAD is not an exact prefix of its Timeline in the working tree (REQ-history-012). Trace: LIFE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2, FLOW-13, DRIVE-3, DRIVE-24.\n\nAcceptance Criteria\n- Every transition kind written in a fixture session appears once, in order, as an entry with its time, kind, stages, text, unique entry ID and structured fields, and no file is written under `.chough/history/` or `.chough/transitions.jsonl`.\n- A save refused after its native read leaves `session.md` byte-identical, with no entry and no checkpoint change.\n- Two branches that each advance a different session merge with no conflict and keep both timelines.\n- Editing an earlier entry by hand and committing nothing else makes `chough doctor` report the session's timeline as rewritten.\n- Each session's timeline holds only its own entries, and a stage move in one session leaves every other session's file unchanged.\n- A gate closed with a relayed decision and a direct lifecycle write each add an entry whose `relayed_by` and `direct_write` parts are labelled lines with no JSON object, and `history show`, `timing` and `doctor` read both those entries and entries written with JSON values.\n- `chough init` and `chough session new` each write one `start` entry, and `chough timing` right after reports the intent segment as started at that entry's time, not unknown.",
+          "previous_content": "Append-only timeline. Each session's transitions SHALL be recorded as entries of the `## Timeline` section of its `session.md` (REQ-records-004), and those entries, carried into the archived story at finish, SHALL be the session's only transition history: no event file, cycle directory, cursor or transitions log SHALL be written. Each entry SHALL be one list item, `- <time> · <kind> · <from> → <to> · <text> ^<entry id>`, where `<time>` is the UTC time to the second in ISO 8601, `<kind>` is a transition kind (`start`, `advance`, `iterate`, `back`, `reset`, `pause`, `resume`, `skip`, `enter`, `return`, `gate-opened`, `gate-closed`, `direct-native-write`, `correction`), `<text>` is the reason, gate or note, and `<entry id>` is `t-` and 6 lowercase hexadecimal digits from fresh random bits, unique in the file. Its structured fields SHALL follow as indented `- <key>: <value>` lines, plain text and never JSON: a field with parts, such as `relayed_by` and `direct_write`, SHALL be a `- <key>:` line with one `- <part>: <value>` line per part indented under it, and a list of parts one level further; a value that holds a line break, or starts or ends with a space or a `\"`, SHALL be written as a JSON string, and Chough SHALL still read the JSON value of an entry written before this rule. The fields are `by` for the actor (REQ-records-007), `native_change` when one is recorded, and the fields of REQ-history-005, REQ-history-010, REQ-history-013, REQ-history-014 and REQ-history-015. `chough init` and `chough session new` SHALL each append one `start` entry, whose `<from>` and `<to>` are the stage the session starts in and whose text is its objective or key, and `chough timing` SHALL read it as the start of that stage's first segment. The entry and the checkpoint change it goes with SHALL be written in the same atomic replace of `session.md`, so a refused or failed save leaves neither. Chough SHALL only append entries: it SHALL never edit, reorder or remove an existing entry line, and an entry ID SHALL never be reused in its file. A timeline entry is what other requirements call a transition, and the session file's Timeline is what they call its transition log. `chough doctor` SHALL report a session or story whose Timeline at HEAD is not an exact prefix of its Timeline in the working tree (REQ-history-012). Trace: LIFE-2, LIFE-3, LIFE-6, LIFE-7, FLOW-2, FLOW-13, DRIVE-3, DRIVE-24.\n\nAcceptance Criteria\n- Every transition kind written in a fixture session appears once, in order, as an entry with its time, kind, stages, text, unique entry ID and structured fields, and no file is written under `.chough/history/` or `.chough/transitions.jsonl`.\n- A save refused after its native read leaves `session.md` byte-identical, with no entry and no checkpoint change.\n- Two branches that each advance a different session merge with no conflict and keep both timelines.\n- Editing an earlier entry by hand and committing nothing else makes `chough doctor` report the session's timeline as rewritten.\n- Each session's timeline holds only its own entries, and a stage move in one session leaves every other session's file unchanged.\n- A gate closed with a relayed decision and a direct lifecycle write each add an entry whose `relayed_by` and `direct_write` parts are labelled lines with no JSON object, and `history show`, `timing` and `doctor` read both those entries and entries written with JSON values.\n- `chough init` and `chough session new` each write one `start` entry, and `chough timing` right after reports the intent segment as started at that entry's time, not unknown."
+        },
+        {
+          "module": "cli",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-cli-030",
+          "content": "Open human gates hold the stage they name. Each awaiting-human gate SHALL name the stage it holds and the native step it drives: `chough checkpoint --awaiting-human \"<gate>\" [--holds <stage>] [--drives approve|review|none]` SHALL record `holds`, a main stage, release or a side stage, defaulting to the current stage, and `drives`, defaulting to `approve` for a gate held at plan, `review` for one held at accept and `none` otherwise (REQ-records-008). While an open gate holds the stage a move would leave, `chough stage advance` and `chough stage skip` SHALL be refused with `refused:awaiting-human` before any native read; for `stage advance --to`, every stage the move would leave counts. The refusal SHALL name at most 3 such gates, in recorded order, with the count of the rest, and SHALL say to record the human's decision on a gate with `chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"` (REQ-cli-050), and to withdraw a gate no human decision closes with `chough checkpoint --clear-awaiting-human`, re-passing gates still waiting with `--awaiting-human`; a gate that `chough doctor --fix --reason` withdraws keeps that reason on its `gate-closed` entry (REQ-history-012). No flag or reason SHALL bypass it. A gate that holds a later stage SHALL NOT refuse a move out of an earlier one, so a pending release or publication decision does not stop build, test or accept (#237). Iterate, back, reset, pause, resume and side-stage enter and return SHALL NOT be refused by any gate. Once no open gate holds the stage being left, the move SHALL be applied and gated as before. `chough next`, `chough status` and `chough gate list` SHALL list every open gate with the stage it holds; while a gate holds the current stage, the waiting next action SHALL say not to decide it for the human, SHALL name `chough checkpoint --close-gate` for recording their decision, and SHALL say that advance and skip are refused until it is closed. Trace: FLOW-3, FLOW-5, FLOW-13, FLOW-2, FLOW-16, FLOW-23.\n\nAcceptance Criteria\n- With one open gate holding the current stage, advance and skip are refused with `refused:awaiting-human` at intent, design, plan with SDD disabled, and release; the stage and the timeline are unchanged and the message names the gate, the `--close-gate` command and the clearing command.\n- With 5 open gates holding the current stage the message names the first 3 and says 2 more.\n- Regression for issue 237: with a gate opened at build that holds release, the advances from build to test and from test to accept apply as usual, the gate stays open and `next` lists it, and the move out of release is refused until it is closed; `stage advance --to accept` from plan is refused while a gate holds build.\n- A gate opened without `--holds` holds the current stage, and a gate migrated from 0.5.x holds the stage its session was at.\n- After `chough checkpoint --clear-awaiting-human`, or after `--close-gate` closes the only gate holding the stage, the same advance is applied with its usual gate label; back, iterate, pause and resume, and side-stage enter and return, still work with a gate open.\n- `chough next` and `chough status` give the same waiting action, which names `--close-gate` and says advance and skip are refused until the gate is closed.",
+          "previous_content": "Open human gates hold the stage they name. Each awaiting-human gate SHALL name the stage it holds and the native step it drives: `chough checkpoint --awaiting-human \"<gate>\" [--holds <stage>] [--drives approve|review|none]` SHALL record `holds`, a main stage, release or a side stage, defaulting to the current stage, and `drives`, defaulting to `approve` for a gate held at plan, `review` for one held at accept and `none` otherwise (REQ-records-008). While an open gate holds the stage a move would leave, `chough stage advance` and `chough stage skip` SHALL be refused with `refused:awaiting-human` before any native read; for `stage advance --to`, every stage the move would leave counts. The refusal SHALL name at most 3 such gates, in recorded order, with the count of the rest, and SHALL say to record the human's decision on a gate with `chough checkpoint --close-gate \"<gate>\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"` (REQ-cli-050), and to withdraw a gate no human decision closes with `chough checkpoint --clear-awaiting-human`, re-passing gates still waiting with `--awaiting-human`. No flag or reason SHALL bypass it. A gate that holds a later stage SHALL NOT refuse a move out of an earlier one, so a pending release or publication decision does not stop build, test or accept (#237). Iterate, back, reset, pause, resume and side-stage enter and return SHALL NOT be refused by any gate. Once no open gate holds the stage being left, the move SHALL be applied and gated as before. `chough next`, `chough status` and `chough gate list` SHALL list every open gate with the stage it holds; while a gate holds the current stage, the waiting next action SHALL say not to decide it for the human, SHALL name `chough checkpoint --close-gate` for recording their decision, and SHALL say that advance and skip are refused until it is closed. Trace: FLOW-3, FLOW-5, FLOW-13, FLOW-2, FLOW-16, FLOW-23.\n\nAcceptance Criteria\n- With one open gate holding the current stage, advance and skip are refused with `refused:awaiting-human` at intent, design, plan with SDD disabled, and release; the stage and the timeline are unchanged and the message names the gate, the `--close-gate` command and the clearing command.\n- With 5 open gates holding the current stage the message names the first 3 and says 2 more.\n- Regression for issue 237: with a gate opened at build that holds release, the advances from build to test and from test to accept apply as usual, the gate stays open and `next` lists it, and the move out of release is refused until it is closed; `stage advance --to accept` from plan is refused while a gate holds build.\n- A gate opened without `--holds` holds the current stage, and a gate migrated from 0.5.x holds the stage its session was at.\n- After `chough checkpoint --clear-awaiting-human`, or after `--close-gate` closes the only gate holding the stage, the same advance is applied with its usual gate label; back, iterate, pause and resume, and side-stage enter and return, still work with a gate open.\n- `chough next` and `chough status` give the same waiting action, which names `--close-gate` and says advance and skip are refused until the gate is closed."
+        },
+        {
+          "module": "records",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-records-004",
+          "content": "The session record. An open session's `session.md` front matter SHALL be its checkpoint and SHALL give `kind: session`, `id`, `aliases`, `objective`, `intent_scope`, `modules`, `stage`, `stage_status`, `iteration`, `callers`, `native_change`, `pr`, `criteria`, `requirements`, `cases`, `design`, `files`, `observations`, `bugs`, `blockers`, `waiting_on_human` (each gate with `gate`, `holds` and `opened`, REQ-cli-030), `run_consents` and `next`. Its body SHALL be the story, in these sections in this order: `# <title>` (the objective), `## Goal`, `## Where it stands`, `## Decisions and why`, `## What was verified`, `## Open threads` and `## Timeline` (REQ-history-002), whose entries carry the fields that requirement lists, the reason a gate was withdrawn among them (REQ-history-012). A decision recorded with `chough checkpoint --decision` SHALL be one list item appended to Decisions and why, naming who decided when the decision is a human's (REQ-cli-050) and linking the gate's timeline entry; completed work SHALL be appended to Where it stands; an open question SHALL be one list item in Open threads, resolved by appending its answer to that item's line through `chough checkpoint --resolve-question`; an evidence entry referenced by the session SHALL be one list item in What was verified that links its file. These sections SHALL be the only place the session keeps decisions, completed work and open questions, and `chough next` and `chough status` SHALL read them there (REQ-cli-021), so no field repeats them. Chough SHALL write the Goal from the objective when the session is created and SHALL NOT rewrite the Goal or Where it stands paragraphs afterwards. Trace: DRIVE-24, DRIVE-25, DRIVE-26, FLOW-13.\n\nAcceptance Criteria\n- `chough session new` writes a `session.md` whose front matter carries every listed key and whose body has the seven parts in order with the Goal taken from the objective.\n- A decision, a completed item, an open question and an evidence reference each appear once, in their section, and `chough next` shows the same decision and question from a fresh process.\n- Resolving an open question keeps its line and appends the answer, and `chough next` no longer lists it as open.\n- A person's rewrite of the Goal paragraph is kept after a decision and a stage move.",
+          "previous_content": "The session record. An open session's `session.md` front matter SHALL be its checkpoint and SHALL give `kind: session`, `id`, `aliases`, `objective`, `intent_scope`, `modules`, `stage`, `stage_status`, `iteration`, `callers`, `native_change`, `pr`, `criteria`, `requirements`, `cases`, `design`, `files`, `observations`, `bugs`, `blockers`, `waiting_on_human` (each gate with `gate`, `holds` and `opened`, REQ-cli-030), `run_consents` and `next`. Its body SHALL be the story, in these sections in this order: `# <title>` (the objective), `## Goal`, `## Where it stands`, `## Decisions and why`, `## What was verified`, `## Open threads` and `## Timeline` (REQ-history-002). A decision recorded with `chough checkpoint --decision` SHALL be one list item appended to Decisions and why, naming who decided when the decision is a human's (REQ-cli-050) and linking the gate's timeline entry; completed work SHALL be appended to Where it stands; an open question SHALL be one list item in Open threads, resolved by appending its answer to that item's line through `chough checkpoint --resolve-question`; an evidence entry referenced by the session SHALL be one list item in What was verified that links its file. These sections SHALL be the only place the session keeps decisions, completed work and open questions, and `chough next` and `chough status` SHALL read them there (REQ-cli-021), so no field repeats them. Chough SHALL write the Goal from the objective when the session is created and SHALL NOT rewrite the Goal or Where it stands paragraphs afterwards. Trace: DRIVE-24, DRIVE-25, DRIVE-26, FLOW-13.\n\nAcceptance Criteria\n- `chough session new` writes a `session.md` whose front matter carries every listed key and whose body has the seven parts in order with the Goal taken from the objective.\n- A decision, a completed item, an open question and an evidence reference each appear once, in their section, and `chough next` shows the same decision and question from a fresh process.\n- Resolving an open question keeps its line and appends the answer, and `chough next` no longer lists it as open.\n- A person's rewrite of the Goal paragraph is kept after a decision and a stage move."
+        }
+      ],
+      "applied_modules": [
+        "history",
+        "cli",
+        "records"
+      ]
+    }
+  ]
+}

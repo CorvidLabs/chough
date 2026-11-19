@@ -168,7 +168,12 @@ fn unverified_out_of_scope_bugs_stay_visible_without_changing_scope() {
     assert_eq!(added["recorded"], bug_path(id));
     assert_eq!(added["verification"], "unverified");
     assert_eq!(added["published"], false);
-    assert_eq!(fixture.session(), before);
+    // The bug joins the active session's bugs list (#329); the session's scope, its
+    // intent scope, modules and references, stays as it was.
+    let mut after = fixture.session();
+    assert_eq!(after["bugs"], serde_json::json!([id]));
+    after["bugs"] = before["bugs"].clone();
+    assert_eq!(after, before);
     let open = fixture.ok(&["bug", "list"]);
     assert_eq!(open["bugs"][0]["scope"], "out-of-scope");
     let context = fixture.ok(&["context", "--json"]);
@@ -369,8 +374,10 @@ fn an_open_blocking_bug_sends_work_back_to_build() {
 }
 
 /// A blocking bug stops only a session that lists it, holds its evidence, or shares a
-/// criterion, requirement, or case. A bug that names none of those stops no session.
-/// `chough next` names it and says it does not block this session (REQ-cli-054).
+/// criterion, requirement, or case. `chough bug add` lists the new bug in the active
+/// session (#329), so a bug that names none of the others stops only the session it was
+/// filed in. `chough next` on another session names it and says it does not block this
+/// session (REQ-cli-054).
 #[test]
 fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
     let fixture = Fixture::new();
@@ -397,6 +404,22 @@ fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
             ("evidence", "[]"),
         ],
     );
+    // Filed in `other`, it is on that session's bugs list and stops it.
+    assert!(
+        fixture.session()["bugs"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|bug| bug == &serde_json::json!(id)),
+        "{:#}",
+        fixture.session()
+    );
+    let filed_in = fixture.fails(&["stage", "advance"]);
+    assert!(
+        filed_in.contains("refused:blocking-bugs") && filed_in.contains(&id),
+        "{filed_in}"
+    );
+    fixture.ok(&["session", "use", &first]);
     let next = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
     assert!(
         next.contains(&id) && next.contains("do not block this session"),
@@ -406,9 +429,6 @@ fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
         !next.contains("go back to build"),
         "an unrelated blocking bug must not send this session back to build: {next}"
     );
-    fixture.ok(&["stage", "advance", "--json"]);
-    assert_eq!(fixture.session()["stage"]["current"], "accept");
-    fixture.ok(&["session", "use", &first]);
     fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.session()["stage"]["current"], "accept");
 
@@ -466,6 +486,90 @@ fn a_blocking_bug_stops_only_a_session_it_is_related_to() {
     assert!(
         warning.contains(&shared) && warning.contains("do not block this session"),
         "{warning}"
+    );
+    fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(fixture.session()["stage"]["current"], "accept");
+}
+
+/// REQ-cli-012, REQ-cli-054 (#329), TC-cli-bug-add-joins-the-active-session: a blocking
+/// bug added while a session is active, with no observation, criterion, requirement or
+/// case, is on that session's bugs list and stops it leaving test.
+#[test]
+fn a_blocking_bug_added_in_a_session_stops_it() {
+    let fixture = Fixture::new();
+    fixture.init();
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    assert_eq!(fixture.session()["stage"]["current"], "test");
+    let id = json(&add_bug(&fixture, &["--scope", "blocking"]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    set_bug_fields(
+        &fixture,
+        &id,
+        &[
+            ("criteria", "[]"),
+            ("requirements", "[]"),
+            ("cases", "[]"),
+            ("evidence", "[]"),
+        ],
+    );
+    assert_eq!(
+        fixture.session()["bugs"],
+        serde_json::json!([id]),
+        "{:#}",
+        fixture.session()
+    );
+    let refusal = fixture.fails(&["stage", "advance"]);
+    assert!(
+        refusal.contains("refused:blocking-bugs") && refusal.contains(&id),
+        "{refusal}"
+    );
+    assert_eq!(fixture.session()["stage"]["current"], "test");
+}
+
+/// REQ-cli-012, REQ-cli-054 (#329): with no session active, a blocking bug that names
+/// nothing joins no checkpoint; a session opened afterwards is not stopped by it, and
+/// `chough next` names it as not blocking this session.
+#[test]
+fn a_blocking_bug_added_with_no_session_active_stays_unlinked() {
+    let fixture = Fixture::new();
+    fixture.init();
+    for _ in 0..5 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    assert_eq!(fixture.session()["stage"]["current"], "accept");
+    fixture.commit("the first session at accept");
+    let done = fixture.ok(&["stage", "advance", "--json"]);
+    assert_eq!(
+        done["applied"]["session_archive"]["status"], "archived",
+        "{done:#}"
+    );
+    let id = json(&add_bug(&fixture, &["--scope", "blocking"]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    set_bug_fields(
+        &fixture,
+        &id,
+        &[
+            ("criteria", "[]"),
+            ("requirements", "[]"),
+            ("cases", "[]"),
+            ("evidence", "[]"),
+        ],
+    );
+    fixture.ok(&["session", "new", "later", "--objective", "Later work"]);
+    assert_eq!(fixture.session()["bugs"], serde_json::json!([]));
+    for _ in 0..4 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    let next = String::from_utf8(fixture.run(&["next"]).stdout).unwrap();
+    assert!(
+        next.contains(&id) && next.contains("do not block this session"),
+        "{next}"
     );
     fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(fixture.session()["stage"]["current"], "accept");
@@ -2263,10 +2367,11 @@ fn verifying_a_bug_with_no_fix_names_the_passing_observation_and_its_revision() 
     assert!(!text.contains("Not fixed yet."), "{text}");
 }
 
-/// REQ-cli-012, F8 of the second fresh-eyes round: `bug add` and `bug update` given
-/// `--observation` with an entry of the active session add the bug to that session's
-/// checkpoint once, so its archived story names the bugs found in it; one naming another
-/// session's entry leaves the active checkpoint unchanged.
+/// REQ-cli-012, F8 of the second fresh-eyes round and #329: `bug add` while a session is
+/// active adds the bug to that session's checkpoint once, with or without
+/// `--observation`, and `bug update` given `--observation` with an entry of the active
+/// session does too, so its archived story names the bugs found in it; an update naming
+/// another session's entry leaves the active checkpoint unchanged.
 #[test]
 fn a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story() {
     let fixture = Fixture::new();
@@ -2306,20 +2411,29 @@ fn a_bug_linked_to_an_active_sessions_entry_is_in_its_checkpoint_and_story() {
     );
     assert_eq!(bugs(), json!([first]));
     let second = add("SYNTHETIC receipt email omits the order number", &[]);
-    assert_eq!(bugs(), json!([first]));
+    assert_eq!(bugs(), json!([first, second]));
     for bug in [&second, &first] {
         fixture.ok(&["bug", "update", bug, "--observation", &passed]);
     }
     assert_eq!(bugs(), json!([first, second]));
+    let later = entry(&fixture, "found-later", "passed", 1_793_000_200);
 
     fixture.ok(&["session", "new", "beta", "--objective", "SYNTHETIC beta"]);
     let beta = fixture.session_file_of("beta");
     let before = fixture.read(&beta);
-    add(
+    fixture.ok(&[
+        "bug",
+        "update",
+        &first,
+        "--observation",
+        &format!("{session}/{later}"),
+    ]);
+    assert_eq!(fixture.read(&beta), before, "the active checkpoint changed");
+    let third = add(
         "SYNTHETIC search ignores accented letters",
         &["--observation", &format!("{session}/{failed}")],
     );
-    assert_eq!(fixture.read(&beta), before, "the active checkpoint changed");
+    assert_eq!(bugs(), json!([third]), "a new bug joins the active session");
 
     fixture.commit("the bugs");
     fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
@@ -2393,4 +2507,66 @@ fn a_bug_body_gives_its_actual_line_its_own_paragraph() {
     let legacy = bug_record(&fixture, LEGACY);
     assert_eq!(legacy["symptom"], "Seeded legacy record remains readable");
     assert_eq!(legacy["actual"], "The legacy identity is present");
+}
+
+/// Every file under `root` but `.git` and `.chough/local`, with its bytes.
+fn tree(root: &std::path::Path) -> std::collections::BTreeMap<String, Vec<u8>> {
+    fn walk(
+        base: &std::path::Path,
+        dir: &std::path::Path,
+        out: &mut std::collections::BTreeMap<String, Vec<u8>>,
+    ) {
+        for entry in std::fs::read_dir(dir).unwrap().flatten() {
+            let path = entry.path();
+            let name = path
+                .strip_prefix(base)
+                .unwrap()
+                .to_string_lossy()
+                .into_owned();
+            if name == ".git" || name.starts_with(".chough/local") {
+                continue;
+            }
+            if path.is_dir() {
+                walk(base, &path, out);
+            } else {
+                out.insert(name, std::fs::read(&path).unwrap());
+            }
+        }
+    }
+    let mut out = std::collections::BTreeMap::new();
+    walk(root, root, &mut out);
+    out
+}
+
+/// REQ-cli-012 (#343 review), TC-cli-bug-add-refuses-before-writing-when-the-session-is-full:
+/// with the active session already holding its 200 bug links, `bug add` refuses before
+/// writing anything, naming the session and the limit, so no bug is left out of the
+/// session it was filed in: no new bug record exists and every file is unchanged.
+#[test]
+fn bug_add_refuses_before_writing_when_the_session_is_full() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let held: Vec<String> = (0..200)
+        .map(|n| format!("2026-01-01-held-bug-{n}"))
+        .collect();
+    fixture.set_front("bugs", &format!("[{}]", held.join(", ")));
+    assert_eq!(fixture.session()["bugs"].as_array().unwrap().len(), 200);
+    let before = tree(fixture.root());
+    let output = add_bug(&fixture, &[]);
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!output.status.success(), "{said}");
+    let after = tree(fixture.root());
+    let written: Vec<&String> = after
+        .keys()
+        .filter(|name| !before.contains_key(*name))
+        .collect();
+    assert!(written.is_empty(), "left behind {written:?}: {said}");
+    assert_eq!(after, before, "{said}");
+    assert!(said.contains(&fixture.active_id()), "{said}");
+    assert!(said.contains("200"), "{said}");
+    assert!(said.contains("nothing was written"), "{said}");
 }
