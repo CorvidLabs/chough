@@ -1,6 +1,6 @@
 ---
 id: fix-339-fence-pass
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 082f1734397527910603c96624c5faf58f34bae0
 ---
