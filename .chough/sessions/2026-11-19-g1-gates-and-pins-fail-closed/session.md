@@ -5,7 +5,7 @@ aliases: [g1-gates-and-pins-fail-closed]
 objective: "Gates and session pins fail closed: a hand-edited no_native_change cannot unlock the ungated move, change ship checks its whole history and writes only to its pinned session, inbox list and session shelve honor the pin and aliases, and session use says when CHOUGH_SESSION still wins (#401, #400, #369, #393, #372)"
 intent_scope: ""
 modules: []
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Scope approval of fix-g1-gates-and-pins-fail-closed\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # Gates and session pins fail closed: a hand-edited no_native_change cannot unlock the ungated move, change ship checks its whole history and writes only to its pinned session, inbox list and session shelve honor the pin and aliases, and session use says when CHOUGH_SESSION still wins (#401, #400, #369, #393, #372)
 
@@ -76,4 +76,9 @@ Gates and session pins fail closed: a hand-edited no_native_change cannot unlock
     - recorded_by: fable-t4b
     - native: specsync change approve fix-g1-gates-and-pins-fail-closed
     - actor: 0xLeif
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T14:18:34Z · advance · plan → build · native:approved ^t-883f9b
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - gate: native:approved
+  - revision: 966758794f24e6ef21befbb20bfe209b0ea668de
   - by: fable (claude-opus-5-5, hc t4b)

@@ -1,0 +1,94 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# G1, gates and pins fail closed (#401, #400, #369, #372).
+
+[[case]]
+id = "TC-cli-a-hand-edited-no-native-change-cannot-unlock-the-ungated-move"
+title = "A no_native_change edited into the session file by hand that is blank, a placeholder or beside a native change is refused by next, checkpoint and stage advance naming the file and the field, with every file byte-identical"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-24"]
+requirements = ["REQ-cli-007"]
+paths = ["src/checkpoint.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_hand_edited_no_native_change_cannot_unlock_the_ungated_move passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_hand_edited_no_native_change_cannot_unlock_the_ungated_move"
+
+[[case]]
+id = "TC-cli-ship-checks-the-whole-history"
+title = "A history holding a change both open and archived and then 1,001 more commits is still refused as refused:corrupt-history, and a base commit the repository lacks is refused as refused:history-unchecked"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_checks_the_whole_history_and_refuses_what_it_cannot_read passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_checks_the_whole_history_and_refuses_what_it_cannot_read"
+
+[[case]]
+id = "TC-cli-ship-acts-on-the-pinned-session"
+title = "With the pointer on another session, change ship --session closes the gate and moves the stage in the named session and leaves the pointer's session byte-identical"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3", "DRIVE-24"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_closes_the_gate_and_moves_the_stage_in_the_pinned_session passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_closes_the_gate_and_moves_the_stage_in_the_pinned_session"
+
+[[case]]
+id = "TC-cli-session-use-and-new-say-when-a-pin-names-another-session"
+title = "session use and session new say on standard error when --session or CHOUGH_SESSION still names another open session, and say nothing otherwise"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-037"]
+paths = ["src/main.rs", "tests/session_pin.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/session_pin.rs::session_use_and_new_say_when_a_pin_still_names_another_session passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "session_pin"
+test = "session_use_and_new_say_when_a_pin_still_names_another_session"
+
+[[case]]
+id = "TC-cli-session-shelve-resolves-its-key"
+title = "session shelve takes a folder name as that folder and otherwise an alias or bare slug as session use does, refusing a key that names several sessions"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-037"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::session_shelve_resolves_its_key_as_session_use_does passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "session_shelve_resolves_its_key_as_session_use_does"
