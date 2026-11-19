@@ -5,7 +5,7 @@ aliases: [fix-339-fence-pass]
 objective: The code-fence scan visits each line a bounded number of times, so many unclosed fence openers no longer make record writes and doctor quadratic, and an unclosed fence still hides nothing (#356 review P2)
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -22,9 +22,13 @@ observations:
   - 2026-11-19-tc-records-a-fenced-example-and-a-lone-separator-both-save-96b8af
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-339-fence-pass
+    holds: accept
+    drives: review
+    opened: 2026-11-19T01:08:13Z
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # The code-fence scan visits each line a bounded number of times, so many unclosed fence openers no longer make record writes and doctor quadratic, and an unclosed fence still hides nothing (#356 review P2)
 
@@ -78,4 +82,20 @@ The code-fence scan visits each line a bounded number of times, so many unclosed
   - native_change: fix-339-fence-pass
   - gate: native:approved
   - revision: 082f1734397527910603c96624c5faf58f34bae0
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T01:08:12Z · advance · build → test · native:verifying ^t-5d6c0d
+  - native_change: fix-339-fence-pass
+  - gate: native:verifying
+  - revision: a19df4fc7d429133617790d0c45c982d475fea09
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T01:08:13Z · advance · test → accept · native:verifying ^t-3718f8
+  - native_change: fix-339-fence-pass
+  - gate: native:verifying
+  - revision: a19df4fc7d429133617790d0c45c982d475fea09
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T01:08:13Z · gate-opened · accept → accept · Implementation review of fix-339-fence-pass ^t-875169
+  - native_change: fix-339-fence-pass
+  - revision: a19df4fc7d429133617790d0c45c982d475fea09
+  - holds: accept
+  - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4n)
