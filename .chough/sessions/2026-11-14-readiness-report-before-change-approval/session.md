@@ -67,6 +67,16 @@ observations:
   - 2026-11-19-tc-cli-change-ready-stale-delta-a0fc54
   - 2026-11-19-tc-cli-change-ready-undocumented-export-93bb69
   - 2026-11-19-tc-cli-change-ready-unknown-change-4d4838
+  - 2026-11-19-tc-cli-change-ready-carried-delta-83ce80
+  - 2026-11-19-tc-cli-change-ready-cross-module-case-c11600
+  - 2026-11-19-tc-cli-change-ready-draft-fixes-3ab90d
+  - 2026-11-19-tc-cli-change-ready-fast-path-ccc4ee
+  - 2026-11-19-tc-cli-change-ready-missing-specsync-ca3384
+  - 2026-11-19-tc-cli-change-ready-no-spec-change-7ab82b
+  - 2026-11-19-tc-cli-change-ready-outside-path-b9eed7
+  - 2026-11-19-tc-cli-change-ready-stale-delta-ca2614
+  - 2026-11-19-tc-cli-change-ready-undocumented-export-9895a9
+  - 2026-11-19-tc-cli-change-ready-unknown-change-3789bf
 bugs: []
 blockers: []
 waiting_on_human:
@@ -148,6 +158,16 @@ One read-only command lists everything still missing before a change is approved
 - [Ran cargo test --locked --test ready -- --exact a_stale_delta_is_named_until_the_body_is_rewritten for TC-cli-change-ready-stale-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-stale-delta-a0fc54.md)
 - [Ran cargo test --locked --test ready -- --exact an_undocumented_export_in_a_declared_file_is_named for TC-cli-change-ready-undocumented-export: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undocumented-export-93bb69.md)
 - [Ran cargo test --locked --test ready -- --exact an_unknown_change_names_status for TC-cli-change-ready-unknown-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-unknown-change-4d4838.md)
+- [Ran cargo test --locked --test ready -- --exact a_delta_that_already_carries_the_canonical_move_is_not_named for TC-cli-change-ready-carried-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-carried-delta-83ce80.md)
+- [Ran cargo test --locked --test ready -- --exact a_case_that_links_another_modules_requirement_is_named for TC-cli-change-ready-cross-module-case: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-cross-module-case-c11600.md)
+- [Ran cargo test --locked --test ready -- --exact a_draft_names_each_missing_fix_and_passes_once_they_are_fixed for TC-cli-change-ready-draft-fixes: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-draft-fixes-3ab90d.md)
+- [Ran cargo test --locked --test package -- --exact the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change for TC-cli-change-ready-fast-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-fast-path-ccc4ee.md)
+- [Ran cargo test --locked --test ready -- --exact a_missing_specsync_names_the_install_command for TC-cli-change-ready-missing-specsync: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-missing-specsync-ca3384.md)
+- [Ran cargo test --locked --test ready -- --exact a_no_spec_change_names_every_delta_for_removal for TC-cli-change-ready-no-spec-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-no-spec-change-7ab82b.md)
+- [Ran cargo test --locked --test ready -- --exact a_changed_file_outside_the_declared_paths_is_named for TC-cli-change-ready-outside-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-outside-path-b9eed7.md)
+- [Ran cargo test --locked --test ready -- --exact a_stale_delta_is_named_until_the_body_is_rewritten for TC-cli-change-ready-stale-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-stale-delta-ca2614.md)
+- [Ran cargo test --locked --test ready -- --exact an_undocumented_export_in_a_declared_file_is_named for TC-cli-change-ready-undocumented-export: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undocumented-export-9895a9.md)
+- [Ran cargo test --locked --test ready -- --exact an_unknown_change_names_status for TC-cli-change-ready-unknown-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-unknown-change-3789bf.md)
 
 ## Open threads
 
