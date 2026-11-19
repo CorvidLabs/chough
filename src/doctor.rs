@@ -56,6 +56,7 @@ enum Kind {
     PossibleConflictSeparator,
     PossibleFencedConflict,
     SkillOutdated,
+    SkillUninspected,
 }
 
 impl Kind {
@@ -80,6 +81,7 @@ impl Kind {
             Self::PossibleConflictSeparator => "possible_conflict_separator",
             Self::PossibleFencedConflict => "possible_fenced_conflict",
             Self::SkillOutdated => "skill_outdated",
+            Self::SkillUninspected => "skill_uninspected",
         }
     }
 }
@@ -1472,8 +1474,9 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
 /// known earlier bundle, naming `chough skill update`. Doctor does not update the skill
 /// itself, and a file a person edited is not reported.
 fn skill_outdated(root: &Path) -> Vec<Finding> {
-    crate::skill::known_outdated(root)
-        .unwrap_or_default()
+    let scan = crate::skill::known_outdated(root);
+    let mut found: Vec<Finding> = scan
+        .outdated
         .into_iter()
         .map(|path| {
             let mut finding = Finding::new(
@@ -1487,7 +1490,24 @@ fn skill_outdated(root: &Path) -> Vec<Finding> {
             ));
             finding
         })
-        .collect()
+        .collect();
+    // A copy that cannot be inspected is said, as advice, and hides no other copy.
+    for base in scan.uninspected {
+        let mut finding = Finding::new(
+            Kind::SkillUninspected,
+            &base,
+            format!(
+                "none: {base} is reached through a symlink or cannot be read, so it was not inspected; check the copy it points to"
+            ),
+            false,
+        );
+        finding.advisory = true;
+        finding.blocked = Some(format!(
+            "{base} was not inspected; doctor follows no symlink into a skill copy"
+        ));
+        found.push(finding);
+    }
+    found
 }
 
 /// The session findings, in fix order: stale pointer, finished sessions, unfinished
@@ -1710,6 +1730,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         | Kind::Unreadable
         | Kind::MergeDriverOutdated
         | Kind::SkillOutdated
+        | Kind::SkillUninspected
         | Kind::ConflictMarkers
         | Kind::GitOperation
         | Kind::PossibleConflictSeparator

@@ -876,27 +876,45 @@ pub(super) fn update_advice(root: &Path) -> Result<Option<String>> {
     )))
 }
 
-/// REQ-cli-016 (#361): each installed skill file that is byte-identical to a known
-/// earlier bundle, project-relative, once however many hosts share its directory. A
-/// file a person edited, a missing one and a current one are not listed.
-pub(super) fn known_outdated(root: &Path) -> Result<Vec<String>> {
-    let mut found = vec![];
+/// What a scan of the installed skill copies found (REQ-cli-016, #361).
+pub(super) struct SkillScan {
+    /// Each installed file that is byte-identical to a known earlier bundle,
+    /// project-relative, once however many hosts share its directory.
+    pub(super) outdated: Vec<String>,
+    /// Each host's skill directory that could not be inspected, such as one reached
+    /// through a symlink. It is skipped and named, and never hides another copy.
+    pub(super) uninspected: Vec<String>,
+}
+
+/// Scan every host's skill directory on its own. A file a person edited, a missing one
+/// and a current one are not listed; a directory or a file that cannot be inspected
+/// stops nothing else, so a scan never reports zero only because one path was refused.
+pub(super) fn known_outdated(root: &Path) -> SkillScan {
+    let mut scan = SkillScan {
+        outdated: vec![],
+        uninspected: vec![],
+    };
     let mut seen = std::collections::BTreeSet::new();
-    for host in installed_hosts(root, vec![])? {
-        let base = directory(&host)?;
+    for (_, path) in HOSTS {
+        let base = format!("{path}/chough-workflow");
         if !seen.insert(base.clone()) {
             continue;
         }
+        match local_path(root, &base) {
+            Ok(folder) if folder.is_dir() => {}
+            Ok(_) => continue,
+            Err(_) => {
+                scan.uninspected.push(base);
+                continue;
+            }
+        }
         for (name, content) in BUNDLE {
-            // Each file on its own (the reviewer's finding on #362): a path that cannot
-            // be inspected, such as a symlink, is not an earlier release's copy, and
-            // must not hide the files that are.
             if matches!(file_state(root, &base, name, content), Ok("known-outdated")) {
-                found.push(format!("{base}/{name}"));
+                scan.outdated.push(format!("{base}/{name}"));
             }
         }
     }
-    Ok(found)
+    scan
 }
 
 fn report(root: &Path, hosts: &[String], update: bool) -> Result<Value> {

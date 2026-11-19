@@ -1086,7 +1086,7 @@ fn pin_session(root: &Path, name: &str, source: &str) -> Result<()> {
 /// that opens the next one, as text or compact JSON, with no session to read.
 fn no_open_session(root: &Path, as_json: bool) -> String {
     // REQ-cli-016 (#361): the skill nudge shows with no session open too.
-    let skill_outdated = skill::known_outdated(root).map_or(0, |files| files.len());
+    let skill_outdated = skill::known_outdated(root).outdated.len();
     let action = json!({
         "action": "Start the next piece of work in a new session.",
         "reason": "There is no open session, the normal state after the move into done archives one.",
@@ -1209,7 +1209,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
         // REQ-cli-016 (#361): how many installed skill files are an earlier release's.
-        "skill_outdated": skill::known_outdated(root).map_or(0, |files| files.len()),
+        "skill_outdated": skill::known_outdated(root).outdated.len(),
         "native_check": native_check::view(root, change.as_deref(), summary)?,
         "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,

@@ -29,6 +29,11 @@ reviewer's finding on #362): with one skill file an earlier release's copy and a
 replaced by a symlink, `next` still counts 1 and doctor still reports the file. It
 fails with the earlier code, where one refused path made the whole scan report 0.
 
+`a_symlinked_host_folder_hides_no_outdated_file` (added after the tester's finding on
+#362): with the shared `.agents` copy outdated and `.codex/skills` a symlink to it,
+`next` still counts 1, doctor still reports the file, and doctor names the symlinked
+folder as the advisory finding `skill_uninspected`.
+
 It fails on main, where doctor reports nothing. No new free-text input is added.
 
 ## Requirement evidence

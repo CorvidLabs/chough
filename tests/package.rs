@@ -4606,3 +4606,54 @@ fn an_uninspectable_skill_path_hides_no_other_outdated_file() {
         ".agents/skills/chough-workflow/references/stages.md"
     );
 }
+
+/// REQ-cli-016 (#361, the tester's finding on #362): a host folder that cannot be
+/// inspected hides nothing either. With the shared `.agents` copy an earlier release's
+/// and `.codex/skills` a symlink to it, the usual way to share one copy, `next` still
+/// counts the outdated file, doctor still reports it, and doctor says, as advice, that
+/// the symlinked copy was not inspected.
+#[cfg(unix)]
+#[test]
+fn a_symlinked_host_folder_hides_no_outdated_file() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    fs::write(
+        root.join(".agents/skills/chough-workflow/references/stages.md"),
+        STAGES_AT_F19823D,
+    )
+    .unwrap();
+    fs::create_dir_all(root.join(".codex")).unwrap();
+    std::os::unix::fs::symlink("../.agents/skills", root.join(".codex/skills")).unwrap();
+    let raw = |args: &[&str]| -> String {
+        let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(args)
+            .output()
+            .unwrap();
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let next: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(next["skill_outdated"], 1, "{next}");
+    let report: Value = serde_json::from_str(&raw(&["doctor"])).unwrap();
+    let of = |kind: &str| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == kind)
+            .cloned()
+            .collect()
+    };
+    let outdated = of("skill_outdated");
+    assert_eq!(outdated.len(), 1, "{report:#}");
+    assert_eq!(
+        outdated[0]["target"],
+        ".agents/skills/chough-workflow/references/stages.md"
+    );
+    let skipped = of("skill_uninspected");
+    assert_eq!(skipped.len(), 1, "{report:#}");
+    assert_eq!(skipped[0]["target"], ".codex/skills/chough-workflow");
+    assert_eq!(skipped[0]["advisory"], true, "{report:#}");
+}
