@@ -1168,9 +1168,9 @@ fn a_stale_gate_reason_that_leaks_is_refused_or_redacted() {
 
 /// REQ-records-001, REQ-cli-055 (#265), TC-records-doctor-reports-conflict-markers-in-records:
 /// a committed record whose body holds a conflict gives one `conflict_markers` finding per
-/// marker line, naming the file, the line and the marker, and `--fix` skips them; a
-/// committed file that is not a record, a case definition or `.chough/README.md`, gives
-/// none, and a heading underline outside a conflict is not one.
+/// marker line, naming the file, the line and the marker, and `--fix` skips them. Since
+/// #339 a committed case definition gives them too, while `.chough/README.md`, which is
+/// not a record, gives none, and a heading underline outside a conflict is not one.
 #[test]
 fn doctor_reports_conflict_markers_in_committed_records_only() {
     let fixture = Fixture::new();
@@ -1180,8 +1180,9 @@ fn doctor_reports_conflict_markers_in_committed_records_only() {
         story,
         "---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\nHeading\n=======\n\n<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> branch\n",
     );
+    let cases = ".chough/cases/old.cases.toml";
     fixture.write(
-        ".chough/cases/old.cases.toml",
+        cases,
         "# <<<<<<< HEAD\n<<<<<<< HEAD\n=======\n>>>>>>> branch\n",
     );
     let readme = fixture.read(".chough/README.md");
@@ -1209,6 +1210,9 @@ fn doctor_reports_conflict_markers_in_committed_records_only() {
             (story.to_string(), 10, "<<<<<<< HEAD".to_string()),
             (story.to_string(), 12, "=======".to_string()),
             (story.to_string(), 14, ">>>>>>> branch".to_string()),
+            (cases.to_string(), 2, "<<<<<<< HEAD".to_string()),
+            (cases.to_string(), 3, "=======".to_string()),
+            (cases.to_string(), 4, ">>>>>>> branch".to_string()),
         ],
         "{report:#}"
     );
@@ -1216,6 +1220,144 @@ fn doctor_reports_conflict_markers_in_committed_records_only() {
     for finding in of_kind(&fixed, "conflict_markers") {
         assert_eq!(finding["status"], "skipped", "{fixed:#}");
     }
+}
+
+/// REQ-records-001, REQ-cli-055 (#339), TC-records-doctor-warns-of-a-lone-conflict-separator:
+/// a lone `=======` outside any conflict, in a committed record or case definition, is a
+/// `possible_conflict_separator` finding naming the line, "possible leftover conflict
+/// separator at line N". It is advisory, a warning only, so doctor's exit status is what
+/// it was without it; a `=======` inside a code fence gives none.
+#[test]
+fn doctor_warns_of_a_lone_conflict_separator_without_failing() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("a session");
+    let (before, report) = doctor(&fixture, &[]);
+    assert!(
+        of_kind(&report, "possible_conflict_separator").is_empty(),
+        "{report:#}"
+    );
+    let file = fixture.session_file();
+    let text = fixture.read(&file).replacen(
+        "## Goal\n\nShip a focused change\n",
+        "## Goal\n\nShip a focused change\n=======\nShip beta\n\n```\n=======\n```\n",
+        1,
+    );
+    let line = text.lines().position(|line| line == "=======").unwrap() + 1;
+    fixture.write(&file, &text);
+    fixture.commit("a lone separator in the Goal");
+    let (after, report) = doctor(&fixture, &[]);
+    let found = of_kind(&report, "possible_conflict_separator");
+    assert_eq!(found.len(), 1, "{report:#}");
+    assert_eq!(found[0]["target"], file);
+    assert_eq!(found[0]["line"], line);
+    assert_eq!(found[0]["advisory"], true);
+    assert_eq!(
+        found[0]["warning"],
+        format!("possible leftover conflict separator at line {line}")
+    );
+    assert!(
+        of_kind(&report, "conflict_markers").is_empty(),
+        "{report:#}"
+    );
+    assert_eq!(
+        after, before,
+        "an advisory finding changed doctor's exit: {report:#}"
+    );
+}
+
+/// REQ-records-001, REQ-cli-055 (#339), TC-records-a-conflict-in-chough-s-own-sections-is-a-marker:
+/// a code fence hides no conflict in a section Chough writes itself, an archived story's
+/// `## Timeline` or its fenced `## Receipts` block, so a real conflict there is a
+/// `conflict_markers` finding for each marker line, while a fenced example in the Goal
+/// stays exempt.
+#[test]
+fn doctor_reports_a_conflict_inside_chough_s_own_fenced_sections() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let story = ".chough/archive/sessions/2026-01-01-old.md";
+    let text = "---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\n## Goal\n\n```\n<<<<<<< HEAD\n```\n\n## Timeline\n\n```\n<<<<<<< HEAD\n- one\n=======\n- two\n>>>>>>> branch\n```\n\n## Receipts\n\n```yaml\nreceipts:\n<<<<<<< HEAD\n  - claim: ours\n=======\n  - claim: theirs\n>>>>>>> branch\n```\n";
+    fixture.write(story, text);
+    fixture.commit("an old story conflicted in Chough's own sections");
+    let timeline = text.lines().position(|line| line == "## Timeline").unwrap();
+    let expected: Vec<u64> = text
+        .lines()
+        .enumerate()
+        .filter(|(index, line)| {
+            *index > timeline
+                && (line.starts_with("<<<<<<<")
+                    || line.starts_with(">>>>>>>")
+                    || *line == "=======")
+        })
+        .map(|(index, _)| index as u64 + 1)
+        .collect();
+    assert_eq!(expected.len(), 6);
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let lines: Vec<u64> = of_kind(&report, "conflict_markers")
+        .iter()
+        .filter(|finding| finding["target"] == story)
+        .map(|finding| finding["line"].as_u64().unwrap())
+        .collect();
+    assert_eq!(lines, expected, "{report:#}");
+}
+
+/// REQ-records-001, REQ-cli-055 (#339, swarm finding 62-F1),
+/// TC-records-doctor-warns-of-a-conflict-inside-a-code-fence: a real Git conflict left
+/// inside a fenced block of a committed session cannot be told from a quoted one, so each
+/// of its marker lines is an advisory `possible_fenced_conflict` finding, "possible
+/// conflict markers inside a code fence at line N". Doctor's exit status is what it was
+/// without it, and the next write is not refused.
+#[test]
+fn doctor_warns_of_a_conflict_inside_a_code_fence() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("a session");
+    let (before, _) = doctor(&fixture, &[]);
+    let file = fixture.session_file();
+    let text = fixture.read(&file).replacen(
+        "## Goal\n\nShip a focused change\n",
+        "## Goal\n\nShip a focused change\n\n```text\n<<<<<<< HEAD\nport = 7070\n=======\nport = 9090\n>>>>>>> c1\n```\n",
+        1,
+    );
+    let lines: Vec<u64> = text
+        .lines()
+        .enumerate()
+        .filter(|(_, line)| {
+            line.starts_with("<<<<<<<") || line.starts_with(">>>>>>>") || *line == "======="
+        })
+        .map(|(index, _)| index as u64 + 1)
+        .collect();
+    assert_eq!(lines.len(), 3);
+    fixture.write(&file, &text);
+    fixture.commit("a conflict left inside a code fence");
+    let (after, report) = doctor(&fixture, &[]);
+    let found = of_kind(&report, "possible_fenced_conflict");
+    let named: Vec<u64> = found
+        .iter()
+        .map(|finding| finding["line"].as_u64().unwrap())
+        .collect();
+    assert_eq!(named, lines, "{report:#}");
+    for finding in &found {
+        assert_eq!(finding["target"], file);
+        assert_eq!(finding["advisory"], true);
+        assert_eq!(
+            finding["warning"],
+            format!(
+                "possible conflict markers inside a code fence at line {}",
+                finding["line"]
+            )
+        );
+    }
+    assert!(
+        of_kind(&report, "conflict_markers").is_empty(),
+        "{report:#}"
+    );
+    assert_eq!(
+        after, before,
+        "an advisory finding changed doctor's exit: {report:#}"
+    );
+    fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
 }
 
 /// REQ-records-014 (#354): when the code SpecSync specifies sits at the repository root,

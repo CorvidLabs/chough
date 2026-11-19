@@ -486,6 +486,14 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
             // change is open, naming each. It stays outside the digest, which names only
             // the conversion.
             let open = open_native_changes(root)?;
+            if open.is_empty()
+                && let Some(refusal) = conflict_refusal(root, &plan)
+            {
+                view["apply_refused"] = json!({
+                    "refusal": "refused:conflict-markers",
+                    "why": refusal,
+                });
+            }
             if !open.is_empty() {
                 view["apply_refused"] = json!({
                     "refusal": "refused:change-open",
@@ -495,6 +503,12 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
                         open.join(", ")
                     ),
                 });
+            }
+            // #339: a plan the apply would refuse is not offered to apply, in JSON either.
+            if view["apply_refused"].is_object()
+                && let Some(fields) = view.as_object_mut()
+            {
+                fields.remove("apply");
             }
             // REQ-records-009 (F12b): a person consents to the plan, so it is text by
             // default, and the same plan and digest as JSON under --json.
@@ -507,6 +521,44 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
         }
         Some(wanted) => apply(root, &plan, &digest, &wanted, args.consent.as_deref()),
     }
+}
+
+/// Each planned record that would hold a Git conflict marker, with the 0.5.x file it
+/// comes from, its line in the record and the marker (REQ-records-001, #339).
+fn planned_conflicts(root: &Path, plan: &Plan) -> Vec<(String, String, usize, String)> {
+    let mut found = vec![];
+    for written in &plan.files {
+        let Ok(text) = std::str::from_utf8(&written.bytes) else {
+            continue;
+        };
+        if !crate::records::holds_a_record(root, &written.path) {
+            continue;
+        }
+        if let Some((line, marker)) = crate::records::conflict_markers(text).into_iter().next() {
+            let source = plan
+                .carried
+                .becomes
+                .iter()
+                .find(|(_, targets)| targets.contains(&written.path))
+                .map_or_else(|| written.path.clone(), |(source, _)| source.clone());
+            found.push((source, written.path.clone(), line, marker));
+        }
+    }
+    found
+}
+
+/// The refusal `--apply` gives, and the preview names up front, while a planned record
+/// would hold a Git conflict marker: the 0.5.x file to resolve, not only the 0.6 target.
+fn conflict_refusal(root: &Path, plan: &Plan) -> Option<String> {
+    let conflicts = planned_conflicts(root, plan);
+    let (source, target, line, marker) = conflicts.first()?;
+    let more = match conflicts.len() {
+        1 => String::new(),
+        count => format!(" ({} more files hold one too)", count - 1),
+    };
+    Some(format!(
+        "refused:conflict-markers: {source} holds a Git conflict marker, which would migrate into {target} at line {line} (`{marker}`){more}; resolve the conflict in {source} by hand and commit it, then run `chough migrate` again; nothing was written"
+    ))
 }
 
 /// Build the plan under the first receipt name that is free for it (REQ-records-009,
@@ -666,11 +718,17 @@ fn preview_text(view: &Value) -> String {
         ));
     }
     out.push_str(&format!(
-        "\nReceipt: {}\nPlan digest: {}\nApply this plan with the human's consent:\n  {}\n",
+        "\nReceipt: {}\nPlan digest: {}\n",
         text(&view["receipt"]),
-        text(&view["plan_digest"]),
-        text(&view["apply"])
+        text(&view["plan_digest"])
     ));
+    // #339: a plan the apply would refuse is not offered to apply.
+    if !view["apply_refused"].is_object() {
+        out.push_str(&format!(
+            "Apply this plan with the human's consent:\n  {}\n",
+            text(&view["apply"])
+        ));
+    }
     out
 }
 
@@ -739,12 +797,11 @@ fn apply(
             .collect::<Vec<_>>()
             .join(", ")
     );
-    // REQ-records-001 (#265): no record is written with a Git conflict marker in its
-    // body; every planned file is checked before any is written, so nothing is.
-    for written in &plan.files {
-        if let Ok(text) = std::str::from_utf8(&written.bytes) {
-            crate::records::refuse_conflict_markers(root, &written.path, text)?;
-        }
+    // REQ-records-001 (#265, #339): no record is written with a Git conflict marker in
+    // its body; every planned file is checked before any is written, so nothing is, and
+    // the refusal names the 0.5.x file to resolve.
+    if let Some(refusal) = conflict_refusal(root, plan) {
+        bail!("{refusal}");
     }
     for written in &plan.files {
         let path = local_path(root, &written.path)?;

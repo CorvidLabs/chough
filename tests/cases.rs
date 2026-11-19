@@ -2984,6 +2984,69 @@ fn a_failed_runs_body_says_the_expected_output_was_missing_before_its_key_lines(
     );
 }
 
+/// #339: a case definition half-merged by Git names its conflict in `cases check`, the
+/// file, the line and the marker, rather than only that the definition is invalid.
+#[test]
+fn cases_check_names_a_conflict_marker_in_a_definition() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let text = format!(
+        "{HEADER}<<<<<<< HEAD{}=======\n{}>>>>>>> other\n",
+        case("TC-cli-0001", "functional", "REQ-cli-001", ""),
+        case("TC-cli-0002", "functional", "REQ-cli-001", "")
+    );
+    fixture.write(".chough/cases/cli.cases.toml", &text);
+    let line = text
+        .lines()
+        .position(|line| line == "<<<<<<< HEAD")
+        .unwrap()
+        + 1;
+    let refused = fixture.fails(&["cases", "check"]);
+    assert!(
+        refused.contains(&format!(
+            ".chough/cases/cli.cases.toml line {line} holds the Git conflict marker `<<<<<<< HEAD`"
+        )),
+        "{refused}"
+    );
+    assert!(
+        !refused.contains("invalid chough-testing definition"),
+        "{refused}"
+    );
+}
+
+/// REQ-cli-009, REQ-cli-055 (#339): a case definition that parses as TOML may quote a
+/// conflict marker inside a string, as before #339; markers count only in a definition
+/// Git left unparsable. `cases check` accepts it, and doctor reports no conflict in it.
+#[cfg(unix)]
+#[test]
+fn a_valid_case_definition_may_quote_a_marker_in_a_string() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    let file = ".chough/cases/cli.cases.toml";
+    let text = format!(
+        "{HEADER}{}",
+        case("TC-cli-0001", "functional", "REQ-cli-001", "")
+    )
+    .replace(
+        "expected = [\"It is right\", \"It is clear\"]",
+        "expected = [\"\"\"the output\n<<<<<<< HEAD\n=======\n>>>>>>> other\"\"\"]",
+    );
+    assert!(text.contains("\n<<<<<<< HEAD\n"), "{text}");
+    fixture.write(file, &text);
+    assert_eq!(fixture.ok(&["cases", "check"])["valid"], true);
+    fixture.commit("a case quoting a conflict marker");
+    let output = fixture.run(&["doctor"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let about: Vec<&Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["target"] == file)
+        .collect();
+    assert!(about.is_empty(), "{report:#}");
+}
+
 /// #283, TC-cli-a-retired-case-keeps-its-fledge-task-binding: removing a fledge task is
 /// often why its case was retired, so `cases check` returns early for a retired case
 /// before checking its `fledge-task` binding, and the binding stays as written, as

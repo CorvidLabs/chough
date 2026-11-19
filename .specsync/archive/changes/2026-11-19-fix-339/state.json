@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-339",
+  "slug": "fix-339",
+  "title": "Fix 339",
+  "description": "fix 339",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "af8ca8901b2a23affcd40ac74865d99637448346",
+  "created_at": 1795035687,
+  "updated_at": 1795049168,
+  "affected_specs": [
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "src/doctor.rs",
+    "src/cases.rs",
+    "src/migrate.rs",
+    "tests/records.rs",
+    "tests/doctor.rs",
+    "tests/cases.rs",
+    "tests/migrate.rs",
+    "docs/cli.md",
+    ".chough/cases/records.conflict-marker-follow-ups.cases.toml",
+    "changelog.d/2026-11-18-fix-339.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A conflict quoted inside a fenced code block in a record is not a marker, so the record saves. A lone ======= with no <<<<<<< or >>>>>>> around it is never refused; chough doctor reports it as an advisory possible_conflict_separator finding, 'possible leftover conflict separator at line N', that does not change its exit status. A committed case definition holding markers gives doctor conflict_markers findings, and cases check names the file, line and marker. The migration preview says the apply refuses and the apply refuses, each naming the 0.5.x source file first, with nothing written."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif's decisions on #339 (2026-11-18, relayed by hc t4c as its scope approval): exempt markers inside fenced code blocks, catch a stray =======, case TOML findings, and the migrate message naming the 0.5.x source. Don't copy the local team's rules as-is: plain heading underlines stay allowed and nothing is written partially. Human gates as plain text in tasks.md; deltas frozen at approval.",
+    "public_contract": "no"
+  }
+}

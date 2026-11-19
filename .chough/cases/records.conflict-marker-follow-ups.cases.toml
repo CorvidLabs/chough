@@ -1,0 +1,115 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #339: follow-ups to #265's conflict-marker check. A conflict quoted in a code
+# fence was refused, and a stray ======= left by a half-resolved conflict was not caught.
+
+[[case]]
+id = "TC-records-a-fenced-example-and-a-lone-separator-both-save"
+title = "A conflict quoted inside backtick and tilde code fences is not a marker and the session saves; a lone ======= with text after it is not refused either"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::a_fenced_example_and_a_lone_separator_both_save passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "a_fenced_example_and_a_lone_separator_both_save"
+
+[[case]]
+id = "TC-records-doctor-warns-of-a-lone-conflict-separator"
+title = "A lone ======= in a committed record is an advisory possible_conflict_separator finding naming the line, and doctor still exits 0"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/doctor.rs", "src/records.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_warns_of_a_lone_conflict_separator_without_failing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_warns_of_a_lone_conflict_separator_without_failing"
+
+[[case]]
+id = "TC-records-a-fence-hides-a-conflict-only-when-closed"
+title = "A code fence that never closes, or a backtick line whose tag holds a backtick, hides no conflict after it, and the write is refused naming the line"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::a_fence_hides_a_conflict_only_when_it_is_one_and_closes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "a_fence_hides_a_conflict_only_when_it_is_one_and_closes"
+
+[[case]]
+id = "TC-records-a-conflict-in-chough-s-own-sections-is-a-marker"
+title = "A conflict inside an archived story's Timeline or fenced Receipts block is a conflict_markers finding for each marker line; a fenced example in the Goal stays exempt"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/doctor.rs", "src/records.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_reports_a_conflict_inside_chough_s_own_fenced_sections passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_reports_a_conflict_inside_chough_s_own_fenced_sections"
+
+[[case]]
+id = "TC-records-doctor-warns-of-a-conflict-inside-a-code-fence"
+title = "A Git conflict left inside a code fence of a committed session gives one advisory possible_fenced_conflict finding per marker line; doctor's exit status and the next write are unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/doctor.rs", "src/records.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_warns_of_a_conflict_inside_a_code_fence passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_warns_of_a_conflict_inside_a_code_fence"
+
+# The #356 review: every unclosed fence opener rescanned the rest of the text.
+
+[[case]]
+id = "TC-records-many-unclosed-fence-openers-are-scanned-in-bounded-time"
+title = "A session holding 40,000 unclosed code fence openers saves in bounded time, and a conflict after them is still refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::many_unclosed_fence_openers_are_scanned_in_bounded_time passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "many_unclosed_fence_openers_are_scanned_in_bounded_time"

@@ -1448,3 +1448,117 @@ fn a_heading_underline_is_not_a_conflict_marker() {
     fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
     assert!(fixture.read(&file).contains("Notes\n=======\n"));
 }
+
+/// REQ-records-001 (#339): a conflict quoted inside a fenced code block, as an example or
+/// tool output, is not a marker, with backtick and tilde fences, so the session saves.
+/// A lone `=======` with text after it is not refused either, since a heading underline
+/// may be followed directly by text; `chough doctor` warns of it instead.
+#[test]
+fn a_fenced_example_and_a_lone_separator_both_save() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let file = fixture.session_file();
+    let good = fixture.read(&file);
+    let fenced = good.replacen(
+        "## Goal\n\nShip alpha\n",
+        "## Goal\n\nShip alpha\n\n```text\n<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> other\n```\n\n~~~\n<<<<<<< HEAD\n~~~\n",
+        1,
+    );
+    assert_ne!(fenced, good);
+    fixture.write(&file, &fenced);
+    fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
+    assert!(fixture.read(&file).contains("```text\n<<<<<<< HEAD\n"));
+
+    let lone = fixture.read(&file).replacen(
+        "## Goal\n\nShip alpha\n",
+        "## Goal\n\nShip alpha\n=======\nShip beta\n",
+        1,
+    );
+    fixture.write(&file, &lone);
+    fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC also kept"]);
+    assert!(
+        fixture
+            .read(&file)
+            .contains("Ship alpha\n=======\nShip beta\n")
+    );
+}
+
+/// REQ-records-001 (#339), TC-records-a-fence-hides-a-conflict-only-when-closed: a code
+/// fence that never closes hides no conflict after it, and a line of three backticks
+/// whose tag holds a backtick, which CommonMark does not read as a fence, hides none
+/// either, so the next write is refused as `refused:conflict-markers`, naming the line,
+/// with the file unchanged.
+#[test]
+fn a_fence_hides_a_conflict_only_when_it_is_one_and_closes() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let file = fixture.session_file();
+    let good = fixture.read(&file);
+    let conflict = "<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> other\n";
+    for quoted in [
+        format!("```text\n{conflict}"),
+        format!("```rust``` is the tag\n{conflict}```\n"),
+    ] {
+        let bad = good.replacen(
+            "## Goal\n\nShip alpha\n",
+            &format!("## Goal\n\nShip alpha\n\n{quoted}"),
+            1,
+        );
+        assert_ne!(bad, good);
+        let line = bad.lines().position(|line| line == "<<<<<<< HEAD").unwrap() + 1;
+        fixture.write(&file, &bad);
+        let refused = fixture.fails(&["checkpoint", "--decision", "never written"]);
+        assert!(
+            refused.contains("refused:conflict-markers"),
+            "{quoted}: {refused}"
+        );
+        assert!(
+            refused.contains(&format!("line {line}")),
+            "{quoted}: {refused}"
+        );
+        assert_eq!(fixture.read(&file), bad, "a refused write changed the file");
+    }
+}
+
+/// REQ-records-001 (#356 review), TC-records-many-unclosed-fence-openers-are-scanned-in-bounded-time:
+/// a session whose Goal holds 40,000 code fence openers that never close saves in bounded
+/// time, since the fence scan visits each line a bounded number of times instead of
+/// rescanning the rest of the text for every unclosed opener. With a conflict after them,
+/// the next write is still refused, naming its line: an unclosed fence hides nothing.
+#[test]
+fn many_unclosed_fence_openers_are_scanned_in_bounded_time() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let file = fixture.session_file();
+    let good = fixture.read(&file);
+    let openers = "```text\n".repeat(40_000);
+    let many = good.replacen(
+        "## Goal\n\nShip alpha\n",
+        &format!("## Goal\n\nShip alpha\n\n{openers}"),
+        1,
+    );
+    assert_ne!(many, good);
+    fixture.write(&file, &many);
+    let started = std::time::Instant::now();
+    fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
+    let took = started.elapsed();
+    assert!(
+        took < std::time::Duration::from_secs(10),
+        "a write over 40,000 unclosed fence openers took {took:?}"
+    );
+
+    let bad = fixture.read(&file).replacen(
+        &openers,
+        &format!("{openers}<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> other\n"),
+        1,
+    );
+    let line = bad.lines().position(|line| line == "<<<<<<< HEAD").unwrap() + 1;
+    fixture.write(&file, &bad);
+    let refused = fixture.fails(&["checkpoint", "--decision", "never written"]);
+    assert!(refused.contains("refused:conflict-markers"), "{refused}");
+    assert!(refused.contains(&format!("line {line}")), "{refused}");
+    assert_eq!(fixture.read(&file), bad, "a refused write changed the file");
+}

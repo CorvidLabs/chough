@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-339-fence-pass",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "163d7eac2868fb21ced1c407cc13210c1de88cef",
+      "contract_digest": "f211a0104ae8f8f17f3977be66362ddd28abffdec61b3de2b22bfdfa5794c542",
+      "execution_digest": "01e7668ddfde77b3749c0867e8d2dc863589799d39703979819cd465e46d1fdb",
+      "workspace_digest": "55c5ff3eed2d085d8fa4d135a98807445469246d16b9d0199fbde946c4b3ff09",
+      "timestamp": 1795052598,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, for today",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, applied by hc t4c to his P2 thread on #356; after the tester's recheck PASS of the follow-up at 414e5fe, hc t4c replied on and resolved the thread under his standing OK and asked for the merge",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    }
+  ]
+}
