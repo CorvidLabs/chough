@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "control-and-echo",
+  "slug": "control-and-echo",
+  "title": "Control and echo",
+  "description": "control and echo",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "9a81c859ae449f9da541cab3538d318de411a1ee",
+  "created_at": 1795070957,
+  "updated_at": 1795071070,
+  "affected_specs": [
+    "records",
+    "cli",
+    "history",
+    "reporting"
+  ],
+  "affected_paths": [
+    "src/leaks.rs",
+    "src/markdown.rs",
+    "src/journal.rs",
+    "src/identity.rs",
+    "src/main.rs",
+    "src/context.rs",
+    "src/checkpoint.rs",
+    "src/records.rs",
+    "src/prefs.rs",
+    "src/skill.rs",
+    "src/stage.rs",
+    "src/validate.rs",
+    "src/library.rs",
+    "src/cases.rs",
+    "src/bugs.rs",
+    "src/history.rs",
+    "src/sessions.rs",
+    "src/timing.rs",
+    "tests/output_safety.rs",
+    "tests/leaks.rs",
+    "tests/next.rs",
+    "tests/checkpoint.rs",
+    "tests/history.rs",
+    "tests/timing.rs",
+    "tests/journal.rs",
+    "docs/cli.md",
+    "changelog.d/2026-11-19-control-and-echo.md",
+    ".chough/cases/records.control-and-echo.cases.toml",
+    ".chough/cases/cli.control-and-echo.cases.toml",
+    ".chough/cases/history.control-and-echo.cases.toml",
+    ".chough/cases/reporting.control-and-echo.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A control character (C0, DEL, C1, a bidi override or isolate) in a value a person gives is refused at write as refused:control-character, naming the field and code point, except a line feed where the field takes a line break, with CRLF stored as LF; text printed from a record or given is escaped as \\u and four hex digits, text and JSON alike, with a line feed shown as \\n on a one-line slot; YAML reserved scalars are written quoted (#366). checkpoint --pr takes only a number or an http(s) URL, an empty value removes it, and next, status, context and the checkpoint view show it; the journal post links only those forms (#353). The remaining error and output sites name the field and what it holds, never the value, proven by a black-box sweep (part of #367). A file: URL is checked like the path it carries, and USERNAME counts like USER and LOGNAME (REQ-records-006)."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif decided the scope on the issues: #366 \"both. New values holding control characters are refused at write (except line breaks where a field allows them), and stored text is shown escaped when printed, as status and context already do\", widened to C0/C1 controls, DEL and bidi overrides in every field; #353 from his decision of 2026-11-18 (number or URL, shown in next, status, context and the checkpoint view; an empty value clears it); #367 \"approved. Errors name the field and the kind, never the offending text\" and \"Show it only if clean\". Stacked on #407 (leaks-and-output), whose REQ-records-006 text it builds on; it modifies no requirement D1 (doctor-fix-safety) or #311 modifies. change.rs sites stay with G1. No new dependency. Failing tests first.",
+    "public_contract": "yes"
+  }
+}
