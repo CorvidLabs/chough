@@ -31,7 +31,7 @@ mod timing;
 mod validate;
 mod vault;
 
-use anyhow::{Context, Result, ensure};
+use anyhow::{Context, Result, bail, ensure};
 use checkpoint::{Session, read_session};
 use clap::{CommandFactory, Parser, Subcommand};
 use records::valid_module_name;
@@ -261,12 +261,17 @@ fn main() -> Result<()> {
     // REQ-cli-037 (#271): a shell pins its session with --session or CHOUGH_SESSION, so
     // each agent writes to its own session whatever the shared pointer says. The commands
     // that set or name a session themselves are left alone.
-    let requested = cli.session.clone().or_else(|| {
-        std::env::var("CHOUGH_SESSION")
-            .ok()
-            .filter(|value| !value.trim().is_empty())
-    });
-    if let Some(name) = requested
+    let requested = cli
+        .session
+        .clone()
+        .map(|name| (name, "--session"))
+        .or_else(|| {
+            std::env::var("CHOUGH_SESSION")
+                .ok()
+                .filter(|value| !value.trim().is_empty())
+                .map(|name| (name, "CHOUGH_SESSION"))
+        });
+    if let Some((name, source)) = requested
         && !matches!(
             &cli.command,
             Commands::Init { .. }
@@ -278,7 +283,7 @@ fn main() -> Result<()> {
                 }
         )
     {
-        pin_session(&root, &name)?;
+        pin_session(&root, &name, source)?;
     }
     match cli.command {
         Commands::Init {
@@ -1046,10 +1051,28 @@ fn merge_in_progress(git: &doctor::GitOperation) -> Value {
 /// alias or bare slug, as `chough session use` resolves it, which every read and write of
 /// the command then uses; the shared pointer is not touched. A name that is not an open
 /// session refuses before anything is read or written.
-fn pin_session(root: &Path, name: &str) -> Result<()> {
-    let id = sessions::resolve_open(root, name).map_err(|error| {
+fn pin_session(root: &Path, name: &str, source: &str) -> Result<()> {
+    let resolved = sessions::resolve_open(root, name);
+    // #334: with no session open at all, the way on is a new session, which `chough
+    // session list` would not show. The detail still says when the named session is
+    // archived, and an option is dropped where the variable is unset.
+    if sessions::open_ids(root)?.is_empty() {
+        let detail = match &resolved {
+            Err(error) => format!(" ({error:#})"),
+            Ok(_) => String::new(),
+        };
+        let leave = if source.starts_with("--") {
+            "drop"
+        } else {
+            "unset"
+        };
+        bail!(
+            "refused:session-not-open: {source} names {name}, but no session is open{detail}; run `chough session new <key>` to start one, or {leave} {source}; nothing was written"
+        );
+    }
+    let id = resolved.map_err(|error| {
         anyhow::anyhow!(
-            "refused:session-not-open: {name}, named by --session or CHOUGH_SESSION, is not an open session ({error:#}); run `chough session list` for the open ones; nothing was written"
+            "refused:session-not-open: {name}, named by {source}, is not an open session ({error:#}); run `chough session list` for the open ones; nothing was written"
         )
     })?;
     sessions::pin(root, &sessions::session_file(&id));
@@ -1175,6 +1198,8 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "native_check": native_check::view(root, change.as_deref(), summary)?,
         "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,
+        // REQ-cli-021 (#351): why the session needs no native change, once it said so.
+        "no_native_change": checkpoint.and_then(|checkpoint| checkpoint.no_native_change.clone()),
         "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
         // F5: a command shown here is whole, whatever its length; the bound cuts the
         // text around it, and the command field is never cut.
@@ -1291,7 +1316,11 @@ fn next_text(view: &Value) -> String {
     if native["change"].is_null() {
         // F12e: with no change recorded there is no read of it to report; SpecSync's own
         // next step, when it gives one, follows on its line.
-        lines.push("Native change: none recorded".into());
+        match view["no_native_change"].as_str() {
+            // REQ-cli-021 (#351): the session said its work needs none, and why.
+            Some(reason) => lines.push(format!("Native change: none needed: {reason}")),
+            None => lines.push("Native change: none recorded".into()),
+        }
     } else {
         lines.push(format!(
             "Native change: {}: {} (read {}; approval_valid {}, correction_valid {}, terminal evidence {})",

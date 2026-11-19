@@ -3590,3 +3590,66 @@ fn a_session_that_needs_no_native_change_reaches_done_and_archives_as_done() {
     let both = other.fails(&["checkpoint", "--no-native-change", reason]);
     assert!(both.contains("add-thing"), "{both}");
 }
+
+/// REQ-cli-021 (#351), TC-cli-a-refused-move-for-lacking-a-change-offers-both-paths:
+/// when a gated move is refused because the session records no native change, the
+/// refusal and `chough next` name both ways on: start a change, or record with
+/// `chough checkpoint --no-native-change` that the work needs none. The workflow skill
+/// teaches the flag, in the canonical copy and the installed one.
+#[cfg(unix)]
+#[test]
+fn a_move_refused_for_lacking_a_change_offers_both_paths() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
+    let flag = "chough checkpoint --no-native-change \"<reason>\"";
+
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(refused.contains("refused:no-native-change"), "{refused}");
+    assert!(
+        refused.contains("chough checkpoint --native-change <id>"),
+        "{refused}"
+    );
+    assert!(refused.contains(flag), "{refused}");
+
+    let next = fixture.ok(&["next", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(action.contains("refused:no-native-change"), "{action}");
+    assert!(action.contains(flag), "{action}");
+    assert_eq!(
+        next["next_valid_action"]["command"],
+        "specsync change new \"<outcome>\" --spec <module> --path <path>",
+        "{next}"
+    );
+    let text = fixture.ok_text(&["next"]);
+    assert!(text.contains(flag), "{text}");
+
+    // The tester's findings on #359: the literal placeholder is refused, and once the
+    // session says it needs no native change, `next` says so with the reason.
+    let placeholder = fixture.fails(&["checkpoint", "--no-native-change", "<reason>"]);
+    assert!(placeholder.contains("placeholder"), "{placeholder}");
+    assert_eq!(fixture.session()["no_native_change"], Value::Null);
+    let reason = "SYNTHETIC planning only";
+    fixture.ok(&["checkpoint", "--no-native-change", reason]);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["no_native_change"], reason, "{next}");
+    let text = fixture.ok_text(&["next"]);
+    assert!(
+        text.contains(&format!("Native change: none needed: {reason}")),
+        "{text}"
+    );
+    assert!(!text.contains("Native change: none recorded"), "{text}");
+
+    for copy in ["skills", ".agents/skills"] {
+        let lifecycle = fs::read_to_string(
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join(copy)
+                .join("chough-workflow/references/lifecycle.md"),
+        )
+        .unwrap();
+        assert!(lifecycle.contains("--no-native-change"), "{copy}");
+    }
+}

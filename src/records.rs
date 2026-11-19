@@ -240,46 +240,221 @@ pub(super) fn valid_change_id(value: &str) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
 }
 
-/// Reject blank text and text that would make a record unreadable.
 /// Every Git conflict marker in a record's body, each with its 1-based line in the file
-/// and the line (REQ-records-001, #265). The body is what follows the front matter's
-/// closing `---`. A line starting `<<<<<<<` or `>>>>>>>` is a marker; a line of
-/// `=======` is one only while a `<<<<<<<` line is open, so a Markdown heading underline
-/// is not.
+/// and the line (REQ-records-001, #265, #339). The body is what follows the front
+/// matter's closing `---`. A line starting `<<<<<<<` or `>>>>>>>` is a marker, and a line
+/// of `=======` is one inside a conflict. A marker inside a closed fenced code block,
+/// quoting an example or tool output, does not count, except in a section Chough writes.
 pub(super) fn conflict_markers(text: &str) -> Vec<(usize, String)> {
-    let mut lines = text.lines().enumerate().peekable();
-    if lines.peek().is_some_and(|(_, line)| *line == "---") {
-        lines.next();
-        for (_, line) in lines.by_ref() {
-            if line == "---" {
-                break;
+    scan_conflicts(text, true).markers
+}
+
+/// Every Git conflict marker in a TOML case definition (#339), by the same rule as
+/// [`conflict_markers`], with no front matter or code fences to skip. A definition that
+/// parses as TOML holds none: a marker line there is quoted in a string.
+pub(super) fn conflict_markers_in_toml(text: &str) -> Vec<(usize, String)> {
+    toml_conflicts(text).markers
+}
+
+/// The 1-based lines of each lone `=======` outside a conflict and outside a code fence
+/// (#339): possibly left by a half-resolved conflict, possibly a heading underline, so
+/// `chough doctor` warns of it and no write is refused for it.
+pub(super) fn lone_separators(text: &str) -> Vec<usize> {
+    scan_conflicts(text, true).lone
+}
+
+/// Each conflict marker line inside a closed code fence of a record's body, with its
+/// 1-based line (#339): a quoted example, or a real conflict Git left inside the fence,
+/// which cannot be told apart, so `chough doctor` warns of it and no write is refused.
+pub(super) fn fenced_conflict_markers(text: &str) -> Vec<(usize, String)> {
+    scan_conflicts(text, true).fenced
+}
+
+/// The lone `=======` lines of a TOML case definition that does not parse (#339).
+pub(super) fn lone_separators_in_toml(text: &str) -> Vec<usize> {
+    toml_conflicts(text).lone
+}
+
+/// The conflicts of a TOML case definition: none when it parses as TOML (#339).
+fn toml_conflicts(text: &str) -> Scan {
+    if text.parse::<toml::Table>().is_ok() {
+        return Scan::default();
+    }
+    scan_conflicts(text, false)
+}
+
+/// What [`scan_conflicts`] finds in a text (#339): its conflict markers, the lines of its
+/// lone `=======` separators, and the marker lines inside a code fence.
+#[derive(Default)]
+struct Scan {
+    markers: Vec<(usize, String)>,
+    lone: Vec<usize>,
+    fenced: Vec<(usize, String)>,
+}
+
+/// The sections Chough writes itself, an archived story's `## Receipts` block and a
+/// session's `## Timeline`, where a code fence never hides a conflict (#339).
+const GENERATED_SECTIONS: [&str; 2] = [crate::markdown::RECEIPTS, crate::session_md::TIMELINE];
+
+/// The mark and length of the code fence `line` opens, as CommonMark reads one: at most
+/// three spaces, then three or more backticks or tildes, and after backticks an info
+/// string with no backtick.
+fn fence_opener(line: &str) -> Option<(char, usize)> {
+    let trimmed = line.trim_start_matches(' ');
+    if line.len() - trimmed.len() > 3 {
+        return None;
+    }
+    let mark = trimmed
+        .chars()
+        .next()
+        .filter(|mark| *mark == '`' || *mark == '~')?;
+    let run = trimmed.chars().take_while(|c| *c == mark).count();
+    (run >= 3 && (mark == '~' || !trimmed[run..].contains('`'))).then_some((mark, run))
+}
+
+/// The mark and run of `line` when it can close a code fence: at most three spaces, then
+/// three or more backticks or tildes and nothing but spaces after them.
+fn fence_close(line: &str) -> Option<(char, usize)> {
+    let trimmed = line.trim_start_matches(' ');
+    if line.len() - trimmed.len() > 3 {
+        return None;
+    }
+    let mark = trimmed
+        .chars()
+        .next()
+        .filter(|mark| *mark == '`' || *mark == '~')?;
+    let run = trimmed.chars().take_while(|c| *c == mark).count();
+    (run >= 3 && trimmed[run..].trim().is_empty()).then_some((mark, run))
+}
+
+/// For each of `lines`, whether it is part of a closed code fence, from `start` on and
+/// outside Chough's own sections (#339). A fence that never closes hides nothing, unlike
+/// CommonMark, where it runs to the end, and a heading of Chough's own sections ends the
+/// search for a close. Each opener's close comes from [`fence_closes`], so the scan visits
+/// each line a bounded number of times however many fences never close (#356 review).
+fn fenced(lines: &[&str], start: usize) -> Vec<bool> {
+    let closes = fence_closes(lines, start);
+    let mut fenced = vec![false; lines.len()];
+    let mut in_generated = false;
+    let mut index = start;
+    while index < lines.len() {
+        let line = lines[index];
+        if line.starts_with("# ") || line.starts_with("## ") {
+            in_generated = generated_heading(line);
+        } else if !in_generated && let Some(close) = closes[index] {
+            fenced[index..=close].fill(true);
+            index = close + 1;
+            continue;
+        }
+        index += 1;
+    }
+    fenced
+}
+
+/// Whether `line` is the heading of one of Chough's own sections (#339).
+fn generated_heading(line: &str) -> bool {
+    GENERATED_SECTIONS
+        .iter()
+        .any(|name| line.trim_end().strip_prefix("## ") == Some(name))
+}
+
+/// For each line from `start` that opens a code fence, the first later line that closes
+/// it before the next heading of Chough's own sections, if any (#356 review). One pass
+/// from the end keeps, per fence character, the candidate closes nearest first, each
+/// longer than every nearer one: a close at least as long and nearer hides a farther one
+/// for every opener. An opener's close is then the first candidate as long as it, found
+/// by a binary search, and each line enters and leaves a stack at most once.
+fn fence_closes(lines: &[&str], start: usize) -> Vec<Option<usize>> {
+    let mut closes = vec![None; lines.len()];
+    // (line, run) per fence character, the nearest last.
+    let mut candidates: [Vec<(usize, usize)>; 2] = [vec![], vec![]];
+    let slot = |mark: char| usize::from(mark == '~');
+    for index in (start..lines.len()).rev() {
+        let line = lines[index];
+        if generated_heading(line) {
+            candidates.iter_mut().for_each(Vec::clear);
+            continue;
+        }
+        if let Some((mark, length)) = fence_opener(line) {
+            let stack = &candidates[slot(mark)];
+            // The runs grow from the last element to the first.
+            let longer = stack.partition_point(|&(_, run)| run >= length);
+            closes[index] = longer.checked_sub(1).map(|at| stack[at].0);
+        }
+        if let Some((mark, run)) = fence_close(line) {
+            let stack = &mut candidates[slot(mark)];
+            while stack.last().is_some_and(|&(_, farther)| farther <= run) {
+                stack.pop();
             }
+            stack.push((index, run));
         }
     }
+    closes
+}
+/// The conflict markers of `text`, the lines of its lone `=======` separators and the
+/// marker lines inside its code fences.
+fn scan_conflicts(text: &str, markdown: bool) -> Scan {
+    let lines: Vec<&str> = text
+        .lines()
+        .map(|line| line.trim_end_matches('\r'))
+        .collect();
+    let mut start = 0;
+    if markdown && lines.first() == Some(&"---") {
+        start = lines
+            .iter()
+            .skip(1)
+            .position(|line| *line == "---")
+            .map_or(lines.len(), |at| at + 2);
+    }
+    let fenced = if markdown {
+        fenced(&lines, start)
+    } else {
+        vec![false; lines.len()]
+    };
     let mut open = false;
-    let mut found = vec![];
-    for (number, line) in lines {
-        let line = line.trim_end_matches('\r');
+    // A conflict opened inside the current code fence.
+    let mut quoted = false;
+    let mut scan = Scan::default();
+    for (index, &line) in lines.iter().enumerate().skip(start) {
+        if fenced[index] {
+            let marker = if line.starts_with("<<<<<<<") {
+                quoted = true;
+                true
+            } else if line.starts_with(">>>>>>>") {
+                quoted = false;
+                true
+            } else {
+                quoted && line == "======="
+            };
+            if marker {
+                scan.fenced.push((index + 1, line.to_string()));
+            }
+            continue;
+        }
+        quoted = false;
         let marker = if line.starts_with("<<<<<<<") {
             open = true;
             true
         } else if line.starts_with(">>>>>>>") {
             open = false;
             true
+        } else if line == "=======" && !open {
+            scan.lone.push(index + 1);
+            false
         } else {
             open && line == "======="
         };
         if marker {
-            found.push((number + 1, line.to_string()));
+            scan.markers.push((index + 1, line.to_string()));
         }
     }
-    found
+    scan
 }
 
 /// Whether `relative` is where a record of REQ-records-001 lives: a Markdown file under
 /// `.chough/`, or a journal post in the knowledge directory. A generated knowledge note
 /// or an installed skill file is not one, so it may quote a conflict marker.
-fn holds_a_record(root: &Path, relative: &str) -> bool {
+pub(super) fn holds_a_record(root: &Path, relative: &str) -> bool {
     if !relative.ends_with(".md") {
         return false;
     }
@@ -1969,6 +2144,88 @@ mod tests {
             let error = native_deadline(Some(OsStr::new(value))).unwrap_err();
             assert!(error.contains("from 1 to 3600"), "{value}: {error}");
             assert!(error.contains("not run"), "{value}: {error}");
+        }
+    }
+
+    /// #356 review: the bounded fence pass marks exactly the lines the plain search did,
+    /// for every opener scanning the rest of the text for its close, over many generated
+    /// bodies mixing fences of both marks and lengths, indented and tagged lines, unclosed
+    /// openers and Chough's own section headings.
+    #[test]
+    fn the_bounded_fence_pass_marks_what_the_plain_search_marked() {
+        fn plain(lines: &[&str], start: usize) -> Vec<bool> {
+            let closes = |line: &str, (mark, length): (char, usize)| {
+                let trimmed = line.trim_start_matches(' ');
+                let run = trimmed.chars().take_while(|c| *c == mark).count();
+                line.len() - trimmed.len() <= 3 && run >= length && trimmed[run..].trim().is_empty()
+            };
+            let mut fenced = vec![false; lines.len()];
+            let mut in_generated = false;
+            let mut index = start;
+            while index < lines.len() {
+                let line = lines[index];
+                if line.starts_with("# ") || line.starts_with("## ") {
+                    in_generated = super::generated_heading(line);
+                } else if !in_generated && let Some(fence) = super::fence_opener(line) {
+                    let close = lines[index + 1..]
+                        .iter()
+                        .position(|later| super::generated_heading(later) || closes(later, fence))
+                        .map(|at| index + 1 + at)
+                        .filter(|at| !super::generated_heading(lines[*at]));
+                    if let Some(close) = close {
+                        fenced[index..=close].fill(true);
+                        index = close + 1;
+                        continue;
+                    }
+                }
+                index += 1;
+            }
+            fenced
+        }
+        const PIECES: [&str; 18] = [
+            "```",
+            "````",
+            "`````",
+            "```text",
+            "```rust``` is the tag",
+            "~~~",
+            "~~~~",
+            "~~~ `tag`",
+            "   ```",
+            "    ```",
+            "```  ",
+            "## Timeline",
+            "## Receipts",
+            "## Goal",
+            "# Title",
+            "<<<<<<< HEAD",
+            "=======",
+            "text",
+        ];
+        let mut seed: u64 = 0x2545_f491_4f6c_dd1d;
+        for _ in 0..4000 {
+            seed = seed
+                .wrapping_mul(6364136223846793005)
+                .wrapping_add(1442695040888963407);
+            let count = (seed >> 33) as usize % 40;
+            let lines: Vec<&str> = (0..count)
+                .map(|_| {
+                    seed = seed
+                        .wrapping_mul(6364136223846793005)
+                        .wrapping_add(1442695040888963407);
+                    PIECES[(seed >> 33) as usize % PIECES.len()]
+                })
+                .collect();
+            let start = if count > 0 {
+                (seed >> 40) as usize % count.min(3)
+            } else {
+                0
+            };
+            assert_eq!(
+                super::fenced(&lines, start),
+                plain(&lines, start),
+                "{lines:?} from {start}"
+            );
         }
     }
 }

@@ -1894,13 +1894,37 @@ fn migrate_refuses_a_plan_whose_files_would_hold_conflict_markers() {
     );
     assert_ne!(conflicted, original);
     let fixture = migrate_project("adopted", &[(entry, &conflicted)]);
-    let digest = fixture.ok(&["migrate", "--json"])["plan_digest"]
-        .as_str()
-        .unwrap()
-        .to_string();
+    let preview = fixture.ok(&["migrate", "--json"]);
+    let digest = preview["plan_digest"].as_str().unwrap().to_string();
+    // A plan the apply would refuse is not offered to apply, in JSON either.
+    assert!(preview.get("apply").is_none(), "{preview:#}");
+    // #339: the preview says up front that the apply refuses, naming the 0.5.x source.
+    assert_eq!(
+        preview["apply_refused"]["refusal"], "refused:conflict-markers",
+        "{preview:#}"
+    );
+    assert!(
+        preview["apply_refused"]["why"]
+            .as_str()
+            .is_some_and(|why| why.starts_with(&format!("refused:conflict-markers: {entry} holds"))),
+        "{preview:#}"
+    );
+    let text = String::from_utf8_lossy(&fixture.run(&["migrate"]).stdout).into_owned();
+    assert!(
+        text.contains("The apply refuses now (refused:conflict-markers)") && text.contains(entry),
+        "{text}"
+    );
+    // A plan the apply would refuse is not offered to apply.
+    assert!(text.contains("Plan digest:"), "{text}");
+    assert!(!text.contains("Apply this plan"), "{text}");
     let before = files(fixture.root());
     let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
     assert!(refused.contains("refused:conflict-markers"), "{refused}");
+    // The refusal names the 0.5.x file to resolve, then the record it would become.
+    assert!(
+        refused.contains(&format!("{entry} holds a Git conflict marker")),
+        "{refused}"
+    );
     assert!(refused.contains("/agent/inbox/"), "{refused}");
     assert!(refused.contains("<<<<<<< HEAD"), "{refused}");
     assert_eq!(

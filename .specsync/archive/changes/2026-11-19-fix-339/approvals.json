@@ -1,0 +1,186 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795037509,
+      "digest": "5adc064e918c24f55bda4d4b23c388063431d3d0af5f60d3ee19228f9a0f03a7",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-339\": \"exempt markers inside fenced code blocks, catch a stray =======, case TOML findings, and the migrate message naming the 0.5.x source … Warn only\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his decisions on the #336 follow-ups filed as CorvidLabs/chough#339, his scope approval for that issue; then for item 2 'Warn only': a lone line of exactly seven '=' with no <<<<<<< or >>>>>>> around it is reported by doctor as 'possible leftover conflict separator at line N', and writes are never refused for it). Relayed and recorded by chough-fixer-t4g at 2026-11-18T21:31:48Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-339",
+        "title": "Fix 339",
+        "description": "fix 339",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.conflict-marker-follow-ups.cases.toml",
+          "changelog.d/2026-11-18-fix-339.md",
+          "docs/cli.md",
+          "src/cases.rs",
+          "src/doctor.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "tests/cases.rs",
+          "tests/doctor.rs",
+          "tests/migrate.rs",
+          "tests/records.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A conflict quoted inside a fenced code block in a record is not a marker, so the record saves. A lone ======= with no <<<<<<< or >>>>>>> around it is never refused; chough doctor reports it as an advisory possible_conflict_separator finding, 'possible leftover conflict separator at line N', that does not change its exit status. A committed case definition holding markers gives doctor conflict_markers findings, and cases check names the file, line and marker. The migration preview says the apply refuses and the apply refuses, each naming the 0.5.x source file first, with nothing written."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decisions on #339 (2026-11-18, relayed by hc t4c as its scope approval): exempt markers inside fenced code blocks, catch a stray =======, case TOML findings, and the migrate message naming the 0.5.x source. Don't copy the local team's rules as-is: plain heading underlines stay allowed and nothing is written partially. Human gates as plain text in tasks.md; deltas frozen at approval.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "eb0191b0a940e518e7f85deaf5bab7986be36bded11b704f7dcad508a00a83d0",
+        "records": "df31d74363cdcead7b815b08717723e2855830ff2434451ad589dd7a8f50b07e"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-009": "58a483a46560f1478a7c7ae68af4bf5fb03c5b8862711fc87d24ff7bbfd88c28",
+        "cli: REQUIREMENT REQ-cli-055": "440857d6bb5f5374bbf628fbd3391029a8fc080574cfae7dbc5239e0dc0ef73f",
+        "records: REQUIREMENT REQ-records-001": "f03aed5be818a359d29266a18f253daaa353ecc05f4f8189f9a76b0aa6a73728"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "exempt markers inside fenced code blocks, catch a stray =======, case TOML findings, and the migrate message naming the 0.5.x source … Warn only",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his decisions on the #336 follow-ups filed as CorvidLabs/chough#339, his scope approval for that issue; then for item 2 'Warn only': a lone line of exactly seven '=' with no <<<<<<< or >>>>>>> around it is reported by doctor as 'possible leftover conflict separator at line N', and writes are never refused for it",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795043191,
+      "digest": "5adc064e918c24f55bda4d4b23c388063431d3d0af5f60d3ee19228f9a0f03a7",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-339 for the tester's four findings\": \"Fix first\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, after the tester's PASS of #356 with notes, within his #339 scope: (a) a code fence never hides a conflict in the Timeline or Receipts sections Chough writes; (b) in a case definition, markers count only when it does not parse as TOML; (c) fences follow CommonMark: a fence that never closes hides nothing, and a backtick line whose tag holds a backtick is not a fence; (d) the migrate preview offers no apply command when the apply would refuse). Relayed and recorded by chough-fixer-t4g at 2026-11-18T23:06:31Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-339",
+        "title": "Fix 339",
+        "description": "fix 339",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.conflict-marker-follow-ups.cases.toml",
+          "changelog.d/2026-11-18-fix-339.md",
+          "docs/cli.md",
+          "src/cases.rs",
+          "src/doctor.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "tests/cases.rs",
+          "tests/doctor.rs",
+          "tests/migrate.rs",
+          "tests/records.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A conflict quoted inside a fenced code block in a record is not a marker, so the record saves. A lone ======= with no <<<<<<< or >>>>>>> around it is never refused; chough doctor reports it as an advisory possible_conflict_separator finding, 'possible leftover conflict separator at line N', that does not change its exit status. A committed case definition holding markers gives doctor conflict_markers findings, and cases check names the file, line and marker. The migration preview says the apply refuses and the apply refuses, each naming the 0.5.x source file first, with nothing written."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decisions on #339 (2026-11-18, relayed by hc t4c as its scope approval): exempt markers inside fenced code blocks, catch a stray =======, case TOML findings, and the migrate message naming the 0.5.x source. Don't copy the local team's rules as-is: plain heading underlines stay allowed and nothing is written partially. Human gates as plain text in tasks.md; deltas frozen at approval.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "c9093c5c2b5f016da4554f0a1c67c272d0ffef5023d964a7d63e2da71cd58d60",
+        "records": "d3e7738411de929681fef71772ca1419a0a6908e2b37ec44a7ed77eeb52c1222"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-009": "8870978191d1216ba24bd8e9a429bdd0fd8a46f37ee82959e2d6b3d193ecc086",
+        "cli: REQUIREMENT REQ-cli-055": "f4a1c4e6ff62e485227f537653e7d154b750b676f0706c2eae9acfa994f6b588",
+        "records: REQUIREMENT REQ-records-001": "799d0a5d226af0e2577332f7511565785d48f1f1cb571c7a444662b1366e0c4c"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Fix first",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, after the tester's PASS of #356 with notes, within his #339 scope: (a) a code fence never hides a conflict in the Timeline or Receipts sections Chough writes; (b) in a case definition, markers count only when it does not parse as TOML; (c) fences follow CommonMark: a fence that never closes hides nothing, and a backtick line whose tag holds a backtick is not a fence; (d) the migrate preview offers no apply command when the apply would refuse",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795047430,
+      "digest": "5adc064e918c24f55bda4d4b23c388063431d3d0af5f60d3ee19228f9a0f03a7",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-339 for a conflict inside a code fence\": \"Advisory finding\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, on swarm finding 62-F1 in #356 (a real Git conflict inside a fenced block of a session passed silently), within his #339 scope: doctor reports 'possible conflict markers inside a code fence at line N' as an advisory finding, with doctor's exit status unchanged and writes allowed, like the stray ======= rule). Relayed and recorded by chough-fixer-t4g at 2026-11-19T00:17:09Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-339",
+        "title": "Fix 339",
+        "description": "fix 339",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.conflict-marker-follow-ups.cases.toml",
+          "changelog.d/2026-11-18-fix-339.md",
+          "docs/cli.md",
+          "src/cases.rs",
+          "src/doctor.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "tests/cases.rs",
+          "tests/doctor.rs",
+          "tests/migrate.rs",
+          "tests/records.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A conflict quoted inside a fenced code block in a record is not a marker, so the record saves. A lone ======= with no <<<<<<< or >>>>>>> around it is never refused; chough doctor reports it as an advisory possible_conflict_separator finding, 'possible leftover conflict separator at line N', that does not change its exit status. A committed case definition holding markers gives doctor conflict_markers findings, and cases check names the file, line and marker. The migration preview says the apply refuses and the apply refuses, each naming the 0.5.x source file first, with nothing written."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decisions on #339 (2026-11-18, relayed by hc t4c as its scope approval): exempt markers inside fenced code blocks, catch a stray =======, case TOML findings, and the migrate message naming the 0.5.x source. Don't copy the local team's rules as-is: plain heading underlines stay allowed and nothing is written partially. Human gates as plain text in tasks.md; deltas frozen at approval.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "0ecf7b5a5aa413bfe6edb4d29e66a67cd69a9dd8e7226155a3f8e728058b6efb",
+        "records": "30e16e2bc77853cb6340d3f5c4ca5ad030de0465469778f83278abf8e566b842"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-009": "04ad843d3a2de603da10a79a74004d3ad5969e58eec514b821f71a4d3ce2980e",
+        "cli: REQUIREMENT REQ-cli-055": "8f546fa0a845355475ab0d2beafd14b49fe55ea6d4eb4526772d72a9ccb641d4",
+        "records: REQUIREMENT REQ-records-001": "192ad4e182d5e2dc45b8eef8f5eafb2a291398dc256909536a222cb56da0581e"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Advisory finding",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, on swarm finding 62-F1 in #356 (a real Git conflict inside a fenced block of a session passed silently), within his #339 scope: doctor reports 'possible conflict markers inside a code fence at line N' as an advisory finding, with doctor's exit status unchanged and writes allowed, like the stray ======= rule",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795049165,
+      "digest": "b50ed11474dd7ab7b38acd1d5cea81370d2e6811c0f688a91fa7a35d67b53d52",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
