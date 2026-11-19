@@ -3858,6 +3858,7 @@ fn the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change() {
         "`chough change new",
         "`specsync change answer`",
         "`deltas/<module>.md` for each affected spec",
+        "`chough change ready <id>`",
         "scope approval belongs to the human",
         "first code edit",
         "`.chough/cases/<module>.<topic>.cases.toml`",

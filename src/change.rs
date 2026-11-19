@@ -1,7 +1,9 @@
 //! SpecSync change steps through Chough (REQ-cli-057, DRIVE-20): `chough change new`,
 //! `answer`, `check` and `status` run the matching SpecSync step in the project root
 //! and pass its standard output, standard error and exit code through unchanged.
-//! Nothing under `.chough/` is read or written. `chough change ship` (REQ-cli-059)
+//! Nothing under `.chough/` is read or written. `chough change ready` (REQ-cli-067)
+//! is not one of those steps: it prints its own report and writes nothing.
+//! `chough change ship` (REQ-cli-059)
 //! checks the session, its stage, its open gates and the review relay first, ships,
 //! and then closes the review gate and moves the session to done with Chough's own
 //! commands.
@@ -57,6 +59,8 @@ pub(super) enum ChangeCommand {
     },
     /// Run `specsync change status [<id>] --json` within the native read bound.
     Status { id: Option<String> },
+    /// List everything still missing before approval, and name each fix (REQ-cli-067).
+    Ready { id: String },
     /// Check first, run `specsync change ship <id>`, then close the review gate with its
     /// relay and move the session to done (REQ-cli-059).
     Ship(Box<ShipArgs>),
@@ -186,6 +190,7 @@ pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
             ("check", arguments, false)
         }
         ChangeCommand::Ship(args) => return ship(root, *args),
+        ChangeCommand::Ready { id } => return crate::ready::run(root, &id),
         ChangeCommand::Status { id } => {
             let mut arguments = vec!["change".to_string(), "status".into()];
             arguments.extend(id);
