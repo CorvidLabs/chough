@@ -829,12 +829,13 @@ fn stored_form(id: &str, linked: &Linked) -> String {
     }
 }
 
-/// REQ-cli-012: a bug written with `--observation` naming an entry of the active session,
-/// which [`stored_form`] stores as `<session>/<id>`, joins that session's checkpoint as
-/// `checkpoint --bug` adds it (REQ-records-004), once, so the session's story names the
-/// bugs found in it. An entry of another session, a receipt or no active session leaves
-/// every checkpoint unchanged.
-fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
+/// REQ-cli-012: the bug joins the active session's checkpoint as `checkpoint --bug` adds
+/// it (REQ-records-004), once, so the session's story names the bugs found in it and a
+/// blocking one stops it (REQ-cli-054). A new bug (`always`) joins whenever a session is
+/// active (#329); an updated one joins only when `--observation` names an entry of the
+/// active session, which [`stored_form`] stores as `<session>/<id>`. An entry of another
+/// session, a receipt or no active session leaves every checkpoint unchanged.
+fn join_active_session(root: &Path, bug: &str, links: &[String], always: bool) -> Result<()> {
     let Some(active) = crate::sessions::checkpoint_path(root)
         .ok()
         .and_then(|relative| crate::sessions::id_of(&relative))
@@ -842,7 +843,7 @@ fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
         return Ok(());
     };
     let prefix = format!("{active}/");
-    if !links.iter().any(|link| link.starts_with(&prefix)) {
+    if !always && !links.iter().any(|link| link.starts_with(&prefix)) {
         return Ok(());
     }
     let mut session = match crate::checkpoint::read_session(root)? {
@@ -853,6 +854,32 @@ fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
     }
     session.bugs.push(bug.to_string());
     crate::checkpoint::save_checkpoint(root, &mut session)
+}
+
+/// Before `bug add` writes anything (#343 review): the active session, if one is, can
+/// take the new bug's link, checked as its save would check it, so a new bug is never
+/// left out of the session it was filed in. The check holds a name as long as any name
+/// `create` can give the bug, so the save after it is never larger than the one checked.
+fn session_takes_a_bug(root: &Path) -> Result<()> {
+    let Some(active) = crate::sessions::checkpoint_path(root)
+        .ok()
+        .and_then(|relative| crate::sessions::id_of(&relative))
+    else {
+        return Ok(());
+    };
+    let mut session = match crate::checkpoint::read_session(root)? {
+        crate::checkpoint::Session::V2(session) => *session,
+    };
+    let date = identity::utc_date(now()?);
+    session.bugs.push(format!(
+        "{date}-{}",
+        "x".repeat(identity::NAME_LIMIT - date.len() - 1)
+    ));
+    crate::checkpoint::check_save(root, &session).map_err(|error| {
+        anyhow::anyhow!(
+            "refused: session {active} cannot take another bug ({error:#}), and a bug added now would be left out of it; run `chough session new <key>` and add the bug there; nothing was written"
+        )
+    })
 }
 
 fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Result<()> {
@@ -1452,8 +1479,9 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         source: args.source,
         notes,
     };
+    session_takes_a_bug(root)?;
     let (stored, redacted) = create(root, draft, false)?;
-    join_active_session(root, stored.id(), &stored.list("evidence"))?;
+    join_active_session(root, stored.id(), &stored.list("evidence"), true)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
@@ -1617,7 +1645,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     validate(&stored)?;
     let redacted = guard(&mut stored.record, Local::current())?;
     markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
-    join_active_session(root, &id, &links)?;
+    join_active_session(root, &id, &links, false)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,

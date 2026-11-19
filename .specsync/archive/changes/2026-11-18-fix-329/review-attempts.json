@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-329",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "47e0f36a18563ce65a3eb26eb4620a405b35cef7",
+      "contract_digest": "ebfa043c128e9975399749eb3475a640c2695d711b2115477dd5c1b2f059e64b",
+      "execution_digest": "279affce41603fad010528d0714e72a443de36650e36f3272d510065236d4010",
+      "workspace_digest": "8f839233a4e1a94c364e7f193f0e9a8c2624f026edcb6eba65e0ca312407ac39",
+      "timestamp": 1795043028,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve, merge when green",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #343 after the tester's PASS; he accepted that a bug filed during session A that links session B's failure blocks both",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    }
+  ]
+}

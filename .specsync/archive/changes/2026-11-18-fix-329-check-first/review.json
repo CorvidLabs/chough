@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-329-check-first",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "44aea719807f00be690d400d35211f89eb231131",
+  "contract_digest": "e32cbd8fc31c4a6a2a5ed59bee744c5e637370baa629fbd518e73e94aac2a30b",
+  "execution_digest": "9c8a634918682d15b6c5523f149cdfaeaf5688b33e2adb03deb828684e05e447",
+  "workspace_digest": "b2528f23e59be2569755ad3f3d9022650b4a2241796aa4a5cd48ebc1e5577b2c",
+  "timestamp": 1795044800,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Yes, for today",
+    "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, applied by hc t4c to his P2 thread on #343; after tester2's PASS of the follow-up at eae1915, hc t4c replied on and resolved the thread under his standing OK and asked for the merge",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}

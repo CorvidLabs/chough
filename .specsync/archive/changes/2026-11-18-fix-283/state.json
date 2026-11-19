@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-283",
+  "slug": "fix-283",
+  "title": "Fix 283",
+  "description": "fix 283",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "e47b4cfaabe2e68fd02246be01fb7e8e256fe00b",
+  "created_at": 1795032541,
+  "updated_at": 1795043933,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/cases.rs",
+    "tests/cases.rs",
+    "docs/cli.md",
+    ".chough/cases/cli.retired-case-binding.cases.toml",
+    "changelog.d/2026-11-18-fix-283.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "No requirement says cases check validates a retired case's fledge-task binding; the code checked it before its retired-case early return. Leif decided the check is skipped for retired cases so the original binding stays as history; a retired case was already never run (find_checked), so only the check order, a test and the docs change.",
+  "acceptance_criteria": [
+    "chough cases check passes a retired case whose fledge-task binding names a task no longer in fledge.toml, with the binding kept as written, while an active case naming a missing task is still refused naming the task; cases run still refuses the retired case."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif's decision on #283 (2026-11-18 planning interview): skip the check for retired cases, returning early before the fledge-task binding check, so the original binding stays as history. Human gates as plain text in tasks.md. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}
