@@ -42,6 +42,7 @@ chough doctor and chough next say when installed skill files are known-outdated 
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-361": "doctor and next" (GitHub issue #361, which records Leif's decision of 2026-11-18 (chough doctor reports each known-outdated skill file naming chough skill update, chough next shows one line, and status JSON carries no_native_change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-361 as 0xLeif
+- 0xLeif decided "Scope approval of fix-361 with the uninspected-path sentence (native approval)": "Yes, approve the sentence" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #362: the sentence added to REQ-cli-016 about a skill directory or file that cannot be inspected, with a one-time send-back of fix-361); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-361 as 0xLeif
 
 ## What was verified
 
@@ -98,4 +99,32 @@ chough doctor and chough next say when installed skill files are known-outdated 
   - revision: 298d00547f969f18b7aa4b0075d39f6b3f97a637
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:07:46Z · gate-opened · accept → accept · Scope approval of fix-361 with the uninspected-path sentence (native approval) ^t-c362cd
+  - native_change: fix-361
+  - revision: e62b7037884fda2f593997d2620a7fb088ec95f7
+  - holds: accept
+  - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:07:46Z · direct-native-write · accept → accept · fix-361's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-bf9342
+  - native_change: fix-361
+  - revision: e62b7037884fda2f593997d2620a7fb088ec95f7
+  - direct_write:
+    - change: fix-361
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:07:46Z · gate-closed · accept → accept · Scope approval of fix-361 with the uninspected-path sentence (native approval) ^t-f1838d
+  - native_change: fix-361
+  - revision: e62b7037884fda2f593997d2620a7fb088ec95f7
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, approve the sentence
+    - where: Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #362: the sentence added to REQ-cli-016 about a skill directory or file that cannot be inspected, with a one-time send-back of fix-361
+    - recorded_by: fable-t4b
+    - native: specsync change approve fix-361
+    - actor: 0xLeif
   - by: fable (claude-fable-5-2, hc t4b)
