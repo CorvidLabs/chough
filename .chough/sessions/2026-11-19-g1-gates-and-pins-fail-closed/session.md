@@ -5,7 +5,7 @@ aliases: [g1-gates-and-pins-fail-closed]
 objective: "Gates and session pins fail closed: a hand-edited no_native_change cannot unlock the ungated move, change ship checks its whole history and writes only to its pinned session, inbox list and session shelve honor the pin and aliases, and session use says when CHOUGH_SESSION still wins (#401, #400, #369, #393, #372)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -82,13 +82,9 @@ observations:
   - 2026-11-19-tc-history-inbox-list-lists-the-pinned-session-a1215c
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-g1-gates-and-pins-fail-closed
-    holds: accept
-    drives: review
-    opened: 2026-11-19T16:47:30Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 title: "G1: gates and session pins fail closed"
 summary:
   - "A hand-edited no_native_change can no longer allow the ungated move; chough change ship checks its whole history from the base, refusing with a working way out when Git cannot read it and going on where a squash merge removed the base; its gate close and move into done act on the pinned session; inbox list honors the pin; session use and new say when a pin still names another session and shelve resolves aliases; chough change refuses a leaking argument before SpecSync runs (#401, #400, #369, #393, #372, part of #367)."
@@ -107,6 +103,7 @@ Gates and session pins fail closed: a hand-edited no_native_change cannot unlock
 - 0xLeif decided "Scope approval of fix-g1-gates-and-pins-fail-closed": "Approve, both as recommended / Approve / Yes, covered" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53). Three answers in order: 'Approve, both as recommended' (Claude Code chat answer, 2026-11-19 about 05:21Z, on G1 at 6a7c7d56 with #372 say-so and #400 whole-range); 'Approve' (about 06:12Z, on declaring history, dropping src/session_md.rs, adding the history spec files and moving the inbox criterion); 'Yes, covered' (2026-11-19 morning MST, on the two case files in place of .chough/cases/ and the re-answered constraints). Scope as checked by fable-lead at e219ab98); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-g1-gates-and-pins-fail-closed as 0xLeif
 - 0xLeif decided "Leif's word on the #400 sentence and the G1 send-back": "yes to both" (Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 14:47Z on 2026-11-19 (morning MST): yes to the replacement #400 sentence and criterion in REQ-cli-059, and yes to t4b running G1's one send-back on his word, relayed via t4c); recorded by fable-t4b; a relayed claim, not authenticated
 - 0xLeif decided "Scope approval of fix-g1-gates-and-pins-fail-closed with the narrowed #400 sentence (native approval)": "yes to both" (Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 14:47Z on 2026-11-19: yes to the replacement #400 sentence and criterion in REQ-cli-059 as sent (g1-400-wording), and to t4b running this one send-back. The send-back cancelled his three earlier answers on G1, which stand for the rest of the delta: 'Approve, both as recommended' (about 05:21Z), 'Approve' (about 06:12Z), 'Yes, covered' (morning MST)); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-g1-gates-and-pins-fail-closed as 0xLeif
+- 0xLeif decided "Implementation review of fix-g1-gates-and-pins-fail-closed": "Yes, record and ship" (Leif's answer in this Claude Code session (hc t4b), 2026-11-19, to recording his implementation review of #413 at 41d486eb and shipping it. Under standing OK 6(b) (his 'Go' to the six rules, relayed by hc t4c): tester PASS at 41d486eb, corvid-agent approved 41d486eb, deltas unchanged since 3438bbca, checked by fable-lead); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-g1-gates-and-pins-fail-closed as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -277,4 +274,20 @@ Gates and session pins fail closed: a hand-edited no_native_change cannot unlock
   - revision: d542aa58be33b5402a83330af954978b33bc390a
   - holds: accept
   - drives: review
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T19:44:10Z · gate-closed · accept → accept · Implementation review of fix-g1-gates-and-pins-fail-closed ^t-b763eb
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - revision: 57d6e38feadc057de23a6037cabac66ff909229f
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, record and ship
+    - where: Leif's answer in this Claude Code session (hc t4b), 2026-11-19, to recording his implementation review of #413 at 41d486eb and shipping it. Under standing OK 6(b) (his 'Go' to the six rules, relayed by hc t4c): tester PASS at 41d486eb, corvid-agent approved 41d486eb, deltas unchanged since 3438bbca, checked by fable-lead
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-g1-gates-and-pins-fail-closed
+    - actor: 0xLeif
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T19:44:12Z · advance · accept → done · native:archived ^t-e79cb1
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - gate: native:archived
+  - revision: 57d6e38feadc057de23a6037cabac66ff909229f
   - by: fable (claude-opus-5-5, hc t4b)
