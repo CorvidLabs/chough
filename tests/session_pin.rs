@@ -316,3 +316,39 @@ fn inbox_list_lists_the_pinned_session() {
         assert_eq!(texts, ["SYNTHETIC for other"], "{listed}");
     }
 }
+
+/// REQ-cli-037 (#372): `session use` and `session new` still ignore the pin, but say
+/// on standard error when `--session` or `CHOUGH_SESSION` still names another open
+/// session; with neither set, or when it names the session made active, they say
+/// nothing.
+#[test]
+fn session_use_and_new_say_when_a_pin_still_names_another_session() {
+    let (fixture, first, other) = two_sessions();
+    let stderr =
+        |output: &std::process::Output| String::from_utf8_lossy(&output.stderr).into_owned();
+    let used = fixture.run_with_env(&["session", "use", &other], &[("CHOUGH_SESSION", &first)]);
+    assert!(used.status.success(), "{}", said(&used));
+    assert_eq!(fixture.active_id(), other);
+    let note = stderr(&used);
+    assert!(
+        note.contains("CHOUGH_SESSION") && note.contains(&first),
+        "{note}"
+    );
+    let by_option = fixture.run(&["--session", &first, "session", "use", &other]);
+    let note = stderr(&by_option);
+    assert!(
+        note.contains("--session") && note.contains(&first),
+        "{note}"
+    );
+    let made = fixture.run_with_env(
+        &["session", "new", "SYNTHETIC-third", "--objective", "Third"],
+        &[("CHOUGH_SESSION", &first)],
+    );
+    assert!(made.status.success(), "{}", said(&made));
+    assert!(stderr(&made).contains(&first), "{}", stderr(&made));
+    // Unset, or naming the session made active: nothing said.
+    let quiet = fixture.run(&["session", "use", &first]);
+    assert_eq!(stderr(&quiet), "");
+    let same = fixture.run_with_env(&["session", "use", &other], &[("CHOUGH_SESSION", &other)]);
+    assert_eq!(stderr(&same), "");
+}
