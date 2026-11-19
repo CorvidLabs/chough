@@ -5,7 +5,7 @@ aliases: [fix-269]
 objective: "checkpoint --objective fills the session's untouched default Goal once, so the story and journal post use the current objective; a Goal a person wrote is never rewritten (REQ-records-004, #269)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -27,13 +27,9 @@ observations:
   - 2026-11-18-tc-records-the-journal-post-uses-the-filled-goal-1c26fa
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-269
-    holds: accept
-    drives: review
-    opened: 2026-11-18T20:07:07Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # checkpoint --objective fills the session's untouched default Goal once, so the story and journal post use the current objective; a Goal a person wrote is never rewritten (REQ-records-004, #269)
 
@@ -49,6 +45,7 @@ checkpoint --objective fills the session's untouched default Goal once, so the s
 
 - 0xLeif decided "Scope approval of fix-269": "fill the placeholder once. When the session's Goal section still holds the untouched default text, checkpoint --objective replaces it. A Goal a person has written is never rewritten. The journal post and the archived story use the current objective. This adds that one exception to REQ-records-004. … Yes, fill both" (Leif's decision comment on CorvidLabs/chough#269 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then 'Yes, fill both', relayed by hc t4c on 2026-11-18, to fill the story's '# ...' title as well as the Goal when it still holds the untouched default, under the same never-rewrite-a-person's-text rule); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-269 as 0xLeif
 - 0xLeif decided "Re-approval of fix-269 onto main's REQ-records-004": "Re-approve both" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #345 changed REQ-records-004 on main, he re-approved fix-269's and fix-269-post's deltas rebased onto main's REQ-records-004 and REQ-history-006, keeping #345's and #342's additions and adding only #344's own sentences and criteria); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-269 as 0xLeif
+- 0xLeif decided "Implementation review of fix-269": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #344 for both fix-269 and fix-269-post after the tester's recheck PASS at 551f136; chough change ship --session fix-269 already ran specsync change review fix-269 as 0xLeif with verdict pass and shipped the change, then refused to close this gate because it looked in the active session (fix-269-post), so the gate is closed here without a second native review); recorded by chough-fixer-t4g; a relayed claim, not authenticated; no native review ran (--no-native)
 
 ## What was verified
 
@@ -137,4 +134,18 @@ checkpoint --objective fills the session's untouched default Goal once, so the s
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve fix-269
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:07:28Z · gate-closed · accept → accept · Implementation review of fix-269 ^t-ef8a3a
+  - native_change: fix-269
+  - revision: aae6fe111b0255cd685fff9cbdb3ca715eabbdda
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #344 for both fix-269 and fix-269-post after the tester's recheck PASS at 551f136; chough change ship --session fix-269 already ran specsync change review fix-269 as 0xLeif with verdict pass and shipped the change, then refused to close this gate because it looked in the active session (fix-269-post), so the gate is closed here without a second native review
+    - recorded_by: chough-fixer-t4g
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:07:29Z · advance · accept → done · native:archived ^t-8e91a3
+  - native_change: fix-269
+  - gate: native:archived
+  - revision: aae6fe111b0255cd685fff9cbdb3ca715eabbdda
   - by: chough-fixer (claude-opus-5-5, hc t4n)
