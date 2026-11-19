@@ -24,6 +24,13 @@ observations:
   - 2026-11-19-tc-records-errors-show-a-session-name-only-when-clean
   - 2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean
   - 2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean
+  - 2026-11-19-tc-records-an-answer-is-leak-checked-and-bounded-2b3212
+  - 2026-11-19-tc-records-the-listed-leak-forms-are-refused-fcdb89
+  - 2026-11-19-tc-records-the-user-name-comes-from-the-account-42e32d
+  - 2026-11-19-tc-records-a-conflict-marker-is-named-by-its-seven-characters-ad0790
+  - 2026-11-19-tc-records-errors-show-a-session-name-only-when-clean-956b58
+  - 2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean-a69367
+  - 2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean-663602
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -51,6 +58,13 @@ Leak and output batch: --answer is leak-checked and bounded (#364), conflict fin
 - [Ran cargo test --locked --test session_pin -- --exact a_session_name_is_shown_only_when_clean for TC-records-errors-show-a-session-name-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-session-name-only-when-clean.md)
 - [Ran cargo test --locked --test bugs -- --exact a_bug_reference_is_shown_only_when_clean for TC-records-errors-show-a-bug-reference-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean.md)
 - [Ran cargo test --locked --test humans -- --exact a_decided_by_value_is_shown_only_when_clean for TC-records-errors-show-a-decided-by-value-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean.md)
+- [Ran cargo test --locked --test leaks -- --exact an_answer_is_leak_checked_redacted_and_bounded for TC-records-an-answer-is-leak-checked-and-bounded: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-an-answer-is-leak-checked-and-bounded-2b3212.md)
+- [Ran cargo test --locked --test leaks -- --exact the_listed_leak_forms_are_refused_and_counted for TC-records-the-listed-leak-forms-are-refused: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-the-listed-leak-forms-are-refused-fcdb89.md)
+- [Ran cargo test --locked --test leaks -- --exact the_user_name_comes_from_the_account for TC-records-the-user-name-comes-from-the-account: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-the-user-name-comes-from-the-account-42e32d.md)
+- [Ran cargo test --locked --test doctor -- --exact a_conflict_marker_is_named_by_its_seven_characters for TC-records-a-conflict-marker-is-named-by-its-seven-characters: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-conflict-marker-is-named-by-its-seven-characters-ad0790.md)
+- [Ran cargo test --locked --test session_pin -- --exact a_session_name_is_shown_only_when_clean for TC-records-errors-show-a-session-name-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-session-name-only-when-clean-956b58.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_reference_is_shown_only_when_clean for TC-records-errors-show-a-bug-reference-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean-a69367.md)
+- [Ran cargo test --locked --test humans -- --exact a_decided_by_value_is_shown_only_when_clean for TC-records-errors-show-a-decided-by-value-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean-663602.md)
 
 ## Open threads
 
