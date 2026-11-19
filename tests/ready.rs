@@ -544,6 +544,45 @@ fn a_cache_replaced_while_the_report_runs_is_left_alone() {
     }
 }
 
+/// REQ-cli-067 (the review of #311): with no cache before the report, a cache another
+/// process puts there while the check runs is not the report's own, so it stays, and
+/// stderr says the cache was left.
+#[cfg(unix)]
+#[test]
+fn a_cache_another_process_made_while_the_report_ran_is_kept() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let cache = fixture.root().join(".specsync/hashes.json");
+    std::fs::remove_file(&cache).unwrap();
+    let output = fixture.run_with_env(&["change", "ready", ID], &[("READY_TEST_CACHE", "regular")]);
+    assert_eq!(
+        String::from_utf8(output.stderr).unwrap(),
+        ".specsync/hashes.json was replaced while this report ran, so it was left as it is now\n"
+    );
+    assert_eq!(std::fs::read_to_string(&cache).unwrap(), "SECOND_WRITER\n");
+}
+
+/// REQ-cli-067 (the review of #311): a delta item whose body holds a short `### `
+/// heading, such as `### Notes`, gives a report; the heading is body text, and the
+/// command does not panic.
+#[test]
+fn a_short_heading_inside_a_delta_item_gives_a_report() {
+    // An approved delta, so the report parses it to look for stale canonical text.
+    let delta = "## MODIFIED\n\n### REQUIREMENT REQ-cli-001\n\nOld line.\n\n### Notes\n\nÜber die Änderung.\n";
+    let fixture = project(OLD_REQ, &["specs/cli/requirements.md"]);
+    fixture.write(&format!(".specsync/changes/{ID}/deltas/cli.md"), delta);
+    approve(&fixture, delta, OLD_REQ);
+    fixture.write("specs/cli/requirements.md", NEW_REQ);
+    let output = fixture.run(&["change", "ready", ID]);
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(
+        stdout.starts_with("chough change ready demo\n"),
+        "{stdout}{stderr}"
+    );
+    assert!(matches!(output.status.code(), Some(0 | 1)), "{stderr}");
+    assert!(!stderr.contains("panicked"), "{stderr}");
+}
+
 /// REQ-cli-067: with no cache before the report, the one SpecSync wrote is removed.
 #[test]
 fn a_cache_the_report_made_is_removed() {
