@@ -7,10 +7,11 @@
   "title": "Fix 347",
   "description": "fix 347",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "dbd0b1f7c772ae17e4b0ff59bd92a7024bfffe2b",
   "created_at": 1795042835,
-  "updated_at": 1795053173,
+  "updated_at": 1795053192,
   "affected_specs": [
     "cli",
     "history"
