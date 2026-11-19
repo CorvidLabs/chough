@@ -1705,3 +1705,29 @@ fn change_commands_refuse_a_leaking_argument_before_specsync_runs() {
         }
     }
 }
+
+/// REQ-records-006 (G1, #367): `chough change ship` never echoes an id that holds a
+/// credential. The refusals an id can reach before it is checked against the session,
+/// `refused:no-native-change` and `refused:other-change`, name it as `<id holding …>`.
+#[test]
+fn ship_refusals_do_not_echo_a_credential_id() {
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    for native in [false, true] {
+        let fixture = shipping_session("accept", native, &[REVIEW_GATE]);
+        let output = fixture.run(&ship_with(token, &[]));
+        let said = format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(!output.status.success(), "{said}");
+        let refusal = if native {
+            "refused:other-change"
+        } else {
+            "refused:no-native-change"
+        };
+        assert!(said.contains(refusal), "{said}");
+        assert!(!said.contains("ghp_"), "the id is echoed: {said}");
+        assert!(said.contains("<id holding"), "{said}");
+    }
+}

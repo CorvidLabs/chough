@@ -290,9 +290,12 @@ fn status(root: &Path, arguments: &[String], rerun: &str) -> Result<i32> {
 /// command.
 fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     let id = &args.id;
+    // REQ-records-006 (#367): every message before the id is checked against the
+    // session shows it only when it is clean.
+    let id_shown = crate::leaks::shown("id", id);
     let relay_command = |gate: &str| {
         format!(
-            "chough change ship {id} --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\""
+            "chough change ship {id_shown} --close-gate \"{gate}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\""
         )
     };
     // REQ-cli-059 (modified): --list and --gate name a listed gate, whose summary must
@@ -311,17 +314,17 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     let session = crate::checkpoint::read_session(root)?.to_value()?;
     match session["native_change"].as_str() {
         None => bail!(
-            "refused:no-native-change: the active session records no native change, so nothing ran.\nRun `chough checkpoint --native-change {id}`, then `chough change ship {id}` again."
+            "refused:no-native-change: the active session records no native change, so nothing ran.\nRun `chough checkpoint --native-change {id_shown}`, then `chough change ship {id_shown}` again."
         ),
         Some(other) if other != id => bail!(
-            "refused:other-change: the active session's native change is {other}, not {id}, so nothing ran.\nRun `chough change ship {other}` to ship it, or `chough session use <key>` to make {id}'s session active."
+            "refused:other-change: the active session's native change is {other}, not {id_shown}, so nothing ran.\nRun `chough change ship {other}` to ship it, or `chough session use <key>` to make {id_shown}'s session active."
         ),
         Some(_) => {}
     }
     let stage = session["stage"]["current"].as_str().unwrap_or_default();
     if stage != "accept" {
         bail!(
-            "refused:not-at-accept: ship runs at accept, and the active session is at {stage}, so nothing ran.\nRun `chough stage advance --to accept`, then `chough change ship {id}` again."
+            "refused:not-at-accept: ship runs at accept, and the active session is at {stage}, so nothing ran.\nRun `chough stage advance --to accept`, then `chough change ship {id_shown}` again."
         );
     }
     let open: Vec<String> = session["awaiting_human"]
@@ -337,7 +340,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
     if let Some(other) = open.iter().find(|gate| Some(gate.as_str()) != named) {
         if named.is_some_and(|named| open.iter().any(|gate| gate == named)) {
             bail!(
-                "refused:other-gates-open: ship closes only the gate it names, and gate \"{other}\" is open too, so nothing ran.\nDecide it first with `chough checkpoint --close-gate \"{other}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"{}`, then run `chough change ship {id}` with the review relay again.",
+                "refused:other-gates-open: ship closes only the gate it names, and gate \"{other}\" is open too, so nothing ran.\nDecide it first with `chough checkpoint --close-gate \"{other}\" --decided-by \"<who>\" --words \"<their words>\" --where \"<where>\" --recorded-by \"<agent>\"{}`, then run `chough change ship {id_shown}` with the review relay again.",
                 other_gate_flags(root, other)
             );
         }
@@ -356,7 +359,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
         use crate::checkpoint::RelayProblem;
         match problem {
             RelayProblem::WithoutGate(given) => anyhow::anyhow!(
-                "refused:relay-without-gate: {} describe a human's decision at a gate, and no gate is open, so nothing ran.\nRun `chough change ship {id}` without them.",
+                "refused:relay-without-gate: {} describe a human's decision at a gate, and no gate is open, so nothing ran.\nRun `chough change ship {id_shown}` without them.",
                 given.join(", ")
             ),
             RelayProblem::Incomplete(gate, missing) => anyhow::anyhow!(
@@ -366,7 +369,7 @@ fn ship(root: &Path, args: ShipArgs) -> Result<i32> {
                 relay_command(&gate)
             ),
             RelayProblem::NotOpen(gate, _) => anyhow::anyhow!(
-                "refused:gate-not-open: no gate is open, so there is no gate \"{gate}\" to close, and nothing ran.\nRun `chough change ship {id}` without --close-gate and the relay."
+                "refused:gate-not-open: no gate is open, so there is no gate \"{gate}\" to close, and nothing ran.\nRun `chough change ship {id_shown}` without --close-gate and the relay."
             ),
             RelayProblem::TooLong(gate, length) => anyhow::anyhow!(
                 "refused:relay-too-long: the decision for gate \"{gate}\" would be {length} bytes, over the {}-byte checkpoint text bound, so nothing ran.\nShorten --words or --where (keep the full text in a committed file and name it in --where), then run `{}`.",
