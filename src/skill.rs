@@ -773,6 +773,10 @@ pub(super) fn planned_files(hosts: &[String]) -> Result<Vec<(String, &'static st
     Ok(files)
 }
 
+/// The most bytes read from an installed skill file (REQ-cli-016, #361): 1 MiB, far
+/// above any bundled file.
+const SKILL_FILE_BOUND: u64 = 1_048_576;
+
 fn file_state(root: &Path, base: &str, name: &str, content: &str) -> Result<&'static str> {
     let path = local_path(root, &format!("{base}/{name}"))?;
     if fs::symlink_metadata(&path).is_err() {
@@ -782,11 +786,22 @@ fn file_state(root: &Path, base: &str, name: &str, content: &str) -> Result<&'st
     // opened without blocking and refused by its type on the handle, as a record is
     // (#262), and reads as `edited`: it is not Chough's copy, so nothing reports it as
     // outdated and nothing overwrites it.
-    let Ok(mut file) = crate::records::open_regular(&path) else {
+    let Ok(file) = crate::records::open_regular(&path) else {
         return Ok("edited");
     };
+    // #361 (62-F8): a skill file is small. One over the bound is not read whole on every
+    // `next` and `doctor`; it cannot be Chough's copy, so it reads as `edited`.
+    if file
+        .metadata()
+        .is_ok_and(|meta| meta.len() > SKILL_FILE_BOUND)
+    {
+        return Ok("edited");
+    }
     let mut bytes = vec![];
-    if std::io::Read::read_to_end(&mut file, &mut bytes).is_err() {
+    let mut bounded = std::io::Read::take(file, SKILL_FILE_BOUND + 1);
+    if std::io::Read::read_to_end(&mut bounded, &mut bytes).is_err()
+        || bytes.len() as u64 > SKILL_FILE_BOUND
+    {
         return Ok("edited");
     }
     if bytes == content.as_bytes() {

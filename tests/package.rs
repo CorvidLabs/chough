@@ -4532,3 +4532,37 @@ fn a_fifo_at_an_installed_skill_file_blocks_neither_next_nor_doctor() {
     );
     within_deadline(&["skill", "status"]);
 }
+
+/// REQ-cli-016 (#361, swarm finding 62-F8 on #362): a skill file is small, so reading
+/// one stops at a bound. A file over 1 MiB at an installed skill path is not read
+/// whole: it reads as `edited`, is not reported as outdated, and is left as it is.
+#[test]
+fn an_oversized_file_at_a_skill_path_reads_as_edited() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow/references/stages.md");
+    // An earlier release's bytes, then padding past the bound: by content it is not
+    // that release's copy, and it is never compared past the bound.
+    let mut oversized = STAGES_AT_F19823D.as_bytes().to_vec();
+    oversized.resize(1_048_577, b'\n');
+    fs::write(&installed, &oversized).unwrap();
+    let status = chough(root, &["skill", "status"]);
+    assert_eq!(
+        skill_state(&status, "references/stages.md")["state"],
+        "edited"
+    );
+    let next: Value = serde_json::from_slice(
+        &Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(["next", "--json"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap();
+    assert_eq!(next["skill_outdated"], 0, "{next}");
+    chough(root, &["skill", "update"]);
+    assert_eq!(fs::read(&installed).unwrap().len(), 1_048_577);
+}
