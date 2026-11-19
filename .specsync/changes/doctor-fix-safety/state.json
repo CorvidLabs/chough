@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "doctor-fix-safety",
+  "slug": "doctor-fix-safety",
+  "title": "Doctor fix safety",
+  "description": "doctor fix safety",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "6936f88f47a2c69f9febf15822678f1d804ff027",
+  "created_at": 1795056773,
+  "updated_at": 1795056773,
+  "affected_specs": [
+    "history",
+    "cli",
+    "records"
+  ],
+  "affected_paths": [
+    "src/doctor.rs",
+    "src/sessions.rs",
+    "src/main.rs",
+    "src/records.rs",
+    "tests/doctor.rs",
+    "tests/sessions.rs",
+    "tests/next.rs",
+    "tests/records.rs",
+    "tests/git_merge.rs",
+    "tests/leaks.rs",
+    "tests/history.rs",
+    "docs/cli.md",
+    "changelog.d/2026-11-19-doctor-fix-safety.md",
+    ".chough/cases/history.doctor-fix-safety.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {}
+}
