@@ -99,6 +99,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #345 changed REQ-records-004 on main, he re-approved fix-269's and fix-269-post's deltas rebased onto main's REQ-records-004 and REQ-history-006, keeping #345's and #342's additions and adding only #344's own sentences and criteria",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795046780,
+      "digest": "f094f12f7f89ac3b3e3246f3a3c754ad60c772a78907f171d18db92c6ccafbdf",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

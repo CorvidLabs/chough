@@ -7,11 +7,11 @@
   "title": "Fix 269",
   "description": "fix 269",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "387d8314aa6dbd9836c7935eaa34530b59fd8c82",
   "created_at": 1795032059,
-  "updated_at": 1795046511,
+  "updated_at": 1795046781,
   "affected_specs": [
     "records"
   ],
