@@ -108,6 +108,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him fable-t4b's question: send back fix-351 once and re-approve it with src/skill.rs, src/checkpoint.rs and src/main.rs added; the requirement text does not change",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795051812,
+      "digest": "015a023e34df47d0c350800e65191cdadba331370a48330267af188a9a4c0fdf",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

@@ -29,6 +29,9 @@ waiting_on_human:
     opened: 2026-11-18T22:58:59Z
 run_consents: []
 next: Wait for the tester's check and Leif's implementation review of fix-351
+title: next and the skill teach --no-native-change
+summary:
+  - Nothing told an agent that chough checkpoint --no-native-change exists (#351). A move refused for lacking a native change, and chough next, now name both ways on; once the flag is set next says the session needs no native change, with the reason; the literal <reason> placeholder is refused. The workflow skill explains the flag, and a project installed by 0.6.1 gets the new text on chough skill update. Tests failed first; the verify lane passed on macOS after main was merged in, and the tester passed the recheck. Linux was not run locally.
 ---
 # The workflow skill teaches --no-native-change, and chough next offers both paths when a move is refused for lacking a native change (#351)
 

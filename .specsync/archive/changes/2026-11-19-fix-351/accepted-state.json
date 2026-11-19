@@ -7,11 +7,11 @@
   "title": "Fix 351",
   "description": "fix 351",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "235c3bfb063e835f67c4aae12f873ceac4074be7",
   "created_at": 1795042416,
-  "updated_at": 1795051748,
+  "updated_at": 1795051812,
   "affected_specs": [
     "cli"
   ],
