@@ -1759,7 +1759,8 @@ fn ship_with_an_unreadable_commit_names_fetch_refetch() {
     let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
     assert!(!output.status.success(), "the ship ran: {stderr}");
     assert!(stderr.contains("refused:history-unchecked"), "{stderr}");
-    assert!(stderr.contains("git fetch --refetch origin"), "{stderr}");
+    // No remote at all in this fixture: the generic form, which names the remote to give.
+    assert!(stderr.contains("git fetch --refetch <remote>"), "{stderr}");
     assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
 }
 
@@ -1798,4 +1799,69 @@ fn ship_with_a_base_commit_that_is_not_an_object_id_goes_on() {
         );
         assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
     }
+}
+
+/// REQ-cli-059 (#400, the tester's recheck of #413): the refusal for a commit Git
+/// cannot read names the remote that holds the history by its real name, so the
+/// printed command pastes as it is. With one remote named `upstream`, running what is
+/// printed brings the object back and the ship goes on.
+#[cfg(unix)]
+#[test]
+fn the_refetch_command_names_the_real_remote_and_works() {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    let lost = head_of(&fixture);
+    fixture.write("notes.txt", "later work\n");
+    fixture.commit("later work");
+    let remote = tempfile::tempdir().unwrap();
+    let bare = remote.path().join("upstream.git");
+    let cloned = std::process::Command::new("git")
+        .args(["clone", "-q", "--bare"])
+        .arg(fixture.root())
+        .arg(&bare)
+        .output()
+        .unwrap();
+    assert!(
+        cloned.status.success(),
+        "{}",
+        String::from_utf8_lossy(&cloned.stderr)
+    );
+    fixture.git(&["remote", "add", "upstream", &bare.display().to_string()]);
+    let object = fixture
+        .root()
+        .join(".git/objects")
+        .join(&lost[..2])
+        .join(&lost[2..]);
+    std::fs::remove_file(&object).unwrap();
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "the ship ran: {stderr}");
+    let command = stderr
+        .split('`')
+        .find(|part| part.starts_with("git fetch --refetch"))
+        .unwrap_or_else(|| panic!("no refetch command: {stderr}"))
+        .to_string();
+    assert_eq!(command, "git fetch --refetch upstream", "{stderr}");
+    let words: Vec<&str> = command.split_whitespace().collect();
+    let fetched = std::process::Command::new(words[0])
+        .args(&words[1..])
+        .current_dir(fixture.root())
+        .output()
+        .unwrap();
+    assert!(
+        fetched.status.success(),
+        "{}",
+        String::from_utf8_lossy(&fetched.stderr)
+    );
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 }

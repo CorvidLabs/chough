@@ -715,9 +715,28 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
         return Ok(());
     }
     let short_base = &base[..base.len().min(12)];
+    // The remote to fetch from, by its real name so the command pastes as printed: the
+    // one the current branch tracks, else the only remote there is (the tester's
+    // recheck of #413).
+    let remote = git(&["symbolic-ref", "--quiet", "--short", "HEAD"])
+        .and_then(|branch| git(&["config", &format!("branch.{}.remote", branch.trim())]))
+        .map(|remote| remote.trim().to_string())
+        .filter(|remote| !remote.is_empty() && remote != ".")
+        .or_else(|| {
+            let remotes = git(&["remote"])?;
+            let names: Vec<&str> = remotes.lines().filter(|name| !name.is_empty()).collect();
+            (names.len() == 1).then(|| names[0].to_string())
+        });
+    let refetch = match &remote {
+        Some(remote) => format!(
+            "Run `git fetch --refetch {}` to fetch every object again, then the ship.",
+            crate::leaks::shown("remote", remote)
+        ),
+        None => "Run `git fetch --refetch <remote>`, naming the remote that holds this history, to fetch every object again, then the ship.".to_string(),
+    };
     let unchecked = |what: &str| {
         anyhow::anyhow!(
-            "refused:history-unchecked: Git could not read {what}, so this change's history from its base commit {short_base} to HEAD could not be checked and nothing ran.\nRun `git fetch --refetch origin` (with your remote's name, if it is not origin) to fetch every object again, then the ship."
+            "refused:history-unchecked: Git could not read {what}, so this change's history from its base commit {short_base} to HEAD could not be checked and nothing ran.\n{refetch}"
         )
     };
     // REQ-cli-059 (#400): a base commit that is not an object. In a shallow clone the
