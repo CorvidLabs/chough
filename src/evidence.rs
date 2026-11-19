@@ -814,6 +814,7 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         Some(text) if args.outcome != Outcome::Passed => manual_key_lines(text)?,
         _ => (vec![], 0),
     };
+    check_limitations(&args.limitations)?;
     let mut limitations = args.limitations.clone();
     if let Some(note) = crate::local::toolchain_limitation(root) {
         limitations.push(note);
@@ -2677,6 +2678,32 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 // ---------------------------------------------------------------------------
 // The seam for the archived story (plan step 4, wired by the step 3 owner):
 // a session's entries as `receipts:` values.
+
+/// The most limitations a person may give one evidence entry, and the most bytes one
+/// may hold (REQ-cli-017, #349): a story writes each limitation twice, in its receipt
+/// and on its What was verified line, so unbounded text could push an archive past its
+/// own bound and leave the session stuck at done.
+pub(super) const LIMITATIONS_PER_ENTRY: usize = 8;
+pub(super) const LIMITATION_BYTES: usize = 512;
+
+/// Refuse, before anything is written, limitations given with `--limitation` that are
+/// more than [`LIMITATIONS_PER_ENTRY`] or longer than [`LIMITATION_BYTES`] each.
+pub(super) fn check_limitations(limitations: &[String]) -> Result<()> {
+    ensure!(
+        limitations.len() <= LIMITATIONS_PER_ENTRY,
+        "refused:limitations: {} limitations were given, over the bound of {LIMITATIONS_PER_ENTRY} per evidence entry, so nothing was written; say the most important ones, or join related ones.",
+        limitations.len()
+    );
+    for (index, limitation) in limitations.iter().enumerate() {
+        ensure!(
+            limitation.len() <= LIMITATION_BYTES,
+            "refused:limitations: limitation {} is {} bytes, over the bound of {LIMITATION_BYTES} bytes each, so nothing was written; shorten it.",
+            index + 1,
+            limitation.len()
+        );
+    }
+    Ok(())
+}
 
 /// The evidence entries of one session as receipt values for its archived story, in
 /// the order and shape the migration writes them (REQ-history-006, REQ-cli-017):

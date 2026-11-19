@@ -1289,3 +1289,78 @@ fn a_verified_line_stays_one_line_whatever_its_claim_or_limits_hold() {
         "{story}"
     );
 }
+
+/// REQ-cli-017 (#349 part 3, swarm finding 62-F5 on #358): a person may give an evidence
+/// entry at most 8 limitations of at most 512 bytes each. At the bound the entry is
+/// written; one byte or one limitation more is refused as `refused:limitations` with
+/// nothing written.
+#[cfg(unix)]
+#[test]
+fn limitations_are_bounded_at_512_bytes_and_8_per_entry() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let session = fixture.active_id();
+    let entries = |fixture: &Fixture| -> usize {
+        fs::read_dir(
+            fixture
+                .root()
+                .join(format!(".chough/sessions/{session}/evidence")),
+        )
+        .map_or(0, |entries| entries.count())
+    };
+    let add = |summary: &str, limitations: &[String]| -> std::process::Output {
+        let mut args = vec![
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            summary,
+        ];
+        for limitation in limitations {
+            args.extend(["--limitation", limitation.as_str()]);
+        }
+        fixture.run(&args)
+    };
+    let at_bound = "x".repeat(512);
+    let over = "x".repeat(513);
+
+    // At the bound: 8 limitations of 512 bytes each.
+    let eight = vec![at_bound.clone(); 8];
+    let output = add("SYNTHETIC at the bound", &eight);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(entries(&fixture), 1);
+    let record = fixture.read(&fixture.session_file());
+
+    // One byte over.
+    let refused = add("SYNTHETIC one byte over", std::slice::from_ref(&over));
+    assert!(!refused.status.success());
+    let said = String::from_utf8_lossy(&refused.stderr);
+    assert!(
+        said.contains("refused:limitations") && said.contains("513 bytes"),
+        "{said}"
+    );
+    // One limitation over.
+    let nine = vec!["SYNTHETIC short".to_string(); 9];
+    let refused = add("SYNTHETIC one too many", &nine);
+    assert!(!refused.status.success());
+    let said = String::from_utf8_lossy(&refused.stderr);
+    assert!(
+        said.contains("refused:limitations") && said.contains("9 limitations"),
+        "{said}"
+    );
+    assert_eq!(entries(&fixture), 1, "a refused add wrote an entry");
+    assert_eq!(fixture.read(&fixture.session_file()), record);
+}
