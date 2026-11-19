@@ -1325,6 +1325,8 @@ pub(super) fn run_case(
 }
 
 fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
+    // REQ-cli-017 (#349): the same bound on limitations as `evidence add`.
+    evidence::check_limitations(&args.limitations)?;
     let RecordArgs {
         id,
         environment,

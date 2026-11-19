@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-349",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "345f866c700c94830473ec8975f0ea62e8ec6254",
+      "contract_digest": "3cca0bf1493a8ed743e888dd562af10e94a6ee3b5402beb90a7f3756fb0b1fbf",
+      "execution_digest": "a47408bb8bd8be68181fbf4a160f965e1cc5d9bf8d1afda7405544f88a9057b0",
+      "workspace_digest": "232454424aa6b0fffac046b1dd2dff71e796f549f556667497d55e963cd3728c",
+      "timestamp": 1795050993,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve, merge when green",
+        "where": "Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's recheck PASS on PR #358; the limitation bound added afterwards is covered by his relayed '512 bytes × 8 per entry', as the planning session confirmed",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ]
+}
