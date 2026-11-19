@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-269-post",
+  "slug": "fix-269-post",
+  "title": "Fix 269 post",
+  "description": "fix 269 post",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "8f3270abaedf56575c3afcc9999c43e6cf6cbd9b",
+  "created_at": 1795034316,
+  "updated_at": 1795046890,
+  "affected_specs": [
+    "records",
+    "history"
+  ],
+  "affected_paths": [
+    "src/journal.rs",
+    "src/sessions.rs",
+    "tests/journal.rs",
+    "docs/cli.md",
+    ".chough/cases/records.objective-at-closeout.cases.toml",
+    "changelog.d/2026-11-18-fix-269-post.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A derived journal post's body opens with the session's current objective, not the Goal's first paragraph, so after a second checkpoint --objective its title and body agree. At closeout, when the story's Goal paragraph is not the current objective, the archived story gets one line 'Objective at closeout: <current objective>' after the Goal paragraph; when it is, no line is added; no title, Goal or other text is rewritten."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif's answers on the #344 review (relayed by hc t4c, 2026-11-18): 'Fix first: post uses current' for the journal post, and 'Add one line if changed' for the archived story, with nothing rewritten; within his #269 scope. Human gates as plain text in tasks.md; deltas frozen at approval.",
+    "public_contract": "no"
+  }
+}

@@ -891,6 +891,20 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     let mut linked = session.clone();
     linked.evidence_links = checkpoint::evidence_links(root, &linked);
     let mut record = checkpoint::render_checkpoint(&linked)?;
+    // REQ-history-006 (#344): when the objective changed after the Goal was filled, the
+    // story says so in one line after the Goal paragraph; nothing is rewritten.
+    let objective = session
+        .objective
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let goal = crate::journal::first_paragraph(&record, crate::session_md::GOAL);
+    if !objective.is_empty() && goal != objective {
+        record.append_to_section(
+            crate::session_md::GOAL,
+            &format!("\nObjective at closeout: {objective}\n"),
+        )?;
+    }
     // REQ-history-006 (Kimi 6): the story is archived, and the session's next action no
     // longer applies.
     record.set_scalar("stage_status", ARCHIVED_STATUS)?;
@@ -1052,7 +1066,8 @@ fn story_verified_lines(
 
 /// A receipt's What was verified line (REQ-history-006): its claim, or its ID without
 /// one; after one ` - `, its command unless the claim already holds it and the first 12
-/// digits of its fingerprint, when it has them; a link to `screenshot`, its key
+/// digits of its fingerprint, when it has them; `; limits: ` and its limitations, when
+/// it has any; a link to `screenshot`, its key
 /// screenshot beside the story, when given; ending `^<evidence id>`. A story at
 /// archiving and the migration write the same line (REQ-records-009). None for a
 /// receipt with no ID.
@@ -1086,10 +1101,22 @@ pub(super) fn receipt_line(
     if !parts.is_empty() {
         line.push_str(&format!(" - {}", parts.join(" ")));
     }
+    // REQ-history-006 (#349): the entry's stated limits, beside its claim.
+    if let Some(limitations) = get("limitations") {
+        line.push_str(&format!("; limits: {limitations}"));
+    }
     if let Some(link) = screenshot {
         line.push_str(&format!(" [screenshot]({link})"));
     }
     line.push_str(&format!(" ^{entry}"));
+    // One line, whatever line breaks a claim or a limitation holds: a second line
+    // would read as another item, or as a heading, of the story (#349).
+    let line = line
+        .split(['\n', '\r'])
+        .map(str::trim)
+        .filter(|part| !part.is_empty())
+        .collect::<Vec<_>>()
+        .join(" ");
     Some(line)
 }
 

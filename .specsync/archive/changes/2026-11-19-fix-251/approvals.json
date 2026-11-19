@@ -1,0 +1,114 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795033793,
+      "digest": "17bdb0b86c8df5c2788ea34e704de2d1111f06d1cfd221f0fc79fcc00645fec1",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-251\": \"Chough advises narrowing. When SpecSync's source_dirs is [\".\"], chough init and chough doctor advise narrowing it to the real code folders (for example [\"src\"]) and say why, instead of advice SpecSync refuses as overlapping. This fixes #251 and #279 together, without changing SpecSync's overlap rule. … Yes, both\" (Leif's decision comment on CorvidLabs/chough#251 and #279 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then 'Yes, both', relayed by hc t4c on 2026-11-18: init and doctor also advise removing '.' from meaningful_paths in .specsync/sdd.json, with the same why). Relayed and recorded by chough-fixer-t4g at 2026-11-18T20:29:52Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-251",
+        "title": "Fix 251",
+        "description": "fix 251",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.whole-repo-specsync.cases.toml",
+          "changelog.d/2026-11-18-fix-251.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "tests/doctor.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With source_dirs = [\".\"] in .specsync/config.toml, chough init prints advice that names it, says SpecSync refuses the record folders in verification_ignored_paths as overlapping and counts the installed skill bundle as uncovered source, and advises narrowing source_dirs to the code folders such as [\"src\"]; with a policy whose meaningful_paths holds \".\" too, chough doctor's records_in_verification finding names both settings, advises narrowing and keeping \".\" out of meaningful_paths, then listing the missing entries; once both are narrowed the advice is the list again. Neither file is ever written."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decision on #251 and #279 (2026-11-18 planning interview): Chough advises narrowing a whole-repository source_dirs and says why, without changing SpecSync's overlap rule; his later 'Yes, both' adds keeping '.' out of meaningful_paths. Chough never writes .specsync/config.toml or .specsync/sdd.json. Human gates as plain text in tasks.md; deltas frozen at approval.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "f9b8af87aa3da8f4f305f30de353375f20f8fe2565af45779ff535b1371c5b93",
+        "records": "479f654270fe6ff5beda0502636f165b88aacd492b2c2bf2bc1e4542358c87e1"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-001": "64c6f4ef91c9b79e844fbb02d5282f04012b7def4c5950c282b88ccf3b5357cc",
+        "records: REQUIREMENT REQ-records-014": "827853c8ba1f0f240f238470260f04a7be7e576118ddebe2da9530b17963e3fb"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Chough advises narrowing. When SpecSync's source_dirs is [\".\"], chough init and chough doctor advise narrowing it to the real code folders (for example [\"src\"]) and say why, instead of advice SpecSync refuses as overlapping. This fixes #251 and #279 together, without changing SpecSync's overlap rule. … Yes, both",
+        "where": "Leif's decision comment on CorvidLabs/chough#251 and #279 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then 'Yes, both', relayed by hc t4c on 2026-11-18: init and doctor also advise removing '.' from meaningful_paths in .specsync/sdd.json, with the same why",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795037721,
+      "digest": "17bdb0b86c8df5c2788ea34e704de2d1111f06d1cfd221f0fc79fcc00645fec1",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-251 for code at the repository root\": \"Chough advises narrowing. … Yes, both … Both: better advice + SpecSync\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, with his #251/#279 decision comment and 'Yes, both' as the scope: after the tester's BLOCK on the NFTMix shape, he chose that when the specified code sits at the repository root (no code folder to narrow to), init and doctor advise adding the skill bundle and Chough's folders to exclude_dirs, and say the ignored list needs the code moved into a folder or SpecSync's fix, CorvidLabs/spec-sync#1083; the folder-repo advice stays as it is). Relayed and recorded by chough-fixer-t4g at 2026-11-18T21:35:21Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-251",
+        "title": "Fix 251",
+        "description": "fix 251",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.whole-repo-specsync.cases.toml",
+          "changelog.d/2026-11-18-fix-251.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "tests/doctor.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With source_dirs = [\".\"] in .specsync/config.toml, chough init prints advice that names it, says SpecSync refuses the record folders in verification_ignored_paths as overlapping and counts the installed skill bundle as uncovered source, and advises narrowing source_dirs to the code folders such as [\"src\"]; with a policy whose meaningful_paths holds \".\" too, chough doctor's records_in_verification finding names both settings, advises narrowing and keeping \".\" out of meaningful_paths, then listing the missing entries; once both are narrowed the advice is the list again. Neither file is ever written."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decision on #251 and #279 (2026-11-18 planning interview): Chough advises narrowing a whole-repository source_dirs and says why, without changing SpecSync's overlap rule; his later 'Yes, both' adds keeping '.' out of meaningful_paths. Chough never writes .specsync/config.toml or .specsync/sdd.json. Human gates as plain text in tasks.md; deltas frozen at approval.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "f9b8af87aa3da8f4f305f30de353375f20f8fe2565af45779ff535b1371c5b93",
+        "records": "7b67676a5e4b07af0e18c298484cc5d3a313abf80d6556255c88f348c27d24e2"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-001": "64c6f4ef91c9b79e844fbb02d5282f04012b7def4c5950c282b88ccf3b5357cc",
+        "records: REQUIREMENT REQ-records-014": "827853c8ba1f0f240f238470260f04a7be7e576118ddebe2da9530b17963e3fb"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Chough advises narrowing. … Yes, both … Both: better advice + SpecSync",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, with his #251/#279 decision comment and 'Yes, both' as the scope: after the tester's BLOCK on the NFTMix shape, he chose that when the specified code sits at the repository root (no code folder to narrow to), init and doctor advise adding the skill bundle and Chough's folders to exclude_dirs, and say the ignored list needs the code moved into a folder or SpecSync's fix, CorvidLabs/spec-sync#1083; the folder-repo advice stays as it is",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795048336,
+      "digest": "3ba347d5da8bfea2e2da787e2276740562a2045fa6c629a9f13bec3e74b10200",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

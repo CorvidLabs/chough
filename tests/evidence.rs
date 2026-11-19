@@ -682,6 +682,26 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
         limited["limitations"],
         "SYNTHETIC only the first page was read; SYNTHETIC no network"
     );
+    // #349: the story's What was verified line shows the limits beside the claim, and
+    // an entry without any gets no such text.
+    let line_of = |id: &str| -> String {
+        story
+            .lines()
+            .find(|line| line.starts_with("- ") && line.ends_with(&format!(" ^{id}")))
+            .unwrap_or_else(|| panic!("no What was verified line for {id}: {story}"))
+            .to_string()
+    };
+    assert!(
+        line_of(&limited_entry)
+            .contains("; limits: SYNTHETIC only the first page was read; SYNTHETIC no network ^"),
+        "{}",
+        line_of(&limited_entry)
+    );
+    assert!(
+        !line_of(&plain_entry).contains("limits:"),
+        "{}",
+        line_of(&plain_entry)
+    );
     assert_eq!(case["criteria"], "LIFE-1");
     assert_eq!(case["requirements"], "REQ-cli-001");
     assert!(
@@ -1209,4 +1229,138 @@ fn a_busy_evidence_add_writes_nothing_and_refuses_with_nothing_saved() {
         String::from_utf8_lossy(&output.stderr)
     );
     assert_eq!(entries(), 1, "the rerun did not record exactly one entry");
+}
+
+/// REQ-history-006 (#349, the tester's finding on #358): a What was verified line is one
+/// line whatever its claim or a limitation holds. A summary or a limitation with line
+/// breaks is folded into the line, so no extra item appears under What was verified and
+/// a `## Timeline` inside a limitation does not become a second Timeline heading.
+#[cfg(unix)]
+#[test]
+fn a_verified_line_stays_one_line_whatever_its_claim_or_limits_hold() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let session = fixture.active_id();
+    let added = fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC first line\nSYNTHETIC second line",
+        "--limitation",
+        "SYNTHETIC limit\n## Timeline\n- SYNTHETIC forged entry",
+    ]);
+    let entry = added["observation"].as_str().unwrap().to_string();
+    fixture.commit("the entry");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
+    let line = story
+        .lines()
+        .find(|line| line.ends_with(&format!(" ^{entry}")))
+        .unwrap_or_else(|| panic!("no What was verified line for {entry}: {story}"));
+    assert!(
+        line.starts_with("- SYNTHETIC first line SYNTHETIC second line"),
+        "{line}"
+    );
+    assert!(
+        line.contains("; limits: SYNTHETIC limit ## Timeline - SYNTHETIC forged entry ^"),
+        "{line}"
+    );
+    assert_eq!(
+        story.lines().filter(|line| *line == "## Timeline").count(),
+        1,
+        "{story}"
+    );
+    assert!(
+        !story.lines().any(|line| line == "- SYNTHETIC forged entry"),
+        "{story}"
+    );
+    assert!(
+        !story.lines().any(|line| line == "SYNTHETIC second line"),
+        "{story}"
+    );
+}
+
+/// REQ-cli-017 (#349 part 3, swarm finding 62-F5 on #358): a person may give an evidence
+/// entry at most 8 limitations of at most 512 bytes each. At the bound the entry is
+/// written; one byte or one limitation more is refused as `refused:limitations` with
+/// nothing written.
+#[cfg(unix)]
+#[test]
+fn limitations_are_bounded_at_512_bytes_and_8_per_entry() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let session = fixture.active_id();
+    let entries = |fixture: &Fixture| -> usize {
+        fs::read_dir(
+            fixture
+                .root()
+                .join(format!(".chough/sessions/{session}/evidence")),
+        )
+        .map_or(0, |entries| entries.count())
+    };
+    let add = |summary: &str, limitations: &[String]| -> std::process::Output {
+        let mut args = vec![
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            summary,
+        ];
+        for limitation in limitations {
+            args.extend(["--limitation", limitation.as_str()]);
+        }
+        fixture.run(&args)
+    };
+    let at_bound = "x".repeat(512);
+    let over = "x".repeat(513);
+
+    // At the bound: 8 limitations of 512 bytes each.
+    let eight = vec![at_bound.clone(); 8];
+    let output = add("SYNTHETIC at the bound", &eight);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(entries(&fixture), 1);
+    let record = fixture.read(&fixture.session_file());
+
+    // One byte over.
+    let refused = add("SYNTHETIC one byte over", std::slice::from_ref(&over));
+    assert!(!refused.status.success());
+    let said = String::from_utf8_lossy(&refused.stderr);
+    assert!(
+        said.contains("refused:limitations") && said.contains("513 bytes"),
+        "{said}"
+    );
+    // One limitation over.
+    let nine = vec!["SYNTHETIC short".to_string(); 9];
+    let refused = add("SYNTHETIC one too many", &nine);
+    assert!(!refused.status.success());
+    let said = String::from_utf8_lossy(&refused.stderr);
+    assert!(
+        said.contains("refused:limitations") && said.contains("9 limitations"),
+        "{said}"
+    );
+    assert_eq!(entries(&fixture), 1, "a refused add wrote an entry");
+    assert_eq!(fixture.read(&fixture.session_file()), record);
 }

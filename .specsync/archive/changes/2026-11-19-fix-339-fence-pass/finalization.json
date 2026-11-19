@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-339-fence-pass",
+  "implementation_commit": "163d7eac2868fb21ced1c407cc13210c1de88cef",
+  "implementation_tree": "70f6b0a249251d093d3e7c64ee09bc8166353542",
+  "contract_digest": "f211a0104ae8f8f17f3977be66362ddd28abffdec61b3de2b22bfdfa5794c542",
+  "workspace_digest": "55c5ff3eed2d085d8fa4d135a98807445469246d16b9d0199fbde946c4b3ff09",
+  "closing_digest": "aa6f7e1d3e6776c119c504887278abbac17df46af1700de41d6062e451737773",
+  "review_digest": "1315d588d50e72ab878f38bf17df9f765230bd03788ad5f0a9e3518c5edf361c",
+  "finalization_digest": "68b89ac98c243147ab2d89dc9e4e5aa3241a8bcaef0d0e4d84f2c00480fdc638",
+  "timestamp": 1795052608
+}
