@@ -20,6 +20,7 @@ observations:
   - 2026-11-18-tc-cli-change-ready-undeclared-owning-module
   - 2026-11-19-tc-cli-change-ready-undeclared-owning-module
   - 2026-11-19-tc-cli-change-ready-undeclared-owning-module-74e3ca
+  - 2026-11-19-tc-cli-change-ready-undeclared-owning-module-26815c
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -49,6 +50,7 @@ chough change ready names an affected path whose owning module the change does n
 - [Ran cargo test --locked --test ready -- --exact a_path_whose_owning_module_is_not_declared_is_named for TC-cli-change-ready-undeclared-owning-module: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-change-ready-undeclared-owning-module.md)
 - [Ran cargo test --locked --test ready -- --exact a_path_whose_owning_module_is_not_declared_is_named for TC-cli-change-ready-undeclared-owning-module: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undeclared-owning-module.md)
 - [Ran cargo test --locked --test ready -- --exact a_path_whose_owning_module_is_not_declared_is_named for TC-cli-change-ready-undeclared-owning-module: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undeclared-owning-module-74e3ca.md)
+- [Ran cargo test --locked --test ready -- --exact a_path_whose_owning_module_is_not_declared_is_named for TC-cli-change-ready-undeclared-owning-module: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undeclared-owning-module-26815c.md)
 
 ## Open threads
 
