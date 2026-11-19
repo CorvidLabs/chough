@@ -2651,6 +2651,24 @@ fn a_bug_too_near_its_bound_gets_advice_and_no_relink_fix() {
     let fix = found[0]["fix"].as_str().unwrap();
     assert!(fix.starts_with("none:"), "{fix}");
     assert!(!fix.contains("chough doctor --fix"), "{fix}");
+    // Advice only: it names the hand edit that clears it, and does not fail the run.
+    assert_eq!(found[0]["advisory"], true, "{found:#?}");
+    assert!(
+        fix.contains("by hand") && fix.contains(&format!("../archive/sessions/{session}.md")),
+        "{fix}"
+    );
+    let whole = report(&[]);
+    let failing = whole["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["advisory"] != true)
+        .count();
+    assert_eq!(
+        fixture.run(&["doctor"]).status.code() == Some(0),
+        failing == 0,
+        "{whole:#}"
+    );
     assert_eq!(
         found[0]["links"][0]["story"],
         format!(".chough/archive/sessions/{session}.md")

@@ -91,6 +91,8 @@ struct Finding {
     decision_reason: Option<String>,
     /// Why the fix cannot run even with `--fix`, when known before fixing.
     blocked: Option<String>,
+    /// Advice only: nothing doctor can fix, and nothing that should fail a run (#347).
+    advisory: bool,
     /// Fields the finding adds to its JSON, such as the missing entries.
     detail: Option<Value>,
 }
@@ -106,6 +108,7 @@ impl Finding {
             reason: None,
             decision_reason: None,
             blocked: None,
+            advisory: false,
             detail: None,
         }
     }
@@ -125,6 +128,9 @@ impl Finding {
         });
         if let Some(reason) = &self.reason {
             value["reason"] = json!(reason);
+        }
+        if self.advisory {
+            value["advisory"] = json!(true);
         }
         if let Some(reason) = &self.decision_reason {
             value["decision_reason"] = json!(reason);
@@ -1211,13 +1217,25 @@ fn stale_bug_link_findings(root: &Path) -> Vec<Finding> {
             let (path, stale) = (found.path, found.links);
             // #347 (62-F9): a bug too near its size bound cannot take the line, so the
             // finding says where the evidence is and offers no fix that never applies.
+            let by_hand: Vec<String> = stale
+                .iter()
+                .map(|(entry, session)| {
+                    format!(
+                        "../sessions/{session}/evidence/{entry}.md with ../archive/sessions/{session}.md"
+                    )
+                })
+                .collect();
             let fix = if found.fits {
                 "chough doctor --fix".to_string()
             } else {
-                "none: the bug is too near its size bound for the link line; its evidence is in the archived story this finding names".to_string()
+                format!(
+                    "none: the bug is too near its size bound for one more Log line; to clear this, edit {path} by hand and replace the link target {}",
+                    by_hand.join(", and ")
+                )
             };
             let mut finding = Finding::new(Kind::StaleBugLinks, &path, fix, false);
             if !found.fits {
+                finding.advisory = true;
                 finding.blocked = Some(format!(
                     "{path} is too near its 65,536-byte bound to take one more Log line, so doctor leaves it as it is; the linked evidence is in the archived story"
                 ));
@@ -1631,7 +1649,10 @@ pub(super) fn run(root: &Path, args: DoctorArgs) -> Result<bool> {
             found.push(cleared);
         }
     }
-    let unresolved = found.iter().any(|finding| finding.status != "fixed");
+    // An advisory finding is said, and never fails the run (#347).
+    let unresolved = found
+        .iter()
+        .any(|finding| finding.status != "fixed" && !finding.advisory);
     print_json(&json!({
         "schema_version": 1,
         "mode": mode,
