@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "docs-387-no-git-while-agents-write",
   "slug": "docs-387-no-git-while-agents-write",
   "title": "Docs 387 no git while agents write",
   "description": "docs 387 no git while agents write",
   "kind": "documentation",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795098858,
-  "updated_at": 1795098881,
+  "updated_at": 1795099074,
   "affected_specs": [
     "cli"
   ],
