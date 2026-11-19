@@ -130,6 +130,13 @@ fn tree(fixture: &Fixture, relative: &str) -> BTreeMap<String, Vec<u8>> {
 }
 
 /// The front matter and body of a post.
+/// The first paragraph of a post's body after its `# <title>` line.
+fn opening(body: &str) -> &str {
+    body.lines()
+        .find(|line| !line.trim().is_empty() && !line.starts_with("# "))
+        .unwrap_or_default()
+}
+
 fn split(text: &str) -> (&str, &str) {
     text.strip_prefix("---\n")
         .and_then(|rest| rest.split_once("\n---\n"))
@@ -239,6 +246,15 @@ fn well_formed(xml: &str) -> Result<(), String> {
 #[test]
 fn done_writes_a_short_post_and_the_feed_lists_it() {
     let fixture = at_accept();
+    // An objective longer than a post may carry: the body opens with it (#344), cut at a
+    // sentence end, and its title is still the text before its first `: `.
+    let long = format!(
+        "Ship a focused change: {}",
+        "The SYNTHETIC change shipped and every case passed on the recorded revision. "
+            .repeat(30)
+            .trim_end()
+    );
+    fixture.ok(&["checkpoint", "--objective", &long]);
     let moved = fixture.ok(&["stage", "advance", "--json"]);
     assert_eq!(moved["stage"]["current"], "done", "{moved:#}");
     let id = moved["applied"]["session_archive"]["id"]
@@ -278,11 +294,13 @@ fn done_writes_a_short_post_and_the_feed_lists_it() {
     );
     // The body is short, cut at a sentence end, and the story holds the full record.
     assert!(body.len() <= 1_200, "{} bytes: {body}", body.len());
-    let paragraph = body
-        .lines()
-        .find(|line| line.starts_with("The SYNTHETIC change"))
-        .unwrap_or_else(|| panic!("no paragraph: {body}"));
+    let paragraph = opening(body);
+    assert!(
+        paragraph.starts_with("Ship a focused change: The SYNTHETIC change"),
+        "the body does not open with the objective: {body}"
+    );
     assert!(paragraph.ends_with("revision."), "{paragraph}");
+    assert!(paragraph.len() < long.len(), "{paragraph}");
     assert!(
         body.contains(&format!("[the pull request]({PR})")),
         "{body}"
@@ -1202,7 +1220,8 @@ fn the_post_uses_the_title_and_summary_the_agent_set() {
 }
 
 /// REQ-records-011, TC-records-journal-post-derives-a-title-and-body: without a title or
-/// summary, the post's title is the objective's first clause and its body holds the Goal,
+/// summary, the post's title is the objective's first clause and its body opens with the
+/// current objective, not the Goal (#344), then holds
 /// `Why:` with the first decision, `Verified:` with the newest verified entry and `Next:`
 /// with the first open thread, cut at sentence ends within 1,200 bytes with its links.
 #[test]
@@ -1232,11 +1251,12 @@ fn without_a_title_or_summary_the_post_derives_both_from_the_story() {
         "{text}"
     );
     assert!(body.len() <= 1_200, "{} bytes: {body}", body.len());
-    let goal = body
-        .lines()
-        .find(|line| line.starts_with("The SYNTHETIC change"))
-        .unwrap_or_else(|| panic!("no Goal paragraph: {body}"));
-    assert!(goal.ends_with("revision."), "{goal}");
+    assert_eq!(
+        opening(body),
+        "Ship human-first records as one change, readable Markdown files and one story per session: dogfooded here",
+        "the body does not open with the objective: {body}"
+    );
+    assert!(!body.contains("The SYNTHETIC change"), "{body}");
     for part in [
         "Why: Records are Markdown, because people read them first",
         "Verified: The final run passed: 641 tests on the last commit",
@@ -1580,4 +1600,108 @@ fn parallel_journal_adds_all_reach_the_feed_in_a_project_with_no_chough_director
         );
         fixture.ok(&["library", "index", "--check"]);
     }
+}
+
+/// REQ-records-004, REQ-records-011 (#269), TC-records-the-journal-post-uses-the-filled-goal:
+/// a session started without an objective holds the placeholder as its title and Goal;
+/// after `checkpoint --objective` and the move into done, the journal post and the
+/// archived story carry the objective, and neither keeps the placeholder.
+#[test]
+fn the_journal_post_and_story_use_the_objective_set_after_session_new() {
+    const PLACEHOLDER: &str = "Describe the current objective before beginning work.";
+    let fixture = at_accept();
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let (head, rest) = text.split_once("## Goal\n").expect("a Goal section");
+    let rest = rest
+        .find("\n## ")
+        .map_or(String::new(), |at| rest[at + 1..].to_string());
+    let title_start = head.find("\n# ").expect("a title") + 1;
+    let title_end = title_start + head[title_start..].find('\n').unwrap() + 1;
+    let head = format!(
+        "{}# {PLACEHOLDER}\n{}",
+        &head[..title_start],
+        &head[title_end..]
+    );
+    fixture.write(&file, &format!("{head}## Goal\n\n{PLACEHOLDER}\n\n{rest}"));
+    fixture.set_front("objective", PLACEHOLDER);
+    fixture.commit("a session started without an objective");
+    fixture.ok(&[
+        "checkpoint",
+        "--objective",
+        "Add a --shout option to greet.py that uppercases the greeting",
+    ]);
+    fixture.commit("the objective");
+    let (_, post, story) = advance_to_done(&fixture);
+    // One objective change: the Goal is the objective, so no closeout line (#344).
+    assert!(!story.contains("Objective at closeout"), "{story}");
+    for (name, text) in [("post", &post), ("story", &story)] {
+        assert!(
+            !text.contains(PLACEHOLDER),
+            "the {name} keeps the placeholder:\n{text}"
+        );
+        assert!(
+            text.contains("Add a --shout option to greet.py that uppercases the greeting"),
+            "the {name} lacks the objective:\n{text}"
+        );
+    }
+}
+
+/// REQ-records-011, REQ-history-006 (#344 review), TC-records-a-changed-objective-is-in-the-post-and-one-story-line:
+/// a session started without an objective has its placeholder filled by the first
+/// `checkpoint --objective` and keeps that text when the objective changes again. At the
+/// move into done, the post's body opens with the current objective, as its title does,
+/// and the story keeps the first objective as its title and Goal and gains exactly one
+/// line naming the objective at closeout.
+#[test]
+fn a_changed_objective_is_in_the_post_and_one_story_line() {
+    const PLACEHOLDER: &str = "Describe the current objective before beginning work.";
+    const FIRST: &str = "Ship the CSV export";
+    const SECOND: &str = "Ship the JSON export instead";
+    let fixture = at_accept();
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let (head, rest) = text.split_once("## Goal\n").expect("a Goal section");
+    let rest = rest
+        .find("\n## ")
+        .map_or(String::new(), |at| rest[at + 1..].to_string());
+    let title_start = head.find("\n# ").expect("a title") + 1;
+    let title_end = title_start + head[title_start..].find('\n').unwrap() + 1;
+    let head = format!(
+        "{}# {PLACEHOLDER}\n{}",
+        &head[..title_start],
+        &head[title_end..]
+    );
+    fixture.write(&file, &format!("{head}## Goal\n\n{PLACEHOLDER}\n\n{rest}"));
+    fixture.set_front("objective", PLACEHOLDER);
+    fixture.commit("a session started without an objective");
+    fixture.ok(&["checkpoint", "--objective", FIRST]);
+    fixture.ok(&["checkpoint", "--objective", SECOND]);
+    fixture.commit("the objective, twice");
+    let (_, post, story) = advance_to_done(&fixture);
+
+    let (front, body) = split(&post);
+    assert!(
+        field(front, "title").starts_with("Ship the JSON export"),
+        "{post}"
+    );
+    assert_eq!(
+        opening(body),
+        SECOND,
+        "the post body does not open with the current objective:\n{post}"
+    );
+    assert!(
+        !body.contains(FIRST),
+        "the post keeps the first objective:\n{post}"
+    );
+
+    assert!(story.contains(&format!("\n# {FIRST}\n")), "{story}");
+    assert!(story.contains(&format!("## Goal\n\n{FIRST}\n")), "{story}");
+    assert_eq!(
+        story
+            .matches(&format!("Objective at closeout: {SECOND}"))
+            .count(),
+        1,
+        "{story}"
+    );
 }

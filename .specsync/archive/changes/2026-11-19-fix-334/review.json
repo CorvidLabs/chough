@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-334",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "d35f87feb5125c414ce9aa2ea4d735d340845c6f",
+  "contract_digest": "c8313c9cc282704ba619d42fb843fdc3f64008828722b5205aea26b70fd03261",
+  "execution_digest": "3c6847484c07a11413a81baa63ef34d4135c096e6f2f9b5791415b35df339d57",
+  "workspace_digest": "4b507b91eb89a620edbda3a046fb702c67ea8123d6c34043b671a56404cffa88",
+  "timestamp": 1795047569,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve, fix the two nits first",
+    "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #355 after tester2's PASS: 'drop --session' rather than 'unset --session', and the 'is archived' detail kept when every session is archived; both are fixed in 125df52 with test assertions",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}
