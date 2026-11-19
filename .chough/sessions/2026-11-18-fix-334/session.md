@@ -5,7 +5,7 @@ aliases: [fix-334]
 objective: "With CHOUGH_SESSION or --session set and no session open yet, the refusal names the variable and gives chough session new <key> (REQ-cli-037, #334)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-19-tc-cli-a-pinned-session-before-any-session-names-session-new
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-334
-    holds: accept
-    drives: review
-    opened: 2026-11-18T21:00:31Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # With CHOUGH_SESSION or --session set and no session open yet, the refusal names the variable and gives chough session new <key> (REQ-cli-037, #334)
 
@@ -43,6 +39,7 @@ With CHOUGH_SESSION or --session set and no session open yet, the refusal names 
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-334": "Approve" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his scope approval of CorvidLabs/chough#334: the refusal names the variable and gives the session-new guidance); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-334 as 0xLeif
+- 0xLeif decided "Implementation review of fix-334": "Approve, fix the two nits first" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #355 after tester2's PASS: 'drop --session' rather than 'unset --session', and the 'is archived' detail kept when every session is archived; both are fixed in 125df52 with test assertions); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-334 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -100,4 +97,20 @@ With CHOUGH_SESSION or --session set and no session open yet, the refusal names 
   - revision: af8ca8901b2a23affcd40ac74865d99637448346
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:20:07Z · gate-closed · accept → accept · Implementation review of fix-334 ^t-77ec8a
+  - native_change: fix-334
+  - revision: fe3307d7cf579a573619f22ae11cbd81b240bbf9
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, fix the two nits first
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #355 after tester2's PASS: 'drop --session' rather than 'unset --session', and the 'is archived' detail kept when every session is archived; both are fixed in 125df52 with test assertions
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-334
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:20:08Z · advance · accept → done · native:archived ^t-872617
+  - native_change: fix-334
+  - gate: native:archived
+  - revision: fe3307d7cf579a573619f22ae11cbd81b240bbf9
   - by: chough-fixer (claude-opus-5-5, hc t4n)
