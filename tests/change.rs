@@ -1762,3 +1762,40 @@ fn ship_with_an_unreadable_commit_names_fetch_refetch() {
     assert!(stderr.contains("git fetch --refetch origin"), "{stderr}");
     assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
 }
+
+/// REQ-cli-059 (#400, fable-lead's read of #413): a recorded base commit that is not a
+/// Git object id, such as a hand edit holding a multi-byte character or other text,
+/// never panics. There is no range to read, so the ship says so without printing the
+/// value and goes on, as for a base commit that is gone.
+#[test]
+fn ship_with_a_base_commit_that_is_not_an_object_id_goes_on() {
+    for base in [
+        "abc\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}\u{e9}",
+        "SYNTHETIC-not-a-commit",
+    ] {
+        let fixture = shipping_session_at("accept");
+        fixture.write(
+            ".specsync/changes/a5/state.json",
+            &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+        );
+        fixture.commit("a5 with a base_commit that is not an object id");
+        let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+        let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert_ne!(
+            output.status.code(),
+            Some(101),
+            "{base:?} panicked: {stderr}"
+        );
+        assert!(output.status.success(), "{base:?}: {stderr}");
+        assert!(
+            stderr.contains("could not be checked"),
+            "{base:?}: {stderr}"
+        );
+        // Byte 12 of the first falls inside a character; no part of either is shown.
+        assert!(
+            !stderr.contains(&base[..3]),
+            "{base:?} printed raw: {stderr}"
+        );
+        assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+    }
+}

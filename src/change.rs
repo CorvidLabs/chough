@@ -704,6 +704,16 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     if git(&["rev-parse", "--git-dir"]).is_none() {
         return Ok(());
     }
+    // A base_commit that is not a Git object id (a hand edit, a bad merge of
+    // state.json) names no range at all, as a base that is gone does: say so without
+    // showing the value, and go on, as before this check existed. Only then is it
+    // ASCII, so the short form below is a safe byte slice.
+    if base.is_empty() || base.len() > 64 || !base.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        eprintln!(
+            "note: the change's recorded base commit is not a Git object id, so its history from that base could not be checked; the ship goes on."
+        );
+        return Ok(());
+    }
     let short_base = &base[..base.len().min(12)];
     let unchecked = |what: &str| {
         anyhow::anyhow!(
