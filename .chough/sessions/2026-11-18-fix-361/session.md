@@ -30,6 +30,9 @@ waiting_on_human:
     opened: 2026-11-18T23:44:05Z
 run_consents: []
 next: Wait for the tester's check and Leif's implementation review of fix-361
+title: Doctor and next name skill update for outdated skill files
+summary:
+  - chough doctor reports each installed skill file that is an earlier release's copy as skill_outdated, and chough next shows one line naming chough skill update, with or without a session. A skill folder or file that cannot be inspected is skipped, reported as the advisory skill_uninspected, and hides nothing; beside one, the update is named per host.
 ---
 # chough doctor and chough next say when installed skill files are known-outdated and name chough skill update, and status JSON carries no_native_change (#361)
 

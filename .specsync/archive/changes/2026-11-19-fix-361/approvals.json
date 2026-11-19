@@ -103,6 +103,13 @@
         "where": "Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #362: the sentence added to REQ-cli-016 about a skill directory or file that cannot be inspected, with a one-time send-back of fix-361",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795055752,
+      "digest": "e8bb061f3e00de0cef2728c79c098926ff286a75ad73bc8b1f1d812f93ed6ae7",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
