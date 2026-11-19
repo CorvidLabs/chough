@@ -1198,6 +1198,8 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         "native_check": native_check::view(root, change.as_deref(), summary)?,
         "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,
+        // REQ-cli-021 (#351): why the session needs no native change, once it said so.
+        "no_native_change": checkpoint.and_then(|checkpoint| checkpoint.no_native_change.clone()),
         "native_verification_warning": policy::verification_warning(root, field("/verification_commands"))?,
         // F5: a command shown here is whole, whatever its length; the bound cuts the
         // text around it, and the command field is never cut.
@@ -1314,7 +1316,11 @@ fn next_text(view: &Value) -> String {
     if native["change"].is_null() {
         // F12e: with no change recorded there is no read of it to report; SpecSync's own
         // next step, when it gives one, follows on its line.
-        lines.push("Native change: none recorded".into());
+        match view["no_native_change"].as_str() {
+            // REQ-cli-021 (#351): the session said its work needs none, and why.
+            Some(reason) => lines.push(format!("Native change: none needed: {reason}")),
+            None => lines.push("Native change: none recorded".into()),
+        }
     } else {
         lines.push(format!(
             "Native change: {}: {} (read {}; approval_valid {}, correction_valid {}, terminal evidence {})",

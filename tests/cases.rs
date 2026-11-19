@@ -643,6 +643,18 @@ fn manual_records_need_a_verdict_for_every_expected_outcome() {
     let mut partial = base.to_vec();
     partial.extend(["--verdict", "1=pass"]);
     assert!(fixture.fails(&partial).contains("every expected outcome"));
+    // REQ-cli-017 (#349): a limitation over 512 bytes is refused here as by evidence add.
+    let long = "x".repeat(513);
+    let mut over = base.to_vec();
+    over.extend([
+        "--verdict",
+        "1=pass",
+        "--verdict",
+        "2=fail",
+        "--limitation",
+        &long,
+    ]);
+    assert!(fixture.fails(&over).contains("refused:limitations"));
     let mut full = base.to_vec();
     full.extend(["--verdict", "1=pass", "--verdict", "2=fail"]);
     let output = fixture.run(&full);
