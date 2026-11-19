@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 120
+version: 119
 status: active
 files:
   - src/main.rs
@@ -10,7 +10,6 @@ files:
   - src/context.rs
   - src/doctor.rs
   - src/change.rs
-  - src/ready.rs
   - src/gates.rs
   - src/direct_writes.rs
   - src/evidence.rs
@@ -38,7 +37,6 @@ files:
   - tests/subdirectory.rs
   - tests/doctor.rs
   - tests/change.rs
-  - tests/ready.rs
   - tests/gates.rs
   - tests/direct_writes.rs
   - tests/fixtures/workflow-at-825a380-SKILL.md
@@ -401,4 +399,3 @@ provider, runtime or hosted service.
 | 117 | 2026-11-18 | fix-339: Fix 339 |
 | 118 | 2026-11-19 | fix-361: Fix 361 |
 | 119 | 2026-11-19 | fix-347: Fix 347 |
-| 120 | 2026-11-14 | readiness-report-before-change-approval: Readiness report before change approval |

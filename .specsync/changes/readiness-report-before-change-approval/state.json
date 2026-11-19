@@ -7,11 +7,10 @@
   "title": "Readiness report before change approval",
   "description": "Readiness report before change approval",
   "kind": "feature",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "draft",
   "base_commit": "cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8",
   "created_at": 1794689756,
-  "updated_at": 1795060242,
+  "updated_at": 1795060640,
   "affected_specs": [
     "cli"
   ],

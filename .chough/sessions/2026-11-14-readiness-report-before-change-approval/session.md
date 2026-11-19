@@ -64,6 +64,10 @@ waiting_on_human:
     holds: accept
     drives: review
     opened: 2026-11-18T15:00:11Z
+  - gate: Scope approval of readiness-report-before-change-approval with the own-work wording (native approval)
+    holds: accept
+    drives: approve
+    opened: 2026-11-19T03:57:21Z
 run_consents: []
 next: Wait for Leif's implementation review of readiness-report-before-change-approval
 ---
@@ -205,4 +209,10 @@ One read-only command lists everything still missing before a change is approved
     - recorded_by: fable-t4b
     - native: specsync change approve readiness-report-before-change-approval
     - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T03:57:21Z · gate-opened · accept → accept · Scope approval of readiness-report-before-change-approval with the own-work wording (native approval) ^t-b4329c
+  - native_change: readiness-report-before-change-approval
+  - revision: f27fabc978595e274d59c1f6af7ae03b4c95966f
+  - holds: accept
+  - drives: approve
   - by: fable (claude-fable-5-2, hc t4b)
