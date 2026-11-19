@@ -12,7 +12,7 @@ callers: []
 native_change: fix-g1-gates-and-pins-fail-closed
 pr: ""
 criteria: [DRIVE-3, DRIVE-24, DRIVE-25]
-requirements: [REQ-cli-007, REQ-cli-037, REQ-cli-057, REQ-cli-059]
+requirements: [REQ-cli-007, REQ-cli-037, REQ-cli-057, REQ-cli-059, REQ-history-009]
 cases: []
 design: []
 files: []
