@@ -10,7 +10,7 @@ stage_status: active
 iteration: 1
 callers: []
 native_change: leaks-and-output
-pr: ""
+pr: https://github.com/CorvidLabs/chough/pull/407
 criteria: [LIFE-26]
 requirements: [REQ-records-006, REQ-records-001, REQ-cli-055, REQ-history-006]
 cases: []
