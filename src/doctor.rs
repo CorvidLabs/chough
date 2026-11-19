@@ -1636,8 +1636,12 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     found.extend(archives);
     found.extend(gates);
     for name in closing {
-        let key = &sessions::resolve_open(root, name)
-            .map_err(|error| anyhow::anyhow!("--close {name}: {error}"))?;
+        let key = &sessions::resolve_open(root, name).map_err(|error| {
+            anyhow::anyhow!(
+                "--close {}: {error}",
+                crate::leaks::shown("session name", name)
+            )
+        })?;
         let file = sessions::session_file(key);
         let session = sessions::read_at(root, &file)?;
         ensure!(

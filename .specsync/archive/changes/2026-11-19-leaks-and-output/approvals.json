@@ -1,0 +1,395 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795053754,
+      "digest": "144719bb4ec2a7dbabd3c458869cd31bf2525b26f800df7c062a2145aa2df967",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of leaks-and-output\": \"Yes, as each issue states … approved. Errors name the field and the kind, never the offending text … Show it only if clean … approved. The leak guard adds all the listed forms\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: the leaks-and-output batch of the bug round, one native change for #364, #365, #367, #368, #379 and #380. For #364, #365, #379 and #380 he approved each issue's stated expected behaviour ('Yes, as each issue states'). For #367 his decision comment on the issue, with 'Show it only if clean': the value is shown only when it holds no leak and no control character, otherwise the error names the field and what it holds. For #368 his decision comment on the issue: all the listed forms, the guard on session new --module, and the evidence add --redact count). Relayed and recorded by chough-fixer-t4g at 2026-11-19T02:02:33Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "leaks-and-output",
+        "title": "Leaks and output",
+        "description": "leaks and output",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.leaks-and-output.cases.toml",
+          "changelog.d/2026-11-19-leaks-and-output.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/evidence.rs",
+          "src/gates.rs",
+          "src/humans.rs",
+          "src/leaks.rs",
+          "src/main.rs",
+          "src/markdown.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/bugs.rs",
+          "tests/cases.rs",
+          "tests/change.rs",
+          "tests/checkpoint.rs",
+          "tests/doctor.rs",
+          "tests/evidence.rs",
+          "tests/gates.rs",
+          "tests/git_merge.rs",
+          "tests/humans.rs",
+          "tests/leaks.rs",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/records.rs",
+          "tests/session_pin.rs",
+          "tests/sessions.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "checkpoint --resolve-question --answer is leak-checked, redacted under --redact and bounded at 4096 bytes (#364). Conflict-marker refusals and doctor findings name only the marker's seven characters (#365). An error shows a value a person gave only when it holds no leak and no control character, otherwise it names the field and what it holds (#367). The leak guard adds password JSON keys, SECRET_KEY and AWS_SECRET_ACCESS_KEY assignments, xapp- and hf_ tokens, ~user/ paths, the macOS LocalHostName and its .local name, dotted host names inside hyphenated build names, and checks session new --module; evidence add --redact reports its count (#368). The user name comes from the account, and a system root such as /dev/ is never a user-name path (#379). gate record's refusal says Error: once (#380)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decisions set the scope: #367 'approved. Errors name the field and the kind, never the offending text' and 'Show it only if clean'; #368 'approved. The leak guard adds all the listed forms…'; and for #364, #365, #379 and #380 'Yes, as each issue states'. #366 (escaping on print) is a later batch, so control characters are only kept out of error echoes here. No new dependency; matchers stay hand-written. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "951f26d08b27b2683be2ca52965ee9598bc33936b35601981213bfb310fcdbc6",
+        "history": "59eb48142153848b3ab32c01ebc66ccc19deb687f35cd7d4f51cc27b27543f45",
+        "records": "177f630319e006e27e231f75ad777d6c97a5b5df82ef5c1457e1a85b4b6bc6e0"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "b47f0d70bf523998e236696369699fb0ffa688bf44cecb966e20401ad334de14",
+        "history: REQUIREMENT REQ-history-006": "89bb2c3ed93fe4f46eeda58164fa7bbc6dd61b106a88c0f091a22f05517dbc82",
+        "records: REQUIREMENT REQ-records-001": "449532db24add6347348595dfb99604ca06917b7e853f32f0c96b63e7f15946b",
+        "records: REQUIREMENT REQ-records-006": "0f977dbc865b46937eaa1869121d2cdd696c7abe4fedbfbfcca41609e6538e99"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, as each issue states … approved. Errors name the field and the kind, never the offending text … Show it only if clean … approved. The leak guard adds all the listed forms",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: the leaks-and-output batch of the bug round, one native change for #364, #365, #367, #368, #379 and #380. For #364, #365, #379 and #380 he approved each issue's stated expected behaviour ('Yes, as each issue states'). For #367 his decision comment on the issue, with 'Show it only if clean': the value is shown only when it holds no leak and no control character, otherwise the error names the field and what it holds. For #368 his decision comment on the issue: all the listed forms, the guard on session new --module, and the evidence add --redact count",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795057425,
+      "digest": "144719bb4ec2a7dbabd3c458869cd31bf2525b26f800df7c062a2145aa2df967",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of leaks-and-output for the #379 user-name sentence\": \"Fix the sentence: check both\" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on fable-lead's L1 review finding 1: REQ-records-006 now says the local user name is checked as the account's name and also as USER or LOGNAME when they are set, as the code does; nothing else in the delta changes). Relayed and recorded by chough-fixer-t4g at 2026-11-19T03:03:44Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "leaks-and-output",
+        "title": "Leaks and output",
+        "description": "leaks and output",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.leaks-and-output.cases.toml",
+          "changelog.d/2026-11-19-leaks-and-output.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/evidence.rs",
+          "src/gates.rs",
+          "src/humans.rs",
+          "src/leaks.rs",
+          "src/main.rs",
+          "src/markdown.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/bugs.rs",
+          "tests/cases.rs",
+          "tests/change.rs",
+          "tests/checkpoint.rs",
+          "tests/doctor.rs",
+          "tests/evidence.rs",
+          "tests/gates.rs",
+          "tests/git_merge.rs",
+          "tests/humans.rs",
+          "tests/leaks.rs",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/records.rs",
+          "tests/session_pin.rs",
+          "tests/sessions.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "checkpoint --resolve-question --answer is leak-checked, redacted under --redact and bounded at 4096 bytes (#364). Conflict-marker refusals and doctor findings name only the marker's seven characters (#365). An error shows a value a person gave only when it holds no leak and no control character, otherwise it names the field and what it holds (#367). The leak guard adds password JSON keys, SECRET_KEY and AWS_SECRET_ACCESS_KEY assignments, xapp- and hf_ tokens, ~user/ paths, the macOS LocalHostName and its .local name, dotted host names inside hyphenated build names, and checks session new --module; evidence add --redact reports its count (#368). The user name comes from the account, and a system root such as /dev/ is never a user-name path (#379). gate record's refusal says Error: once (#380)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decisions set the scope: #367 'approved. Errors name the field and the kind, never the offending text' and 'Show it only if clean'; #368 'approved. The leak guard adds all the listed forms…'; and for #364, #365, #379 and #380 'Yes, as each issue states'. #366 (escaping on print) is a later batch, so control characters are only kept out of error echoes here. No new dependency; matchers stay hand-written. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "951f26d08b27b2683be2ca52965ee9598bc33936b35601981213bfb310fcdbc6",
+        "history": "59eb48142153848b3ab32c01ebc66ccc19deb687f35cd7d4f51cc27b27543f45",
+        "records": "b742a6c63118c209a780a40a5469461fd45ac09e427033934197f88a30e76e54"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "b47f0d70bf523998e236696369699fb0ffa688bf44cecb966e20401ad334de14",
+        "history: REQUIREMENT REQ-history-006": "89bb2c3ed93fe4f46eeda58164fa7bbc6dd61b106a88c0f091a22f05517dbc82",
+        "records: REQUIREMENT REQ-records-001": "5339e30f9bd6cebf2d4500dbd61f56dae1bcaceca9e61b249c666de1d66d14e3",
+        "records: REQUIREMENT REQ-records-006": "adba5dc4c93829996c8fc800d68262a1e9c20d3b00f2d5d16fc888985646fe08"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Fix the sentence: check both",
+        "where": "Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on fable-lead's L1 review finding 1: REQ-records-006 now says the local user name is checked as the account's name and also as USER or LOGNAME when they are set, as the code does; nothing else in the delta changes",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795060418,
+      "digest": "144719bb4ec2a7dbabd3c458869cd31bf2525b26f800df7c062a2145aa2df967",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of leaks-and-output for the narrowed #379 user-name rule\": \"Narrow it\" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on tester2's finding C: the user name counts as a leak only inside an absolute path, after ~, or as user@host, and never when the name is root; one more sentence in REQ-records-006 beside his 'Fix the sentence: check both', and its acceptance criterion). Relayed and recorded by chough-fixer-t4g at 2026-11-19T03:53:33Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "leaks-and-output",
+        "title": "Leaks and output",
+        "description": "leaks and output",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.leaks-and-output.cases.toml",
+          "changelog.d/2026-11-19-leaks-and-output.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/evidence.rs",
+          "src/gates.rs",
+          "src/humans.rs",
+          "src/leaks.rs",
+          "src/main.rs",
+          "src/markdown.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/bugs.rs",
+          "tests/cases.rs",
+          "tests/change.rs",
+          "tests/checkpoint.rs",
+          "tests/doctor.rs",
+          "tests/evidence.rs",
+          "tests/gates.rs",
+          "tests/git_merge.rs",
+          "tests/humans.rs",
+          "tests/leaks.rs",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/records.rs",
+          "tests/session_pin.rs",
+          "tests/sessions.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "checkpoint --resolve-question --answer is leak-checked, redacted under --redact and bounded at 4096 bytes (#364). Conflict-marker refusals and doctor findings name only the marker's seven characters (#365). An error shows a value a person gave only when it holds no leak and no control character, otherwise it names the field and what it holds (#367). The leak guard adds password JSON keys, SECRET_KEY and AWS_SECRET_ACCESS_KEY assignments, xapp- and hf_ tokens, ~user/ paths, the macOS LocalHostName and its .local name, dotted host names inside hyphenated build names, and checks session new --module; evidence add --redact reports its count (#368). The user name comes from the account, and a system root such as /dev/ is never a user-name path (#379). gate record's refusal says Error: once (#380)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decisions set the scope: #367 'approved. Errors name the field and the kind, never the offending text' and 'Show it only if clean'; #368 'approved. The leak guard adds all the listed forms…'; and for #364, #365, #379 and #380 'Yes, as each issue states'. #366 (escaping on print) is a later batch, so control characters are only kept out of error echoes here. No new dependency; matchers stay hand-written. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "951f26d08b27b2683be2ca52965ee9598bc33936b35601981213bfb310fcdbc6",
+        "history": "59eb48142153848b3ab32c01ebc66ccc19deb687f35cd7d4f51cc27b27543f45",
+        "records": "cd6964b48c5a6c9b38edfdf16516a70b730f613c1b7add3daf989ee36dc20037"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "b47f0d70bf523998e236696369699fb0ffa688bf44cecb966e20401ad334de14",
+        "history: REQUIREMENT REQ-history-006": "89bb2c3ed93fe4f46eeda58164fa7bbc6dd61b106a88c0f091a22f05517dbc82",
+        "records: REQUIREMENT REQ-records-001": "5339e30f9bd6cebf2d4500dbd61f56dae1bcaceca9e61b249c666de1d66d14e3",
+        "records: REQUIREMENT REQ-records-006": "8018e82b9d4a5908bc2adbf61d7501a0ca48e97dcf81d9f90d23527d05a22273"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Narrow it",
+        "where": "Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on tester2's finding C: the user name counts as a leak only inside an absolute path, after ~, or as user@host, and never when the name is root; one more sentence in REQ-records-006 beside his 'Fix the sentence: check both', and its acceptance criterion",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795098173,
+      "digest": "1e038a2eda2cb5405761721a8cc899996d413f4beba00f00043a4579cf8f4bfc",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of leaks-and-output for the cli and history case files\": \"Yes to both\" (Claude Code chat answer, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 14:08Z, to: may leaks-and-output be sent back once for the two case files .chough/cases/cli.leaks-and-output.cases.toml and .chough/cases/history.leaks-and-output.cases.toml, no code and no sentence change, and is the merge approved once that is pushed, tester2 has rechecked it and CI is green). Relayed and recorded by chough-fixer-t4g at 2026-11-19T14:22:52Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "leaks-and-output",
+        "title": "Leaks and output",
+        "description": "leaks and output",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.leaks-and-output.cases.toml",
+          ".chough/cases/history.leaks-and-output.cases.toml",
+          ".chough/cases/records.leaks-and-output.cases.toml",
+          "changelog.d/2026-11-19-leaks-and-output.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/evidence.rs",
+          "src/gates.rs",
+          "src/humans.rs",
+          "src/leaks.rs",
+          "src/main.rs",
+          "src/markdown.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/bugs.rs",
+          "tests/cases.rs",
+          "tests/change.rs",
+          "tests/checkpoint.rs",
+          "tests/doctor.rs",
+          "tests/evidence.rs",
+          "tests/gates.rs",
+          "tests/git_merge.rs",
+          "tests/humans.rs",
+          "tests/leaks.rs",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/records.rs",
+          "tests/session_pin.rs",
+          "tests/sessions.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "checkpoint --resolve-question --answer is leak-checked, redacted under --redact and bounded at 4096 bytes (#364). Conflict-marker refusals and doctor findings name only the marker's seven characters (#365). An error shows a value a person gave only when it holds no leak and no control character, otherwise it names the field and what it holds (#367). The leak guard adds password JSON keys, SECRET_KEY and AWS_SECRET_ACCESS_KEY assignments, xapp- and hf_ tokens, ~user/ paths, the macOS LocalHostName and its .local name, dotted host names inside hyphenated build names, and checks session new --module; evidence add --redact reports its count (#368). The user name comes from the account, and a system root such as /dev/ is never a user-name path (#379). gate record's refusal says Error: once (#380)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decisions set the scope: #367 'approved. Errors name the field and the kind, never the offending text' and 'Show it only if clean'; #368 'approved. The leak guard adds all the listed forms…'; and for #364, #365, #379 and #380 'Yes, as each issue states'. #366 (escaping on print) is a later batch, so control characters are only kept out of error echoes here. No new dependency; matchers stay hand-written. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "951f26d08b27b2683be2ca52965ee9598bc33936b35601981213bfb310fcdbc6",
+        "history": "59eb48142153848b3ab32c01ebc66ccc19deb687f35cd7d4f51cc27b27543f45",
+        "records": "cd6964b48c5a6c9b38edfdf16516a70b730f613c1b7add3daf989ee36dc20037"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "b47f0d70bf523998e236696369699fb0ffa688bf44cecb966e20401ad334de14",
+        "history: REQUIREMENT REQ-history-006": "89bb2c3ed93fe4f46eeda58164fa7bbc6dd61b106a88c0f091a22f05517dbc82",
+        "records: REQUIREMENT REQ-records-001": "5339e30f9bd6cebf2d4500dbd61f56dae1bcaceca9e61b249c666de1d66d14e3",
+        "records: REQUIREMENT REQ-records-006": "8018e82b9d4a5908bc2adbf61d7501a0ca48e97dcf81d9f90d23527d05a22273"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes to both",
+        "where": "Claude Code chat answer, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 14:08Z, to: may leaks-and-output be sent back once for the two case files .chough/cases/cli.leaks-and-output.cases.toml and .chough/cases/history.leaks-and-output.cases.toml, no code and no sentence change, and is the merge approved once that is pushed, tester2 has rechecked it and CI is green",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795099426,
+      "digest": "2352f10352b67f5503da19c30b91dc87c5afc6eb8cb358cf33f494c40e455c3e",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "leaks-and-output",
+      "actor": "0xLeif",
+      "reason": "Add the cli and history case files so REQ-cli-055 and REQ-history-006 are each verified by a case; no code or sentence change (send-back run by the fixer on Leif's relayed word, via t4c, 2026-11-19)",
+      "timestamp": 1795098137,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 3,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "records",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-records-001",
+          "content": "Record files. Every record Chough writes, a session, an archived session story, an evidence entry, a bug, an inbox entry, a journal post and a migration receipt, SHALL be one UTF-8 Markdown file that starts with YAML front matter between two `---` lines, and that file SHALL be the record's only source of truth: no JSON or other twin SHALL be written beside it, and no index, cache or generated note SHALL be read in its place. The front matter SHALL carry the IDs and fields agents parse; the body SHALL carry the record for a human reader. Front matter SHALL use a strict subset of YAML that Chough reads and writes without a new dependency: `key: value` scalars, plain or double-quoted with `\\\"`, `\\\\` and `\\n` escapes; flow lists `[a, b]`; block lists of scalars; and block lists of flat maps of scalars. Chough SHALL refuse front matter outside that subset, a duplicate key or a missing closing `---`, naming the file, the line and the rule, and SHALL write nothing in that command. A record's body SHALL NOT hold a Git conflict marker: a line that starts with `<<<<<<<` or `>>>>>>>`, or a line of `=======` between such lines (a `=======` line outside them, as a Markdown heading underline, is not one); a line inside a closed fenced code block, as CommonMark reads one, quoting an example or tool output, is not one, but a fence that never closes hides nothing after it, and no fence hides a conflict in a section Chough writes itself, a session's `## Timeline` or an archived story's `## Receipts` (#339). A real conflict Git leaves inside such a fence cannot be told from a quoted one, so no write SHALL be refused for it, and `chough doctor` SHALL only warn of each marker line there (REQ-cli-055). A lone `=======` outside a conflict may be left by a half-resolved conflict, but a heading underline may be followed directly by text, so no write SHALL be refused for it, and `chough doctor` SHALL only warn of it (REQ-cli-055). Chough SHALL refuse a write whose body would hold one as `refused:conflict-markers`, naming the file, the line and the marker, with every file unchanged, and `chough doctor` SHALL report each committed record whose body holds one as a `conflict_markers` finding naming the file, the line and the marker, which has no fix. A marker SHALL be named by its seven characters only, never the rest of its line, which may carry a branch name or a commit subject (#365). Reading SHALL be tolerant: an unknown front matter key SHALL be kept byte for byte, in place, when Chough rewrites the front matter, and SHALL be ignored otherwise; a missing optional key SHALL take its documented default; CRLF line endings SHALL be read as LF. Chough SHALL own only the front matter and the sections it appends to, and SHALL keep every other body byte a person or agent wrote: a write SHALL replace the front matter, append list items to the end of a named section, or create a missing named section at the end of the body, and SHALL do nothing else to an existing body. Files SHALL be written with LF line endings by an atomic replace under the writer lock of REQ-cli-040, or by create-new for a new record. A record SHALL be at most 65,536 bytes, except a session record, an archived session story and a migration receipt, which SHALL be at most 1,048,576, 1,048,576 and 4,194,304 bytes; a record over its bound SHALL be refused with the bound named and every file byte-identical. When a 0.5.x record would migrate into a record that holds a marker, the preview SHALL say that the apply refuses and SHALL NOT offer the apply command, and `chough migrate --apply` SHALL refuse with nothing written, each naming the 0.5.x file to resolve, the record it would become, the line and the marker. Trace: DRIVE-25, DRIVE-26, DRIVE-28, KNOW-32, LIFE-3.\n\nAcceptance Criteria\n- Every record kind written by a fixture cycle (session, archived story, evidence, bug, inbox entry, journal post, migration receipt) starts with front matter that the reader parses, and no `.json` file is written under `.chough/` except the local caches of REQ-history-007 and `.chough/preferences.json`.\n- A person's edit to a session's Goal paragraph, to a bug's Steps and to an evidence entry's body survives a following stage move, decision, evidence add and bug update byte for byte.\n- An unknown front matter key added by hand is kept byte for byte after Chough rewrites that front matter, and a missing optional key reads as its default.\n- Front matter with a nested map, an anchor, a duplicate key or no closing line is refused with the file, line and rule named, and nothing is written.\n- A CRLF copy of a record reads the same as the LF original.\n- A record one byte over its bound is refused naming the bound, with every file unchanged.\n- A record write whose body holds a `<<<<<<<`, `=======` or `>>>>>>>` conflict line is refused as `refused:conflict-markers` naming the file, the line and the marker, with every file unchanged; a body with a `=======` heading underline and no conflict is written.\n- With a committed record whose body holds a conflict, `chough doctor` reports a `conflict_markers` finding for each marker line naming the file, the line and the marker, exits 1, and reports none for a tracked file that is not a record.\n- A conflict quoted inside a fenced code block, with backtick or tilde fences, is not a marker and the record saves; a lone `=======` with text after it is not refused either.\n- A conflict after a code fence that never closes, or after a backtick line whose tag holds a backtick, is a marker and the write is refused.\n- A conflict inside an archived story's `## Timeline` or fenced `## Receipts` block is a marker, inside a fence or not.\n- A Git conflict left inside a code fence of a session's Goal is not refused on the next write.\n- A 0.5.x inbox entry whose text holds a conflict makes the migration preview say the apply refuses, without offering the apply command, and the apply refuse, each naming that 0.5.x file first.\n- A conflict whose marker lines name a branch or a commit subject holding a token is refused and reported naming only `<<<<<<<`, `=======` or `>>>>>>>` and the line, never the branch or the subject (#365).",
+          "previous_content": "Record files. Every record Chough writes, a session, an archived session story, an evidence entry, a bug, an inbox entry, a journal post and a migration receipt, SHALL be one UTF-8 Markdown file that starts with YAML front matter between two `---` lines, and that file SHALL be the record's only source of truth: no JSON or other twin SHALL be written beside it, and no index, cache or generated note SHALL be read in its place. The front matter SHALL carry the IDs and fields agents parse; the body SHALL carry the record for a human reader. Front matter SHALL use a strict subset of YAML that Chough reads and writes without a new dependency: `key: value` scalars, plain or double-quoted with `\\\"`, `\\\\` and `\\n` escapes; flow lists `[a, b]`; block lists of scalars; and block lists of flat maps of scalars. Chough SHALL refuse front matter outside that subset, a duplicate key or a missing closing `---`, naming the file, the line and the rule, and SHALL write nothing in that command. A record's body SHALL NOT hold a Git conflict marker: a line that starts with `<<<<<<<` or `>>>>>>>`, or a line of `=======` between such lines (a `=======` line outside them, as a Markdown heading underline, is not one); a line inside a closed fenced code block, as CommonMark reads one, quoting an example or tool output, is not one, but a fence that never closes hides nothing after it, and no fence hides a conflict in a section Chough writes itself, a session's `## Timeline` or an archived story's `## Receipts` (#339). A real conflict Git leaves inside such a fence cannot be told from a quoted one, so no write SHALL be refused for it, and `chough doctor` SHALL only warn of each marker line there (REQ-cli-055). A lone `=======` outside a conflict may be left by a half-resolved conflict, but a heading underline may be followed directly by text, so no write SHALL be refused for it, and `chough doctor` SHALL only warn of it (REQ-cli-055). Chough SHALL refuse a write whose body would hold one as `refused:conflict-markers`, naming the file, the line and the marker, with every file unchanged, and `chough doctor` SHALL report each committed record whose body holds one as a `conflict_markers` finding naming the file, the line and the marker, which has no fix. Reading SHALL be tolerant: an unknown front matter key SHALL be kept byte for byte, in place, when Chough rewrites the front matter, and SHALL be ignored otherwise; a missing optional key SHALL take its documented default; CRLF line endings SHALL be read as LF. Chough SHALL own only the front matter and the sections it appends to, and SHALL keep every other body byte a person or agent wrote: a write SHALL replace the front matter, append list items to the end of a named section, or create a missing named section at the end of the body, and SHALL do nothing else to an existing body. Files SHALL be written with LF line endings by an atomic replace under the writer lock of REQ-cli-040, or by create-new for a new record. A record SHALL be at most 65,536 bytes, except a session record, an archived session story and a migration receipt, which SHALL be at most 1,048,576, 1,048,576 and 4,194,304 bytes; a record over its bound SHALL be refused with the bound named and every file byte-identical. When a 0.5.x record would migrate into a record that holds a marker, the preview SHALL say that the apply refuses and SHALL NOT offer the apply command, and `chough migrate --apply` SHALL refuse with nothing written, each naming the 0.5.x file to resolve, the record it would become, the line and the marker. Trace: DRIVE-25, DRIVE-26, DRIVE-28, KNOW-32, LIFE-3.\n\nAcceptance Criteria\n- Every record kind written by a fixture cycle (session, archived story, evidence, bug, inbox entry, journal post, migration receipt) starts with front matter that the reader parses, and no `.json` file is written under `.chough/` except the local caches of REQ-history-007 and `.chough/preferences.json`.\n- A person's edit to a session's Goal paragraph, to a bug's Steps and to an evidence entry's body survives a following stage move, decision, evidence add and bug update byte for byte.\n- An unknown front matter key added by hand is kept byte for byte after Chough rewrites that front matter, and a missing optional key reads as its default.\n- Front matter with a nested map, an anchor, a duplicate key or no closing line is refused with the file, line and rule named, and nothing is written.\n- A CRLF copy of a record reads the same as the LF original.\n- A record one byte over its bound is refused naming the bound, with every file unchanged.\n- A record write whose body holds a `<<<<<<<`, `=======` or `>>>>>>>` conflict line is refused as `refused:conflict-markers` naming the file, the line and the marker, with every file unchanged; a body with a `=======` heading underline and no conflict is written.\n- With a committed record whose body holds a conflict, `chough doctor` reports a `conflict_markers` finding for each marker line naming the file, the line and the marker, exits 1, and reports none for a tracked file that is not a record.\n- A conflict quoted inside a fenced code block, with backtick or tilde fences, is not a marker and the record saves; a lone `=======` with text after it is not refused either.\n- A conflict after a code fence that never closes, or after a backtick line whose tag holds a backtick, is a marker and the write is refused.\n- A conflict inside an archived story's `## Timeline` or fenced `## Receipts` block is a marker, inside a fence or not.\n- A Git conflict left inside a code fence of a session's Goal is not refused on the next write.\n- A 0.5.x inbox entry whose text holds a conflict makes the migration preview say the apply refuses, without offering the apply command, and the apply refuse, each naming that 0.5.x file first."
+        },
+        {
+          "module": "records",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-records-006",
+          "content": "No leaks in committed records. Before writing any committed record, Chough SHALL check every value it writes, in front matter and body, including recorded commands, summaries, reasons, decisions, answers to questions, relayed words and places, notes, limitations, titles, module names and actor values, for: an absolute path under a home, temporary or system root (`/Users/`, `/home/`, `/root/`, `/private/`, `/tmp/`, `/var/`, `/Volumes/`, `/mnt/`) or a Windows drive path; a `~/` or `~<user>/` path; the local host name anywhere when it is at least 8 characters long or holds a digit, a hyphen or a dot, and a shorter all-letter host name, which may be an ordinary word, only inside a path or a URL or as `<user>@<host>`, or as the `<host>:/<absolute path>` of an scp-style remote path, where the local host names are the machine's host name, its first label and, on macOS, its LocalHostName, each also as `<name>.local`, and one holding a dot counts inside a hyphenated name too, as in `build-<host>-1` (#368); and the local user name, checked as the account's name and also as `USER` or `LOGNAME` when they are set (#379), when it appears inside an absolute path, except as the first component of one that names a system root such as `/dev/`, after `~`, or as `<user>@<host>`. A relative path or a URL holds no user name, and the name `root` never counts (#379); an email address; and credentials: GitHub, GitLab, Slack (bot, user, workspace and `xapp-` app tokens), AWS, Hugging Face (`hf_`) and model-provider token forms, private key blocks, bearer and basic authorization values, JSON web tokens, and `password`, `secret`, `secret_key`, `secret_access_key` (as in `AWS_SECRET_ACCESS_KEY`), `token` or `api_key` assignments, with the key quoted or not, as in `{\"password\": …}`, and a value of 8 or more characters (#368). A value that matches SHALL refuse the write as `refused:leak`, naming the field and the kind of match and never the matched text, with every file byte-identical. With `--redact`, each match SHALL instead be replaced by `<redacted:<kind>>` and the write SHALL proceed, saying how many values were redacted, `chough evidence add` included (#368); a module name is an ID, so it is refused under `--redact` too. An error SHALL show a value a person gave, such as a session name from `--session`, `CHOUGH_SESSION` or `session use`, a bug or evidence reference or a `--decided-by` value, only when the value holds no match and no control character; otherwise it SHALL name the field and what it holds, as in `CHOUGH_SESSION holds token`, never the value (#367). A human's configured display name (REQ-records-008) SHALL NOT count as a user name. `chough doctor` SHALL scan every file Git tracks under `.chough/` and `knowledge/` for the same patterns and SHALL report each as a `leak` finding with the file, the line and the kind, never the text, except that a path under `/tmp/` or `/private/tmp/` in a case definition (`.chough/cases/*.cases.toml`) is a deliberate test setting, such as a case's own `XDG_DATA_HOME`, and SHALL NOT be reported or offered `--redact`, while a home path, the local user or host name, an email or a credential in a case definition still SHALL; the verify and CI lanes SHALL run that scan and fail on a finding. An scp-style remote path, `<host>:/<absolute path>`, SHALL be checked like the path it carries, so a home or system root after the colon refuses as a path leak and the host part counts as the local host name when it matches. Trace: LIFE-26, LIFE-17, FLOW-22.\n\nAcceptance Criteria\n- Each pattern kind, placed in an evidence summary, a decision, a relayed `--words`, a bug note and a recorded command, refuses the write with `refused:leak` naming the field and kind, the output never contains the matched text, and every file is unchanged.\n- The same writes with `--redact` store `<redacted:<kind>>` and report the count.\n- A decision naming the configured human display name is written; the same name inside `/Users/<name>/` is refused.\n- With one committed record holding a home path, `chough doctor` reports a `leak` finding with its file, line and kind, without the path, and exits 1; `fledge lanes run verify` fails on it.\n- The records of a full fixture cycle run inside a temporary directory hold no absolute path, user name or host name.\n- A committed case definition whose binding sets `XDG_DATA_HOME` to a path under `/tmp/` gives no `leak` finding from `chough doctor`, while one holding a home-folder path still gives one naming the file and line.\n- With a short all-letter host name, a record using it as an ordinary word is written and `chough doctor` reports nothing, while the same name inside a path, a URL or as `<user>@<host>` is still refused; a host name of 8 or more characters, or one holding a digit, hyphen or dot, is still refused anywhere.\n- With an scp-style remote path, `<host>:/<absolute path>`, the write is refused as a path leak when a home or system root follows the colon, and the host part is refused as a host-name leak when it is the local host, in the write guard and in `chough doctor` alike.\n- `checkpoint --resolve-question <question> --answer <text>` with each pattern kind refuses with `refused:leak` naming `answer`, with every file unchanged; with `--redact` the answer holds `<redacted:<kind>>`; an answer over 4,096 bytes is refused (#364).\n- `{\"password\": \"…\"}`, `SECRET_KEY=…`, `AWS_SECRET_ACCESS_KEY=…`, an `xapp-` and an `hf_` token, a `~<user>/` path, the LocalHostName's `<name>.local` and a dotted host name inside `build-<host>-1` each refuse the write; `session new --module` holding a pattern kind is refused (#368).\n- With `USER` and `LOGNAME` unset, the account's user name as `<user>@<host>` is still refused; with the user named `dev`, a `/dev/…` path, `src/dev/main.rs` and `https://example.com/dev/guide` are written while `/opt/dev/x` is refused; with the account `root`, `ssh root@build-box` and `postgres://root@db/x` are written; a home path and a `~/` path are still refused (#379).\n- `evidence add --redact` with a leaking value says how many values it redacted (#368).\n- An unknown session, bug or evidence reference or `--decided-by` value holding a pattern kind or a control character is refused naming the field and what it holds, and the output holds neither the value nor the control character; a clean one is still named (#367).",
+          "previous_content": "No leaks in committed records. Before writing any committed record, Chough SHALL check every value it writes, in front matter and body, including recorded commands, summaries, reasons, decisions, relayed words and places, notes, limitations, titles and actor values, for: an absolute path under a home, temporary or system root (`/Users/`, `/home/`, `/root/`, `/private/`, `/tmp/`, `/var/`, `/Volumes/`, `/mnt/`) or a Windows drive path; a `~/` path; the local host name anywhere when it is at least 8 characters long or holds a digit, a hyphen or a dot, and a shorter all-letter host name, which may be an ordinary word, only inside a path or a URL or as `<user>@<host>`, or as the `<host>:/<absolute path>` of an scp-style remote path; and the local user name when it appears inside a path or as `<user>@<host>`; an email address; and credentials: GitHub, GitLab, Slack, AWS and model-provider token forms, private key blocks, bearer and basic authorization values, JSON web tokens, and `password`, `secret`, `token` or `api_key` assignments with a value of 8 or more characters. A value that matches SHALL refuse the write as `refused:leak`, naming the field and the kind of match and never the matched text, with every file byte-identical. With `--redact`, each match SHALL instead be replaced by `<redacted:<kind>>` and the write SHALL proceed, saying how many values were redacted. A human's configured display name (REQ-records-008) SHALL NOT count as a user name. `chough doctor` SHALL scan every file Git tracks under `.chough/` and `knowledge/` for the same patterns and SHALL report each as a `leak` finding with the file, the line and the kind, never the text, except that a path under `/tmp/` or `/private/tmp/` in a case definition (`.chough/cases/*.cases.toml`) is a deliberate test setting, such as a case's own `XDG_DATA_HOME`, and SHALL NOT be reported or offered `--redact`, while a home path, the local user or host name, an email or a credential in a case definition still SHALL; the verify and CI lanes SHALL run that scan and fail on a finding. An scp-style remote path, `<host>:/<absolute path>`, SHALL be checked like the path it carries, so a home or system root after the colon refuses as a path leak and the host part counts as the local host name when it matches. Trace: LIFE-26, LIFE-17, FLOW-22.\n\nAcceptance Criteria\n- Each pattern kind, placed in an evidence summary, a decision, a relayed `--words`, a bug note and a recorded command, refuses the write with `refused:leak` naming the field and kind, the output never contains the matched text, and every file is unchanged.\n- The same writes with `--redact` store `<redacted:<kind>>` and report the count.\n- A decision naming the configured human display name is written; the same name inside `/Users/<name>/` is refused.\n- With one committed record holding a home path, `chough doctor` reports a `leak` finding with its file, line and kind, without the path, and exits 1; `fledge lanes run verify` fails on it.\n- The records of a full fixture cycle run inside a temporary directory hold no absolute path, user name or host name.\n- A committed case definition whose binding sets `XDG_DATA_HOME` to a path under `/tmp/` gives no `leak` finding from `chough doctor`, while one holding a home-folder path still gives one naming the file and line.\n- With a short all-letter host name, a record using it as an ordinary word is written and `chough doctor` reports nothing, while the same name inside a path, a URL or as `<user>@<host>` is still refused; a host name of 8 or more characters, or one holding a digit, hyphen or dot, is still refused anywhere.\n- With an scp-style remote path, `<host>:/<absolute path>`, the write is refused as a path leak when a home or system root follows the colon, and the host part is refused as a host-name leak when it is the local host, in the write guard and in `chough doctor` alike."
+        },
+        {
+          "module": "cli",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-cli-055",
+          "content": "Chough doctor. `chough doctor` SHALL report the Chough debt of REQ-history-012 and each committed record, or case definition that does not parse as TOML, that holds a Git conflict marker (REQ-records-001, #339) as JSON with `schema_version` 1, `mode` (`report`, `dry-run` or `fix`) and `findings`, each with `kind`, `target`, `fix` (the Chough command that fixes it), `decision` (whether the fix is a decision) and `status` (`found`, `fixed` or `skipped`, with a `reason` when skipped). With no flag, or with `--dry-run`, it SHALL change nothing and report each finding as `found`. With `--fix` it SHALL apply each fix that is not a decision. A lone `=======` outside a conflict in a committed record, or in a case definition that does not parse as TOML, SHALL be a `possible_conflict_separator` finding naming its line, \"possible leftover conflict separator at line N\", marked `advisory`: a warning only, which SHALL never make `chough doctor` exit 1 (#339). A Git conflict marker line inside a closed code fence of a committed record SHALL be a `possible_fenced_conflict` finding naming its line and marker, \"possible conflict markers inside a code fence at line N\", also marked `advisory`, since a real conflict there cannot be told from a quoted one (#339). Each such finding SHALL name the marker by its seven characters only, never the rest of its line (REQ-records-001, #365). A fix that would leave a record unreadable, such as redacting an ID (REQ-history-012), SHALL NOT be applied: its finding SHALL be `skipped`, with the reason and the recovery, and the record SHALL stay byte for byte as it was on that line. It SHALL apply a decision fix only when `--reason <text>` is given, and SHALL otherwise report it as `skipped` with a fix that names `--reason`. It SHALL exit 0 when no finding is left `found` or `skipped`, and 1 otherwise. It SHALL make no native read, and SHALL never record a human decision, approval, review or consent. Its per-session findings (`finished_session`, `stale_gates`) SHALL come from one session check that `chough migrate`'s plan also runs on the planned records (REQ-records-009), so a migration's follow-ups name what the doctor will report. Trace: DRIVE-17.\n\nAcceptance Criteria\n- With no flag and with `--dry-run`, the doctor reports the same findings, each with a `chough` fix, exits 1, and leaves every file under `.chough/` unchanged.\n- `--fix` without `--reason` applies the fixes that are not decisions and reports each decision fix as `skipped`, naming `--reason`; a project with no debt reports no findings and exits 0.\n- No doctor run calls SpecSync.\n- On a tree just migrated from 0.5.x, `chough doctor` reports exactly the `finished_session` and `stale_gates` sessions the migration's follow-ups named.\n- `--fix --redact` on a committed session record whose ID reference holds a token leaves that line unchanged and the session readable, and reports the finding `skipped`, naming `chough session shelve <id>`.\n- A committed record whose body holds a conflict gives a `conflict_markers` finding with no fix, and `--fix` reports it `skipped`.\n- A committed case definition holding a conflict gives a `conflict_markers` finding for each marker line, naming the file, the line and the marker; a valid definition quoting a marker in a string gives none.\n- A lone `=======` in a committed record gives one advisory `possible_conflict_separator` finding naming its line, and doctor's exit status is what it is without it.\n- A Git conflict left inside a code fence of a committed session gives one advisory `possible_fenced_conflict` finding per marker line, naming it, and doctor's exit status is what it is without it.\n- A committed conflict whose `>>>>>>>` line names a branch holding a token gives `conflict_markers` findings whose `marker` is `>>>>>>>`, and doctor's output holds no part of the branch name (#365).",
+          "previous_content": "Chough doctor. `chough doctor` SHALL report the Chough debt of REQ-history-012 and each committed record, or case definition that does not parse as TOML, that holds a Git conflict marker (REQ-records-001, #339) as JSON with `schema_version` 1, `mode` (`report`, `dry-run` or `fix`) and `findings`, each with `kind`, `target`, `fix` (the Chough command that fixes it), `decision` (whether the fix is a decision) and `status` (`found`, `fixed` or `skipped`, with a `reason` when skipped). With no flag, or with `--dry-run`, it SHALL change nothing and report each finding as `found`. With `--fix` it SHALL apply each fix that is not a decision. A lone `=======` outside a conflict in a committed record, or in a case definition that does not parse as TOML, SHALL be a `possible_conflict_separator` finding naming its line, \"possible leftover conflict separator at line N\", marked `advisory`: a warning only, which SHALL never make `chough doctor` exit 1 (#339). A Git conflict marker line inside a closed code fence of a committed record SHALL be a `possible_fenced_conflict` finding naming its line and marker, \"possible conflict markers inside a code fence at line N\", also marked `advisory`, since a real conflict there cannot be told from a quoted one (#339). A fix that would leave a record unreadable, such as redacting an ID (REQ-history-012), SHALL NOT be applied: its finding SHALL be `skipped`, with the reason and the recovery, and the record SHALL stay byte for byte as it was on that line. It SHALL apply a decision fix only when `--reason <text>` is given, and SHALL otherwise report it as `skipped` with a fix that names `--reason`. It SHALL exit 0 when no finding is left `found` or `skipped`, and 1 otherwise. It SHALL make no native read, and SHALL never record a human decision, approval, review or consent. Its per-session findings (`finished_session`, `stale_gates`) SHALL come from one session check that `chough migrate`'s plan also runs on the planned records (REQ-records-009), so a migration's follow-ups name what the doctor will report. Trace: DRIVE-17.\n\nAcceptance Criteria\n- With no flag and with `--dry-run`, the doctor reports the same findings, each with a `chough` fix, exits 1, and leaves every file under `.chough/` unchanged.\n- `--fix` without `--reason` applies the fixes that are not decisions and reports each decision fix as `skipped`, naming `--reason`; a project with no debt reports no findings and exits 0.\n- No doctor run calls SpecSync.\n- On a tree just migrated from 0.5.x, `chough doctor` reports exactly the `finished_session` and `stale_gates` sessions the migration's follow-ups named.\n- `--fix --redact` on a committed session record whose ID reference holds a token leaves that line unchanged and the session readable, and reports the finding `skipped`, naming `chough session shelve <id>`.\n- A committed record whose body holds a conflict gives a `conflict_markers` finding with no fix, and `--fix` reports it `skipped`.\n- A committed case definition holding a conflict gives a `conflict_markers` finding for each marker line, naming the file, the line and the marker; a valid definition quoting a marker in a string gives none.\n- A lone `=======` in a committed record gives one advisory `possible_conflict_separator` finding naming its line, and doctor's exit status is what it is without it.\n- A Git conflict left inside a code fence of a committed session gives one advisory `possible_fenced_conflict` finding per marker line, naming it, and doctor's exit status is what it is without it."
+        },
+        {
+          "module": "history",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-history-006",
+          "content": "Sessions in their own folders. `chough session new <key>` SHALL create `.chough/sessions/<id>/session.md` by create-new, where `<id>` is the date and the slug of `<key>` (REQ-records-003) and `<key>` is kept as an alias, with its own timeline, and SHALL point at it; `session use <id>` SHALL point at an open session by ID, alias or the bare slug when exactly one open session has it, and a name that is no open session SHALL be named in its refusal only when it holds no leak and no control character (REQ-records-006, #367); an active pointer that holds such an alias or bare slug, as a 0.5.x pointer that an in-place migration keeps, SHALL name that session, and `chough doctor` SHALL NOT report it as `stale_pointer`; `session list` SHALL report each session's ID, aliases, stage, status (`archived` for an archived story, otherwise its stage status) and whether it is active, open or archived. A session is finished when it is at stage done or its native change is archived on HEAD, at any stage, as the archive's `finalization.json` records, read without a native read (DRIVE-16). A session SHALL close only itself, at its own move into done or with `chough session close --reason`: `session new` and `session use` SHALL NOT archive, close or change any other session, even a finished one (#207, #214). `session list`, `chough next` and `chough doctor` SHALL list each finished open session with its fix, `chough doctor --fix` (REQ-history-012), which keeps one with unfolded inbox entries or an open awaiting-human gate open and names the recovery: `chough inbox fold`, or `chough checkpoint --close-gate`, since closing a gate is a decision (#181). When `chough stage advance` moves the active session into done and its save succeeds, after the deferred knowledge step of REQ-cli-043, the helper SHALL archive that session in the same command and clear the active pointer, reporting `applied.session_archive` with status `archived` and the ID; a session with unfolded inbox entries SHALL stay open with its pointer, reported as `kept_open` with the count; a session for which release is authorized at that move (a run consent or a standing preference, as `stage enter release` requires) SHALL stay open for the release, reported as `kept_open` with that reason, and SHALL archive itself the same way at the move from release into done. The step SHALL NOT undo the move into done. To archive a session, Chough SHALL write `.chough/archive/sessions/<id>.md` by create-new: the session's front matter with `stage: done` (or the stage it closed at), `stage_status: archived`, no `next`, since the session's next action no longer applies, `closed` (the UTC date) and `outcome` (`done` or `closed-without-done`), and no receipts, so the story comes first; then the story as written; then, last, a `## Receipts` section holding `receipts` as one fenced YAML block, one map per evidence entry the session holds, ordered by its observation time, oldest first, then by ID, with its `id`, `aliases` (one scalar, comma-and-space separated), `claim`, `result`, `observed` (the entry's observation time, ISO UTC, REQ-cli-017), `duration_seconds` (the run's wall-clock seconds, when known), `command`, `revision`, `environment`, `content`, `fingerprint`, `raw_log` when present, `case`, `case_digest`, `criteria` and `requirements` (each one scalar, comma-and-space separated) and `limitations` (one scalar, semicolon-and-space separated) when the entry has any, so the story says what was verified against what and its stated limits stay with it, `screenshot` when present and `actor` when known (REQ-records-007), so a bug whose evidence is archived keeps its verified state, which needs a pass observed after its latest failure (REQ-cli-012), and the timing report can order and time case runs read from receipts (REQ-reporting-001); readers SHALL read receipts from that section and, for a story written before it, from the front matter. In the story, What was verified SHALL give the latest receipt of each case and every receipt bound to no case, one line each (its claim, then, after ` - `, a plain dash and never an em dash, its command unless the claim already holds it, and the first 12 digits of its fingerprint, then `; limits: ` and its limitations when it has any, so its stated limits read beside the claim, ending `^<evidence id>`) for each entry not already listed, with one line counting the earlier runs of those cases, which stay in `receipts`; a `## Bugs` section SHALL name each bug in the session's checkpoint with its title and status, linked to its record; and the story SHALL end with the Timeline and a closing line `Closed <date>: <outcome>.`, before `## Receipts`. When the story's Goal paragraph is not the session's current objective, as after a later `checkpoint --objective` (REQ-records-004), the story SHALL get one line `Objective at closeout: <objective>` after the Goal paragraph; nothing in the title, the Goal or elsewhere SHALL be rewritten. Chough SHALL read the story back and compare it before it removes anything, and SHALL then remove the session folder, `session.md`, `evidence/` and `agent/` included, and move its screenshots beside the story (REQ-records-013), each file only under REQ-records-012; files it keeps SHALL be reported, the folder SHALL count as archived while its story exists, and `chough doctor --fix` SHALL finish the removal once they are committed. Archiving a session SHALL NOT read, move, rewrite or remove any other session's folder or story. After it, until a session is opened, `next` SHALL say there is no open session and name `chough session new <key>`, exiting 0, and `status` SHALL refuse with that message (DRIVE-13). Evidence and bug links into an archived session SHALL resolve to its story's receipts. Two branches that record work in different sessions SHALL merge without conflict. A session that cannot be read, because it is over the bound of REQ-records-001 or invalid, SHALL NOT stop `session list`, `session new`, `session use` or another session's `next`; `session list` SHALL report it with the reason and the recovery `chough session shelve <id>`, which SHALL move the folder unparsed and byte for byte to `.chough/archive/shelved/<id>/` with a `shelved.md` giving its size, SHA-256 per file, time and reason, and clear the active pointer when it named that session. Shelving SHALL never replace a file, and no reader SHALL scan `.chough/archive/shelved/` (DRIVE-14). `chough session close <id> --reason <text>` SHALL close an open session for abandoned work without a native read: it SHALL refuse with nothing changed a blank reason, a session that is archived or does not exist, and a session with unfolded inbox entries, naming `chough session use <id>` and `chough inbox fold`; otherwise it SHALL withdraw each open awaiting-human gate of that session as `chough checkpoint --clear-awaiting-human` does, one `gate-closed` entry each and no human decision, name them in its output under `withdrawn_gates`, so the story lists no gate as awaiting, add the decision `Closed without done: <reason>` and archive the session as above with outcome `closed-without-done`, clearing the active pointer when it named that session (DRIVE-16). Trace: DRIVE-3, DRIVE-24, DRIVE-25, KNOW-30, KNOW-34, LIFE-3, LIFE-7, DRIVE-14, DRIVE-13, DRIVE-16.\n\nAcceptance Criteria\n- Two branches that each advance a different session merge in Git with no conflict and keep both sessions' timelines.\n- The move into done of the active session writes `.chough/archive/sessions/<id>.md` with every receipt and the full timeline, removes the committed session folder, clears the pointer, reports `archived`, and `next` then exits 0 naming `chough session new <key>` while `status` refuses.\n- Each receipt in the story gives its entry's `observed` time, its `duration_seconds`, `raw_log` and `actor` when the entry has them, and its `aliases` as one comma-and-space separated scalar; a bug whose linked pass was observed after its latest linked failure stays verified once that session is archived.\n- Regression for issue 165: with seven earlier archived stories present, among them 0.5.x-era stories, and `knowledge/` neither tracked nor ignored, advancing accept to done leaves every earlier story byte-identical in place, `git status` shows no deleted file, and the only new committed record is the new story; the same path in the 0.5.x layout is recorded failing first on the 0.5.0 code and linked to a local bug.\n- With an uncommitted file in `agent/`, the move into done writes the story, keeps that file and its folder, reports it, and `next` does not treat the folder as open; after a commit, `doctor --fix` removes the folder.\n- At the move into done, a session with unfolded inbox entries stays open (`kept_open` with the count).\n- Regression for #207: with a finished session whose native change is archived and that still waits on a publish gate, `session new` and `session use` leave it byte-identical and open, and `next` and `doctor` list it as finished with its fix.\n- With release authorized before the move into done, the session stays open (`kept_open`), `stage enter release` works, and the move from release into done archives it.\n- A session whose native change is archived on HEAD, at a stage short of done, is listed as finished with no native read, and only `chough doctor --fix` archives it.\n- `session list` reports open, active and archived sessions; `session use` accepts the ID, the alias and a unique bare slug.\n- With one session over its bound and another unreadable, `session list` reports each with `chough session shelve <id>`, and `next` on the active session and `session new` still work; shelving moves the folder byte for byte under `.chough/archive/shelved/`.\n- `chough session close <id> --reason <text>` archives the session with outcome `closed-without-done` and the reason in its decisions; a blank reason, an archived or missing session and a session with unfolded inbox entries refuse with nothing changed.\n- After an in-place migration whose machine-local pointer holds a 0.5.x session key, `next` and `status` read that session, and `chough doctor` reports no `stale_pointer`.\n- A story's receipts, and its What was verified lines for them, are in observation-time order, oldest first, whatever order the session referenced them in.\n- A session with three runs of one case and one manual entry archives a story whose What was verified lists the case's latest run and the manual entry, each command once, and a line counting 2 earlier runs, while `receipts` keeps all four.\n- An archived story's front matter gives `stage_status: archived` and no `next`.\n- `chough session close <id> --reason <text>` on a session with an open human gate writes one `gate-closed` entry for it with no decision, names it under `withdrawn_gates`, and the story lists no gate as awaiting.\n- An archived story starts its body within the first 20 lines of the file, ends with `## Receipts` holding every receipt, and names each bug of its checkpoint under `## Bugs`; a bug verified by a receipt in it stays verified, and a story written with receipts in its front matter still reads.\n- After the move into done, `chough next` exits 0 naming `chough session new <key>`, and `chough status` refuses with the same message.\n- A story's What was verified line joins its claim to its command and fingerprint digits with ` - ` and holds no em dash, at archiving and in a migrated story alike (#278).\n- A session whose objective changed after its Goal was filled archives a story with one line `Objective at closeout: <current objective>` after its unchanged Goal paragraph; a session whose Goal is its objective archives a story without that line.\n- `session use` given a name that holds a token names no value in its refusal, only that the name holds a token, and a clean unknown name is still named (#367).",
+          "previous_content": "Sessions in their own folders. `chough session new <key>` SHALL create `.chough/sessions/<id>/session.md` by create-new, where `<id>` is the date and the slug of `<key>` (REQ-records-003) and `<key>` is kept as an alias, with its own timeline, and SHALL point at it; `session use <id>` SHALL point at an open session by ID, alias or the bare slug when exactly one open session has it; an active pointer that holds such an alias or bare slug, as a 0.5.x pointer that an in-place migration keeps, SHALL name that session, and `chough doctor` SHALL NOT report it as `stale_pointer`; `session list` SHALL report each session's ID, aliases, stage, status (`archived` for an archived story, otherwise its stage status) and whether it is active, open or archived. A session is finished when it is at stage done or its native change is archived on HEAD, at any stage, as the archive's `finalization.json` records, read without a native read (DRIVE-16). A session SHALL close only itself, at its own move into done or with `chough session close --reason`: `session new` and `session use` SHALL NOT archive, close or change any other session, even a finished one (#207, #214). `session list`, `chough next` and `chough doctor` SHALL list each finished open session with its fix, `chough doctor --fix` (REQ-history-012), which keeps one with unfolded inbox entries or an open awaiting-human gate open and names the recovery: `chough inbox fold`, or `chough checkpoint --close-gate`, since closing a gate is a decision (#181). When `chough stage advance` moves the active session into done and its save succeeds, after the deferred knowledge step of REQ-cli-043, the helper SHALL archive that session in the same command and clear the active pointer, reporting `applied.session_archive` with status `archived` and the ID; a session with unfolded inbox entries SHALL stay open with its pointer, reported as `kept_open` with the count; a session for which release is authorized at that move (a run consent or a standing preference, as `stage enter release` requires) SHALL stay open for the release, reported as `kept_open` with that reason, and SHALL archive itself the same way at the move from release into done. The step SHALL NOT undo the move into done. To archive a session, Chough SHALL write `.chough/archive/sessions/<id>.md` by create-new: the session's front matter with `stage: done` (or the stage it closed at), `stage_status: archived`, no `next`, since the session's next action no longer applies, `closed` (the UTC date) and `outcome` (`done` or `closed-without-done`), and no receipts, so the story comes first; then the story as written; then, last, a `## Receipts` section holding `receipts` as one fenced YAML block, one map per evidence entry the session holds, ordered by its observation time, oldest first, then by ID, with its `id`, `aliases` (one scalar, comma-and-space separated), `claim`, `result`, `observed` (the entry's observation time, ISO UTC, REQ-cli-017), `duration_seconds` (the run's wall-clock seconds, when known), `command`, `revision`, `environment`, `content`, `fingerprint`, `raw_log` when present, `case`, `case_digest`, `criteria` and `requirements` (each one scalar, comma-and-space separated) and `limitations` (one scalar, semicolon-and-space separated) when the entry has any, so the story says what was verified against what and its stated limits stay with it, `screenshot` when present and `actor` when known (REQ-records-007), so a bug whose evidence is archived keeps its verified state, which needs a pass observed after its latest failure (REQ-cli-012), and the timing report can order and time case runs read from receipts (REQ-reporting-001); readers SHALL read receipts from that section and, for a story written before it, from the front matter. In the story, What was verified SHALL give the latest receipt of each case and every receipt bound to no case, one line each (its claim, then, after ` - `, a plain dash and never an em dash, its command unless the claim already holds it, and the first 12 digits of its fingerprint, then `; limits: ` and its limitations when it has any, so its stated limits read beside the claim, ending `^<evidence id>`) for each entry not already listed, with one line counting the earlier runs of those cases, which stay in `receipts`; a `## Bugs` section SHALL name each bug in the session's checkpoint with its title and status, linked to its record; and the story SHALL end with the Timeline and a closing line `Closed <date>: <outcome>.`, before `## Receipts`. When the story's Goal paragraph is not the session's current objective, as after a later `checkpoint --objective` (REQ-records-004), the story SHALL get one line `Objective at closeout: <objective>` after the Goal paragraph; nothing in the title, the Goal or elsewhere SHALL be rewritten. Chough SHALL read the story back and compare it before it removes anything, and SHALL then remove the session folder, `session.md`, `evidence/` and `agent/` included, and move its screenshots beside the story (REQ-records-013), each file only under REQ-records-012; files it keeps SHALL be reported, the folder SHALL count as archived while its story exists, and `chough doctor --fix` SHALL finish the removal once they are committed. Archiving a session SHALL NOT read, move, rewrite or remove any other session's folder or story. After it, until a session is opened, `next` SHALL say there is no open session and name `chough session new <key>`, exiting 0, and `status` SHALL refuse with that message (DRIVE-13). Evidence and bug links into an archived session SHALL resolve to its story's receipts. Two branches that record work in different sessions SHALL merge without conflict. A session that cannot be read, because it is over the bound of REQ-records-001 or invalid, SHALL NOT stop `session list`, `session new`, `session use` or another session's `next`; `session list` SHALL report it with the reason and the recovery `chough session shelve <id>`, which SHALL move the folder unparsed and byte for byte to `.chough/archive/shelved/<id>/` with a `shelved.md` giving its size, SHA-256 per file, time and reason, and clear the active pointer when it named that session. Shelving SHALL never replace a file, and no reader SHALL scan `.chough/archive/shelved/` (DRIVE-14). `chough session close <id> --reason <text>` SHALL close an open session for abandoned work without a native read: it SHALL refuse with nothing changed a blank reason, a session that is archived or does not exist, and a session with unfolded inbox entries, naming `chough session use <id>` and `chough inbox fold`; otherwise it SHALL withdraw each open awaiting-human gate of that session as `chough checkpoint --clear-awaiting-human` does, one `gate-closed` entry each and no human decision, name them in its output under `withdrawn_gates`, so the story lists no gate as awaiting, add the decision `Closed without done: <reason>` and archive the session as above with outcome `closed-without-done`, clearing the active pointer when it named that session (DRIVE-16). Trace: DRIVE-3, DRIVE-24, DRIVE-25, KNOW-30, KNOW-34, LIFE-3, LIFE-7, DRIVE-14, DRIVE-13, DRIVE-16.\n\nAcceptance Criteria\n- Two branches that each advance a different session merge in Git with no conflict and keep both sessions' timelines.\n- The move into done of the active session writes `.chough/archive/sessions/<id>.md` with every receipt and the full timeline, removes the committed session folder, clears the pointer, reports `archived`, and `next` then exits 0 naming `chough session new <key>` while `status` refuses.\n- Each receipt in the story gives its entry's `observed` time, its `duration_seconds`, `raw_log` and `actor` when the entry has them, and its `aliases` as one comma-and-space separated scalar; a bug whose linked pass was observed after its latest linked failure stays verified once that session is archived.\n- Regression for issue 165: with seven earlier archived stories present, among them 0.5.x-era stories, and `knowledge/` neither tracked nor ignored, advancing accept to done leaves every earlier story byte-identical in place, `git status` shows no deleted file, and the only new committed record is the new story; the same path in the 0.5.x layout is recorded failing first on the 0.5.0 code and linked to a local bug.\n- With an uncommitted file in `agent/`, the move into done writes the story, keeps that file and its folder, reports it, and `next` does not treat the folder as open; after a commit, `doctor --fix` removes the folder.\n- At the move into done, a session with unfolded inbox entries stays open (`kept_open` with the count).\n- Regression for #207: with a finished session whose native change is archived and that still waits on a publish gate, `session new` and `session use` leave it byte-identical and open, and `next` and `doctor` list it as finished with its fix.\n- With release authorized before the move into done, the session stays open (`kept_open`), `stage enter release` works, and the move from release into done archives it.\n- A session whose native change is archived on HEAD, at a stage short of done, is listed as finished with no native read, and only `chough doctor --fix` archives it.\n- `session list` reports open, active and archived sessions; `session use` accepts the ID, the alias and a unique bare slug.\n- With one session over its bound and another unreadable, `session list` reports each with `chough session shelve <id>`, and `next` on the active session and `session new` still work; shelving moves the folder byte for byte under `.chough/archive/shelved/`.\n- `chough session close <id> --reason <text>` archives the session with outcome `closed-without-done` and the reason in its decisions; a blank reason, an archived or missing session and a session with unfolded inbox entries refuse with nothing changed.\n- After an in-place migration whose machine-local pointer holds a 0.5.x session key, `next` and `status` read that session, and `chough doctor` reports no `stale_pointer`.\n- A story's receipts, and its What was verified lines for them, are in observation-time order, oldest first, whatever order the session referenced them in.\n- A session with three runs of one case and one manual entry archives a story whose What was verified lists the case's latest run and the manual entry, each command once, and a line counting 2 earlier runs, while `receipts` keeps all four.\n- An archived story's front matter gives `stage_status: archived` and no `next`.\n- `chough session close <id> --reason <text>` on a session with an open human gate writes one `gate-closed` entry for it with no decision, names it under `withdrawn_gates`, and the story lists no gate as awaiting.\n- An archived story starts its body within the first 20 lines of the file, ends with `## Receipts` holding every receipt, and names each bug of its checkpoint under `## Bugs`; a bug verified by a receipt in it stays verified, and a story written with receipts in its front matter still reads.\n- After the move into done, `chough next` exits 0 naming `chough session new <key>`, and `chough status` refuses with the same message.\n- A story's What was verified line joins its claim to its command and fingerprint digits with ` - ` and holds no em dash, at archiving and in a migrated story alike (#278).\n- A session whose objective changed after its Goal was filled archives a story with one line `Objective at closeout: <current objective>` after its unchanged Goal paragraph; a session whose Goal is its objective archives a story without that line."
+        }
+      ],
+      "applied_modules": [
+        "records",
+        "cli",
+        "history"
+      ]
+    }
+  ]
+}
