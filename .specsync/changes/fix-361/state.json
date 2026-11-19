@@ -7,10 +7,11 @@
   "title": "Fix 361",
   "description": "fix 361",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "66b82f22a2eb775ece9ab823b4f2698137474a68",
   "created_at": 1795044963,
-  "updated_at": 1795054067,
+  "updated_at": 1795054070,
   "affected_specs": [
     "cli"
   ],
