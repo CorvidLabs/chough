@@ -5,7 +5,7 @@ aliases: [readiness-report-before-change-approval]
 objective: One read-only command lists everything still missing before a change is approved, and names the command that fixes each piece (DRIVE-29).
 intent_scope: DRIVE
 modules: [cli]
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -119,13 +119,9 @@ observations:
   - 2026-11-19-tc-cli-change-ready-unknown-change-3ac49e
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of readiness-report-before-change-approval
-    holds: accept
-    drives: review
-    opened: 2026-11-18T15:00:11Z
+waiting_on_human: []
 run_consents: []
-next: Wait for Leif's implementation review of readiness-report-before-change-approval
+next: Continue done
 title: "chough change ready: a read-only report before approval"
 summary:
   - "Adds chough change ready <id> (REQ-cli-067, DRIVE-29): one read-only report of what is still missing before a change is approved, each finding naming the command that fixes it; it exits 1 when anything is missing and writes nothing."
@@ -150,6 +146,7 @@ One read-only command lists everything still missing before a change is approved
 - 0xLeif decided "Scope approval of readiness-report-before-change-approval with src/skill.rs added (native approval)": "Yes" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #311: send its change back once to add src/skill.rs for the two 0.6.1 digests, with his relayed re-approval, same scope otherwise); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
 - 0xLeif decided "Scope approval of readiness-report-before-change-approval with the own-work wording (native approval)": "Approve" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: the REQ-cli-067 wording 'Each file that differs from the change's base_commit and is the change's own work', its definition sentence and the new acceptance criterion, with one send-back; nothing else in the delta changes); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
 - 0xLeif decided "Scope approval of readiness-report-before-change-approval with its changelog fragment added (native approval)": "Yes, add it" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: one more send-back to add changelog.d/2026-11-14-readiness-report-before-change-approval.md to the declared paths, paths only with the delta untouched); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
+- 0xLeif decided "Implementation review of readiness-report-before-change-approval": "Merge once its findings are fixed / yes corvid-agent counts, merge 311" (Two answers relayed by Leif's planning session (hc t4c): 'Merge once its findings are fixed' (2026-11-19, early UTC) and 'yes corvid-agent counts, merge 311' (Claude Code chat message relayed through fable-lead hc t53, about 15:04Z). Before the ship: tester2's rerun PASS, fable-lead's read by patch id, and corvid-agent's approval of 75b6bf6e at 15:22Z); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review readiness-report-before-change-approval as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -391,3 +388,19 @@ One read-only command lists everything still missing before a change is approved
     - native: specsync change approve readiness-report-before-change-approval
     - actor: 0xLeif
   - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T15:39:05Z · gate-closed · accept → accept · Implementation review of readiness-report-before-change-approval ^t-7aade0
+  - native_change: readiness-report-before-change-approval
+  - revision: c824abe00244a15111d5daed1e62e38090d6f16c
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Merge once its findings are fixed / yes corvid-agent counts, merge 311
+    - where: Two answers relayed by Leif's planning session (hc t4c): 'Merge once its findings are fixed' (2026-11-19, early UTC) and 'yes corvid-agent counts, merge 311' (Claude Code chat message relayed through fable-lead hc t53, about 15:04Z). Before the ship: tester2's rerun PASS, fable-lead's read by patch id, and corvid-agent's approval of 75b6bf6e at 15:22Z
+    - recorded_by: fable-t4b
+    - native: specsync change review readiness-report-before-change-approval
+    - actor: 0xLeif
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T15:39:07Z · advance · accept → done · native:archived ^t-a8b5fc
+  - native_change: readiness-report-before-change-approval
+  - gate: native:archived
+  - revision: c824abe00244a15111d5daed1e62e38090d6f16c
+  - by: fable (claude-opus-5-5, hc t4b)
