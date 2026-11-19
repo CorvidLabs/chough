@@ -5,7 +5,7 @@ aliases: [g1-gates-and-pins-fail-closed]
 objective: "Gates and session pins fail closed: a hand-edited no_native_change cannot unlock the ungated move, change ship checks its whole history and writes only to its pinned session, inbox list and session shelve honor the pin and aliases, and session use says when CHOUGH_SESSION still wins (#401, #400, #369, #393, #372)"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -43,9 +43,13 @@ observations:
   - 2026-11-19-tc-history-inbox-list-lists-the-pinned-session-716a68
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of fix-g1-gates-and-pins-fail-closed
+    holds: accept
+    drives: review
+    opened: 2026-11-19T16:47:30Z
 run_consents: []
-next: "Gate \"Scope approval of fix-g1-gates-and-pins-fail-closed with the narrowed #400 sentence (native approval)\" closed (approved); run `chough stage advance` to move on."
+next: Continue accept
 ---
 # Gates and session pins fail closed: a hand-edited no_native_change cannot unlock the ungated move, change ship checks its whole history and writes only to its pinned session, inbox list and session shelve honor the pin and aliases, and session use says when CHOUGH_SESSION still wins (#401, #400, #369, #393, #372)
 
@@ -175,4 +179,20 @@ Gates and session pins fail closed: a hand-edited no_native_change cannot unlock
     - recorded_by: fable-t4b
     - native: specsync change approve fix-g1-gates-and-pins-fail-closed
     - actor: 0xLeif
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T16:47:29Z · advance · build → test · native:verifying ^t-c2d9af
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - gate: native:verifying
+  - revision: d542aa58be33b5402a83330af954978b33bc390a
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T16:47:30Z · advance · test → accept · native:verifying ^t-fa76f0
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - gate: native:verifying
+  - revision: d542aa58be33b5402a83330af954978b33bc390a
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T16:47:30Z · gate-opened · accept → accept · Implementation review of fix-g1-gates-and-pins-fail-closed ^t-84f19c
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - revision: d542aa58be33b5402a83330af954978b33bc390a
+  - holds: accept
+  - drives: review
   - by: fable (claude-opus-5-5, hc t4b)
