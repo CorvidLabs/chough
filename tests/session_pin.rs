@@ -221,3 +221,59 @@ fn init_and_inbox_add_keep_their_session_and_session_use_ignores_the_variable() 
     ]);
     assert!(output.status.success(), "{}", said(&output));
 }
+
+/// REQ-cli-037 (#334), TC-cli-a-pinned-session-before-any-session-names-session-new: with
+/// `CHOUGH_SESSION` set in a project where no session is open yet, a command refuses
+/// naming the variable and `chough session new <key>`, the way on, not `chough session
+/// list`, which would list nothing; `--session` is named the same way, as an option to
+/// drop rather than a variable to unset. With every session archived, the refusal still
+/// says the named one is archived. Nothing is written.
+#[test]
+fn a_pinned_session_before_any_session_names_session_new() {
+    let fixture = Fixture::new();
+    // `chough init` alone creates no session (REQ-cli-037).
+    fixture.ok(&["init"]);
+    let before = tree(fixture.root());
+    let output = fixture.run_with_env(&["next"], &[("CHOUGH_SESSION", "alpha")]);
+    let text = said(&output);
+    assert!(!output.status.success(), "{text}");
+    assert!(text.contains("refused:session-not-open"), "{text}");
+    assert!(text.contains("CHOUGH_SESSION"), "{text}");
+    assert!(text.contains("chough session new <key>"), "{text}");
+    assert!(text.contains("unset CHOUGH_SESSION"), "{text}");
+    assert!(!text.contains("chough session list"), "{text}");
+    assert_eq!(tree(fixture.root()), before);
+
+    let output = fixture.run(&["next", "--session", "alpha"]);
+    let text = said(&output);
+    assert!(!output.status.success(), "{text}");
+    assert!(text.contains("--session"), "{text}");
+    assert!(text.contains("chough session new <key>"), "{text}");
+    assert!(text.contains("drop --session"), "{text}");
+    assert!(!text.contains("unset --session"), "{text}");
+    assert_eq!(tree(fixture.root()), before);
+
+    // Every session archived: the way on is still a new session, and the refusal keeps
+    // saying that the named session is archived.
+    let (fixture, first, other) = two_sessions();
+    for id in [&other, &first] {
+        fixture.ok(&["session", "close", id, "--reason", "SYNTHETIC done"]);
+    }
+    fixture.commit("every session closed");
+    let before = tree(fixture.root());
+    let archived = format!("session {other} is archived");
+    let output = fixture.run_with_env(&["next"], &[("CHOUGH_SESSION", other.as_str())]);
+    let text = said(&output);
+    assert!(!output.status.success(), "{text}");
+    assert!(text.contains(&archived), "{text}");
+    assert!(text.contains("chough session new <key>"), "{text}");
+    assert!(text.contains("unset CHOUGH_SESSION"), "{text}");
+    assert_eq!(tree(fixture.root()), before);
+
+    let output = fixture.run(&["next", "--session", &other]);
+    let text = said(&output);
+    assert!(!output.status.success(), "{text}");
+    assert!(text.contains(&archived), "{text}");
+    assert!(text.contains("drop --session"), "{text}");
+    assert_eq!(tree(fixture.root()), before);
+}

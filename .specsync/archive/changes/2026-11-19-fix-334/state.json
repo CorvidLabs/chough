@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-334",
+  "slug": "fix-334",
+  "title": "Fix 334",
+  "description": "fix 334",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "af8ca8901b2a23affcd40ac74865d99637448346",
+  "created_at": 1795035343,
+  "updated_at": 1795047581,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/main.rs",
+    "tests/session_pin.rs",
+    "docs/cli.md",
+    ".chough/cases/cli.pinned-session-before-any-session.cases.toml",
+    "changelog.d/2026-11-18-fix-334.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With CHOUGH_SESSION set in a project with no open session, a command refuses as refused:session-not-open naming CHOUGH_SESSION and chough session new <key>, with nothing written; with --session the refusal names --session; a name that is not open while other sessions are still names chough session list, as before."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif's 'Approve' for #334 (relayed by hc t4c, 2026-11-18): the refusal names the variable and gives the session-new guidance. A follow-up of #331 (#271). Human gates as plain text in tasks.md; deltas frozen at approval.",
+    "public_contract": "no"
+  }
+}

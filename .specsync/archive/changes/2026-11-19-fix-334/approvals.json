@@ -1,0 +1,60 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795035361,
+      "digest": "c8313c9cc282704ba619d42fb843fdc3f64008828722b5205aea26b70fd03261",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-334\": \"Approve\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his scope approval of CorvidLabs/chough#334: the refusal names the variable and gives the session-new guidance). Relayed and recorded by chough-fixer-t4g at 2026-11-18T20:56:00Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-334",
+        "title": "Fix 334",
+        "description": "fix 334",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.pinned-session-before-any-session.cases.toml",
+          "changelog.d/2026-11-18-fix-334.md",
+          "docs/cli.md",
+          "src/main.rs",
+          "tests/session_pin.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With CHOUGH_SESSION set in a project with no open session, a command refuses as refused:session-not-open naming CHOUGH_SESSION and chough session new <key>, with nothing written; with --session the refusal names --session; a name that is not open while other sessions are still names chough session list, as before."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's 'Approve' for #334 (relayed by hc t4c, 2026-11-18): the refusal names the variable and gives the session-new guidance. A follow-up of #331 (#271). Human gates as plain text in tasks.md; deltas frozen at approval.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "a189ed9aa4ec94607ff06a4bca9d7add92d4646f4b981de8822c078178a5e0c1"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-037": "83508c3cd8689610e9b7ac2fc7584ab98e8f7006a93a29162bc7f4479b98be81"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his scope approval of CorvidLabs/chough#334: the refusal names the variable and gives the session-new guidance",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795047579,
+      "digest": "b9924df213e6260b8808c2f62790fb8682cf9755e39504811202056ca25e73df",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}
