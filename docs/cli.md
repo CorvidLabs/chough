@@ -456,7 +456,13 @@ Its body gives `# <title>` and the paragraphs What happened (with the actual
 behaviour as its own `Actual:` paragraph when it differs from the symptom), Steps (led
 by `Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
 `## Log`, an append-only list with one dated entry per report,
-note, evidence link and status change. A person's edits to the paragraphs stay, and
+note, evidence link and status change. A Log entry names linked evidence as a Markdown
+link relative to the bug's file, its text the evidence name: to
+`../sessions/<session>/evidence/<id>.md` for an open session's entry, to
+`../archive/sessions/<session>.md` for a receipt an archived story holds, and the bare
+name for a receipt only the bug holds; the front matter keeps `<session>/<id>`. When a session is archived its entries leave with its
+folder, and `chough doctor --fix` appends a Log entry linking the story
+(`stale_bug_links`). A person's edits to the paragraphs stay, and
 every earlier Log line stays byte-identical. Fix says `Not fixed yet.` until `bug
 update --fix <text>` sets it, which the Log records too; marking a bug verified while
 its Fix still says `Not fixed yet.` replaces that with a line naming the passing
@@ -878,6 +884,9 @@ native read, and never records a human decision, approval, review or consent.
 | `finished_session` | An open session at done, or with its native change archived on HEAD | Archive it into its story; one with unfolded inbox entries is skipped, naming `chough inbox fold` |
 | `unfinished_archive` | A session folder whose story exists and that still holds files | Remove each file whose bytes are committed at HEAD; otherwise skipped, naming the commit to make |
 | `stale_gates` | A finished session with open awaiting-human gates, whose native change is archived | A decision: withdraw the gates as `checkpoint --clear-awaiting-human` does, recording no human decision, write the reason on each withdrawn gate's `gate-closed` Timeline entry as `withdrawn: <reason>`, which the archived story keeps, then archive the session. A decision fix that was applied echoes the reason as `decision_reason` |
+| `skill_outdated` | An installed skill file that is byte-identical to an earlier release's copy | None of doctor's own: run `chough skill update`. A file a person edited is not reported |
+| `skill_uninspected` | A host's skill folder that doctor could not inspect, such as `.codex/skills` when it is a symlink to the shared copy. Advice only: it never makes doctor exit 1, and it hides no outdated file in another folder | None: check the copy it points to |
+| `stale_bug_links` | A bug whose body links an open session's evidence entry that left with its archived session | Append one Log entry to the bug that links each entry to the archived story, `../archive/sessions/<session>.md`; no earlier line changes. A bug too near its size bound for that line gets an advisory finding instead (`"advisory": true`), which names the hand edit that clears it and does not make doctor exit 1 |
 | `unfinished_session` | An open, unfinished session named with `--close <key>` | A decision: `session close <key> --reason` |
 | `timeline_rewritten` | A session or story whose Timeline at HEAD is not an exact prefix of its working Timeline (REQ-history-002); `entries` names the entries that differ | None: restore them from `git show HEAD:<file>` by hand |
 | `alias_conflict` | An ID that is the `id` or an alias of two records of one kind (REQ-records-003); `records` names both | None: decide which record keeps it |
@@ -1540,7 +1549,8 @@ cache or metadata-only freshness shortcut.
 With no open session and no pointer, as after the move into done, `next` reads nothing
 and shows only `Session: none open` and a next valid action naming `chough session new
 <key> --objective "<outcome>"` (in JSON, `session` is `null` beside
-`next_valid_action`), and exits 0.
+`next_valid_action` and `skill_outdated`), with the skill line of `skill_outdated`
+below when it applies, and exits 0.
 It makes at most one `specsync change status` read, or reuses an authenticated archived
 response as above, and evaluates the gate for the next main
 stage on that response, and shows:
@@ -1549,6 +1559,8 @@ stage on that response, and shows:
 |---|---|
 | `schema_version`, `view` | `1` and `next` |
 | `objective`, `stage` | The objective; current stage, status, iteration and side-stage callers |
+| `skill_outdated` | How many installed skill files are an earlier release's copy; while it is above 0 the text view shows the line ``Skill files are outdated: run `chough skill update` `` below the objective |
+| `skill_update` | Empty unless a skill folder was not inspected (doctor's `skill_uninspected`); then one `chough skill update --host <host>` for each installed copy that was inspected, since plain `chough skill update` is refused beside such a folder. The text view shows them on a line after the skill line |
 | `native` | `change`, `read` (the native section state), `state`, `approval_valid`, `correction_valid`, `terminal_evidence`, `next_action` and `approved_deltas` (`unchanged: <modules>`, `no semantic deltas (no_spec_change)`, `changed: ...`, `unverifiable: ...` or `not checked: <why>`; with SpecSync configured but SDD off, as `specsync init` leaves it, the reason is ``native SDD is disabled; run `specsync change adopt` to gate stages``, and the `ungated:sdd-disabled` gate detail says the same); unknown values are `null` |
 | `native_check` | For a recorded native change with a workspace under `.specsync/changes/`, otherwise `null`: `last_attempt` (the latest attempt in its `verification-attempts.json` by timestamp: `passed`, `at_unix_seconds`, a 12-character `commit` and `failed_commands` with at most 3 `command` and `exit_code` entries and their `total`, or `null`), `not_passed_for_tree` (native state `approved` or `implementing`, or `verifying` while SpecSync's `handoff.readiness` from the same read is not `safe`, which it reports when the tree moved after the last check; a `verifying` reply with no readiness gives an "unknown" note instead), `note` and `unknown` (why the record could not be read; never shown as no failure). SpecSync 6.1.2 records an attempt only when a verification command runs; a refusal before verifying, such as incomplete tasks or missing requirement evidence, leaves no record or reason, so the note names `specsync change check <id>` (#86). It reads that one local file and no native command |
 | `direct_writes` | Pending direct lifecycle writes; see [Direct lifecycle writes](#direct-lifecycle-writes) |

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-361",
+  "slug": "fix-361",
+  "title": "Fix 361",
+  "description": "fix 361",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "66b82f22a2eb775ece9ab823b4f2698137474a68",
+  "created_at": 1795044963,
+  "updated_at": 1795055754,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/skill.rs",
+    "src/doctor.rs",
+    "src/main.rs",
+    "tests/package.rs",
+    "docs/cli.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    ".chough/cases/cli.skill-outdated-nudge.cases.toml",
+    "changelog.d/2026-11-18-fix-361.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "While an installed skill file is byte-identical to a known earlier bundle, chough doctor reports it as skill_outdated, naming the file and chough skill update, not a decision, and chough next shows the line 'Skill files are outdated: run chough skill update' and skill_outdated as the count; a current, missing or edited file gives neither, and chough skill update clears both. chough status carries no_native_change once the session recorded it."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lessons apply: human gates are plain text in tasks.md and the delta is frozen at approval. Doctor writes no skill file (REQ-cli-016 keeps updates to chough skill update), and next reads only the installed copy's files.",
+    "public_contract": "yes"
+  }
+}
