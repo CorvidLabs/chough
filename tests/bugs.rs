@@ -2872,6 +2872,9 @@ fn a_qualified_id_of_archived_evidence_links_the_story() {
     let first = only_bug_id(&fixture);
     let session = fixture.active_id();
     let entry_name = "2026-11-10-first-failure";
+    // An entry the bug does not hold yet, so the update writes an evidence line
+    // (tester2's finding: an entry the bug already links writes none).
+    let second = entry(&fixture, "second-failure", "failed", 200);
     fixture.commit("the bug and its evidence");
     fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
     fixture.ok(&["session", "new", "later", "--objective", "Later work"]);
@@ -2879,16 +2882,27 @@ fn a_qualified_id_of_archived_evidence_links_the_story() {
     let story = format!("[{entry_name}](../archive/sessions/{session}.md)");
     let gone = format!("../sessions/{session}/evidence/{entry_name}.md");
 
-    // bug update with the qualified ID of the archived entry.
+    // bug update with the qualified ID of an archived entry the bug does not hold yet.
     fixture.ok(&[
         "bug",
         "update",
         &first,
         "--observation",
-        &qualified,
-        "--note",
-        "SYNTHETIC seen again after archiving",
+        &format!("{session}/{second}"),
     ]);
+    let updated = fixture.read(&format!(".chough/bugs/{first}.md"));
+    let line = updated
+        .lines()
+        .rfind(|line| line.contains(&second))
+        .unwrap_or_else(|| panic!("no line names {second}: {updated}"));
+    assert!(
+        line.contains(&format!("[{second}](../archive/sessions/{session}.md)")),
+        "{line}"
+    );
+    assert!(
+        !line.contains(&format!("../sessions/{session}/evidence/{second}.md")),
+        "{line}"
+    );
     // bug add with the qualified ID, and with the bare one.
     let added = |id: &str| -> String {
         let output = add_bug(
@@ -2916,11 +2930,4 @@ fn a_qualified_id_of_archived_evidence_links_the_story() {
         assert!(reported.contains(&story), "{reported}");
         assert!(!reported.contains(&gone), "{reported}");
     }
-    let updated = fixture.read(&format!(".chough/bugs/{first}.md"));
-    let last = updated.lines().last().unwrap();
-    assert!(
-        last.contains("SYNTHETIC seen again after archiving"),
-        "{last}"
-    );
-    assert!(!last.contains(&gone), "{last}");
 }
