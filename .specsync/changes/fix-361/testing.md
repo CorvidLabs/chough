@@ -24,6 +24,11 @@ swarm's finding on #362): with a FIFO at an installed skill file, `next`, `docto
 and `skill status` return within 20 seconds and report no outdated file. It fails
 without the non-blocking open, where `next` blocks.
 
+`an_uninspectable_skill_path_hides_no_other_outdated_file` (added after the
+reviewer's finding on #362): with one skill file an earlier release's copy and another
+replaced by a symlink, `next` still counts 1 and doctor still reports the file. It
+fails with the earlier code, where one refused path made the whole scan report 0.
+
 It fails on main, where doctor reports nothing. No new free-text input is added.
 
 ## Requirement evidence

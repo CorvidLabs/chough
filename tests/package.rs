@@ -4566,3 +4566,43 @@ fn an_oversized_file_at_a_skill_path_reads_as_edited() {
     chough(root, &["skill", "update"]);
     assert_eq!(fs::read(&installed).unwrap().len(), 1_048_577);
 }
+
+/// REQ-cli-016 (#361, the reviewer's finding on #362): one skill path that cannot be
+/// inspected hides nothing else. With `references/stages.md` an earlier release's copy
+/// and `agents/openai.yaml` replaced by a symlink, `next` still counts the outdated
+/// file and doctor still reports it.
+#[cfg(unix)]
+#[test]
+fn an_uninspectable_skill_path_hides_no_other_outdated_file() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let base = root.join(".agents/skills/chough-workflow");
+    fs::write(base.join("references/stages.md"), STAGES_AT_F19823D).unwrap();
+    let rejected = base.join("agents/openai.yaml");
+    fs::remove_file(&rejected).unwrap();
+    std::os::unix::fs::symlink(root.join("elsewhere.yaml"), &rejected).unwrap();
+    let raw = |args: &[&str]| -> String {
+        let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(args)
+            .output()
+            .unwrap();
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let next: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(next["skill_outdated"], 1, "{next}");
+    let report: Value = serde_json::from_str(&raw(&["doctor"])).unwrap();
+    let outdated: Vec<&Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["kind"] == "skill_outdated")
+        .collect();
+    assert_eq!(outdated.len(), 1, "{report:#}");
+    assert_eq!(
+        outdated[0]["target"],
+        ".agents/skills/chough-workflow/references/stages.md"
+    );
+}

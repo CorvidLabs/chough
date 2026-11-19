@@ -882,7 +882,10 @@ pub(super) fn known_outdated(root: &Path) -> Result<Vec<String>> {
             continue;
         }
         for (name, content) in BUNDLE {
-            if file_state(root, &base, name, content)? == "known-outdated" {
+            // Each file on its own (the reviewer's finding on #362): a path that cannot
+            // be inspected, such as a symlink, is not an earlier release's copy, and
+            // must not hide the files that are.
+            if matches!(file_state(root, &base, name, content), Ok("known-outdated")) {
                 found.push(format!("{base}/{name}"));
             }
         }
