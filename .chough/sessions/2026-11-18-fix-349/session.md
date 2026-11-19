@@ -20,6 +20,7 @@ observations:
   - 2026-11-18-tc-history-a-storys-verified-line-shows-the-entrys-limitations
   - 2026-11-18-tc-history-a-storys-verified-line-shows-the-entrys-limitations-903080
   - 2026-11-19-tc-history-a-storys-verified-line-shows-the-entrys-limitations
+  - 2026-11-19-tc-history-a-storys-verified-line-shows-the-entrys-limitations-9142df
 bugs: []
 blockers: []
 waiting_on_human:
@@ -50,6 +51,7 @@ An archived story's What was verified line shows each entry's limitations beside
 - [Ran cargo test --locked --test evidence -- --exact a_story_receipt_carries_each_field_its_entry_knows for TC-history-a-storys-verified-line-shows-the-entrys-limitations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-storys-verified-line-shows-the-entrys-limitations.md)
 - [Ran cargo test --locked --test evidence -- --exact a_story_receipt_carries_each_field_its_entry_knows for TC-history-a-storys-verified-line-shows-the-entrys-limitations: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-history-a-storys-verified-line-shows-the-entrys-limitations-903080.md)
 - [Ran cargo test --locked --test evidence -- --exact a_story_receipt_carries_each_field_its_entry_knows for TC-history-a-storys-verified-line-shows-the-entrys-limitations: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-storys-verified-line-shows-the-entrys-limitations.md)
+- [Ran cargo test --locked --test evidence -- --exact a_story_receipt_carries_each_field_its_entry_knows for TC-history-a-storys-verified-line-shows-the-entrys-limitations: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-storys-verified-line-shows-the-entrys-limitations-9142df.md)
 
 ## Open threads
 
