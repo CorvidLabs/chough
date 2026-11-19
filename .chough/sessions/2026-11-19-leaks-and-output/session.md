@@ -16,7 +16,14 @@ requirements: [REQ-records-006, REQ-records-001, REQ-cli-055, REQ-history-006]
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-19-tc-records-an-answer-is-leak-checked-and-bounded
+  - 2026-11-19-tc-records-the-listed-leak-forms-are-refused
+  - 2026-11-19-tc-records-the-user-name-comes-from-the-account
+  - 2026-11-19-tc-records-a-conflict-marker-is-named-by-its-seven-characters
+  - 2026-11-19-tc-records-errors-show-a-session-name-only-when-clean
+  - 2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean
+  - 2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -36,6 +43,14 @@ Leak and output batch: --answer is leak-checked and bounded (#364), conflict fin
 - 0xLeif decided "Scope approval of leaks-and-output": "Yes, as each issue states … approved. Errors name the field and the kind, never the offending text … Show it only if clean … approved. The leak guard adds all the listed forms" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: the leaks-and-output batch of the bug round, one native change for #364, #365, #367, #368, #379 and #380. For #364, #365, #379 and #380 he approved each issue's stated expected behaviour ('Yes, as each issue states'). For #367 his decision comment on the issue, with 'Show it only if clean': the value is shown only when it holds no leak and no control character, otherwise the error names the field and what it holds. For #368 his decision comment on the issue: all the listed forms, the guard on session new --module, and the evidence add --redact count); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve leaks-and-output as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test leaks -- --exact an_answer_is_leak_checked_redacted_and_bounded for TC-records-an-answer-is-leak-checked-and-bounded: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-an-answer-is-leak-checked-and-bounded.md)
+- [Ran cargo test --locked --test leaks -- --exact the_listed_leak_forms_are_refused_and_counted for TC-records-the-listed-leak-forms-are-refused: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-the-listed-leak-forms-are-refused.md)
+- [Ran cargo test --locked --test leaks -- --exact the_user_name_comes_from_the_account for TC-records-the-user-name-comes-from-the-account: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-the-user-name-comes-from-the-account.md)
+- [Ran cargo test --locked --test doctor -- --exact a_conflict_marker_is_named_by_its_seven_characters for TC-records-a-conflict-marker-is-named-by-its-seven-characters: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-conflict-marker-is-named-by-its-seven-characters.md)
+- [Ran cargo test --locked --test session_pin -- --exact a_session_name_is_shown_only_when_clean for TC-records-errors-show-a-session-name-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-session-name-only-when-clean.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_reference_is_shown_only_when_clean for TC-records-errors-show-a-bug-reference-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean.md)
+- [Ran cargo test --locked --test humans -- --exact a_decided_by_value_is_shown_only_when_clean for TC-records-errors-show-a-decided-by-value-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean.md)
 
 ## Open threads
 
