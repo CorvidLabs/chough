@@ -7,20 +7,25 @@
   "title": "Fix 349",
   "description": "fix 349",
   "kind": "bug_fix",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "approved",
   "base_commit": "235c3bfb063e835f67c4aae12f873ceac4074be7",
   "created_at": 1795041817,
-  "updated_at": 1795043302,
+  "updated_at": 1795047542,
   "affected_specs": [
-    "history"
+    "history",
+    "cli"
   ],
   "affected_paths": [
     "src/sessions.rs",
+    "src/evidence.rs",
+    "src/cases.rs",
     "tests/evidence.rs",
+    "tests/cases.rs",
     "docs/cli.md",
     "specs/history/requirements.md",
     "specs/history/history.spec.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
     ".chough/cases/history.story-line-shows-limitations.cases.toml",
     "changelog.d/2026-11-18-fix-349.md"
   ],
@@ -40,7 +45,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "no",
-    "constraints": "The history lessons were read; none constrains the line. Human gates are plain text in tasks.md, not checkboxes, and the delta is frozen at approval.",
+    "constraints": "The cli and history lessons were read: human gates are plain text in tasks.md, and the deltas are frozen at approval. REQ-records-006 already guards limitation text for leaks at evidence add; the bound adds no new free-text input.",
     "public_contract": "yes"
   }
 }

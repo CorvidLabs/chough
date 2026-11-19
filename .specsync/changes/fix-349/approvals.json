@@ -49,7 +49,82 @@
         "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18, in answer to fable-t4b's scope question on #349: one small PR now for the story's What was verified line showing limitations; his decision 'yes' for that line is in issue #349",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795047542,
+      "digest": "3cca0bf1493a8ed743e888dd562af10e94a6ee3b5402beb90a7f3756fb0b1fbf",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-349, with the limitation bound (native approval)\": \"512 bytes × 8 per entry\" (Relayed by Leif's planning session (hc t4c) on 2026-11-18 as his scope for #349 part 3, to be added in #358 before it merges: each limitation up to 512 bytes, up to 8 per evidence entry, more refused with nothing written. The REQ-history-006 delta is the same added clause rewritten onto main's newer text, re-approved under his standing rule for today ('Yes, for today')). Relayed and recorded by fable-t4b at 2026-11-19T00:19:01Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-349",
+        "title": "Fix 349",
+        "description": "fix 349",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.story-line-shows-limitations.cases.toml",
+          "changelog.d/2026-11-18-fix-349.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/history/history.spec.md",
+          "specs/history/requirements.md",
+          "src/cases.rs",
+          "src/evidence.rs",
+          "src/sessions.rs",
+          "tests/cases.rs",
+          "tests/evidence.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "An archived story's What was verified line of an entry that has limitations ends with '; limits: ' and those limitations before its ^<evidence id>, and the line of an entry without any holds no such text. The receipts are unchanged."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The cli and history lessons were read: human gates are plain text in tasks.md, and the deltas are frozen at approval. REQ-records-006 already guards limitation text for leaks at evidence add; the bound adds no new free-text input.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "2d6b66c526bf1947be121427624bdbe8f862591100fc693daa999ea6c119a7dc",
+        "history": "d7ad71fea0d404b90ff88f1fa9904b69e2ec92b6c92f00ee4dafc24f19a6bfc1"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-017": "c198c85791c6244252bf2b1de5392c50d15d662a51ba20b58790187aee3a6486",
+        "history: REQUIREMENT REQ-history-006": "f9a022647e6606e22e58d392802d92c8fcf4919173024695717a102f2111ae7c"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "512 bytes × 8 per entry",
+        "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18 as his scope for #349 part 3, to be added in #358 before it merges: each limitation up to 512 bytes, up to 8 per evidence entry, more refused with nothing written. The REQ-history-006 delta is the same added clause rewritten onto main's newer text, re-approved under his standing rule for today ('Yes, for today')",
+        "recorded_by": "fable-t4b"
+      }
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "fix-349",
+      "actor": "0xLeif",
+      "reason": "Two reasons, both from Leif through his planning session (hc t4c) on 2026-11-18. First, his #349 part 3 bound, '512 bytes x 8 per entry', is to be added in #358 before it merges as his relayed scope: the change gains src/evidence.rs, src/cases.rs, tests/cases.rs and a REQ-cli-017 sentence. Second, main changed REQ-history-006 (#344), so this change's delta is rewritten onto main's text with the same added clause, under his standing rule for today ('Yes, for today'). Run by fable-t4b.",
+      "timestamp": 1795047490,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_modules": [
+        "history"
+      ]
+    }
+  ]
 }

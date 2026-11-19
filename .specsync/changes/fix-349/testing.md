@@ -17,8 +17,14 @@ breaks, one holding `## Timeline`, are folded into the one line, so the story ga
 extra item and no second Timeline heading. It fails without the fold; the summary case
 fails on main too.
 
+`tests/evidence.rs::limitations_are_bounded_at_512_bytes_and_8_per_entry` (part 3):
+8 limitations of 512 bytes are written; a 513-byte one and a ninth are each refused
+as `refused:limitations` with no entry written and the session unchanged.
+`tests/cases.rs` refuses a 513-byte `--limitation` on `cases record` the same way.
+
 ## Requirement evidence
 
 | Requirement | Evidence |
 |---|---|
+| REQ-cli-017 | the bound tests above |
 | REQ-history-006 | the test above and the case in `.chough/cases/history.story-line-shows-limitations.cases.toml` |
