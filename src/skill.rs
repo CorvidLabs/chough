@@ -152,6 +152,16 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/lifecycle.md",
         "4b2d2c8246ca5bc6f2b9b37c9f608f35b767190629f274c45d97b8e6ad812e08",
     ),
+    // v0.6.1 (tag at cef86e26): the released plan and stages references, replaced when
+    // the skill named `chough change ready` (REQ-cli-067), so a 0.6.1 install updates.
+    (
+        "references/plan.md",
+        "06c450931a6c6dd6fdeb0bca5afcce984bad36239a6b21e7fe50e17e135b0fdd",
+    ),
+    (
+        "references/stages.md",
+        "515693d51d4b40ab515f0223dc41f5c16bbf00e1eb0830e40de5a8e019c6452c",
+    ),
     // v0.6.1 (tag at cef86e26): the released lifecycle reference, replaced when the
     // skill learned `--no-native-change` (#351), so a 0.6.1 install updates.
     (
