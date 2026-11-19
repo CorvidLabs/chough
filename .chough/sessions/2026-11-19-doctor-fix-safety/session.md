@@ -30,6 +30,8 @@ observations:
   - 2026-11-19-tc-history-a-front-matter-conflict-is-named-67d461
   - 2026-11-19-tc-history-a-redacted-timeline-entry-is-not-rewritten-ac9ac5
   - 2026-11-19-tc-history-the-spec-walk-follows-no-link-and-is-bounded-9bfc91
+  - 2026-11-19-tc-history-a-front-matter-conflict-is-named-f1e33c
+  - 2026-11-19-tc-history-the-spec-walk-follows-no-link-and-is-bounded-672851
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -66,6 +68,8 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
 - [Ran cargo test --locked --test doctor -- --exact a_front_matter_conflict_is_named_and_resolved_not_shelved for TC-history-a-front-matter-conflict-is-named: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-front-matter-conflict-is-named-67d461.md)
 - [Ran cargo test --locked --test doctor -- --exact a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is for TC-history-a-redacted-timeline-entry-is-not-rewritten: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-redacted-timeline-entry-is-not-rewritten-ac9ac5.md)
 - [Ran cargo test --locked --test doctor -- --exact the_spec_walk_follows_no_link_and_is_bounded for TC-history-the-spec-walk-follows-no-link-and-is-bounded: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-the-spec-walk-follows-no-link-and-is-bounded-9bfc91.md)
+- [Ran cargo test --locked --test doctor -- --exact a_front_matter_conflict_is_named_and_resolved_not_shelved for TC-history-a-front-matter-conflict-is-named: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-front-matter-conflict-is-named-f1e33c.md)
+- [Ran cargo test --locked --test doctor -- --exact the_spec_walk_follows_no_link_and_is_bounded for TC-history-the-spec-walk-follows-no-link-and-is-bounded: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-the-spec-walk-follows-no-link-and-is-bounded-672851.md)
 
 ## Open threads
 
