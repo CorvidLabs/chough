@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "9a81c859ae449f9da541cab3538d318de411a1ee",
   "created_at": 1795070957,
-  "updated_at": 1795071070,
+  "updated_at": 1795071322,
   "affected_specs": [
     "records",
     "cli",
@@ -67,7 +67,7 @@
   "dependencies": [],
   "answers": {
     "architecture_risk": "no",
-    "constraints": "Leif decided the scope on the issues: #366 \"both. New values holding control characters are refused at write (except line breaks where a field allows them), and stored text is shown escaped when printed, as status and context already do\", widened to C0/C1 controls, DEL and bidi overrides in every field; #353 from his decision of 2026-11-18 (number or URL, shown in next, status, context and the checkpoint view; an empty value clears it); #367 \"approved. Errors name the field and the kind, never the offending text\" and \"Show it only if clean\". Stacked on #407 (leaks-and-output), whose REQ-records-006 text it builds on; it modifies no requirement D1 (doctor-fix-safety) or #311 modifies. change.rs sites stay with G1. No new dependency. Failing tests first.",
+    "constraints": "Leif decided the scope on the issues: #366 \"both. New values holding control characters are refused at write (except line breaks where a field allows them), and stored text is shown escaped when printed, as status and context already do\", widened to C0/C1 controls, DEL and bidi overrides in every field; a tab allowed wherever a line feed is, an exception asked of him; #353 from his decision of 2026-11-18 (number or URL, shown in next, status, context and the checkpoint view; an empty value clears it), with #12 stored as 12; #367 \"approved. Errors name the field and the kind, never the offending text\" and \"Show it only if clean\". Stacked on #407 (leaks-and-output), whose REQ-records-006 text it builds on; it modifies no requirement D1 (doctor-fix-safety) or #311 modifies. change.rs sites stay with G1. No new dependency. Failing tests first.",
     "public_contract": "yes"
   }
 }
