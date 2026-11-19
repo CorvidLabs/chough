@@ -1704,7 +1704,7 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
         if !unheld.is_empty() {
             finding.fix = format!(
                 "chough doctor --fix, then by hand: {}",
-                keep_or_drop(&unheld, &unreadable_entries(root, &id))
+                keep_or_drop(root, &id, &unheld)
             );
             finding.detail = Some(json!({"kept": unheld}));
         }
@@ -1738,19 +1738,41 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
             .collect();
         uncommitted.extend(held);
         if !uncommitted.is_empty() {
-            let force = if ignored.is_empty() {
+            // A whole command, its paths quoted; Git refuses a plain `git add` of a file
+            // it ignores, so those are added with `-f`, or the ignore rule is changed.
+            let (forced, plain): (Vec<&String>, Vec<&String>) =
+                uncommitted.iter().partition(|file| ignored.contains(file));
+            let mut adds = vec![];
+            if !plain.is_empty() {
+                adds.push(format!(
+                    "git add -- {}",
+                    plain
+                        .iter()
+                        .map(|file| sh(file))
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                ));
+            }
+            if !forced.is_empty() {
+                adds.push(format!(
+                    "git add -f -- {}",
+                    forced
+                        .iter()
+                        .map(|file| sh(file))
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                ));
+            }
+            let ignore_note = if forced.is_empty() {
                 String::new()
             } else {
-                format!(
-                    " (Git ignores {}: add {} with `git add -f {}`, or change the ignore rule)",
-                    ignored.join(", "),
-                    if ignored.len() == 1 { "it" } else { "them" },
-                    ignored.join(" ")
-                )
+                " (`git add -f` since Git ignores it; or change the ignore rule)".to_string()
             };
             finding.fix = format!(
-                "commit {}{force}, then chough doctor --fix",
-                uncommitted.join(", ")
+                "commit {}: `{} && git commit -q -m {}`{ignore_note}, then chough doctor --fix",
+                uncommitted.join(", "),
+                adds.join(" && "),
+                sh(&format!("Archive the {id} session."))
             );
             finding.blocked = Some(format!(
                 "{} not committed at HEAD; commit it first, so Git holds every byte removed and the story before its folder goes",
@@ -1986,7 +2008,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
             ensure!(
                 unheld.is_empty(),
                 "{}",
-                keep_or_drop(&unheld, &unreadable_entries(root, &finding.target))
+                keep_or_drop(root, &finding.target, &unheld)
             );
         }
         Kind::UnfinishedSession => {
@@ -1996,47 +2018,103 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
     Ok(())
 }
 
+/// `text` as one single-quoted POSIX shell word.
+fn sh(text: &str) -> String {
+    format!("'{}'", text.replace('\'', "'\\''"))
+}
+
 /// What a person does with the entries an archived session's story does not hold, which
-/// the archive finish keeps (REQ-history-012, #381): keep each in an open session or drop
-/// it in a reviewed commit, then run the fix again.
-/// An evidence entry that cannot be read is kept too, but moving it would make an open
-/// session unreadable, so only dropping it is named for it and the files beside it.
-fn keep_or_drop(unheld: &[String], unreadable: &[String]) -> String {
+/// the archive finish keeps (REQ-history-012, #381): keep each in the open session or drop
+/// it in a commit, then run the fix again. Each way out is a whole command, its paths
+/// quoted, that runs as printed (rule 3); with no session open, the person opens one and
+/// runs `chough doctor` again for the command that moves an entry there. An evidence entry
+/// that cannot be read is only dropped, since moving it would make an open session
+/// unreadable.
+fn keep_or_drop(root: &Path, id: &str, unheld: &[String]) -> String {
     let stem = |file: &str| -> String {
         let name = file.rsplit('/').next().unwrap_or_default();
         name.split('.').next().unwrap_or_default().to_string()
     };
-    let broken_stems: Vec<String> = unreadable.iter().map(|file| stem(file)).collect();
-    let (broken, rest): (Vec<&String>, Vec<&String>) = unheld
+    let broken: Vec<String> = unreadable_entries(root, id)
         .iter()
-        .partition(|file| file.contains("/evidence/") && broken_stems.contains(&stem(file)));
-    let join = |files: &[&String]| {
+        .map(|file| stem(file))
+        .collect();
+    let open = crate::sessions::checkpoint_path(root)
+        .ok()
+        .and_then(|relative| crate::sessions::id_of(&relative))
+        .filter(|open| open != id);
+    let quoted = |files: &[&String]| {
         files
             .iter()
-            .map(|file| file.as_str())
+            .map(|file| sh(file))
             .collect::<Vec<_>>()
-            .join(", ")
-    };
-    let forms = |count: usize| {
-        if count == 1 {
-            ("is", "it")
-        } else {
-            ("are", "them")
-        }
+            .join(" ")
     };
     let mut parts = vec![];
-    if !broken.is_empty() {
-        let (_, it) = forms(broken.len());
+    let mut groups: Vec<(String, Vec<&String>)> = vec![];
+    for file in unheld.iter().filter(|file| file.contains("/evidence/")) {
+        let key = stem(file);
+        match groups.iter_mut().find(|(name, _)| *name == key) {
+            Some((_, files)) => files.push(file),
+            None => groups.push((key, vec![file])),
+        }
+    }
+    for (name, files) in &groups {
+        let drop = format!(
+            "`git rm -q -- {} && git commit -q -m {}`",
+            quoted(files),
+            sh(&format!("Drop evidence entry {name}."))
+        );
+        if broken.contains(name) {
+            parts.push(format!(
+                "{} cannot be read, as its `unreadable` finding says, so doctor keeps it; drop it: {drop}",
+                quoted(files)
+            ));
+            continue;
+        }
+        let keep = match &open {
+            Some(open) => {
+                let folder = sh(&format!(".chough/sessions/{open}/evidence"));
+                format!(
+                    "keep it in session {open}: `mkdir -p {folder} && git mv -- {} {folder} && git commit -q -m {}`",
+                    quoted(files),
+                    sh(&format!("Keep evidence entry {name} in session {open}."))
+                )
+            }
+            None => "keep it by opening a session with `chough session new <key>` and running `chough doctor` again for the command that moves it there".to_string(),
+        };
         parts.push(format!(
-            "{} cannot be read, as its `unreadable` finding says, so doctor keeps {it}; drop {it} with `git rm` in a reviewed commit",
-            join(&broken),
+            "{} is not held by the session's story, so doctor keeps it; {keep}, or drop it: {drop}",
+            quoted(files)
         ));
     }
-    if !rest.is_empty() {
-        let (is, it) = forms(rest.len());
+    for file in unheld.iter().filter(|file| !file.contains("/evidence/")) {
+        let drop = format!(
+            "`git rm -q -- {} && git commit -q -m {}`",
+            sh(file),
+            sh(&format!("Drop the kept inbox entry {}.", stem(file)))
+        );
+        let entry = crate::records::local_path(root, file)
+            .ok()
+            .and_then(|full| {
+                crate::records::read_bounded_record(&full, crate::markdown::RECORD_BOUND).ok()
+            })
+            .and_then(|text| crate::markdown::parse(file, &text).ok());
+        let add = match (&open, &entry) {
+            (Some(open), Some(entry)) => format!(
+                "add its text again in session {open} and drop the kept copy: `chough inbox add --session {} --from {} --kind {} --text {} && git rm -q -- {} && git commit -q -m {}`",
+                sh(open),
+                sh(entry.scalar("from").unwrap_or("agent")),
+                sh(entry.scalar("kind").unwrap_or("observation")),
+                sh(entry.scalar("value").unwrap_or_default()),
+                sh(file),
+                sh(&format!("Move inbox entry {} into session {open}.", stem(file)))
+            ),
+            _ => "add its text again in an open session with `chough inbox add`, opening one with `chough session new <key>` first, then run `chough doctor` again".to_string(),
+        };
         parts.push(format!(
-            "{} {is} not held by the session's story, so doctor keeps {it}; keep an evidence entry by moving it with `git mv`, with the files beside it, into an open session's `evidence/` folder and committing that, or drop it with `git rm` in a reviewed commit; for an unfolded inbox entry, add its text again in an open session with `chough inbox add`, then drop the kept copy with `git rm` in a reviewed commit",
-            join(&rest),
+            "{} is an unfolded inbox entry, so doctor keeps it; {add}, or drop it: {drop}",
+            sh(file)
         ));
     }
     format!("{}; then run `chough doctor --fix` again", parts.join("; "))
