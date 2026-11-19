@@ -339,7 +339,7 @@ An error that names a value you gave, such as a session name from `--session`,
 `CHOUGH_SESSION` or `chough session use`, a bug or evidence reference, or a
 `--decided-by` value, shows it only when it holds no leak and no control character.
 Otherwise it says what the option or variable holds, as in `CHOUGH_SESSION holds
-token` or `<bug ID holding control characters>`, and never the value (#367).
+token` or `<bug ID holding control characters>`, and never the value (#367). The same holds for every other error that names a value you gave, such as an unknown question, case or stage, an invalid ID, and a value the argument parser refuses.
 
 `chough doctor` scans every file Git tracks under `.chough/` and the knowledge
 directory the same way, except that a path under `/tmp/` or `/private/tmp/` in a case

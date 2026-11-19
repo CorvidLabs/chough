@@ -1375,7 +1375,11 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
     ensure_key(key)?;
     let source = format!("{DIR}/{key}");
     let from = local_path(root, &source)?;
-    ensure!(from.is_dir(), "no session folder {source} to shelve");
+    ensure!(
+        from.is_dir(),
+        "no session folder {} to shelve",
+        crate::leaks::shown("session folder", &source)
+    );
     let target = format!("{SHELVED}/{key}");
     let note = format!("{target}/{SHELVED_NOTE}");
     ensure!(
@@ -1558,8 +1562,12 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             // entries, so taking it here means the entry is either seen by that archive
             // (the session stays open) or refused below; never stranded (#98).
             lock_project(root)?;
-            let session = resolve_open(root, &session)
-                .map_err(|_| anyhow::anyhow!("no open session {session}"))?;
+            let session = resolve_open(root, &session).map_err(|_| {
+                anyhow::anyhow!(
+                    "no open session {}",
+                    crate::leaks::shown("session name", &session)
+                )
+            })?;
             validate_entry(&from, kind, &text)?;
             // REQ-records-006: an inbox entry is committed with the session; its values
             // pass the leak guard, refused or redacted under --redact.

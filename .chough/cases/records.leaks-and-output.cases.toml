@@ -129,3 +129,21 @@ expected = ["tests/humans.rs::a_decided_by_value_is_shown_only_when_clean passes
 adapter = "cargo-test"
 test_target = "humans"
 test = "a_decided_by_value_is_shown_only_when_clean"
+
+[[case]]
+id = "TC-records-errors-show-a-given-value-only-when-clean"
+title = "Across the errors that name a value a person gave, including the argument parser's usage errors, a value holding a token is named by what it holds, never shown"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "src/main.rs", "src/checkpoint.rs", "src/cases.rs", "src/bugs.rs", "src/evidence.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::errors_show_a_given_value_only_when_clean passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "errors_show_a_given_value_only_when_clean"

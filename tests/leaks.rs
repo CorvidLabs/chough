@@ -1219,3 +1219,79 @@ fn the_user_name_comes_from_the_account() {
     assert!(!output.status.success(), "/opt/dev/x was written");
     assert!(said.contains("decision holds user-name"), "{said}");
 }
+
+/// REQ-records-006 (#367), TC-records-errors-show-a-given-value-only-when-clean: across the
+/// errors that name a value a person gave, a value holding a token is named by what it
+/// holds, never shown: an unknown question or completed entry, an invalid criterion ID,
+/// a stage `--holds` does not know, an unknown case for `cases run` or `evidence add`,
+/// an invalid linked ID for `bug add`, and a value the argument parser refuses.
+#[test]
+fn errors_show_a_given_value_only_when_clean() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    let bug = [
+        "bug",
+        "add",
+        "--title",
+        "SYNTHETIC probe",
+        "--symptom",
+        "s",
+        "--trigger",
+        "t",
+        "--expected",
+        "e",
+        "--actual",
+        "a",
+        "--environment",
+        "local",
+    ];
+    let evidence = [
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC probe",
+    ];
+    let mut cases: Vec<Vec<&str>> = vec![
+        vec!["checkpoint", "--resolve-question", token],
+        vec!["checkpoint", "--remove-completed", token],
+        vec!["checkpoint", "--criterion", token],
+        vec![
+            "checkpoint",
+            "--awaiting-human",
+            "SYNTHETIC gate",
+            "--holds",
+            token,
+        ],
+        vec!["cases", "run", "--environment", "local", token],
+        vec!["evidence", "add", "--kind", token],
+    ];
+    let mut linked = bug.to_vec();
+    linked.extend(["--criterion", token]);
+    cases.push(linked);
+    let mut case = evidence.to_vec();
+    case.extend(["--case", token]);
+    cases.push(case);
+    let before = tree(fixture.root());
+    for args in &cases {
+        let output = run(&fixture, args);
+        let said = format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(!output.status.success(), "{args:?} succeeded: {said}");
+        assert!(!said.contains("ghp_"), "{args:?} showed the value: {said}");
+        assert!(said.contains("holding token"), "{args:?}: {said}");
+    }
+    assert_eq!(tree(fixture.root()), before);
+}

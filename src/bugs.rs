@@ -334,14 +334,22 @@ fn validate(stored: &Stored) -> Result<()> {
     check_scope(stored.text("scope"))?;
     check_classification(stored.text("classification"))?;
     for id in stored.list("criteria") {
-        ensure!(valid_criterion_id(&id), "invalid linked ID {id}");
+        ensure!(
+            valid_criterion_id(&id),
+            "invalid linked ID {}",
+            crate::leaks::shown("linked ID", &id)
+        );
     }
     for id in stored
         .list("requirements")
         .iter()
         .chain(&stored.list("cases"))
     {
-        ensure!(valid_reference_id(id), "invalid linked ID {id}");
+        ensure!(
+            valid_reference_id(id),
+            "invalid linked ID {}",
+            crate::leaks::shown("linked ID", id)
+        );
     }
     ensure!(
         stored.optional("duplicate_of").is_none() || stored.status() == "duplicate",
@@ -1081,10 +1089,18 @@ fn draft_record(
     fix: &str,
 ) -> Result<Record> {
     for id in &draft.criteria {
-        ensure!(valid_criterion_id(id), "invalid linked ID {id}");
+        ensure!(
+            valid_criterion_id(id),
+            "invalid linked ID {}",
+            crate::leaks::shown("linked ID", id)
+        );
     }
     for id in draft.requirements.iter().chain(&draft.cases) {
-        ensure!(valid_reference_id(id), "invalid linked ID {id}");
+        ensure!(
+            valid_reference_id(id),
+            "invalid linked ID {}",
+            crate::leaks::shown("linked ID", id)
+        );
     }
     check_scope(&draft.scope)?;
     check_classification(&draft.classification)?;

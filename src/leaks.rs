@@ -264,6 +264,32 @@ pub(super) fn shown(field: &str, value: &str) -> String {
     }
 }
 
+/// `text`, a message that quotes values a person gave, such as a usage error from the
+/// argument parser, with each leak in it replaced by `<value holding <kind>>` and each
+/// control or invisible formatting character by `<control character>`, so it shows what
+/// a value holds and never the value (REQ-records-006, #367). A line break stays.
+pub(super) fn masked(text: &str) -> String {
+    let found = find(Local::current(), text);
+    let mut out = String::with_capacity(text.len());
+    let mut at = 0;
+    let push_clean = |out: &mut String, part: &str| {
+        for character in part.chars() {
+            if hidden(character) && character != '\n' {
+                out.push_str("<control character>");
+            } else {
+                out.push(character);
+            }
+        }
+    };
+    for found in &found {
+        push_clean(&mut out, &text[at..found.start]);
+        out.push_str(&format!("<value holding {}>", found.kind.name()));
+        at = found.end;
+    }
+    push_clean(&mut out, &text[at..]);
+    out
+}
+
 /// Whether `character` is a control character or an invisible formatting one, such as a
 /// right-to-left override or a zero-width space, which a terminal acts on or hides.
 fn hidden(character: char) -> bool {
@@ -1335,5 +1361,23 @@ mod tests {
             "<name holding control characters>"
         );
         assert_eq!(unshowable("plain words"), None);
+    }
+
+    /// #367: a usage error that quotes a value names each leak in it and each control
+    /// character by what it is, and keeps everything else, line breaks included.
+    #[test]
+    fn a_quoted_message_is_masked() {
+        let token = concat!("ghp_", "abcdefghij0123456789abcdefghij0123");
+        assert_eq!(
+            masked(&format!(
+                "error: invalid value 'x {token} y' for '--kind'\n"
+            )),
+            "error: invalid value 'x <value holding token> y' for '--kind'\n"
+        );
+        assert_eq!(
+            masked("error: unexpected argument 'a\u{1b}[31m' found"),
+            "error: unexpected argument 'a<control character>[31m' found"
+        );
+        assert_eq!(masked("plain\ntext"), "plain\ntext");
     }
 }

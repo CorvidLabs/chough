@@ -230,7 +230,11 @@ fn ensure_ids(label: &str, values: &[String], limit: usize) -> Result<()> {
         _ => valid_name,
     };
     for value in values {
-        ensure!(valid(value), "invalid {label} ID: {value}");
+        ensure!(
+            valid(value),
+            "invalid {label} ID: {}",
+            crate::leaks::shown(&format!("{label} ID"), value)
+        );
     }
     Ok(())
 }
@@ -265,7 +269,7 @@ fn validate_as(session: &Checkpoint, story: bool) -> Result<()> {
     ensure!(
         stage::is_stage(&session.stage.current),
         "unknown stage: {}",
-        session.stage.current
+        crate::leaks::shown("stage", &session.stage.current)
     );
     ensure!(
         matches!(session.stage.status.as_str(), "active" | "paused")
@@ -281,7 +285,7 @@ fn validate_as(session: &Checkpoint, story: bool) -> Result<()> {
         ensure!(
             stage::is_stage(&caller.stage),
             "unknown caller stage: {}",
-            caller.stage
+            crate::leaks::shown("stage", &caller.stage)
         );
     }
     ensure!(
@@ -291,7 +295,8 @@ fn validate_as(session: &Checkpoint, story: bool) -> Result<()> {
     if let Some(change) = &session.native_change {
         ensure!(
             valid_change_id(change),
-            "invalid native change ID: {change}"
+            "invalid native change ID: {}",
+            crate::leaks::shown("native change ID", change)
         );
     }
     ensure_ids("criterion", &session.references.criteria, MAX_ITEMS)?;
@@ -1562,7 +1567,8 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     if let Some(holds) = &args.holds {
         ensure!(
             stage::is_stage(holds),
-            "--holds must name a stage (a main stage, release or a side stage); got {holds:?}, so nothing was saved"
+            "--holds must name a stage (a main stage, release or a side stage); got {}, so nothing was saved",
+            crate::leaks::shown("--holds", holds)
         );
     }
     let mut changed = false;
@@ -1671,14 +1677,18 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             .retain(|question| question != resolved);
         ensure!(
             session.open_questions.len() < before,
-            "no open question has that exact text: {resolved}"
+            "no open question has that exact text: {}",
+            crate::leaks::shown("question", resolved)
         );
         changed = true;
     }
     for removed in &args.remove_completed {
         let position = session.completed.iter().position(|entry| entry == removed);
         let Some(position) = position else {
-            bail!("no completed entry has that exact text: {removed}");
+            bail!(
+                "no completed entry has that exact text: {}",
+                crate::leaks::shown("completed entry", removed)
+            );
         };
         session.completed.remove(position);
         changed = true;

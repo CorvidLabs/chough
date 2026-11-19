@@ -1069,14 +1069,11 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
                 .iter()
                 .map(|listed| listed.number.to_string())
                 .collect();
-            // The close's own `Error: ` prefix is dropped, so the refusal says it once (#380).
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            let refusal = stderr.trim();
             bail!(
                 "closing gate {} (\"{}\") was refused: {}\nRun `chough gate list`, then `chough gate record` for gates {} again.",
                 listed.number,
                 listed.gate,
-                refusal.strip_prefix("Error: ").unwrap_or(refusal),
+                quoted_refusal(&String::from_utf8_lossy(&output.stderr)),
                 remaining.join(",")
             );
         }
@@ -1096,6 +1093,18 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
     print_json(&json!({"schema_version": 1, "list": args.list, "closed": closed}))
 }
 
+/// A refused close's standard error as `gate record` quotes it: the close's own `Error: `
+/// prefix is dropped from the line that carries it, after any line printed before it, so
+/// the refusal says `Error:` once (#380).
+fn quoted_refusal(stderr: &str) -> String {
+    stderr
+        .trim()
+        .lines()
+        .map(|line| line.strip_prefix("Error: ").unwrap_or(line))
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -1104,5 +1113,20 @@ mod tests {
         for id in ["", "0123456789AB", "0123456789a", "../etc/passw"] {
             assert!(!crate::stage::lowercase_hex(id, 12), "{id}");
         }
+    }
+
+    /// #380: the close's `Error: ` prefix is dropped wherever its line sits, so a line
+    /// printed before it, such as a `--redact` count, leaves one `Error:` in the refusal.
+    #[test]
+    fn a_quoted_refusal_says_error_once() {
+        assert_eq!(
+            super::quoted_refusal("Error: refused:leak: x\n"),
+            "refused:leak: x"
+        );
+        assert_eq!(
+            super::quoted_refusal("chough: redacted 1 value(s)\nError: refused:leak: x"),
+            "chough: redacted 1 value(s)\nrefused:leak: x"
+        );
+        assert_eq!(super::quoted_refusal("no prefix"), "no prefix");
     }
 }

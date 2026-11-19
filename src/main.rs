@@ -200,6 +200,20 @@ enum Commands {
     Doctor(Box<doctor::DoctorArgs>),
 }
 
+/// The command line, parsed. A usage error is printed as the argument parser words it,
+/// except that a value it quotes that holds a leak or a control character is named by
+/// what it holds, never shown (REQ-records-006, #367); help and version print as they do.
+fn parse_cli() -> Cli {
+    match Cli::try_parse() {
+        Ok(cli) => cli,
+        Err(error) if !error.use_stderr() => error.exit(),
+        Err(error) => {
+            eprint!("{}", leaks::masked(&error.render().to_string()));
+            std::process::exit(error.exit_code());
+        }
+    }
+}
+
 fn main() -> Result<()> {
     // A stop then finds orphans of what Chough started (#81, Linux; no effect elsewhere).
     records::become_subreaper();
@@ -220,7 +234,7 @@ fn main() -> Result<()> {
         print!("{text}");
         return Ok(());
     }
-    let cli = Cli::parse();
+    let cli = parse_cli();
     leaks::set_redacting(cli.redact);
     let root = cli.root.canonicalize().context("project root must exist")?;
     ensure!(root.is_dir(), "project root must be a directory");
