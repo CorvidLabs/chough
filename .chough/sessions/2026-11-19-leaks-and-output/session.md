@@ -5,7 +5,7 @@ aliases: [leaks-and-output]
 objective: "Leak and output batch: --answer is leak-checked and bounded (#364), conflict findings name only the marker (#365), errors show a value only when it holds no leak and no control characters (#367), the leak guard adds the listed forms (#368), the user name comes from the account (#379), and gate record says Error once (#380)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -120,13 +120,9 @@ observations:
   - 2026-11-19-tc-history-session-use-names-a-session-only-when-clean
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of leaks-and-output
-    holds: accept
-    drives: review
-    opened: 2026-11-19T02:44:55Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Leak and output batch: --answer is leak-checked and bounded (#364), conflict findings name only the marker (#365), errors show a value only when it holds no leak and no control characters (#367), the leak guard adds the listed forms (#368), the user name comes from the account (#379), and gate record says Error once (#380)
 
@@ -143,6 +139,7 @@ Leak and output batch: --answer is leak-checked and bounded (#364), conflict fin
 - 0xLeif decided "Re-approval of leaks-and-output for the narrowed #379 user-name rule": "Narrow it" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on tester2's finding C: the user name counts as a leak only inside an absolute path, after ~, or as user@host, and never when the name is root; one more sentence in REQ-records-006 beside his 'Fix the sentence: check both', and its acceptance criterion); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve leaks-and-output as 0xLeif
 - 0xLeif decided "Send back leaks-and-output for the cli and history case files, run by the fixer": "The fixer runs them, on my word" (Claude Code chat answer, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 14:17Z); recorded by chough-fixer-t4g; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of leaks-and-output for the cli and history case files": "Yes to both" (Claude Code chat answer, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 14:08Z, to: may leaks-and-output be sent back once for the two case files .chough/cases/cli.leaks-and-output.cases.toml and .chough/cases/history.leaks-and-output.cases.toml, no code and no sentence change, and is the merge approved once that is pushed, tester2 has rechecked it and CI is green); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve leaks-and-output as 0xLeif
+- 0xLeif decided "Implementation review of leaks-and-output": "Yes to both" (Claude Code chat answer, 2026-11-19 about 14:08Z, relayed by hc t4c through fable-lead (hc t53), to: send leaks-and-output back once for the cli and history case files, and approve the merge once that is pushed, tester2 has rechecked it and CI is green; at 0871080 tester2's recheck passed and fable-lead's read passed, both checked by fable-lead, with CI to be green before the merge); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review leaks-and-output as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -399,4 +396,20 @@ Leak and output batch: --answer is leak-checked and bounded (#364), conflict fin
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve leaks-and-output
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T14:44:38Z · gate-closed · accept → accept · Implementation review of leaks-and-output ^t-f0e75d
+  - native_change: leaks-and-output
+  - revision: 8594051275394625fcc5f6d009b88d6c662e6bc2
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes to both
+    - where: Claude Code chat answer, 2026-11-19 about 14:08Z, relayed by hc t4c through fable-lead (hc t53), to: send leaks-and-output back once for the cli and history case files, and approve the merge once that is pushed, tester2 has rechecked it and CI is green; at 0871080 tester2's recheck passed and fable-lead's read passed, both checked by fable-lead, with CI to be green before the merge
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review leaks-and-output
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T14:44:42Z · advance · accept → done · native:archived ^t-1d24b4
+  - native_change: leaks-and-output
+  - gate: native:archived
+  - revision: 8594051275394625fcc5f6d009b88d6c662e6bc2
   - by: chough-fixer (claude-opus-5-5, hc t4n)
