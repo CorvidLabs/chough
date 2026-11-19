@@ -173,6 +173,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, on swarm finding 62-F1 in #356 (a real Git conflict inside a fenced block of a session passed silently), within his #339 scope: doctor reports 'possible conflict markers inside a code fence at line N' as an advisory finding, with doctor's exit status unchanged and writes allowed, like the stray ======= rule",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795049165,
+      "digest": "b50ed11474dd7ab7b38acd1d5cea81370d2e6811c0f688a91fa7a35d67b53d52",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
