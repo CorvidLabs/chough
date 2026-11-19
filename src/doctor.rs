@@ -1475,6 +1475,11 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
 /// itself, and a file a person edited is not reported.
 fn skill_outdated(root: &Path) -> Vec<Finding> {
     let scan = crate::skill::known_outdated(root);
+    let updates: Vec<String> = scan
+        .host_updates()
+        .iter()
+        .map(|run| format!("`{run}`"))
+        .collect();
     let mut found: Vec<Finding> = scan
         .outdated
         .into_iter()
@@ -1496,9 +1501,16 @@ fn skill_outdated(root: &Path) -> Vec<Finding> {
         let mut finding = Finding::new(
             Kind::SkillUninspected,
             &base,
-            format!(
-                "none: {base} is reached through a symlink or cannot be read, so it was not inspected; check the copy it points to"
-            ),
+            if updates.is_empty() {
+                format!(
+                    "none: {base} is reached through a symlink or cannot be read, so it was not inspected; check the copy it points to"
+                )
+            } else {
+                format!(
+                    "none: {base} is reached through a symlink or cannot be read, so it was not inspected; `chough skill update` alone is refused there, so run {}",
+                    updates.join(" and ")
+                )
+            },
             false,
         );
         finding.advisory = true;

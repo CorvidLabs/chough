@@ -1084,9 +1084,27 @@ fn pin_session(root: &Path, name: &str, source: &str) -> Result<()> {
 /// The next view with no open session, the normal state after the move into done
 /// archives one (REQ-cli-021, REQ-history-006): that no session is open and the command
 /// that opens the next one, as text or compact JSON, with no session to read.
+/// REQ-cli-016 (#361): the one line `next` shows while a skill file is outdated.
+const SKILL_NUDGE: &str = "Skill files are outdated: run `chough skill update`";
+
+/// The line after it when a skill folder was not inspected: plain
+/// `chough skill update` is refused there, so the update is named per host.
+fn host_update_line(updates: &[String]) -> Option<String> {
+    if updates.is_empty() {
+        return None;
+    }
+    let named: Vec<String> = updates.iter().map(|run| format!("`{run}`")).collect();
+    Some(format!(
+        "A skill folder was not inspected, and `chough skill update` alone is refused there: run {}",
+        named.join(" and ")
+    ))
+}
+
 fn no_open_session(root: &Path, as_json: bool) -> String {
     // REQ-cli-016 (#361): the skill nudge shows with no session open too.
-    let skill_outdated = skill::known_outdated(root).outdated.len();
+    let scan = skill::known_outdated(root);
+    let skill_outdated = scan.outdated.len();
+    let host_updates = scan.host_updates();
     let action = json!({
         "action": "Start the next piece of work in a new session.",
         "reason": "There is no open session, the normal state after the move into done archives one.",
@@ -1098,14 +1116,17 @@ fn no_open_session(root: &Path, as_json: bool) -> String {
             json!({
                 "session": null,
                 "skill_outdated": skill_outdated,
+                "skill_update": host_updates,
                 "next_valid_action": action,
             })
         );
     }
     let nudge = if skill_outdated > 0 {
-        "Skill files are outdated: run `chough skill update`\n"
+        let mut lines = vec![SKILL_NUDGE.to_string()];
+        lines.extend(host_update_line(&host_updates));
+        format!("{}\n", lines.join("\n"))
     } else {
-        ""
+        String::new()
     };
     format!(
         "Session: none open\n{nudge}Next: {}\n  Why: {}\n  Run: {NEW_SESSION}\n",
@@ -1120,6 +1141,7 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
     let assessment = assess(root)?;
     records::trace_phase("next.assess", phase);
     let session = &assessment.session;
+    let skill_scan = skill::known_outdated(root);
     let checkpoint = match session {
         Session::V2(checkpoint) => Some(checkpoint.as_ref()),
     };
@@ -1209,7 +1231,8 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
             "callers": checkpoint.stage.callers.iter().map(|caller| caller.stage.clone()).collect::<Vec<_>>(),
         })),
         // REQ-cli-016 (#361): how many installed skill files are an earlier release's.
-        "skill_outdated": skill::known_outdated(root).outdated.len(),
+        "skill_outdated": skill_scan.outdated.len(),
+        "skill_update": skill_scan.host_updates(),
         "native_check": native_check::view(root, change.as_deref(), summary)?,
         "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,
@@ -1310,7 +1333,17 @@ fn next_text(view: &Value) -> String {
         .as_u64()
         .is_some_and(|count| count > 0)
     {
-        lines.push("Skill files are outdated: run `chough skill update`".into());
+        lines.push(SKILL_NUDGE.into());
+        let updates: Vec<String> = view["skill_update"]
+            .as_array()
+            .map(|items| {
+                items
+                    .iter()
+                    .filter_map(|item| item.as_str().map(str::to_string))
+                    .collect()
+            })
+            .unwrap_or_default();
+        lines.extend(host_update_line(&updates));
     }
     let stage = &view["stage"];
     if stage.is_null() {

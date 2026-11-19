@@ -884,6 +884,23 @@ pub(super) struct SkillScan {
     /// Each host's skill directory that could not be inspected, such as one reached
     /// through a symlink. It is skipped and named, and never hides another copy.
     pub(super) uninspected: Vec<String>,
+    /// One host name for each installed directory that was inspected.
+    hosts: Vec<String>,
+}
+
+impl SkillScan {
+    /// The update to run when a directory was not inspected: plain
+    /// `chough skill update` refuses that directory and updates nothing, so each
+    /// inspected copy is named by its host. Empty while every directory was inspected.
+    pub(super) fn host_updates(&self) -> Vec<String> {
+        if self.uninspected.is_empty() {
+            return vec![];
+        }
+        self.hosts
+            .iter()
+            .map(|host| format!("chough skill update --host {host}"))
+            .collect()
+    }
 }
 
 /// Scan every host's skill directory on its own. A file a person edited, a missing one
@@ -893,15 +910,16 @@ pub(super) fn known_outdated(root: &Path) -> SkillScan {
     let mut scan = SkillScan {
         outdated: vec![],
         uninspected: vec![],
+        hosts: vec![],
     };
     let mut seen = std::collections::BTreeSet::new();
-    for (_, path) in HOSTS {
+    for (host, path) in HOSTS {
         let base = format!("{path}/chough-workflow");
         if !seen.insert(base.clone()) {
             continue;
         }
         match local_path(root, &base) {
-            Ok(folder) if folder.is_dir() => {}
+            Ok(folder) if folder.is_dir() => scan.hosts.push((*host).to_string()),
             Ok(_) => continue,
             Err(_) => {
                 scan.uninspected.push(base);

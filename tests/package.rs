@@ -4656,4 +4656,22 @@ fn a_symlinked_host_folder_hides_no_outdated_file() {
     assert_eq!(skipped.len(), 1, "{report:#}");
     assert_eq!(skipped[0]["target"], ".codex/skills/chough-workflow");
     assert_eq!(skipped[0]["advisory"], true, "{report:#}");
+    // The nudge never dead-ends (the tester's note on #362): plain
+    // `chough skill update` is refused beside the symlink, so `next` and the advice
+    // name the update for the host that is really installed, and that update works.
+    let by_host = "chough skill update --host openai";
+    assert_eq!(next["skill_update"], serde_json::json!([by_host]), "{next}");
+    let text = raw(&["next"]);
+    assert!(
+        text.contains("Skill files are outdated: run `chough skill update`"),
+        "{text}"
+    );
+    assert!(text.contains(&format!("run `{by_host}`")), "{text}");
+    assert!(
+        skipped[0]["fix"].as_str().unwrap().contains(by_host),
+        "{report:#}"
+    );
+    chough(root, &["skill", "update", "--host", "openai"]);
+    let after: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(after["skill_outdated"], 0, "{after}");
 }
