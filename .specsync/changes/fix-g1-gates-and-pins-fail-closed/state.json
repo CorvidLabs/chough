@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "fix-g1-gates-and-pins-fail-closed",
   "slug": "fix-g1-gates-and-pins-fail-closed",
   "title": "Fix g1 gates and pins fail closed",
   "description": "fix g1 gates and pins fail closed",
   "kind": "bug_fix",
-  "state": "draft",
+  "state": "approved",
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795065230,
-  "updated_at": 1795097042,
+  "updated_at": 1795097153,
   "affected_specs": [
     "cli",
     "history"

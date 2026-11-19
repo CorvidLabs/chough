@@ -1,4 +1,71 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795097153,
+      "digest": "a15e34e272d322d03c0769ea565f6c20080b2c332c291fd4e99ccd86521e0c62",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-g1-gates-and-pins-fail-closed\": \"Approve, both as recommended / Approve / Yes, covered\" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53). Three answers in order: 'Approve, both as recommended' (Claude Code chat answer, 2026-11-19 about 05:21Z, on G1 at 6a7c7d56 with #372 say-so and #400 whole-range); 'Approve' (about 06:12Z, on declaring history, dropping src/session_md.rs, adding the history spec files and moving the inbox criterion); 'Yes, covered' (2026-11-19 morning MST, on the two case files in place of .chough/cases/ and the re-answered constraints). Scope as checked by fable-lead at e219ab98). Relayed and recorded by fable-t4b at 2026-11-19T14:05:52Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-g1-gates-and-pins-fail-closed",
+        "title": "Fix g1 gates and pins fail closed",
+        "description": "fix g1 gates and pins fail closed",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.gates-and-pins.cases.toml",
+          ".chough/cases/history.gates-and-pins.cases.toml",
+          "changelog.d/",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/history/history.spec.md",
+          "specs/history/requirements.md",
+          "src/change.rs",
+          "src/checkpoint.rs",
+          "src/main.rs",
+          "src/sessions.rs",
+          "tests/change.rs",
+          "tests/checkpoint.rs",
+          "tests/session_pin.rs",
+          "tests/sessions.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A hand-edited blank, placeholder or doubled no_native_change is refused by every reader with the edit named, and session list and doctor still run; inbox list honors --session and CHOUGH_SESSION; session use and session new say when a pin still names another session; session shelve resolves a folder name, alias or bare slug; change ship closes its gate and moves its stage in the session it resolved; the ship history check covers the whole range and refuses when Git cannot read it; chough change refuses a leaking or control-character argument before SpecSync runs"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "cli and history lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so every sentence was tried against the binary first; a new free-text value goes through the leak guard. File boundaries from the lead's plan: doctor.rs and the archive finish in sessions.rs belong to the fixer's batch and are not touched; the REQ-cli-057 part waits for #407.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "75163f3f81b10ae74c3d995457852ea7c38610e6d0fe7f4052b8983c37d8d32f",
+        "history": "be0534d71a1f78048b387a0c5f8b85c835555a486c3cd497c8677add8ec2d4d9"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-007": "5a20e9cfd7c2171aa8035f1b8ddad319fc60ba56f44c2095cb86d746c1289c91",
+        "cli: REQUIREMENT REQ-cli-037": "5d3b8304be5472c3b37b1c4521e317600b282d286f17050f4463e47c223bd932",
+        "cli: REQUIREMENT REQ-cli-057": "bf67bdc7e3dce8efce6b5c805fafe22fab4e460a4df35b7af87a3c3c9dcf79c5",
+        "cli: REQUIREMENT REQ-cli-059": "826db03b30b079f031d52a08e7e3bd52441fb8f13c35b96921736c327afd1d11",
+        "history: REQUIREMENT REQ-history-009": "3574324c60096b106b5e55d3c46fd521e3ef0595e36ffa5d14412ccd1e99860c"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve, both as recommended / Approve / Yes, covered",
+        "where": "Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53). Three answers in order: 'Approve, both as recommended' (Claude Code chat answer, 2026-11-19 about 05:21Z, on G1 at 6a7c7d56 with #372 say-so and #400 whole-range); 'Approve' (about 06:12Z, on declaring history, dropping src/session_md.rs, adding the history spec files and moving the inbox criterion); 'Yes, covered' (2026-11-19 morning MST, on the two case files in place of .chough/cases/ and the re-answered constraints). Scope as checked by fable-lead at e219ab98",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ],
   "reopenings": []
 }
