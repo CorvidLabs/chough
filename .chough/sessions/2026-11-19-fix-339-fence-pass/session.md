@@ -5,7 +5,7 @@ aliases: [fix-339-fence-pass]
 objective: The code-fence scan visits each line a bounded number of times, so many unclosed fence openers no longer make record writes and doctor quadratic, and an unclosed fence still hides nothing (#356 review P2)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -24,13 +24,9 @@ observations:
   - 2026-11-19-tc-records-doctor-warns-of-a-conflict-inside-a-code-fence-e78f03
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-339-fence-pass
-    holds: accept
-    drives: review
-    opened: 2026-11-19T01:08:13Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # The code-fence scan visits each line a bounded number of times, so many unclosed fence openers no longer make record writes and doctor quadratic, and an unclosed fence still hides nothing (#356 review P2)
 
@@ -43,6 +39,7 @@ The code-fence scan visits each line a bounded number of times, so many unclosed
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-339-fence-pass": "Yes, for today" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, that a real gap his review thread finds in an already-approved PR is fixed inside its approved scope as a small follow-up change, applied to his P2 thread on #356 ('Avoid rescanning the full suffix for every unmatched fence'): compute matching fences in a bounded pass, keep the rule that an unclosed fence hides nothing, and add a regression for many unmatched openers); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339-fence-pass as 0xLeif
+- 0xLeif decided "Implementation review of fix-339-fence-pass": "Yes, for today" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, applied by hc t4c to his P2 thread on #356; after the tester's recheck PASS of the follow-up at 414e5fe, hc t4c replied on and resolved the thread under his standing OK and asked for the merge); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-339-fence-pass as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -102,4 +99,20 @@ The code-fence scan visits each line a bounded number of times, so many unclosed
   - revision: a19df4fc7d429133617790d0c45c982d475fea09
   - holds: accept
   - drives: review
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T01:43:57Z · gate-closed · accept → accept · Implementation review of fix-339-fence-pass ^t-87ae5a
+  - native_change: fix-339-fence-pass
+  - revision: acc6043cc4b5f24ac0911c30a30b5644ef3b4de7
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, for today
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, applied by hc t4c to his P2 thread on #356; after the tester's recheck PASS of the follow-up at 414e5fe, hc t4c replied on and resolved the thread under his standing OK and asked for the merge
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-339-fence-pass
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T01:43:58Z · advance · accept → done · native:archived ^t-4324a4
+  - native_change: fix-339-fence-pass
+  - gate: native:archived
+  - revision: acc6043cc4b5f24ac0911c30a30b5644ef3b4de7
   - by: chough-fixer (claude-opus-5-5, hc t4n)
