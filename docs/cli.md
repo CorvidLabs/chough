@@ -300,17 +300,26 @@ matter and body, for (REQ-records-006):
 
 - an absolute path under a home, temporary or system root (`/Users/`, `/home/`,
   `/root/`, `/private/`, `/tmp/`, `/var/`, `/Volumes/`, `/mnt/`) or a Windows drive path,
-  and a `~/` path;
+  and a `~/` or `~<user>/` path;
 - the local host name anywhere when it is at least 8 characters long or holds a digit,
   a hyphen or a dot, and a shorter all-letter host name, which may be an ordinary word,
   only inside a path or a URL or as `<user>@<host>`, or as the `<host>:/<absolute path>`
   of an scp-style remote path, so a word that happens to be this machine's name is
-  written;
-- the local user name inside a path or as `<user>@<host>`;
+  written. The local host names are the host name, its first label and, on macOS, the
+  LocalHostName, each also as its `<name>.local` Bonjour name, and a dotted one counts
+  glued into a hyphenated name too, as in `build-<host>-1` (#368);
+- the local user name inside an absolute path, after `~`, or as `<user>@<host>`: the
+  account's user name, and `USER` or `LOGNAME` when they name another, so it is checked
+  under `env -i`, cron or launchd too (#379). The first folder of an absolute path that
+  is a system root, as `/dev/` for a user named `dev`, is no user name, nor is a relative
+  path or a URL, as `src/dev/main.rs` or `https://example.com/dev/guide`; and `root`
+  never counts;
 - an email address;
-- credentials: GitHub, GitLab, Slack, AWS and model-provider token forms, private key
-  blocks, bearer and basic authorization values, JSON web tokens, and `password`,
-  `secret`, `token` or `api_key` assignments with a value of 8 or more characters.
+- credentials: GitHub, GitLab, Slack (including `xapp-` app tokens), AWS, Hugging Face
+  (`hf_`) and model-provider token forms, private key blocks, bearer and basic
+  authorization values, JSON web tokens, and `password`, `secret`, `secret_key`,
+  `secret_access_key` (as in `AWS_SECRET_ACCESS_KEY`), `token` or `api_key` assignments,
+  the key quoted or not as in `{"password": …}`, with a value of 8 or more characters.
 
 An scp-style remote path, `<host>:/<absolute path>`, is checked like the path it
 carries, so a home or system root after the colon refuses as a path leak and the host
@@ -323,9 +332,16 @@ A match refuses the write as `refused:leak`, naming the field and the kind of ma
 every file byte-identical. With the global `--redact`, each match is stored as
 `<redacted:<kind>>` instead, and the write proceeds, saying how many values were
 redacted. A configured human's display name (see [Human identity](#human-identity))
-does not count as a user name. This build checks session values and Timeline entries,
-relay values, corrections, bugs and journal posts, and `chough migrate` always redacts
-what it writes.
+does not count as a user name. Under `--redact`, a leak already stored in a session's body, as a decision an older Chough wrote, is replaced where it stands, and `gate record --redact` redacts in the closes it runs. This build checks session values and Timeline entries,
+answers to questions (#364), relay values, corrections, bugs, evidence and journal
+posts, and `chough migrate` always redacts what it writes. A module name is an ID, so
+`session new --module` refuses one that leaks, under `--redact` too (#368).
+
+An error that names a value you gave, such as a session name from `--session`,
+`CHOUGH_SESSION` or `chough session use`, a bug or evidence reference, or a
+`--decided-by` value, shows it only when it holds no leak and no control character.
+Otherwise it says what the option or variable holds, as in `CHOUGH_SESSION holds
+token` or `<bug ID holding control characters>`, and never the value (#367). The same holds for every other error that names a value you gave, such as an unknown question, case or stage, an invalid ID, and a value the argument parser refuses.
 
 `chough doctor` scans every file Git tracks under `.chough/` and the knowledge
 directory the same way, except that a path under `/tmp/` or `/private/tmp/` in a case
@@ -882,9 +898,9 @@ native read, and never records a human decision, approval, review or consent.
 | `alias_conflict` | An ID that is the `id` or an alias of two records of one kind (REQ-records-003); `records` names both | None: decide which record keeps it |
 | `oversize` | A committed record, evidence entry or screenshot over its bound, or a session's screenshots over 2,097,152 bytes in all (REQ-records-001, -005, -013), with its `bytes` and `bound` | None |
 | `unreadable` | A committed Chough record under `.chough/` that its reader refuses, such as front matter outside the subset, so `status` and `next` refuse the project (REQ-history-012); `error` names the file, the line and the rule. A record over its bound is `oversize` instead | None: fix the line by hand in a reviewed change, or set an open session aside with `chough session shelve <id>` |
-| `conflict_markers` | A Git conflict marker in the body of a committed record, or in a committed case definition that does not parse as TOML (REQ-records-001, #265, #339). It is a line starting `<<<<<<<` or `>>>>>>>`, or a `=======` line between them. A line inside a closed fenced code block is not one, but a fence that never closes hides nothing, and no fence hides one in a section Chough writes, a `## Timeline` or the `## Receipts` block. A valid case definition may quote a marker in a string. By the same rule, a real conflict that Git leaves wholly inside a case's multi-line string is not caught, since the file still parses as TOML. One finding per marker line, with its `line` and `marker`. Records and case definitions are read, not READMEs or the generated knowledge index. Chough refuses to write a record whose body holds one, as `refused:conflict-markers` naming the file, the line and the marker. `chough cases check` names the same for a case definition. `chough migrate` says in its preview that the apply refuses, and offers no apply command (its JSON has no `apply` field), and `--apply` refuses before writing anything, both naming the 0.5.x file to resolve first | None: resolve the conflict in the record by hand in a reviewed change, then run `chough doctor` again |
+| `conflict_markers` | A Git conflict marker in the body of a committed record, or in a committed case definition that does not parse as TOML (REQ-records-001, #265, #339). It is a line starting `<<<<<<<` or `>>>>>>>`, or a `=======` line between them. A line inside a closed fenced code block is not one, but a fence that never closes hides nothing, and no fence hides one in a section Chough writes, a `## Timeline` or the `## Receipts` block. A valid case definition may quote a marker in a string. By the same rule, a real conflict that Git leaves wholly inside a case's multi-line string is not caught, since the file still parses as TOML. One finding per marker line, with its `line` and `marker`: the marker's seven characters, `<<<<<<<`, `=======` or `>>>>>>>`, never the rest of its line, which may carry a branch name or a commit subject (#365). Records and case definitions are read, not READMEs or the generated knowledge index. Chough refuses to write a record whose body holds one, as `refused:conflict-markers` naming the file, the line and the marker. `chough cases check` names the same for a case definition. `chough migrate` says in its preview that the apply refuses, and offers no apply command (its JSON has no `apply` field), and `--apply` refuses before writing anything, both naming the 0.5.x file to resolve first | None: resolve the conflict in the record by hand in a reviewed change, then run `chough doctor` again |
 | `possible_conflict_separator` | A lone `=======` outside any conflict, and outside a code fence, in a committed record or in a case definition that does not parse as TOML (REQ-cli-055, #339). It may be left by a half-resolved conflict, or it may be a heading underline. One finding per line, with its `line` and a `warning`, "possible leftover conflict separator at line N". It is `advisory`: it never makes doctor exit 1, and no write is refused for it | None: if the line is left from a Git conflict, resolve it by hand; a heading underline can stay |
-| `possible_fenced_conflict` | A Git conflict marker line inside a closed code fence of a committed record (REQ-cli-055, #339). A quoted example and a real conflict Git left inside the fence look the same, so it is a warning: one finding per marker line, with its `line`, `marker` and a `warning`, "possible conflict markers inside a code fence at line N". It is `advisory`: it never makes doctor exit 1, and no write is refused for it |
+| `possible_fenced_conflict` | A Git conflict marker line inside a closed code fence of a committed record (REQ-cli-055, #339). A quoted example and a real conflict Git left inside the fence look the same, so it is a warning: one finding per marker line, with its `line`, `marker` (its seven characters) and a `warning`, "possible conflict markers inside a code fence at line N". It is `advisory`: it never makes doctor exit 1, and no write is refused for it |
 | `records_in_verification` | `.specsync/sdd.json` exists and its `verification_ignored_paths` lacks `.chough/sessions/`, `.chough/archive/` or `.chough/bugs/` (REQ-records-014) | Never fixed: Chough never writes the policy. The finding adds `missing` (the entries to add), `specsync` (`6.1.2 and later`, the releases that honour the list) and `advice`: adding them is an ordinary reviewed change to `.specsync/sdd.json`. A broader entry such as `.chough/` gets the advice to list the three folders instead. While SpecSync covers the whole repository, through `source_dirs = ["."]` in `.specsync/config.toml` or `.` in the policy's `meaningful_paths`, SpecSync refuses those entries as overlapping (#251). The fix and `advice` then say to narrow `source_dirs` to the code folders, for example `["src"]`, and keep `.` out of `meaningful_paths`, then list the entries. They say why, including that a whole-repository `source_dirs` counts the skill bundle `chough init` installs as uncovered source (#279). `whole_repo` names those settings. When the code SpecSync specifies sits at the repository root, as no folder holds it, the fix and `advice` say instead to add `.chough` and the installed skill folder to `exclude_dirs`, which keeps them out of coverage. They also say that the list needs the code moved into a folder, or SpecSync's fix, CorvidLabs/spec-sync#1083 (#354). `root_code` names a root-level file and `unexcluded` the folders to add. `chough init` prints the same advice as `records_in_verification`, and the narrowing advice even with no policy. Chough writes neither file |
 | `merge_drivers` | In a Git work tree, a clone whose Git config has no command for `merge.chough-bug.driver` or `merge.chough-generated.driver`, as a fresh clone has none, or a `.gitattributes` that lacks one of Chough's merge lines (REQ-cli-047); one finding, with `missing_drivers` and `missing_lines` | `chough doctor --fix` sets the missing drivers in the clone's local config. It never writes `.gitattributes`, so a missing line keeps the finding `skipped`, naming the lines: `chough init` appends exactly those, then commit the file |
 | `merge_driver_outdated` | The merge drivers are set, and the `chough` they run, found through `PATH` as Git finds it (Git runs `<program> --version` in its shell), is missing or reports a version older than the running Chough, so a merge would run older code on these records; one finding naming the drivers, `running_version`, `path_version` (null when missing) and `install`. A driver set to another program is not checked | None: Chough never installs itself. Install the running version where Git finds it, `cargo install chough --locked` as in the README's Install section, then run `chough doctor` again |

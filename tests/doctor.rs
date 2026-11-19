@@ -1207,12 +1207,12 @@ fn doctor_reports_conflict_markers_in_committed_records_only() {
     assert_eq!(
         named,
         [
-            (story.to_string(), 10, "<<<<<<< HEAD".to_string()),
+            (story.to_string(), 10, "<<<<<<<".to_string()),
             (story.to_string(), 12, "=======".to_string()),
-            (story.to_string(), 14, ">>>>>>> branch".to_string()),
-            (cases.to_string(), 2, "<<<<<<< HEAD".to_string()),
+            (story.to_string(), 14, ">>>>>>>".to_string()),
+            (cases.to_string(), 2, "<<<<<<<".to_string()),
             (cases.to_string(), 3, "=======".to_string()),
-            (cases.to_string(), 4, ">>>>>>> branch".to_string()),
+            (cases.to_string(), 4, ">>>>>>>".to_string()),
         ],
         "{report:#}"
     );
@@ -1427,4 +1427,67 @@ fn root_level_code_gets_the_exclude_advice_instead_of_narrowing() {
     assert!(!advice.contains("to exclude_dirs"), "{advice}");
     assert!(advice.contains("CorvidLabs/spec-sync#1083"), "{advice}");
     assert_eq!(fixture.read(".specsync/config.toml"), narrowed_config);
+}
+
+/// REQ-records-001, REQ-cli-055 (#365), TC-records-a-conflict-marker-is-named-by-its-seven-characters:
+/// a conflict whose marker lines name a branch, or a rebase's commit subject, that holds
+/// a token is reported by doctor as `conflict_markers` and `possible_fenced_conflict`
+/// findings whose `marker` is only `<<<<<<<`, `=======` or `>>>>>>>`, and the refused
+/// write names only the marker too: no output holds the branch or the subject.
+#[test]
+fn a_conflict_marker_is_named_by_its_seven_characters() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let branch = concat!("fix-ghp_", "abcdefghij0123456789", "abcdefghij0123");
+    let subject = concat!("1a2b3c4 (rotate ", "sk-", "SYNTHETICabcdefghij0123456789)");
+    let story = ".chough/archive/sessions/2026-01-01-old.md";
+    let conflict = format!(
+        "<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> {branch}\n\n```text\n<<<<<<< HEAD\nquoted\n=======\nquoted\n>>>>>>> {subject}\n```\n"
+    );
+    fixture.write(
+        story,
+        &format!("---\nkind: session\nid: 2026-01-01-old\n---\n# Old\n\n## Goal\n\n{conflict}"),
+    );
+    fixture.commit("an old story with a conflict naming a branch");
+    let output = fixture.run(&["doctor"]);
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!said.contains("ghp_"), "doctor printed the branch: {said}");
+    assert!(
+        !said.contains("rotate"),
+        "doctor printed the subject: {said}"
+    );
+    let report: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    let markers: Vec<String> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["target"] == story)
+        .filter_map(|finding| finding["marker"].as_str().map(str::to_string))
+        .collect();
+    assert_eq!(
+        markers,
+        [
+            "<<<<<<<", "=======", ">>>>>>>", "<<<<<<<", "=======", ">>>>>>>"
+        ],
+        "{report:#}"
+    );
+
+    let file = fixture.session_file();
+    let text = fixture.read(&file).replacen(
+        "## Goal\n\nShip a focused change\n",
+        &format!("## Goal\n\n<<<<<<< {branch}\nShip it\n=======\nShip that\n>>>>>>> HEAD\n"),
+        1,
+    );
+    fixture.write(&file, &text);
+    let refused = fixture.fails(&["checkpoint", "--decision", "never written"]);
+    assert!(refused.contains("refused:conflict-markers"), "{refused}");
+    assert!(refused.contains("`<<<<<<<`"), "{refused}");
+    assert!(
+        !refused.contains("ghp_"),
+        "the refusal printed the branch: {refused}"
+    );
 }
