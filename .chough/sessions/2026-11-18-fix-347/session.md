@@ -38,6 +38,9 @@ waiting_on_human:
     opened: 2026-11-18T23:14:52Z
 run_consents: []
 next: Wait for the tester's check and Leif's implementation review of fix-347
+title: A bug's Log links its evidence, and doctor relinks after archiving
+summary:
+  - "A bug's Log entry names each piece of linked evidence as a Markdown link relative to the bug's file, chosen after the evidence is resolved: the open session's entry, or the archived story that holds it as a receipt. Doctor reports a bug whose body still links an entry that left with its archived session as stale_bug_links and appends one Log line linking the story; a bug too near its size bound gets advice instead."
 ---
 # A new bug's Log links its evidence with relative links, and chough doctor reports and fixes a bug link left stale when its session is archived (#347)
 

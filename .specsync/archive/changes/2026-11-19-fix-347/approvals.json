@@ -111,6 +111,13 @@
         "where": "Leif's standing rule of 2026-11-18, relayed by his planning session (hc t4c): when an approved PR's delta goes stale only because main changed the same requirement, and the rebase puts the same added sentences on the newer text with nothing else changed, fable-t4b may record his relayed re-approval and report the PR and requirement. Here: PR #360, REQ-cli-012 and REQ-history-012",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795056745,
+      "digest": "9583243ad1682fd95b348eacde12ea55db9656d5e3bc9706e1d0c978814da34f",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
