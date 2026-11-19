@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "fix-m1-migrate-refuses-before-writing",
+  "slug": "fix-m1-migrate-refuses-before-writing",
+  "title": "Fix m1 migrate refuses before writing",
+  "description": "fix m1 migrate refuses before writing",
+  "kind": "bug_fix",
+  "state": "draft",
+  "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
+  "created_at": 1795068669,
+  "updated_at": 1795068714,
+  "affected_specs": [
+    "records",
+    "cli"
+  ],
+  "affected_paths": [
+    "src/migrate.rs",
+    "src/doctor.rs",
+    "src/bugs.rs",
+    "src/library.rs",
+    "tests/migrate.rs",
+    "tests/migrate_bugs.rs",
+    "tests/migrate_knowledge.rs",
+    "tests/doctor.rs",
+    "docs/cli.md",
+    "changelog.d/",
+    "specs/records/requirements.md",
+    "specs/records/records.spec.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    ".chough/cases/records.migrate-refuses.cases.toml",
+    ".chough/cases/cli.doctor-keeps-alias-pointer.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "doctor --fix after an in-place migration keeps a pointer that names an open session by alias; any entry at a migration target or receipt name counts as taken, the preview never waits and says the apply would refuse, and refusals name relative paths with nothing written; a returning 0.5.x record whose ID is already held is refused by name, and the generated index and feed are rebuilt in place; of several applies of one digest only one applies and records its consent"
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "records and cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval, so each sentence was tried against the binary first. File boundary from the lead's plan: in doctor.rs only the stale-pointer check after a fix is touched. #375 and #338 are left out until Leif chooses.",
+    "public_contract": "yes"
+  }
+}
