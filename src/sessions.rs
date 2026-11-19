@@ -1167,24 +1167,133 @@ pub(super) fn unfinished_archives(root: &Path) -> Result<Vec<String>> {
     Ok(ids)
 }
 
-/// The files of archived session `id`'s folder that are not committed at HEAD as they are.
+/// The files of archived session `id`'s folder that are not committed at HEAD as they
+/// are, leaving out macOS metadata, which the archive finish removes as it is (#377), and
+/// the entries the story does not hold, which it keeps (#381).
 pub(super) fn uncommitted_files(root: &Path, id: &str) -> Result<Vec<String>> {
+    let unheld = unheld_files(root, id)?;
     let mut files = vec![];
     collect_files(root, &format!("{DIR}/{id}"), &mut files)?;
     Ok(files
         .into_iter()
+        .filter(|file| !os_metadata(file) && !unheld.contains(file))
         .filter(|file| !committed_at_head(root, file))
         .collect())
 }
 
-/// Remove an archived session's folder, each file only when committed at HEAD; returns
-/// the files kept (REQ-records-012).
+/// The files of archived session `id`'s folder that its story does not hold, which the
+/// archive finish keeps so no work is lost (REQ-history-012, #381): each evidence entry,
+/// with the files beside it under its name, unless one of the story's receipts has its
+/// ID and equals the receipt it gives now, and each entry of `agent/inbox/`, unfolded
+/// while it is there. Without a story nothing is held.
+pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
+    let folder = format!("{DIR}/{id}");
+    if !local_path(root, &folder)?.is_dir() {
+        return Ok(vec![]);
+    }
+    let story = archive_file(id);
+    let held: Vec<Vec<(String, String)>> = match local_path(root, &story) {
+        Ok(path) if path.is_file() => {
+            let text = read_bounded_record(&path, RecordKind::Story.bound())?;
+            crate::markdown::parse(&story, &text)?.story_receipts(&story)?
+        }
+        _ => vec![],
+    };
+    let mut unheld_ids = vec![];
+    for receipt in crate::evidence::receipts_of(root, id)? {
+        let entry = receipt
+            .iter()
+            .find(|(key, _)| key == "id")
+            .map(|(_, value)| value.clone())
+            .unwrap_or_default();
+        if !held.contains(&receipt) {
+            unheld_ids.push(entry);
+        }
+    }
+    let mut files = vec![];
+    collect_files(root, &format!("{folder}/evidence"), &mut files)?;
+    let mut unheld: Vec<String> = files
+        .into_iter()
+        .filter(|file| {
+            let name = file.rsplit('/').next().unwrap_or_default();
+            let stem = name.split('.').next().unwrap_or_default();
+            !os_metadata(file) && unheld_ids.iter().any(|entry| entry == stem)
+        })
+        .collect();
+    let inbox = inbox_dir(id);
+    for entry in entry_names(root, &inbox)? {
+        unheld.push(format!("{inbox}/{entry}.md"));
+    }
+    unheld.sort();
+    Ok(unheld)
+}
+
+/// What a person commits to finish archived session `id`'s archive (REQ-cli-021, #371):
+/// its folder, its story and its journal post, each when Git does not hold it as it is,
+/// read with one `git status`. A post is the session's when its `record` is the story.
+/// None when Git cannot be read, as in a project that is not a repository, where no
+/// commit can finish it.
+pub(super) fn archive_to_commit(root: &Path, id: &str) -> Option<Vec<String>> {
+    let folder = format!("{DIR}/{id}");
+    let story = archive_file(id);
+    let journal = crate::prefs::effective(root, "library-dir")
+        .map(|(dir, _)| format!("{}/journal", dir.trim_end_matches('/')))
+        .unwrap_or_else(|_| "knowledge/journal".into());
+    let Ok(output) = crate::records::run_owned(
+        std::process::Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(["status", "--porcelain", "--untracked-files=all", "--"])
+            .args([&folder, &story, &journal]),
+        None,
+    ) else {
+        return None;
+    };
+    if !output.status.success() {
+        return None;
+    }
+    let mut paths = vec![];
+    for line in String::from_utf8_lossy(&output.stdout).lines() {
+        let Some(path) = line.get(3..).map(|path| path.trim_matches('"')) else {
+            continue;
+        };
+        let wanted = if path.starts_with(&format!("{folder}/")) {
+            format!("{folder}/")
+        } else if path == story {
+            story.clone()
+        } else if path.starts_with(&format!("{journal}/"))
+            && local_path(root, path)
+                .ok()
+                .and_then(|full| fs::read_to_string(full).ok())
+                .and_then(|text| crate::markdown::parse(path, &text).ok())
+                .is_some_and(|post| post.scalar("record") == Some(story.as_str()))
+        {
+            path.to_string()
+        } else {
+            continue;
+        };
+        if !paths.contains(&wanted) {
+            paths.push(wanted);
+        }
+    }
+    Some(paths)
+}
+
+/// Whether the file at `relative` is macOS metadata (REQ-cli-068).
+fn os_metadata(relative: &str) -> bool {
+    crate::evidence::is_os_metadata(relative.rsplit('/').next().unwrap_or_default())
+}
+
+/// Remove an archived session's folder, each file only when committed at HEAD, keeping
+/// the entries its story does not hold (#381) and removing macOS metadata as it is
+/// (#377); returns the files kept (REQ-records-012).
 pub(super) fn remove_archived_folder(root: &Path, id: &str) -> Result<Vec<String>> {
     ensure!(
         local_path(root, &archive_file(id))?.is_file(),
         "session {id} has no story; it is not archived"
     );
-    remove_committed(root, &format!("{DIR}/{id}"))
+    let unheld = unheld_files(root, id)?;
+    remove_committed_except(root, &format!("{DIR}/{id}"), &unheld)
 }
 
 /// Archive open session `id` as finished, for `chough doctor --fix`.
@@ -1196,11 +1305,20 @@ pub(super) fn archive_open(root: &Path, id: &str) -> Result<()> {
 /// Remove each file under `folder` whose exact bytes are committed at HEAD, then the
 /// folders left empty; return the files kept (REQ-records-012).
 fn remove_committed(root: &Path, folder: &str) -> Result<Vec<String>> {
+    remove_committed_except(root, folder, &[])
+}
+
+/// As [`remove_committed`], keeping each file `keep` names, and removing macOS metadata
+/// whether committed or not, since it holds no work and would keep the folder forever
+/// (REQ-history-012, #377).
+fn remove_committed_except(root: &Path, folder: &str, keep: &[String]) -> Result<Vec<String>> {
     let mut files = vec![];
     collect_files(root, folder, &mut files)?;
     let mut kept = vec![];
     for file in files {
-        if committed_at_head(root, &file) {
+        if keep.contains(&file) {
+            kept.push(file);
+        } else if os_metadata(&file) || committed_at_head(root, &file) {
             fs::remove_file(local_path(root, &file)?)
                 .with_context(|| format!("removing {file}"))?;
         } else {

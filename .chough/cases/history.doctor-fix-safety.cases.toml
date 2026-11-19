@@ -1,0 +1,128 @@
+profile = "chough-testing/1"
+module = "history"
+
+[[case]]
+id = "TC-history-the-archive-finish-keeps-what-the-story-does-not-hold"
+title = "doctor --fix keeps an evidence entry and an inbox entry the archived story does not hold, and names the way out for each (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::the_archive_finish_keeps_what_the_story_does_not_hold passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "the_archive_finish_keeps_what_the_story_does_not_hold"
+
+[[case]]
+id = "TC-history-an-entry-that-differs-from-its-receipt-is-kept"
+title = "doctor --fix keeps an evidence entry whose receipt differs from the one the story holds (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_entry_that_differs_from_its_receipt_is_kept passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_entry_that_differs_from_its_receipt_is_kept"
+
+[[case]]
+id = "TC-history-macos-metadata-never-blocks-the-archive-finish"
+title = "Uncommitted .DS_Store and ._* files never block the archive finish, which removes them (#377)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::macos_metadata_never_blocks_the_archive_finish passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "macos_metadata_never_blocks_the_archive_finish"
+
+[[case]]
+id = "TC-history-next-names-finishing-the-archive"
+title = "next names committing the archive then doctor --fix, then doctor --fix alone, then session new once the folder is gone (#371)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-021", "REQ-history-012"]
+paths = ["src/main.rs", "src/sessions.rs", "tests/next.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/next.rs::next_names_finishing_the_archive_until_the_folder_is_gone passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "next"
+test = "next_names_finishing_the_archive_until_the_folder_is_gone"
+
+[[case]]
+id = "TC-history-a-front-matter-conflict-is-named"
+title = "A Git conflict in a record's front matter gives conflict_markers for each marker line, and unreadable names resolving the conflict, not shelving (#374)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-records-001", "REQ-history-012"]
+paths = ["src/records.rs", "src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_front_matter_conflict_is_named_and_resolved_not_shelved passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_front_matter_conflict_is_named_and_resolved_not_shelved"
+
+[[case]]
+id = "TC-history-a-redacted-timeline-entry-is-not-rewritten"
+title = "A Timeline entry doctor --fix --redact redacted is not timeline_rewritten; a hand edit writing a redaction marker still is (#374)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is"
+
+[[case]]
+id = "TC-history-the-spec-walk-follows-no-link-and-is-bounded"
+title = "The spec walk follows no link out of or back into the project, finishes, and names its bound when a specs folder exceeds it (#402)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-records-014"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::the_spec_walk_follows_no_link_and_is_bounded passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "the_spec_walk_follows_no_link_and_is_bounded"

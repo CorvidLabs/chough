@@ -415,7 +415,9 @@ fn scan_conflicts(text: &str, markdown: bool) -> Scan {
     // A conflict opened inside the current code fence.
     let mut quoted = false;
     let mut scan = Scan::default();
-    for (index, &line) in lines.iter().enumerate().skip(start) {
+    // #374: markers are looked for in the front matter too, where a merge of two
+    // checkpoints leaves them; code fences are only the body's.
+    for (index, &line) in lines.iter().enumerate() {
         if fenced[index] {
             let marker = if line.starts_with("<<<<<<<") {
                 quoted = true;

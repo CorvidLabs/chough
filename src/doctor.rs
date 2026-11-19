@@ -617,10 +617,18 @@ fn timeline_findings(root: &Path) -> Vec<Finding> {
         };
         let head = timeline_entries(&path, &String::from_utf8_lossy(&head));
         let now = timeline_entries(&working, &text);
+        // #374: an entry that equals what redaction makes of HEAD's entry, redacted
+        // again here as `chough doctor --fix --redact` redacts, is not rewritten, since
+        // restoring it would restore the leak; any other difference still is.
+        let local = crate::leaks::Local::current();
         let differing: Vec<String> = head
             .iter()
             .enumerate()
-            .filter(|(position, entry)| now.get(*position) != Some(*entry))
+            .filter(|(position, entry)| {
+                now.get(*position).is_none_or(|current| {
+                    current != *entry && *current != crate::leaks::redact(local, entry).0
+                })
+            })
             .map(|(position, entry)| entry_name(entry, position))
             .collect();
         if differing.is_empty() {
@@ -942,7 +950,11 @@ fn unreadable_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
         let Some(error) = refused else {
             continue;
         };
+        // #374: a record Git left half-merged is resolved, not set aside; its
+        // `conflict_markers` findings name each marker line.
+        let conflicted = !crate::records::conflict_markers(&text).is_empty();
         let fix = match parts.as_slice() {
+            _ if conflicted => "none: resolve the Git conflict in the record by hand in a reviewed change, as its conflict_markers findings name, then run chough doctor again".into(),
             [".chough", "sessions", id, "session.md"] => format!(
                 "none: fix the line by hand in a reviewed change, or set the session aside with `chough session shelve {id}`"
             ),
@@ -991,36 +1003,74 @@ pub(super) struct Exclusions {
     /// The skill bundle's and Chough's top folders that `exclude_dirs` does not list yet,
     /// for that case: excluding them keeps them out of SpecSync's coverage (#279).
     pub(super) unexcluded: Vec<String>,
+    /// The spec walk for `root_code` stopped at its bound (#402), so a root file beyond it
+    /// was not looked for.
+    pub(super) spec_walk_bounded: bool,
 }
+
+/// The bounds of the spec walk for `root_code` (#402): the entries it reads and how many
+/// folders deep it goes.
+const SPEC_WALK_ENTRIES: usize = 4_096;
+const SPEC_WALK_DEPTH: usize = 32;
 
 /// SpecSync's native configuration, whose `source_dirs` Chough reads and never writes.
 const SPECSYNC_CONFIG: &str = ".specsync/config.toml";
 
 /// A file a SpecSync spec covers that sits at the repository root, read from the
 /// `files:` lists of the specs under `specs_dir` (#354): with one, there is no code
-/// folder to narrow `source_dirs` to.
-fn root_code(root: &Path) -> Option<String> {
-    let config = crate::records::read_native_text(&local_path(root, SPECSYNC_CONFIG).ok()?).ok()?;
-    let config: toml::Value = toml::from_str(&config).ok()?;
+/// folder to narrow `source_dirs` to. The walk follows no symbolic link, to a file or a
+/// folder, so a link out of the project counts no outside code and a link cycle cannot
+/// hang it, and it stops at [`SPEC_WALK_ENTRIES`] entries or [`SPEC_WALK_DEPTH`] folders
+/// deep, saying so (#402).
+fn root_code(root: &Path) -> (Option<String>, bool) {
+    let Some(config) = local_path(root, SPECSYNC_CONFIG)
+        .ok()
+        .and_then(|path| crate::records::read_native_text(&path).ok())
+    else {
+        return (None, false);
+    };
+    let Ok(config) = toml::from_str::<toml::Value>(&config) else {
+        return (None, false);
+    };
     let specs = config
         .get("specs_dir")
         .and_then(toml::Value::as_str)
         .unwrap_or("specs")
         .trim_end_matches('/')
         .to_string();
-    let mut pending = vec![local_path(root, &specs).ok()?];
+    let Ok(top) = local_path(root, &specs) else {
+        return (None, false);
+    };
+    let mut pending = vec![(top, 0_usize)];
     let mut found: Vec<String> = vec![];
-    while let Some(dir) = pending.pop() {
+    let mut read = 0_usize;
+    let mut bounded = false;
+    'walk: while let Some((dir, depth)) = pending.pop() {
         let Ok(entries) = std::fs::read_dir(&dir) else {
             continue;
         };
         for entry in entries.flatten() {
-            let path = entry.path();
-            if path.is_dir() {
-                pending.push(path);
+            read += 1;
+            if read > SPEC_WALK_ENTRIES {
+                bounded = true;
+                break 'walk;
+            }
+            let Ok(kind) = entry.file_type() else {
+                continue;
+            };
+            if kind.is_symlink() {
                 continue;
             }
-            if !path.to_string_lossy().ends_with(".spec.md") {
+            let path = entry.path();
+            if kind.is_dir() {
+                if depth + 1 > SPEC_WALK_DEPTH {
+                    bounded = true;
+                } else {
+                    pending.push((path, depth + 1));
+                }
+                continue;
+            }
+            if !kind.is_file() || !path.to_string_lossy().ends_with(".spec.md") {
                 continue;
             }
             let Ok(text) = std::fs::read_to_string(&path) else {
@@ -1047,7 +1097,7 @@ fn root_code(root: &Path) -> Option<String> {
         }
     }
     found.sort();
-    found.into_iter().next()
+    (found.into_iter().next(), bounded)
 }
 
 /// `.chough` and the top folder of each installed skill bundle, as `exclude_dirs` names
@@ -1100,6 +1150,17 @@ impl Exclusions {
             })
     }
 
+    /// What the advice adds when the spec walk stopped at its bound (#402).
+    fn walk_note(&self) -> String {
+        if self.spec_walk_bounded {
+            format!(
+                " The spec walk stopped at its bound of {SPEC_WALK_ENTRIES} entries or {SPEC_WALK_DEPTH} folders deep, so a file at the repository root beyond it was not looked for."
+            )
+        } else {
+            String::new()
+        }
+    }
+
     /// The advice `chough doctor` and `chough init` give while a record prefix is not
     /// listed exactly, or None when all three are.
     pub(super) fn advice(&self) -> Option<String> {
@@ -1126,6 +1187,7 @@ impl Exclusions {
             }
             advice
                 .push_str(" Each is an ordinary reviewed change, and Chough writes neither file.");
+            advice.push_str(&self.walk_note());
             return Some(advice);
         }
         // REQ-records-014 (#251, #279): while SpecSync covers the whole repository, the
@@ -1154,8 +1216,9 @@ impl Exclusions {
                 ""
             };
             return Some(format!(
-                "{} {verb} the whole repository, so SpecSync refuses a verification_ignored_paths entry for Chough's record folders as overlapping it{bundle}. Narrow source_dirs to the folders that hold the code, for example [\"src\"], and keep \".\" out of meaningful_paths{list}; each is an ordinary reviewed change, and Chough writes neither file.",
-                self.whole_repo.join(" and ")
+                "{} {verb} the whole repository, so SpecSync refuses a verification_ignored_paths entry for Chough's record folders as overlapping it{bundle}. Narrow source_dirs to the folders that hold the code, for example [\"src\"], and keep \".\" out of meaningful_paths{list}; each is an ordinary reviewed change, and Chough writes neither file.{}",
+                self.whole_repo.join(" and "),
+                self.walk_note()
             ));
         }
         if self.no_policy {
@@ -1226,6 +1289,7 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
         broader: vec![],
         whole_repo: vec![],
         root_code: None,
+        spec_walk_bounded: false,
         unexcluded: vec![],
     };
     // `source_dirs` lives in SpecSync's config; an unreadable one is SpecSync's to report.
@@ -1240,7 +1304,7 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
         found
             .whole_repo
             .push(format!("source_dirs = [\".\"] in {SPECSYNC_CONFIG}"));
-        found.root_code = root_code(root);
+        (found.root_code, found.spec_walk_bounded) = root_code(root);
         if found.root_code.is_some() {
             found.unexcluded = unexcluded(root);
         }
@@ -1339,6 +1403,7 @@ fn records_in_verification(root: &Path) -> Option<Finding> {
         "missing": exclusions.missing,
         "whole_repo": exclusions.whole_repo,
         "root_code": exclusions.root_code,
+        "spec_walk_bounded": exclusions.spec_walk_bounded,
         "unexcluded": exclusions.unexcluded,
         "specsync": format!("{EXCLUSIONS_SINCE} and later"),
         "advice": advice,
@@ -1620,6 +1685,16 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
             "chough doctor --fix".into(),
             false,
         );
+        // #381: the entries the story does not hold are kept, so the finding names them
+        // and the way out by hand.
+        let unheld = sessions::unheld_files(root, &id)?;
+        if !unheld.is_empty() {
+            finding.fix = format!(
+                "chough doctor --fix, then by hand: {}",
+                keep_or_drop(&unheld)
+            );
+            finding.detail = Some(json!({"kept": unheld}));
+        }
         let uncommitted = sessions::uncommitted_files(root, &id)?;
         if !uncommitted.is_empty() {
             finding.fix = format!(
@@ -1845,18 +1920,37 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         }
         Kind::FinishedSession => sessions::archive_open(root, &finding.target)?,
         Kind::UnfinishedArchive => {
+            let unheld = sessions::unheld_files(root, &finding.target)?;
             let kept = sessions::remove_archived_folder(root, &finding.target)?;
+            let changed: Vec<&String> = kept.iter().filter(|file| !unheld.contains(file)).collect();
             ensure!(
-                kept.is_empty(),
+                changed.is_empty(),
                 "{} changed since it was checked; commit it, then run chough doctor --fix again",
-                kept.join(", ")
+                changed
+                    .iter()
+                    .map(|file| file.as_str())
+                    .collect::<Vec<_>>()
+                    .join(", ")
             );
+            ensure!(unheld.is_empty(), "{}", keep_or_drop(&unheld));
         }
         Kind::UnfinishedSession => {
             sessions::close_session(root, &finding.target, reason.unwrap_or_default())?;
         }
     }
     Ok(())
+}
+
+/// What a person does with the entries an archived session's story does not hold, which
+/// the archive finish keeps (REQ-history-012, #381): keep each in an open session or drop
+/// it in a reviewed commit, then run the fix again.
+fn keep_or_drop(unheld: &[String]) -> String {
+    format!(
+        "{} {} not held by the session's story, so doctor keeps {}; keep an evidence entry by moving it with `git mv`, with the files beside it, into an open session's `evidence/` folder and committing that, or drop it with `git rm` in a reviewed commit; for an unfolded inbox entry, add its text again in an open session with `chough inbox add`, then drop the kept copy with `git rm` in a reviewed commit; then run `chough doctor --fix` again",
+        unheld.join(", "),
+        if unheld.len() == 1 { "is" } else { "are" },
+        if unheld.len() == 1 { "it" } else { "them" }
+    )
 }
 
 /// Run the doctor; returns whether any finding is left unresolved (exit 1).

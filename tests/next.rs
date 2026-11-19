@@ -3317,3 +3317,64 @@ fn at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_refer
         "the unreferenced run {newer} counted as the latest: {action}"
     );
 }
+
+/// REQ-cli-021 (#371), TC-cli-next-names-finishing-the-archive: after the move into
+/// done, while the archived session's folder still holds files, `chough next` names
+/// committing the session folder, the story and the journal post, then `chough doctor
+/// --fix`; after the commit it names `chough doctor --fix`; once the folder is gone it
+/// names only `chough session new <key>`.
+#[test]
+fn next_names_finishing_the_archive_until_the_folder_is_gone() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let id = fixture.active_id();
+    for _ in 0..5 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.commit("alpha at accept");
+    fixture.ok(&["stage", "advance", "--json"]);
+    let folder = format!(".chough/sessions/{id}/");
+    let story = format!(".chough/archive/sessions/{id}.md");
+    assert!(
+        fixture.exists(&folder),
+        "the move into done removed the folder"
+    );
+    let posts: Vec<String> = std::fs::read_dir(fixture.root().join("knowledge/journal"))
+        .map(|entries| {
+            entries
+                .flatten()
+                .map(|entry| entry.file_name().to_string_lossy().into_owned())
+                .filter(|name| name.ends_with(".md"))
+                .collect()
+        })
+        .unwrap_or_default();
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.contains(&format!("Finish the archive of session {id}")),
+        "{shown}"
+    );
+    assert!(shown.contains(&folder) && shown.contains(&story), "{shown}");
+    for post in &posts {
+        assert!(shown.contains(post.as_str()), "{post}: {shown}");
+    }
+    assert!(
+        shown.contains("git commit") && shown.contains("chough doctor --fix"),
+        "{shown}"
+    );
+
+    fixture.commit("the archive");
+    let shown = text(&fixture, &["next"]);
+    assert!(
+        shown.contains(&format!(
+            "Finish the archive of session {id} with chough doctor --fix"
+        )),
+        "{shown}"
+    );
+    assert!(shown.contains("Run: chough doctor --fix"), "{shown}");
+
+    let _ = fixture.run(&["doctor", "--fix"]);
+    assert!(!fixture.exists(&folder));
+    let shown = text(&fixture, &["next"]);
+    assert!(shown.contains("chough session new <key>"), "{shown}");
+    assert!(!shown.contains("doctor --fix"), "{shown}");
+}

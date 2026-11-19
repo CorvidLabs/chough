@@ -1105,11 +1105,51 @@ fn no_open_session(root: &Path, as_json: bool) -> String {
     let scan = skill::known_outdated(root);
     let skill_outdated = scan.outdated.len();
     let host_updates = scan.host_updates();
-    let action = json!({
-        "action": "Start the next piece of work in a new session.",
-        "reason": "There is no open session, the normal state after the move into done archives one.",
-        "command": NEW_SESSION,
-    });
+    // REQ-cli-021 (#371): while an archived session's folder still holds files, finishing
+    // that archive comes first: commit what is not committed, then `chough doctor --fix`.
+    // Where Git cannot be read no commit can finish it, so a new session comes next, as
+    // before.
+    let unfinished = sessions::unfinished_archives(root)
+        .ok()
+        .and_then(|ids| ids.into_iter().next())
+        .and_then(|id| sessions::archive_to_commit(root, &id).map(|commit| (id, commit)));
+    let action = match &unfinished {
+        Some((id, commit)) => {
+            let command = if commit.is_empty() {
+                "chough doctor --fix".to_string()
+            } else {
+                format!(
+                    "git add -- {} && git commit -m \"Archive the {id} session and its journal post.\" && chough doctor --fix",
+                    commit.join(" ")
+                )
+            };
+            // An entry the story does not hold stays until it is moved or dropped by hand,
+            // as the finding's way out says (#381).
+            let kept = sessions::unheld_files(root, id).is_ok_and(|files| !files.is_empty());
+            let action = if !commit.is_empty() {
+                format!(
+                    "Finish the archive of session {id}: commit {}, then run chough doctor --fix.",
+                    commit.join(", ")
+                )
+            } else if kept {
+                format!(
+                    "Finish the archive of session {id} with chough doctor --fix, then move or drop by hand each entry it keeps, as its finding says."
+                )
+            } else {
+                format!("Finish the archive of session {id} with chough doctor --fix.")
+            };
+            json!({
+                "action": action,
+                "reason": format!("There is no open session: the move into done archived session {id}, and its folder stays until its files are committed and `chough doctor --fix` removes them; then start the next piece of work with `chough session new <key>`."),
+                "command": command,
+            })
+        }
+        None => json!({
+            "action": "Start the next piece of work in a new session.",
+            "reason": "There is no open session, the normal state after the move into done archives one.",
+            "command": NEW_SESSION,
+        }),
+    };
     if as_json {
         return format!(
             "{}\n",
@@ -1129,9 +1169,10 @@ fn no_open_session(root: &Path, as_json: bool) -> String {
         String::new()
     };
     format!(
-        "Session: none open\n{nudge}Next: {}\n  Why: {}\n  Run: {NEW_SESSION}\n",
+        "Session: none open\n{nudge}Next: {}\n  Why: {}\n  Run: {}\n",
         action["action"].as_str().unwrap_or_default(),
-        action["reason"].as_str().unwrap_or_default()
+        action["reason"].as_str().unwrap_or_default(),
+        action["command"].as_str().unwrap_or_default()
     )
 }
 
