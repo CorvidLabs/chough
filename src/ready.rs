@@ -442,14 +442,19 @@ fn questions_from(id: &str, output: &Output) -> Vec<Finding> {
 
 fn export_findings(root: &Path, change: &Change) -> Vec<Finding> {
     let cache = root.join(".specsync/hashes.json");
-    let before = Cache::observe(&cache);
-    let mut after = Cache::Absent;
+    let mut before = Cache::observe(&cache);
+    // With no cache yet, make the empty file SpecSync will fill, so the one removed
+    // afterwards is provably this report's own: seeing a file after SpecSync ran does
+    // not show who made it. If something appears first, it is not ours; look again.
+    if before == Cache::Absent {
+        before = match make_cache(&cache) {
+            Some((device, inode)) => Cache::Made(device, inode),
+            None => Cache::observe(&cache),
+        };
+    }
     let mut findings = Vec::new();
     for module in &change.affected_specs {
-        let ran = specsync(root, &["check", "--spec", module, "--format", "json"]);
-        // What SpecSync left right after this run: the only state a restore may undo.
-        after = Cache::observe(&cache);
-        let output = match ran {
+        let output = match specsync(root, &["check", "--spec", module, "--format", "json"]) {
             Ok(output) => output,
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
                 findings.push(Finding {
@@ -504,7 +509,7 @@ fn export_findings(root: &Path, change: &Change) -> Vec<Finding> {
         }
     }
     // Not a finding: REQ-cli-067 lists what the report names, and nothing else.
-    if !restore_cache(&cache, &before, &after) {
+    if !restore_cache(&cache, &before) {
         eprintln!(
             ".specsync/hashes.json was replaced while this report ran, so it was left as it is now"
         );
@@ -513,7 +518,12 @@ fn export_findings(root: &Path, change: &Change) -> Vec<Finding> {
 }
 
 fn export_warning(warning: &str) -> Option<(&str, &str)> {
-    let rest = warning.strip_prefix("Undocumented export '")?;
+    // SpecSync 6.3.0 puts the spec's path first: `specs/<m>/<m>.spec.md: Undocumented
+    // export '<symbol>' from <file>`. The bare form is read too.
+    let (spec, rest) = warning.split_once("Undocumented export '")?;
+    if !(spec.is_empty() || spec.ends_with(": ")) {
+        return None;
+    }
     let (symbol, rest) = rest.split_once("' from ")?;
     let file = rest.trim();
     (!symbol.is_empty() && !file.is_empty()).then_some((symbol, file))
@@ -527,6 +537,8 @@ enum Cache {
     Regular(u64, u64, Vec<u8>),
     /// A symlink or anything else that is not a regular file. Never read or written.
     Other,
+    /// No cache was there, so this report made an empty one: its device and inode.
+    Made(u64, u64),
 }
 
 impl Cache {
@@ -573,23 +585,39 @@ fn open_cache(path: &Path, write: bool) -> io::Result<(fs::File, u64, u64)> {
     Ok((file, identity.0, identity.1))
 }
 
+/// Make the empty cache file, only if nothing is at its path, and say which file it is.
+fn make_cache(path: &Path) -> Option<(u64, u64)> {
+    fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(path)
+        .ok()?;
+    open_cache(path, false)
+        .ok()
+        .map(|(_, device, inode)| (device, inode))
+}
+
 /// Put the cache back as the report found it (REQ-cli-067), but only while it is still
-/// the file this report's own SpecSync runs wrote. A cache another process replaced
+/// the file this report can show is its own. A cache another process made or replaced
 /// meanwhile, by a regular file or a symlink, is theirs: it is left alone and the
 /// caller says so. False when it was left changed.
 ///
-/// What is ours: with a cache before, the same file (device and inode) SpecSync
-/// rewrote in place; with none before, the file exactly as it was right after the last
-/// run. Another writer that rewrites the same file in place between two looks cannot
-/// be told from SpecSync and is not detected.
-fn restore_cache(path: &Path, before: &Cache, after: &Cache) -> bool {
+/// What is ours: with a cache before, the same file (device and inode), which SpecSync
+/// rewrites in place; with none before, the empty file this report made. Another
+/// writer that rewrites that same file in place cannot be told from SpecSync and is
+/// not detected.
+fn restore_cache(path: &Path, before: &Cache) -> bool {
     let now = Cache::observe(path);
     match (before, &now) {
         // Never ours to touch: it was not a regular file when the report started.
         (Cache::Other, _) => true,
-        (Cache::Absent, Cache::Absent) => true,
-        (Cache::Absent, now @ Cache::Regular(..)) => now == after && fs::remove_file(path).is_ok(),
-        (Cache::Absent, Cache::Other) => false,
+        // Something appeared after the look and before this report could make its own.
+        (Cache::Absent, _) => matches!(now, Cache::Absent),
+        (Cache::Made(..), Cache::Absent) => true,
+        (Cache::Made(device, inode), Cache::Regular(now_device, now_inode, _)) => {
+            (device, inode) == (now_device, now_inode) && fs::remove_file(path).is_ok()
+        }
+        (Cache::Made(..), _) => false,
         (Cache::Regular(device, inode, bytes), Cache::Regular(now_device, now_inode, held)) => {
             if (device, inode) != (now_device, now_inode) {
                 return false;
@@ -1448,9 +1476,10 @@ fn parse_delta(content: &str) -> Result<Vec<Item>, String> {
 }
 
 fn strip_prefix_ignore_ascii<'a>(value: &'a str, prefix: &str) -> Option<&'a str> {
-    let length = prefix.len();
-    (value.len() >= length && value.as_bytes()[..length].eq_ignore_ascii_case(prefix.as_bytes()))
-        .then_some(&value[length..])
+    // `get` gives nothing for a value shorter than the prefix or cut inside a
+    // character, where a plain slice would panic (the review of #311).
+    let (head, rest) = (value.get(..prefix.len())?, value.get(prefix.len()..)?);
+    head.eq_ignore_ascii_case(prefix).then_some(rest)
 }
 
 fn delta_digest(module: &str, body: &str) -> String {
@@ -1600,6 +1629,55 @@ fn lcs(left: &[&str], right: &[&str]) -> Vec<Option<usize>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The review of #311: a heading shorter than the prefix, or one whose text is cut
+    /// inside a character at the prefix's length, is no match and never a panic.
+    #[test]
+    fn a_short_or_multi_byte_heading_is_no_prefix_match() {
+        assert_eq!(strip_prefix_ignore_ascii("Notes", "REQUIREMENT "), None);
+        assert_eq!(strip_prefix_ignore_ascii("", "REQUIREMENT "), None);
+        // 12 bytes in, this text is inside a two-byte character.
+        assert_eq!(
+            strip_prefix_ignore_ascii("Ünïcödé notes", "REQUIREMENT "),
+            None
+        );
+        assert_eq!(
+            strip_prefix_ignore_ascii("Übersicht", "SPEC SECTION "),
+            None
+        );
+        assert_eq!(
+            strip_prefix_ignore_ascii("requirement REQ-cli-001", "REQUIREMENT "),
+            Some("REQ-cli-001")
+        );
+        assert_eq!(
+            strip_prefix_ignore_ascii("REQUIREMENT Ünïcödé", "REQUIREMENT "),
+            Some("Ünïcödé")
+        );
+    }
+
+    /// The tester's finding on #311: the warning as SpecSync 6.3.0 prints it, with the
+    /// spec's path first, and its count line, which is not an export.
+    #[test]
+    fn an_export_warning_is_read_as_specsync_prints_it() {
+        assert_eq!(
+            export_warning(
+                "specs/auth/auth.spec.md: Undocumented export 'logout' from src/auth.rs"
+            ),
+            Some(("logout", "src/auth.rs"))
+        );
+        assert_eq!(
+            export_warning("Undocumented export 'logout' from src/auth.rs"),
+            Some(("logout", "src/auth.rs"))
+        );
+        assert_eq!(
+            export_warning("specs/auth/auth.spec.md: 1/2 exports documented"),
+            None
+        );
+        assert_eq!(
+            export_warning("a note that quotes Undocumented export 'x' from y"),
+            None
+        );
+    }
 
     #[test]
     fn the_framed_delta_digest_matches_specsyncs_construction() {
