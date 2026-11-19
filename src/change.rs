@@ -99,7 +99,41 @@ pub(super) struct ShipArgs {
 const SUMMARY_LINES: usize = 12;
 
 /// Run one step and return the exit code to end with.
+/// REQ-cli-057 (G1, #367): an argument SpecSync would write or echo back is checked
+/// before SpecSync runs. One holding a credential, a personal value or a control
+/// character is refused, naming the argument and what it holds and never the value;
+/// `--redact` does not change this, since SpecSync, not Chough, would write it.
+fn refuse_unshowable(arguments: &[(&str, &str)]) -> Result<()> {
+    for (name, value) in arguments {
+        if let Some(held) = crate::leaks::unshowable(value) {
+            bail!(
+                "refused:unshowable-argument: the {name} argument holds {held}, so SpecSync was not run and nothing was written.\nGive the {name} without it and run the command again."
+            );
+        }
+    }
+    Ok(())
+}
+
 pub(super) fn run(root: &Path, command: ChangeCommand) -> Result<i32> {
+    match &command {
+        ChangeCommand::New {
+            kind, specs, paths, ..
+        } => {
+            let mut checked: Vec<(&str, &str)> = vec![];
+            if let Some(kind) = kind {
+                checked.push(("kind", kind));
+            }
+            checked.extend(specs.iter().map(|spec| ("spec", spec.as_str())));
+            checked.extend(paths.iter().map(|path| ("path", path.as_str())));
+            refuse_unshowable(&checked)?;
+        }
+        ChangeCommand::Answer { id, question, .. } => {
+            refuse_unshowable(&[("id", id), ("question", question)])?;
+        }
+        ChangeCommand::Check { id, .. } => refuse_unshowable(&[("id", id)])?,
+        ChangeCommand::Status { id: Some(id) } => refuse_unshowable(&[("id", id)])?,
+        _ => {}
+    }
     let (step, arguments, read) = match command {
         ChangeCommand::New {
             description,

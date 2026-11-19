@@ -14,7 +14,7 @@ artifact: tasks
 - [x] #369: `change ship` passes its resolved session to the gate close and the move.
 - [x] #400: the history check covers the whole range and refuses when Git cannot
       list or read it.
-- [ ] After #407 merges: `chough change` arguments are checked before SpecSync runs.
+- [x] After #407 merges: `chough change` arguments are checked before SpecSync runs.
 - [x] `docs/cli.md`, case definitions and the changelog fragment.
 
 Human gates (not checkboxes): scope approval, implementation review, merge.

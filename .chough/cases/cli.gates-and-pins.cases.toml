@@ -110,3 +110,21 @@ expected = ["tests/change.rs::ship_in_a_shallow_clone_without_the_base_names_fet
 adapter = "cargo-test"
 test_target = "change"
 test = "ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow"
+
+[[case]]
+id = "TC-cli-change-commands-refuse-a-leaking-argument"
+title = "chough change new, answer, check and status refuse a kind, spec, path, id or question holding a credential or a control character before SpecSync runs, naming the argument and never the value, with or without --redact"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::change_commands_refuse_a_leaking_argument_before_specsync_runs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "change_commands_refuse_a_leaking_argument_before_specsync_runs"

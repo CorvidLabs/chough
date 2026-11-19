@@ -8,3 +8,6 @@
 - `chough inbox list` lists the pinned session (#393).
 - `chough session use` and `session new` say on standard error when a pin still names
   another session, and `chough session shelve` takes an alias or bare slug (#372).
+- `chough change new`, `answer`, `check` and `status` refuse an argument that holds a
+  credential or a control character before SpecSync runs, so SpecSync's own error
+  cannot show it (#367).

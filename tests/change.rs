@@ -1651,3 +1651,57 @@ fn ship_keeps_the_session_it_started_from_when_the_pointer_moves() {
     assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
     assert_eq!(fixture.read(&other_file), before);
 }
+
+/// REQ-cli-057 (G1, #367): before SpecSync runs, `chough change` refuses an id, kind,
+/// spec, path or question argument that holds a credential or a control character,
+/// naming the argument and what it holds and showing none of the value, with or
+/// without `--redact`, since SpecSync, not Chough, would write or echo it.
+#[test]
+fn change_commands_refuse_a_leaking_argument_before_specsync_runs() {
+    let fixture = fixture();
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    let escape = "fix-\u{1b}[31m";
+    let cases: Vec<(Vec<&str>, &str, &str)> = vec![
+        (
+            vec!["change", "new", "SYNTHETIC work", "--path", token],
+            "path",
+            "ghp_",
+        ),
+        (
+            vec!["change", "new", "SYNTHETIC work", "--spec", token],
+            "spec",
+            "ghp_",
+        ),
+        (
+            vec!["change", "new", "SYNTHETIC work", "--kind", token],
+            "kind",
+            "ghp_",
+        ),
+        (vec!["change", "status", token], "id", "ghp_"),
+        (vec!["change", "check", escape], "id", "\u{1b}"),
+        (
+            vec!["change", "answer", "free-shipping", token, "an answer"],
+            "question",
+            "ghp_",
+        ),
+    ];
+    for (args, named, hidden) in cases {
+        for redact in [false, true] {
+            let _ = std::fs::remove_file(fixture.root().join(".stub-argv"));
+            let mut args = args.clone();
+            if redact {
+                args.insert(0, "--redact");
+            }
+            let output = run_env(&fixture, &args, &[]);
+            let said = format!(
+                "{}{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert_eq!(output.status.code(), Some(1), "{args:?}: {said}");
+            assert!(said.contains(named), "{args:?}: {said}");
+            assert!(!said.contains(hidden), "{args:?} shows the value: {said}");
+            assert!(!fixture.exists(".stub-argv"), "{args:?}: SpecSync ran");
+        }
+    }
+}

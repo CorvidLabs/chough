@@ -1190,6 +1190,10 @@ nothing and writes nothing under `.chough/`.
   SpecSync and its descendants (FLOW-14).
 - When `specsync` cannot be started, the step refuses with exit 1 and runs nothing,
   naming `cargo install --locked specsync@6.3.0` and the step to run again.
+- An id, kind, spec, path or question that holds a credential, a personal value or a
+  control character is refused before SpecSync runs, as
+  `refused:unshowable-argument`, naming the argument and what it holds but not the value,
+  with or without `--redact`, since SpecSync would write or echo it (#367).
 
 A human's approval and review run through their gate (see
 [Relayed decisions at gates](#relayed-decisions-at-gates)).
