@@ -92,7 +92,7 @@ impl Local {
     }
 
     /// Another name of the local user.
-    pub(crate) fn add_user(&mut self, user: &str) {
+    pub(super) fn add_user(&mut self, user: &str) {
         let user = user.trim();
         if user.len() >= 2
             && user.bytes().all(name_byte)
@@ -104,7 +104,7 @@ impl Local {
 
     /// Another name of this machine: the name, its first label and each as its
     /// `<name>.local` Bonjour name (#368).
-    pub(crate) fn add_host(&mut self, host: &str) {
+    pub(super) fn add_host(&mut self, host: &str) {
         let host = host.trim();
         let label = host.split('.').next().unwrap_or(host);
         let bonjour = format!("{label}.local");
@@ -242,7 +242,7 @@ pub(crate) fn check(local: &Local, field: &str, value: &str) -> Result<()> {
 /// What `value` holds that an error must not show (REQ-records-006, #367): the kinds of
 /// leak it matches, and control characters, invisible formatting ones included, or
 /// `None` when an error may show it.
-pub(crate) fn unshowable(value: &str) -> Option<String> {
+pub(super) fn unshowable(value: &str) -> Option<String> {
     let mut held: Vec<&str> = find(Local::current(), value)
         .iter()
         .map(|found| found.kind.name())
@@ -257,7 +257,7 @@ pub(crate) fn unshowable(value: &str) -> Option<String> {
 
 /// `value`, given as `field`, as an error shows it (REQ-records-006, #367): the value
 /// itself when it is clean, otherwise `<field holding what>`, never the value.
-pub(crate) fn shown(field: &str, value: &str) -> String {
+pub(super) fn shown(field: &str, value: &str) -> String {
     match unshowable(value) {
         None => value.to_string(),
         Some(held) => format!("<{field} holding {held}>"),
