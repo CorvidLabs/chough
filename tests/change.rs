@@ -1872,3 +1872,73 @@ fn refetch_with_a_remote_named(name: &str) {
         String::from_utf8_lossy(&output.stderr)
     );
 }
+
+/// REQ-cli-059 (#400, fable-lead's read of #413): with several remotes and none that
+/// the branch tracks, the refusal names them, quoted, and says to pick the one that
+/// holds the history; it does not say to add a remote. Filling in one name works.
+#[cfg(unix)]
+#[test]
+fn several_untracked_remotes_are_named_to_choose_from() {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    let lost = head_of(&fixture);
+    fixture.write("notes.txt", "later work\n");
+    fixture.commit("later work");
+    let remote = tempfile::tempdir().unwrap();
+    let bare = remote.path().join("upstream.git");
+    let cloned = std::process::Command::new("git")
+        .args(["clone", "-q", "--bare"])
+        .arg(fixture.root())
+        .arg(&bare)
+        .output()
+        .unwrap();
+    assert!(cloned.status.success());
+    for name in ["upstream", "fork"] {
+        fixture.git(&["remote", "add", name, &bare.display().to_string()]);
+    }
+    let object = fixture
+        .root()
+        .join(".git/objects")
+        .join(&lost[..2])
+        .join(&lost[2..]);
+    std::fs::remove_file(&object).unwrap();
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "the ship ran: {stderr}");
+    assert!(
+        stderr.contains("'fork'") && stderr.contains("'upstream'"),
+        "{stderr}"
+    );
+    assert!(!stderr.contains("git remote add"), "{stderr}");
+    let line = stderr
+        .lines()
+        .find(|line| line.contains("git fetch --refetch"))
+        .unwrap();
+    let command = line
+        .split('`')
+        .nth(1)
+        .unwrap()
+        .replace("<remote>", "'upstream'");
+    let fetched = std::process::Command::new("sh")
+        .args(["-c", &command])
+        .current_dir(fixture.root())
+        .env("GIT_TERMINAL_PROMPT", "0")
+        .output()
+        .unwrap();
+    assert!(
+        fetched.status.success(),
+        "`{command}`: {}",
+        String::from_utf8_lossy(&fetched.stderr)
+    );
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}

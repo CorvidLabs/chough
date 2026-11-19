@@ -718,15 +718,20 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     // The remote to fetch from, by its real name so the command pastes as printed: the
     // one the current branch tracks, else the only remote there is (the tester's
     // recheck of #413).
-    let remote = git(&["symbolic-ref", "--quiet", "--short", "HEAD"])
+    let tracked = git(&["symbolic-ref", "--quiet", "--short", "HEAD"])
         .and_then(|branch| git(&["config", &format!("branch.{}.remote", branch.trim())]))
         .map(|remote| remote.trim().to_string())
-        .filter(|remote| !remote.is_empty() && remote != ".")
-        .or_else(|| {
-            let remotes = git(&["remote"])?;
-            let names: Vec<&str> = remotes.lines().filter(|name| !name.is_empty()).collect();
-            (names.len() == 1).then(|| names[0].to_string())
-        });
+        .filter(|remote| !remote.is_empty() && remote != ".");
+    let remotes: Vec<String> = git(&["remote"])
+        .map(|names| {
+            names
+                .lines()
+                .filter(|name| !name.is_empty())
+                .map(String::from)
+                .collect()
+        })
+        .unwrap_or_default();
+    let remote = tracked.or_else(|| (remotes.len() == 1).then(|| remotes[0].clone()));
     let refetch = match &remote {
         // A name that cannot be shown is not printed, so there is nothing to paste.
         Some(remote) if crate::leaks::unshowable(remote).is_some() => format!(
@@ -739,6 +744,24 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
             "Run `git fetch --refetch -- {}` to fetch every object again, then the ship.",
             shell_quoted(remote)
         ),
+        // Several remotes and none tracked: they exist, so name a few to choose from.
+        None if !remotes.is_empty() => {
+            let mut named: Vec<String> = remotes
+                .iter()
+                .take(5)
+                .map(|remote| match crate::leaks::unshowable(remote) {
+                    Some(_) => crate::leaks::shown("remote", remote),
+                    None => shell_quoted(remote),
+                })
+                .collect();
+            if remotes.len() > 5 {
+                named.push(format!("{} more (`git remote`)", remotes.len() - 5));
+            }
+            format!(
+                "Run `git fetch --refetch -- <remote>` with the remote that holds this history, one of {}, to fetch every object again, then the ship.",
+                named.join(", ")
+            )
+        }
         None => "Add the remote that holds this history with `git remote add <name> <url>`, then run `git fetch --refetch -- <name>` to fetch every object again, then the ship.".to_string(),
     };
     let unchecked = |what: &str| {
