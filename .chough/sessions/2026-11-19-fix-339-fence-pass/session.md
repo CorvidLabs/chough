@@ -20,6 +20,8 @@ observations:
   - 2026-11-19-tc-records-many-unclosed-fence-openers-are-scanned-in-bounded
   - 2026-11-19-tc-records-a-fence-hides-a-conflict-only-when-closed-095bfc
   - 2026-11-19-tc-records-a-fenced-example-and-a-lone-separator-both-save-96b8af
+  - 2026-11-19-tc-records-many-unclosed-fence-openers-are-scanned-in-bounded-5263f6
+  - 2026-11-19-tc-records-doctor-warns-of-a-conflict-inside-a-code-fence-e78f03
 bugs: []
 blockers: []
 waiting_on_human:
@@ -47,6 +49,8 @@ The code-fence scan visits each line a bounded number of times, so many unclosed
 - [Ran cargo test --locked --test records -- --exact many_unclosed_fence_openers_are_scanned_in_bounded_time for TC-records-many-unclosed-fence-openers-are-scanned-in-bounded-time: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-many-unclosed-fence-openers-are-scanned-in-bounded.md)
 - [Ran cargo test --locked --test records -- --exact a_fence_hides_a_conflict_only_when_it_is_one_and_closes for TC-records-a-fence-hides-a-conflict-only-when-closed: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-fence-hides-a-conflict-only-when-closed-095bfc.md)
 - [Ran cargo test --locked --test records -- --exact a_fenced_example_and_a_lone_separator_both_save for TC-records-a-fenced-example-and-a-lone-separator-both-save: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-fenced-example-and-a-lone-separator-both-save-96b8af.md)
+- [Ran cargo test --locked --test records -- --exact many_unclosed_fence_openers_are_scanned_in_bounded_time for TC-records-many-unclosed-fence-openers-are-scanned-in-bounded-time: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-many-unclosed-fence-openers-are-scanned-in-bounded-5263f6.md)
+- [Ran cargo test --locked --test doctor -- --exact doctor_warns_of_a_conflict_inside_a_code_fence for TC-records-doctor-warns-of-a-conflict-inside-a-code-fence: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-doctor-warns-of-a-conflict-inside-a-code-fence-e78f03.md)
 
 ## Open threads
 
