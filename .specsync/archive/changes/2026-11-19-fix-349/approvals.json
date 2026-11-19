@@ -107,6 +107,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) on 2026-11-18 as his scope for #349 part 3, to be added in #358 before it merges: each limitation up to 512 bytes, up to 8 per evidence entry, more refused with nothing written. The REQ-history-006 delta is the same added clause rewritten onto main's newer text, re-approved under his standing rule for today ('Yes, for today')",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795051000,
+      "digest": "1d1670793a089e33a3923eb66d4aa06c01fdd7568e311630d5c3d936b3994476",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

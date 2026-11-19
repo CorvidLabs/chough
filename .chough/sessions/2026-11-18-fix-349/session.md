@@ -30,6 +30,9 @@ waiting_on_human:
     opened: 2026-11-18T22:52:24Z
 run_consents: []
 next: Wait for the tester's check and Leif's implementation review of fix-349
+title: A story's verified line shows limitations, bounded
+summary:
+  - An archived story's What was verified line now shows an entry's limitations beside its claim, always on one line (#349). A person may give an entry at most 8 limitations of 512 bytes each; evidence add and cases record refuse more with nothing written, since a story writes each limitation twice. Tests failed first for the line, for multi-line text and at the bound; the verify lane passed on macOS after main was merged in, and tester2 passed the rechecks. Linux was not run locally. Limitations as a list in receipts, and the per-session overflow, are left for later.
 ---
 # An archived story's What was verified line shows each entry's limitations beside its claim (REQ-history-006, #349 part 1)
 
