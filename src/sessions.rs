@@ -833,7 +833,22 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
         SessionCommand::Close { key, reason } => print_json(&close_session(root, &key, &reason)?),
         SessionCommand::Shelve { key } => {
             lock_project(root)?;
-            shelve(root, &key)
+            // REQ-cli-037 (#372): a session folder's name is that folder; any other key
+            // resolves as `session use` resolves it, by alias or bare slug.
+            let folder = if valid_change_id(&key)
+                && local_path(root, &format!("{DIR}/{key}"))?.is_dir()
+            {
+                key
+            } else {
+                // A key that names several sessions is refused as `session use`
+                // refuses it; one that names none falls through to the folder check.
+                match resolve_open(root, &key) {
+                    Ok(id) => id,
+                    Err(error) if error.to_string().contains("more than one") => return Err(error),
+                    Err(_) => key,
+                }
+            };
+            shelve(root, &folder)
         }
     }
 }

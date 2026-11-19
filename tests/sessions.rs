@@ -2055,3 +2055,65 @@ fn after_the_move_into_done_next_exits_0_and_status_refuses() {
     let next = fixture.ok_text(&["next"]);
     assert!(next.starts_with("Objective: Ship beta\n"), "{next}");
 }
+
+/// REQ-cli-037 (#372): `session shelve` takes a key that is a session folder's name as
+/// that folder, and any other key as `session use` resolves it, by alias or bare slug,
+/// refusing one that names several; a session whose record cannot be read is still
+/// shelved by its folder name or bare slug.
+#[test]
+fn session_shelve_resolves_its_key_as_session_use_does() {
+    let shelved = |fixture: &Fixture, key: &str| -> String {
+        fixture.ok(&["session", "shelve", key])["shelved"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    // By alias, which is also the bare slug here.
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    let alpha = fixture.id_of("alpha");
+    assert_eq!(
+        shelved(&fixture, "alpha"),
+        format!(".chough/archive/shelved/{alpha}")
+    );
+    // An unreadable session by its bare slug.
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    let beta = fixture.id_of("beta");
+    fixture.write(
+        &format!(".chough/sessions/{beta}/session.md"),
+        "not a record\n",
+    );
+    assert_eq!(
+        shelved(&fixture, "beta"),
+        format!(".chough/archive/shelved/{beta}")
+    );
+    // A folder name that is also another session's alias is that folder.
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    let alpha = fixture.id_of("alpha");
+    let beta_file = fixture.session_file_of("beta");
+    let text = fixture
+        .read(&beta_file)
+        .replace("aliases: [beta]", &format!("aliases: [beta, {alpha}]"));
+    fixture.write(&beta_file, &text);
+    assert_eq!(
+        shelved(&fixture, &alpha),
+        format!(".chough/archive/shelved/{alpha}")
+    );
+    assert!(fixture.exists(&beta_file));
+    // A key that names several open sessions is refused, and nothing moves.
+    let fixture = Fixture::new();
+    sessions(&fixture);
+    let alpha_file = fixture.session_file_of("alpha");
+    let beta_file = fixture.session_file_of("beta");
+    for file in [&alpha_file, &beta_file] {
+        let text = fixture
+            .read(file)
+            .replacen("aliases: [", "aliases: [shared, ", 1);
+        fixture.write(file, &text);
+    }
+    let refused = fixture.fails(&["session", "shelve", "shared"]);
+    assert!(refused.contains("more than one"), "{refused}");
+    assert!(fixture.exists(&alpha_file) && fixture.exists(&beta_file));
+}
