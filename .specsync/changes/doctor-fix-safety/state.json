@@ -7,11 +7,10 @@
   "title": "Doctor fix safety",
   "description": "doctor fix safety",
   "kind": "bug_fix",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "approved",
   "base_commit": "6936f88f47a2c69f9febf15822678f1d804ff027",
   "created_at": 1795056773,
-  "updated_at": 1795066747,
+  "updated_at": 1795098605,
   "affected_specs": [
     "history",
     "cli",
@@ -31,7 +30,11 @@
     "tests/history.rs",
     "docs/cli.md",
     "changelog.d/2026-11-19-doctor-fix-safety.md",
-    ".chough/cases/history.doctor-fix-safety.cases.toml"
+    ".chough/cases/history.doctor-fix-safety.cases.toml",
+    "tests/reduce.rs",
+    "src/evidence.rs",
+    ".chough/cases/records.doctor-fix-safety.cases.toml",
+    ".chough/cases/cli.doctor-fix-safety.cases.toml"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
