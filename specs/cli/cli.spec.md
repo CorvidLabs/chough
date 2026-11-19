@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 120
+version: 121
 status: active
 files:
   - src/main.rs
@@ -400,3 +400,4 @@ provider, runtime or hosted service.
 | 118 | 2026-11-19 | fix-361: Fix 361 |
 | 119 | 2026-11-19 | fix-347: Fix 347 |
 | 120 | 2026-11-19 | leaks-and-output: Leaks and output |
+| 121 | 2026-11-19 | fix-g1-gates-and-pins-fail-closed: Fix g1 gates and pins fail closed |

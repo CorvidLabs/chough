@@ -1,6 +1,6 @@
 ---
 id: fix-g1-gates-and-pins-fail-closed
-state: approved
+state: implementing
 type: bug_fix
 base_commit: 9d260310bca8553a0203e5ef90bc8372b4e15aae
 ---

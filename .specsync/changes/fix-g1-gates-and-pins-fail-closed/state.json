@@ -7,10 +7,11 @@
   "title": "Fix g1 gates and pins fail closed",
   "description": "fix g1 gates and pins fail closed",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
   "created_at": 1795065230,
-  "updated_at": 1795099695,
+  "updated_at": 1795100391,
   "affected_specs": [
     "cli",
     "history"
