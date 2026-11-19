@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: "Gate \"Scope approval of fix-g1-gates-and-pins-fail-closed with the narrowed #400 sentence (native approval)\" closed (approved); run `chough stage advance` to move on."
 ---
 # Gates and session pins fail closed: a hand-edited no_native_change cannot unlock the ungated move, change ship checks its whole history and writes only to its pinned session, inbox list and session shelve honor the pin and aliases, and session use says when CHOUGH_SESSION still wins (#401, #400, #369, #393, #372)
 
@@ -34,6 +34,8 @@ Gates and session pins fail closed: a hand-edited no_native_change cannot unlock
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-g1-gates-and-pins-fail-closed": "Approve, both as recommended / Approve / Yes, covered" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53). Three answers in order: 'Approve, both as recommended' (Claude Code chat answer, 2026-11-19 about 05:21Z, on G1 at 6a7c7d56 with #372 say-so and #400 whole-range); 'Approve' (about 06:12Z, on declaring history, dropping src/session_md.rs, adding the history spec files and moving the inbox criterion); 'Yes, covered' (2026-11-19 morning MST, on the two case files in place of .chough/cases/ and the re-answered constraints). Scope as checked by fable-lead at e219ab98); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-g1-gates-and-pins-fail-closed as 0xLeif
+- 0xLeif decided "Leif's word on the #400 sentence and the G1 send-back": "yes to both" (Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 14:47Z on 2026-11-19 (morning MST): yes to the replacement #400 sentence and criterion in REQ-cli-059, and yes to t4b running G1's one send-back on his word, relayed via t4c); recorded by fable-t4b; a relayed claim, not authenticated
+- 0xLeif decided "Scope approval of fix-g1-gates-and-pins-fail-closed with the narrowed #400 sentence (native approval)": "yes to both" (Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 14:47Z on 2026-11-19: yes to the replacement #400 sentence and criterion in REQ-cli-059 as sent (g1-400-wording), and to t4b running this one send-back. The send-back cancelled his three earlier answers on G1, which stand for the rest of the delta: 'Approve, both as recommended' (about 05:21Z), 'Approve' (about 06:12Z), 'Yes, covered' (morning MST)); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-g1-gates-and-pins-fail-closed as 0xLeif
 
 ## What was verified
 
@@ -81,4 +83,47 @@ Gates and session pins fail closed: a hand-edited no_native_change cannot unlock
   - native_change: fix-g1-gates-and-pins-fail-closed
   - gate: native:approved
   - revision: 966758794f24e6ef21befbb20bfe209b0ea668de
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T14:47:47Z · gate-opened · build → build · Leif's word on the #400 sentence and the G1 send-back ^t-ca7a35
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - revision: 531e2329aee336d3175b564dc4c0a7065eaa7a1a
+  - holds: build
+  - drives: none
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T14:47:47Z · gate-closed · build → build · Leif's word on the #400 sentence and the G1 send-back ^t-3d9620
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - revision: 531e2329aee336d3175b564dc4c0a7065eaa7a1a
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: yes to both
+    - where: Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 14:47Z on 2026-11-19 (morning MST): yes to the replacement #400 sentence and criterion in REQ-cli-059, and yes to t4b running G1's one send-back on his word, relayed via t4c
+    - recorded_by: fable-t4b
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T14:48:14Z · gate-opened · build → build · Scope approval of fix-g1-gates-and-pins-fail-closed with the narrowed #400 sentence (native approval) ^t-200a2b
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - revision: 531e2329aee336d3175b564dc4c0a7065eaa7a1a
+  - holds: build
+  - drives: approve
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T14:48:14Z · direct-native-write · build → build · fix-g1-gates-and-pins-fail-closed's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state approved → draft ^t-dfe690
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - revision: 531e2329aee336d3175b564dc4c0a7065eaa7a1a
+  - direct_write:
+    - change: fix-g1-gates-and-pins-fail-closed
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: approved
+    - after_state: draft
+  - by: fable (claude-opus-5-5, hc t4b)
+- 2026-11-19T14:48:14Z · gate-closed · build → build · Scope approval of fix-g1-gates-and-pins-fail-closed with the narrowed #400 sentence (native approval) ^t-b6a3e1
+  - native_change: fix-g1-gates-and-pins-fail-closed
+  - revision: 531e2329aee336d3175b564dc4c0a7065eaa7a1a
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: yes to both
+    - where: Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 14:47Z on 2026-11-19: yes to the replacement #400 sentence and criterion in REQ-cli-059 as sent (g1-400-wording), and to t4b running this one send-back. The send-back cancelled his three earlier answers on G1, which stand for the rest of the delta: 'Approve, both as recommended' (about 05:21Z), 'Approve' (about 06:12Z), 'Yes, covered' (morning MST)
+    - recorded_by: fable-t4b
+    - native: specsync change approve fix-g1-gates-and-pins-fail-closed
+    - actor: 0xLeif
   - by: fable (claude-opus-5-5, hc t4b)
