@@ -65,6 +65,21 @@ observations:
   - 2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow-6c8f1e
   - 2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument-3a0423
   - 2026-11-19-tc-history-inbox-list-lists-the-pinned-session-43445b
+  - 2026-11-19-tc-cli-a-hand-edited-no-native-change-cannot-unlock-the-cbf8df
+  - 2026-11-19-tc-cli-ship-checks-the-whole-history-fab6e3
+  - 2026-11-19-tc-cli-ship-acts-on-the-pinned-session-5f558b
+  - 2026-11-19-tc-cli-session-use-and-new-say-when-a-pin-names-another-c4bc56
+  - 2026-11-19-tc-cli-session-shelve-resolves-its-key-76b5f2
+  - 2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow-0c0883
+  - 2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument-450552
+  - 2026-11-19-tc-cli-ship-keeps-the-session-it-started-from
+  - 2026-11-19-tc-cli-ship-refusals-do-not-echo-a-credential-id
+  - 2026-11-19-tc-cli-ship-names-an-unreadable-commit
+  - 2026-11-19-tc-cli-ship-with-a-base-commit-that-is-not-an-object-id
+  - 2026-11-19-tc-cli-the-refetch-command-names-the-real-remote
+  - 2026-11-19-tc-cli-several-untracked-remotes-are-named
+  - 2026-11-19-tc-cli-an-unreadable-change-folder-tree-refuses
+  - 2026-11-19-tc-history-inbox-list-lists-the-pinned-session-a1215c
 bugs: []
 blockers: []
 waiting_on_human:
@@ -139,6 +154,21 @@ Gates and session pins fail closed: a hand-edited no_native_change cannot unlock
 - [Ran cargo test --locked --test change -- --exact ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow for TC-cli-ship-in-a-shallow-clone-names-fetch-unshallow: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow-6c8f1e.md)
 - [Ran cargo test --locked --test change -- --exact change_commands_refuse_a_leaking_argument_before_specsync_runs for TC-cli-change-commands-refuse-a-leaking-argument: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument-3a0423.md)
 - [Ran cargo test --locked --test session_pin -- --exact inbox_list_lists_the_pinned_session for TC-history-inbox-list-lists-the-pinned-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-inbox-list-lists-the-pinned-session-43445b.md)
+- [Ran cargo test --locked --test stages -- --exact a_hand_edited_no_native_change_cannot_unlock_the_ungated_move for TC-cli-a-hand-edited-no-native-change-cannot-unlock-the-ungated-move: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-a-hand-edited-no-native-change-cannot-unlock-the-cbf8df.md)
+- [Ran cargo test --locked --test change -- --exact ship_checks_the_whole_history_and_goes_on_without_a_base for TC-cli-ship-checks-the-whole-history: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-checks-the-whole-history-fab6e3.md)
+- [Ran cargo test --locked --test change -- --exact ship_closes_the_gate_and_moves_the_stage_in_the_pinned_session for TC-cli-ship-acts-on-the-pinned-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-acts-on-the-pinned-session-5f558b.md)
+- [Ran cargo test --locked --test session_pin -- --exact session_use_and_new_say_when_a_pin_still_names_another_session for TC-cli-session-use-and-new-say-when-a-pin-names-another-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-session-use-and-new-say-when-a-pin-names-another-c4bc56.md)
+- [Ran cargo test --locked --test sessions -- --exact session_shelve_resolves_its_key_as_session_use_does for TC-cli-session-shelve-resolves-its-key: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-session-shelve-resolves-its-key-76b5f2.md)
+- [Ran cargo test --locked --test change -- --exact ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow for TC-cli-ship-in-a-shallow-clone-names-fetch-unshallow: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow-0c0883.md)
+- [Ran cargo test --locked --test change -- --exact change_commands_refuse_a_leaking_argument_before_specsync_runs for TC-cli-change-commands-refuse-a-leaking-argument: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument-450552.md)
+- [Ran cargo test --locked --test change -- --exact ship_keeps_the_session_it_started_from_when_the_pointer_moves for TC-cli-ship-keeps-the-session-it-started-from: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-keeps-the-session-it-started-from.md)
+- [Ran cargo test --locked --test change -- --exact ship_refusals_do_not_echo_a_credential_id for TC-cli-ship-refusals-do-not-echo-a-credential-id: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-refusals-do-not-echo-a-credential-id.md)
+- [Ran cargo test --locked --test change -- --exact ship_with_an_unreadable_commit_names_fetch_refetch for TC-cli-ship-names-an-unreadable-commit: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-names-an-unreadable-commit.md)
+- [Ran cargo test --locked --test change -- --exact ship_with_a_base_commit_that_is_not_an_object_id_goes_on for TC-cli-ship-with-a-base-commit-that-is-not-an-object-id: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-with-a-base-commit-that-is-not-an-object-id.md)
+- [Ran cargo test --locked --test change -- --exact the_refetch_command_names_the_real_remote_and_works for TC-cli-the-refetch-command-names-the-real-remote: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-the-refetch-command-names-the-real-remote.md)
+- [Ran cargo test --locked --test change -- --exact several_untracked_remotes_are_named_to_choose_from for TC-cli-several-untracked-remotes-are-named: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-several-untracked-remotes-are-named.md)
+- [Ran cargo test --locked --test change -- --exact an_unreadable_change_folder_tree_is_never_read_as_absent for TC-cli-an-unreadable-change-folder-tree-refuses: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-an-unreadable-change-folder-tree-refuses.md)
+- [Ran cargo test --locked --test session_pin -- --exact inbox_list_lists_the_pinned_session for TC-history-inbox-list-lists-the-pinned-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-inbox-list-lists-the-pinned-session-a1215c.md)
 
 ## Open threads
 
