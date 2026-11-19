@@ -498,6 +498,18 @@ impl Record {
     }
 
     /// Replace every leaking match with `<redacted:<kind>>`; returns how many.
+    /// Replace each leak in the body with `<redacted:<kind>>` in place, leaving the front
+    /// matter to its writer; returns how many were replaced (REQ-records-006). A save under
+    /// `--redact` calls it, so a leak already stored in a list item is redacted where it
+    /// stands and the save adds no redacted copy beside it.
+    pub(super) fn redact_body(&mut self, local: &crate::leaks::Local) -> usize {
+        let (redacted, found) = crate::leaks::redact(local, &self.body);
+        if found > 0 {
+            self.body = redacted;
+        }
+        found
+    }
+
     pub(crate) fn redact_leaks(&mut self, local: &crate::leaks::Local) -> usize {
         let mut count = 0;
         let mut redact = |text: &mut String| {

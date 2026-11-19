@@ -1095,3 +1095,41 @@ fn a_decided_by_value_is_shown_only_when_clean() {
     assert_eq!(text.matches("Error:").count(), 1, "{text}");
     assert_eq!(records(fixture.root()), before, "something was written");
 }
+
+/// REQ-records-006: `gate record --redact` passes `--redact` to the close it runs, so a
+/// relayed value that leaks is stored as `<redacted:<kind>>` and the gate closes, instead
+/// of a refusal that says to pass `--redact`.
+#[cfg(unix)]
+#[test]
+fn gate_record_redact_redacts_in_the_close_it_runs() {
+    let fixture = project();
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    let (list, number) = listed(&fixture, SCOPE);
+    let secret = concat!("ghp_", "abcdefghij0123456789", "abcdefghij0123");
+    let words = format!("ok {secret}");
+    let output = fixture.run(&[
+        "--redact",
+        "gate",
+        "record",
+        &list,
+        "--gates",
+        &number,
+        "--decided-by",
+        "SYNTHETIC-human",
+        "--words",
+        &words,
+        "--where",
+        "SYNTHETIC chat",
+        "--recorded-by",
+        "SYNTHETIC-agent",
+    ]);
+    let text = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{text}");
+    let session = fixture.read(&fixture.session_file());
+    assert!(!session.contains(secret), "{session}");
+    assert!(session.contains("ok <redacted:token>"), "{session}");
+    assert_eq!(
+        fixture.checkpoint()["awaiting_human"],
+        serde_json::json!([])
+    );
+}

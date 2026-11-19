@@ -308,10 +308,12 @@ matter and body, for (REQ-records-006):
   written. The local host names are the host name, its first label and, on macOS, the
   LocalHostName, each also as its `<name>.local` Bonjour name, and a dotted one counts
   glued into a hyphenated name too, as in `build-<host>-1` (#368);
-- the local user name inside a path or as `<user>@<host>`: the account's user name,
-  and `USER` or `LOGNAME` when they name another, so it is checked under `env -i`, cron
-  or launchd too (#379). The first folder of an absolute path that is a system root,
-  as `/dev/` for a user named `dev`, is no user name;
+- the local user name inside an absolute path, after `~`, or as `<user>@<host>`: the
+  account's user name, and `USER` or `LOGNAME` when they name another, so it is checked
+  under `env -i`, cron or launchd too (#379). The first folder of an absolute path that
+  is a system root, as `/dev/` for a user named `dev`, is no user name, nor is a relative
+  path or a URL, as `src/dev/main.rs` or `https://example.com/dev/guide`; and `root`
+  never counts;
 - an email address;
 - credentials: GitHub, GitLab, Slack (including `xapp-` app tokens), AWS, Hugging Face
   (`hf_`) and model-provider token forms, private key blocks, bearer and basic
@@ -330,7 +332,7 @@ A match refuses the write as `refused:leak`, naming the field and the kind of ma
 every file byte-identical. With the global `--redact`, each match is stored as
 `<redacted:<kind>>` instead, and the write proceeds, saying how many values were
 redacted. A configured human's display name (see [Human identity](#human-identity))
-does not count as a user name. This build checks session values and Timeline entries,
+does not count as a user name. Under `--redact`, a leak already stored in a session's body, as a decision an older Chough wrote, is replaced where it stands, and `gate record --redact` redacts in the closes it runs. This build checks session values and Timeline entries,
 answers to questions (#364), relay values, corrections, bugs, evidence and journal
 posts, and `chough migrate` always redacts what it writes. A module name is an ID, so
 `session new --module` refuses one that leaks, under `--redact` too (#368).

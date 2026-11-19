@@ -69,6 +69,7 @@ Leak and output batch: --answer is leak-checked and bounded (#364), conflict fin
 
 - 0xLeif decided "Scope approval of leaks-and-output": "Yes, as each issue states … approved. Errors name the field and the kind, never the offending text … Show it only if clean … approved. The leak guard adds all the listed forms" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: the leaks-and-output batch of the bug round, one native change for #364, #365, #367, #368, #379 and #380. For #364, #365, #379 and #380 he approved each issue's stated expected behaviour ('Yes, as each issue states'). For #367 his decision comment on the issue, with 'Show it only if clean': the value is shown only when it holds no leak and no control character, otherwise the error names the field and what it holds. For #368 his decision comment on the issue: all the listed forms, the guard on session new --module, and the evidence add --redact count); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve leaks-and-output as 0xLeif
 - 0xLeif decided "Re-approval of leaks-and-output for the #379 user-name sentence": "Fix the sentence: check both" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on fable-lead's L1 review finding 1: REQ-records-006 now says the local user name is checked as the account's name and also as USER or LOGNAME when they are set, as the code does; nothing else in the delta changes); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve leaks-and-output as 0xLeif
+- 0xLeif decided "Re-approval of leaks-and-output for the narrowed #379 user-name rule": "Narrow it" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on tester2's finding C: the user name counts as a leak only inside an absolute path, after ~, or as user@host, and never when the name is root; one more sentence in REQ-records-006 beside his 'Fix the sentence: check both', and its acceptance criterion); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve leaks-and-output as 0xLeif
 
 ## What was verified
 
@@ -191,6 +192,23 @@ Leak and output batch: --answer is leak-checked and bounded (#364), conflict fin
     - decided_by: 0xLeif
     - words: Fix the sentence: check both
     - where: Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on fable-lead's L1 review finding 1: REQ-records-006 now says the local user name is checked as the account's name and also as USER or LOGNAME when they are set, as the code does; nothing else in the delta changes
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve leaks-and-output
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T03:53:33Z · gate-opened · accept → accept · Re-approval of leaks-and-output for the narrowed #379 user-name rule ^t-1c4f4b
+  - native_change: leaks-and-output
+  - revision: 932092439117fcd7743d5b1465db6a597c831eb7
+  - holds: accept
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T03:53:33Z · gate-closed · accept → accept · Re-approval of leaks-and-output for the narrowed #379 user-name rule ^t-662453
+  - native_change: leaks-and-output
+  - revision: 932092439117fcd7743d5b1465db6a597c831eb7
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Narrow it
+    - where: Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on tester2's finding C: the user name counts as a leak only inside an absolute path, after ~, or as user@host, and never when the name is root; one more sentence in REQ-records-006 beside his 'Fix the sentence: check both', and its acceptance criterion
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve leaks-and-output
     - actor: 0xLeif

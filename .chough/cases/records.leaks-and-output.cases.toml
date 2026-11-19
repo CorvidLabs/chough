@@ -147,3 +147,39 @@ expected = ["tests/leaks.rs::errors_show_a_given_value_only_when_clean passes"]
 adapter = "cargo-test"
 test_target = "leaks"
 test = "errors_show_a_given_value_only_when_clean"
+
+[[case]]
+id = "TC-records-a-redacting-save-replaces-a-stored-leak"
+title = "A session holding a leaking decision from an older Chough refuses a plain save; one --redact save replaces it in place with no copy, and the next plain save passes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/checkpoint.rs", "src/markdown.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::a_redacting_save_replaces_a_stored_leak_in_place passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "a_redacting_save_replaces_a_stored_leak_in_place"
+
+[[case]]
+id = "TC-records-gate-record-redact-redacts-the-close"
+title = "gate record --redact passes --redact to the close it runs, so a leaking relayed value is stored redacted and the gate closes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/gates.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::gate_record_redact_redacts_in_the_close_it_runs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "gate_record_redact_redacts_in_the_close_it_runs"

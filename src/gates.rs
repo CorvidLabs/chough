@@ -1037,9 +1037,12 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
     let mut closed = vec![];
     for (index, listed) in checked.iter().enumerate() {
         let mut command = Command::new(&chough);
+        command.arg("--root").arg(root);
+        // REQ-records-006: a `gate record --redact` redacts in the close it runs too.
+        if crate::leaks::redacting() {
+            command.arg("--redact");
+        }
         command
-            .arg("--root")
-            .arg(root)
             .args(["checkpoint", "--close-gate", &listed.gate])
             .args([
                 "--decided-by",

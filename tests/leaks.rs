@@ -1194,6 +1194,10 @@ fn the_user_name_comes_from_the_account() {
     .trim()
     .to_string();
     assert!(account.len() >= 2, "{account:?}");
+    // `root` never counts as a user name (#379), so a container run as root has none.
+    if account == "root" {
+        return;
+    }
     // As `<user>@<host>`, which only the user-name rule matches, whatever the host is
     // called.
     let value = format!("ssh {account}@build-box");
@@ -1218,6 +1222,63 @@ fn the_user_name_comes_from_the_account() {
     let said = String::from_utf8_lossy(&output.stderr).into_owned();
     assert!(!output.status.success(), "/opt/dev/x was written");
     assert!(said.contains("decision holds user-name"), "{said}");
+    // A relative path or a URL holds no user name (Leif's "Narrow it").
+    for value in ["edit src/dev/main.rs", "see https://example.com/dev/guide"] {
+        let output = fixture.run_with_env(&["checkpoint", "--decision", value], &dev);
+        assert!(
+            output.status.success(),
+            "{value}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
+/// REQ-records-006, TC-records-a-redacting-save-replaces-a-stored-leak: a session that
+/// already holds a leaking decision, as one written by an older Chough or left by a
+/// merge, refuses a plain save; one save with `--redact` replaces the stored decision in
+/// place, with no redacted copy beside it and the value gone; and the next plain save
+/// passes.
+#[test]
+fn a_redacting_save_replaces_a_stored_leak_in_place() {
+    let fixture = Fixture::new();
+    fixture.init();
+    assert!(
+        run(&fixture, &["checkpoint", "--decision", "decided: first"])
+            .status
+            .success()
+    );
+    let file = fixture.session_file();
+    let secret = concat!("ghp_", "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8");
+    let text = fixture.read(&file).replacen(
+        "- decided: first\n",
+        &format!("- decided: first\n- decided: use {secret} for the deploy\n"),
+        1,
+    );
+    fixture.write(&file, &text);
+    fixture.commit("an older session holding a leaking decision");
+    let output = run(&fixture, &["checkpoint", "--decision", "decided: clean"]);
+    assert!(
+        !output.status.success(),
+        "a plain save over a stored leak was written"
+    );
+    redacted(&fixture, &["checkpoint", "--decision", "decided: clean"]);
+    let text = fixture.read(&file);
+    assert!(!text.contains(secret), "{text}");
+    assert_eq!(
+        text.matches("decided: use <redacted:token> for the deploy")
+            .count(),
+        1,
+        "{text}"
+    );
+    let output = run(
+        &fixture,
+        &["checkpoint", "--decision", "decided: clean two"],
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 /// REQ-records-006 (#367), TC-records-errors-show-a-given-value-only-when-clean: across the

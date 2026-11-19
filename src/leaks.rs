@@ -589,13 +589,21 @@ const ROOT_FOLDERS: [&str; 24] = [
     "srv",
 ];
 
-/// The places `user`, the local user name, appears in `value`: inside a path, but not as
-/// the first folder of an absolute path where it names a system root, or as
-/// `<user>@<host>` (REQ-records-006).
+/// The places `user`, the local user name, appears in `value` (REQ-records-006, #379):
+/// inside an absolute path, but not as the first folder of one where it names a system
+/// root; after `~`; or as `<user>@<host>`. A relative path or a URL such as
+/// `src/dev/main.rs` or `https://example.com/dev/guide` holds no user name, and `root`
+/// never counts, since every container has it.
 fn user_names(user: &str, value: &str, all: &mut Vec<Match>) {
+    if user == "root" {
+        return;
+    }
     let bytes = value.as_bytes();
     for (start, _) in value.match_indices(user) {
         let end = start + user.len();
+        let ends =
+            end == bytes.len() || matches!(bytes[end], b'/' | b'\\') || !name_byte(bytes[end]);
+        let after_tilde = start > 0 && bytes[start - 1] == b'~' && starts_word(bytes, start - 1);
         let at_root = start > 0
             && bytes[start - 1] == b'/'
             && (start == 1
@@ -604,13 +612,14 @@ fn user_names(user: &str, value: &str, all: &mut Vec<Match>) {
         let in_path = start > 0
             && !at_root
             && matches!(bytes[start - 1], b'/' | b'\\')
-            && (end == bytes.len() || matches!(bytes[end], b'/' | b'\\') || !name_byte(bytes[end]));
+            && ends
+            && in_absolute_path(bytes, start);
         let at_host = starts_word(bytes, start)
             && bytes.get(end) == Some(&b'@')
             && bytes
                 .get(end + 1)
                 .is_some_and(|byte| byte.is_ascii_alphanumeric());
-        if in_path || at_host {
+        if in_path || (after_tilde && ends) || at_host {
             let end = if at_host {
                 host_end(bytes, end + 1)
             } else {
@@ -622,6 +631,32 @@ fn user_names(user: &str, value: &str, all: &mut Vec<Match>) {
                 end,
             });
         }
+    }
+}
+
+/// Whether the path token around `at` is an absolute path: it starts with `/` or `\`, or
+/// with a drive such as `C:\`, and is no URL (#379).
+fn in_absolute_path(bytes: &[u8], at: usize) -> bool {
+    let mut start = at;
+    while start > 0
+        && !bytes[start - 1].is_ascii_whitespace()
+        && !matches!(
+            bytes[start - 1],
+            b'"' | b'\'' | b'`' | b')' | b'(' | b'<' | b'>' | b',' | b';' | b'|' | b']' | b'['
+                // An assignment, as `X=/tmp/<user>/data`, starts the path after the `=`.
+                | b'='
+        )
+    {
+        start -= 1;
+    }
+    let token = &bytes[start..at];
+    if token.windows(3).any(|window| window == b"://") {
+        return false;
+    }
+    match token {
+        [b'/' | b'\\', ..] => true,
+        [drive, b':', b'/' | b'\\', ..] => drive.is_ascii_alphabetic(),
+        _ => false,
     }
 }
 
@@ -1379,5 +1414,33 @@ mod tests {
             "error: unexpected argument 'a<control character>[31m' found"
         );
         assert_eq!(masked("plain\ntext"), "plain\ntext");
+    }
+
+    /// #379, Leif's "Narrow it": the user name counts only inside an absolute path, after
+    /// `~`, or as `<user>@<host>`, and never when it is `root`. A relative path and a URL
+    /// hold no user name; a home path and a `~/` path are still home paths.
+    #[test]
+    fn the_user_name_counts_only_in_an_absolute_path_after_a_tilde_or_at_a_host() {
+        let dev = Local::new(Some("dev"), None);
+        let kinds = |local: &Local, value: &str| -> Vec<&'static str> {
+            find(local, value)
+                .iter()
+                .map(|found| found.kind.name())
+                .collect()
+        };
+        assert!(kinds(&dev, "edit src/dev/main.rs").is_empty());
+        assert!(kinds(&dev, "run ./dev/run.sh").is_empty());
+        assert!(kinds(&dev, "see https://example.com/dev/guide").is_empty());
+        assert_eq!(kinds(&dev, "see /opt/dev/x"), ["user-name"]);
+        assert_eq!(kinds(&dev, "X=/opt/dev/x"), ["user-name"]);
+        assert_eq!(kinds(&dev, "ssh dev@build-box"), ["user-name"]);
+        assert_eq!(kinds(&dev, "see ~dev/projects"), ["home-path"]);
+        assert_eq!(kinds(&dev, "ran in /Users/dev/app"), ["home-path"]);
+        assert_eq!(kinds(&dev, "ran in ~/app"), ["home-path"]);
+        let root = Local::new(Some("root"), None);
+        assert!(kinds(&root, "ssh root@build-box").is_empty());
+        assert!(kinds(&root, "postgres://root@db/x").is_empty());
+        assert!(kinds(&root, "see /opt/root/x").is_empty());
+        assert_eq!(kinds(&root, "ran in /root/app"), ["home-path"]);
     }
 }

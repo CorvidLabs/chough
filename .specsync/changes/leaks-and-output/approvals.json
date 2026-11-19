@@ -163,6 +163,88 @@
         "where": "Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on fable-lead's L1 review finding 1: REQ-records-006 now says the local user name is checked as the account's name and also as USER or LOGNAME when they are set, as the code does; nothing else in the delta changes",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795060418,
+      "digest": "144719bb4ec2a7dbabd3c458869cd31bf2525b26f800df7c062a2145aa2df967",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of leaks-and-output for the narrowed #379 user-name rule\": \"Narrow it\" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on tester2's finding C: the user name counts as a leak only inside an absolute path, after ~, or as user@host, and never when the name is root; one more sentence in REQ-records-006 beside his 'Fix the sentence: check both', and its acceptance criterion). Relayed and recorded by chough-fixer-t4g at 2026-11-19T03:53:33Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "leaks-and-output",
+        "title": "Leaks and output",
+        "description": "leaks and output",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.leaks-and-output.cases.toml",
+          "changelog.d/2026-11-19-leaks-and-output.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/cases.rs",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "src/evidence.rs",
+          "src/gates.rs",
+          "src/humans.rs",
+          "src/leaks.rs",
+          "src/main.rs",
+          "src/markdown.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/bugs.rs",
+          "tests/cases.rs",
+          "tests/change.rs",
+          "tests/checkpoint.rs",
+          "tests/doctor.rs",
+          "tests/evidence.rs",
+          "tests/gates.rs",
+          "tests/git_merge.rs",
+          "tests/humans.rs",
+          "tests/leaks.rs",
+          "tests/migrate.rs",
+          "tests/migrate_bugs.rs",
+          "tests/records.rs",
+          "tests/session_pin.rs",
+          "tests/sessions.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "checkpoint --resolve-question --answer is leak-checked, redacted under --redact and bounded at 4096 bytes (#364). Conflict-marker refusals and doctor findings name only the marker's seven characters (#365). An error shows a value a person gave only when it holds no leak and no control character, otherwise it names the field and what it holds (#367). The leak guard adds password JSON keys, SECRET_KEY and AWS_SECRET_ACCESS_KEY assignments, xapp- and hf_ tokens, ~user/ paths, the macOS LocalHostName and its .local name, dotted host names inside hyphenated build names, and checks session new --module; evidence add --redact reports its count (#368). The user name comes from the account, and a system root such as /dev/ is never a user-name path (#379). gate record's refusal says Error: once (#380)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decisions set the scope: #367 'approved. Errors name the field and the kind, never the offending text' and 'Show it only if clean'; #368 'approved. The leak guard adds all the listed forms…'; and for #364, #365, #379 and #380 'Yes, as each issue states'. #366 (escaping on print) is a later batch, so control characters are only kept out of error echoes here. No new dependency; matchers stay hand-written. Failing tests first.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "951f26d08b27b2683be2ca52965ee9598bc33936b35601981213bfb310fcdbc6",
+        "history": "59eb48142153848b3ab32c01ebc66ccc19deb687f35cd7d4f51cc27b27543f45",
+        "records": "cd6964b48c5a6c9b38edfdf16516a70b730f613c1b7add3daf989ee36dc20037"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "b47f0d70bf523998e236696369699fb0ffa688bf44cecb966e20401ad334de14",
+        "history: REQUIREMENT REQ-history-006": "89bb2c3ed93fe4f46eeda58164fa7bbc6dd61b106a88c0f091a22f05517dbc82",
+        "records: REQUIREMENT REQ-records-001": "5339e30f9bd6cebf2d4500dbd61f56dae1bcaceca9e61b249c666de1d66d14e3",
+        "records: REQUIREMENT REQ-records-006": "8018e82b9d4a5908bc2adbf61d7501a0ca48e97dcf81d9f90d23527d05a22273"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Narrow it",
+        "where": "Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on tester2's finding C: the user name counts as a leak only inside an absolute path, after ~, or as user@host, and never when the name is root; one more sentence in REQ-records-006 beside his 'Fix the sentence: check both', and its acceptance criterion",
+        "recorded_by": "chough-fixer-t4g"
+      }
     }
   ],
   "reopenings": []
