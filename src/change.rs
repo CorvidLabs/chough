@@ -702,7 +702,7 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     let short_base = &base[..base.len().min(12)];
     let unchecked = |what: &str| {
         anyhow::anyhow!(
-            "refused:history-unchecked: Git could not read {what}, so this change's history from its base commit {short_base} to HEAD could not be checked and nothing ran.\nFetch the missing history and run the ship again."
+            "refused:history-unchecked: Git could not read {what}, so this change's history from its base commit {short_base} to HEAD could not be checked and nothing ran.\nRun `git fetch --refetch origin` (with your remote's name, if it is not origin) to fetch every object again, then the ship."
         )
     };
     // REQ-cli-059 (#400): a base commit that is not an object. In a shallow clone the

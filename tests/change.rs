@@ -1731,3 +1731,34 @@ fn ship_refusals_do_not_echo_a_credential_id() {
         assert!(said.contains("<id holding"), "{said}");
     }
 }
+
+/// REQ-cli-059 (#400, the tester's run of G1): when Git cannot read a commit in the
+/// change's history, the ship refuses as `refused:history-unchecked`, naming the
+/// command that fetches every object again, with nothing run.
+#[cfg(unix)]
+#[test]
+fn ship_with_an_unreadable_commit_names_fetch_refetch() {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    let lost = head_of(&fixture);
+    fixture.write("notes.txt", "later work\n");
+    fixture.commit("later work");
+    // Lose the middle commit's object, as a damaged or partly fetched repository can.
+    let object = fixture
+        .root()
+        .join(".git/objects")
+        .join(&lost[..2])
+        .join(&lost[2..]);
+    std::fs::remove_file(&object).unwrap();
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "the ship ran: {stderr}");
+    assert!(stderr.contains("refused:history-unchecked"), "{stderr}");
+    assert!(stderr.contains("git fetch --refetch origin"), "{stderr}");
+    assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
+}
