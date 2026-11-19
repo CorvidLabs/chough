@@ -3318,11 +3318,12 @@ fn at_the_observation_cap_writes_refuse_before_running_and_next_reads_only_refer
     );
 }
 
-/// REQ-cli-021 (#371), TC-cli-next-names-finishing-the-archive: after the move into
-/// done, while the archived session's folder still holds files, `chough next` names
-/// committing the session folder, the story and the journal post, then `chough doctor
-/// --fix`; after the commit it names `chough doctor --fix`; once the folder is gone it
-/// names only `chough session new <key>`.
+/// REQ-cli-021, REQ-history-006 (#371), TC-history-next-names-finishing-the-archive:
+/// after the move into done, while the archived session's folder still holds files,
+/// `chough next` names committing the session folder, the story and the journal post,
+/// then `chough doctor --fix`; after the commit it names `chough doctor --fix`; once the
+/// folder is gone it names only `chough session new <key>`. In every state it says there
+/// is no open session and names `chough session new <key>` (REQ-history-006).
 #[test]
 fn next_names_finishing_the_archive_until_the_folder_is_gone() {
     let fixture = Fixture::new();
@@ -3348,6 +3349,10 @@ fn next_names_finishing_the_archive_until_the_folder_is_gone() {
                 .collect()
         })
         .unwrap_or_default();
+    assert!(
+        !posts.is_empty(),
+        "the move into done wrote no journal post"
+    );
     let shown = text(&fixture, &["next"]);
     assert!(
         shown.contains(&format!("Finish the archive of session {id}")),
@@ -3361,6 +3366,10 @@ fn next_names_finishing_the_archive_until_the_folder_is_gone() {
         shown.contains("git commit") && shown.contains("chough doctor --fix"),
         "{shown}"
     );
+    assert!(
+        shown.contains("no open session") && shown.contains("chough session new <key>"),
+        "{shown}"
+    );
 
     fixture.commit("the archive");
     let shown = text(&fixture, &["next"]);
@@ -3371,10 +3380,17 @@ fn next_names_finishing_the_archive_until_the_folder_is_gone() {
         "{shown}"
     );
     assert!(shown.contains("Run: chough doctor --fix"), "{shown}");
+    assert!(
+        shown.contains("no open session") && shown.contains("chough session new <key>"),
+        "{shown}"
+    );
 
     let _ = fixture.run(&["doctor", "--fix"]);
     assert!(!fixture.exists(&folder));
     let shown = text(&fixture, &["next"]);
-    assert!(shown.contains("chough session new <key>"), "{shown}");
+    assert!(
+        shown.contains("no open session") && shown.contains("chough session new <key>"),
+        "{shown}"
+    );
     assert!(!shown.contains("doctor --fix"), "{shown}");
 }
