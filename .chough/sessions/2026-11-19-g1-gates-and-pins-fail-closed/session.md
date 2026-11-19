@@ -10,7 +10,7 @@ stage_status: active
 iteration: 1
 callers: []
 native_change: fix-g1-gates-and-pins-fail-closed
-pr: ""
+pr: 413
 criteria: [DRIVE-3, DRIVE-24, DRIVE-25]
 requirements: [REQ-cli-007, REQ-cli-037, REQ-cli-057, REQ-cli-059, REQ-history-009]
 cases: []
@@ -89,6 +89,10 @@ waiting_on_human:
     opened: 2026-11-19T16:47:30Z
 run_consents: []
 next: Continue accept
+title: "G1: gates and session pins fail closed"
+summary:
+  - "A hand-edited no_native_change can no longer allow the ungated move; chough change ship checks its whole history from the base, refusing with a working way out when Git cannot read it and going on where a squash merge removed the base; its gate close and move into done act on the pinned session; inbox list honors the pin; session use and new say when a pin still names another session and shelve resolves aliases; chough change refuses a leaking argument before SpecSync runs (#401, #400, #369, #393, #372, part of #367)."
+  - "Verified at 41d486eb: all eleven verify steps and fifteen cases on macOS; the tester's run on 22 real repositories and its regression set (191, 4 fixed, none newly failing); corvid-agent's review and recheck."
 ---
 # Gates and session pins fail closed: a hand-edited no_native_change cannot unlock the ungated move, change ship checks its whole history and writes only to its pinned session, inbox list and session shelve honor the pin and aliases, and session use says when CHOUGH_SESSION still wins (#401, #400, #369, #393, #372)
 

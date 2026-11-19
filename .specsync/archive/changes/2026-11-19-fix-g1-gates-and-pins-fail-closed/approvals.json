@@ -131,6 +131,13 @@
         "where": "Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 14:47Z on 2026-11-19: yes to the replacement #400 sentence and criterion in REQ-cli-059 as sent (g1-400-wording), and to t4b running this one send-back. The send-back cancelled his three earlier answers on G1, which stand for the rest of the delta: 'Approve, both as recommended' (about 05:21Z), 'Approve' (about 06:12Z), 'Yes, covered' (morning MST)",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795117422,
+      "digest": "302aacca8d84424117768643563d1b19fcaeb04b90a02490ef6033eb144cd8b2",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],
