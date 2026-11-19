@@ -585,15 +585,26 @@ fn open_cache(path: &Path, write: bool) -> io::Result<(fs::File, u64, u64)> {
 }
 
 /// Make the empty cache file, only if nothing is at its path, and say which file it is.
+/// The identity comes from the handle that made it, never from a second look at the
+/// path, which another writer could have swapped in between.
 fn make_cache(path: &Path) -> Option<(u64, u64)> {
-    fs::OpenOptions::new()
+    let file = fs::OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(path)
         .ok()?;
-    open_cache(path, false)
-        .ok()
-        .map(|(_, device, inode)| (device, inode))
+    let made = file.metadata().ok()?;
+    #[cfg(unix)]
+    let identity = {
+        use std::os::unix::fs::MetadataExt as _;
+        (made.dev(), made.ino())
+    };
+    #[cfg(not(unix))]
+    let identity = {
+        let _ = made;
+        (0, 0)
+    };
+    Some(identity)
 }
 
 /// Put the cache back as the report found it (REQ-cli-067), but only while it is still
