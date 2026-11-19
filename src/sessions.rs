@@ -1246,7 +1246,10 @@ pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
                     .iter()
                     .all(|field| receipt.iter().any(|given| given == field))
         };
+        // Kept by the file that was read, which may be named other than its ID (renamed,
+        // or its `id` edited), and by the ID, which names the files beside it (#381).
         if !held.iter().any(holds) {
+            unheld_ids.push(name);
             unheld_ids.push(entry);
         }
     }
@@ -1334,40 +1337,47 @@ pub(super) fn archive_to_commit(root: &Path, id: &str) -> Option<Vec<String>> {
     Some(paths)
 }
 
-/// The records archived session `id`'s finish waits on (#389): its story and each journal
-/// post whose `record` is the story, found by reading the journal, wherever Git stands on
-/// them.
-pub(super) fn archive_records(root: &Path, id: &str) -> Vec<String> {
+/// The story archived session `id`'s finish waits on (#389, Leif's option B), with
+/// whether Git ignores it, while HEAD does not hold it as it is; None once it does, or
+/// when there is no story. The journal post never holds the finish, since the finish
+/// never removes it.
+pub(super) fn held_story(root: &Path, id: &str) -> Option<(String, bool)> {
     let story = archive_file(id);
-    let mut records = vec![];
-    if local_path(root, &story).is_ok_and(|path| path.is_file()) {
-        records.push(story.clone());
+    if !local_path(root, &story).is_ok_and(|path| path.is_file()) || committed_at_head(root, &story)
+    {
+        return None;
     }
-    let journal = crate::prefs::effective(root, "library-dir")
-        .map(|(dir, _)| format!("{}/journal", dir.trim_end_matches('/')))
-        .unwrap_or_else(|_| "knowledge/journal".into());
-    let Ok(entries) = local_path(root, &journal).and_then(|folder| Ok(fs::read_dir(folder)?))
-    else {
-        return records;
+    let ignored = ignored_by_git(root, &story);
+    Some((story, ignored))
+}
+
+/// `text` as one single-quoted POSIX shell word.
+pub(super) fn shell_quoted(text: &str) -> String {
+    format!("'{}'", text.replace('\'', "'\\''"))
+}
+
+/// The command that commits `plain` and, with `-f` since Git ignores them, `forced`, as
+/// `doctor` and `next` both print it, each path quoted (REQ-cli-021, #371, #389).
+pub(super) fn commit_command(plain: &[String], forced: &[String], message: &str) -> String {
+    let quoted = |files: &[String]| {
+        files
+            .iter()
+            .map(|file| shell_quoted(file))
+            .collect::<Vec<_>>()
+            .join(" ")
     };
-    let mut names: Vec<String> = entries
-        .flatten()
-        .filter_map(|entry| entry.file_name().into_string().ok())
-        .filter(|name| name.ends_with(".md") && !os_metadata(name))
-        .collect();
-    names.sort();
-    for name in names {
-        let path = format!("{journal}/{name}");
-        let is_post = local_path(root, &path)
-            .ok()
-            .and_then(|full| read_bounded_record(&full, crate::markdown::RECORD_BOUND).ok())
-            .and_then(|text| crate::markdown::parse(&path, &text).ok())
-            .is_some_and(|post| post.scalar("record") == Some(story.as_str()));
-        if is_post {
-            records.push(path);
-        }
+    let mut adds = vec![];
+    if !plain.is_empty() {
+        adds.push(format!("git add -- {}", quoted(plain)));
     }
-    records
+    if !forced.is_empty() {
+        adds.push(format!("git add -f -- {}", quoted(forced)));
+    }
+    format!(
+        "{} && git commit -q -m {}",
+        adds.join(" && "),
+        shell_quoted(message)
+    )
 }
 
 /// Whether Git can read the project's HEAD commit.

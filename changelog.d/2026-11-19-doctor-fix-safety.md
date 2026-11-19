@@ -10,6 +10,6 @@
 - The spec walk behind the whole-repository advice follows no link and stops at 4,096
   entries or 32 folders deep, saying so, so a link loop in `specs/` no longer hangs
   `chough doctor` or `chough init` (#402).
-- `chough doctor --fix` no longer removes an archived session's folder while its story or
-  journal post is not committed; it names each to commit first (#389). A story an earlier
+- `chough doctor --fix` no longer removes an archived session's folder while its story is
+  not committed; it names it to commit first, `git add -f` for an ignored story (#389). A story an earlier
   release wrote still holds its entries, and an unreadable entry is kept and named.

@@ -200,8 +200,8 @@ test_target = "sessions"
 test = "an_ignored_story_holds_the_finish_and_names_git_add_f"
 
 [[case]]
-id = "TC-history-an-ignored-journal-post-holds-the-finish"
-title = "A journal post Git ignores, found by its record field, holds the archive finish (#389)"
+id = "TC-history-an-ignored-journal-post-does-not-hold-the-finish"
+title = "A journal post Git ignores, as in a project that keeps its vault out of Git, does not hold the archive finish (#389, option B)"
 status = "active"
 track = "functional"
 method = "automated"
@@ -210,12 +210,12 @@ requirements = ["REQ-history-012"]
 paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/sessions.rs::an_ignored_journal_post_holds_the_finish passes"]
+expected = ["tests/sessions.rs::an_ignored_journal_post_does_not_hold_the_finish passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "sessions"
-test = "an_ignored_journal_post_holds_the_finish"
+test = "an_ignored_journal_post_does_not_hold_the_finish"
 
 [[case]]
 id = "TC-history-a-failed-git-read-holds-the-finish"
@@ -270,3 +270,57 @@ expected = ["tests/doctor.rs::a_redacting_save_leaves_no_timeline_rewrite passes
 adapter = "cargo-test"
 test_target = "doctor"
 test = "a_redacting_save_leaves_no_timeline_rewrite"
+
+[[case]]
+id = "TC-history-a-kept-entry-is-kept-by-its-file"
+title = "A kept entry renamed or with its id edited stays kept by its file, and the folder does not go (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "src/main.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_kept_entry_is_kept_by_its_file_whatever_its_id passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_kept_entry_is_kept_by_its_file_whatever_its_id"
+
+[[case]]
+id = "TC-history-next-finishes-an-ignored-story-as-printed"
+title = "With the story ignored, next prints the finding's git add -f command, and running it as printed finishes the archive (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "src/main.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::next_finishes_an_ignored_story_as_printed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "next_finishes_an_ignored_story_as_printed"
+
+[[case]]
+id = "TC-history-the-way-out-names-the-open-sessions"
+title = "With open sessions but none active, the way out names them to pick one, not session new (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "src/main.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::the_way_out_names_the_open_sessions_when_none_is_active passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "the_way_out_names_the_open_sessions_when_none_is_active"

@@ -1155,23 +1155,33 @@ fn host_update_line(updates: &[String]) -> Option<String> {
 fn archive_finish(root: &Path) -> Option<Value> {
     let unfinished = sessions::unfinished_archives(root).ok()?;
     let id = unfinished.first()?;
-    let commit = sessions::archive_to_commit(root, id)?;
-    let command = if commit.is_empty() {
+    let mut commit = sessions::archive_to_commit(root, id)?;
+    // The story the finish waits on, from the same check as doctor's finding: one Git
+    // ignores never shows in `git status`, and is added with `-f` (#389).
+    let mut forced = vec![];
+    if let Some((story, true)) = sessions::held_story(root, id) {
+        commit.retain(|path| *path != story);
+        forced.push(story);
+    }
+    let command = if commit.is_empty() && forced.is_empty() {
         "chough doctor --fix".to_string()
     } else {
         // Each file by name, so macOS metadata stays out and every Git stages the story;
         // the message names the journal post only when there is one.
         let post = commit.iter().any(|path| !path.starts_with(".chough/"));
         format!(
-            "git add -- {} && git commit -m \"Archive the {id} session{}.\" && chough doctor --fix",
-            commit
-                .iter()
-                .map(|path| shell_word(path))
-                .collect::<Vec<_>>()
-                .join(" "),
-            if post { " and its journal post" } else { "" }
+            "{} && chough doctor --fix",
+            sessions::commit_command(
+                &commit,
+                &forced,
+                &format!(
+                    "Archive the {id} session{}.",
+                    if post { " and its journal post" } else { "" }
+                )
+            )
         )
     };
+    commit.extend(forced);
     // An entry the story does not hold stays until it is moved or dropped by hand, as the
     // finding's way out says (#381).
     let kept = sessions::unheld_files(root, id).is_ok_and(|files| !files.is_empty());
@@ -1194,20 +1204,6 @@ fn archive_finish(root: &Path) -> Option<Value> {
         "reason": format!("There is no open session: the move into done archived session {id}, and its folder stays until its files are committed and `chough doctor --fix` removes them; then start the next piece of work with `chough session new <key>`."),
         "command": command,
     }))
-}
-
-/// `text` as one POSIX shell word: bare when it holds only characters a shell reads as
-/// they are, otherwise in single quotes.
-fn shell_word(text: &str) -> String {
-    let plain = !text.is_empty()
-        && text
-            .chars()
-            .all(|c| c.is_ascii_alphanumeric() || "._/-+@:,=".contains(c));
-    if plain {
-        text.to_string()
-    } else {
-        format!("'{}'", text.replace('\'', "'\\''"))
-    }
 }
 
 fn no_open_session(root: &Path, as_json: bool) -> String {

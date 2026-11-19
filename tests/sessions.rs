@@ -2500,8 +2500,8 @@ fn tracked(fixture: &Fixture, path: &str) -> bool {
 /// REQ-history-012 (#389, tester2's run of D1 on real repositories),
 /// TC-history-the-finish-waits-for-the-story-to-be-committed: with the folder's files
 /// committed but the story and its journal post untracked, `doctor --fix` removes nothing
-/// and its `unfinished_archive` finding names the story and the post to commit; once they
-/// are committed, it removes the folder, and the story stays tracked.
+/// and its `unfinished_archive` finding names the story to commit; once the story alone is
+/// committed, it removes the folder, and the untracked post holds nothing (option B).
 #[cfg(unix)]
 #[test]
 fn the_finish_waits_until_the_story_and_post_are_committed() {
@@ -2511,24 +2511,22 @@ fn the_finish_waits_until_the_story_and_post_are_committed() {
     let folder = format!(".chough/sessions/{id}");
     let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
     assert_eq!(finding["status"], "skipped", "{report:#}");
-    let said = finding.to_string();
-    assert!(said.contains(&story) && said.contains(&post), "{finding:#}");
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    assert!(fix.contains(&story), "{finding:#}");
     assert!(
         fixture.exists(&folder),
         "the folder went before the story was committed"
     );
     assert!(fixture.exists(&story));
 
+    // Only the story is committed: the untracked post does not hold the finish.
+    assert!(git(&fixture, &["add", "--", &story]).status.success());
     assert!(
-        git(&fixture, &["add", "--", &story, &post])
+        git(&fixture, &["commit", "-q", "-m", "the story"])
             .status
             .success()
     );
-    assert!(
-        git(&fixture, &["commit", "-q", "-m", "the story and its post"])
-            .status
-            .success()
-    );
+    assert!(!tracked(&fixture, &post));
     let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
     assert_eq!(finding["status"], "fixed", "{report:#}");
     assert!(!fixture.exists(&folder));
@@ -2633,33 +2631,31 @@ fn an_ignored_story_holds_the_finish_and_names_git_add_f() {
     assert!(!fixture.exists(&folder));
 }
 
-/// REQ-history-012 (#389): the session's journal post is found by its `record` field,
-/// not only among the paths `git status` lists, so an ignored post holds the finish too.
+/// REQ-history-012 (#389, Leif's option B), TC-history-an-ignored-journal-post-does-not-hold-the-finish:
+/// only an uncommitted story holds the archive finish. In a project that ignores its
+/// vault on purpose (`knowledge/` in `.gitignore`, as algochat does), the journal post is
+/// never committed, and the finish still goes through once the story is.
 #[cfg(unix)]
 #[test]
-fn an_ignored_journal_post_holds_the_finish() {
+fn an_ignored_journal_post_does_not_hold_the_finish() {
     let fixture = Fixture::new();
     let (id, story, post) = archived_with_the_folder_committed(&fixture);
-    fixture.write(".gitignore", "knowledge/journal/\n");
+    fixture.write(".gitignore", "knowledge/\n");
     assert!(
         git(&fixture, &["add", "--", ".gitignore", &story])
             .status
             .success()
     );
     assert!(
-        git(&fixture, &["commit", "-q", "-m", "ignore the journal"])
+        git(&fixture, &["commit", "-q", "-m", "ignore the vault"])
             .status
             .success()
     );
     assert!(!tracked(&fixture, &post));
     let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
-    assert_eq!(finding["status"], "skipped", "{report:#}");
-    let fix = finding["fix"].as_str().unwrap_or_default();
-    assert!(
-        fix.contains(&format!("git add -f -- '{post}'")),
-        "{finding:#}"
-    );
-    assert!(fixture.exists(&format!(".chough/sessions/{id}")));
+    assert_eq!(finding["status"], "fixed", "{report:#}");
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+    assert!(fixture.exists(&post), "the finish removed the journal post");
 }
 
 /// REQ-history-012 (#389): when Git cannot read HEAD, the finish removes nothing and its
@@ -2800,4 +2796,133 @@ fn an_unreadable_entry_is_dropped_by_the_printed_commands() {
         "{report:#}"
     );
     assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+}
+
+/// REQ-history-012 (#381, tester2's run of D1 on real repositories): an entry is kept by
+/// the file that was read, not by the ID inside it. An entry whose claim was edited after
+/// the story and that was then renamed with `git mv`, so its file name is not its ID, is
+/// kept, and so is one whose `id` field was edited; neither goes with the folder.
+#[cfg(unix)]
+#[test]
+fn a_kept_entry_is_kept_by_its_file_whatever_its_id() {
+    for case in ["renamed", "id edited"] {
+        let fixture = Fixture::new();
+        let (id, file) = archived_with_a_kept_entry(&fixture);
+        fixture.commit("the archive");
+        let text = fixture.read(&file);
+        let kept = match case {
+            "renamed" => {
+                let edited = text.replacen(
+                    "SYNTHETIC check at accept",
+                    "SYNTHETIC check at accept, edited",
+                    1,
+                );
+                assert_ne!(edited, text);
+                fixture.write(&file, &edited);
+                let renamed = format!(".chough/sessions/{id}/evidence/2026-11-19-renamed-entry.md");
+                assert!(
+                    git(&fixture, &["mv", "--", &file, &renamed])
+                        .status
+                        .success()
+                );
+                renamed
+            }
+            _ => {
+                let stem = file.rsplit('/').next().unwrap().trim_end_matches(".md");
+                let moved =
+                    text.replacen(&format!("id: {stem}\n"), &format!("id: {stem}-edited\n"), 1);
+                assert_ne!(moved, text, "no id line in {file}");
+                fixture.write(&file, &moved);
+                file.clone()
+            }
+        };
+        fixture.commit(case);
+        let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+        assert_eq!(finding["status"], "skipped", "{case}: {report:#}");
+        assert!(
+            finding["kept"].to_string().contains(&kept),
+            "{case}: {finding:#}"
+        );
+        assert!(fixture.exists(&kept), "{case}: the kept entry went");
+    }
+}
+
+/// REQ-cli-021, REQ-history-012 (#371, #389, tester2): with the story ignored by Git,
+/// `next` names the same commit the finding does, `git add -f`, so running what `next`
+/// prints, as printed, until it names no archive finish ends the archive; it never loops
+/// on `chough doctor --fix` alone.
+#[cfg(unix)]
+#[test]
+fn next_finishes_an_ignored_story_as_printed() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    fixture.write(".gitignore", &format!("{story}\n"));
+    assert!(
+        git(&fixture, &["add", "--", ".gitignore", &post])
+            .status
+            .success()
+    );
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "ignore the story"])
+            .status
+            .success()
+    );
+    for round in 0..3 {
+        let view = fixture.ok(&["next", "--json"]);
+        let action = view["next_valid_action"]["action"]
+            .as_str()
+            .unwrap_or_default();
+        if !action.starts_with("Finish the archive") {
+            assert!(
+                !fixture.exists(&format!(".chough/sessions/{id}")),
+                "{view:#}"
+            );
+            assert!(tracked(&fixture, &story));
+            return;
+        }
+        let command = view["next_valid_action"]["command"]
+            .as_str()
+            .unwrap_or_default()
+            .to_string();
+        assert_ne!(
+            command, "chough doctor --fix",
+            "round {round}: next loops: {view:#}"
+        );
+        let output = run_printed(&fixture, &command);
+        let _ = output;
+    }
+    panic!("next still names the archive finish after three rounds");
+}
+
+/// REQ-history-012 (#381, tester2 on jackdaw: six open sessions, none active): with open
+/// sessions but no active pointer, the way out names them and says to pick one, with
+/// `chough session use <id>` or the move into `<id>`'s `evidence/`, never `chough session
+/// new` beside them.
+#[cfg(unix)]
+#[test]
+fn the_way_out_names_the_open_sessions_when_none_is_active() {
+    let fixture = Fixture::new();
+    let (id, file) = archived_with_a_kept_entry(&fixture);
+    fixture.commit("the archive");
+    let text = fixture.read(&file);
+    fixture.write(
+        &file,
+        &text.replacen(
+            "SYNTHETIC check at accept",
+            "SYNTHETIC check at accept, edited",
+            1,
+        ),
+    );
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    let beta = fixture.active_id();
+    fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    let gamma = fixture.active_id();
+    std::fs::remove_file(fixture.root().join(".chough/local/active-session")).unwrap();
+    fixture.commit("two open sessions, none active");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor"]);
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    assert!(fix.contains(&beta) && fix.contains(&gamma), "{report:#}");
+    assert!(fix.contains("chough session use"), "{fix}");
+    assert!(!fix.contains("chough session new"), "{fix}");
+    assert!(fixture.exists(&format!(".chough/sessions/{id}")));
 }

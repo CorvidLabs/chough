@@ -1727,52 +1727,32 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
         // Git is asked of each record whether HEAD holds it as it is, so a record Git
         // ignores, which `git status` never lists, or a Git call that fails holds the
         // finish too; an ignored record is named with a way out Git accepts.
-        let held: Vec<String> = sessions::archive_records(root, &id)
-            .into_iter()
-            .filter(|path| !sessions::committed_at_head(root, path))
-            .collect();
-        let ignored: Vec<String> = held
-            .iter()
-            .filter(|path| sessions::ignored_by_git(root, path))
-            .cloned()
-            .collect();
-        uncommitted.extend(held);
-        if !uncommitted.is_empty() {
-            // A whole command, its paths quoted; Git refuses a plain `git add` of a file
-            // it ignores, so those are added with `-f`, or the ignore rule is changed.
-            let (forced, plain): (Vec<&String>, Vec<&String>) =
-                uncommitted.iter().partition(|file| ignored.contains(file));
-            let mut adds = vec![];
-            if !plain.is_empty() {
-                adds.push(format!(
-                    "git add -- {}",
-                    plain
-                        .iter()
-                        .map(|file| sh(file))
-                        .collect::<Vec<_>>()
-                        .join(" ")
-                ));
+        // Only the story holds the finish (Leif's option B): Git is asked whether HEAD
+        // holds it, so one Git ignores, which `git status` never lists, holds it too, and
+        // is added with `-f`, or the ignore rule is changed.
+        let mut forced = vec![];
+        if let Some((story, ignored)) = sessions::held_story(root, &id) {
+            if ignored {
+                forced.push(story);
+            } else {
+                uncommitted.push(story);
             }
-            if !forced.is_empty() {
-                adds.push(format!(
-                    "git add -f -- {}",
-                    forced
-                        .iter()
-                        .map(|file| sh(file))
-                        .collect::<Vec<_>>()
-                        .join(" ")
-                ));
-            }
+        }
+        if !uncommitted.is_empty() || !forced.is_empty() {
             let ignore_note = if forced.is_empty() {
                 String::new()
             } else {
                 " (`git add -f` since Git ignores it; or change the ignore rule)".to_string()
             };
+            let command = sessions::commit_command(
+                &uncommitted,
+                &forced,
+                &format!("Archive the {id} session."),
+            );
+            uncommitted.extend(forced);
             finding.fix = format!(
-                "commit {}: `{} && git commit -q -m {}`{ignore_note}, then chough doctor --fix",
+                "commit {}: `{command}`{ignore_note}, then chough doctor --fix",
                 uncommitted.join(", "),
-                adds.join(" && "),
-                sh(&format!("Archive the {id} session."))
             );
             finding.blocked = Some(format!(
                 "{} not committed at HEAD; commit it first, so Git holds every byte removed and the story before its folder goes",
@@ -2024,7 +2004,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
 
 /// `text` as one single-quoted POSIX shell word.
 fn sh(text: &str) -> String {
-    format!("'{}'", text.replace('\'', "'\\''"))
+    sessions::shell_quoted(text)
 }
 
 /// What a person does with the entries an archived session's story does not hold, which
@@ -2047,6 +2027,28 @@ fn keep_or_drop(root: &Path, id: &str, unheld: &[String]) -> String {
         .ok()
         .and_then(|relative| crate::sessions::id_of(&relative))
         .filter(|open| open != id);
+    // With open sessions but none active, the person picks one of them: they are named,
+    // and a new session is named only when none is open.
+    let others: Vec<String> = crate::sessions::open_ids(root)
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|other| other != id)
+        .collect();
+    let pick = if others.is_empty() {
+        None
+    } else {
+        let shown: Vec<&str> = others.iter().take(5).map(String::as_str).collect();
+        let more = others.len().saturating_sub(shown.len());
+        Some(format!(
+            "{}{}",
+            shown.join(", "),
+            if more > 0 {
+                format!(" and {more} more (`chough session list`)")
+            } else {
+                String::new()
+            }
+        ))
+    };
     let quoted = |files: &[&String]| {
         files
             .iter()
@@ -2085,7 +2087,14 @@ fn keep_or_drop(root: &Path, id: &str, unheld: &[String]) -> String {
                     sh(&format!("Keep evidence entry {name} in session {open}."))
                 )
             }
-            None => "keep it by opening a session with `chough session new <key>` and running `chough doctor` again for the command that moves it there".to_string(),
+            None => match &pick {
+                Some(names) => format!(
+                    "keep it in one of the open sessions, {names}: run `chough session use <id>` with one of them, then `chough doctor` again for the command that moves it there, or move it yourself, with <id> one of them: `mkdir -p .chough/sessions/<id>/evidence && git mv -- {} .chough/sessions/<id>/evidence && git commit -q -m {}`",
+                    quoted(files),
+                    sh(&format!("Keep evidence entry {name}."))
+                ),
+                None => "keep it by opening a session with `chough session new <key>` and running `chough doctor` again for the command that moves it there".to_string(),
+            },
         };
         parts.push(format!(
             "{} is not held by the session's story, so doctor keeps it; {keep}, or drop it: {drop}",
@@ -2114,7 +2123,12 @@ fn keep_or_drop(root: &Path, id: &str, unheld: &[String]) -> String {
                 sh(file),
                 sh(&format!("Move inbox entry {} into session {open}.", stem(file)))
             ),
-            _ => "add its text again in an open session with `chough inbox add`, opening one with `chough session new <key>` first, then run `chough doctor` again".to_string(),
+            _ => match &pick {
+                Some(names) => format!(
+                    "add its text again in one of the open sessions, {names}: run `chough session use <id>` with one of them, then `chough doctor` again for the command that adds it there"
+                ),
+                None => "add its text again in an open session with `chough inbox add`, opening one with `chough session new <key>` first, then run `chough doctor` again".to_string(),
+            },
         };
         parts.push(format!(
             "{} is an unfolded inbox entry, so doctor keeps it; {add}, or drop it: {drop}",
