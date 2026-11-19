@@ -836,8 +836,10 @@ command takes `--session <id>`, before or after its subcommand, and without it r
 `CHOUGH_SESSION` environment variable. Either one names the session the command reads
 and writes, by ID, alias or bare slug as `chough session use` resolves them, whatever
 the pointer says. The pointer itself never moves. A name that is not an open session,
-unknown or archived, refuses as `refused:session-not-open`, naming `chough session
-list`, with nothing written. Three kinds of command are left as they were:
+unknown or archived, refuses as `refused:session-not-open`, naming the option or the
+variable and `chough session list`, with nothing written. With no session open at all,
+it names `chough session new <key>` instead, still saying when the named session is
+archived, and to drop `--session` or unset `CHOUGH_SESSION` (#334). Three kinds of command are left as they were:
 `chough init --session <key>` still names the first session's key, `chough inbox add
 --session` still names the session it appends to, and the `chough session` commands
 (`new`, `use`, `list`, `close`, `shelve`) ignore the variable, since they set or name a
