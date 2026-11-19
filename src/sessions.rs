@@ -1274,10 +1274,16 @@ pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
         })
         .collect();
     // Every file in the inbox, whatever its name: an unfolded entry renamed with a dot or
-    // a capital letter is someone's work too (#381).
+    // a capital letter is someone's work too (#381). What `inbox fold` moved into
+    // `folded/` is held by the session, and goes with the folder.
     let mut inbox = vec![];
     collect_files(root, &inbox_dir(id), &mut inbox)?;
-    unheld.extend(inbox.into_iter().filter(|file| !os_metadata(file)));
+    let folded = format!("{}/folded/", inbox_dir(id));
+    unheld.extend(
+        inbox
+            .into_iter()
+            .filter(|file| !os_metadata(file) && !file.starts_with(&folded)),
+    );
     unheld.sort();
     Ok(unheld)
 }
@@ -1776,6 +1782,28 @@ fn pending(root: &Path, key: &str) -> Result<Vec<(String, Entry)>> {
         ));
     }
     Ok(entries)
+}
+
+/// The `from`, kind and text of inbox file `file` when `chough inbox add` takes them again
+/// as they are, read and checked as `inbox fold` reads an entry; None for any other file a
+/// person left in an inbox, whose only way out is to drop it (#381, rule 3).
+pub(super) fn entry_to_add_again(
+    root: &Path,
+    file: &str,
+) -> Option<(String, &'static str, String)> {
+    let content = read_bounded_record(&local_path(root, file).ok()?, INBOX_LIMIT).ok()?;
+    let record = crate::markdown::parse(file, &content).ok()?;
+    let field = |name: &str| record.scalar(name).unwrap_or_default().to_string();
+    let kind = match field("kind").as_str() {
+        "observation" => Kind::Observation,
+        "decision" => Kind::Decision,
+        "completed" => Kind::Completed,
+        "question" => Kind::Question,
+        _ => return None,
+    };
+    let (from, text) = (field("from"), field("value"));
+    validate_entry(&from, kind, &text).ok()?;
+    Some((from, kind.name(), text))
 }
 
 /// The Markdown record of a new inbox entry named `name`.

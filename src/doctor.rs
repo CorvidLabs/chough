@@ -2111,23 +2111,26 @@ fn keep_or_drop(root: &Path, id: &str, unheld: &[String]) -> String {
             sh(file),
             sh(&format!("Drop the kept inbox entry {}.", stem(file)))
         );
-        let entry = crate::records::local_path(root, file)
-            .ok()
-            .and_then(|full| {
-                crate::records::read_bounded_record(&full, crate::markdown::RECORD_BOUND).ok()
-            })
-            .and_then(|text| crate::markdown::parse(file, &text).ok());
-        let add = match (&open, &entry) {
-            (Some(open), Some(entry)) => format!(
+        // Only an entry `chough inbox add` takes again as it is gets that command; any
+        // other file, such as notes or an entry with no text, is only dropped (rule 3).
+        let Some((from, kind, text)) = crate::sessions::entry_to_add_again(root, file) else {
+            parts.push(format!(
+                "{} is not an inbox entry that can be added again as it is, so doctor keeps it; copy what you need from it, then drop it: {drop}",
+                sh(file)
+            ));
+            continue;
+        };
+        let add = match &open {
+            Some(open) => format!(
                 "add its text again in session {open} and drop the kept copy: `chough inbox add --session {} --from {} --kind {} --text {} && git rm -q -- {} && git commit -q -m {}`",
                 sh(open),
-                sh(entry.scalar("from").unwrap_or("agent")),
-                sh(entry.scalar("kind").unwrap_or("observation")),
-                sh(entry.scalar("value").unwrap_or_default()),
+                sh(&from),
+                sh(kind),
+                sh(&text),
                 sh(file),
                 sh(&format!("Move inbox entry {} into session {open}.", stem(file)))
             ),
-            _ => match &pick {
+            None => match &pick {
                 Some(names) => format!(
                     "add its text again in one of the open sessions, {names}: run `chough session use <id>` with one of them, then `chough doctor` again for the command that adds it there"
                 ),

@@ -3030,3 +3030,93 @@ fn an_inbox_entry_is_kept_whatever_its_name() {
         );
     }
 }
+
+/// REQ-history-012 (#381, the inbox sweep in #414): an entry folded before the move into
+/// done is held by the session, so the files `inbox fold` leaves under
+/// `agent/inbox/folded/`, there at the finish when the fold came after the last commit,
+/// never hold it; only what is left unfolded in the inbox is kept.
+#[cfg(unix)]
+#[test]
+fn a_folded_inbox_entry_does_not_hold_the_finish() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    advance_to(&fixture, "accept");
+    fixture.commit("alpha at accept");
+    // Folded after the last commit, so the move into done leaves `folded/` for the finish.
+    add_entry(&fixture, "alpha", "decision", "SYNTHETIC folded decision");
+    fixture.ok(&["inbox", "fold"]);
+    let id = fixture.id_of("alpha");
+    let folded = format!(".chough/sessions/{id}/agent/inbox/folded");
+    assert!(
+        fixture.exists(&folded),
+        "inbox fold left nothing in {folded}"
+    );
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.commit("the archive");
+    assert!(
+        fixture.exists(&folded),
+        "the move into done left no {folded} for the finish to meet"
+    );
+    let output = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|finding| finding["kind"] != "unfinished_archive" || finding["status"] == "fixed"),
+        "{report:#}"
+    );
+    assert!(
+        !fixture.exists(&format!(".chough/sessions/{id}")),
+        "{report:#}"
+    );
+}
+
+/// REQ-history-012 (#381, rule 3): a kept file in `agent/inbox/` that `chough inbox add`
+/// would not take again as it is, such as plain notes or an entry with no text, is named
+/// as such and only dropped, after copying what is needed from it. Doctor never prints an
+/// `inbox add` that is refused, or sends the person to `chough session use` and back for a
+/// command it cannot print; the drop runs as printed and the archive finishes.
+#[cfg(unix)]
+#[test]
+fn an_inbox_file_inbox_add_would_not_take_is_only_dropped() {
+    let fixture = Fixture::new();
+    let (id, _) = archived_with_a_kept_entry(&fixture);
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    let names = [
+        format!(".chough/sessions/{id}/agent/inbox/notes.txt"),
+        format!(".chough/sessions/{id}/agent/inbox/2026-11-19-no-text.md"),
+    ];
+    fixture.write(&names[0], "SYNTHETIC plain notes\n");
+    fixture.write(&names[1], "---\nkind: decision\nfrom: worker\n---\n\n");
+    fixture.commit("the archive with two inbox files inbox add would not take");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let fix = finding["fix"].as_str().unwrap_or_default().to_string();
+    assert!(!fix.contains("chough session use"), "{fix}");
+    assert!(!fix.contains("chough inbox add"), "{fix}");
+    for name in &names {
+        let drop = printed_commands(&fix)
+            .into_iter()
+            .find(|command| command.starts_with("git rm ") && command.contains(name.as_str()))
+            .unwrap_or_else(|| panic!("no drop for {name}: {fix}"));
+        let output = run_printed(&fixture, &drop);
+        assert!(
+            output.status.success(),
+            "{drop}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let output = fixture.run(&["doctor", "--fix"]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap();
+    assert!(
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|finding| finding["kind"] != "unfinished_archive" || finding["status"] == "fixed"),
+        "{report:#}"
+    );
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+}

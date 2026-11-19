@@ -360,3 +360,39 @@ expected = ["tests/sessions.rs::an_inbox_entry_is_kept_whatever_its_name passes"
 adapter = "cargo-test"
 test_target = "sessions"
 test = "an_inbox_entry_is_kept_whatever_its_name"
+
+[[case]]
+id = "TC-history-a-folded-inbox-entry-does-not-hold-the-finish"
+title = "An entry inbox fold moved into folded/ goes with the archived folder; only an unfolded one is kept (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_folded_inbox_entry_does_not_hold_the_finish passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_folded_inbox_entry_does_not_hold_the_finish"
+
+[[case]]
+id = "TC-history-an-inbox-file-inbox-add-would-not-take-is-only-dropped"
+title = "A kept inbox file inbox add would not take again is named as such and only dropped, as printed (#381, rule 3)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_inbox_file_inbox_add_would_not_take_is_only_dropped passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_inbox_file_inbox_add_would_not_take_is_only_dropped"
