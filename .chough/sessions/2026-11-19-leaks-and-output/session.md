@@ -5,7 +5,7 @@ aliases: [leaks-and-output]
 objective: "Leak and output batch: --answer is leak-checked and bounded (#364), conflict findings name only the marker (#365), errors show a value only when it holds no leak and no control characters (#367), the leak guard adds the listed forms (#368), the user name comes from the account (#379), and gate record says Error once (#380)"
 intent_scope: ""
 modules: []
-stage: build
+stage: accept
 stage_status: active
 iteration: 1
 callers: []
@@ -33,9 +33,13 @@ observations:
   - 2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean-663602
 bugs: []
 blockers: []
-waiting_on_human: []
+waiting_on_human:
+  - gate: Implementation review of leaks-and-output
+    holds: accept
+    drives: review
+    opened: 2026-11-19T02:44:55Z
 run_consents: []
-next: Continue build
+next: Continue accept
 ---
 # Leak and output batch: --answer is leak-checked and bounded (#364), conflict findings name only the marker (#365), errors show a value only when it holds no leak and no control characters (#367), the leak guard adds the listed forms (#368), the user name comes from the account (#379), and gate record says Error once (#380)
 
@@ -100,4 +104,44 @@ Leak and output batch: --answer is leak-checked and bounded (#364), conflict fin
   - native_change: leaks-and-output
   - gate: native:approved
   - revision: bd77bbd15f0e373776192a7d058a09c70fdbc00e
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T02:44:53Z · direct-native-write · build → build · leaks-and-output's lifecycle records changed outside Chough: state.json changed, verification.json removed, verification-attempts.json removed; state verifying → approved ^t-5d1ea4
+  - native_change: leaks-and-output
+  - revision: dcddb723c6577e567ad2104cf5f391a5ae0a78aa
+  - direct_write:
+    - change: leaks-and-output
+    - files:
+      - state.json: changed
+      - verification.json: removed
+      - verification-attempts.json: removed
+    - before_state: verifying
+    - after_state: approved
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T02:44:53Z · direct-native-write · build → build · leaks-and-output's lifecycle records changed outside Chough: state.json changed, verification.json removed, verification-attempts.json removed; state verifying → approved ^t-a78bf7
+  - native_change: leaks-and-output
+  - revision: dcddb723c6577e567ad2104cf5f391a5ae0a78aa
+  - direct_write:
+    - change: leaks-and-output
+    - files:
+      - state.json: changed
+      - verification.json: removed
+      - verification-attempts.json: removed
+    - before_state: verifying
+    - after_state: approved
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T02:44:53Z · advance · build → test · native:verifying ^t-9df829
+  - native_change: leaks-and-output
+  - gate: native:verifying
+  - revision: dcddb723c6577e567ad2104cf5f391a5ae0a78aa
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T02:44:54Z · advance · test → accept · native:verifying ^t-cce0ce
+  - native_change: leaks-and-output
+  - gate: native:verifying
+  - revision: dcddb723c6577e567ad2104cf5f391a5ae0a78aa
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T02:44:54Z · gate-opened · accept → accept · Implementation review of leaks-and-output ^t-294c3f
+  - native_change: leaks-and-output
+  - revision: dcddb723c6577e567ad2104cf5f391a5ae0a78aa
+  - holds: accept
+  - drives: review
   - by: chough-fixer (claude-opus-5-5, hc t4n)
