@@ -517,7 +517,12 @@ fn export_findings(root: &Path, change: &Change) -> Vec<Finding> {
 }
 
 fn export_warning(warning: &str) -> Option<(&str, &str)> {
-    let rest = warning.strip_prefix("Undocumented export '")?;
+    // SpecSync 6.3.0 puts the spec's path first: `specs/<m>/<m>.spec.md: Undocumented
+    // export '<symbol>' from <file>`. The bare form is read too.
+    let (spec, rest) = warning.split_once("Undocumented export '")?;
+    if !(spec.is_empty() || spec.ends_with(": ")) {
+        return None;
+    }
     let (symbol, rest) = rest.split_once("' from ")?;
     let file = rest.trim();
     (!symbol.is_empty() && !file.is_empty()).then_some((symbol, file))
@@ -1455,6 +1460,30 @@ mod tests {
         assert_eq!(
             strip_prefix_ignore_ascii("REQUIREMENT Ünïcödé", "REQUIREMENT "),
             Some("Ünïcödé")
+        );
+    }
+
+    /// The tester's finding on #311: the warning as SpecSync 6.3.0 prints it, with the
+    /// spec's path first, and its count line, which is not an export.
+    #[test]
+    fn an_export_warning_is_read_as_specsync_prints_it() {
+        assert_eq!(
+            export_warning(
+                "specs/auth/auth.spec.md: Undocumented export 'logout' from src/auth.rs"
+            ),
+            Some(("logout", "src/auth.rs"))
+        );
+        assert_eq!(
+            export_warning("Undocumented export 'logout' from src/auth.rs"),
+            Some(("logout", "src/auth.rs"))
+        );
+        assert_eq!(
+            export_warning("specs/auth/auth.spec.md: 1/2 exports documented"),
+            None
+        );
+        assert_eq!(
+            export_warning("a note that quotes Undocumented export 'x' from y"),
+            None
         );
     }
 

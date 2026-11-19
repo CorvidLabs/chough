@@ -287,7 +287,7 @@ fn an_undocumented_export_in_a_declared_file_is_named() {
     let fixture = project(OLD_REQ, &["src/lib.rs"]);
     fixture.write(
         &format!(".specsync/changes/{ID}/check.json"),
-        "{\"warnings\":[\"Undocumented export 'hidden' from src/lib.rs\",\"Undocumented export 'other' from src/other.rs\"]}\n",
+        "{\"errors\":[],\"passed\":true,\"specs_checked\":1,\"warnings\":[\"specs/cli/cli.spec.md: 1/3 exports documented\",\"specs/cli/cli.spec.md: Undocumented export 'hidden' from src/lib.rs\",\"specs/cli/cli.spec.md: Undocumented export 'other' from src/other.rs\"]}\n",
     );
     assert_report(
         &fixture,
