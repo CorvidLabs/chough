@@ -1245,7 +1245,7 @@ pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
 }
 
 /// What a person commits to finish archived session `id`'s archive (REQ-cli-021, #371):
-/// its folder, its story and its journal post, each when Git does not hold it as it is,
+/// each file of its folder, its story and its journal post that Git does not hold as it is,
 /// read with one `git status`. A post is the session's when its `record` is the story.
 /// None when Git cannot be read, as in a project that is not a repository, where no
 /// commit can finish it.
@@ -1291,21 +1291,18 @@ pub(super) fn archive_to_commit(root: &Path, id: &str) -> Option<Vec<String>> {
         if os_metadata(path) {
             continue;
         }
-        let wanted = if path.starts_with(&format!("{folder}/")) {
-            format!("{folder}/")
-        } else if path == story {
-            story.clone()
-        } else if path.starts_with(&format!("{journal}/"))
+        // Each file by name, never the folder: a pathspec for the folder would also take
+        // its macOS metadata, which needs no commit (#377).
+        let post = path.starts_with(&format!("{journal}/"))
             && local_path(root, path)
                 .ok()
                 .and_then(|full| fs::read_to_string(full).ok())
                 .and_then(|text| crate::markdown::parse(path, &text).ok())
-                .is_some_and(|post| post.scalar("record") == Some(story.as_str()))
-        {
-            path.to_string()
-        } else {
+                .is_some_and(|post| post.scalar("record") == Some(story.as_str()));
+        if !(path.starts_with(&format!("{folder}/")) || path == story || post) {
             continue;
-        };
+        }
+        let wanted = path.to_string();
         if !paths.contains(&wanted) {
             paths.push(wanted);
         }

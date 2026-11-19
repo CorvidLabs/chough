@@ -3524,3 +3524,147 @@ fn the_finish_command_quotes_each_path_and_leaves_metadata_out() {
         "{shown}"
     );
 }
+
+/// Run `command` exactly as a person pastes what follows `Run:`, in the fixture's root,
+/// with this build's `chough` on PATH, the fixture's user configuration and a committer.
+#[cfg(unix)]
+fn run_printed(fixture: &Fixture, command: &str) -> std::process::Output {
+    let mut paths = vec![
+        std::path::Path::new(env!("CARGO_BIN_EXE_chough"))
+            .parent()
+            .unwrap()
+            .to_path_buf(),
+    ];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    let mut shell = std::process::Command::new("sh");
+    shell
+        .current_dir(fixture.root())
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG))
+        .env("GIT_AUTHOR_NAME", "Test")
+        .env("GIT_AUTHOR_EMAIL", "test@example.invalid")
+        .env("GIT_COMMITTER_NAME", "Test")
+        .env("GIT_COMMITTER_EMAIL", "test@example.invalid")
+        .env("GIT_CONFIG_COUNT", "1")
+        .env("GIT_CONFIG_KEY_0", "commit.gpgsign")
+        .env("GIT_CONFIG_VALUE_0", "false");
+    for name in common::ACTOR_VARIABLES {
+        shell.env_remove(name);
+    }
+    shell.args(["-c", command]).output().unwrap()
+}
+
+/// The files the last commit holds.
+#[cfg(unix)]
+fn last_commit(fixture: &Fixture) -> (String, Vec<String>) {
+    let output = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["log", "-1", "--name-only", "--format=%s"])
+        .output()
+        .unwrap();
+    let text = String::from_utf8_lossy(&output.stdout).into_owned();
+    let mut lines = text.lines().filter(|line| !line.is_empty());
+    let subject = lines.next().unwrap_or_default().to_string();
+    (subject, lines.map(str::to_string).collect())
+}
+
+/// REQ-cli-021 (#371, tester2's run of D1 on real repositories): with other archived
+/// folders waiting and a session open, what follows `Run:` on the Archive line is the
+/// command alone, the count of the others before it, and run as printed it commits the
+/// first archive's files and story and finishes it.
+#[cfg(unix)]
+#[test]
+fn the_archive_line_runs_as_printed_with_other_archives_waiting() {
+    let fixture = Fixture::new();
+    let first = archived_and_left(&fixture);
+    // A second archive, moved into done with nothing committed, so neither folder's
+    // files are committed when the line is read.
+    fixture.ok(&["session", "new", "beta", "--objective", "Ship beta"]);
+    for _ in 0..6 {
+        fixture.ok(&["stage", "advance", "--json"]);
+    }
+    fixture.ok(&["session", "new", "gamma", "--objective", "Ship gamma"]);
+    let shown = text(&fixture, &["next"]);
+    let line = shown
+        .lines()
+        .find(|line| line.starts_with("Archive: "))
+        .unwrap_or_else(|| panic!("{shown}"));
+    let (before, command) = line.split_once(" Run: ").unwrap();
+    assert!(
+        before.contains("1 more archived session folder(s) wait too"),
+        "{line}"
+    );
+    assert!(
+        command.starts_with("git add -- ") && command.ends_with("chough doctor --fix"),
+        "{line}"
+    );
+    let output = run_printed(&fixture, command);
+    let said = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        !said.contains("syntax error")
+            && !said.contains("not found")
+            && !said.contains("unexpected"),
+        "{command}: {said}"
+    );
+    let (_, files) = last_commit(&fixture);
+    let story = format!(".chough/archive/sessions/{first}.md");
+    assert!(files.contains(&story), "{files:?}");
+    assert!(
+        !fixture.exists(&format!(".chough/sessions/{first}")),
+        "{said}"
+    );
+}
+
+/// REQ-cli-021 (#371, tester2 on Apple Git): the printed command stages the archived
+/// story with a journal post and without one, so the commit holds it and the finish
+/// leaves it tracked; the message names the post only when there is one.
+#[cfg(unix)]
+#[test]
+fn the_printed_command_commits_the_story_with_or_without_a_journal_post() {
+    for with_post in [true, false] {
+        let fixture = Fixture::new();
+        let id = archived_and_left(&fixture);
+        if !with_post {
+            for entry in std::fs::read_dir(fixture.root().join("knowledge/journal")).unwrap() {
+                let path = entry.unwrap().path();
+                if path.extension().is_some_and(|extension| extension == "md") {
+                    std::fs::remove_file(path).unwrap();
+                }
+            }
+        }
+        fixture.write(&format!(".chough/sessions/{id}/.DS_Store"), "finder\n");
+        let view = fixture.ok(&["next", "--json"]);
+        let command = view["next_valid_action"]["command"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        assert!(!command.contains("exclude"), "{command}");
+        let output = run_printed(&fixture, &command);
+        // The fixture installs no merge drivers, so doctor still reports `merge_drivers`
+        // after the finish; the commit and the finish are what this checks.
+        let report = String::from_utf8_lossy(&output.stdout);
+        assert!(
+            report.contains("\"kind\": \"unfinished_archive\"")
+                && report.contains("\"status\": \"fixed\""),
+            "{command}: {report}{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let (subject, files) = last_commit(&fixture);
+        let story = format!(".chough/archive/sessions/{id}.md");
+        assert!(files.contains(&story), "with_post {with_post}: {files:?}");
+        assert_eq!(subject.contains("journal post"), with_post, "{subject}");
+        assert!(
+            !files.iter().any(|file| file.ends_with(".DS_Store")),
+            "{files:?}"
+        );
+        let tracked = std::process::Command::new("git")
+            .current_dir(fixture.root())
+            .args(["ls-files", "--error-unmatch", &story])
+            .output()
+            .unwrap();
+        assert!(tracked.status.success(), "the story is not tracked");
+        assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+    }
+}

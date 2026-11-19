@@ -1112,14 +1112,17 @@ fn archive_finish(root: &Path) -> Option<Value> {
     let command = if commit.is_empty() {
         "chough doctor --fix".to_string()
     } else {
-        // macOS metadata stays out of the commit: the finish removes it as it is (#377).
+        // Each file by name, so macOS metadata stays out and every Git stages the story;
+        // the message names the journal post only when there is one.
+        let post = commit.iter().any(|path| !path.starts_with(".chough/"));
         format!(
-            "git add -- {} ':(exclude,glob)**/.DS_Store' ':(exclude,glob)**/._*' && git commit -m \"Archive the {id} session and its journal post.\" && chough doctor --fix",
+            "git add -- {} && git commit -m \"Archive the {id} session{}.\" && chough doctor --fix",
             commit
                 .iter()
                 .map(|path| shell_word(path))
                 .collect::<Vec<_>>()
-                .join(" ")
+                .join(" "),
+            if post { " and its journal post" } else { "" }
         )
     };
     // An entry the story does not hold stays until it is moved or dropped by hand, as the
@@ -1424,15 +1427,14 @@ fn next_text(view: &Value) -> String {
     // REQ-cli-021 (#371): finishing an archive comes first, on one line.
     if let Some(action) = view["unfinished_archive"]["action"].as_str() {
         let others = view["unfinished_archive"]["others"].as_u64().unwrap_or(0);
+        // The count goes before `Run:`, so what follows `Run:` is the command alone.
         let more = if others > 0 {
-            format!(
-                " {others} more archived session folder(s) wait too; `chough doctor` names each."
-            )
+            format!(" {others} more archived session folder(s) wait too; chough doctor names each.")
         } else {
             String::new()
         };
         lines.push(format!(
-            "Archive: {action} Run: {}{more}",
+            "Archive: {action}{more} Run: {}",
             text(&view["unfinished_archive"]["command"])
         ));
     }
