@@ -16,7 +16,20 @@ requirements: [REQ-history-012, REQ-cli-021, REQ-records-001, REQ-records-014]
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-19-tc-history-the-archive-finish-keeps-what-the-story-does-not
+  - 2026-11-19-tc-history-an-entry-that-differs-from-its-receipt-is-kept
+  - 2026-11-19-tc-history-macos-metadata-never-blocks-the-archive-finish
+  - 2026-11-19-tc-history-a-front-matter-conflict-is-named
+  - 2026-11-19-tc-history-a-redacted-timeline-entry-is-not-rewritten
+  - 2026-11-19-tc-history-the-spec-walk-follows-no-link-and-is-bounded
+  - 2026-11-19-tc-history-the-archive-finish-keeps-what-the-story-does-not-cad975
+  - 2026-11-19-tc-history-an-entry-that-differs-from-its-receipt-is-kept-d21527
+  - 2026-11-19-tc-history-macos-metadata-never-blocks-the-archive-finish-40c735
+  - 2026-11-19-tc-history-next-names-finishing-the-archive
+  - 2026-11-19-tc-history-a-front-matter-conflict-is-named-67d461
+  - 2026-11-19-tc-history-a-redacted-timeline-entry-is-not-rewritten-ac9ac5
+  - 2026-11-19-tc-history-the-spec-walk-follows-no-link-and-is-bounded-9bfc91
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -39,6 +52,20 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
 - 0xLeif decided "Re-approval of doctor-fix-safety for the #381 screenshot wording": "Yes" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on D1's #381 log wording: in both places in REQ-history-012, what doctor --fix keeps and the git mv way out, 'with its log and screenshot' became 'with the screenshot beside it', since an entry's log lives in .chough/local/logs and never in the session folder; nothing else changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test sessions -- --exact the_archive_finish_keeps_what_the_story_does_not_hold for TC-history-the-archive-finish-keeps-what-the-story-does-not-hold: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-the-archive-finish-keeps-what-the-story-does-not.md)
+- [Ran cargo test --locked --test sessions -- --exact an_entry_that_differs_from_its_receipt_is_kept for TC-history-an-entry-that-differs-from-its-receipt-is-kept: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-an-entry-that-differs-from-its-receipt-is-kept.md)
+- [Ran cargo test --locked --test sessions -- --exact macos_metadata_never_blocks_the_archive_finish for TC-history-macos-metadata-never-blocks-the-archive-finish: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-macos-metadata-never-blocks-the-archive-finish.md)
+- [Ran cargo test --locked --test doctor -- --exact a_front_matter_conflict_is_named_and_resolved_not_shelved for TC-history-a-front-matter-conflict-is-named: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-front-matter-conflict-is-named.md)
+- [Ran cargo test --locked --test doctor -- --exact a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is for TC-history-a-redacted-timeline-entry-is-not-rewritten: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-redacted-timeline-entry-is-not-rewritten.md)
+- [Ran cargo test --locked --test doctor -- --exact the_spec_walk_follows_no_link_and_is_bounded for TC-history-the-spec-walk-follows-no-link-and-is-bounded: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-the-spec-walk-follows-no-link-and-is-bounded.md)
+- [Ran cargo test --locked --test sessions -- --exact the_archive_finish_keeps_what_the_story_does_not_hold for TC-history-the-archive-finish-keeps-what-the-story-does-not-hold: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-the-archive-finish-keeps-what-the-story-does-not-cad975.md)
+- [Ran cargo test --locked --test sessions -- --exact an_entry_that_differs_from_its_receipt_is_kept for TC-history-an-entry-that-differs-from-its-receipt-is-kept: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-an-entry-that-differs-from-its-receipt-is-kept-d21527.md)
+- [Ran cargo test --locked --test sessions -- --exact macos_metadata_never_blocks_the_archive_finish for TC-history-macos-metadata-never-blocks-the-archive-finish: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-macos-metadata-never-blocks-the-archive-finish-40c735.md)
+- [Ran cargo test --locked --test next -- --exact next_names_finishing_the_archive_until_the_folder_is_gone for TC-history-next-names-finishing-the-archive: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-next-names-finishing-the-archive.md)
+- [Ran cargo test --locked --test doctor -- --exact a_front_matter_conflict_is_named_and_resolved_not_shelved for TC-history-a-front-matter-conflict-is-named: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-front-matter-conflict-is-named-67d461.md)
+- [Ran cargo test --locked --test doctor -- --exact a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is for TC-history-a-redacted-timeline-entry-is-not-rewritten: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-redacted-timeline-entry-is-not-rewritten-ac9ac5.md)
+- [Ran cargo test --locked --test doctor -- --exact the_spec_walk_follows_no_link_and_is_bounded for TC-history-the-spec-walk-follows-no-link-and-is-bounded: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-the-spec-walk-follows-no-link-and-is-bounded-9bfc91.md)
 
 ## Open threads
 
