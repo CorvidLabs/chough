@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "leaks-and-output",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "8ab22af2450048896b18c6f5f413fc8dae407aea",
+  "contract_digest": "1e038a2eda2cb5405761721a8cc899996d413f4beba00f00043a4579cf8f4bfc",
+  "execution_digest": "749a5ebba6813b33c3517fbaeb95a65ea5fe226f3a93f4adc444a75ecf622440",
+  "workspace_digest": "c133c28814bfc72670899ab7c7a73f398b74679e29d53a564df7b76c652dc656",
+  "timestamp": 1795099416,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Yes to both",
+    "where": "Claude Code chat answer, 2026-11-19 about 14:08Z, relayed by hc t4c through fable-lead (hc t53), to: send leaks-and-output back once for the cli and history case files, and approve the merge once that is pushed, tester2 has rechecked it and CI is green; at 0871080 tester2's recheck passed and fable-lead's read passed, both checked by fable-lead, with CI to be green before the merge",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}

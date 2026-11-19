@@ -329,6 +329,13 @@
         "where": "Claude Code chat answer, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 14:08Z, to: may leaks-and-output be sent back once for the two case files .chough/cases/cli.leaks-and-output.cases.toml and .chough/cases/history.leaks-and-output.cases.toml, no code and no sentence change, and is the merge approved once that is pushed, tester2 has rechecked it and CI is green",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795099426,
+      "digest": "2352f10352b67f5503da19c30b91dc87c5afc6eb8cb358cf33f494c40e455c3e",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

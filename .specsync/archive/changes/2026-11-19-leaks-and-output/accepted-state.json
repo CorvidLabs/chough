@@ -7,11 +7,11 @@
   "title": "Leaks and output",
   "description": "leaks and output",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "accepted",
   "canonical_applied": true,
   "base_commit": "bd77bbd15f0e373776192a7d058a09c70fdbc00e",
   "created_at": 1795053435,
-  "updated_at": 1795098228,
+  "updated_at": 1795099426,
   "affected_specs": [
     "records",
     "cli",
