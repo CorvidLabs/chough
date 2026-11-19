@@ -442,7 +442,13 @@ Its body gives `# <title>` and the paragraphs What happened (with the actual
 behaviour as its own `Actual:` paragraph when it differs from the symptom), Steps (led
 by `Trigger:` and the trigger, then each step), Expected, Why it matters and Fix, then
 `## Log`, an append-only list with one dated entry per report,
-note, evidence link and status change. A person's edits to the paragraphs stay, and
+note, evidence link and status change. A Log entry names linked evidence as a Markdown
+link relative to the bug's file, its text the evidence name: to
+`../sessions/<session>/evidence/<id>.md` for an open session's entry, to
+`../archive/sessions/<session>.md` for a receipt an archived story holds, and the bare
+name for a receipt only the bug holds; the front matter keeps `<session>/<id>`. When a session is archived its entries leave with its
+folder, and `chough doctor --fix` appends a Log entry linking the story
+(`stale_bug_links`). A person's edits to the paragraphs stay, and
 every earlier Log line stays byte-identical. Fix says `Not fixed yet.` until `bug
 update --fix <text>` sets it, which the Log records too; marking a bug verified while
 its Fix still says `Not fixed yet.` replaces that with a line naming the passing
@@ -866,6 +872,7 @@ native read, and never records a human decision, approval, review or consent.
 | `stale_gates` | A finished session with open awaiting-human gates, whose native change is archived | A decision: withdraw the gates as `checkpoint --clear-awaiting-human` does, recording no human decision, write the reason on each withdrawn gate's `gate-closed` Timeline entry as `withdrawn: <reason>`, which the archived story keeps, then archive the session. A decision fix that was applied echoes the reason as `decision_reason` |
 | `skill_outdated` | An installed skill file that is byte-identical to an earlier release's copy | None of doctor's own: run `chough skill update`. A file a person edited is not reported |
 | `skill_uninspected` | A host's skill folder that doctor could not inspect, such as `.codex/skills` when it is a symlink to the shared copy. Advice only: it never makes doctor exit 1, and it hides no outdated file in another folder | None: check the copy it points to |
+| `stale_bug_links` | A bug whose body links an open session's evidence entry that left with its archived session | Append one Log entry to the bug that links each entry to the archived story, `../archive/sessions/<session>.md`; no earlier line changes. A bug too near its size bound for that line gets an advisory finding instead (`"advisory": true`), which names the hand edit that clears it and does not make doctor exit 1 |
 | `unfinished_session` | An open, unfinished session named with `--close <key>` | A decision: `session close <key> --reason` |
 | `timeline_rewritten` | A session or story whose Timeline at HEAD is not an exact prefix of its working Timeline (REQ-history-002); `entries` names the entries that differ | None: restore them from `git show HEAD:<file>` by hand |
 | `alias_conflict` | An ID that is the `id` or an alias of two records of one kind (REQ-records-003); `records` names both | None: decide which record keeps it |

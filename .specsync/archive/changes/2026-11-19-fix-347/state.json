@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-347",
+  "slug": "fix-347",
+  "title": "Fix 347",
+  "description": "fix 347",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "dbd0b1f7c772ae17e4b0ff59bd92a7024bfffe2b",
+  "created_at": 1795042835,
+  "updated_at": 1795056750,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/bugs.rs",
+    "src/doctor.rs",
+    "tests/bugs.rs",
+    "docs/cli.md",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    "specs/history/requirements.md",
+    "specs/history/history.spec.md",
+    ".chough/cases/cli.bug-evidence-links.cases.toml",
+    "changelog.d/2026-11-18-fix-347.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A new bug's Log names each piece of linked evidence as a Markdown link relative to the bug's file that opens the open session's entry, bug update and the automatic failure capture do the same, and the front matter keeps the stored form. After that session is archived, chough doctor reports the bug as stale_bug_links, naming the entry and the story, and --fix appends one Log entry linking the story with every earlier Log line unchanged; the bug is then not reported again."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "REQ-cli-012 keeps a bug's Log append-only, so a stale link is never rewritten; the fix appends. REQ-history-006 keeps archiving from touching any record but the session's own, so the relink is a doctor fix. Human gates are plain text in tasks.md, and the deltas are frozen at approval.",
+    "public_contract": "yes"
+  }
+}
