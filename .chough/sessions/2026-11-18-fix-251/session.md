@@ -19,6 +19,7 @@ files: []
 observations:
   - 2026-11-18-tc-records-a-whole-repository-specsync-gets-the-narrowing
   - 2026-11-18-tc-records-a-whole-repository-specsync-gets-the-narrowing-f04562
+  - 2026-11-19-tc-records-a-whole-repository-specsync-gets-the-narrowing
 bugs: []
 blockers: []
 waiting_on_human:
@@ -49,6 +50,7 @@ When SpecSync's source_dirs or meaningful_paths covers the whole repository, cho
 
 - [Ran cargo test --locked --test doctor -- --exact a_whole_repository_specsync_gets_the_narrowing_advice for TC-records-a-whole-repository-specsync-gets-the-narrowing-advice: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-whole-repository-specsync-gets-the-narrowing.md)
 - [Ran cargo test --locked --test doctor -- --exact a_whole_repository_specsync_gets_the_narrowing_advice for TC-records-a-whole-repository-specsync-gets-the-narrowing-advice: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-records-a-whole-repository-specsync-gets-the-narrowing-f04562.md)
+- [Ran cargo test --locked --test doctor -- --exact a_whole_repository_specsync_gets_the_narrowing_advice for TC-records-a-whole-repository-specsync-gets-the-narrowing-advice: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-whole-repository-specsync-gets-the-narrowing.md)
 
 ## Open threads
 
