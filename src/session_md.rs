@@ -15,6 +15,9 @@ use crate::stage::Transition;
 use anyhow::{Context, Result, bail, ensure};
 
 pub(super) const GOAL: &str = "Goal";
+/// The objective `chough session new` gives a session when none is given (its
+/// `DEFAULT_OBJECTIVE`), which [`new_body`] writes as the title and the Goal.
+const PLACEHOLDER_OBJECTIVE: &str = "Describe the current objective before beginning work.";
 pub(super) const STANDS: &str = "Where it stands";
 pub(super) const DECISIONS: &str = "Decisions and why";
 pub(super) const VERIFIED: &str = "What was verified";
@@ -213,6 +216,12 @@ pub(super) fn render_with(
     record.set_scalar("id", &meta.id)?;
     record.set("aliases", list(&meta.aliases))?;
     record.set_scalar("objective", &session.objective)?;
+    // REQ-records-004 (#269): the placeholder `chough session new` writes when no
+    // objective is given is filled once by the objective set later, so the story and its
+    // journal post never keep it; a Goal or title a person wrote is never rewritten.
+    if session.objective != PLACEHOLDER_OBJECTIVE {
+        record.fill_placeholder(GOAL, PLACEHOLDER_OBJECTIVE, &one_line(&session.objective));
+    }
     record.set_scalar("intent_scope", &session.intent_scope)?;
     record.set("modules", list(&session.modules))?;
     record.set_scalar("stage", &session.stage.current)?;
