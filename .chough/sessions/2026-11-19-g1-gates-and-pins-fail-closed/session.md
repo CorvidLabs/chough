@@ -25,6 +25,14 @@ observations:
   - 2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow
   - 2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument
   - 2026-11-19-tc-history-inbox-list-lists-the-pinned-session
+  - 2026-11-19-tc-cli-a-hand-edited-no-native-change-cannot-unlock-the-afb826
+  - 2026-11-19-tc-cli-ship-checks-the-whole-history-effff9
+  - 2026-11-19-tc-cli-ship-acts-on-the-pinned-session-73b6e9
+  - 2026-11-19-tc-cli-session-use-and-new-say-when-a-pin-names-another-99c554
+  - 2026-11-19-tc-cli-session-shelve-resolves-its-key-c3e9e9
+  - 2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow-165174
+  - 2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument-4f1612
+  - 2026-11-19-tc-history-inbox-list-lists-the-pinned-session-841e5f
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -55,6 +63,14 @@ Gates and session pins fail closed: a hand-edited no_native_change cannot unlock
 - [Ran cargo test --locked --test change -- --exact ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow for TC-cli-ship-in-a-shallow-clone-names-fetch-unshallow: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow.md)
 - [Ran cargo test --locked --test change -- --exact change_commands_refuse_a_leaking_argument_before_specsync_runs for TC-cli-change-commands-refuse-a-leaking-argument: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument.md)
 - [Ran cargo test --locked --test session_pin -- --exact inbox_list_lists_the_pinned_session for TC-history-inbox-list-lists-the-pinned-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-inbox-list-lists-the-pinned-session.md)
+- [Ran cargo test --locked --test stages -- --exact a_hand_edited_no_native_change_cannot_unlock_the_ungated_move for TC-cli-a-hand-edited-no-native-change-cannot-unlock-the-ungated-move: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-a-hand-edited-no-native-change-cannot-unlock-the-afb826.md)
+- [Ran cargo test --locked --test change -- --exact ship_checks_the_whole_history_and_goes_on_without_a_base for TC-cli-ship-checks-the-whole-history: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-checks-the-whole-history-effff9.md)
+- [Ran cargo test --locked --test change -- --exact ship_closes_the_gate_and_moves_the_stage_in_the_pinned_session for TC-cli-ship-acts-on-the-pinned-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-acts-on-the-pinned-session-73b6e9.md)
+- [Ran cargo test --locked --test session_pin -- --exact session_use_and_new_say_when_a_pin_still_names_another_session for TC-cli-session-use-and-new-say-when-a-pin-names-another-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-session-use-and-new-say-when-a-pin-names-another-99c554.md)
+- [Ran cargo test --locked --test sessions -- --exact session_shelve_resolves_its_key_as_session_use_does for TC-cli-session-shelve-resolves-its-key: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-session-shelve-resolves-its-key-c3e9e9.md)
+- [Ran cargo test --locked --test change -- --exact ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow for TC-cli-ship-in-a-shallow-clone-names-fetch-unshallow: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow-165174.md)
+- [Ran cargo test --locked --test change -- --exact change_commands_refuse_a_leaking_argument_before_specsync_runs for TC-cli-change-commands-refuse-a-leaking-argument: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument-4f1612.md)
+- [Ran cargo test --locked --test session_pin -- --exact inbox_list_lists_the_pinned_session for TC-history-inbox-list-lists-the-pinned-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-inbox-list-lists-the-pinned-session-841e5f.md)
 
 ## Open threads
 
