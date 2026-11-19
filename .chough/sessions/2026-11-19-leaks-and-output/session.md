@@ -47,6 +47,16 @@ observations:
   - 2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean-cc18d8
   - 2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean-4da2d0
   - 2026-11-19-tc-records-errors-show-a-given-value-only-when-clean-97dada
+  - 2026-11-19-tc-records-an-answer-is-leak-checked-and-bounded-8ade06
+  - 2026-11-19-tc-records-the-listed-leak-forms-are-refused-750e65
+  - 2026-11-19-tc-records-the-user-name-comes-from-the-account-af64ff
+  - 2026-11-19-tc-records-a-conflict-marker-is-named-by-its-seven-characters-dab931
+  - 2026-11-19-tc-records-errors-show-a-session-name-only-when-clean-134730
+  - 2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean-83abb7
+  - 2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean-f05049
+  - 2026-11-19-tc-records-errors-show-a-given-value-only-when-clean-09351b
+  - 2026-11-19-tc-records-a-redacting-save-replaces-a-stored-leak
+  - 2026-11-19-tc-records-gate-record-redact-redacts-the-close
 bugs: []
 blockers: []
 waiting_on_human:
@@ -103,6 +113,16 @@ Leak and output batch: --answer is leak-checked and bounded (#364), conflict fin
 - [Ran cargo test --locked --test bugs -- --exact a_bug_reference_is_shown_only_when_clean for TC-records-errors-show-a-bug-reference-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean-cc18d8.md)
 - [Ran cargo test --locked --test humans -- --exact a_decided_by_value_is_shown_only_when_clean for TC-records-errors-show-a-decided-by-value-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean-4da2d0.md)
 - [Ran cargo test --locked --test leaks -- --exact errors_show_a_given_value_only_when_clean for TC-records-errors-show-a-given-value-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-given-value-only-when-clean-97dada.md)
+- [Ran cargo test --locked --test leaks -- --exact an_answer_is_leak_checked_redacted_and_bounded for TC-records-an-answer-is-leak-checked-and-bounded: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-an-answer-is-leak-checked-and-bounded-8ade06.md)
+- [Ran cargo test --locked --test leaks -- --exact the_listed_leak_forms_are_refused_and_counted for TC-records-the-listed-leak-forms-are-refused: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-the-listed-leak-forms-are-refused-750e65.md)
+- [Ran cargo test --locked --test leaks -- --exact the_user_name_comes_from_the_account for TC-records-the-user-name-comes-from-the-account: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-the-user-name-comes-from-the-account-af64ff.md)
+- [Ran cargo test --locked --test doctor -- --exact a_conflict_marker_is_named_by_its_seven_characters for TC-records-a-conflict-marker-is-named-by-its-seven-characters: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-conflict-marker-is-named-by-its-seven-characters-dab931.md)
+- [Ran cargo test --locked --test session_pin -- --exact a_session_name_is_shown_only_when_clean for TC-records-errors-show-a-session-name-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-session-name-only-when-clean-134730.md)
+- [Ran cargo test --locked --test bugs -- --exact a_bug_reference_is_shown_only_when_clean for TC-records-errors-show-a-bug-reference-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-bug-reference-only-when-clean-83abb7.md)
+- [Ran cargo test --locked --test humans -- --exact a_decided_by_value_is_shown_only_when_clean for TC-records-errors-show-a-decided-by-value-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-decided-by-value-only-when-clean-f05049.md)
+- [Ran cargo test --locked --test leaks -- --exact errors_show_a_given_value_only_when_clean for TC-records-errors-show-a-given-value-only-when-clean: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-errors-show-a-given-value-only-when-clean-09351b.md)
+- [Ran cargo test --locked --test leaks -- --exact a_redacting_save_replaces_a_stored_leak_in_place for TC-records-a-redacting-save-replaces-a-stored-leak: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-redacting-save-replaces-a-stored-leak.md)
+- [Ran cargo test --locked --test humans -- --exact gate_record_redact_redacts_in_the_close_it_runs for TC-records-gate-record-redact-redacts-the-close: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-gate-record-redact-redacts-the-close.md)
 
 ## Open threads
 
