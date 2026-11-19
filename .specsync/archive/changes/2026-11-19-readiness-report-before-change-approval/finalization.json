@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "readiness-report-before-change-approval",
+  "implementation_commit": "75b6bf6e3dc87965576e74a004fbfd5397588e2a",
+  "implementation_tree": "7d238e1aa95a8897a3ede297faa108ea15a4e96b",
+  "contract_digest": "5adaef9f1c03b98f69bc0aedab178221e76d287db166048e9a35d345bca3b13c",
+  "workspace_digest": "4085f82ff1a17ef9fa13faeb6f38e973fb7a645c27e8bea3b0c20d3cd237569f",
+  "closing_digest": "5a0aac3ce903c5426aa60535408666d2f5f6856ba397b6449c0d86540ce587b3",
+  "review_digest": "2041fe918392c8c577a7b8dbe7aa15eb6f2312b6210b7ac500edecb264c7213c",
+  "finalization_digest": "e7d207af8eaa5f57fe0bffea3f6f00c38ef71f8bbfa7c7ebc9fc192947f4c1bb",
+  "timestamp": 1795102703
+}

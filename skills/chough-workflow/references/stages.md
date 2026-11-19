@@ -25,7 +25,7 @@ reference `chough next` names, and the code. Local and small-context agents star
    same interview as `specsync change answer`, and write `deltas/<module>.md` for each affected spec
    (`## MODIFIED` with each changed requirement's full new text),
    unless the change is `--no-spec-change`.
-4. Fill the change's artifacts, then stop: scope approval belongs to the human unless
+4. Fill the change's artifacts, run `chough change ready <id>`, then stop: scope approval belongs to the human unless
    standing authorization covers it ([plan.md](plan.md)).
 5. Make the first code edit soon. Search for the names you need; don't survey.
 6. Add a test that fails without the fix and a case in its own

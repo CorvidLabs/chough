@@ -22,6 +22,7 @@ mod native;
 mod native_check;
 mod policy;
 mod prefs;
+mod ready;
 mod records;
 mod session_md;
 mod sessions;
@@ -185,6 +186,8 @@ enum Commands {
     },
     /// Run SpecSync's change new, answer, check (with --commit) and status steps and pass
     /// their output, refusals and exit code through unchanged (REQ-cli-057).
+    /// `ready` lists everything still missing before approval and writes nothing
+    /// (REQ-cli-067).
     Change {
         #[command(subcommand)]
         command: change::ChangeCommand,

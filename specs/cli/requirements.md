@@ -689,3 +689,25 @@ Acceptance Criteria
 - During a merge whose only conflict is outside `.chough/`, `next`, `status` and `doctor` still name the merge, and a write succeeds.
 - Once the merge is committed or aborted, none of this appears.
 
+### REQ-cli-067
+
+Readiness before approval. `chough change ready <id>` SHALL read the active change `<id>` and SHALL leave every tracked file and SpecSync's gitignored hash cache as it found them. It SHALL print one report and SHALL exit 0 when that report has no finding and 1 when it has any. An unknown change SHALL exit 1 and name `chough change status`. Each finding SHALL name one exact command that fixes it, with the real change id and paths filled in. Trace: DRIVE-29.
+
+The report SHALL name a finding for each of these, and for nothing else:
+
+- Delta set. When the change is not `no_spec_change`, every module in `affected_specs` with no file `.specsync/changes/<id>/deltas/<module>.md`, and every other file in that `deltas` directory. The fix for a missing module is `write .specsync/changes/<id>/deltas/<module>.md`. When `no_spec_change` is set, every delta file is a finding whose fix is `remove .specsync/changes/<id>/deltas/<module>.md`.
+- Stale canonical text. When the latest definition approval recorded bases, each `## MODIFIED` or `## REMOVED` item whose delta body is unchanged since that approval and whose canonical block now differs from the recorded base, unless the approved body already carries every edit the current text made to that base. The finding names the module and the requirement or section. The fix is `rewrite .specsync/changes/<id>/deltas/<module>.md` and then `chough change ready <id>`.
+- Undocumented exports. For each affected spec, each undocumented export that `specsync check --spec <module> --format json` reports from a file an affected path covers. The fix is `document <symbol> in specs/<module>/<module>.spec.md`. When `specsync` cannot be started, the finding names `cargo install --locked specsync@6.3.0`.
+- Cross-module cases. In each `.chough/cases` file that changed since the change's base or that an affected path covers, a case that links a requirement owned by another module. The fix is `move <case> to .chough/cases/<owner>.<topic>.cases.toml`.
+- Paths outside the declaration. Each file that differs from the change's `base_commit` and is the change's own work, that no affected path covers, other than a path under `verification_ignored_paths` or under `.specsync/changes/<id>/`. A file is the change's own work when a commit on the branch's first-parent line since `base_commit` changed it, counting for a merge commit only the files its result changes against every parent, or when it is unstaged, staged, or untracked and not ignored by Git; a file that only a merge from another branch brought in is not. While the change is a draft, the fix is one `chough change answer <id> affected_paths "<the full list>"`. Otherwise the fix is `specsync change send-back <id> --actor <name> --reason "<the paths>"`.
+- Interview and unfinished artifacts. Each interview question SpecSync still asks. The fix is `chough change answer <id> <question> "<answer>"`. Each selected artifact whose body is empty or only a TODO placeholder, and a plan that is missing approach, out of scope, steps, risks, or constraints consulted. The fix names that artifact's path.
+
+Acceptance Criteria
+- A draft with a missing delta, an extra delta, an unanswered question and a TODO artifact exits 1 and names the fix for each, and the same command exits 0 once they are fixed, having changed no file.
+- A delta approved against a requirement, then left unchanged while that requirement's canonical text changes, is named, and a delta rewritten onto the new text is not.
+- An undocumented export in a declared file is named as `specsync check --spec` names it, and an export in a file the change does not declare is not.
+- A changed case that links another module's requirement is named with the owning module, and a case that links only its own module is not.
+- A changed file outside the declared paths is named, a file under a declared prefix is not, and a file under `verification_ignored_paths` is not. On a draft the fix is `chough change answer` with the full path list.
+- A file outside the declared paths that a merge from another branch brought in is not named, and a file outside them that the merge's own resolution changed is named.
+- An unknown change id exits 1 and names `chough change status`.
+
