@@ -46,6 +46,7 @@ A new bug's Log links its evidence with relative links, and chough doctor report
 ## Decisions and why
 
 - 0xLeif decided "Scope approval of fix-347": "both" (GitHub issue #347, which records 'Leif chose both' on 2026-11-18 for its two follow-ups (new bugs get real links; links follow archiving, by repointing or by doctor reporting and fixing); his planning session (hc t4c) relayed it to fable-t4b as his scope approval and asked for the smaller honest option on the second, which is the doctor fix); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-347 as 0xLeif
+- 0xLeif decided "Scope approval of fix-347, rebased onto main (native approval)": "Yes, for today" (Leif's standing rule of 2026-11-18, relayed by his planning session (hc t4c): when an approved PR's delta goes stale only because main changed the same requirement, and the rebase puts the same added sentences on the newer text with nothing else changed, fable-t4b may record his relayed re-approval and report the PR and requirement. Here: PR #360, REQ-cli-012 and REQ-history-012); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-347 as 0xLeif
 
 ## What was verified
 
@@ -104,4 +105,32 @@ A new bug's Log links its evidence with relative links, and chough doctor report
   - revision: 8072f4dd5c336fae3b3053c464cfde4938520188
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T01:52:50Z · gate-opened · accept → accept · Scope approval of fix-347, rebased onto main (native approval) ^t-5a48a4
+  - native_change: fix-347
+  - revision: 83f87dd373bbdb02efb7554bb44b8d8a96cdb92f
+  - holds: accept
+  - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T01:52:50Z · direct-native-write · accept → accept · fix-347's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-da1e8e
+  - native_change: fix-347
+  - revision: 83f87dd373bbdb02efb7554bb44b8d8a96cdb92f
+  - direct_write:
+    - change: fix-347
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T01:52:50Z · gate-closed · accept → accept · Scope approval of fix-347, rebased onto main (native approval) ^t-e489c3
+  - native_change: fix-347
+  - revision: 83f87dd373bbdb02efb7554bb44b8d8a96cdb92f
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, for today
+    - where: Leif's standing rule of 2026-11-18, relayed by his planning session (hc t4c): when an approved PR's delta goes stale only because main changed the same requirement, and the rebase puts the same added sentences on the newer text with nothing else changed, fable-t4b may record his relayed re-approval and report the PR and requirement. Here: PR #360, REQ-cli-012 and REQ-history-012
+    - recorded_by: fable-t4b
+    - native: specsync change approve fix-347
+    - actor: 0xLeif
   - by: fable (claude-fable-5-2, hc t4b)

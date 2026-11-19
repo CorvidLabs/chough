@@ -28,6 +28,11 @@ finding 62-F9 on #360): a bug 60 bytes below its bound gets a finding whose fix
 starts `none:` and names the story, and `--fix` leaves it byte for byte. It fails
 without the fit check, where the finding offers `chough doctor --fix` for ever.
 
+`a_qualified_id_of_archived_evidence_links_the_story` (added after the reviewer's
+finding on #360): after a session is archived, its entry given by the qualified
+`<session>/<entry>` ID to `bug add` and `bug update` links the story, as the bare ID
+does. It fails with the earlier code, which linked the removed session folder.
+
 Two existing tests that pinned the bare `<session>/<id>` text in a Log line now
 expect the link. The link text is built from evidence names the bug already
 holds, so no new free-text input is added.
