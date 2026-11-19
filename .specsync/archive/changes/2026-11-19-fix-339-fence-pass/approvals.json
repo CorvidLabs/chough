@@ -42,6 +42,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, that a real gap his review thread finds in an already-approved PR is fixed inside its approved scope as a small follow-up change, applied to his P2 thread on #356 ('Avoid rescanning the full suffix for every unmatched fence'): compute matching fences in a bounded pass, keep the rule that an unclosed fence hides nothing, and add a regression for many unmatched openers",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795052608,
+      "digest": "aa6f7e1d3e6776c119c504887278abbac17df46af1700de41d6062e451737773",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
