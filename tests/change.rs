@@ -1759,6 +1759,8 @@ fn ship_with_an_unreadable_commit_names_fetch_refetch() {
     let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
     assert!(!output.status.success(), "the ship ran: {stderr}");
     assert!(stderr.contains("refused:history-unchecked"), "{stderr}");
+    // The commit Git cannot read is named, not only the range.
+    assert!(stderr.contains(&lost[..12]), "{stderr}");
     // No remote at all in this fixture: the generic form, which names the remote to give.
     assert!(stderr.contains("git remote add <name> <url>"), "{stderr}");
     assert!(stderr.contains("git fetch --refetch -- <name>"), "{stderr}");
@@ -1941,4 +1943,70 @@ fn several_untracked_remotes_are_named_to_choose_from() {
         "{}",
         String::from_utf8_lossy(&output.stderr)
     );
+}
+
+/// REQ-cli-059 (#400, corvid-agent's review of #413): a change folder whose tree object
+/// Git cannot read is not an absent folder. With the `.specsync/changes` tree of the
+/// commit that holds a change both open and archived deleted, the ship refuses as
+/// `refused:history-unchecked`, naming that commit, with no ship call; the control,
+/// with nothing deleted, refuses as `refused:corrupt-history`.
+#[cfg(unix)]
+#[test]
+fn an_unreadable_change_folder_tree_is_never_read_as_absent() {
+    for delete in [false, true] {
+        let fixture = shipping_session_at("accept");
+        let base = head_of(&fixture);
+        std::fs::remove_dir_all(
+            fixture
+                .root()
+                .join(".specsync/archive/changes/2026-11-01-a5"),
+        )
+        .unwrap();
+        fixture.write(
+            ".specsync/changes/a5/state.json",
+            &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+        );
+        fixture.commit("a5 in progress");
+        fixture.write(
+            ".specsync/changes/old/state.json",
+            "{\"id\": \"old\", \"state\": \"verifying\"}\n",
+        );
+        fixture.write(
+            ".specsync/archive/changes/2026-11-01-old/state.json",
+            "{\"id\": \"old\", \"state\": \"archived\"}\n",
+        );
+        fixture.commit("merge main, keeping both copies of old");
+        let both = head_of(&fixture);
+        std::fs::remove_dir_all(fixture.root().join(".specsync/changes/old")).unwrap();
+        fixture.commit("drop the duplicate copy of old");
+        if delete {
+            let tree = std::process::Command::new("git")
+                .current_dir(fixture.root())
+                .args(["rev-parse", &format!("{both}:.specsync/changes")])
+                .output()
+                .unwrap();
+            let tree = String::from_utf8_lossy(&tree.stdout).trim().to_string();
+            std::fs::remove_file(
+                fixture
+                    .root()
+                    .join(".git/objects")
+                    .join(&tree[..2])
+                    .join(&tree[2..]),
+            )
+            .unwrap();
+        }
+        let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+        let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert!(
+            !output.status.success(),
+            "delete={delete}: the ship ran: {stderr}"
+        );
+        if delete {
+            assert!(stderr.contains("refused:history-unchecked"), "{stderr}");
+            assert!(stderr.contains(&both[..12]), "{stderr}");
+        } else {
+            assert!(stderr.contains("refused:corrupt-history"), "{stderr}");
+        }
+        assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
+    }
 }

@@ -790,13 +790,33 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     }
     // REQ-cli-059 (#400): the whole range, however many commits.
     let range = format!("{base}..HEAD");
-    let commits = git(&["rev-list", &range]).ok_or_else(|| unchecked(&range))?;
-    // One streaming call gives each commit's two folder trees, so commits that leave
-    // both folders as they were cost no further Git call.
+    // When a commit object itself cannot be read, `git rev-list` says which on
+    // standard error (`error: Could not read <id>`); name that commit, else the range.
+    let listed = records::run_owned(
+        Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(["rev-list", &range]),
+        None,
+    )
+    .map_err(|_| unchecked(&range))?;
+    if !listed.status.success() {
+        let said = String::from_utf8_lossy(&listed.stderr);
+        let lost = said
+            .split(|character: char| !character.is_ascii_hexdigit())
+            .find(|word| word.len() == 40 || word.len() == 64);
+        return Err(match lost {
+            Some(lost) => unchecked(&format!("commit {lost}")),
+            None => unchecked(&range),
+        });
+    }
+    let commits = String::from_utf8_lossy(&listed.stdout).into_owned();
+    // One streaming call gives each commit's two folder trees and its root tree, so
+    // commits that leave both folders as they were cost no further Git call.
     let mut asked = String::new();
     for commit in commits.lines() {
         asked.push_str(&format!(
-            "{commit}:.specsync/changes\n{commit}:.specsync/archive/changes\n"
+            "{commit}:.specsync/changes\n{commit}:.specsync/archive/changes\n{commit}^{{tree}}\n"
         ));
     }
     let trees = records::run_owned(
@@ -823,10 +843,15 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
         })
         .collect();
     // Fewer answers than questions would leave commits unread; never pass them.
-    if tree_ids.len() != commits.lines().count() * 2 {
+    if tree_ids.len() != commits.lines().count() * 3 {
         return Err(unchecked("the trees of every commit in that range"));
     }
     let mut by_trees: std::collections::HashMap<(String, String), Vec<String>> =
+        std::collections::HashMap::new();
+    // `missing` is also Git's answer for a folder that exists but whose own tree cannot
+    // be read (corvid-agent's review of #413). `git ls-tree -d` reads only the parent
+    // trees, so it still lists such a folder; one listing per distinct root tree.
+    let mut folders_by_root: std::collections::HashMap<String, String> =
         std::collections::HashMap::new();
     // Newest first, as `git rev-list` gives them: the change kept both ways, and every
     // commit in the window that holds it, so the refusal can name the one that brought
@@ -834,9 +859,38 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     let mut found: Option<(String, Vec<String>)> = None;
     for (index, commit) in commits.lines().enumerate() {
         let key = (
-            tree_ids[index * 2].to_string(),
-            tree_ids[index * 2 + 1].to_string(),
+            tree_ids[index * 3].to_string(),
+            tree_ids[index * 3 + 1].to_string(),
         );
+        if key.0 == "missing" || key.1 == "missing" {
+            let root_tree = tree_ids[index * 3 + 2];
+            if root_tree == "missing" {
+                return Err(unchecked(&format!("commit {commit}")));
+            }
+            let folders = match folders_by_root.get(root_tree) {
+                Some(folders) => folders.clone(),
+                None => {
+                    let folders = git(&[
+                        "ls-tree",
+                        "-d",
+                        "--name-only",
+                        commit,
+                        "--",
+                        ".specsync/changes",
+                        ".specsync/archive/changes",
+                    ])
+                    .ok_or_else(|| unchecked(&format!("commit {commit}")))?;
+                    folders_by_root.insert(root_tree.to_string(), folders.clone());
+                    folders
+                }
+            };
+            let exists = |path: &str| folders.lines().any(|line| line == path);
+            if (key.0 == "missing" && exists(".specsync/changes"))
+                || (key.1 == "missing" && exists(".specsync/archive/changes"))
+            {
+                return Err(unchecked(&format!("commit {commit}")));
+            }
+        }
         let both: Vec<String> = match by_trees.get(&key) {
             // With either folder absent no change can be both open and archived.
             _ if key.0 == "missing" || key.1 == "missing" => vec![],

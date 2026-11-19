@@ -332,20 +332,7 @@ pub(super) fn resolve_any(root: &Path, name: &str) -> Result<String> {
 }
 
 pub(super) fn resolve_open(root: &Path, name: &str) -> Result<String> {
-    let ids = open_ids(root)?;
-    if ids.iter().any(|id| id == name) {
-        return Ok(name.to_string());
-    }
-    let mut found: Vec<String> = vec![];
-    for id in &ids {
-        let aliases = read_at(root, &session_file(id))
-            .map(|session| session.meta.aliases)
-            .unwrap_or_default();
-        let bare = id.get(11..).unwrap_or_default();
-        if aliases.iter().any(|alias| alias == name) || bare == name {
-            found.push(id.clone());
-        }
-    }
+    let found = open_matches(root, name)?;
     match found.as_slice() {
         [id] => Ok(id.clone()),
         [] => {
@@ -371,6 +358,26 @@ pub(super) fn resolve_open(root: &Path, name: &str) -> Result<String> {
             found.join(", ")
         ),
     }
+}
+
+/// The open sessions `name` names: itself when it is an open session's ID, otherwise
+/// each open session that has it as an alias or bare slug.
+pub(super) fn open_matches(root: &Path, name: &str) -> Result<Vec<String>> {
+    let ids = open_ids(root)?;
+    if ids.iter().any(|id| id == name) {
+        return Ok(vec![name.to_string()]);
+    }
+    let mut found: Vec<String> = vec![];
+    for id in &ids {
+        let aliases = read_at(root, &session_file(id))
+            .map(|session| session.meta.aliases)
+            .unwrap_or_default();
+        let bare = id.get(11..).unwrap_or_default();
+        if aliases.iter().any(|alias| alias == name) || bare == name {
+            found.push(id.clone());
+        }
+    }
+    Ok(found)
 }
 
 pub(super) fn pointer(root: &Path) -> Result<Option<String>> {
@@ -849,19 +856,18 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
             lock_project(root)?;
             // REQ-cli-037 (#372): a session folder's name is that folder; any other key
             // resolves as `session use` resolves it, by alias or bare slug.
-            let folder = if valid_change_id(&key)
-                && local_path(root, &format!("{DIR}/{key}"))?.is_dir()
-            {
-                key
-            } else {
-                // A key that names several sessions is refused as `session use`
-                // refuses it; one that names none falls through to the folder check.
-                match resolve_open(root, &key) {
-                    Ok(id) => id,
-                    Err(error) if error.to_string().contains("more than one") => return Err(error),
-                    Err(_) => key,
-                }
-            };
+            let folder =
+                if valid_change_id(&key) && local_path(root, &format!("{DIR}/{key}"))?.is_dir() {
+                    key
+                } else {
+                    // A key that names several sessions is refused as `session use`
+                    // refuses it; one that names none falls through to the folder check.
+                    match open_matches(root, &key)?.as_slice() {
+                        [id] => id.clone(),
+                        [] => key,
+                        _ => return Err(resolve_open(root, &key).unwrap_err()),
+                    }
+                };
             shelve(root, &folder)
         }
     }
