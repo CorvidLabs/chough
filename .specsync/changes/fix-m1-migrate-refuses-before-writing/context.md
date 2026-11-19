@@ -9,8 +9,12 @@ Four reports from the 0.6.2 candidate swarm about `chough migrate` and the docto
 after it (#376, #370, #337, #378). #375 (folders left holding only Finder files) is in as its option A, a folder left
 holding only macOS metadata is removed with it after the apply and named in the
 output, not in the plan or the receipt; it comes out again if Leif picks another
-option. #338 (a Linux chough on a Docker Desktop bind mount) waits for a reproduction
-and is not in this scope.
+option. #338 (a Linux chough on a Docker Desktop bind mount) is in: tester2 reproduced it on
+main in 6 of 6 fresh clones on that mount and 0 of 4 on overlayfs. The case-only
+change `INDEX.md` to `index.md` is written by create-new as the last step, after the
+receipt and the removals, and fails there on a stale name; sources are gone and the
+index is missing. tester2 also confirmed #337 on Linux: an empty folder at
+`knowledge/index.md` ends with every source removed.
 
 Reproduced on main (9d260310) with the built binary on scratch 0.5.x fixtures:
 

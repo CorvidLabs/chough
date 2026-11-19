@@ -20,6 +20,9 @@ One test per issue, each failing on main before the fix:
 - #378 (`tests/migrate.rs`): three applies of one digest at once leave one receipt
   with one consent, and no second `applied: true`.
 
+- #338 (`tests/migrate.rs`): the index is spelled `index.md` with its planned bytes
+  and `INDEX.md` is gone, on macOS and in the Linux image; a planned write made to
+  fail leaves every source in place. The bind-mount run is tester2's container.
 - #375 (`tests/migrate.rs`): the existing metadata test now expects each emptied
   folder gone with its metadata files and named in the output, the digest unchanged,
   and metadata beside kept records still there.

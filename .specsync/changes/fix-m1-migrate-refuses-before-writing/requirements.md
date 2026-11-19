@@ -11,7 +11,8 @@ text):
 - REQ-records-009: anything at a target or receipt name counts as taken and is never
   opened in a way that can wait; the preview says the apply would refuse; the index
   and feed are rebuilt in place; a returning record whose ID is held is refused by
-  name; the writer lock is held from before the plan is read (#337, #370, #378).
+  name; the writer lock is held from before the plan is read (#337, #370, #378); no source is removed until every planned file is on disk, and
+  a case-colliding target takes its name by rename (#338).
 - REQ-records-015: the one edit of existing text. A folder the migration empties
   that holds only macOS metadata is removed with it and named in the apply's output;
   the plan, digest and receipt still do not depend on such files (#375, option A).
