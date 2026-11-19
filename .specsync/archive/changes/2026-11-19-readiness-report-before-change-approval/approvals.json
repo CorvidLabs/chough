@@ -237,6 +237,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: one more send-back to add changelog.d/2026-11-14-readiness-report-before-change-approval.md to the declared paths, paths only with the delta untouched",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795102703,
+      "digest": "5a0aac3ce903c5426aa60535408666d2f5f6856ba397b6449c0d86540ce587b3",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": [],

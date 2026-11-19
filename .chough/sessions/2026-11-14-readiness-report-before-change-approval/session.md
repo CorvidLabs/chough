@@ -10,7 +10,7 @@ stage_status: active
 iteration: 1
 callers: []
 native_change: readiness-report-before-change-approval
-pr: ""
+pr: 311
 criteria: [DRIVE-29]
 requirements: [REQ-cli-067]
 cases: []
@@ -126,6 +126,11 @@ waiting_on_human:
     opened: 2026-11-18T15:00:11Z
 run_consents: []
 next: Wait for Leif's implementation review of readiness-report-before-change-approval
+title: "chough change ready: a read-only report before approval"
+summary:
+  - "Adds chough change ready <id> (REQ-cli-067, DRIVE-29): one read-only report of what is still missing before a change is approved, each finding naming the command that fixes it; it exits 1 when anything is missing and writes nothing."
+  - "Verified: all eleven verify steps on macOS and Linux and its ten cases on macOS at 75b6bf6e; 890 tests in corvid-agent's run; tester2's harness against real SpecSync 6.3.0, identical on d3ab8590 and 75b6bf6e; the hash cache left byte-identical or absent, a replacement by another process left alone."
+  - "Known gaps go to #406: SpecSync's dry run of the approval (spec-sync #1091) will replace this report's own copy of the owner rule; #307 is folded there."
 ---
 # One read-only command lists everything still missing before a change is approved, and names the command that fixes each piece (DRIVE-29).
 
