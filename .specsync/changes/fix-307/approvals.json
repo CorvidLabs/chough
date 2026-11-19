@@ -99,6 +99,56 @@
         "where": "Claude Code session with Fable, 2026-11-18, answer to the interview question 'fix-307, corrected scope ... Do you approve this scope?' after the send-back",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795062342,
+      "digest": "aa3b5566aa68477d04061f9318746718df3fc31ec8ade85a3bbff69b80cfdcf2",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-307, rebased onto the change-ready wording (native approval)\": \"Yes, for today\" (Leif's standing rule of 2026-11-18, relayed by his planning session (hc t4c): when an approved PR's delta goes stale only because the same requirement changed under it, and the rebase puts the same added sentences and criteria on the newer text with nothing else changed, fable-t4b may record his relayed re-approval and report the PR and requirement. Here: PR #310, REQ-cli-067, rebased onto #311's approved own-work wording). Relayed and recorded by fable-t4b at 2026-11-19T04:25:41Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-307",
+        "title": "Fix 307",
+        "description": "fix 307",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.ready-owning-module.cases.toml",
+          "changelog.d/2026-11-18-fix-307.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/ready.rs",
+          "tests/ready.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A change with an affected path that is an existing file outside test and fixture folders, listed in a spec's files: while no declared module lists it, makes chough change ready exit 1, naming the module, the paths it owns and the affected_specs answer that declares it; a folder, a test file, a file that does not exist yet and a path no spec lists are not named; with the module declared the report has no finding and exits 0."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lessons on native tasks apply: human gates are plain text in tasks.md, not checkboxes, and the delta is frozen at approval, so it is complete before the scope gate. REQ-cli-067 keeps ready read-only: the new finding reads spec front matter and writes nothing.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "df58e84bd5941f00ad56141ca6c550fe558885fee3c82f4846742bfa1a600634"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-067": "4dd0f9a31dd013cd8fcb1734831e89d989cbc32fefb7dcd3798ae50bc3e85cd2"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, for today",
+        "where": "Leif's standing rule of 2026-11-18, relayed by his planning session (hc t4c): when an approved PR's delta goes stale only because the same requirement changed under it, and the rebase puts the same added sentences and criteria on the newer text with nothing else changed, fable-t4b may record his relayed re-approval and report the PR and requirement. Here: PR #310, REQ-cli-067, rebased onto #311's approved own-work wording",
+        "recorded_by": "fable-t4b"
+      }
     }
   ],
   "reopenings": [],
@@ -114,6 +164,18 @@
       "cancelled_approvals": 1,
       "cancelled_review_attempts": 0,
       "canonical_applied": false
+    },
+    {
+      "schema_version": 1,
+      "change_id": "fix-307",
+      "actor": "0xLeif",
+      "reason": "#311 changed REQ-cli-067 (Leif's approved own-work wording) after this delta was approved, so the delta is rewritten onto that text with the same added bullet and criterion and nothing else, under Leif's standing rule ('Yes, for today', relayed by his planning session hc t4c, 2026-11-18). Run by fable-t4b.",
+      "timestamp": 1795062328,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 2,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true
     }
   ]
 }

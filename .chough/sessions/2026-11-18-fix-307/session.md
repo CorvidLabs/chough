@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: Continue build
+next: "Gate \"Scope approval of fix-307, rebased onto the change-ready wording (native approval)\" closed (approved); run `chough stage advance` to move on."
 ---
 # chough change ready names an affected path whose owning module the change does not declare, so the approval does not refuse on it after ready said nothing is missing (REQ-cli-067, #307)
 
@@ -39,6 +39,7 @@ chough change ready names an affected path whose owning module the change does n
 - 0xLeif decided "Scope approval of fix-307": "Approve (Recommended)" (Claude Code session with Fable, 2026-11-18, answer to the interview question 'Do you approve the scope of fix-307?'); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-307 as 0xLeif
 - The first scope named folders and test files that SpecSync's approval accepts; on Leif's choice 'You run it this once' fable-t4b ran specsync change send-back and narrowed the entry to SpecSync 6.3.0's own rule
 - 0xLeif decided "Scope approval of fix-307": "Approve (Recommended)" (Claude Code session with Fable, 2026-11-18, answer to the interview question 'fix-307, corrected scope ... Do you approve this scope?' after the send-back); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-307 as 0xLeif
+- 0xLeif decided "Scope approval of fix-307, rebased onto the change-ready wording (native approval)": "Yes, for today" (Leif's standing rule of 2026-11-18, relayed by his planning session (hc t4c): when an approved PR's delta goes stale only because the same requirement changed under it, and the rebase puts the same added sentences and criteria on the newer text with nothing else changed, fable-t4b may record his relayed re-approval and report the PR and requirement. Here: PR #310, REQ-cli-067, rebased onto #311's approved own-work wording); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-307 as 0xLeif
 
 ## What was verified
 
@@ -106,4 +107,32 @@ chough change ready names an affected path whose owning module the change does n
   - native_change: fix-307
   - gate: native:approved
   - revision: 315aca55cae30ebf05f77d0af8dae048298e24ff
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T04:25:41Z · gate-opened · build → build · Scope approval of fix-307, rebased onto the change-ready wording (native approval) ^t-494f18
+  - native_change: fix-307
+  - revision: 8ff522b62f3767e813890743f049150572c526a1
+  - holds: build
+  - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T04:25:41Z · direct-native-write · build → build · fix-307's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-fdb3e7
+  - native_change: fix-307
+  - revision: 8ff522b62f3767e813890743f049150572c526a1
+  - direct_write:
+    - change: fix-307
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T04:25:41Z · gate-closed · build → build · Scope approval of fix-307, rebased onto the change-ready wording (native approval) ^t-3d50f4
+  - native_change: fix-307
+  - revision: 8ff522b62f3767e813890743f049150572c526a1
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, for today
+    - where: Leif's standing rule of 2026-11-18, relayed by his planning session (hc t4c): when an approved PR's delta goes stale only because the same requirement changed under it, and the rebase puts the same added sentences and criteria on the newer text with nothing else changed, fable-t4b may record his relayed re-approval and report the PR and requirement. Here: PR #310, REQ-cli-067, rebased onto #311's approved own-work wording
+    - recorded_by: fable-t4b
+    - native: specsync change approve fix-307
+    - actor: 0xLeif
   - by: fable (claude-fable-5-2, hc t4b)

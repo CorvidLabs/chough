@@ -7,11 +7,10 @@
   "title": "Fix 307",
   "description": "fix 307",
   "kind": "bug_fix",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "approved",
   "base_commit": "ea159cfef2259a81d1855371d351d543a0d833a4",
   "created_at": 1795012910,
-  "updated_at": 1795054859,
+  "updated_at": 1795062342,
   "affected_specs": [
     "cli"
   ],
