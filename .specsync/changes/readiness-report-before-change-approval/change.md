@@ -1,6 +1,6 @@
 ---
 id: readiness-report-before-change-approval
-state: draft
+state: approved
 type: feature
 base_commit: cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8
 ---

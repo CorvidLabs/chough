@@ -114,6 +114,67 @@
         "where": "Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #311: send its change back once to add src/skill.rs for the two 0.6.1 digests, with his relayed re-approval, same scope otherwise",
         "recorded_by": "fable-t4b"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795060670,
+      "digest": "47cd15b2b2fb86f2a3547cc2ed8becebe5d7c2a0804b86afec4f26a670838e05",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of readiness-report-before-change-approval with the own-work wording (native approval)\": \"Approve\" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: the REQ-cli-067 wording 'Each file that differs from the change's base_commit and is the change's own work', its definition sentence and the new acceptance criterion, with one send-back; nothing else in the delta changes). Relayed and recorded by fable-t4b at 2026-11-19T03:57:44Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "readiness-report-before-change-approval",
+        "title": "Readiness report before change approval",
+        "description": "Readiness report before change approval",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/plan.md",
+          ".agents/skills/chough-workflow/references/stages.md",
+          ".chough/cases/cli.change-ready.cases.toml",
+          "CHANGELOG.md",
+          "INTENT.md",
+          "README.md",
+          "docs/cli.md",
+          "hi/drive.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/stages.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/change.rs",
+          "src/main.rs",
+          "src/ready.rs",
+          "src/skill.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/package.rs",
+          "tests/ready.rs",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough change ready exits 0 when nothing is missing and 1 when a finding remains, and each finding names the command that fixes it."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "cli lessons: change check refuses while tasks.md has unchecked boxes, so human gates stay plain text; an approved delta is frozen; pub(crate) is reported as an undocumented export, so new items stay pub(super); do not list .chough/sessions in affected paths.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "16b99e1696d00b9a908cc49d46343d58ef3b9a7e6c255a397069841a06da6bfc"
+      },
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve",
+        "where": "Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: the REQ-cli-067 wording 'Each file that differs from the change's base_commit and is the change's own work', its definition sentence and the new acceptance criterion, with one send-back; nothing else in the delta changes",
+        "recorded_by": "fable-t4b"
+      }
     }
   ],
   "reopenings": [],

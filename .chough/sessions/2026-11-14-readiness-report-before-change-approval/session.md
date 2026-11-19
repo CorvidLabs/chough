@@ -64,10 +64,6 @@ waiting_on_human:
     holds: accept
     drives: review
     opened: 2026-11-18T15:00:11Z
-  - gate: Scope approval of readiness-report-before-change-approval with the own-work wording (native approval)
-    holds: accept
-    drives: approve
-    opened: 2026-11-19T03:57:21Z
 run_consents: []
 next: Wait for Leif's implementation review of readiness-report-before-change-approval
 ---
@@ -87,6 +83,7 @@ One read-only command lists everything still missing before a change is approved
 - 0xLeif decided "Scope approval of readiness-report-before-change-approval": "Approve this scope (Recommended)" (Grok chat, 2026-11-14, choosing the option Approve this scope for this change's scope question. Relayed by grok (hc t1w).); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
 - fable-t4b took this session over on Leif's choice 'You take it over' (Claude Code session, 2026-11-18): merged main, moved the changelog entry to changelog.d, renumbered the cli change log row to 101. The planned local-agent proof was not run; the command was used for real on fix-263 and fix-307 instead
 - 0xLeif decided "Scope approval of readiness-report-before-change-approval with src/skill.rs added (native approval)": "Yes" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #311: send its change back once to add src/skill.rs for the two 0.6.1 digests, with his relayed re-approval, same scope otherwise); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
+- 0xLeif decided "Scope approval of readiness-report-before-change-approval with the own-work wording (native approval)": "Approve" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: the REQ-cli-067 wording 'Each file that differs from the change's base_commit and is the change's own work', its definition sentence and the new acceptance criterion, with one send-back; nothing else in the delta changes); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
 
 ## What was verified
 
@@ -215,4 +212,26 @@ One read-only command lists everything still missing before a change is approved
   - revision: f27fabc978595e274d59c1f6af7ae03b4c95966f
   - holds: accept
   - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T03:57:44Z · direct-native-write · accept → accept · readiness-report-before-change-approval's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-7b4d12
+  - native_change: readiness-report-before-change-approval
+  - revision: c17066e4d5d1bbe2b64f2db286b3aca282e21798
+  - direct_write:
+    - change: readiness-report-before-change-approval
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T03:57:44Z · gate-closed · accept → accept · Scope approval of readiness-report-before-change-approval with the own-work wording (native approval) ^t-cff492
+  - native_change: readiness-report-before-change-approval
+  - revision: c17066e4d5d1bbe2b64f2db286b3aca282e21798
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve
+    - where: Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: the REQ-cli-067 wording 'Each file that differs from the change's base_commit and is the change's own work', its definition sentence and the new acceptance criterion, with one send-back; nothing else in the delta changes
+    - recorded_by: fable-t4b
+    - native: specsync change approve readiness-report-before-change-approval
+    - actor: 0xLeif
   - by: fable (claude-fable-5-2, hc t4b)
