@@ -52,6 +52,7 @@ One read-only command lists everything still missing before a change is approved
 - Leif chose Capture as written for DRIVE-29 in chat on 2026-11-14. The sentence is the readiness command before approval.
 - 0xLeif decided "Scope approval of readiness-report-before-change-approval": "Approve this scope (Recommended)" (Grok chat, 2026-11-14, choosing the option Approve this scope for this change's scope question. Relayed by grok (hc t1w).); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
 - fable-t4b took this session over on Leif's choice 'You take it over' (Claude Code session, 2026-11-18): merged main, moved the changelog entry to changelog.d, renumbered the cli change log row to 101. The planned local-agent proof was not run; the command was used for real on fix-263 and fix-307 instead
+- 0xLeif decided "Scope approval of readiness-report-before-change-approval with src/skill.rs added (native approval)": "Yes" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #311: send its change back once to add src/skill.rs for the two 0.6.1 digests, with his relayed re-approval, same scope otherwise); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
 
 ## What was verified
 
@@ -116,4 +117,32 @@ One read-only command lists everything still missing before a change is approved
   - revision: f659d73d58d8bd642a2e99de2741c0ba05d109a4
   - holds: accept
   - drives: review
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:08:34Z · gate-opened · accept → accept · Scope approval of readiness-report-before-change-approval with src/skill.rs added (native approval) ^t-d443d4
+  - native_change: readiness-report-before-change-approval
+  - revision: 0dd6a5fd773f3d7e9ac64da032a803a0afed9a37
+  - holds: accept
+  - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:08:35Z · direct-native-write · accept → accept · readiness-report-before-change-approval's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-bb1789
+  - native_change: readiness-report-before-change-approval
+  - revision: 0dd6a5fd773f3d7e9ac64da032a803a0afed9a37
+  - direct_write:
+    - change: readiness-report-before-change-approval
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:08:35Z · gate-closed · accept → accept · Scope approval of readiness-report-before-change-approval with src/skill.rs added (native approval) ^t-8adba3
+  - native_change: readiness-report-before-change-approval
+  - revision: 0dd6a5fd773f3d7e9ac64da032a803a0afed9a37
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes
+    - where: Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #311: send its change back once to add src/skill.rs for the two 0.6.1 digests, with his relayed re-approval, same scope otherwise
+    - recorded_by: fable-t4b
+    - native: specsync change approve readiness-report-before-change-approval
+    - actor: 0xLeif
   - by: fable (claude-fable-5-2, hc t4b)

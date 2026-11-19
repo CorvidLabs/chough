@@ -1,17 +1,16 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "workflow_origin_version": 2,
   "id": "readiness-report-before-change-approval",
   "slug": "readiness-report-before-change-approval",
   "title": "Readiness report before change approval",
   "description": "Readiness report before change approval",
   "kind": "feature",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "approved",
   "base_commit": "cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8",
   "created_at": 1794689756,
-  "updated_at": 1795053867,
+  "updated_at": 1795054116,
   "affected_specs": [
     "cli"
   ],
@@ -34,7 +33,8 @@
     "skills/chough-workflow/references/stages.md",
     "skills/chough-workflow/references/plan.md",
     ".agents/skills/chough-workflow/references/stages.md",
-    ".agents/skills/chough-workflow/references/plan.md"
+    ".agents/skills/chough-workflow/references/plan.md",
+    "src/skill.rs"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,

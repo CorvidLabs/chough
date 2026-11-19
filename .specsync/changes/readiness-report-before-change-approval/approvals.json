@@ -53,7 +53,94 @@
         "cli": "19592df66baa36ae280f94f6b033b4ce6d21f8bda41d5d5877d88066cf586933"
       },
       "approved_delta_bases": {}
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795054116,
+      "digest": "47cd15b2b2fb86f2a3547cc2ed8becebe5d7c2a0804b86afec4f26a670838e05",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of readiness-report-before-change-approval with src/skill.rs added (native approval)\": \"Yes\" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #311: send its change back once to add src/skill.rs for the two 0.6.1 digests, with his relayed re-approval, same scope otherwise). Relayed and recorded by fable-t4b at 2026-11-19T02:08:35Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "readiness-report-before-change-approval",
+        "title": "Readiness report before change approval",
+        "description": "Readiness report before change approval",
+        "kind": "feature",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/plan.md",
+          ".agents/skills/chough-workflow/references/stages.md",
+          ".chough/cases/cli.change-ready.cases.toml",
+          "CHANGELOG.md",
+          "INTENT.md",
+          "README.md",
+          "docs/cli.md",
+          "hi/drive.md",
+          "skills/chough-workflow/references/plan.md",
+          "skills/chough-workflow/references/stages.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/change.rs",
+          "src/main.rs",
+          "src/ready.rs",
+          "src/skill.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/package.rs",
+          "tests/ready.rs",
+          "tests/skill_releases.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough change ready exits 0 when nothing is missing and 1 when a finding remains, and each finding names the command that fixes it."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "cli lessons: change check refuses while tasks.md has unchecked boxes, so human gates stay plain text; an approved delta is frozen; pub(crate) is reported as an undocumented export, so new items stay pub(super); do not list .chough/sessions in affected paths.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "19592df66baa36ae280f94f6b033b4ce6d21f8bda41d5d5877d88066cf586933"
+      },
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes",
+        "where": "Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #311: send its change back once to add src/skill.rs for the two 0.6.1 digests, with his relayed re-approval, same scope otherwise",
+        "recorded_by": "fable-t4b"
+      }
     }
   ],
-  "reopenings": []
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "readiness-report-before-change-approval",
+      "actor": "0xLeif",
+      "reason": "Add src/skill.rs to the declared paths: the change replaces two skill references, so their 0.6.1 digests join KNOWN_PREVIOUS and a 0.6.1 install updates. Same scope otherwise. Leif said 'Yes' to this one send-back and re-approval, relayed by his planning session (hc t4c), 2026-11-18. Run by fable-t4b.",
+      "timestamp": 1795054099,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "cli",
+          "operation": "added",
+          "target": "requirement",
+          "key": "REQ-cli-067",
+          "content": "Readiness before approval. `chough change ready <id>` SHALL read the active change `<id>` and SHALL leave every tracked file and SpecSync's gitignored hash cache as it found them. It SHALL print one report and SHALL exit 0 when that report has no finding and 1 when it has any. An unknown change SHALL exit 1 and name `chough change status`. Each finding SHALL name one exact command that fixes it, with the real change id and paths filled in. Trace: DRIVE-29.\n\nThe report SHALL name a finding for each of these, and for nothing else:\n\n- Delta set. When the change is not `no_spec_change`, every module in `affected_specs` with no file `.specsync/changes/<id>/deltas/<module>.md`, and every other file in that `deltas` directory. The fix for a missing module is `write .specsync/changes/<id>/deltas/<module>.md`. When `no_spec_change` is set, every delta file is a finding whose fix is `remove .specsync/changes/<id>/deltas/<module>.md`.\n- Stale canonical text. When the latest definition approval recorded bases, each `## MODIFIED` or `## REMOVED` item whose delta body is unchanged since that approval and whose canonical block now differs from the recorded base, unless the approved body already carries every edit the current text made to that base. The finding names the module and the requirement or section. The fix is `rewrite .specsync/changes/<id>/deltas/<module>.md` and then `chough change ready <id>`.\n- Undocumented exports. For each affected spec, each undocumented export that `specsync check --spec <module> --format json` reports from a file an affected path covers. The fix is `document <symbol> in specs/<module>/<module>.spec.md`. When `specsync` cannot be started, the finding names `cargo install --locked specsync@6.3.0`.\n- Cross-module cases. In each `.chough/cases` file that changed since the change's base or that an affected path covers, a case that links a requirement owned by another module. The fix is `move <case> to .chough/cases/<owner>.<topic>.cases.toml`.\n- Paths outside the declaration. Each file changed since the change's `base_commit`, including unstaged, staged and untracked files that Git does not ignore, that no affected path covers, other than a path under `verification_ignored_paths` or under `.specsync/changes/<id>/`. While the change is a draft, the fix is one `chough change answer <id> affected_paths \"<the full list>\"`. Otherwise the fix is `specsync change send-back <id> --actor <name> --reason \"<the paths>\"`.\n- Interview and unfinished artifacts. Each interview question SpecSync still asks. The fix is `chough change answer <id> <question> \"<answer>\"`. Each selected artifact whose body is empty or only a TODO placeholder, and a plan that is missing approach, out of scope, steps, risks, or constraints consulted. The fix names that artifact's path.\n\nAcceptance Criteria\n- A draft with a missing delta, an extra delta, an unanswered question and a TODO artifact exits 1 and names the fix for each, and the same command exits 0 once they are fixed, having changed no file.\n- A delta approved against a requirement, then left unchanged while that requirement's canonical text changes, is named, and a delta rewritten onto the new text is not.\n- An undocumented export in a declared file is named as `specsync check --spec` names it, and an export in a file the change does not declare is not.\n- A changed case that links another module's requirement is named with the owning module, and a case that links only its own module is not.\n- A changed file outside the declared paths is named, a file under a declared prefix is not, and a file under `verification_ignored_paths` is not. On a draft the fix is `chough change answer` with the full path list.\n- An unknown change id exits 1 and names `chough change status`."
+        }
+      ],
+      "applied_modules": [
+        "cli"
+      ]
+    }
+  ]
 }
