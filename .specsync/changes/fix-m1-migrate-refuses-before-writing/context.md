@@ -56,8 +56,10 @@ Telling an earlier migration's receipt from this migration's own: the receipt is
 written before any 0.5.x file is removed, so an interrupted apply leaves every source
 present with the bytes its receipt lists. The two are told apart by Git, not by the
 plan: a finished migration is committed (a file can only come back through Git after
-that), while an interrupted apply's receipt is not committed. An uncommitted receipt
-judges nothing and is used again as today. Walked through for a stop before the
+that), while an interrupted apply's receipt is not committed. A receipt Git has never
+held judges nothing and is used again as today. A receipt Git holds but that differs
+on disk from its committed bytes is neither kind: treating it as the migration's own
+would let an uncommitted edit switch the guard off, so it refuses by name. Walked through for a stop before the
 receipt (no receipt, the plan as before), after the receipt and partway through the
 removals (the receipt is uncommitted, so it judges nothing and the apply goes on as
 today). Tried on the binary by putting sources back after a full apply, which is not
