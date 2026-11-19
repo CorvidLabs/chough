@@ -1926,7 +1926,8 @@ fn migrate_refuses_a_plan_whose_files_would_hold_conflict_markers() {
         "{refused}"
     );
     assert!(refused.contains("/agent/inbox/"), "{refused}");
-    assert!(refused.contains("<<<<<<< HEAD"), "{refused}");
+    assert!(refused.contains("`<<<<<<<`"), "{refused}");
+    assert!(!refused.contains("<<<<<<< HEAD"), "{refused}");
     assert_eq!(
         files(fixture.root()),
         before,

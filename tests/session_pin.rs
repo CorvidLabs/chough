@@ -277,3 +277,55 @@ fn a_pinned_session_before_any_session_names_session_new() {
     assert!(text.contains("drop --session"), "{text}");
     assert_eq!(tree(fixture.root()), before);
 }
+
+/// REQ-records-006, REQ-history-006 (#367), TC-records-errors-show-a-value-only-when-clean:
+/// a session name from `CHOUGH_SESSION`, `--session` or `session use` that holds a token
+/// or a control character is refused naming the variable or option and what it holds,
+/// never the name: the output holds neither the token nor the escape. A clean unknown
+/// name is still named. Each holds with no session open and with one open.
+#[test]
+fn a_session_name_is_shown_only_when_clean() {
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    let escape = "a\u{1b}[31mb";
+    for open in [false, true] {
+        let fixture = Fixture::new();
+        if open {
+            fixture.init();
+        } else {
+            fixture.ok(&["init"]);
+        }
+        let before = tree(fixture.root());
+        for (value, held) in [(token, "token"), (escape, "control characters")] {
+            for output in [
+                fixture.run_with_env(&["next"], &[("CHOUGH_SESSION", value)]),
+                fixture.run(&["next", "--session", value]),
+                fixture.run(&["session", "use", value]),
+            ] {
+                let text = said(&output);
+                assert!(!output.status.success(), "{text}");
+                assert!(!text.contains("ghp_"), "the token was shown: {text}");
+                assert!(!text.contains('\u{1b}'), "the escape was shown: {text:?}");
+            }
+            // With sessions to look in, `session use` says what the name holds; with
+            // none, it names no value at all.
+            if open {
+                let text = said(&fixture.run(&["session", "use", value]));
+                assert!(text.contains(&format!("holding {held}")), "{text}");
+            }
+            let text = said(&fixture.run_with_env(&["next"], &[("CHOUGH_SESSION", value)]));
+            assert!(
+                text.contains(&format!("CHOUGH_SESSION holds {held}")),
+                "{text}"
+            );
+            let text = said(&fixture.run(&["next", "--session", value]));
+            assert!(text.contains(&format!("--session holds {held}")), "{text}");
+        }
+        let text = said(&fixture.run_with_env(&["next"], &[("CHOUGH_SESSION", "alpha")]));
+        assert!(text.contains("CHOUGH_SESSION names alpha"), "{text}");
+        if open {
+            let text = said(&fixture.run(&["session", "use", "alpha"]));
+            assert!(text.contains("no session alpha"), "{text}");
+        }
+        assert_eq!(tree(fixture.root()), before);
+    }
+}

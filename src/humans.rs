@@ -134,13 +134,22 @@ pub(crate) fn resolve(root: &Path, decided_by: &str) -> Result<Human> {
                 .any(|name| name.trim().eq_ignore_ascii_case(wanted))
         })
         .collect();
+    // REQ-records-006 (#367): the value is shown only when it holds no leak and no
+    // control character; otherwise the refusal says what it holds.
+    let (named, alias) = match crate::leaks::unshowable(wanted) {
+        None => (format!("--decided-by \"{wanted}\""), wanted.to_string()),
+        Some(held) => (
+            format!("--decided-by, which holds {held},"),
+            "<their name>".to_string(),
+        ),
+    };
     match matches.as_slice() {
         [human] => Ok((*human).clone()),
         [] => bail!(
-            "refused:human-identity-unknown: --decided-by \"{wanted}\" names no configured human, so no native step ran and nothing was written.\nAdd them to {LOCAL_FILE} or to {USER_FILE_SHOWN} as:\n[[human]]\nname = \"<display name>\"\naliases = [\"{wanted}\"]\nspecsync_actor = \"<their SpecSync actor>\"\nThen close the gate again."
+            "refused:human-identity-unknown: {named} names no configured human, so no native step ran and nothing was written.\nAdd them to {LOCAL_FILE} or to {USER_FILE_SHOWN} as:\n[[human]]\nname = \"<display name>\"\naliases = [\"{alias}\"]\nspecsync_actor = \"<their SpecSync actor>\"\nThen close the gate again."
         ),
         several => bail!(
-            "refused:human-identity-unknown: --decided-by \"{wanted}\" names {} configured humans ({}), so no native step ran and nothing was written.\nMake the name or alias unique in {LOCAL_FILE} or {USER_FILE_SHOWN}, then close the gate again.",
+            "refused:human-identity-unknown: {named} names {} configured humans ({}), so no native step ran and nothing was written.\nMake the name or alias unique in {LOCAL_FILE} or {USER_FILE_SHOWN}, then close the gate again.",
             several.len(),
             several
                 .iter()

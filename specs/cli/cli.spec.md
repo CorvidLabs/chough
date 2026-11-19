@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 120
+version: 121
 status: active
 files:
   - src/main.rs
@@ -283,8 +283,30 @@ provider, runtime or hosted service.
 |---------|------|---------|
 | 1 | 2026-10-31 | Authorized first-slice bootstrap contract; no native approval claimed |
 | 10 | 2026-11-01 | prepare-the-0-1-0-release-pinned-toolchain-with-one-install-command-a-checked-minimum-rust-version-accurate-skill: Prepare the 0.1.0 release: pinned toolchain with one install command, a checked minimum Rust version, accurate skill guidance and contract wording, and a change log |
+| 100 | 2026-11-15 | clarify-req-cli-001-init-preserves-bytes-acceptance: Clarify REQ-cli-001 init-preserves-bytes acceptance |
+| 101 | 2026-11-18 | a-blocking-bug-stops-only-a-session-it-is-related-to: A blocking bug stops only a session it is related to |
+| 102 | 2026-11-18 | fix-314: Fix 314 |
+| 103 | 2026-11-18 | fix-271: Fix 271 |
+| 104 | 2026-11-18 | fix-266: Fix 266 |
+| 105 | 2026-11-18 | fix-320: Fix 320 |
+| 106 | 2026-11-18 | fix-265: Fix 265 |
+| 107 | 2026-11-18 | fix-286: Fix 286 |
+| 108 | 2026-11-18 | fix-281: Fix 281 |
+| 109 | 2026-11-18 | fix-250: Fix 250 |
 | 11 | 2026-11-01 | use-collision-resistant-slug-identities-for-new-bugs: Use collision-resistant slug identities for new bugs |
+| 110 | 2026-11-18 | fix-298: Fix 298 |
+| 111 | 2026-11-18 | fix-329: Fix 329 |
+| 112 | 2026-11-18 | fix-282: Fix 282 |
+| 113 | 2026-11-18 | fix-334: Fix 334 |
+| 114 | 2026-11-18 | fix-251: Fix 251 |
+| 115 | 2026-11-19 | fix-349: Fix 349 |
+| 116 | 2026-11-18 | fix-351: Fix 351 |
+| 117 | 2026-11-18 | fix-339: Fix 339 |
+| 118 | 2026-11-19 | fix-361: Fix 361 |
+| 119 | 2026-11-19 | fix-347: Fix 347 |
 | 12 | 2026-11-01 | make-checkpoint-merges-safe-across-parallel-changes: Make checkpoint merges safe across parallel changes |
+| 120 | 2026-11-19 | leaks-and-output: Leaks and output |
+| 121 | 2026-11-19 | readiness-report-before-change-approval: Readiness report before change approval |
 | 13 | 2026-11-02 | use-slug-identities-for-all-new-chough-records: Use slug identities for all new Chough records |
 | 14 | 2026-11-02 | make-chough-timing-read-each-native-change-at-most-once-skip-archived-history-the-requested-report-does-not-show-bound: Make chough timing read each native change at most once, skip archived history the requested report does not show, bound total native wait per report with explicit unknown states, and add an opt-in phase trace |
 | 15 | 2026-11-02 | fresh-agent-handoff-from-existing-records-chough-next-shows-recent-decisions-the-last-failure-and-a-lessons-pointer: Fresh-agent handoff from existing records: chough next shows recent decisions, the last failure and a lessons pointer, names a new cycle after the native change is archived, and the skill labels lesson certainty and closes out inside the open change |
@@ -381,24 +403,3 @@ provider, runtime or hosted service.
 | 97 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
 | 98 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
 | 99 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
-| 100 | 2026-11-15 | clarify-req-cli-001-init-preserves-bytes-acceptance: Clarify REQ-cli-001 init-preserves-bytes acceptance |
-| 101 | 2026-11-18 | a-blocking-bug-stops-only-a-session-it-is-related-to: A blocking bug stops only a session it is related to |
-| 102 | 2026-11-18 | fix-314: Fix 314 |
-| 103 | 2026-11-18 | fix-271: Fix 271 |
-| 104 | 2026-11-18 | fix-266: Fix 266 |
-| 105 | 2026-11-18 | fix-320: Fix 320 |
-| 106 | 2026-11-18 | fix-265: Fix 265 |
-| 107 | 2026-11-18 | fix-286: Fix 286 |
-| 108 | 2026-11-18 | fix-281: Fix 281 |
-| 109 | 2026-11-18 | fix-250: Fix 250 |
-| 110 | 2026-11-18 | fix-298: Fix 298 |
-| 111 | 2026-11-18 | fix-329: Fix 329 |
-| 112 | 2026-11-18 | fix-282: Fix 282 |
-| 113 | 2026-11-18 | fix-334: Fix 334 |
-| 114 | 2026-11-18 | fix-251: Fix 251 |
-| 115 | 2026-11-19 | fix-349: Fix 349 |
-| 116 | 2026-11-18 | fix-351: Fix 351 |
-| 117 | 2026-11-18 | fix-339: Fix 339 |
-| 118 | 2026-11-19 | fix-361: Fix 361 |
-| 119 | 2026-11-19 | fix-347: Fix 347 |
-| 120 | 2026-11-19 | readiness-report-before-change-approval: Readiness report before change approval |
