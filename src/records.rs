@@ -312,47 +312,85 @@ fn fence_opener(line: &str) -> Option<(char, usize)> {
     (run >= 3 && (mark == '~' || !trimmed[run..].contains('`'))).then_some((mark, run))
 }
 
-/// Whether `line` closes a code fence of `mark` opened `length` long.
-fn closes_fence(line: &str, (mark, length): (char, usize)) -> bool {
+/// The mark and run of `line` when it can close a code fence: at most three spaces, then
+/// three or more backticks or tildes and nothing but spaces after them.
+fn fence_close(line: &str) -> Option<(char, usize)> {
     let trimmed = line.trim_start_matches(' ');
+    if line.len() - trimmed.len() > 3 {
+        return None;
+    }
+    let mark = trimmed
+        .chars()
+        .next()
+        .filter(|mark| *mark == '`' || *mark == '~')?;
     let run = trimmed.chars().take_while(|c| *c == mark).count();
-    line.len() - trimmed.len() <= 3 && run >= length && trimmed[run..].trim().is_empty()
+    (run >= 3 && trimmed[run..].trim().is_empty()).then_some((mark, run))
 }
 
 /// For each of `lines`, whether it is part of a closed code fence, from `start` on and
 /// outside Chough's own sections (#339). A fence that never closes hides nothing, unlike
 /// CommonMark, where it runs to the end, and a heading of Chough's own sections ends the
-/// search for a close.
+/// search for a close. Each opener's close comes from [`fence_closes`], so the scan visits
+/// each line a bounded number of times however many fences never close (#356 review).
 fn fenced(lines: &[&str], start: usize) -> Vec<bool> {
-    let generated = |line: &str| {
-        GENERATED_SECTIONS
-            .iter()
-            .any(|name| line.trim_end().strip_prefix("## ") == Some(name))
-    };
+    let closes = fence_closes(lines, start);
     let mut fenced = vec![false; lines.len()];
     let mut in_generated = false;
     let mut index = start;
     while index < lines.len() {
         let line = lines[index];
         if line.starts_with("# ") || line.starts_with("## ") {
-            in_generated = generated(line);
-        } else if !in_generated && let Some(fence) = fence_opener(line) {
-            let close = lines[index + 1..]
-                .iter()
-                .position(|later| generated(later) || closes_fence(later, fence))
-                .map(|at| index + 1 + at)
-                .filter(|at| !generated(lines[*at]));
-            if let Some(close) = close {
-                fenced[index..=close].fill(true);
-                index = close + 1;
-                continue;
-            }
+            in_generated = generated_heading(line);
+        } else if !in_generated && let Some(close) = closes[index] {
+            fenced[index..=close].fill(true);
+            index = close + 1;
+            continue;
         }
         index += 1;
     }
     fenced
 }
 
+/// Whether `line` is the heading of one of Chough's own sections (#339).
+fn generated_heading(line: &str) -> bool {
+    GENERATED_SECTIONS
+        .iter()
+        .any(|name| line.trim_end().strip_prefix("## ") == Some(name))
+}
+
+/// For each line from `start` that opens a code fence, the first later line that closes
+/// it before the next heading of Chough's own sections, if any (#356 review). One pass
+/// from the end keeps, per fence character, the candidate closes nearest first, each
+/// longer than every nearer one: a close at least as long and nearer hides a farther one
+/// for every opener. An opener's close is then the first candidate as long as it, found
+/// by a binary search, and each line enters and leaves a stack at most once.
+fn fence_closes(lines: &[&str], start: usize) -> Vec<Option<usize>> {
+    let mut closes = vec![None; lines.len()];
+    // (line, run) per fence character, the nearest last.
+    let mut candidates: [Vec<(usize, usize)>; 2] = [vec![], vec![]];
+    let slot = |mark: char| usize::from(mark == '~');
+    for index in (start..lines.len()).rev() {
+        let line = lines[index];
+        if generated_heading(line) {
+            candidates.iter_mut().for_each(Vec::clear);
+            continue;
+        }
+        if let Some((mark, length)) = fence_opener(line) {
+            let stack = &candidates[slot(mark)];
+            // The runs grow from the last element to the first.
+            let longer = stack.partition_point(|&(_, run)| run >= length);
+            closes[index] = longer.checked_sub(1).map(|at| stack[at].0);
+        }
+        if let Some((mark, run)) = fence_close(line) {
+            let stack = &mut candidates[slot(mark)];
+            while stack.last().is_some_and(|&(_, farther)| farther <= run) {
+                stack.pop();
+            }
+            stack.push((index, run));
+        }
+    }
+    closes
+}
 /// The conflict markers of `text`, the lines of its lone `=======` separators and the
 /// marker lines inside its code fences.
 fn scan_conflicts(text: &str, markdown: bool) -> Scan {
@@ -2106,6 +2144,88 @@ mod tests {
             let error = native_deadline(Some(OsStr::new(value))).unwrap_err();
             assert!(error.contains("from 1 to 3600"), "{value}: {error}");
             assert!(error.contains("not run"), "{value}: {error}");
+        }
+    }
+
+    /// #356 review: the bounded fence pass marks exactly the lines the plain search did,
+    /// for every opener scanning the rest of the text for its close, over many generated
+    /// bodies mixing fences of both marks and lengths, indented and tagged lines, unclosed
+    /// openers and Chough's own section headings.
+    #[test]
+    fn the_bounded_fence_pass_marks_what_the_plain_search_marked() {
+        fn plain(lines: &[&str], start: usize) -> Vec<bool> {
+            let closes = |line: &str, (mark, length): (char, usize)| {
+                let trimmed = line.trim_start_matches(' ');
+                let run = trimmed.chars().take_while(|c| *c == mark).count();
+                line.len() - trimmed.len() <= 3 && run >= length && trimmed[run..].trim().is_empty()
+            };
+            let mut fenced = vec![false; lines.len()];
+            let mut in_generated = false;
+            let mut index = start;
+            while index < lines.len() {
+                let line = lines[index];
+                if line.starts_with("# ") || line.starts_with("## ") {
+                    in_generated = super::generated_heading(line);
+                } else if !in_generated && let Some(fence) = super::fence_opener(line) {
+                    let close = lines[index + 1..]
+                        .iter()
+                        .position(|later| super::generated_heading(later) || closes(later, fence))
+                        .map(|at| index + 1 + at)
+                        .filter(|at| !super::generated_heading(lines[*at]));
+                    if let Some(close) = close {
+                        fenced[index..=close].fill(true);
+                        index = close + 1;
+                        continue;
+                    }
+                }
+                index += 1;
+            }
+            fenced
+        }
+        const PIECES: [&str; 18] = [
+            "```",
+            "````",
+            "`````",
+            "```text",
+            "```rust``` is the tag",
+            "~~~",
+            "~~~~",
+            "~~~ `tag`",
+            "   ```",
+            "    ```",
+            "```  ",
+            "## Timeline",
+            "## Receipts",
+            "## Goal",
+            "# Title",
+            "<<<<<<< HEAD",
+            "=======",
+            "text",
+        ];
+        let mut seed: u64 = 0x2545_f491_4f6c_dd1d;
+        for _ in 0..4000 {
+            seed = seed
+                .wrapping_mul(6364136223846793005)
+                .wrapping_add(1442695040888963407);
+            let count = (seed >> 33) as usize % 40;
+            let lines: Vec<&str> = (0..count)
+                .map(|_| {
+                    seed = seed
+                        .wrapping_mul(6364136223846793005)
+                        .wrapping_add(1442695040888963407);
+                    PIECES[(seed >> 33) as usize % PIECES.len()]
+                })
+                .collect();
+            let start = if count > 0 {
+                (seed >> 40) as usize % count.min(3)
+            } else {
+                0
+            };
+            assert_eq!(
+                super::fenced(&lines, start),
+                plain(&lines, start),
+                "{lines:?} from {start}"
+            );
         }
     }
 }

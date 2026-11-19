@@ -1521,3 +1521,44 @@ fn a_fence_hides_a_conflict_only_when_it_is_one_and_closes() {
         assert_eq!(fixture.read(&file), bad, "a refused write changed the file");
     }
 }
+
+/// REQ-records-001 (#356 review), TC-records-many-unclosed-fence-openers-are-scanned-in-bounded-time:
+/// a session whose Goal holds 40,000 code fence openers that never close saves in bounded
+/// time, since the fence scan visits each line a bounded number of times instead of
+/// rescanning the rest of the text for every unclosed opener. With a conflict after them,
+/// the next write is still refused, naming its line: an unclosed fence hides nothing.
+#[test]
+fn many_unclosed_fence_openers_are_scanned_in_bounded_time() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    let file = fixture.session_file();
+    let good = fixture.read(&file);
+    let openers = "```text\n".repeat(40_000);
+    let many = good.replacen(
+        "## Goal\n\nShip alpha\n",
+        &format!("## Goal\n\nShip alpha\n\n{openers}"),
+        1,
+    );
+    assert_ne!(many, good);
+    fixture.write(&file, &many);
+    let started = std::time::Instant::now();
+    fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
+    let took = started.elapsed();
+    assert!(
+        took < std::time::Duration::from_secs(10),
+        "a write over 40,000 unclosed fence openers took {took:?}"
+    );
+
+    let bad = fixture.read(&file).replacen(
+        &openers,
+        &format!("{openers}<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> other\n"),
+        1,
+    );
+    let line = bad.lines().position(|line| line == "<<<<<<< HEAD").unwrap() + 1;
+    fixture.write(&file, &bad);
+    let refused = fixture.fails(&["checkpoint", "--decision", "never written"]);
+    assert!(refused.contains("refused:conflict-markers"), "{refused}");
+    assert!(refused.contains(&format!("line {line}")), "{refused}");
+    assert_eq!(fixture.read(&file), bad, "a refused write changed the file");
+}

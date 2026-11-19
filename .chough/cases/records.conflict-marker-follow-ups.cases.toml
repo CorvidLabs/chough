@@ -93,3 +93,23 @@ expected = ["tests/doctor.rs::doctor_warns_of_a_conflict_inside_a_code_fence pas
 adapter = "cargo-test"
 test_target = "doctor"
 test = "doctor_warns_of_a_conflict_inside_a_code_fence"
+
+# The #356 review: every unclosed fence opener rescanned the rest of the text.
+
+[[case]]
+id = "TC-records-many-unclosed-fence-openers-are-scanned-in-bounded-time"
+title = "A session holding 40,000 unclosed code fence openers saves in bounded time, and a conflict after them is still refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::many_unclosed_fence_openers_are_scanned_in_bounded_time passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "many_unclosed_fence_openers_are_scanned_in_bounded_time"
