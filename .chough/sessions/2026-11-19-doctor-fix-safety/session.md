@@ -95,7 +95,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Re-approval of doctor-fix-safety rebased onto main after #407 (standing OK (d))\" closed (approved); run `chough stage advance` to move on."
+next: "Gate \"Re-approval of doctor-fix-safety with the journal post dropped from the #389 guard\" closed (approved); run `chough stage advance` to move on."
 ---
 # doctor --fix never destroys or hangs: the archive finish keeps evidence its story does not hold (#381) and removes OS metadata (#377), next names the archive finish (#371), doctor names front-matter conflicts and gives no restore advice for a redaction (#374), and the spec walk stays inside the project and is bounded (#402)
 
@@ -115,6 +115,8 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
 - 0xLeif decided "Re-approval of doctor-fix-safety for the receipt and #389 sentences and four paths": "Yes" (Claude Code chat answer, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 14:08Z, to: may doctor-fix-safety be sent back once for the two sentences (the receipt-fields sentence and the #389 sentence with its criterion) and the four paths tests/reduce.rs, src/evidence.rs, .chough/cases/records.doctor-fix-safety.cases.toml and .chough/cases/cli.doctor-fix-safety.cases.toml); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 - 0xLeif decided "Standing OK (d): send back doctor-fix-safety to rebase its delta onto main after #407": "yes to both" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:02Z, to t4c's proposed standing OK (d): when an approved delta goes stale only because main changed the same requirement, the builder rebases it onto main's text with exactly the same added and removed words, the lead verifies by script that nothing else changed, the builder runs the send-back with '(standing OK (d), relayed via t4c)' in its reason, puts in the rebased text and records the re-approval citing the rule); recorded by chough-fixer-t4g; a relayed claim, not authenticated
 - 0xLeif decided "Re-approval of doctor-fix-safety rebased onto main after #407 (standing OK (d))": "yes to both" (Standing OK (d), Leif's Claude Code chat message relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:02Z; the delta was rebased onto main's REQ-records-001 and REQ-history-006 after #407 with exactly #407's added and removed words, and fable-lead verified by script that nothing else changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
+- 0xLeif decided "Send back doctor-fix-safety to drop the journal post from the #389 guard, run by the fixer": "B, fixer runs the send-back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:46Z); recorded by chough-fixer-t4g; a relayed claim, not authenticated
+- 0xLeif decided "Re-approval of doctor-fix-safety with the journal post dropped from the #389 guard": "B, fixer runs the send-back" (Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:46Z, choosing option B (drop the journal post from the #389 guard, with the criterion that an untracked or ignored journal post does not hold the finish) on this text; the earlier approvals stand for the rest of the delta: 'Approve, with the 3 recommended choices', the three wording answers, 'Yes' for the two sentences and four paths, and standing OK (d) for the rebase onto main after #407); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 
 ## What was verified
 
@@ -361,6 +363,49 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
     - decided_by: 0xLeif
     - words: yes to both
     - where: Standing OK (d), Leif's Claude Code chat message relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:02Z; the delta was rebased onto main's REQ-records-001 and REQ-history-006 after #407 with exactly #407's added and removed words, and fable-lead verified by script that nothing else changed
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve doctor-fix-safety
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T15:55:49Z · gate-opened · build → build · Send back doctor-fix-safety to drop the journal post from the #389 guard, run by the fixer ^t-27e70a
+  - native_change: doctor-fix-safety
+  - revision: 45deab1d1f19a608f5e65d4994cef5afe01520bc
+  - holds: build
+  - drives: none
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T15:55:49Z · gate-closed · build → build · Send back doctor-fix-safety to drop the journal post from the #389 guard, run by the fixer ^t-f076fd
+  - native_change: doctor-fix-safety
+  - revision: 45deab1d1f19a608f5e65d4994cef5afe01520bc
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: B, fixer runs the send-back
+    - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:46Z
+    - recorded_by: chough-fixer-t4g
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T15:56:09Z · gate-opened · build → build · Re-approval of doctor-fix-safety with the journal post dropped from the #389 guard ^t-e67e76
+  - native_change: doctor-fix-safety
+  - revision: 45deab1d1f19a608f5e65d4994cef5afe01520bc
+  - holds: build
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T15:56:09Z · direct-native-write · build → build · doctor-fix-safety's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-1fd5df
+  - native_change: doctor-fix-safety
+  - revision: 45deab1d1f19a608f5e65d4994cef5afe01520bc
+  - direct_write:
+    - change: doctor-fix-safety
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T15:56:09Z · gate-closed · build → build · Re-approval of doctor-fix-safety with the journal post dropped from the #389 guard ^t-a39b7c
+  - native_change: doctor-fix-safety
+  - revision: 45deab1d1f19a608f5e65d4994cef5afe01520bc
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: B, fixer runs the send-back
+    - where: Claude Code chat message, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:46Z, choosing option B (drop the journal post from the #389 guard, with the criterion that an untracked or ignored journal post does not hold the finish) on this text; the earlier approvals stand for the rest of the delta: 'Approve, with the 3 recommended choices', the three wording answers, 'Yes' for the two sentences and four paths, and standing OK (d) for the rebase onto main after #407
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve doctor-fix-safety
     - actor: 0xLeif
