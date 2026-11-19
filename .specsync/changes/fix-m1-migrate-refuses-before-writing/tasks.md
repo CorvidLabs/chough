@@ -11,6 +11,8 @@ artifact: tasks
 - [ ] #370: refuse a returning record whose ID is already held; rebuild the index
       and feed in place.
 - [ ] #378: take the writer lock before the plan is read.
+- [ ] #375: remove a folder left holding only macOS metadata, and name it in the
+      apply's output.
 - [ ] `docs/cli.md`, case definitions and the changelog fragment.
 
 Human gates (not checkboxes): scope approval, implementation review, merge.

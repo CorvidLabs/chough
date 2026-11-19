@@ -12,7 +12,7 @@ callers: []
 native_change: ""
 pr: ""
 criteria: [DRIVE-27, LIFE-20, LIFE-21]
-requirements: [REQ-records-009, REQ-cli-055]
+requirements: [REQ-records-009, REQ-cli-055, REQ-records-015]
 cases: []
 design: []
 files: []

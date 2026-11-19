@@ -6,9 +6,11 @@ artifact: context
 # Context
 
 Four reports from the 0.6.2 candidate swarm about `chough migrate` and the doctor run
-after it (#376, #370, #337, #378). Two more wait for Leif's choice and are not in this
-scope yet: #375 (folders left holding only Finder files) and #338 (a Linux chough on a
-Docker Desktop bind mount).
+after it (#376, #370, #337, #378). #375 (folders left holding only Finder files) is in as its option A, a folder left
+holding only macOS metadata is removed with it after the apply and named in the
+output, not in the plan or the receipt; it comes out again if Leif picks another
+option. #338 (a Linux chough on a Docker Desktop bind mount) waits for a reproduction
+and is not in this scope.
 
 Reproduced on main (9d260310) with the built binary on scratch 0.5.x fixtures:
 

@@ -20,4 +20,8 @@ One test per issue, each failing on main before the fix:
 - #378 (`tests/migrate.rs`): three applies of one digest at once leave one receipt
   with one consent, and no second `applied: true`.
 
+- #375 (`tests/migrate.rs`): the existing metadata test now expects each emptied
+  folder gone with its metadata files and named in the output, the digest unchanged,
+  and metadata beside kept records still there.
+
 Then every verify step, and the cases run on macOS and in the Linux image.
