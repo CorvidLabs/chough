@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-347",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "49734b4bffa346e4656f4e566f2ecd36fb4dd9a7",
+      "contract_digest": "ae84c2b5c4c1554be62b4e2b8bd94a784ffa5c6ff803502f38e7495f7ec5ce77",
+      "execution_digest": "548e9839d58118c42f1addba761168615bfbd469bfb19dc6fbf06b2dc81e00d6",
+      "workspace_digest": "b2cbcbd19745b561b12c4ed804bbdfef4430acea4816e8a4c7a5de449a53a720",
+      "timestamp": 1795056716,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve, merge when green",
+        "where": "Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #360; the later reviewer and tester fixes (qualified IDs of archived evidence, the near-bound advisory, the stronger update test) were within his #347 scope and reported to him by that session, which gave the go to merge",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ]
+}

@@ -236,8 +236,10 @@ fn a_reproduced_bug_is_deduplicated_and_keeps_added_evidence() {
     );
     let last = log(&fixture, &id).pop().unwrap();
     assert!(
-        last.contains(&format!("evidence: {session}/{repro_2}"))
-            && last.contains("Reported again from the mobile checkout"),
+        // #347: the Log links the entry, relative to the bug's file.
+        last.contains(&format!(
+            "evidence: [{repro_2}](../sessions/{session}/evidence/{repro_2}.md)"
+        )) && last.contains("Reported again from the mobile checkout"),
         "{last}"
     );
 
@@ -1026,7 +1028,11 @@ fn automatic_failure_capture_links_each_failure_by_its_session_qualified_id() {
     }
     assert!(
         record.contains("Additional failure from")
-            && record.contains(&format!("evidence: {}", links[1])),
+            // #347: the Log links the entry, relative to the bug's file.
+            && record.contains(&format!(
+                "evidence: [{bare}](../sessions/{session}/evidence/{bare}.md)",
+                bare = links[1].split_once('/').unwrap().1
+            )),
         "the appended failure's Log line does not name {}: {record}",
         links[1]
     );
@@ -2509,6 +2515,291 @@ fn a_bug_body_gives_its_actual_line_its_own_paragraph() {
     assert_eq!(legacy["actual"], "The legacy identity is present");
 }
 
+/// REQ-cli-012 (#347), TC-cli-a-new-bugs-log-links-its-evidence: a new bug's Log names
+/// its evidence as a Markdown link, relative to the bug's own file, to the open
+/// session's entry, as a migrated bug's Log does; the link opens a file; a later
+/// `bug update --observation` links what it adds the same way; and the front matter
+/// keeps the `<session>/<evidence>` form.
+#[test]
+fn a_new_bugs_log_links_its_evidence_relative_to_the_bug() {
+    let fixture = ordered_bug(&[("first-failure", "failed", 100)]);
+    let id = only_bug_id(&fixture);
+    let session = fixture.active_id();
+    let path = format!(".chough/bugs/{id}.md");
+    let text = fixture.read(&path);
+    let stored = text
+        .lines()
+        .find_map(|line| line.strip_prefix("evidence: ["))
+        .and_then(|rest| rest.strip_suffix(']'))
+        .unwrap_or_else(|| panic!("no evidence in the front matter: {text}"))
+        .to_string();
+    let (in_session, first) = stored.split_once('/').expect("a session-qualified link");
+    assert_eq!(in_session, session, "{stored}");
+    let link =
+        |evidence: &str| format!("[{evidence}](../sessions/{session}/evidence/{evidence}.md)");
+    let reported = text
+        .lines()
+        .find(|line| line.contains("Reported ("))
+        .unwrap_or_else(|| panic!("no Reported line: {text}"));
+    assert!(
+        reported.contains(&format!("; evidence: {}", link(first))),
+        "{reported}"
+    );
+    assert!(
+        fixture
+            .root()
+            .join(".chough/bugs")
+            .join(format!("../sessions/{session}/evidence/{first}.md"))
+            .is_file()
+    );
+
+    let second = entry(&fixture, "seen-again", "failed", 200);
+    fixture.ok(&[
+        "bug",
+        "update",
+        &id,
+        "--observation",
+        &second,
+        "--note",
+        "Seen again",
+    ]);
+    let text = fixture.read(&path);
+    assert!(
+        text.contains(&format!("evidence: {}", link(&second))),
+        "{text}"
+    );
+    // The front matter keeps the stored form, however the list is laid out.
+    let front = text.split("\n---\n").next().unwrap();
+    for evidence in [first, second.as_str()] {
+        assert!(front.contains(&format!("{session}/{evidence}")), "{front}");
+    }
+    assert!(!front.contains("]("), "{front}");
+}
+
+/// REQ-history-012 (#347), TC-cli-doctor-relinks-a-bugs-evidence-after-archiving: when a
+/// session is archived, its evidence entries leave with its folder and live on as
+/// receipts of its story, so a bug's link to an entry goes stale. `chough doctor`
+/// reports the bug as `stale_bug_links`, naming the entry and the story; `--fix` appends
+/// one Log line that links the story, leaving every earlier line as it was; and the bug
+/// is then not reported again.
+#[test]
+fn doctor_relinks_a_bugs_evidence_after_its_session_is_archived() {
+    let fixture = ordered_bug(&[("first-failure", "failed", 100)]);
+    let id = only_bug_id(&fixture);
+    let session = fixture.active_id();
+    let path = format!(".chough/bugs/{id}.md");
+    let entry_name = "2026-11-10-first-failure";
+    let before = fixture.read(&path);
+    assert!(
+        before.contains(&format!(
+            "[{entry_name}](../sessions/{session}/evidence/{entry_name}.md)"
+        )),
+        "{before}"
+    );
+    fixture.commit("the bug and its evidence");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    assert!(!fixture.exists(&format!(
+        ".chough/sessions/{session}/evidence/{entry_name}.md"
+    )));
+
+    let report = |args: &[&str]| -> Value {
+        let mut all = vec!["doctor"];
+        all.extend_from_slice(args);
+        let output = fixture.run(&all);
+        serde_json::from_slice(&output.stdout).unwrap()
+    };
+    let stale = |report: &Value| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "stale_bug_links")
+            .cloned()
+            .collect()
+    };
+    let found = stale(&report(&[]));
+    assert_eq!(found.len(), 1, "{found:#?}");
+    assert_eq!(found[0]["target"], path.as_str());
+    assert_eq!(found[0]["status"], "found");
+    assert_eq!(found[0]["decision"], false);
+    assert_eq!(found[0]["links"][0]["entry"], entry_name);
+    assert_eq!(
+        found[0]["links"][0]["story"],
+        format!(".chough/archive/sessions/{session}.md")
+    );
+
+    let fixed = stale(&report(&["--fix"]));
+    assert_eq!(fixed[0]["status"], "fixed", "{fixed:#?}");
+    let after = fixture.read(&path);
+    let story_link = format!("[{entry_name}](../archive/sessions/{session}.md)");
+    assert!(
+        after.contains(&format!(
+            "Evidence now in its archived session: {story_link}"
+        )),
+        "{after}"
+    );
+    assert!(
+        fixture
+            .root()
+            .join(".chough/bugs")
+            .join(format!("../archive/sessions/{session}.md"))
+            .is_file()
+    );
+    // Append-only: every Log line the bug had is still there, in order.
+    let log = |text: &str| -> Vec<String> {
+        text.lines()
+            .skip_while(|line| *line != "## Log")
+            .filter(|line| line.starts_with("- "))
+            .map(str::to_string)
+            .collect()
+    };
+    assert_eq!(log(&after)[..log(&before).len()], log(&before)[..]);
+    assert_eq!(log(&after).len(), log(&before).len() + 1);
+    assert!(stale(&report(&[])).is_empty());
+}
+
+/// REQ-history-012 (#347, the tester's findings on #360): doctor relinks only an entry
+/// the archived story holds as a receipt. A link to an entry that was never recorded
+/// gets no line saying it moved, and a hand-edited link whose entry name holds a
+/// credential is never written again.
+#[test]
+fn doctor_relinks_only_what_the_archived_story_holds_as_a_receipt() {
+    let fixture = ordered_bug(&[("first-failure", "failed", 100)]);
+    let id = only_bug_id(&fixture);
+    let session = fixture.active_id();
+    let path = format!(".chough/bugs/{id}.md");
+    let real = "2026-11-10-first-failure";
+    let never = "2026-11-10-never-recorded";
+    fixture.ok(&[
+        "bug",
+        "update",
+        &id,
+        "--note",
+        &format!("SYNTHETIC see [{never}](../sessions/{session}/evidence/{never}.md)"),
+    ]);
+    let token = concat!("glpat-", "abcdefghijklmnopqrstuvwx");
+    let text = fixture.read(&path);
+    fixture.write(
+        &path,
+        &format!(
+            "{text}- 2026-11-10T00:00:05Z · SYNTHETIC hand edit [x](../sessions/{session}/evidence/{token}.md)\n"
+        ),
+    );
+    fixture.commit("the bug, a note and a hand edit");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+
+    let report = |args: &[&str]| -> Value {
+        let mut all = vec!["doctor"];
+        all.extend_from_slice(args);
+        serde_json::from_slice(&fixture.run(&all).stdout).unwrap()
+    };
+    let stale = |report: &Value| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "stale_bug_links")
+            .cloned()
+            .collect()
+    };
+    let found = stale(&report(&[]));
+    assert_eq!(found.len(), 1, "{found:#?}");
+    let links = found[0]["links"].as_array().unwrap();
+    assert_eq!(links.len(), 1, "{links:#?}");
+    assert_eq!(links[0]["entry"], real);
+
+    report(&["--fix"]);
+    let after = fixture.read(&path);
+    let added: Vec<&str> = after
+        .lines()
+        .filter(|line| line.contains("Evidence now in its archived session"))
+        .collect();
+    assert_eq!(added.len(), 1, "{after}");
+    assert!(
+        added[0].contains(&format!("[{real}](../archive/sessions/{session}.md)")),
+        "{}",
+        added[0]
+    );
+    assert!(!added[0].contains(never), "{}", added[0]);
+    assert!(!added[0].contains(token), "{}", added[0]);
+    assert_eq!(after.matches(token).count(), 1, "{after}");
+    assert!(stale(&report(&[])).is_empty());
+}
+
+/// REQ-history-012 (#347, swarm finding 62-F9 on #360): a bug too near its 65,536-byte
+/// bound cannot take the relink line. Doctor says so, names where the evidence is, and
+/// offers no `chough doctor --fix` that would never apply; `--fix` leaves the bug byte
+/// for byte.
+#[test]
+fn a_bug_too_near_its_bound_gets_advice_and_no_relink_fix() {
+    let fixture = ordered_bug(&[("first-failure", "failed", 100)]);
+    let id = only_bug_id(&fixture);
+    let session = fixture.active_id();
+    let path = format!(".chough/bugs/{id}.md");
+    let text = fixture.read(&path);
+    // One hand-written Log line that leaves 60 bytes below the bound.
+    let prefix = "- 2026-11-10T00:00:05Z · SYNTHETIC padding ";
+    let padding = 65_536 - 60 - text.len() - prefix.len() - 1;
+    fixture.write(&path, &format!("{text}{prefix}{}\n", "x".repeat(padding)));
+    assert_eq!(fixture.read(&path).len(), 65_536 - 60);
+    fixture.commit("a bug near its bound");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    let before = fixture.read(&path);
+
+    let report = |args: &[&str]| -> Value {
+        let mut all = vec!["doctor"];
+        all.extend_from_slice(args);
+        serde_json::from_slice(&fixture.run(&all).stdout).unwrap()
+    };
+    let stale = |report: &Value| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "stale_bug_links")
+            .cloned()
+            .collect()
+    };
+    let found = stale(&report(&[]));
+    assert_eq!(found.len(), 1, "{found:#?}");
+    let fix = found[0]["fix"].as_str().unwrap();
+    assert!(fix.starts_with("none:"), "{fix}");
+    assert!(!fix.contains("chough doctor --fix"), "{fix}");
+    // Advice only: it names the hand edit that clears it, and does not fail the run.
+    assert_eq!(found[0]["advisory"], true, "{found:#?}");
+    assert!(
+        fix.contains("by hand") && fix.contains(&format!("../archive/sessions/{session}.md")),
+        "{fix}"
+    );
+    let whole = report(&[]);
+    let failing = whole["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["advisory"] != true)
+        .count();
+    assert_eq!(
+        fixture.run(&["doctor"]).status.code() == Some(0),
+        failing == 0,
+        "{whole:#}"
+    );
+    assert_eq!(
+        found[0]["links"][0]["story"],
+        format!(".chough/archive/sessions/{session}.md")
+    );
+
+    let fixed = stale(&report(&["--fix"]));
+    assert_eq!(fixed[0]["status"], "skipped", "{fixed:#?}");
+    assert!(
+        fixed[0]["reason"]
+            .as_str()
+            .unwrap()
+            .contains("65,536-byte bound"),
+        "{fixed:#?}"
+    );
+    assert_eq!(fixture.read(&path), before);
+}
+
 /// Every file under `root` but `.git` and `.chough/local`, with its bytes.
 fn tree(root: &std::path::Path) -> std::collections::BTreeMap<String, Vec<u8>> {
     fn walk(
@@ -2569,4 +2860,74 @@ fn bug_add_refuses_before_writing_when_the_session_is_full() {
     assert!(said.contains(&fixture.active_id()), "{said}");
     assert!(said.contains("200"), "{said}");
     assert!(said.contains("nothing was written"), "{said}");
+}
+
+/// REQ-cli-012 (#347, the reviewer's finding on #360): evidence is resolved before its
+/// link is chosen. After a session is archived, its entry given by the qualified
+/// `<session>/<entry>` ID, to `bug add` and to `bug update`, links the archived story,
+/// as the bare ID does, and never the removed session folder.
+#[test]
+fn a_qualified_id_of_archived_evidence_links_the_story() {
+    let fixture = ordered_bug(&[("first-failure", "failed", 100)]);
+    let first = only_bug_id(&fixture);
+    let session = fixture.active_id();
+    let entry_name = "2026-11-10-first-failure";
+    // An entry the bug does not hold yet, so the update writes an evidence line
+    // (tester2's finding: an entry the bug already links writes none).
+    let second = entry(&fixture, "second-failure", "failed", 200);
+    fixture.commit("the bug and its evidence");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    fixture.ok(&["session", "new", "later", "--objective", "Later work"]);
+    let qualified = format!("{session}/{entry_name}");
+    let story = format!("[{entry_name}](../archive/sessions/{session}.md)");
+    let gone = format!("../sessions/{session}/evidence/{entry_name}.md");
+
+    // bug update with the qualified ID of an archived entry the bug does not hold yet.
+    fixture.ok(&[
+        "bug",
+        "update",
+        &first,
+        "--observation",
+        &format!("{session}/{second}"),
+    ]);
+    let updated = fixture.read(&format!(".chough/bugs/{first}.md"));
+    let line = updated
+        .lines()
+        .rfind(|line| line.contains(&second))
+        .unwrap_or_else(|| panic!("no line names {second}: {updated}"));
+    assert!(
+        line.contains(&format!("[{second}](../archive/sessions/{session}.md)")),
+        "{line}"
+    );
+    assert!(
+        !line.contains(&format!("../sessions/{session}/evidence/{second}.md")),
+        "{line}"
+    );
+    // bug add with the qualified ID, and with the bare one.
+    let added = |id: &str| -> String {
+        let output = add_bug(
+            &fixture,
+            &[
+                "--observation",
+                id,
+                "--distinct",
+                "SYNTHETIC a separate report",
+            ],
+        );
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let id = json(&output)["id"].as_str().unwrap().to_string();
+        fixture.read(&format!(".chough/bugs/{id}.md"))
+    };
+    for text in [added(&qualified), added(entry_name)] {
+        let reported = text
+            .lines()
+            .find(|line| line.contains("Reported ("))
+            .unwrap_or_else(|| panic!("no Reported line: {text}"));
+        assert!(reported.contains(&story), "{reported}");
+        assert!(!reported.contains(&gone), "{reported}");
+    }
 }
