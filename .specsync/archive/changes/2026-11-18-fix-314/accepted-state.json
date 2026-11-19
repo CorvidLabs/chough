@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-314",
+  "slug": "fix-314",
+  "title": "Fix 314",
+  "description": "fix 314",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "cef86e2622a2a908856b0c2cf11b29d3c1d3e472",
+  "created_at": 1795024391,
+  "updated_at": 1795025551,
+  "affected_specs": [
+    "cli",
+    "records"
+  ],
+  "affected_paths": [
+    "src/evidence.rs",
+    "src/cases.rs",
+    "src/doctor.rs",
+    "src/bugs.rs",
+    "src/library.rs",
+    "src/migrate.rs",
+    "src/evidence_migrate.rs",
+    "tests/special_files.rs",
+    "tests/migrate.rs",
+    ".chough/cases/cli.macos-metadata.cases.toml",
+    ".chough/cases/records.migrate-macos-metadata.cases.toml",
+    "changelog.d/2026-11-18-fix-314.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With an AppleDouble ._<name>.md file in .chough/bugs/, in a session's evidence/ and in .chough/archive/sessions/, chough next and chough status succeed as they do without it; a .DS_Store or ._<name>.cases.toml file in .chough/cases/ leaves chough cases check passing; chough doctor reports no unreadable finding for a committed ._ file; a 0.5.x project with ._ and .DS_Store files beside its bugs, sessions, archived sessions, inbox entries, evidence, history events and knowledge notes previews with the same plan digest as without them, applies, and still holds every one of them after; a committed binary AppleDouble file holding an email gives a leak finding from chough doctor --leaks, and chough doctor --fix --redact leaves it byte-identical; a malformed record with an ordinary name is still refused, naming the file."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the deltas are frozen at approval. records::publish_new is not touched. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

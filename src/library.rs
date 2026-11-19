@@ -255,6 +255,11 @@ fn files_0_5(root: &Path, relative: &str, found: &mut Vec<(String, bool)>) -> Re
     };
     for entry in entries {
         let entry = entry?;
+        // macOS metadata beside a 0.5.x note is not one: the migration neither reads,
+        // carries, lists nor removes it (REQ-records-015).
+        if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
+            continue;
+        }
         let name = format!("{relative}/{}", entry.file_name().to_string_lossy());
         let kind = entry.file_type()?;
         if kind.is_dir() {

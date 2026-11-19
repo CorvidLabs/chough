@@ -256,8 +256,8 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `journal add` | Write one short dated post in `knowledge/journal/` that links the records; the move into done and `session close` write one too |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
-This table documents 0.6.0, which is not released yet. Every command writes
-0.6.0 records, which the released 0.5.0 binary cannot read.
+This table documents 0.6.1. Every command writes records in the format 0.6.0
+introduced, which a Chough 0.5.x binary cannot read.
 
 ## Record identities and compatibility
 

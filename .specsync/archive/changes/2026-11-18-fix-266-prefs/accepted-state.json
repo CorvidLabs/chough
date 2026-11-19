@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-266-prefs",
+  "slug": "fix-266-prefs",
+  "title": "Fix 266 prefs",
+  "description": "fix 266 prefs",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "968172b73473b5f9149355b47bb9a59a7ea48d17",
+  "created_at": 1795030472,
+  "updated_at": 1795031022,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/prefs.rs",
+    "tests/git_merge.rs"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-cli-069 already says every command that writes a Chough record refuses while a path under .chough/ is unmerged; pref set and pref unset wrote .chough/preferences.json without the writer lock, so only their lock and a test change.",
+  "acceptance_criteria": [
+    "While a path under .chough/ is unmerged, chough pref set and chough pref unset refuse as refused:unmerged, naming the paths, with .chough/preferences.json and every other file unchanged; chough pref show still runs. With nothing unmerged they write as before, under the writer lock."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif's P2 review comment on #330 and his answer 'Fix first, you resolve' set the scope: pref set and unset take the writer lock, with a regression test that is red first. Deltas none; human gates as plain text in tasks.md. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

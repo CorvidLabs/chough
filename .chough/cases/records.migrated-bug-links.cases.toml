@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #277: a migrated bug's body named its carried observations by bare 0.5.x ID.
+
+[[case]]
+id = "TC-records-a-migrated-bugs-body-links-its-carried-observations"
+title = "A migrated bug's Log links each carried observation to the open session's entry or the archived story that holds its receipt, and every link opens a file"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/bugs.rs", "src/migrate.rs", "tests/migrate_evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_evidence.rs::a_migrated_bugs_body_links_its_carried_observations passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_evidence"
+test = "a_migrated_bugs_body_links_its_carried_observations"

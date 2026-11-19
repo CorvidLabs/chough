@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-314-folders",
+  "slug": "fix-314-folders",
+  "title": "Fix 314 folders",
+  "description": "fix 314 folders",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "b2a227e3aa07fed5bf465dca8c70a8c35c4476ca",
+  "created_at": 1795025997,
+  "updated_at": 1795026284,
+  "affected_specs": [
+    "records"
+  ],
+  "affected_paths": [
+    "src/migrate.rs",
+    "tests/migrate.rs",
+    "changelog.d/2026-11-18-fix-314-folders.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-records-015 already says the migration neither reads, lists nor removes a file or folder whose name starts with ._; only the folder clean-up and its test change.",
+  "acceptance_criteria": [
+    "A 0.5.x project with a ._* folder holding only an empty folder under .chough/history/ previews with the same plan digest as without it, and after the apply that ._* folder and the folder inside it are both still there; the migration neither descends into nor removes a folder whose name starts with ._."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes. No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

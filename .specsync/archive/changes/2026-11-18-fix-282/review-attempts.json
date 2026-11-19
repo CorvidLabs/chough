@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-282",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "e9a7316909d9bd890bff30514166d2aa4efe1da0",
+      "contract_digest": "a758ab44baa3fb33b37ed0b4dd3e8c21b60f128829e1056328e5cabf883eba4b",
+      "execution_digest": "89184220b28268862a3e661eab5a28e00f8050005c005da72b4a5d80d8abaca0",
+      "workspace_digest": "407073805fc67790e49176768a917423c9001ef450af06536f8b94db1ea2e8c9",
+      "timestamp": 1795045591,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve now + follow-up",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #350 after the tester's check; the follow-up is #353 (show pr in next, status, context and the checkpoint view, and accept only a number or an http(s) URL)",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    }
+  ]
+}

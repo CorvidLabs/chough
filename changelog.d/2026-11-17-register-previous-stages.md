@@ -1,1 +1,0 @@
-- `chough skill update` replaces a pristine copy of the workflow stages file from main 0fd9fd22, and the architecture note says which session files `session use` reads (FLOW-18).

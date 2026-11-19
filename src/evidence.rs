@@ -452,6 +452,10 @@ fn active_session(root: &Path) -> Result<String> {
 /// in What was verified (REQ-records-004). Returns the entry's path.
 pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Result<String> {
     validate_record(evidence, &evidence.id)?;
+    // REQ-cli-040 (#325): take the writer lock before anything is written, so a busy
+    // lock refuses with nothing saved and a rerun does not duplicate the entry. A case
+    // has already run by now, so it never runs under the lock; the save keeps it.
+    crate::checkpoint::lock_for_update(root)?;
     // The entry adds a reference, so a session at its observation bound refuses it
     // before anything is written (REQ-cli-032).
     crate::checkpoint::observation_room(root)?;
@@ -523,9 +527,10 @@ pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Res
         return Err(error);
     }
 
-    let mut session = match crate::checkpoint::read_session(root)? {
-        crate::checkpoint::Session::V2(session) => *session,
-    };
+    // REQ-cli-040 (#317): read the session under the writer lock, which the save keeps,
+    // so an update another writer saved while this one ran its case or wrote its entry
+    // is kept. A case has already run, so it never ran under the lock.
+    let mut session = crate::checkpoint::read_checkpoint(root)?;
     if !session.observations.contains(&name) {
         session.observations.push(name.clone());
     }
@@ -809,6 +814,7 @@ fn add(root: &Path, args: EvidenceArgs) -> Result<()> {
         Some(text) if args.outcome != Outcome::Passed => manual_key_lines(text)?,
         _ => (vec![], 0),
     };
+    check_limitations(&args.limitations)?;
     let mut limitations = args.limitations.clone();
     if let Some(note) = crate::local::toolchain_limitation(root) {
         limitations.push(note);
@@ -1048,6 +1054,14 @@ pub(super) fn load_all(root: &Path) -> Result<Vec<Evidence>> {
     Ok(found)
 }
 
+/// Whether `name` is metadata macOS writes beside files: Finder's `.DS_Store`, or an
+/// AppleDouble `._<name>` file, which macOS writes beside every file on exFAT and other
+/// non-Apple volumes. Readers in `.chough/` skip it; it is never a record (REQ-cli-068,
+/// #314).
+pub(super) fn is_os_metadata(name: &str) -> bool {
+    name == ".DS_Store" || name.starts_with("._")
+}
+
 /// The evidence entries of one session.
 fn load_session(root: &Path, session_id: &str) -> Result<Vec<Evidence>> {
     let dir = evidence_dir(session_id);
@@ -1059,7 +1073,7 @@ fn load_session(root: &Path, session_id: &str) -> Result<Vec<Evidence>> {
     let mut names: Vec<String> = entries
         .filter_map(|entry| entry.ok())
         .filter_map(|entry| entry.file_name().into_string().ok())
-        .filter(|name| name.ends_with(".md"))
+        .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
         .collect();
     names.sort();
     for name in names {
@@ -1144,7 +1158,7 @@ fn receipt_maps(root: &Path, dir: &str, key: &str) -> Result<ReceiptMaps> {
         .flatten()
         .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_file()))
         .map(|entry| entry.file_name().to_string_lossy().into_owned())
-        .filter(|name| name.ends_with(".md"))
+        .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
         .collect();
     names.sort();
     for name in names {
@@ -1259,7 +1273,7 @@ impl Index {
             let mut names: Vec<String> = entries
                 .filter_map(|entry| entry.ok())
                 .filter_map(|entry| entry.file_name().into_string().ok())
-                .filter(|name| name.ends_with(".md"))
+                .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
                 .collect();
             names.sort();
             for name in names {
@@ -1337,7 +1351,7 @@ impl Index {
         let mut names: Vec<String> = entries
             .filter_map(|entry| entry.ok())
             .filter_map(|entry| entry.file_name().into_string().ok())
-            .filter(|name| name.ends_with(".md"))
+            .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
             .collect();
         names.sort();
         for name in names {
@@ -2625,7 +2639,7 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
         for entry in fs::read_dir(&bugs)? {
             let entry = entry?;
             let name = entry.file_name().to_string_lossy().into_owned();
-            if !name.ends_with(".json") && !name.ends_with(".md") {
+            if (!name.ends_with(".json") && !name.ends_with(".md")) || is_os_metadata(&name) {
                 continue;
             }
             // Only regular files are records, as `chough bug list` reads the folder (#262).
@@ -2665,12 +2679,40 @@ fn references_from(root: &Path) -> Result<BTreeMap<String, Vec<String>>> {
 // The seam for the archived story (plan step 4, wired by the step 3 owner):
 // a session's entries as `receipts:` values.
 
+/// The most limitations a person may give one evidence entry, and the most bytes one
+/// may hold (REQ-cli-017, #349): a story writes each limitation twice, in its receipt
+/// and on its What was verified line, so unbounded text could push an archive past its
+/// own bound and leave the session stuck at done.
+pub(super) const LIMITATIONS_PER_ENTRY: usize = 8;
+pub(super) const LIMITATION_BYTES: usize = 512;
+
+/// Refuse, before anything is written, limitations given with `--limitation` that are
+/// more than [`LIMITATIONS_PER_ENTRY`] or longer than [`LIMITATION_BYTES`] each.
+pub(super) fn check_limitations(limitations: &[String]) -> Result<()> {
+    ensure!(
+        limitations.len() <= LIMITATIONS_PER_ENTRY,
+        "refused:limitations: {} limitations were given, over the bound of {LIMITATIONS_PER_ENTRY} per evidence entry, so nothing was written; say the most important ones, or join related ones.",
+        limitations.len()
+    );
+    for (index, limitation) in limitations.iter().enumerate() {
+        ensure!(
+            limitation.len() <= LIMITATION_BYTES,
+            "refused:limitations: limitation {} is {} bytes, over the bound of {LIMITATION_BYTES} bytes each, so nothing was written; shorten it.",
+            index + 1,
+            limitation.len()
+        );
+    }
+    Ok(())
+}
+
 /// The evidence entries of one session as receipt values for its archived story, in
 /// the order and shape the migration writes them (REQ-history-006, REQ-cli-017):
 /// id; aliases as one scalar, comma-and-space separated; claim; result; command, the
 /// executed argument vector joined by spaces; revision; environment; content;
-/// fingerprint; raw_log; case and case_digest; screenshot; observed; duration_seconds;
-/// and the actor. Each field is written only when known. Front-matter-native maps.
+/// fingerprint; raw_log; case and case_digest; criteria and requirements, each one
+/// scalar, comma-and-space separated, and limitations, one scalar, semicolon-and-space
+/// separated (#286); screenshot; observed; duration_seconds; and the actor. Each field is
+/// written only when known. Front-matter-native maps.
 pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(String, String)>>> {
     let mut receipts = vec![];
     // REQ-history-006 (t38j): receipts in observation-time order, oldest first, then by
@@ -2705,6 +2747,16 @@ pub(super) fn receipts_of(root: &Path, session_id: &str) -> Result<Vec<Vec<(Stri
         if let Some(case) = evidence.cases.first() {
             map.push(("case".into(), case.id.clone()));
             map.push(("case_digest".into(), case.digest.clone()));
+        }
+        // #286: what the entry was verified against, and its stated limits.
+        if !evidence.criteria.is_empty() {
+            map.push(("criteria".into(), evidence.criteria.join(", ")));
+        }
+        if !evidence.requirements.is_empty() {
+            map.push(("requirements".into(), evidence.requirements.join(", ")));
+        }
+        if !evidence.limitations.is_empty() {
+            map.push(("limitations".into(), evidence.limitations.join("; ")));
         }
         if let Some(screenshot) = &evidence.screenshot {
             map.push(("screenshot".into(), screenshot.clone()));
@@ -3026,7 +3078,7 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
         let mut names: Vec<String> = fs::read_dir(&archive)?
             .filter_map(|entry| entry.ok())
             .filter_map(|entry| entry.file_name().into_string().ok())
-            .filter(|name| name.ends_with(".md"))
+            .filter(|name| name.ends_with(".md") && !is_os_metadata(name))
             .collect();
         names.sort();
         for name in names {
@@ -3045,7 +3097,7 @@ pub(super) fn every_observation(root: &Path) -> Result<Vec<ObservationView>> {
             let entry = entry?;
             let name = entry.file_name().to_string_lossy().into_owned();
             // Only regular files are records, as `chough bug list` reads the folder (#262).
-            if name.ends_with(".md") && entry.file_type()?.is_file() {
+            if name.ends_with(".md") && !is_os_metadata(&name) && entry.file_type()?.is_file() {
                 let text = read_bounded_record(&entry.path(), markdown::RECORD_BOUND)?;
                 let record = markdown::parse(&name, &text)?;
                 for map in record.maps("receipts") {

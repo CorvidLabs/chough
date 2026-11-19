@@ -1,0 +1,57 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795019086,
+      "digest": "b3b3bbd6836cfce6e650d101a04eb95f2f481e70dae0371319614a4a805f847d",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-317, recreated with bug add and bug update\": \"Yes, include them\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g, later 'fixer'), 2026-11-18: his answer to including bug add/update --observation (bugs.rs join_active_session, REQ-cli-040) in #317, added to his earlier 'File it, fixer's A list' approval of #317, with his choice 'Recreate the draft'). Relayed and recorded by chough-fixer-t4g at 2026-11-18T16:24:45Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-317",
+        "title": "Fix 317",
+        "description": "fix 317",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.evidence-writers-lock.cases.toml",
+          "changelog.d/2026-11-18-fix-317.md",
+          "src/bugs.rs",
+          "src/evidence.rs",
+          "tests/evidence.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-cli-040 already requires evidence add, cases record, bug add and bug update to hold the writer lock while they read what they change, and a command that first runs a case to re-read under the lock for its save; only the evidence save, the bug commands' session save and their tests change.",
+        "acceptance_criteria": [
+          "evidence add, cases run and cases record take the project's writer lock before they read session.md to add their observation reference, and save under it, so an update another writer saves while one of them waits is kept: with the lock held while evidence add waits and the checkpoint's next action changed meanwhile, the change survives the save. bug add and bug update with --observation do the same when they add the bug to the active session, so an update saved while bug add waits survives too. Ten checkpoint --decision and ten evidence add commands run in parallel keep all ten decisions and all ten observation references. cases run still runs its case without holding the lock."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). The writer lock must not be held while cases run runs its case, since a writer that waits 30 seconds refuses (REQ-cli-040). No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, include them",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g, later 'fixer'), 2026-11-18: his answer to including bug add/update --observation (bugs.rs join_active_session, REQ-cli-040) in #317, added to his earlier 'File it, fixer's A list' approval of #317, with his choice 'Recreate the draft'",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795021393,
+      "digest": "7a1c8877c553d81e9a3cce59bf90b078e851beee011d0d98b67dffad6ead19b3",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

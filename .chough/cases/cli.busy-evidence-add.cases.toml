@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #325: an evidence add refused as refused:checkpoint-busy said nothing was
+# saved, but its entry had been written before the lock wait, so a rerun duplicated it.
+
+[[case]]
+id = "TC-cli-a-busy-evidence-add-leaves-nothing"
+title = "With the writer lock held elsewhere, evidence add writes no entry while it waits, its refused:checkpoint-busy leaves every file unchanged, and a rerun records exactly one entry"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-11"]
+requirements = ["REQ-cli-040"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::a_busy_evidence_add_writes_nothing_and_refuses_with_nothing_saved passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "a_busy_evidence_add_writes_nothing_and_refuses_with_nothing_saved"

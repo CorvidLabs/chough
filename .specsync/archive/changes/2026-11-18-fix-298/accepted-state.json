@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-298",
+  "slug": "fix-298",
+  "title": "Fix 298",
+  "description": "fix 298",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "cef86e2622a2a908856b0c2cf11b29d3c1d3e472",
+  "created_at": 1795027370,
+  "updated_at": 1795042179,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/change.rs",
+    "tests/change.rs",
+    "docs/cli.md",
+    ".chough/cases/cli.ship-refuses-a-corrupt-history.cases.toml",
+    "changelog.d/2026-11-18-fix-298.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "When a commit between the change's base commit and HEAD holds a change both open under .specsync/changes/<id>/ and archived under .specsync/archive/changes/<date>-<id>/, chough change ship refuses before it runs SpecSync's review or ship, naming the commit, the duplicated change and how to recover, with every file unchanged and no native step run; without such a commit the ship runs as before. The docs say the check is interim until SpecSync's preflight (CorvidLabs/spec-sync#1082)."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the delta is frozen at approval. SpecSync owns terminal-evidence validity; this check is interim until its preflight (spec-sync#1082). No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

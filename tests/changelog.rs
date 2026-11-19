@@ -61,8 +61,11 @@ fn fragment_dir() -> PathBuf {
 /// The contents of every `changelog.d/*.md` fragment, in sorted file-name order.
 fn fragments() -> Vec<String> {
     let directory = fragment_dir();
-    let mut names: Vec<String> = std::fs::read_dir(&directory)
-        .expect("changelog.d is readable")
+    // A release assembles every fragment and removes it, and Git keeps no empty folder.
+    let Ok(listing) = std::fs::read_dir(&directory) else {
+        return Vec::new();
+    };
+    let mut names: Vec<String> = listing
         .filter_map(|entry| {
             let entry = entry.ok()?;
             let path = entry.path();
@@ -87,11 +90,18 @@ fn fragments() -> Vec<String> {
         .collect()
 }
 
-/// Every `changelog.d/*.md` fragment, in sorted file-name order, as (name, contents).
+/// The fragments the old Unreleased bullets became (#290) and #278's, kept as fixture
+/// copies: a release removes the live ones from `changelog.d/`.
+fn converted_fragment_dir() -> PathBuf {
+    manifest_dir().join("tests/fixtures/changelog/unreleased-at-289")
+}
+
+/// Every `*.md` fragment in the fixture folder, in sorted file-name order, as (name,
+/// contents).
 fn fragment_files() -> Vec<(String, String)> {
-    let directory = fragment_dir();
+    let directory = converted_fragment_dir();
     let mut names: Vec<String> = std::fs::read_dir(&directory)
-        .expect("changelog.d is readable")
+        .expect("the fixture fragments are readable")
         .filter_map(|entry| {
             let entry = entry.ok()?;
             let path = entry.path();
@@ -111,7 +121,7 @@ fn fragment_files() -> Vec<(String, String)> {
         .into_iter()
         .map(|name| {
             let contents = std::fs::read_to_string(directory.join(&name))
-                .unwrap_or_else(|error| panic!("changelog.d/{name} is readable: {error}"));
+                .unwrap_or_else(|error| panic!("fixture {name} is readable: {error}"));
             (name, contents)
         })
         .collect()
@@ -275,7 +285,9 @@ fn the_0_6_0_also_list_names_nothing_0_6_0_removed() {
 
 /// LIFE-16, #290: before a release the change the working branch is on is named by the
 /// changelog, from the fragment it adds under `changelog.d/` and not from a
-/// `CHANGELOG.md` Unreleased bullet that two open changes would edit together.
+/// `CHANGELOG.md` Unreleased bullet that two open changes would edit together. Once a
+/// release has assembled the fragments, the same entry sits in that release's section,
+/// 0.6.1 for this change, and still only once.
 #[test]
 fn the_changelog_names_this_change_before_release() {
     let text = changelog();
@@ -283,6 +295,9 @@ fn the_changelog_names_this_change_before_release() {
     let mut named = unreleased.clone();
     for fragment in fragments() {
         named.extend(entries(&fragment));
+    }
+    if text.contains("\n## [0.6.1]") {
+        named.extend(entries(section(&text, "0.6.1")));
     }
     let hits: Vec<String> = named
         .into_iter()
@@ -761,8 +776,9 @@ fn the_changelog_task_assembles_the_unreleased_fragments_gives_back_the_same_tex
     )
     .expect("CHANGELOG.md");
     // Only the fragments MAIN_UNRELEASED was fixed from: the numbered conversions of the
-    // old Unreleased bullets and #278's. A later change adds its own fragment, which this
-    // round trip must not read (#289).
+    // old Unreleased bullets and #278's, read from their fixture copies, since a release
+    // removes the live fragments. A later change adds its own fragment, which this round
+    // trip must not read (#289).
     let converted: Vec<(String, String)> = fragment_files()
         .into_iter()
         .filter(|(name, _)| {

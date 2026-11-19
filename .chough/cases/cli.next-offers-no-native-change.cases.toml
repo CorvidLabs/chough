@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #351: nothing told an agent that --no-native-change exists.
+
+[[case]]
+id = "TC-cli-a-refused-move-for-lacking-a-change-offers-both-paths"
+title = "A move refused for lacking a native change, and chough next, name both chough checkpoint --native-change and --no-native-change, and the workflow skill teaches the flag"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-cli-021"]
+paths = ["src/stage.rs", "tests/stages.rs", "skills/chough-workflow/"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_move_refused_for_lacking_a_change_offers_both_paths passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_move_refused_for_lacking_a_change_offers_both_paths"

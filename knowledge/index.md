@@ -24,16 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
-- [Docs and help-text change for the list-valued checkpoint flags and…](journal/2026-11-18-docs-and-help-text-change-for-the-list-valued-checkpoint-flags.md) (2026-11-18, shipped)
-- [A credential glued to a hyphen is a leak](journal/2026-11-18-a-credential-glued-to-a-hyphen-is-a-leak.md) (2026-11-18, shipped)
-- [journal add holds the writer lock](journal/2026-11-18-journal-add-holds-the-writer-lock.md) (2026-11-18, shipped)
-- [Previous stages digest updates; session reads qualified](journal/2026-11-17-previous-stages-digest-updates-session-reads-qualified.md) (2026-11-17, shipped)
-- [Skill release pin matches the edited fast path](journal/2026-11-17-skill-release-pin-matches-the-edited-fast-path.md) (2026-11-17, shipped)
-- [Docs and host templates match current main](journal/2026-11-17-docs-and-host-templates-match-current-main.md) (2026-11-17, shipped)
-- [The init case runs the real preservation test](journal/2026-11-16-the-init-case-runs-the-real-preservation-test.md) (2026-11-16, shipped)
-- [Spec files use SpecSync's merge driver](journal/2026-11-16-spec-files-use-specsync-s-merge-driver.md) (2026-11-16, shipped)
-- [Fix #289: rebuild the knowledge index at release](journal/2026-11-15-fix-289-rebuild-the-knowledge-index-at-release.md) (2026-11-15, shipped)
-- [Fix #290: each change adds a changelog fragment](journal/2026-11-15-fix-290-each-change-adds-a-changelog-fragment.md) (2026-11-15, shipped)
+- [Chough 0.6.1 release preparation](journal/2026-11-18-chough-0-6-1-release-preparation.md) (2026-11-18, shipped)
+- [A test asserts the gate summary's Change line separator](journal/2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator.md) (2026-11-18, shipped)
+- [evidence add, cases run and cases record re-read session.md under…](journal/2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md.md) (2026-11-18, shipped)
+- [The feature-bug-loop example stops at a refused chough or SpecSync…](journal/2026-11-18-the-feature-bug-loop-example-stops-at-a-refused-chough-or.md) (2026-11-18, shipped)
+- [Revert #306's new-record writer for 0.6.1](journal/2026-11-18-revert-306-s-new-record-writer-for-0-6-1.md) (2026-11-18, shipped)
+- [checkpoint --file and --design values pass the write-time leak guard](journal/2026-11-18-checkpoint-file-and-design-values-pass-the-write-time-leak.md) (2026-11-18, shipped)
+- [A slug with -sk- is not a model-provider key again](journal/2026-11-18-a-slug-with-sk-is-not-a-model-provider-key-again.md) (2026-11-18, shipped)
+- [A new record whose write fails is not left behind](journal/2026-11-18-a-new-record-whose-write-fails-is-not-left-behind.md) (2026-11-18, shipped)
+- [A FIFO swapped in at the open blocks no reader](journal/2026-11-18-a-fifo-swapped-in-at-the-open-blocks-no-reader.md) (2026-11-18, shipped)
+- [journal add holds the writer lock with no .chough directory](journal/2026-11-18-journal-add-holds-the-writer-lock-with-no-chough-directory.md) (2026-11-18, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
-- [fix-301](../.specsync/archive/changes/2026-11-18-fix-301/lesson-bundle.md), CLI reference and help text cover every command and flag (#301)
-- [fix-267](../.specsync/archive/changes/2026-11-18-fix-267/lesson-bundle.md), Fix 267
-- [fix-272](../.specsync/archive/changes/2026-11-18-fix-272/lesson-bundle.md), Fix 272
+- [release-0-6-1](../.specsync/archive/changes/2026-11-18-release-0-6-1/lesson-bundle.md), Release 0 6 1
+- [fix-294](../.specsync/archive/changes/2026-11-18-fix-294/lesson-bundle.md), Fix 294
+- [fix-317](../.specsync/archive/changes/2026-11-18-fix-317/lesson-bundle.md), Fix 317
 
 ## Snapshots and briefs
 

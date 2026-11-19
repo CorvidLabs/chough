@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-266-prefs",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "2cee4ee1cc9bce6755e9151eb2457af61b776a62",
+      "contract_digest": "747d59fcc3dd507a3afb881eef1f03c88db05cfdc041f51bcd8beb5ce2b635e3",
+      "execution_digest": "5b95a6bb8ea076f1207a7e44524032b5a2cfba8ca2ca9a763150c6fd0a87dc61",
+      "workspace_digest": "71e7f7d7737cb9ead59ad789fc5aaf5e2ab57553a79494310b71696ad3ccc8c4",
+      "timestamp": 1795031015,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Fix first, you resolve",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his P2 review thread on #330, with the instruction to make a small follow-up native change on #330's branch, run the verify lane, ship and push; a tester glances at it, he resolves the thread, then the fixer merges",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    }
+  ]
+}

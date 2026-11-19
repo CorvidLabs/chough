@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-339",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "ed54cb4c20f3b67c4c012b3ceee957f250f5fd3b",
+  "contract_digest": "5adc064e918c24f55bda4d4b23c388063431d3d0af5f60d3ee19228f9a0f03a7",
+  "execution_digest": "c61c7a5f2981c423fbf9522ba2417876acadd84e17ba4b6a9a9120fb2a8dbbdf",
+  "workspace_digest": "15821f70403bec750e9fb75e289854ce95f2e2350c99deeab458b964f51c40c2",
+  "timestamp": 1795049143,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve; drop the JSON field first",
+    "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #356 after the tester's recheck PASS at dc8c09d; the JSON field was dropped in 80f964d. Then, on swarm finding 62-F1, his 'Advisory finding' added the advisory possible_fenced_conflict finding (e72be7d), which the tester's glance passed at a29c3b2; hc t4c relayed that his answer covered exactly this addition",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}

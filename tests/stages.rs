@@ -2202,6 +2202,7 @@ fn a_linking_bug_lifts_the_unlinked_failure_refusal_and_other_moves_are_unchange
         "blocking",
         "2026-01-01-other-1",
     );
+    fixture.ok(&["checkpoint", "--bug", "BUG-0002"]);
     let error = fixture.fails(&["stage", "advance"]);
     assert!(error.contains("refused:blocking-bugs"), "{error}");
     assert!(!error.contains("refused:unlinked-failure"), "{error}");
@@ -3481,4 +3482,174 @@ fn a_stage_move_prints_a_short_summary_and_its_full_report_under_json() {
     }
     assert_eq!(report["applied"]["kind"], "skip", "{report:#}");
     assert_eq!(report["applied"]["to"], "plan", "{report:#}");
+}
+
+/// REQ-cli-007 (#281), TC-cli-a-session-that-needs-no-native-change-reaches-done: with
+/// SpecSync configured, a session whose work needs no native change records that with a
+/// reason, and its gated moves are then allowed as `ungated:no-native-change-required`,
+/// so it advances to done and is archived with outcome `done`. An open human gate still
+/// refuses the move, a blank reason is refused, and a session that records a native
+/// change cannot also record that it needs none.
+#[cfg(unix)]
+#[test]
+fn a_session_that_needs_no_native_change_reaches_done_and_archives_as_done() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(refused.contains("refused:no-native-change"), "{refused}");
+
+    let blank = fixture.fails(&["checkpoint", "--no-native-change", " "]);
+    assert!(blank.contains("reason"), "{blank}");
+    let reason = "SYNTHETIC planning only: hi criteria, docs and issues";
+    fixture.ok(&["checkpoint", "--no-native-change", reason]);
+    assert_eq!(fixture.session()["no_native_change"], reason);
+    let record = fixture.read(&fixture.session_file());
+    assert!(
+        record
+            .lines()
+            .any(|line| line.starts_with("no_native_change: ") && line.contains("planning only")),
+        "{record}"
+    );
+
+    // A human gate still has to be closed by a person.
+    fixture.ok(&["checkpoint", "--awaiting-human", "SYNTHETIC-human's go"]);
+    let held = fixture.fails(&["stage", "advance"]);
+    assert!(held.contains("refused:awaiting-human"), "{held}");
+    fixture.ok(&["checkpoint", "--clear-awaiting-human"]);
+
+    let mut labels = vec![];
+    for _ in 0..4 {
+        let moved = fixture.ok(&["stage", "advance", "--json"]).to_string();
+        labels.push(moved.contains("ungated:no-native-change-required"));
+    }
+    assert_eq!(labels, [true; 4], "every gated move names the label");
+    assert!(fixture.is_archived("Ship a focused change"));
+    let story = fixture.session_json("Ship a focused change");
+    assert_eq!(story["stage"]["current"], "done", "{story:#}");
+    let archived = fs::read_dir(fixture.root().join(".chough/archive/sessions"))
+        .unwrap()
+        .flatten()
+        .map(|entry| fs::read_to_string(entry.path()).unwrap())
+        .next()
+        .expect("an archived story");
+    assert!(archived.contains("\noutcome: done\n"), "{archived}");
+    // The archived story keeps why it had no native change.
+    assert!(
+        archived
+            .lines()
+            .any(|line| line.starts_with("no_native_change: ") && line.contains("planning only")),
+        "{archived}"
+    );
+
+    // REQ-records-006 (the tester's finding on #348): the reason is a written value. One
+    // that holds a credential or an email address is refused with nothing saved, as
+    // --objective and --decision refuse it, and --redact stores it redacted.
+    let leaky = Fixture::new();
+    leaky.stubs();
+    leaky.native("draft");
+    leaky.init();
+    let token = concat!("ghp_", "abcdefghijklmnopqrstuvwxyz0123456789");
+    for sample in [
+        format!("SYNTHETIC planning only, token {token}"),
+        "SYNTHETIC planning only, ask someone@example.org".to_string(),
+    ] {
+        let before = leaky.read(&leaky.session_file());
+        let refused = leaky.fails(&["checkpoint", "--no-native-change", &sample]);
+        assert!(refused.contains("refused:leak"), "{refused}");
+        assert!(!refused.contains(token), "{refused}");
+        assert_eq!(leaky.read(&leaky.session_file()), before);
+    }
+    leaky.ok(&[
+        "checkpoint",
+        "--redact",
+        "--no-native-change",
+        &format!("SYNTHETIC planning only, token {token}"),
+    ]);
+    let stored = leaky.read(&leaky.session_file());
+    assert!(!stored.contains(token), "{stored}");
+    assert!(
+        stored
+            .lines()
+            .any(|line| line.starts_with("no_native_change: ") && line.contains("<redacted:")),
+        "{stored}"
+    );
+
+    // With a native change recorded, the session cannot also say it needs none, and
+    // recording a native change later takes the reason away.
+    let other = Fixture::new();
+    other.stubs();
+    other.native("draft");
+    other.init();
+    other.ok(&["checkpoint", "--no-native-change", reason]);
+    other.ok(&["checkpoint", "--native-change", "add-thing"]);
+    assert_eq!(other.session()["no_native_change"], Value::Null);
+    let both = other.fails(&["checkpoint", "--no-native-change", reason]);
+    assert!(both.contains("add-thing"), "{both}");
+}
+
+/// REQ-cli-021 (#351), TC-cli-a-refused-move-for-lacking-a-change-offers-both-paths:
+/// when a gated move is refused because the session records no native change, the
+/// refusal and `chough next` name both ways on: start a change, or record with
+/// `chough checkpoint --no-native-change` that the work needs none. The workflow skill
+/// teaches the flag, in the canonical copy and the installed one.
+#[cfg(unix)]
+#[test]
+fn a_move_refused_for_lacking_a_change_offers_both_paths() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.native("draft");
+    fixture.init();
+    fixture.ok(&["stage", "advance", "--json"]);
+    fixture.ok(&["stage", "skip", "--json", "--reason", "No visuals"]);
+    let flag = "chough checkpoint --no-native-change \"<reason>\"";
+
+    let refused = fixture.fails(&["stage", "advance"]);
+    assert!(refused.contains("refused:no-native-change"), "{refused}");
+    assert!(
+        refused.contains("chough checkpoint --native-change <id>"),
+        "{refused}"
+    );
+    assert!(refused.contains(flag), "{refused}");
+
+    let next = fixture.ok(&["next", "--json"]);
+    let action = next["next_valid_action"]["action"].as_str().unwrap();
+    assert!(action.contains("refused:no-native-change"), "{action}");
+    assert!(action.contains(flag), "{action}");
+    assert_eq!(
+        next["next_valid_action"]["command"],
+        "specsync change new \"<outcome>\" --spec <module> --path <path>",
+        "{next}"
+    );
+    let text = fixture.ok_text(&["next"]);
+    assert!(text.contains(flag), "{text}");
+
+    // The tester's findings on #359: the literal placeholder is refused, and once the
+    // session says it needs no native change, `next` says so with the reason.
+    let placeholder = fixture.fails(&["checkpoint", "--no-native-change", "<reason>"]);
+    assert!(placeholder.contains("placeholder"), "{placeholder}");
+    assert_eq!(fixture.session()["no_native_change"], Value::Null);
+    let reason = "SYNTHETIC planning only";
+    fixture.ok(&["checkpoint", "--no-native-change", reason]);
+    let next = fixture.ok(&["next", "--json"]);
+    assert_eq!(next["no_native_change"], reason, "{next}");
+    let text = fixture.ok_text(&["next"]);
+    assert!(
+        text.contains(&format!("Native change: none needed: {reason}")),
+        "{text}"
+    );
+    assert!(!text.contains("Native change: none recorded"), "{text}");
+
+    for copy in ["skills", ".agents/skills"] {
+        let lifecycle = fs::read_to_string(
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join(copy)
+                .join("chough-workflow/references/lifecycle.md"),
+        )
+        .unwrap();
+        assert!(lifecycle.contains("--no-native-change"), "{copy}");
+    }
 }

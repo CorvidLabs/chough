@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "docs-0-6-1-release",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "8d58a297bf8631450557f3bb6cd6792913639ffc",
+      "contract_digest": "67b91a5bca396f2bced4b86476a0aaca87b0a1bcd5c0ed3d7239aa27e3ea5369",
+      "execution_digest": "c7e517a465dc0f873b56afa1bb513db2fce74a9edfc79a80c6cf6550674d4b96",
+      "workspace_digest": "a3a1845e7da1b186a7f0b541eb36e58cbb568c91f93adaac6cc696c3b25af511",
+      "timestamp": 1795028265,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve, merge when green",
+        "where": "Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after it read PR #327's diff for him",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ]
+}

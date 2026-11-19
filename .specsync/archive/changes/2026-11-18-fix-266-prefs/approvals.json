@@ -1,0 +1,53 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795030493,
+      "digest": "747d59fcc3dd507a3afb881eef1f03c88db05cfdc041f51bcd8beb5ce2b635e3",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-266-prefs\": \"Fix first, you resolve\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his own P2 review thread on #330 ('Cover preference writers before relying on this lock as the merge guard … regress pref set/unset'): a small follow-up native change on #330's branch in which pref set and pref unset take the writer lock, with a regression test red first). Relayed and recorded by chough-fixer-t4g at 2026-11-18T19:34:52Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-266-prefs",
+        "title": "Fix 266 prefs",
+        "description": "fix 266 prefs",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "src/prefs.rs",
+          "tests/git_merge.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-cli-069 already says every command that writes a Chough record refuses while a path under .chough/ is unmerged; pref set and pref unset wrote .chough/preferences.json without the writer lock, so only their lock and a test change.",
+        "acceptance_criteria": [
+          "While a path under .chough/ is unmerged, chough pref set and chough pref unset refuse as refused:unmerged, naming the paths, with .chough/preferences.json and every other file unchanged; chough pref show still runs. With nothing unmerged they write as before, under the writer lock."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's P2 review comment on #330 and his answer 'Fix first, you resolve' set the scope: pref set and unset take the writer lock, with a regression test that is red first. Deltas none; human gates as plain text in tasks.md. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Fix first, you resolve",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answer to his own P2 review thread on #330 ('Cover preference writers before relying on this lock as the merge guard … regress pref set/unset'): a small follow-up native change on #330's branch in which pref set and pref unset take the writer lock, with a regression test red first",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795031022,
+      "digest": "b4406f90924c619d83940a29b6a1c3061e2df44f8112de67f0fac722bbadeb8e",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

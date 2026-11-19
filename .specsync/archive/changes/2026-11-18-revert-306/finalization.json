@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "revert-306",
+  "implementation_commit": "62cf3cc4b160968508c38e86124449659d939ba6",
+  "implementation_tree": "51bd7732167884d3e892fce45f14dd4e6019418a",
+  "contract_digest": "6276b8772d0b4dfb8867081839a583bfc176d983d3916e08a2fe9caaa2f2e9e0",
+  "workspace_digest": "6f9281a4d5c968aa48b357769c28b6fd3bd3d193e311006da7c4c0de94403316",
+  "closing_digest": "b9313d768cc4d179a2e0a807560ac7557316143b5155207643a3cf999126748f",
+  "review_digest": "3fa880e653d299e3352ee9637ff43b271221a1e260f182c76d48e6d39a4ba303",
+  "finalization_digest": "f9eb7cded0087fe7fb8c653da6f7bcf3f50e7f2cbbe002f153d4380bc31004e9",
+  "timestamp": 1795020364
+}

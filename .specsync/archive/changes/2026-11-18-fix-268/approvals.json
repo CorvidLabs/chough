@@ -1,0 +1,56 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795016250,
+      "digest": "41f54ce828e9eba51014ad32d690214e494051ad35119b9f5cbef31f5ef973e5",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-268\": \"Approve all three\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, in answer to: Approve the scope for all three A-list fixes: #268 (checkpoint --file/--design skip the write-time leak guard), #274 (feature-bug-loop example: no pipefail), #294 (test-only: the gate summary Change line)?). Relayed and recorded by chough-fixer-t4g at 2026-11-18T15:37:30Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-268",
+        "title": "Fix 268",
+        "description": "fix 268",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.checkpoint-file-leak-guard.cases.toml",
+          "changelog.d/2026-11-18-fix-268.md",
+          "src/checkpoint.rs",
+          "tests/leaks.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-records-006 already requires every value Chough writes, front matter included, to pass the leak check; only the checkpoint guard and its tests change.",
+        "acceptance_criteria": [
+          "A token form in a chough checkpoint --file or --design value, such as src/ghp_<token>.txt, refuses the write as refused:leak naming the field (file or design) and the kind token, never echoing the value, with every file unchanged; with --redact the stored path holds <redacted:token> and the command says it redacted. A file or design path that holds no leak is saved as before."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve all three",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, in answer to: Approve the scope for all three A-list fixes: #268 (checkpoint --file/--design skip the write-time leak guard), #274 (feature-bug-loop example: no pipefail), #294 (test-only: the gate summary Change line)?",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795018836,
+      "digest": "6e91724337fb37d2a29e3c076699a9056c9944250a221b3d3442c8a741216375",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

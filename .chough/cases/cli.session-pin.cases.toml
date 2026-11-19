@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #271: two agents in one worktree silently wrote into each other's session,
+# since every write resolved the one shared active-session pointer.
+
+[[case]]
+id = "TC-cli-a-pinned-shell-writes-its-own-session"
+title = "With the pointer on one session, evidence add with --session or CHOUGH_SESSION naming the other records into the other, the pointer stays, and next --session shows that session"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-037"]
+paths = ["src/main.rs", "tests/session_pin.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/session_pin.rs::a_pinned_shell_writes_its_own_session_whatever_the_pointer_says passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "session_pin"
+test = "a_pinned_shell_writes_its_own_session_whatever_the_pointer_says"

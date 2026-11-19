@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-277",
+  "slug": "fix-277",
+  "title": "Fix 277",
+  "description": "fix 277",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "9dd28de28015ce6f873e237044cc9650e74a3712",
+  "created_at": 1795031019,
+  "updated_at": 1795033766,
+  "affected_specs": [
+    "cli",
+    "records"
+  ],
+  "affected_paths": [
+    "src/bugs.rs",
+    "src/migrate.rs",
+    "tests/migrate_evidence.rs",
+    "docs/cli.md",
+    ".chough/cases/records.migrated-bug-links.cases.toml",
+    "changelog.d/2026-11-18-fix-277.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-records-009 already says each bug becomes a Markdown bug and each carried observation becomes an entry or a receipt. The Log lines of a migrated bug named those observations by bare 0.5.x ID; they now link the file that holds each. No requirement text changes.",
+  "acceptance_criteria": [
+    "A migrated bug's Log names each carried observation as a Markdown link, relative to the bug's file, to the open session's evidence entry or to the archived story that holds its receipt; every such link opens a file; a receipt only the bug holds is named as the bug's own; a removed observation keeps its 0.5.x ID. The bug's front matter is unchanged."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes. No requirement text changes, so no delta.",
+    "public_contract": "no"
+  }
+}

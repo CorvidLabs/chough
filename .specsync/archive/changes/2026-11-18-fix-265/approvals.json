@@ -1,0 +1,122 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795029109,
+      "digest": "a01cf9cb8506f289997215b406d8c905733ae989b315166b112cead8da9e287a",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-265\": \"Approve the scope. … Yes, within scope\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, in two answers: 'Approve the scope' (a record body may not hold git conflict markers; writes refused naming the file, line and marker; chough doctor reports committed records holding them; a new sentence in REQ-records-001), then 'Yes, within scope' to the doctor sentence in REQ-cli-055 beside REQ-records-001, counting ======= only between <<<<<<< and >>>>>>>, and migrate checking every planned file before writing any). Relayed and recorded by chough-fixer-t4g at 2026-11-18T19:11:48Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-265",
+        "title": "Fix 265",
+        "description": "fix 265",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.conflict-markers.cases.toml",
+          "changelog.d/2026-11-18-fix-265.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "tests/doctor.rs",
+          "tests/migrate.rs",
+          "tests/records.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A record write whose body holds a Git conflict marker, a line starting <<<<<<<, a line starting >>>>>>>, or a ======= line between them, is refused as refused:conflict-markers naming the file, the line and the marker, with every file unchanged; a ======= line outside such a block, as a Markdown heading underline, is not a marker. chough doctor reports each committed record (not other tracked files) whose body holds one as a conflict_markers finding naming the file, the line and the marker, with no fix, and exits 1. chough migrate checks every file it would write before writing any and refuses, writing nothing, when one would hold a conflict marker."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the deltas are frozen at approval. Ripple's review of the local team's attempt: limit the doctor scan to records, keep the cases' expectations apart, and declare and test src/migrate.rs's guard. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "644fcd050ee4bee1025839219ec30f5c1a4ac0870a7525dd3cfb582a301fd0bc",
+        "records": "244adb93010f38a2d62cb5fb7a5fe0c0fc0e814fc97e279405dfd720f9e106ee"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "2e0b32a3acbebe757ffc96a2a4a595c8de5fc1d616286fd73cae66e0cf636765",
+        "records: REQUIREMENT REQ-records-001": "d98e92ac5307a86bf5c75417a479d97d81fb5b900a4f67480b2af7683ac4f5c5"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve the scope. … Yes, within scope",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, in two answers: 'Approve the scope' (a record body may not hold git conflict markers; writes refused naming the file, line and marker; chough doctor reports committed records holding them; a new sentence in REQ-records-001), then 'Yes, within scope' to the doctor sentence in REQ-cli-055 beside REQ-records-001, counting ======= only between <<<<<<< and >>>>>>>, and migrate checking every planned file before writing any",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795033574,
+      "digest": "a01cf9cb8506f289997215b406d8c905733ae989b315166b112cead8da9e287a",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-265's rebased delta\": \"Re-approve\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #335 (#320) merged and changed REQ-cli-055, SpecSync refused fix-265's approved cli delta as approved against changed canonical text; the delta was rebased onto main's REQ-cli-055 with only #265's clause and acceptance line added, nothing else changed, and he re-approved it). Relayed and recorded by chough-fixer-t4g at 2026-11-18T20:26:12Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-265",
+        "title": "Fix 265",
+        "description": "fix 265",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.conflict-markers.cases.toml",
+          "changelog.d/2026-11-18-fix-265.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "src/migrate.rs",
+          "src/records.rs",
+          "tests/doctor.rs",
+          "tests/migrate.rs",
+          "tests/records.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A record write whose body holds a Git conflict marker, a line starting <<<<<<<, a line starting >>>>>>>, or a ======= line between them, is refused as refused:conflict-markers naming the file, the line and the marker, with every file unchanged; a ======= line outside such a block, as a Markdown heading underline, is not a marker. chough doctor reports each committed record (not other tracked files) whose body holds one as a conflict_markers finding naming the file, the line and the marker, with no fix, and exits 1. chough migrate checks every file it would write before writing any and refuses, writing nothing, when one would hold a conflict marker."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the deltas are frozen at approval. Ripple's review of the local team's attempt: limit the doctor scan to records, keep the cases' expectations apart, and declare and test src/migrate.rs's guard. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "91547eb1500eef649314d4a8a896cb499b050dbcafd5ee8e9791e226b5ebd06f",
+        "records": "244adb93010f38a2d62cb5fb7a5fe0c0fc0e814fc97e279405dfd720f9e106ee"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "82ca3f4b373e269b3c9b03ace2be48a0ede32ccf05802891757441baedbd08f7",
+        "records: REQUIREMENT REQ-records-001": "d98e92ac5307a86bf5c75417a479d97d81fb5b900a4f67480b2af7683ac4f5c5"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Re-approve",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #335 (#320) merged and changed REQ-cli-055, SpecSync refused fix-265's approved cli delta as approved against changed canonical text; the delta was rebased onto main's REQ-cli-055 with only #265's clause and acceptance line added, nothing else changed, and he re-approved it",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795033950,
+      "digest": "a2fa8cce04859507bada9262514f364d97a3d989c699cb1850068a60af7db689",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

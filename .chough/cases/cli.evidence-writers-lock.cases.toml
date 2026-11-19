@@ -1,0 +1,41 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #317: evidence add, cases run and cases record read session.md before taking
+# the writer lock and saved that stale copy under it, so parallel writers lost updates.
+
+[[case]]
+id = "TC-cli-evidence-writers-reread-under-the-lock"
+title = "An update saved while evidence add waits for the writer lock survives its save, and evidence add's observation reference is added"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-11"]
+requirements = ["REQ-cli-040"]
+paths = ["src/evidence.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::evidence_add_rereads_the_session_under_the_writer_lock passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "evidence_add_rereads_the_session_under_the_writer_lock"
+
+[[case]]
+id = "TC-cli-bug-add-holds-the-writer-lock"
+title = "With the writer lock held, bug add --observation waits and writes no bug, and once the lock is free it adds the bug to the session and keeps another writer's update"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-11"]
+requirements = ["REQ-cli-040"]
+paths = ["src/bugs.rs", "tests/evidence.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/evidence.rs::bug_add_holds_the_writer_lock_and_keeps_another_writers_update passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "evidence"
+test = "bug_add_holds_the_writer_lock_and_keeps_another_writers_update"

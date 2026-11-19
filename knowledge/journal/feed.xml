@@ -2,14 +2,91 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 <title>Project journal</title>
 <id>urn:chough:journal</id>
-<updated>2026-11-18T03:37:40Z</updated>
+<updated>2026-11-18T17:33:42Z</updated>
 <author><name>Chough</name></author>
 <link rel="self" href="feed.xml"/>
+  <entry>
+<title>Chough 0.6.1 release preparation</title>
+<id>urn:chough:journal:2026-11-18-chough-0-6-1-release-preparation</id>
+<updated>2026-11-18T17:33:42Z</updated>
+<link href="2026-11-18-chough-0-6-1-release-preparation.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>A test asserts the gate summary&apos;s Change line separator</title>
+<id>urn:chough:journal:2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator</id>
+<updated>2026-11-18T17:10:31Z</updated>
+<link href="2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>evidence add, cases run and cases record re-read session.md under…</title>
+<id>urn:chough:journal:2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md</id>
+<updated>2026-11-18T17:03:45Z</updated>
+<link href="2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>The feature-bug-loop example stops at a refused chough or SpecSync…</title>
+<id>urn:chough:journal:2026-11-18-the-feature-bug-loop-example-stops-at-a-refused-chough-or</id>
+<updated>2026-11-18T16:55:11Z</updated>
+<link href="2026-11-18-the-feature-bug-loop-example-stops-at-a-refused-chough-or.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>Revert #306&apos;s new-record writer for 0.6.1</title>
+<id>urn:chough:journal:2026-11-18-revert-306-s-new-record-writer-for-0-6-1</id>
+<updated>2026-11-18T16:46:28Z</updated>
+<link href="2026-11-18-revert-306-s-new-record-writer-for-0-6-1.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>checkpoint --file and --design values pass the write-time leak guard</title>
+<id>urn:chough:journal:2026-11-18-checkpoint-file-and-design-values-pass-the-write-time-leak</id>
+<updated>2026-11-18T16:22:51Z</updated>
+<link href="2026-11-18-checkpoint-file-and-design-values-pass-the-write-time-leak.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>A slug with -sk- is not a model-provider key again</title>
+<id>urn:chough:journal:2026-11-18-a-slug-with-sk-is-not-a-model-provider-key-again</id>
+<updated>2026-11-18T16:01:02Z</updated>
+<link href="2026-11-18-a-slug-with-sk-is-not-a-model-provider-key-again.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>A new record whose write fails is not left behind</title>
+<id>urn:chough:journal:2026-11-18-a-new-record-whose-write-fails-is-not-left-behind</id>
+<updated>2026-11-18T14:10:31Z</updated>
+<link href="2026-11-18-a-new-record-whose-write-fails-is-not-left-behind.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>A FIFO swapped in at the open blocks no reader</title>
+<id>urn:chough:journal:2026-11-18-a-fifo-swapped-in-at-the-open-blocks-no-reader</id>
+<updated>2026-11-18T06:11:18Z</updated>
+<link href="2026-11-18-a-fifo-swapped-in-at-the-open-blocks-no-reader.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>journal add holds the writer lock with no .chough directory</title>
+<id>urn:chough:journal:2026-11-18-journal-add-holds-the-writer-lock-with-no-chough-directory</id>
+<updated>2026-11-18T05:59:23Z</updated>
+<link href="2026-11-18-journal-add-holds-the-writer-lock-with-no-chough-directory.md"/>
+<category term="shipped"/>
+</entry>
   <entry>
 <title>Docs and help-text change for the list-valued checkpoint flags and…</title>
 <id>urn:chough:journal:2026-11-18-docs-and-help-text-change-for-the-list-valued-checkpoint-flags</id>
 <updated>2026-11-18T03:37:40Z</updated>
 <link href="2026-11-18-docs-and-help-text-change-for-the-list-valued-checkpoint-flags.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>A FIFO in a record&apos;s place blocks no reader</title>
+<id>urn:chough:journal:2026-11-18-a-fifo-in-a-record-s-place-blocks-no-reader</id>
+<updated>2026-11-18T01:15:47Z</updated>
+<link href="2026-11-18-a-fifo-in-a-record-s-place-blocks-no-reader.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
@@ -24,6 +101,13 @@
 <id>urn:chough:journal:2026-11-18-journal-add-holds-the-writer-lock</id>
 <updated>2026-11-18T00:58:31Z</updated>
 <link href="2026-11-18-journal-add-holds-the-writer-lock.md"/>
+<category term="shipped"/>
+</entry>
+  <entry>
+<title>A blocking bug stops only its session</title>
+<id>urn:chough:journal:2026-11-18-a-blocking-bug-stops-only-its-session</id>
+<updated>2026-11-18T00:36:40Z</updated>
+<link href="2026-11-18-a-blocking-bug-stops-only-its-session.md"/>
 <category term="shipped"/>
 </entry>
   <entry>
@@ -59,90 +143,6 @@
 <id>urn:chough:journal:2026-11-16-spec-files-use-specsync-s-merge-driver</id>
 <updated>2026-11-16T03:24:31Z</updated>
 <link href="2026-11-16-spec-files-use-specsync-s-merge-driver.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Fix #289: rebuild the knowledge index at release</title>
-<id>urn:chough:journal:2026-11-15-fix-289-rebuild-the-knowledge-index-at-release</id>
-<updated>2026-11-15T21:20:26Z</updated>
-<link href="2026-11-15-fix-289-rebuild-the-knowledge-index-at-release.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Fix #290: each change adds a changelog fragment</title>
-<id>urn:chough:journal:2026-11-15-fix-290-each-change-adds-a-changelog-fragment</id>
-<updated>2026-11-15T16:41:23Z</updated>
-<link href="2026-11-15-fix-290-each-change-adds-a-changelog-fragment.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Describe the current objective before beginning work</title>
-<id>urn:chough:journal:2026-11-15-describe-the-current-objective-before-beginning-work</id>
-<updated>2026-11-15T03:53:17Z</updated>
-<link href="2026-11-15-describe-the-current-objective-before-beginning-work.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Fix #278: Chough&apos;s records join a receipt&apos;s claim to its evidence…</title>
-<id>urn:chough:journal:2026-11-15-fix-278-chough-s-records-join-a-receipt-s-claim-to-its</id>
-<updated>2026-11-15T03:45:43Z</updated>
-<link href="2026-11-15-fix-278-chough-s-records-join-a-receipt-s-claim-to-its.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Fix #249: a relayed decision reaches SpecSync&apos;s approval and review…</title>
-<id>urn:chough:journal:2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and</id>
-<updated>2026-11-14T20:03:55Z</updated>
-<link href="2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>The leak check reads an scp-style host path</title>
-<id>urn:chough:journal:2026-11-14-the-leak-check-reads-an-scp-style-host-path</id>
-<updated>2026-11-14T17:45:12Z</updated>
-<link href="2026-11-14-the-leak-check-reads-an-scp-style-host-path.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>#217: fledge run flake-window computes Chough&apos;s two-week clean…</title>
-<id>urn:chough:journal:2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean</id>
-<updated>2026-11-14T17:34:54Z</updated>
-<link href="2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>#219: integrations/ ships versioned example hc templates for Claude Code</title>
-<id>urn:chough:journal:2026-11-14-219-integrations-ships-versioned-example-hc-templates-for</id>
-<updated>2026-11-14T17:34:03Z</updated>
-<link href="2026-11-14-219-integrations-ships-versioned-example-hc-templates-for.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Fix #245: the index links no source Git ignores</title>
-<id>urn:chough:journal:2026-11-14-fix-245-the-index-links-no-source-git-ignores</id>
-<updated>2026-11-14T17:33:02Z</updated>
-<link href="2026-11-14-fix-245-the-index-links-no-source-git-ignores.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>Give agents, local models included</title>
-<id>urn:chough:journal:2026-11-14-give-agents-local-models-included</id>
-<updated>2026-11-14T16:18:53Z</updated>
-<link href="2026-11-14-give-agents-local-models-included.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>#217: CI also runs once a day on main</title>
-<id>urn:chough:journal:2026-11-13-217-ci-also-runs-once-a-day-on-main</id>
-<updated>2026-11-13T14:51:30Z</updated>
-<link href="2026-11-13-217-ci-also-runs-once-a-day-on-main.md"/>
-<category term="shipped"/>
-</entry>
-  <entry>
-<title>#217: seed the flake tracker</title>
-<id>urn:chough:journal:2026-11-13-217-seed-the-flake-tracker</id>
-<updated>2026-11-13T14:43:42Z</updated>
-<link href="2026-11-13-217-seed-the-flake-tracker.md"/>
 <category term="shipped"/>
 </entry>
 </feed>

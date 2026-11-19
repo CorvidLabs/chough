@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-264",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "7e7372e58175ac8f609464017385918298b55171",
+      "contract_digest": "bfc93eb6a5127a3c8a9e83c59c921ac93473fbfbbb41f38c4c96be2a59196ec0",
+      "execution_digest": "4fb9fdcf7b3b1a356755f601d85b6865a288f16ae1320866b6bc6303b56dbe12",
+      "workspace_digest": "72ec770bf6a9574e817ef66a82270c17f84c08776814871d90859ce948994939",
+      "timestamp": 1795031802,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve, merge when green",
+        "where": "Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after tester2's PASS on PR #340",
+        "recorded_by": "fable-t4b"
+      }
+    }
+  ]
+}

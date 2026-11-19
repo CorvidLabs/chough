@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-316",
+  "slug": "fix-316",
+  "title": "Fix 316",
+  "description": "fix 316",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "66543c2bf509627ec2a165414acae0bc8ab59c4a",
+  "created_at": 1795016726,
+  "updated_at": 1795017636,
+  "affected_specs": [
+    "records"
+  ],
+  "affected_paths": [
+    "src/leaks.rs",
+    "tests/leaks.rs",
+    ".chough/cases/records.sk-after-a-hyphen.cases.toml",
+    "changelog.d/2026-11-18-fix-316.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-records-006 names model-provider token forms without fixing the byte before the prefix; only the matcher's boundary for sk- and its tests change.",
+  "acceptance_criteria": [
+    "A hyphen before sk- continues a word again, as in 0.6.0: chough bug add --title 'Fix flaky sk-learn tests in CI pipeline' writes its bug, a committed 0.6.0 bug whose id holds -sk- followed by 20 or more letters, digits and hyphens accepts chough bug update, and chough doctor --leaks reports no leak in it. sk- followed by 20 or more such bytes at the start of a value or after a space is still refused as a token, and a GitHub, GitLab, Slack or AWS token form directly after a hyphen, such as x-ghp_<token>, is still refused."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

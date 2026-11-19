@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-266",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "6a7cf86a46ee055382edc0172222bf3d5497e40d",
+  "contract_digest": "3fb9dcee1159ae91adb5ac6e222fb4050e805fe7c4e5c52405358c32fd529e6b",
+  "execution_digest": "c13321cd01fc7488106da16484e9a5cfbb9153f685eabb94266eb6fbb0528956",
+  "workspace_digest": "08e2e2a5ce191951846549da85526b48d6eb5a5f3bee106316ff4d68dba1bc07",
+  "timestamp": 1795029841,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve, merge when green",
+    "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #330 after the tester's recheck PASS at 69f156a; with it he chose 'Let the fixer send it back once' to drop REBASE_HEAD from REQ-cli-069, recorded at that re-approval",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}

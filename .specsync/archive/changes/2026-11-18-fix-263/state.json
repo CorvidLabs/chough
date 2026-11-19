@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-263",
+  "slug": "fix-263",
+  "title": "Fix 263",
+  "description": "fix 263",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "be6c9f126e448bd33945a52261d55db2a9677d3d",
+  "created_at": 1795011870,
+  "updated_at": 1795029945,
+  "affected_specs": [
+    "records"
+  ],
+  "affected_paths": [
+    "src/migrate.rs",
+    "tests/migrate_knowledge.rs",
+    ".chough/cases/records.migrate-case-colliding-target.cases.toml",
+    "changelog.d/2026-11-18-fix-263.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-records-009 already says the apply refuses, writing nothing more, when a file it would write already exists with other bytes, and removes the 0.5.x files only after every write is read back. The pre-write check skipped a target that differs only in case from a removed file, so on a case-sensitive file system a separate knowledge/index.md passed it. Only the check and its test change.",
+  "acceptance_criteria": [
+    "On a case-sensitive file system, when knowledge/index.md already exists with other bytes beside the 0.5.x knowledge/INDEX.md, chough migrate --apply exits non-zero with refused:target-exists naming knowledge/index.md, and no file is written, removed or changed, so no receipt exists. On a case-insensitive file system, where the two names are one file, the apply still migrates as before."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "no"
+  }
+}

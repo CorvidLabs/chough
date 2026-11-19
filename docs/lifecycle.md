@@ -14,7 +14,7 @@ flowchart TB
     design -->|"advance, or skip with a reason when nothing is visual"| plan["plan: native change, one scope approval"]
     plan -->|"gate: native definition approved"| build["build: approved tasks"]
     build -->|"gate: native approval valid or archived"| test["test: focused cases, three tracks"]
-    test -->|"gate: no open blocking bug or unlinked failure; native approval valid or archived"| accept["accept: evidence for human review"]
+    test -->|"gate: no blocking bug related to this session, or unlinked failure; native approval valid or archived"| accept["accept: evidence for human review"]
     accept -->|"gate: native change archived, terminal evidence authenticates"| done["done"]
     done -. "only on request or standing setting" .-> release["release: optional, real commands"]
     release -->|"same archive gate"| done

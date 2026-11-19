@@ -1810,3 +1810,206 @@ fn the_preview_names_the_sessions_doctor_reports_after_the_apply() {
         }
     }
 }
+
+/// REQ-records-015 (#314 review), TC-records-migrate-skips-macos-metadata: the
+/// `.DS_Store` and AppleDouble `._*` files macOS writes beside 0.5.x records, in
+/// `.chough/` and in the knowledge directory, are not records, so `chough migrate`
+/// neither reads, carries nor removes them: the preview gives the same plan digest as
+/// without them, that digest applies, and every one of them is still there after.
+#[test]
+fn migrate_skips_macos_metadata_beside_0_5_records() {
+    let fixture = migrate_project("adopted", &[(".chough/bugs/BUG-0001.json", LEGACY_BUG)]);
+    let digest = fixture.ok(&["migrate", "--json"])["plan_digest"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let apple_double: &[u8] = b"\x00\x05\x16\x07\x00\x02\x00\x00Mac OS X        \x00\x02\xff\xfe";
+    let metadata = [
+        ".chough/.DS_Store",
+        ".chough/bugs/.DS_Store",
+        ".chough/bugs/._BUG-0001.json",
+        ".chough/sessions/.DS_Store",
+        ".chough/sessions/._open-one.json",
+        ".chough/sessions/archive/._archived-2.json",
+        ".chough/sessions/open-two.inbox/._INB-0590e45a5d1e2245e91e1121.json",
+        ".chough/history/.DS_Store",
+        ".chough/history/cycles/CYC-5a72dc37cbbdb146702c0e2a/._EVT-ce87b276f18c71b7feab3cfb.json",
+        ".chough/evidence/.DS_Store",
+        ".chough/evidence/._OBS-1.json",
+        "knowledge/.DS_Store",
+        "knowledge/._INDEX.md",
+        "knowledge/._rules.md",
+        "knowledge/sessions/._archived-2.md",
+        "knowledge/intent/._widget.md",
+        "knowledge/modules/._widget.md",
+    ];
+    for path in metadata {
+        let full = fixture.root().join(path);
+        std::fs::create_dir_all(full.parent().unwrap()).unwrap();
+        std::fs::write(full, apple_double).unwrap();
+    }
+    // A metadata folder holding only an empty folder (#321 review P3).
+    let metadata_folder = ".chough/history/._metadata-folder/empty-child";
+    std::fs::create_dir_all(fixture.root().join(metadata_folder)).unwrap();
+    let plan = fixture.ok(&["migrate", "--json"]);
+    assert_eq!(plan["plan_digest"], digest.as_str(), "{plan:#}");
+    assert_eq!(plan["unaccounted"], serde_json::json!([]), "{plan:#}");
+    let applied = fixture.ok(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert_eq!(applied["applied"], true, "{applied:#}");
+    // Nothing removed them, not even with a folder the migration emptied of its 0.5.x
+    // records: macOS's rmdir would delete orphaned `._*` files along with it.
+    for path in metadata {
+        assert!(
+            fixture.root().join(path).is_file(),
+            "{path} was removed by the migration"
+        );
+    }
+    assert!(
+        fixture.root().join(metadata_folder).is_dir(),
+        "{metadata_folder} was removed by the migration"
+    );
+    // The migrated tree reads with the metadata files still beside its records.
+    for args in [&["session", "list"][..], &["bug", "list"][..]] {
+        let output = fixture.run(args);
+        assert!(
+            output.status.success(),
+            "{args:?}: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
+/// REQ-records-001 (#265), TC-records-migrate-refuses-conflict-markers: a 0.5.x inbox
+/// entry's text becomes the body of its 0.6 entry as written, so an entry whose text
+/// holds a Git conflict block would migrate into a record with conflict markers in its
+/// body; `migrate --apply` checks every planned file first and refuses as
+/// `refused:conflict-markers`, naming the file and the marker, before it writes anything.
+#[test]
+fn migrate_refuses_a_plan_whose_files_would_hold_conflict_markers() {
+    let entry = ".chough/sessions/open-two.inbox/INB-0590e45a5d1e2245e91e1121.json";
+    let original = std::fs::read_to_string(fixture_dir("adopted").join(entry)).unwrap();
+    let conflicted = original.replace(
+        "\"text\": \"Keep the second run?\"",
+        "\"text\": \"Keep the second run?\\n<<<<<<< HEAD\\nyes\\n=======\\nno\\n>>>>>>> other\"",
+    );
+    assert_ne!(conflicted, original);
+    let fixture = migrate_project("adopted", &[(entry, &conflicted)]);
+    let preview = fixture.ok(&["migrate", "--json"]);
+    let digest = preview["plan_digest"].as_str().unwrap().to_string();
+    // A plan the apply would refuse is not offered to apply, in JSON either.
+    assert!(preview.get("apply").is_none(), "{preview:#}");
+    // #339: the preview says up front that the apply refuses, naming the 0.5.x source.
+    assert_eq!(
+        preview["apply_refused"]["refusal"], "refused:conflict-markers",
+        "{preview:#}"
+    );
+    assert!(
+        preview["apply_refused"]["why"]
+            .as_str()
+            .is_some_and(|why| why.starts_with(&format!("refused:conflict-markers: {entry} holds"))),
+        "{preview:#}"
+    );
+    let text = String::from_utf8_lossy(&fixture.run(&["migrate"]).stdout).into_owned();
+    assert!(
+        text.contains("The apply refuses now (refused:conflict-markers)") && text.contains(entry),
+        "{text}"
+    );
+    // A plan the apply would refuse is not offered to apply.
+    assert!(text.contains("Plan digest:"), "{text}");
+    assert!(!text.contains("Apply this plan"), "{text}");
+    let before = files(fixture.root());
+    let refused = fixture.fails(&["migrate", "--apply", &digest, "--consent", CONSENT]);
+    assert!(refused.contains("refused:conflict-markers"), "{refused}");
+    // The refusal names the 0.5.x file to resolve, then the record it would become.
+    assert!(
+        refused.contains(&format!("{entry} holds a Git conflict marker")),
+        "{refused}"
+    );
+    assert!(refused.contains("/agent/inbox/"), "{refused}");
+    assert!(refused.contains("<<<<<<< HEAD"), "{refused}");
+    assert_eq!(
+        files(fixture.root()),
+        before,
+        "the refused apply wrote a file"
+    );
+}
+
+/// REQ-records-009 (#264), TC-records-a-second-same-day-migration-names-its-own-receipt:
+/// a 0.5.x record written into an already migrated tree on the same day is migrated by
+/// a second plan, which names its receipt `<date>-from-0-5-2.md` in the preview, as
+/// part of the plan and its digest. The apply writes that receipt, leaves the first
+/// receipt byte for byte, removes the stray record, and writes nothing before it has
+/// checked every target.
+#[test]
+fn a_second_same_day_migration_names_its_own_receipt() {
+    let fixture = migrate_project("adopted", &[]);
+    let (first_plan, first) = migrate(&fixture, Some(CONSENT));
+    let first_receipt = first["receipt"].as_str().unwrap().to_string();
+    assert!(first_receipt.ends_with("-from-0-5.md"), "{first_receipt}");
+    assert_eq!(first_plan["receipt"], first["receipt"], "{first_plan:#}");
+    fixture.commit("migrated");
+    let first_bytes = fixture.read(&first_receipt);
+
+    // A 0.5.x binary writes one more record into the migrated tree.
+    fixture.write(
+        ".chough/sessions/stray-work.json",
+        &session_0_5("Stray work", "", &[]),
+    );
+    fixture.commit("a stray 0.5.x record");
+    let plan = fixture.ok(&["migrate", "--json"]);
+    let second_receipt = first_receipt.replace("-from-0-5.md", "-from-0-5-2.md");
+    assert_eq!(plan["receipt"], second_receipt.as_str(), "{plan:#}");
+    let text = fixture.ok_text(&["migrate"]);
+    assert!(text.contains(&second_receipt), "{text}");
+
+    let digest = plan["plan_digest"].as_str().unwrap();
+    let applied = fixture.ok(&["migrate", "--apply", digest, "--consent", CONSENT]);
+    assert_eq!(applied["receipt"], second_receipt.as_str(), "{applied:#}");
+    assert_eq!(fixture.read(&first_receipt), first_bytes);
+    assert!(
+        fixture
+            .read(&second_receipt)
+            .contains(&format!("plan_digest: {digest}"))
+    );
+    assert!(!fixture.exists(".chough/sessions/stray-work.json"));
+    let again = fixture.ok(&["migrate", "--json"]);
+    assert!(again["nothing_to_do"].is_string(), "{again:#}");
+}
+
+/// REQ-records-009 (#264): the apply checks every target, the receipt included, before
+/// it writes anything. A receipt for another plan that takes the previewed name after
+/// the preview makes the previewed digest stale, so the apply refuses with nothing
+/// written; a fresh preview then names the next receipt and applies.
+#[test]
+fn a_receipt_name_taken_after_the_preview_refuses_before_any_write() {
+    let fixture = migrate_project("adopted", &[]);
+    let plan = fixture.ok(&["migrate", "--json"]);
+    let receipt = plan["receipt"].as_str().unwrap().to_string();
+    fixture.write(
+        &receipt,
+        "---\nkind: receipt\nplan_digest: SYNTHETIC-another-plan\n---\n",
+    );
+    let before = files(fixture.root());
+    let refused = fixture.fails(&[
+        "migrate",
+        "--apply",
+        plan["plan_digest"].as_str().unwrap(),
+        "--consent",
+        CONSENT,
+    ]);
+    assert!(refused.contains("refused:plan-digest"), "{refused}");
+    assert_eq!(
+        files(fixture.root()),
+        before,
+        "the refused apply changed a file"
+    );
+    let (next_plan, applied) = migrate(&fixture, Some(CONSENT));
+    let second = receipt.replace("-from-0-5.md", "-from-0-5-2.md");
+    assert_eq!(next_plan["receipt"], second.as_str(), "{next_plan:#}");
+    assert_eq!(applied["receipt"], second.as_str(), "{applied:#}");
+    assert!(
+        fixture
+            .read(&receipt)
+            .contains("plan_digest: SYNTHETIC-another-plan")
+    );
+}

@@ -1,0 +1,116 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795034343,
+      "digest": "b4bfc2008eff44c3fda76f9707997ec4973f59252e5f8ab61226ed632b1c7dbc",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-269-post\": \"Fix first: post uses current … Add one line if changed\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answers on the tester's #344 finding, within his #269 scope: the journal post's body describes the current objective while the session's Goal keeps the filled-once text, as a small follow-up change on #344 declaring src/journal.rs and REQ-records-011; and at closeout, if the objective changed after the Goal was filled, the story gets one added line 'Objective at closeout: <current objective>', nothing rewritten). Relayed and recorded by chough-fixer-t4g at 2026-11-18T20:39:01Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-269-post",
+        "title": "Fix 269 post",
+        "description": "fix 269 post",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.objective-at-closeout.cases.toml",
+          "changelog.d/2026-11-18-fix-269-post.md",
+          "docs/cli.md",
+          "src/journal.rs",
+          "src/sessions.rs",
+          "tests/journal.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A derived journal post's body opens with the session's current objective, not the Goal's first paragraph, so after a second checkpoint --objective its title and body agree. At closeout, when the story's Goal paragraph is not the current objective, the archived story gets one line 'Objective at closeout: <current objective>' after the Goal paragraph; when it is, no line is added; no title, Goal or other text is rewritten."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's answers on the #344 review (relayed by hc t4c, 2026-11-18): 'Fix first: post uses current' for the journal post, and 'Add one line if changed' for the archived story, with nothing rewritten; within his #269 scope. Human gates as plain text in tasks.md; deltas frozen at approval.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "history": "ca8ca2c5fe0a2c94b9b5443581535ac22a199a44d76f769f46f7f6d8fcf8a737",
+        "records": "166322bd9dffe93415742c5dc2f3f65f6dde9117613d71bfdb8854e253a5f6e4"
+      },
+      "approved_delta_bases": {
+        "history: REQUIREMENT REQ-history-006": "79e4464ef99272c2ff0d9a6afa27e8176e9da5368630a44ca723d1fb7eb469d1",
+        "records: REQUIREMENT REQ-records-011": "608fc7d5ad0821b5ba88fd2e0968e5b0a1900ce599424f56a35337ca956e9105"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Fix first: post uses current … Add one line if changed",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his answers on the tester's #344 finding, within his #269 scope: the journal post's body describes the current objective while the session's Goal keeps the filled-once text, as a small follow-up change on #344 declaring src/journal.rs and REQ-records-011; and at closeout, if the objective changed after the Goal was filled, the story gets one added line 'Objective at closeout: <current objective>', nothing rewritten",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795046256,
+      "digest": "b4bfc2008eff44c3fda76f9707997ec4973f59252e5f8ab61226ed632b1c7dbc",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-269-post onto main's REQ-history-006\": \"Re-approve both\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #342 changed REQ-history-006 on main, he re-approved fix-269's and fix-269-post's deltas rebased onto main's REQ-records-004 and REQ-history-006, keeping #345's and #342's additions and adding only #344's own sentences and criteria). Relayed and recorded by chough-fixer-t4g at 2026-11-18T23:57:35Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-269-post",
+        "title": "Fix 269 post",
+        "description": "fix 269 post",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.objective-at-closeout.cases.toml",
+          "changelog.d/2026-11-18-fix-269-post.md",
+          "docs/cli.md",
+          "src/journal.rs",
+          "src/sessions.rs",
+          "tests/journal.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A derived journal post's body opens with the session's current objective, not the Goal's first paragraph, so after a second checkpoint --objective its title and body agree. At closeout, when the story's Goal paragraph is not the current objective, the archived story gets one line 'Objective at closeout: <current objective>' after the Goal paragraph; when it is, no line is added; no title, Goal or other text is rewritten."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's answers on the #344 review (relayed by hc t4c, 2026-11-18): 'Fix first: post uses current' for the journal post, and 'Add one line if changed' for the archived story, with nothing rewritten; within his #269 scope. Human gates as plain text in tasks.md; deltas frozen at approval.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "history": "de9505933d6871716db97b8b597527569eae021cb5897dcffa0a09f584563695",
+        "records": "166322bd9dffe93415742c5dc2f3f65f6dde9117613d71bfdb8854e253a5f6e4"
+      },
+      "approved_delta_bases": {
+        "history: REQUIREMENT REQ-history-006": "1645aea201b81242595e4b3c72ac6027f89da637432f339645b0163f09f97de6",
+        "records: REQUIREMENT REQ-records-011": "608fc7d5ad0821b5ba88fd2e0968e5b0a1900ce599424f56a35337ca956e9105"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Re-approve both",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #342 changed REQ-history-006 on main, he re-approved fix-269's and fix-269-post's deltas rebased onto main's REQ-records-004 and REQ-history-006, keeping #345's and #342's additions and adding only #344's own sentences and criteria",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795046889,
+      "digest": "776a3da4c44aa0c2a849d3156ae51053b0f95e7cbf6ee8f3e34a2194234532b4",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

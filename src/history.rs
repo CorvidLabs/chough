@@ -356,6 +356,7 @@ pub(super) fn correct(root: &Path, args: CorrectArgs) -> Result<()> {
         holds: None,
         drives: None,
         corrects: None,
+        withdrawn: None,
     };
     let (updated, id) = session_md::append_correction(&file, &text, &target, correction)?;
     crate::records::write_replace_bounded(root, &file, &updated, crate::checkpoint::SESSION_LIMIT)?;

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "a-blocking-bug-stops-only-a-session-it-is-related-to",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "c08a9e3360abd993ba10932f35d0ef8ae78025d3",
+      "contract_digest": "94d2b007c62c0a41baf005d4e0d0f813b9f47fca1bc6b1a832897c2210800437",
+      "execution_digest": "b4373d62239ab4768b91882f331ace7bb2ee8aee3d0d12b5701e8f1c6c02f32c",
+      "workspace_digest": "0ffcde14245bf0dae3d5e0792e823403c3a69b2cf90566a29ae28b083f28d35e",
+      "timestamp": 1794962175,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "i approve",
+        "where": "reply in this chat to the implementation review",
+        "recorded_by": "grok-t1w"
+      }
+    }
+  ]
+}

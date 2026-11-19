@@ -89,6 +89,10 @@ pub(super) struct Checkpoint {
     pub(super) stage: StageState,
     #[serde(default)]
     pub(super) native_change: Option<String>,
+    /// Why this session's work needs no native change, when it recorded that
+    /// (REQ-cli-007, #281); never set together with `native_change`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) no_native_change: Option<String>,
     #[serde(default)]
     pub(super) references: References,
     #[serde(default)]
@@ -181,6 +185,7 @@ pub(super) fn new_checkpoint(
             iteration: 1,
         },
         native_change: None,
+        no_native_change: None,
         references: References::default(),
         decisions: vec![],
         open_questions: vec![],
@@ -340,12 +345,18 @@ pub(super) fn read_session(root: &Path) -> Result<Session> {
 
 /// Refuse a write that adds an observation reference while the active session's
 /// `observations` list is at its bound, before the write runs or writes anything
-/// (REQ-cli-032): `cases run`, `cases record` and `evidence add` call it first.
+/// (REQ-cli-032): `cases run`, `cases record` and `evidence add` call it first. A
+/// session that already holds a value its save would refuse as a leak, such as a path
+/// written before #268, refuses here too, so no entry is written for a save that cannot
+/// happen (REQ-records-006).
 pub(super) fn observation_room(root: &Path) -> Result<()> {
+    // REQ-cli-069: refused before the entry is written, while `.chough/` is mid-conflict.
+    crate::doctor::refuse_if_unmerged(root)?;
     let Session::V2(session) = read_session(root)?;
     if session.observations.len() >= MAX_OBSERVATIONS {
         bail!(observations_full(root, session.observations.len(), 1)?);
     }
+    guard_leaks(&mut (*session).clone())?;
     Ok(())
 }
 
@@ -400,11 +411,27 @@ static HELD_LOCKS: Mutex<Vec<(PathBuf, fs::File)>> = Mutex::new(Vec::new());
 /// temps left by killed writers once it holds the lock (issue 64), so a read-only
 /// command that takes the lock leaves them in place. `init` takes no lock: it writes a new session that must not
 /// exist yet, so the first writer after it creates the lock file.
+/// Whether this command only reads (REQ-cli-069). Such a command may take the writer
+/// lock to read a consistent checkpoint, but writes nothing, so a merge or rebase in
+/// progress does not refuse it.
+static READS_ONLY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Mark this command as one that only reads (REQ-cli-069).
+pub(super) fn reads_only() {
+    READS_ONLY.store(true, std::sync::atomic::Ordering::Relaxed);
+}
+
 pub(super) fn lock_checkpoint(root: &Path) -> Result<()> {
     let path = checkpoint_lock_path(root)?;
     let mut held = HELD_LOCKS.lock().unwrap_or_else(PoisonError::into_inner);
     if held.iter().any(|(locked, _)| *locked == path) {
         return Ok(());
+    }
+    // REQ-cli-069: every record writer takes this lock before it writes, so a path
+    // under `.chough/` left unmerged by a merge or rebase refuses the write here; a
+    // command that only reads, though it takes the lock to read, still runs.
+    if !READS_ONLY.load(std::sync::atomic::Ordering::Relaxed) {
+        crate::doctor::refuse_if_unmerged(root)?;
     }
     let file = match OpenOptions::new()
         .read(true)
@@ -542,6 +569,11 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
     count += guard(local, "objective", &mut session.objective)?;
     count += guard(local, "intent_scope", &mut session.intent_scope)?;
     count += guard(local, "next", &mut session.next_action)?;
+    // REQ-records-006 (#281): the reason a session needs no native change is a written
+    // value like the others.
+    if let Some(reason) = &mut session.no_native_change {
+        count += guard(local, "no_native_change", reason)?;
+    }
     for (name, list) in [
         ("decision", &mut session.decisions),
         ("completed", &mut session.completed),
@@ -556,6 +588,31 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
     for consent in &mut session.run_consents {
         count += guard(local, "consent source", &mut consent.source)?;
         count += guard(local, "consent objective", &mut consent.objective)?;
+    }
+    // Every reference is a value Chough writes (#268). A path is redacted like any value
+    // under `--redact`; an ID is only checked, since its ID form would not hold
+    // `<redacted:<kind>>` and the session would no longer read.
+    for (name, list) in [
+        ("file", &mut session.references.files),
+        ("design", &mut session.references.design),
+    ] {
+        for value in list.iter_mut() {
+            count += guard(local, name, value)?;
+        }
+    }
+    for (name, list) in [
+        ("criterion", &session.references.criteria),
+        ("requirement", &session.references.requirements),
+        ("case", &session.references.cases),
+        ("observation", &session.observations),
+        ("bug", &session.bugs),
+    ] {
+        for value in list {
+            check_id(local, &session.meta.id, name, value)?;
+        }
+    }
+    if let Some(change) = &session.native_change {
+        check_id(local, &session.meta.id, "native_change", change)?;
     }
     for alias in &mut session.meta.aliases {
         count += guard(local, "alias", alias)?;
@@ -583,6 +640,23 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         }
     }
     Ok(count)
+}
+
+/// Refuse an ID reference that leaks, under `--redact` too (REQ-records-006, #268): an
+/// ID keeps its ID form, which `<redacted:<kind>>` would break, so the only fix is to
+/// remove it. Names the field and the kinds, never the text.
+fn check_id(local: &crate::leaks::Local, session: &str, field: &str, value: &str) -> Result<()> {
+    let found = crate::leaks::find(local, value);
+    if found.is_empty() {
+        return Ok(());
+    }
+    let mut kinds: Vec<&str> = found.iter().map(|found| found.kind.name()).collect();
+    kinds.sort_unstable();
+    kinds.dedup();
+    bail!(
+        "refused:leak: {field} holds {}; an ID cannot be redacted, so remove it from this command, or, when the session already holds it, set the session aside with `chough session shelve {session}` and continue in `chough session new <key>` (#320); nothing was written",
+        kinds.join(", ")
+    )
 }
 
 /// The session record `session` saves as, within its bound (REQ-records-001), with
@@ -634,6 +708,15 @@ pub(super) fn evidence_links(
 
 /// Save the checkpoint and its queued Timeline entries in one atomic replace; the
 /// checkpoint then holds the record written and no queued entry.
+/// Check, with nothing written, that `session` would save as [`save_checkpoint`] saves
+/// it: the same links, validation, rendering and bound (#343 review). The error says why
+/// it would not.
+pub(super) fn check_save(root: &Path, session: &Checkpoint) -> Result<()> {
+    let mut session = session.clone();
+    session.evidence_links = evidence_links(root, &session);
+    render_checkpoint(&session).map(|_| ())
+}
+
 pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<()> {
     lock_checkpoint(root)?;
     remove_orphaned_session_temps(root)?;
@@ -672,8 +755,16 @@ pub(super) struct CheckpointArgs {
     /// (REQ-records-011); an empty value removes it.
     #[arg(long, allow_hyphen_values = true)]
     summary: Option<String>,
+    /// The session's pull request, a number or URL, one line; an empty value clears it
+    /// (REQ-cli-007, #282).
+    #[arg(long)]
+    pr: Option<String>,
     #[arg(long)]
     native_change: Option<String>,
+    /// Record that this session's work needs no native change, with the reason, so its
+    /// stage moves are not refused for lacking one. Human gates still hold.
+    #[arg(long, value_name = "REASON", allow_hyphen_values = true)]
+    no_native_change: Option<String>,
     /// A human decision the session recorded; repeat the flag for each one.
     #[arg(long = "decision")]
     decisions: Vec<String>,
@@ -1115,22 +1206,6 @@ fn relayed_decision(session: &Checkpoint, args: &CheckpointArgs) -> Result<Optio
     })
 }
 
-/// Save `session` with a gate-closed entry for each of `cleared` and a gate-opened entry
-/// for each of `opened`, all in the same atomic replace as the checkpoint change, so a
-/// refused save writes neither. `checkpoint` and the doctor's gate withdrawal
-/// (REQ-history-012) share it.
-fn save_with_gate_events(
-    root: &Path,
-    session: &mut Checkpoint,
-    current_stage: &str,
-    cleared: &[String],
-    opened: &[String],
-    relay_for: impl Fn(&String) -> Option<stage::RelayedBy>,
-) -> Result<()> {
-    queue_gate_events(root, session, current_stage, cleared, opened, relay_for)?;
-    save_checkpoint(root, session)
-}
-
 /// Queue a gate-closed entry for each of `cleared` and a gate-opened entry for each of
 /// `opened` for the next save.
 fn queue_gate_events(
@@ -1159,15 +1234,29 @@ fn queue_gate_events(
 
 /// Withdraw every open awaiting-human gate of the canonical checkpoint, as
 /// `chough checkpoint --clear-awaiting-human` does: gate-closed events with no relayed
-/// decision, and no decision recorded. Returns the withdrawn gates.
-pub(super) fn withdraw_gates(root: &Path) -> Result<Vec<String>> {
+/// decision, and no decision recorded. Each gate-closed entry carries `reason`, the
+/// words `chough doctor --fix --reason` was given (REQ-history-012, #250). Returns the
+/// withdrawn gates.
+pub(super) fn withdraw_gates(root: &Path, reason: &str) -> Result<Vec<String>> {
+    // REQ-records-006: the reason is a written value, so it is refused for a leak, or
+    // redacted under `--redact`, before anything is written, as `session close
+    // --reason` is.
+    let mut reason = reason.to_string();
+    crate::leaks::guard(crate::leaks::Local::current(), "reason", &mut reason)?;
     let mut session = read_checkpoint(root)?;
     let cleared = std::mem::take(&mut session.awaiting_human);
     if cleared.is_empty() {
         return Ok(cleared);
     }
     let current_stage = session.stage.current.clone();
-    save_with_gate_events(root, &mut session, &current_stage, &cleared, &[], |_| None)?;
+    let queued = session.pending.len();
+    queue_gate_events(root, &mut session, &current_stage, &cleared, &[], |_| None)?;
+    for entry in session.pending.iter_mut().skip(queued) {
+        if entry.kind == stage::GATE_CLOSED {
+            entry.withdrawn = Some(reason.clone());
+        }
+    }
+    save_checkpoint(root, &mut session)?;
     Ok(cleared)
 }
 
@@ -1268,6 +1357,96 @@ fn closed_gate_next_action(gate: &str, closed: Closed, change: Option<&str>) -> 
     format!("{head}{name}{tail}")
 }
 
+impl CheckpointArgs {
+    /// Whether this call only shows the checkpoint and changes nothing (REQ-cli-069), so
+    /// it still runs while `.chough/` is mid-conflict. The destructuring names every
+    /// field, so a new one cannot be left out of this test unnoticed.
+    pub(super) fn only_shows(&self) -> bool {
+        let Self {
+            objective,
+            next_action,
+            title,
+            summary,
+            pr,
+            native_change,
+            no_native_change,
+            decisions,
+            questions,
+            resolved,
+            answer,
+            completed,
+            remove_completed,
+            blockers,
+            clear_blockers,
+            awaiting_human,
+            clear_awaiting_human,
+            close_gate,
+            decided_by,
+            words,
+            place,
+            recorded_by,
+            verdict,
+            no_native,
+            native_ran,
+            native_command,
+            native_actor,
+            holds,
+            drives,
+            summary_digest,
+            list,
+            criteria,
+            requirements,
+            cases,
+            design,
+            files,
+            observations,
+            bugs,
+        } = self;
+        objective.is_none()
+            && next_action.is_none()
+            && title.is_none()
+            && summary.is_none()
+            && pr.is_none()
+            && native_change.is_none()
+            && no_native_change.is_none()
+            && answer.is_none()
+            && close_gate.is_none()
+            && decided_by.is_none()
+            && words.is_none()
+            && place.is_none()
+            && recorded_by.is_none()
+            && verdict.is_none()
+            && native_ran.is_none()
+            && native_command.is_none()
+            && native_actor.is_none()
+            && holds.is_none()
+            && drives.is_none()
+            && summary_digest.is_none()
+            && list.is_none()
+            && !clear_blockers
+            && !clear_awaiting_human
+            && !no_native
+            && [
+                decisions,
+                questions,
+                resolved,
+                completed,
+                remove_completed,
+                blockers,
+                awaiting_human,
+                criteria,
+                requirements,
+                cases,
+                design,
+                files,
+                observations,
+                bugs,
+            ]
+            .iter()
+            .all(|list| list.is_empty())
+    }
+}
+
 pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()> {
     let mut session = read_checkpoint(root)?;
     // REQ-cli-032: references the list would gain past its bound are refused before
@@ -1305,6 +1484,7 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             holds: None,
             drives: None,
             corrects: None,
+            withdrawn: None,
         };
         stage::validate_relay(&probe)
             .context("the summary digest and list are not a valid pair; nothing was saved")?;
@@ -1401,6 +1581,19 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         session.meta.summary = crate::journal::checked_summary(&summary)?;
         changed = true;
     }
+    // REQ-cli-007 (#282): one line, as the objective is; the save's leak guard checks it
+    // as it always has. Like --objective and --title, it adds no Timeline entry.
+    if let Some(pr) = args.pr {
+        if !pr.is_empty() {
+            ensure_text("pr", &pr)?;
+            ensure!(
+                !pr.contains(['\n', '\r']),
+                "--pr is one line: the pull request's number or URL; nothing was saved"
+            );
+        }
+        session.meta.pr = pr;
+        changed = true;
+    }
     if let Some(change) = args.native_change {
         ensure!(
             valid_change_id(&change),
@@ -1408,6 +1601,27 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
         );
         ensure_native_change_known(root, &change)?;
         session.native_change = Some(change);
+        // A session with a native change no longer says it needs none (#281).
+        session.no_native_change = None;
+        changed = true;
+    }
+    if let Some(reason) = args.no_native_change {
+        let reason = reason.trim().to_string();
+        ensure!(
+            !reason.is_empty(),
+            "--no-native-change needs a reason: say why this session's work needs no native change"
+        );
+        ensure!(
+            !(reason.starts_with('<') && reason.ends_with('>')),
+            "--no-native-change got the placeholder {reason}: replace it with the reason this session's work needs no native change"
+        );
+        ensure_text("no_native_change", &reason)?;
+        if let Some(change) = &session.native_change {
+            bail!(
+                "refused: the session records native change {change}, so it cannot also record that it needs none; nothing was saved."
+            );
+        }
+        session.no_native_change = Some(reason);
         changed = true;
     }
     // Clears run before additions, so entries given in the same call are kept.

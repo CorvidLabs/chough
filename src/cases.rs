@@ -232,6 +232,10 @@ pub(super) fn load(root: &Path) -> Result<Vec<Located>> {
             .to_str()
             .context("invalid case filename")?
             .to_string();
+        // macOS metadata beside the definitions is not a definition (REQ-cli-068).
+        if crate::evidence::is_os_metadata(&name) {
+            continue;
+        }
         ensure!(
             name.ends_with(".cases.toml"),
             "unexpected file in {CASES_DIR}: {name}"
@@ -243,7 +247,17 @@ pub(super) fn load(root: &Path) -> Result<Vec<Located>> {
     let mut ids = BTreeSet::new();
     for name in names {
         let file = format!("{CASES_DIR}/{name}");
-        let parsed: CaseFile = toml::from_str(&read_bounded(&local_path(root, &file)?)?)
+        let text = read_bounded(&local_path(root, &file)?)?;
+        // #339: a half-merged definition names its conflict, not only that it is invalid.
+        if let Some((line, marker)) = crate::records::conflict_markers_in_toml(&text)
+            .into_iter()
+            .next()
+        {
+            bail!(
+                "{file} line {line} holds the Git conflict marker `{marker}`; resolve the conflict by hand, then run `chough cases check` again"
+            );
+        }
+        let parsed: CaseFile = toml::from_str(&text)
             .with_context(|| format!("{file}: invalid chough-testing definition"))?;
         ensure!(
             parsed.profile == PROFILE,
@@ -621,6 +635,12 @@ fn check_links(
 ) -> Result<()> {
     let case = &located.case;
     let context = || format!("{}: case {}", located.file, case.id);
+    // A retired case is history and never runs (`find_checked`), so its links and its
+    // binding's fledge task are not checked: removing that task is often why the case
+    // was retired, and its binding stays as written (#283).
+    if case.status == "retired" {
+        return Ok(());
+    }
     if let Some(binding) = &case.bind
         && let Some(task) = &binding.task
     {
@@ -629,9 +649,6 @@ fn check_links(
             "{}: fledge task {task} is not defined in fledge.toml",
             context()
         );
-    }
-    if case.status == "retired" {
-        return Ok(());
     }
     evidence::validate_criteria(root, &case.criteria).with_context(context)?;
     for requirement in &case.requirements {
@@ -1318,6 +1335,8 @@ pub(super) fn run_case(
 }
 
 fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
+    // REQ-cli-017 (#349): the same bound on limitations as `evidence add`.
+    evidence::check_limitations(&args.limitations)?;
     let RecordArgs {
         id,
         environment,

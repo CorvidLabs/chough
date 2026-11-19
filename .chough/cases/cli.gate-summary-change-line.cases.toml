@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #294: no test checked the gate summary's Change line separator, so the em dash
+# #293 removed from src/gates.rs could come back with every test still passing.
+
+[[case]]
+id = "TC-cli-gate-summary-names-its-change-with-a-plain-dash"
+title = "A gate's summary names its change as Change: <id> - <title> (<state>) with a plain dash and holds no em dash, in chough gate list and its JSON"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-21"]
+requirements = ["REQ-cli-061"]
+paths = ["src/gates.rs", "tests/gates.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/gates.rs::a_gate_summary_names_its_change_with_a_plain_dash passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "gates"
+test = "a_gate_summary_names_its_change_with_a_plain_dash"

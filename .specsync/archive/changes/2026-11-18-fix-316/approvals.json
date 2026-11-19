@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795016753,
+      "digest": "324593c7512798824e641f58a2789c6a52ceec9a76b6fae525c1ff8388983c17",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-316\": \"Narrow it: not for sk-\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, his answer on how to handle the #316 regression, with t4c's instruction to record it as his scope approval for this change). Relayed and recorded by chough-fixer-t4g at 2026-11-18T15:45:52Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-316",
+        "title": "Fix 316",
+        "description": "fix 316",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.sk-after-a-hyphen.cases.toml",
+          "changelog.d/2026-11-18-fix-316.md",
+          "src/leaks.rs",
+          "tests/leaks.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-records-006 names model-provider token forms without fixing the byte before the prefix; only the matcher's boundary for sk- and its tests change.",
+        "acceptance_criteria": [
+          "A hyphen before sk- continues a word again, as in 0.6.0: chough bug add --title 'Fix flaky sk-learn tests in CI pipeline' writes its bug, a committed 0.6.0 bug whose id holds -sk- followed by 20 or more letters, digits and hyphens accepts chough bug update, and chough doctor --leaks reports no leak in it. sk- followed by 20 or more such bytes at the start of a value or after a space is still refused as a token, and a GitHub, GitLab, Slack or AWS token form directly after a hyphen, such as x-ghp_<token>, is still refused."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Narrow it: not for sk-",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, his answer on how to handle the #316 regression, with t4c's instruction to record it as his scope approval for this change",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795017636,
+      "digest": "c1189ad130ef46a5dbb267bf04086efe41e69699bce0cfc7c90d2835d77d67a4",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

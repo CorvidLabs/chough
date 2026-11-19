@@ -1,0 +1,42 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #314: a Finder .DS_Store or an AppleDouble ._* file in .chough/, which macOS
+# writes beside every file on exFAT, stopped chough next, status and cases check, doctor
+# reported a committed one as unreadable, and the leak scan skipped a binary one.
+
+[[case]]
+id = "TC-cli-macos-metadata-files-stop-no-reader"
+title = "With .DS_Store and ._* files in .chough/bugs/, a session's evidence/, .chough/archive/sessions/ and .chough/cases/, next, status, bug list and cases check succeed, and doctor reports only a malformed ordinary record as unreadable"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-14"]
+requirements = ["REQ-cli-068"]
+paths = ["src/evidence.rs", "src/cases.rs", "src/doctor.rs", "tests/special_files.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/special_files.rs::macos_metadata_files_in_chough_stop_no_reader passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "special_files"
+test = "macos_metadata_files_in_chough_stop_no_reader"
+
+[[case]]
+id = "TC-cli-a-leak-in-a-binary-metadata-file-is-found"
+title = "A committed binary AppleDouble file holding an email gives a leak finding from doctor --leaks, and doctor --fix --redact leaves it byte-identical with the finding skipped"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-cli-068"]
+paths = ["src/doctor.rs", "tests/special_files.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/special_files.rs::a_leak_in_a_binary_metadata_file_is_found_and_left_unrewritten passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "special_files"
+test = "a_leak_in_a_binary_metadata_file_is_found_and_left_unrewritten"
