@@ -19,6 +19,7 @@ files: [src/skill.rs, src/doctor.rs, src/main.rs, tests/package.rs]
 observations:
   - 2026-11-18-tc-cli-doctor-and-next-name-skill-update-for-outdated-files
   - 2026-11-19-tc-cli-doctor-and-next-name-skill-update-for-outdated-files
+  - 2026-11-19-tc-cli-doctor-and-next-name-skill-update-for-outdated-files-6cd603
 bugs: []
 blockers: []
 waiting_on_human:
@@ -48,6 +49,7 @@ chough doctor and chough next say when installed skill files are known-outdated 
 
 - [Ran cargo test --locked --test package -- --exact doctor_and_next_say_when_skill_files_are_known_outdated for TC-cli-doctor-and-next-name-skill-update-for-outdated-files: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-doctor-and-next-name-skill-update-for-outdated-files.md)
 - [Ran cargo test --locked --test package -- --exact doctor_and_next_say_when_skill_files_are_known_outdated for TC-cli-doctor-and-next-name-skill-update-for-outdated-files: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-doctor-and-next-name-skill-update-for-outdated-files.md)
+- [Ran cargo test --locked --test package -- --exact doctor_and_next_say_when_skill_files_are_known_outdated for TC-cli-doctor-and-next-name-skill-update-for-outdated-files: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-doctor-and-next-name-skill-update-for-outdated-files-6cd603.md)
 
 ## Open threads
 
