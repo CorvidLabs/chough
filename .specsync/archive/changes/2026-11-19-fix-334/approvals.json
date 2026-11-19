@@ -47,6 +47,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his scope approval of CorvidLabs/chough#334: the refusal names the variable and gives the session-new guidance",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795047579,
+      "digest": "b9924df213e6260b8808c2f62790fb8682cf9755e39504811202056ca25e73df",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []

@@ -7,11 +7,11 @@
   "title": "Fix 334",
   "description": "fix 334",
   "kind": "bug_fix",
-  "state": "verifying",
+  "state": "archived",
   "canonical_applied": true,
   "base_commit": "af8ca8901b2a23affcd40ac74865d99637448346",
   "created_at": 1795035343,
-  "updated_at": 1795047292,
+  "updated_at": 1795047581,
   "affected_specs": [
     "cli"
   ],
