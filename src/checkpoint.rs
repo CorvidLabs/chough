@@ -1611,6 +1611,10 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
             !reason.is_empty(),
             "--no-native-change needs a reason: say why this session's work needs no native change"
         );
+        ensure!(
+            !(reason.starts_with('<') && reason.ends_with('>')),
+            "--no-native-change got the placeholder {reason}: replace it with the reason this session's work needs no native change"
+        );
         ensure_text("no_native_change", &reason)?;
         if let Some(change) = &session.native_change {
             bail!(
