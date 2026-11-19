@@ -1,6 +1,6 @@
 ---
 module: records
-version: 17
+version: 18
 status: active
 files:
   - src/markdown.rs
@@ -225,3 +225,4 @@ use this one for every record they write.
 | 15 | 2026-11-18 | fix-250: Fix 250 |
 | 16 | 2026-11-18 | fix-269: Fix 269 |
 | 17 | 2026-11-18 | fix-269-post: Fix 269 post |
+| 18 | 2026-11-18 | fix-251: Fix 251 |
