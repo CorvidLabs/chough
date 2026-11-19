@@ -128,3 +128,129 @@ expected = ["tests/change.rs::change_commands_refuse_a_leaking_argument_before_s
 adapter = "cargo-test"
 test_target = "change"
 test = "change_commands_refuse_a_leaking_argument_before_specsync_runs"
+
+[[case]]
+id = "TC-cli-ship-keeps-the-session-it-started-from"
+title = "An unpinned change ship resolves its session once: the shared pointer moved during the history check changes nothing, and the other session's file is byte-identical"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_keeps_the_session_it_started_from_when_the_pointer_moves passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_keeps_the_session_it_started_from_when_the_pointer_moves"
+
+[[case]]
+id = "TC-cli-ship-refusals-do-not-echo-a-credential-id"
+title = "change ship's refusals before the id is checked show a credential-shaped id as <id holding ...>, never the value"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-057"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_refusals_do_not_echo_a_credential_id passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_refusals_do_not_echo_a_credential_id"
+
+[[case]]
+id = "TC-cli-ship-names-an-unreadable-commit"
+title = "When Git cannot read a commit in the range, change ship refuses as refused:history-unchecked naming that commit and git fetch --refetch, with nothing run"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_with_an_unreadable_commit_names_fetch_refetch passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_with_an_unreadable_commit_names_fetch_refetch"
+
+[[case]]
+id = "TC-cli-ship-with-a-base-commit-that-is-not-an-object-id"
+title = "A base_commit that is not a Git object id never panics: the ship says the history could not be checked, shows nothing of the value, and goes on"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_with_a_base_commit_that_is_not_an_object_id_goes_on passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_with_a_base_commit_that_is_not_an_object_id_goes_on"
+
+[[case]]
+id = "TC-cli-the-refetch-command-names-the-real-remote"
+title = "The refetch command names the tracked or only remote, quoted as one shell word after --, and pasted as printed it brings the history back so the ship goes on"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::the_refetch_command_names_the_real_remote_and_works passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "the_refetch_command_names_the_real_remote_and_works"
+
+[[case]]
+id = "TC-cli-several-untracked-remotes-are-named"
+title = "With several remotes and none tracked, the refusal names them quoted to choose from and does not say to add a remote"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::several_untracked_remotes_are_named_to_choose_from passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "several_untracked_remotes_are_named_to_choose_from"
+
+[[case]]
+id = "TC-cli-an-unreadable-change-folder-tree-refuses"
+title = "A change folder whose tree Git cannot read is never read as absent: change ship refuses as refused:history-unchecked naming the commit, with no ship call, while the control refuses as refused:corrupt-history"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::an_unreadable_change_folder_tree_is_never_read_as_absent passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "an_unreadable_change_folder_tree_is_never_read_as_absent"
