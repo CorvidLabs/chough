@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "docs-387-no-git-while-agents-write",
+  "slug": "docs-387-no-git-while-agents-write",
+  "title": "Docs 387 no git while agents write",
+  "description": "docs 387 no git while agents write",
+  "kind": "documentation",
+  "state": "draft",
+  "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
+  "created_at": 1795098858,
+  "updated_at": 1795098881,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "docs/cli.md",
+    "skills/chough-workflow/references/checkpoint.md",
+    ".agents/skills/chough-workflow/references/checkpoint.md",
+    "src/skill.rs",
+    "tests/fixtures/skill-releases/manifest.json",
+    "tests/skill_releases.rs",
+    "tests/docs.rs",
+    "changelog.d/",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    ".chough/cases/cli.no-git-while-agents-write.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "The workflow skill's checkpoint reference, in the bundle and in an installed copy, and docs/cli.md each tell agents not to run git merge, rebase, checkout or stash in a worktree while Chough writers run there, and why"
+  ],
+  "selected_artifacts": [
+    "context",
+    "docs",
+    "design",
+    "tasks",
+    "requirements"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "cli lessons apply: human gates are plain text in tasks.md; the delta is frozen at approval; a changed skill file needs its released digest in KNOWN_PREVIOUS so an older install updates.",
+    "public_contract": "yes"
+  }
+}
