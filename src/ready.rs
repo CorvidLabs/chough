@@ -843,8 +843,9 @@ fn spec_listings(root: &Path) -> Vec<(String, BTreeSet<String>)> {
 
 /// The entries of the `files:` list in a spec's front matter, in each form SpecSync
 /// reads: a block list, a flow list on the key's line (`files: [a, b]`), and a single
-/// value, each with or without quotes and a trailing `# comment`.
-fn listed_files(spec: &str) -> BTreeSet<String> {
+/// value, each with or without quotes and a trailing `# comment`. Shared within the
+/// crate, so another reader of a spec's `files:` need not repeat it.
+pub(super) fn listed_files(spec: &str) -> BTreeSet<String> {
     let mut files = BTreeSet::new();
     let mut lines = spec.lines();
     if lines.next().map(str::trim_end) != Some("---") {

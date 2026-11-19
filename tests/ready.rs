@@ -495,6 +495,12 @@ fn an_owner_is_named_whatever_form_its_files_list_takes() {
             "files: # sources\n  - src/main.rs # entry\n  - \"src/checkpoint.rs\"   # quoted\n",
         ),
         ("flow", "files: [src/main.rs, src/checkpoint.rs]\n"),
+        // A spec file with CRLF line endings, in the block and the flow form.
+        (
+            "block, CRLF",
+            "files:\n  - src/main.rs\n  - src/checkpoint.rs\n",
+        ),
+        ("flow, CRLF", "files: [src/main.rs, src/checkpoint.rs]\n"),
         (
             "quoted flow",
             "files: [\"src/main.rs\", 'src/checkpoint.rs'] # both\n",
@@ -502,12 +508,16 @@ fn an_owner_is_named_whatever_form_its_files_list_takes() {
     ];
     for (form, files) in forms {
         let fixture = project(OLD_REQ, &["src/"]);
-        fixture.write(
-            "specs/cli/cli.spec.md",
-            &format!(
+        fixture.write("specs/cli/cli.spec.md", &{
+            let spec = format!(
                 "---\nmodule: cli\nversion: 1\nstatus: active\n{files}db_tables: []\n---\n\n# CLI\n"
-            ),
-        );
+            );
+            if form.ends_with("CRLF") {
+                spec.replace('\n', "\r\n")
+            } else {
+                spec
+            }
+        });
         for path in ["src/main.rs", "src/checkpoint.rs"] {
             fixture.write(path, "// fixture\n");
         }
