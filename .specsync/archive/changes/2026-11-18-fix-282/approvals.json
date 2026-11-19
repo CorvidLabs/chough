@@ -1,0 +1,108 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795033491,
+      "digest": "a758ab44baa3fb33b37ed0b4dd3e8c21b60f128829e1056328e5cabf883eba4b",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-282\": \"add chough checkpoint --pr <number or URL>, with the existing pr validation and a Timeline entry, like every other checkpoint field. … No Timeline entry\" (Leif's decision comment on CorvidLabs/chough#282 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then 'No Timeline entry', relayed by hc t4c on 2026-11-18: --pr sets the pr field with the existing validation, like --objective and --title, cli only). Relayed and recorded by chough-fixer-t4g at 2026-11-18T20:24:51Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-282",
+        "title": "Fix 282",
+        "description": "fix 282",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.checkpoint-pr.cases.toml",
+          "changelog.d/2026-11-18-fix-282.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "tests/checkpoint.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough checkpoint --pr 150 and --pr with a pull request URL each set the session's pr field, which another process reads back; an empty value clears it; a value with a line break, or one holding a local path or a token, is refused with the session file byte-identical, or redacted under --redact, as the pr field's existing guard does. Setting it adds no Timeline entry, as --objective and --title do not."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decision on #282 (2026-11-18 planning interview) adds chough checkpoint --pr <number or URL> with the existing pr validation; his later answer 'No Timeline entry' makes it like --objective and --title, cli only. Human gates as plain text in tasks.md; deltas frozen at approval. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "44a22b4b76d20309e94da3c10e195b9a2bbe72d58151c0085ed506166ac34a8e"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-007": "e88c603fe1026b6b3fb9ed21a35c8fc933a8ab36b01611e617c5bacb47444964"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "add chough checkpoint --pr <number or URL>, with the existing pr validation and a Timeline entry, like every other checkpoint field. … No Timeline entry",
+        "where": "Leif's decision comment on CorvidLabs/chough#282 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then 'No Timeline entry', relayed by hc t4c on 2026-11-18: --pr sets the pr field with the existing validation, like --objective and --title, cli only",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795044629,
+      "digest": "a758ab44baa3fb33b37ed0b4dd3e8c21b60f128829e1056328e5cabf883eba4b",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of fix-282 onto main's REQ-cli-007\": \"Re-approve\" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #348 (fix-281) changed REQ-cli-007 on main, he re-approved fix-282's delta rebased onto main's text, keeping #348's --no-native-change sentence and adding only the --pr sentence and its acceptance criterion). Relayed and recorded by chough-fixer-t4g at 2026-11-18T23:30:28Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-282",
+        "title": "Fix 282",
+        "description": "fix 282",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.checkpoint-pr.cases.toml",
+          "changelog.d/2026-11-18-fix-282.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "tests/checkpoint.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "chough checkpoint --pr 150 and --pr with a pull request URL each set the session's pr field, which another process reads back; an empty value clears it; a value with a line break, or one holding a local path or a token, is refused with the session file byte-identical, or redacted under --redact, as the pr field's existing guard does. Setting it adds no Timeline entry, as --objective and --title do not."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decision on #282 (2026-11-18 planning interview) adds chough checkpoint --pr <number or URL> with the existing pr validation; his later answer 'No Timeline entry' makes it like --objective and --title, cli only. Human gates as plain text in tasks.md; deltas frozen at approval. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "1dc545b020e13a514e4fcd5307bbb909644b6e829d87926a58b980bf77e0fda8"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-007": "1a3910fb020948a4c6bbc22094fc970bc69fd281abc7cd42c4abfcd2caa313fd"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Re-approve",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: after #348 (fix-281) changed REQ-cli-007 on main, he re-approved fix-282's delta rebased onto main's text, keeping #348's --no-native-change sentence and adding only the --pr sentence and its acceptance criterion",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795045598,
+      "digest": "36de39460c854e3ca77e632710b530b9da080970eb0c96db1dd0236f9b8219e1",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

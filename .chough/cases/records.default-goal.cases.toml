@@ -1,0 +1,41 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #269: checkpoint --objective updated the front matter, but the story's title
+# and Goal, and the journal post built from them, kept the session new placeholder.
+
+[[case]]
+id = "TC-records-the-default-goal-is-filled-once"
+title = "A session started without an objective has its placeholder title and Goal filled by the first checkpoint --objective, and a later objective change rewrites neither"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-records-004"]
+paths = ["src/session_md.rs", "src/markdown.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::a_default_goal_is_filled_once_by_the_objective passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "a_default_goal_is_filled_once_by_the_objective"
+
+[[case]]
+id = "TC-records-the-journal-post-uses-the-filled-goal"
+title = "After checkpoint --objective and the move into done, the journal post and archived story of a session started without an objective carry the objective and never the placeholder"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-records-004"]
+paths = ["src/session_md.rs", "tests/journal.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/journal.rs::the_journal_post_and_story_use_the_objective_set_after_session_new passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "journal"
+test = "the_journal_post_and_story_use_the_objective_set_after_session_new"

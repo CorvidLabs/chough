@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #282: no command set a session's pr field, so linking a session to its pull
+# request meant hand-editing session.md.
+
+[[case]]
+id = "TC-cli-checkpoint-pr-sets-the-pull-request"
+title = "checkpoint --pr sets the session's pull request by number or URL with no Timeline entry, an empty value clears it, and a line break or a local path is refused with the file unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-24"]
+requirements = ["REQ-cli-007"]
+paths = ["src/checkpoint.rs", "tests/checkpoint.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/checkpoint.rs::checkpoint_pr_sets_and_clears_the_pull_request passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "checkpoint"
+test = "checkpoint_pr_sets_and_clears_the_pull_request"

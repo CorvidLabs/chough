@@ -625,6 +625,12 @@ fn check_links(
 ) -> Result<()> {
     let case = &located.case;
     let context = || format!("{}: case {}", located.file, case.id);
+    // A retired case is history and never runs (`find_checked`), so its links and its
+    // binding's fledge task are not checked: removing that task is often why the case
+    // was retired, and its binding stays as written (#283).
+    if case.status == "retired" {
+        return Ok(());
+    }
     if let Some(binding) = &case.bind
         && let Some(task) = &binding.task
     {
@@ -633,9 +639,6 @@ fn check_links(
             "{}: fledge task {task} is not defined in fledge.toml",
             context()
         );
-    }
-    if case.status == "retired" {
-        return Ok(());
     }
     evidence::validate_criteria(root, &case.criteria).with_context(context)?;
     for requirement in &case.requirements {
@@ -1322,6 +1325,8 @@ pub(super) fn run_case(
 }
 
 fn record_manual(root: &Path, args: RecordArgs) -> Result<Value> {
+    // REQ-cli-017 (#349): the same bound on limitations as `evidence add`.
+    evidence::check_limitations(&args.limitations)?;
     let RecordArgs {
         id,
         environment,
