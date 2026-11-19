@@ -1,6 +1,6 @@
 ---
 id: fix-251
-state: implementing
+state: archived
 type: bug_fix
 base_commit: 66efea4dd777077ef9bbd412cf0fac8f7ea93b41
 ---

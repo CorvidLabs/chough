@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "fix-251",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "4582f2345d44cef3f82951640aad66933c71b2b0",
+      "contract_digest": "17bdb0b86c8df5c2788ea34e704de2d1111f06d1cfd221f0fc79fcc00645fec1",
+      "execution_digest": "ef267163d607c09319be30974d79ee36181f221d18b765994129a79bceb8e82a",
+      "workspace_digest": "8e5852cef2582b8493e60e86181ab323048de29a97a48bc8d6e46b7afa302349",
+      "timestamp": 1795048327,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve + follow-up",
+        "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #354 after the tester's recheck PASS at a059d88 on real NFTMix and arcron; the follow-up is #357 (root code in every files: style, and a folder repo with one root file)",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    }
+  ]
+}

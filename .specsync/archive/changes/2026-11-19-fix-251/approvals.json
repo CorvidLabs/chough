@@ -101,6 +101,13 @@
         "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, with his #251/#279 decision comment and 'Yes, both' as the scope: after the tester's BLOCK on the NFTMix shape, he chose that when the specified code sits at the repository root (no code folder to narrow to), init and doctor advise adding the skill bundle and Chough's folders to exclude_dirs, and say the ignored list needs the code moved into a folder or SpecSync's fix, CorvidLabs/spec-sync#1083; the folder-repo advice stays as it is",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795048336,
+      "digest": "3ba347d5da8bfea2e2da787e2276740562a2045fa6c629a9f13bec3e74b10200",
+      "note": "Same-PR finalization closing digest"
     }
   ],
   "reopenings": []
