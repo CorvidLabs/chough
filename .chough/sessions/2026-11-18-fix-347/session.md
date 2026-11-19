@@ -5,7 +5,7 @@ aliases: [fix-347]
 objective: A new bug's Log links its evidence with relative links, and chough doctor reports and fixes a bug link left stale when its session is archived (#347)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -31,13 +31,9 @@ observations:
   - 2026-11-19-tc-cli-doctor-relinks-a-bugs-evidence-after-archiving-16bb43
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-347
-    holds: accept
-    drives: review
-    opened: 2026-11-18T23:14:52Z
+waiting_on_human: []
 run_consents: []
-next: Wait for the tester's check and Leif's implementation review of fix-347
+next: Continue done
 title: A bug's Log links its evidence, and doctor relinks after archiving
 summary:
   - "A bug's Log entry names each piece of linked evidence as a Markdown link relative to the bug's file, chosen after the evidence is resolved: the open session's entry, or the archived story that holds it as a receipt. Doctor reports a bug whose body still links an entry that left with its archived session as stale_bug_links and appends one Log line linking the story; a bug too near its size bound gets advice instead."
@@ -56,6 +52,7 @@ A new bug's Log links its evidence with relative links, and chough doctor report
 
 - 0xLeif decided "Scope approval of fix-347": "both" (GitHub issue #347, which records 'Leif chose both' on 2026-11-18 for its two follow-ups (new bugs get real links; links follow archiving, by repointing or by doctor reporting and fixing); his planning session (hc t4c) relayed it to fable-t4b as his scope approval and asked for the smaller honest option on the second, which is the doctor fix); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-347 as 0xLeif
 - 0xLeif decided "Scope approval of fix-347, rebased onto main (native approval)": "Yes, for today" (Leif's standing rule of 2026-11-18, relayed by his planning session (hc t4c): when an approved PR's delta goes stale only because main changed the same requirement, and the rebase puts the same added sentences on the newer text with nothing else changed, fable-t4b may record his relayed re-approval and report the PR and requirement. Here: PR #360, REQ-cli-012 and REQ-history-012); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-347 as 0xLeif
+- 0xLeif decided "Implementation review of fix-347": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #360; the later reviewer and tester fixes (qualified IDs of archived evidence, the near-bound advisory, the stronger update test) were within his #347 scope and reported to him by that session, which gave the go to merge); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-347 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -148,4 +145,20 @@ A new bug's Log links its evidence with relative links, and chough doctor report
     - recorded_by: fable-t4b
     - native: specsync change approve fix-347
     - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:53:47Z · gate-closed · accept → accept · Implementation review of fix-347 ^t-72bab6
+  - native_change: fix-347
+  - revision: 568acc68f84714ad449b9bc9da49764d6a83e1bc
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #360; the later reviewer and tester fixes (qualified IDs of archived evidence, the near-bound advisory, the stronger update test) were within his #347 scope and reported to him by that session, which gave the go to merge
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-347
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:53:50Z · advance · accept → done · native:archived ^t-8c6093
+  - native_change: fix-347
+  - gate: native:archived
+  - revision: 568acc68f84714ad449b9bc9da49764d6a83e1bc
   - by: fable (claude-fable-5-2, hc t4b)
