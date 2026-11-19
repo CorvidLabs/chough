@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 119
+version: 120
 status: active
 files:
   - src/main.rs
@@ -401,3 +401,4 @@ provider, runtime or hosted service.
 | 117 | 2026-11-18 | fix-339: Fix 339 |
 | 118 | 2026-11-19 | fix-361: Fix 361 |
 | 119 | 2026-11-19 | fix-347: Fix 347 |
+| 120 | 2026-11-19 | readiness-report-before-change-approval: Readiness report before change approval |
