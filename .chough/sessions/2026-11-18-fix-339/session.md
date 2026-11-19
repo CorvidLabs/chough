@@ -5,7 +5,7 @@ aliases: [fix-339]
 objective: "Conflict-marker follow-ups: markers in fenced code blocks don't count, a stray ======= is caught, case definitions get the same check, and migrate names the 0.5.x source (REQ-records-001, #339)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -39,13 +39,9 @@ observations:
   - 2026-11-19-tc-records-doctor-warns-of-a-conflict-inside-a-code-fence-532975
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-339
-    holds: accept
-    drives: review
-    opened: 2026-11-18T21:33:09Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # Conflict-marker follow-ups: markers in fenced code blocks don't count, a stray ======= is caught, case definitions get the same check, and migrate names the 0.5.x source (REQ-records-001, #339)
 
@@ -62,6 +58,7 @@ Conflict-marker follow-ups: markers in fenced code blocks don't count, a stray =
 - 0xLeif decided "Scope approval of fix-339": "exempt markers inside fenced code blocks, catch a stray =======, case TOML findings, and the migrate message naming the 0.5.x source … Warn only" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his decisions on the #336 follow-ups filed as CorvidLabs/chough#339, his scope approval for that issue; then for item 2 'Warn only': a lone line of exactly seven '=' with no <<<<<<< or >>>>>>> around it is reported by doctor as 'possible leftover conflict separator at line N', and writes are never refused for it); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339 as 0xLeif
 - 0xLeif decided "Re-approval of fix-339 for the tester's four findings": "Fix first" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, after the tester's PASS of #356 with notes, within his #339 scope: (a) a code fence never hides a conflict in the Timeline or Receipts sections Chough writes; (b) in a case definition, markers count only when it does not parse as TOML; (c) fences follow CommonMark: a fence that never closes hides nothing, and a backtick line whose tag holds a backtick is not a fence; (d) the migrate preview offers no apply command when the apply would refuse); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339 as 0xLeif
 - 0xLeif decided "Re-approval of fix-339 for a conflict inside a code fence": "Advisory finding" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, on swarm finding 62-F1 in #356 (a real Git conflict inside a fenced block of a session passed silently), within his #339 scope: doctor reports 'possible conflict markers inside a code fence at line N' as an advisory finding, with doctor's exit status unchanged and writes allowed, like the stray ======= rule); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339 as 0xLeif
+- 0xLeif decided "Implementation review of fix-339": "Approve; drop the JSON field first" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #356 after the tester's recheck PASS at dc8c09d; the JSON field was dropped in 80f964d. Then, on swarm finding 62-F1, his 'Advisory finding' added the advisory possible_fenced_conflict finding (e72be7d), which the tester's glance passed at a29c3b2; hc t4c relayed that his answer covered exactly this addition); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-339 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -180,4 +177,20 @@ Conflict-marker follow-ups: markers in fenced code blocks don't count, a stray =
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve fix-339
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:46:57Z · gate-closed · accept → accept · Implementation review of fix-339 ^t-143b80
+  - native_change: fix-339
+  - revision: cdd41aadacf7137c41cdbccb559898e67cec803b
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve; drop the JSON field first
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #356 after the tester's recheck PASS at dc8c09d; the JSON field was dropped in 80f964d. Then, on swarm finding 62-F1, his 'Advisory finding' added the advisory possible_fenced_conflict finding (e72be7d), which the tester's glance passed at a29c3b2; hc t4c relayed that his answer covered exactly this addition
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-339
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:47:00Z · advance · accept → done · native:archived ^t-e84ef7
+  - native_change: fix-339
+  - gate: native:archived
+  - revision: cdd41aadacf7137c41cdbccb559898e67cec803b
   - by: chough-fixer (claude-opus-5-5, hc t4n)
