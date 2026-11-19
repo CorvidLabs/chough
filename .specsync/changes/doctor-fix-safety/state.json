@@ -10,7 +10,7 @@
   "state": "draft",
   "base_commit": "6936f88f47a2c69f9febf15822678f1d804ff027",
   "created_at": 1795056773,
-  "updated_at": 1795056773,
+  "updated_at": 1795057660,
   "affected_specs": [
     "history",
     "cli",
@@ -34,13 +34,21 @@
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
-  "acceptance_criteria": [],
+  "acceptance_criteria": [
+    "doctor --fix never deletes an evidence entry its archived story does not hold (by ID and receipt) or an unfolded inbox entry, and names each kept entry with the way out by hand (#381); macOS metadata never blocks the archive finish (#377); next names committing the session folder, story and journal post, then doctor --fix, while an archive is unfinished (#371); a front-matter conflict is reported as conflict_markers and unreadable names resolving it, and a Timeline entry that only redaction changed is not reported as rewritten while a hand edit still is (#374); the spec walk follows no symlink, is bounded at 4,096 entries and 32 folders, and says when it stops at the bound (#402)."
+  ],
   "selected_artifacts": [
     "context",
     "testing",
     "tasks",
-    "design"
+    "design",
+    "requirements",
+    "docs"
   ],
   "dependencies": [],
-  "answers": {}
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif's decision on #402 ('fix in 0.6.2', the finding as scope) and his words on #381, #377, #371 and #374, relayed through fable-lead from hc t4c, set the scope. doctor --fix never removes work a story does not hold and never hangs; failing tests first. File boundaries from fable-lead: doctor.rs (archive finish, spec walk, conflict and timeline advice), the archive finish in sessions.rs and next's line in main.rs; t4b keeps the stale-pointer check, session_md.rs, stage.rs, change.rs and the inbox, shelve and session-use code.",
+    "public_contract": "yes"
+  }
 }
