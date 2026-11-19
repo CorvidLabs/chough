@@ -328,6 +328,75 @@
         "where": "Claude Code chat answer, relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 14:08Z, to: may doctor-fix-safety be sent back once for the two sentences (the receipt-fields sentence and the #389 sentence with its criterion) and the four paths tests/reduce.rs, src/evidence.rs, .chough/cases/records.doctor-fix-safety.cases.toml and .chough/cases/cli.doctor-fix-safety.cases.toml",
         "recorded_by": "chough-fixer-t4g"
       }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795100662,
+      "digest": "1307de09d44b1c49e53a7c223beea951ca95a18d504ddbc4f86e2c21bb1d6fa2",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approval of doctor-fix-safety rebased onto main after #407 (standing OK (d))\": \"yes to both\" (Standing OK (d), Leif's Claude Code chat message relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:02Z; the delta was rebased onto main's REQ-records-001 and REQ-history-006 after #407 with exactly #407's added and removed words, and fable-lead verified by script that nothing else changed). Relayed and recorded by chough-fixer-t4g at 2026-11-19T15:04:17Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "doctor-fix-safety",
+        "title": "Doctor fix safety",
+        "description": "doctor fix safety",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.doctor-fix-safety.cases.toml",
+          ".chough/cases/history.doctor-fix-safety.cases.toml",
+          ".chough/cases/records.doctor-fix-safety.cases.toml",
+          "changelog.d/2026-11-19-doctor-fix-safety.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "src/evidence.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/doctor.rs",
+          "tests/git_merge.rs",
+          "tests/history.rs",
+          "tests/leaks.rs",
+          "tests/next.rs",
+          "tests/records.rs",
+          "tests/reduce.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "doctor --fix never deletes an evidence entry its archived story does not hold (by ID and receipt) or an unfolded inbox entry, and names each kept entry with the way out by hand (#381); macOS metadata never blocks the archive finish (#377); next names committing the session folder, story and journal post, then doctor --fix, while an archive is unfinished (#371); a front-matter conflict is reported as conflict_markers and unreadable names resolving it, and a Timeline entry that only redaction changed is not reported as rewritten while a hand edit still is (#374); the spec walk follows no symlink, is bounded at 4,096 entries and 32 folders, and says when it stops at the bound (#402)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decision on #402 ('fix in 0.6.2', the finding as scope) and his words on #381, #377, #371 and #374, relayed through fable-lead from hc t4c, set the scope. doctor --fix never removes work a story does not hold and never hangs; failing tests first. File boundaries from fable-lead: doctor.rs (archive finish, spec walk, conflict and timeline advice), the archive finish in sessions.rs and next's line in main.rs; t4b keeps the stale-pointer check, session_md.rs, stage.rs, change.rs and the inbox, shelve and session-use code.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "008bdc734d9d113eb6a36900db20e82afc058695e8c431f1a78a8009facf4d03",
+        "history": "8149ada0fb1bf5587a3a2b9d5333c0cb2779dd934d63c5a0efb8131333dde665",
+        "records": "e0487602a1399cad3ca10ffea276977a084a7ad5bb9289ebc5961eff486b0e6e"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-021": "35e3a369cf9e973c99ab3cb91823e59c027a7a544b419b910a8638edca04a609",
+        "history: REQUIREMENT REQ-history-006": "d494d942540151dc4688025695701e9b9aea10e6fe5fe310277927e1fe30d849",
+        "history: REQUIREMENT REQ-history-012": "1900cd7e96b4fff95684584a7b49148f5b2c82f483d7d4ca1941b44f7428f8fe",
+        "records: REQUIREMENT REQ-records-001": "5339e30f9bd6cebf2d4500dbd61f56dae1bcaceca9e61b249c666de1d66d14e3",
+        "records: REQUIREMENT REQ-records-014": "d39797f12217992794a3cc1eef2bb836448fc044c24afa25b881ec1ca1833739"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "yes to both",
+        "where": "Standing OK (d), Leif's Claude Code chat message relayed by hc t4c through fable-lead (hc t53), 2026-11-19 about 15:02Z; the delta was rebased onto main's REQ-records-001 and REQ-history-006 after #407 with exactly #407's added and removed words, and fable-lead verified by script that nothing else changed",
+        "recorded_by": "chough-fixer-t4g"
+      }
     }
   ],
   "reopenings": [],
@@ -390,6 +459,18 @@
         "cli",
         "records"
       ]
+    },
+    {
+      "schema_version": 1,
+      "change_id": "doctor-fix-safety",
+      "actor": "0xLeif",
+      "reason": "Rebase the delta onto main after #407 changed REQ-records-001 and REQ-history-006; no D1 word changed (standing OK (d), relayed via t4c)",
+      "timestamp": 1795100640,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 5,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true
     }
   ]
 }
