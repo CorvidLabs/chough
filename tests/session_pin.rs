@@ -277,3 +277,42 @@ fn a_pinned_session_before_any_session_names_session_new() {
     assert!(text.contains("drop --session"), "{text}");
     assert_eq!(tree(fixture.root()), before);
 }
+
+/// REQ-history-009 (#393): `inbox list` honors the pin as `inbox fold` does. With the
+/// pointer on one session and `--session` or `CHOUGH_SESSION` naming another, it lists
+/// the named session's entries and names that session.
+#[test]
+fn inbox_list_lists_the_pinned_session() {
+    let (fixture, first, other) = two_sessions();
+    for (session, text) in [
+        (&first, "SYNTHETIC for first"),
+        (&other, "SYNTHETIC for other"),
+    ] {
+        fixture.ok(&[
+            "inbox",
+            "add",
+            "--session",
+            session,
+            "--kind",
+            "decision",
+            "--text",
+            text,
+            "--from",
+            "SYNTHETIC-agent",
+        ]);
+    }
+    let by_option = fixture.ok(&["--session", &other, "inbox", "list"]);
+    let output = fixture.run_with_env(&["inbox", "list"], &[("CHOUGH_SESSION", &other)]);
+    assert!(output.status.success(), "{}", said(&output));
+    let by_variable: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    for listed in [&by_option, &by_variable] {
+        assert_eq!(listed["session"], other.as_str(), "{listed}");
+        let texts: Vec<&str> = listed["entries"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(|entry| entry["text"].as_str())
+            .collect();
+        assert_eq!(texts, ["SYNTHETIC for other"], "{listed}");
+    }
+}

@@ -1609,7 +1609,12 @@ pub(super) fn inbox(root: &Path, command: InboxCommand) -> Result<()> {
             print_json(&added)
         }
         InboxCommand::List => {
-            let key = active(root)?;
+            // REQ-history-009 (#393): the pinned session, as `inbox fold` resolves it.
+            let relative = checkpoint_path(root)?;
+            let key = match id_of(&relative) {
+                Some(key) => key,
+                None => active(root)?,
+            };
             let mut entries = vec![];
             for (_, entry) in pending(root, &key)? {
                 let recorded = (entry.kind == Kind::Observation.name())
