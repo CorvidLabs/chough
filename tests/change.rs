@@ -1531,3 +1531,64 @@ fn ship_closes_the_gate_and_moves_the_stage_in_the_pinned_session() {
     assert_eq!(shipped["stage"]["current"], "done", "{shipped}");
     assert_eq!(fixture.read(&other_file), before);
 }
+
+/// REQ-cli-059 (#369, fable-lead's review): an unpinned ship resolves its session once.
+/// A `git` on PATH that moves the shared pointer to another session while the history
+/// check runs changes nothing: the gate close and the move into done still land in the
+/// session the ship started from, and the other session's file is byte-identical.
+#[cfg(unix)]
+#[test]
+fn ship_keeps_the_session_it_started_from_when_the_pointer_moves() {
+    let fixture = shipping_session_at("accept");
+    let shipping = fixture.active_id();
+    // A recorded base commit, so the history check runs Git.
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.ok(&[
+        "session",
+        "new",
+        "SYNTHETIC-elsewhere",
+        "--objective",
+        "Other work",
+    ]);
+    let elsewhere = fixture.active_id();
+    fixture.ok(&["session", "use", &shipping]);
+    let git = std::str::from_utf8(
+        &std::process::Command::new("sh")
+            .args(["-c", "command -v git"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap()
+    .trim()
+    .to_string();
+    fixture.write(
+        "bin/git",
+        &format!(
+            "#!/bin/sh\nfor arg in \"$@\"; do\n  if [ \"$arg\" = rev-list ]; then\n    printf '%s\\n' {elsewhere} > \"{}/.chough/local/active-session\"\n  fi\ndone\nexec {git} \"$@\"\n",
+            fixture.root().display()
+        ),
+    );
+    fixture.executable("bin/git");
+    fixture.commit("two sessions, the pointer on the shipping one");
+    let other_file = format!(".chough/sessions/{elsewhere}/session.md");
+    let before = fixture.read(&other_file);
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    assert!(
+        output.status.success(),
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(
+        fixture.read(".chough/local/active-session").trim(),
+        elsewhere,
+        "the pointer was not moved during the ship, so the test proves nothing"
+    );
+    assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+    assert_eq!(fixture.read(&other_file), before);
+}

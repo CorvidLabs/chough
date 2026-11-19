@@ -690,11 +690,22 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     .filter(|output| output.status.success())
     .map(|output| String::from_utf8_lossy(&output.stdout).into_owned())
     .ok_or_else(|| unchecked("the trees of the commits in that range"))?;
-    // A missing folder answers `<name> missing`; a present one `<tree id> tree <size>`.
+    // A present folder answers `<tree id> tree <size>`; a missing one
+    // `<commit>:<path> missing`, which is one value here, "missing", whatever the commit.
     let tree_ids: Vec<&str> = trees
         .lines()
-        .map(|line| line.split_whitespace().next().unwrap_or_default())
+        .map(|line| {
+            if line.ends_with(" missing") {
+                "missing"
+            } else {
+                line.split_whitespace().next().unwrap_or_default()
+            }
+        })
         .collect();
+    // Fewer answers than questions would leave commits unread; never pass them.
+    if tree_ids.len() != commits.lines().count() * 2 {
+        return Err(unchecked("the trees of every commit in that range"));
+    }
     let mut by_trees: std::collections::HashMap<(String, String), Vec<String>> =
         std::collections::HashMap::new();
     // Newest first, as `git rev-list` gives them: the change kept both ways, and every
@@ -703,18 +714,12 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     let mut found: Option<(String, Vec<String>)> = None;
     for (index, commit) in commits.lines().enumerate() {
         let key = (
-            tree_ids
-                .get(index * 2)
-                .copied()
-                .unwrap_or_default()
-                .to_string(),
-            tree_ids
-                .get(index * 2 + 1)
-                .copied()
-                .unwrap_or_default()
-                .to_string(),
+            tree_ids[index * 2].to_string(),
+            tree_ids[index * 2 + 1].to_string(),
         );
         let both: Vec<String> = match by_trees.get(&key) {
+            // With either folder absent no change can be both open and archived.
+            _ if key.0 == "missing" || key.1 == "missing" => vec![],
             Some(both) => both.clone(),
             None => {
                 let both = changes_both_ways(&git, commit, id)
