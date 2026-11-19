@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Re-approval of doctor-fix-safety for the #381 inbox way out\" closed (approved); run `chough stage advance` to move on."
+next: "Gate \"Re-approval of doctor-fix-safety for the #381 screenshot wording\" closed (approved); run `chough stage advance` to move on."
 ---
 # doctor --fix never destroys or hangs: the archive finish keeps evidence its story does not hold (#381) and removes OS metadata (#377), next names the archive finish (#371), doctor names front-matter conflicts and gives no restore advice for a redaction (#374), and the spec walk stays inside the project and is bounded (#402)
 
@@ -36,6 +36,7 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
 - 0xLeif decided "Scope approval of doctor-fix-safety": "Approve, with the 3 recommended choices" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, his scope approval of D1 'doctor --fix must not destroy or hang' (#381, #402, #377, #371, #374) for the deltas at bf9f70c, with the three recommended choices: #381 keeps and names the entry, attaching it to the story being later and its own issue; #371 next says commit, then doctor --fix; #374 a Timeline entry changed only by redaction is not reported as rewritten, checked by redacting HEAD's text again); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 - 0xLeif decided "Re-approval of doctor-fix-safety for the #381 criterion wording": "Yes, fix the wording" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18: REQ-history-012's #381 criterion now ends 'naming each and the way out by hand; the kept files are byte-identical, and after the way out the evidence entry resolves again (#381)', since a kept entry in an archived session's folder resolves only once moved into an open session; nothing else in the delta changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 - 0xLeif decided "Re-approval of doctor-fix-safety for the #381 inbox way out": "Yes, fix the wording" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on D1's #381 inbox way out: an unfolded inbox entry's way out is now 'add its text again in an open session with chough inbox add, then drop the kept copy with git rm in a reviewed commit', in REQ-history-012 and in the finding, since an inbox entry names its session and cannot be moved; nothing else changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
+- 0xLeif decided "Re-approval of doctor-fix-safety for the #381 screenshot wording": "Yes" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on D1's #381 log wording: in both places in REQ-history-012, what doctor --fix keeps and the git mv way out, 'with its log and screenshot' became 'with the screenshot beside it', since an entry's log lives in .chough/local/logs and never in the session folder; nothing else changed); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve doctor-fix-safety as 0xLeif
 
 ## What was verified
 
@@ -104,6 +105,23 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
     - decided_by: 0xLeif
     - words: Yes, fix the wording
     - where: Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on D1's #381 inbox way out: an unfolded inbox entry's way out is now 'add its text again in an open session with chough inbox add, then drop the kept copy with git rm in a reviewed commit', in REQ-history-012 and in the finding, since an inbox entry names its session and cannot be moved; nothing else changed
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve doctor-fix-safety
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T04:37:42Z · gate-opened · build → build · Re-approval of doctor-fix-safety for the #381 screenshot wording ^t-1ba198
+  - native_change: doctor-fix-safety
+  - revision: a6c97eb528a176798513cd5792e929848a41ab36
+  - holds: build
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T04:37:42Z · gate-closed · build → build · Re-approval of doctor-fix-safety for the #381 screenshot wording ^t-daf78c
+  - native_change: doctor-fix-safety
+  - revision: a6c97eb528a176798513cd5792e929848a41ab36
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes
+    - where: Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, on D1's #381 log wording: in both places in REQ-history-012, what doctor --fix keeps and the git mv way out, 'with its log and screenshot' became 'with the screenshot beside it', since an entry's log lives in .chough/local/logs and never in the session folder; nothing else changed
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve doctor-fix-safety
     - actor: 0xLeif
