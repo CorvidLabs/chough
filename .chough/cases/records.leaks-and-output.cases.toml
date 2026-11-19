@@ -1,0 +1,131 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #364, #365, #367, #368 and #379: the leaks and output batch of the 0.6.2 bug
+# round, from the 0.6.2 candidate swarm's s6 run.
+
+[[case]]
+id = "TC-records-an-answer-is-leak-checked-and-bounded"
+title = "An answer given with --resolve-question is refused for each leak kind naming answer, redacted under --redact, and refused over 4,096 bytes"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/checkpoint.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::an_answer_is_leak_checked_redacted_and_bounded passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "an_answer_is_leak_checked_redacted_and_bounded"
+
+[[case]]
+id = "TC-records-the-listed-leak-forms-are-refused"
+title = "The leak forms of #368 refuse a write, a leaking module name is refused at session new, and evidence add --redact says how many values it redacted"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "src/checkpoint.rs", "src/evidence.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::the_listed_leak_forms_are_refused_and_counted passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "the_listed_leak_forms_are_refused_and_counted"
+
+[[case]]
+id = "TC-records-the-user-name-comes-from-the-account"
+title = "With USER and LOGNAME empty the account's user name is still refused, and with USER=dev a /dev/ path is written"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::the_user_name_comes_from_the_account passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "the_user_name_comes_from_the_account"
+
+[[case]]
+id = "TC-records-a-conflict-marker-is-named-by-its-seven-characters"
+title = "A conflict whose marker lines name a token-holding branch or commit subject is reported and refused naming only the seven-character marker"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_conflict_marker_is_named_by_its_seven_characters passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_conflict_marker_is_named_by_its_seven_characters"
+
+[[case]]
+id = "TC-records-errors-show-a-session-name-only-when-clean"
+title = "A session name from CHOUGH_SESSION, --session or session use holding a token or a control character is refused naming what it holds, never the name"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/main.rs", "src/sessions.rs", "src/leaks.rs", "tests/session_pin.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/session_pin.rs::a_session_name_is_shown_only_when_clean passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "session_pin"
+test = "a_session_name_is_shown_only_when_clean"
+
+[[case]]
+id = "TC-records-errors-show-a-bug-reference-only-when-clean"
+title = "A bug or evidence reference holding a leak or a control character is refused naming what it holds, never the reference"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/bugs.rs", "src/leaks.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_bug_reference_is_shown_only_when_clean passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_bug_reference_is_shown_only_when_clean"
+
+[[case]]
+id = "TC-records-errors-show-a-decided-by-value-only-when-clean"
+title = "gate record --decided-by holding a leak or a control character is refused naming what it holds, and a refused close says Error once"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/humans.rs", "src/gates.rs", "tests/humans.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/humans.rs::a_decided_by_value_is_shown_only_when_clean passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "humans"
+test = "a_decided_by_value_is_shown_only_when_clean"

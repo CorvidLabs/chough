@@ -307,7 +307,7 @@ pub(super) fn resolve_any(root: &Path, name: &str) -> Result<String> {
         Ok(id) => return Ok(session_file(&id)),
         Err(error) => {
             let message = error.to_string();
-            if message != format!("no session {name}") && !message.ends_with("is archived") {
+            if !message.starts_with("no session ") && !message.ends_with("is archived") {
                 return Err(error);
             }
         }
@@ -357,10 +357,14 @@ pub(super) fn resolve_open(root: &Path, name: &str) -> Result<String> {
                     || id.get(11..) == Some(name)
                     || aliases.iter().any(|alias| alias == name)
                 {
-                    bail!("session {name} is archived");
+                    // REQ-records-006 (#367): a name is shown only when clean.
+                    bail!(
+                        "session {} is archived",
+                        crate::leaks::shown("session name", name)
+                    );
                 }
             }
-            bail!("no session {name}")
+            bail!("no session {}", crate::leaks::shown("session name", name))
         }
         _ => bail!(
             "{name} names more than one open session ({}); use the full ID",

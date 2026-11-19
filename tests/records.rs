@@ -1427,7 +1427,9 @@ fn a_record_body_with_conflict_markers_is_refused_and_unchanged() {
     assert!(refused.contains("refused:conflict-markers"), "{refused}");
     assert!(refused.contains(&file), "{refused}");
     assert!(refused.contains(&format!("line {line}")), "{refused}");
-    assert!(refused.contains("<<<<<<< HEAD"), "{refused}");
+    // The marker is named by its seven characters (#365).
+    assert!(refused.contains("`<<<<<<<`"), "{refused}");
+    assert!(!refused.contains("<<<<<<< HEAD"), "{refused}");
     assert_eq!(fixture.read(&file), bad, "a refused write changed the file");
 }
 

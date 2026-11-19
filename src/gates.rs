@@ -1069,11 +1069,14 @@ fn record(root: &Path, args: RecordArgs) -> Result<()> {
                 .iter()
                 .map(|listed| listed.number.to_string())
                 .collect();
+            // The close's own `Error: ` prefix is dropped, so the refusal says it once (#380).
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            let refusal = stderr.trim();
             bail!(
                 "closing gate {} (\"{}\") was refused: {}\nRun `chough gate list`, then `chough gate record` for gates {} again.",
                 listed.number,
                 listed.gate,
-                String::from_utf8_lossy(&output.stderr).trim(),
+                refusal.strip_prefix("Error: ").unwrap_or(refusal),
                 remaining.join(",")
             );
         }

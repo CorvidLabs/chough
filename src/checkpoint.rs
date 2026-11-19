@@ -585,6 +585,10 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
             count += guard(local, name, value)?;
         }
     }
+    // REQ-records-006 (#364): each answer to a question is a written value too.
+    for answer in session.answers.values_mut() {
+        count += guard(local, "answer", answer)?;
+    }
     for consent in &mut session.run_consents {
         count += guard(local, "consent source", &mut consent.source)?;
         count += guard(local, "consent objective", &mut consent.objective)?;
@@ -601,6 +605,8 @@ fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
         }
     }
     for (name, list) in [
+        // A module name is an ID SpecSync reads, so it is checked, never redacted (#368).
+        ("module", &session.modules),
         ("criterion", &session.references.criteria),
         ("requirement", &session.references.requirements),
         ("case", &session.references.cases),
@@ -1653,6 +1659,9 @@ pub(super) fn checkpoint_command(root: &Path, args: CheckpointArgs) -> Result<()
     );
     if let (Some(answer), [question]) = (&args.answer, args.resolved.as_slice()) {
         ensure!(!answer.trim().is_empty(), "--answer must not be blank");
+        // REQ-records-006 (#364): bounded like every other text the checkpoint takes; the
+        // save's leak guard checks it.
+        ensure_text("answer", answer)?;
         session.answers.insert(question.clone(), answer.clone());
     }
     for resolved in &args.resolved {

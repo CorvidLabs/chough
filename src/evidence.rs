@@ -506,8 +506,9 @@ pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Res
         entry.screenshot = Some(format!("{name}.{extension}"));
     }
     let mut record = entry.to_record(&name);
+    let mut redacted = 0;
     if leaks::redacting() {
-        record.redact_leaks(leaks::Local::current());
+        redacted = record.redact_leaks(leaks::Local::current());
     } else {
         record.check_leaks(leaks::Local::current())?;
     }
@@ -517,6 +518,11 @@ pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Res
         crate::records::write_new_bounded(root, &target, &text, markdown::RECORD_BOUND)?,
         "observation identity collision: {name} already exists; nothing was written"
     );
+    // REQ-records-006 (#368): `--redact` says how many values it redacted, as every other
+    // write does.
+    if redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in evidence entry {name} (--redact)");
+    }
     let mut written = vec![target.clone()];
     if let Err(error) = write_side_files(root, &dir, &name, &files, &mut written) {
         for path in written.iter().rev() {

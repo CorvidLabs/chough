@@ -2570,3 +2570,57 @@ fn bug_add_refuses_before_writing_when_the_session_is_full() {
     assert!(said.contains("200"), "{said}");
     assert!(said.contains("nothing was written"), "{said}");
 }
+
+/// REQ-records-006 (#367), TC-records-a-bug-reference-is-shown-only-when-clean: a bug or
+/// evidence reference that holds a leak or a control character is refused naming what it
+/// holds, never the reference, for `bug update --related`, `--duplicate-of` and
+/// `--observation` and for `bug add --observation`; a clean unknown reference is still
+/// named.
+#[test]
+fn a_bug_reference_is_shown_only_when_clean() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let id = json(&add_bug(&fixture, &[]))["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    let token = concat!("x ghp_", "abcdefghij0123456789", "abcdefghij0123 y");
+    let email = "x synthetic.person@example.com";
+    let escape = "a\u{1b}[31mb";
+    for (value, held, secret) in [
+        (token, "token", "ghp_"),
+        (email, "email", "example.com"),
+        (escape, "control characters", "\u{1b}"),
+    ] {
+        for flag in ["--related", "--duplicate-of", "--observation"] {
+            let output = fixture.run(&["bug", "update", &id, flag, value]);
+            let text = format!(
+                "{}{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(!output.status.success(), "{flag}: {text}");
+            assert!(!text.contains(secret), "{flag} showed the value: {text:?}");
+            assert!(text.contains(&format!("holding {held}")), "{flag}: {text}");
+        }
+        let output = add_bug(
+            &fixture,
+            &[
+                "--distinct",
+                "SYNTHETIC separate report",
+                "--observation",
+                value,
+            ],
+        );
+        let text = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert!(!output.status.success(), "{text}");
+        assert!(!text.contains(secret), "bug add showed the value: {text:?}");
+        assert!(text.contains(&format!("holding {held}")), "{text}");
+    }
+    let output = fixture.run(&["bug", "update", &id, "--related", "2026-01-01-no-such-bug"]);
+    let text = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(
+        text.contains("unknown bug: 2026-01-01-no-such-bug"),
+        "{text}"
+    );
+}

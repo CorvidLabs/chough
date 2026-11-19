@@ -967,17 +967,10 @@ fn doctor_redact_never_rewrites_modules_or_a_regression_baseline() {
     fixture.init();
     let email = concat!("someone", "@", "example.org");
     let token = concat!("sk-", "abcdefghijklmnopqrstuvwx");
-    fixture.ok(&[
-        "session",
-        "new",
-        "mods",
-        "--objective",
-        "module probe",
-        "--module",
-        email,
-        "--module",
-        token,
-    ]);
+    // `session new --module` refuses a leaking module name since #368, so an older
+    // session that holds them is written by hand.
+    fixture.ok(&["session", "new", "mods", "--objective", "module probe"]);
+    fixture.set_front("modules", &format!("[{email}, {token}]"));
     let id = fixture.active_id();
     let record = format!(".chough/sessions/{id}/session.md");
     let session = fs::read_to_string(fixture.root().join(&record)).unwrap();
@@ -1038,4 +1031,191 @@ fn doctor_redact_never_rewrites_modules_or_a_regression_baseline() {
     reads(&["next"]);
     reads(&["status"]);
     reads(&["bug", "show", "2026-11-10-totals"]);
+}
+
+/// REQ-records-006 (#364), TC-records-an-answer-is-leak-checked-and-bounded: an answer
+/// given with `--resolve-question` is checked like every other value Chough writes. Each
+/// kind refuses naming `answer`, with nothing written and the value never echoed; under
+/// `--redact` the answer holds `<redacted:<kind>>`; and an answer over 4,096 bytes is
+/// refused.
+#[test]
+fn an_answer_is_leak_checked_redacted_and_bounded() {
+    let fixture = Fixture::new();
+    fixture.init();
+    for (kind, value, secret) in SAMPLES {
+        let question = format!("which {kind}");
+        let output = run(&fixture, &["checkpoint", "--question", &question]);
+        assert!(output.status.success(), "{output:?}");
+        // `--answer=<value>`, since a private key block starts with hyphens.
+        let answer = format!("--answer={value}");
+        refused(
+            &fixture,
+            &["checkpoint", "--resolve-question", &question, &answer],
+            "answer",
+            kind,
+            secret,
+        );
+    }
+    let (_, token, secret) = SAMPLES
+        .into_iter()
+        .find(|(kind, _, _)| *kind == "token")
+        .unwrap();
+    let answer = format!("--answer={token}");
+    redacted(
+        &fixture,
+        &["checkpoint", "--resolve-question", "which token", &answer],
+    );
+    let text = fixture.read(&fixture.session_file());
+    assert!(text.contains("<redacted:token>"), "{text}");
+    assert!(!text.contains(secret), "{text}");
+
+    let output = run(&fixture, &["checkpoint", "--question", "how long"]);
+    assert!(output.status.success(), "{output:?}");
+    let before = tree(fixture.root());
+    let long = "y".repeat(4_097);
+    let output = run(
+        &fixture,
+        &[
+            "checkpoint",
+            "--resolve-question",
+            "how long",
+            "--answer",
+            &long,
+        ],
+    );
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "a 4,097-byte answer was written");
+    assert!(said.contains("answer exceeds 4096 bytes"), "{said}");
+    assert_eq!(tree(fixture.root()), before);
+}
+
+/// The leak forms #368 adds, each with the text that must never be echoed.
+const LISTED_FORMS: [(&str, &str, &str); 6] = [
+    (
+        "credential",
+        concat!("{\"password\": \"", "hunter2", "hunter2\"}"),
+        concat!("hunter2", "hunter2"),
+    ),
+    (
+        "credential",
+        concat!("SECRET_KEY=", "abcdefgh", "12345678"),
+        concat!("abcdefgh", "12345678"),
+    ),
+    (
+        "credential",
+        concat!("AWS_SECRET_ACCESS_KEY=", "wJalrXUtnFEMI", "K7MDENGbPxRfiCY"),
+        concat!("wJalrXUtnFEMI", "K7MDENG"),
+    ),
+    (
+        "token",
+        concat!("xapp-", "1-A0123ABCDEF-", "1234567890123-abcdef"),
+        concat!("A0123ABCDEF-", "1234567890123"),
+    ),
+    (
+        "token",
+        concat!("hf_", "abcdefghijklmnop", "qrstuvwxyzABCDEFGH"),
+        concat!("abcdefghijklmnop", "qrstuvwxyz"),
+    ),
+    (
+        "home-path",
+        "see ~SYNTHETICother/projects/app",
+        "~SYNTHETICother",
+    ),
+];
+
+/// REQ-records-006 (#368), TC-records-the-listed-leak-forms-are-refused: a password JSON
+/// key, `SECRET_KEY=` and `AWS_SECRET_ACCESS_KEY=` assignments, `xapp-` and `hf_` tokens
+/// and a `~<user>/` path each refuse a write naming the field and the kind; a module name
+/// holding an email is refused at `session new`, under `--redact` too; and `evidence add
+/// --redact` says how many values it redacted.
+#[test]
+fn the_listed_leak_forms_are_refused_and_counted() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    for (kind, value, secret) in LISTED_FORMS {
+        refused(
+            &fixture,
+            &["checkpoint", "--decision", value],
+            "decision",
+            kind,
+            secret,
+        );
+    }
+    let email = "synthetic.person@example.com";
+    for redact in [false, true] {
+        let mut args = vec![];
+        if redact {
+            args.push("--redact");
+        }
+        args.extend(["session", "new", "beta", "--module", email]);
+        let before = tree(fixture.root());
+        let output = run(&fixture, &args);
+        let said = format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(!output.status.success(), "{args:?} was written: {said}");
+        assert!(said.contains("module holds email"), "{args:?}: {said}");
+        assert!(!said.contains(email), "{args:?} echoed the value: {said}");
+        assert_eq!(tree(fixture.root()), before, "{args:?} changed a file");
+    }
+
+    fixture.commit("fixture");
+    let arguments = evidence_add("SYNTHETIC check /Users/SYNTHETIC-person/notes.txt");
+    let mut arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
+    arguments.insert(0, "--redact");
+    let output = run(&fixture, &arguments);
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{said}");
+    assert!(
+        said.contains("chough: redacted ") && said.contains("value(s) in evidence entry"),
+        "{said}"
+    );
+}
+
+/// REQ-records-006 (#379), TC-records-the-user-name-comes-from-the-account: with `USER`
+/// and `LOGNAME` empty, as under `env -i`, cron or launchd, the account's user name as
+/// `<user>@<host>` is still refused; and with `USER=dev`, a `/dev/` path, a system root, is
+/// written, while `dev` deeper in a path is still the user name.
+#[test]
+fn the_user_name_comes_from_the_account() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let account = String::from_utf8(
+        std::process::Command::new("id")
+            .arg("-un")
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap()
+    .trim()
+    .to_string();
+    assert!(account.len() >= 2, "{account:?}");
+    // As `<user>@<host>`, which only the user-name rule matches, whatever the host is
+    // called.
+    let value = format!("ssh {account}@build-box");
+    let before = tree(fixture.root());
+    let output = fixture.run_with_env(
+        &["checkpoint", "--decision", &value],
+        &[("USER", ""), ("LOGNAME", "")],
+    );
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "{value} was written");
+    assert!(said.contains("decision holds user-name"), "{said}");
+    assert_eq!(tree(fixture.root()), before);
+
+    let dev = [("USER", "dev"), ("LOGNAME", "dev")];
+    let output = fixture.run_with_env(&["checkpoint", "--decision", "mounted /dev/disk2s1"], &dev);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let output = fixture.run_with_env(&["checkpoint", "--decision", "see /opt/dev/x"], &dev);
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "/opt/dev/x was written");
+    assert!(said.contains("decision holds user-name"), "{said}");
 }

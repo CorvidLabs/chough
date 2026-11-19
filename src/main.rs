@@ -1053,26 +1053,36 @@ fn merge_in_progress(git: &doctor::GitOperation) -> Value {
 /// session refuses before anything is read or written.
 fn pin_session(root: &Path, name: &str, source: &str) -> Result<()> {
     let resolved = sessions::resolve_open(root, name);
+    // REQ-records-006 (#367): the name is shown only when it holds no leak and no control
+    // character; otherwise the refusal says what the option or variable holds.
+    let held = leaks::unshowable(name);
     // #334: with no session open at all, the way on is a new session, which `chough
     // session list` would not show. The detail still says when the named session is
     // archived, and an option is dropped where the variable is unset.
     if sessions::open_ids(root)?.is_empty() {
-        let detail = match &resolved {
-            Err(error) => format!(" ({error:#})"),
-            Ok(_) => String::new(),
-        };
         let leave = if source.starts_with("--") {
             "drop"
         } else {
             "unset"
         };
+        let names = match (&held, &resolved) {
+            (Some(held), _) => format!("{source} holds {held}, and no session is open"),
+            (None, Err(error)) => {
+                format!("{source} names {name}, but no session is open ({error:#})")
+            }
+            (None, Ok(_)) => format!("{source} names {name}, but no session is open"),
+        };
         bail!(
-            "refused:session-not-open: {source} names {name}, but no session is open{detail}; run `chough session new <key>` to start one, or {leave} {source}; nothing was written"
+            "refused:session-not-open: {names}; run `chough session new <key>` to start one, or {leave} {source}; nothing was written"
         );
     }
     let id = resolved.map_err(|error| {
+        let names = match &held {
+            Some(held) => format!("{source} holds {held}, so it names no open session"),
+            None => format!("{source} names {name}, which is not an open session ({error:#})"),
+        };
         anyhow::anyhow!(
-            "refused:session-not-open: {name}, named by {source}, is not an open session ({error:#}); run `chough session list` for the open ones; nothing was written"
+            "refused:session-not-open: {names}; run `chough session list` for the open ones; nothing was written"
         )
     })?;
     sessions::pin(root, &sessions::session_file(&id));

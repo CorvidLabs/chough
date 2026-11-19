@@ -53,47 +53,129 @@ pub(crate) struct Match {
 /// The local facts a value is checked against.
 #[derive(Clone, Debug, Default)]
 pub(crate) struct Local {
-    user: Option<String>,
+    users: Vec<String>,
     hosts: Vec<String>,
 }
 
 impl Local {
-    /// This machine's user and host names, read once per process.
+    /// This machine's user and host names, read once per process: the account's user
+    /// name, and `USER` or `LOGNAME` when it names another (#379); the host name, and on
+    /// macOS the LocalHostName (#368).
     pub(crate) fn current() -> &'static Local {
         static LOCAL: OnceLock<Local> = OnceLock::new();
         LOCAL.get_or_init(|| {
-            let user = ["USER", "LOGNAME", "USERNAME"]
+            let variable = ["USER", "LOGNAME", "USERNAME"]
                 .iter()
                 .find_map(|name| std::env::var(name).ok().filter(|value| !value.is_empty()));
-            Local::new(user.as_deref(), host_name().as_deref())
+            let mut local = Local::new(account_user().as_deref(), host_name().as_deref());
+            if let Some(user) = variable {
+                local.add_user(&user);
+            }
+            if let Some(host) = local_host_name() {
+                local.add_host(&host);
+            }
+            local
         })
     }
 
     /// Facts given explicitly, for tests and for a migration run on another machine's
     /// records.
     pub(crate) fn new(user: Option<&str>, host: Option<&str>) -> Local {
-        let user = user
-            .map(str::trim)
-            .filter(|user| user.len() >= 2 && user.bytes().all(name_byte))
-            .map(str::to_string);
-        let mut hosts = vec![];
-        if let Some(host) = host.map(str::trim) {
-            for candidate in [host, host.split('.').next().unwrap_or(host)] {
-                if candidate.len() >= 3
-                    && !candidate.eq_ignore_ascii_case("localhost")
-                    && candidate
-                        .bytes()
-                        .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.'))
-                    && !hosts
-                        .iter()
-                        .any(|known: &String| known.eq_ignore_ascii_case(candidate))
-                {
-                    hosts.push(candidate.to_string());
-                }
+        let mut local = Local::default();
+        if let Some(user) = user {
+            local.add_user(user);
+        }
+        if let Some(host) = host {
+            local.add_host(host);
+        }
+        local
+    }
+
+    /// Another name of the local user.
+    pub(crate) fn add_user(&mut self, user: &str) {
+        let user = user.trim();
+        if user.len() >= 2
+            && user.bytes().all(name_byte)
+            && !self.users.iter().any(|known| known == user)
+        {
+            self.users.push(user.to_string());
+        }
+    }
+
+    /// Another name of this machine: the name, its first label and each as its
+    /// `<name>.local` Bonjour name (#368).
+    pub(crate) fn add_host(&mut self, host: &str) {
+        let host = host.trim();
+        let label = host.split('.').next().unwrap_or(host);
+        let bonjour = format!("{label}.local");
+        for candidate in [host, label, bonjour.as_str()] {
+            if candidate.len() >= 3
+                && !candidate.eq_ignore_ascii_case("localhost")
+                && !candidate.eq_ignore_ascii_case("localhost.local")
+                && !candidate.starts_with('.')
+                && candidate
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.'))
+                && !self
+                    .hosts
+                    .iter()
+                    .any(|known: &String| known.eq_ignore_ascii_case(candidate))
+            {
+                self.hosts.push(candidate.to_string());
             }
         }
-        Local { user, hosts }
     }
+}
+
+/// The user name of the account this process runs as, whatever `USER` and `LOGNAME` say
+/// (#379).
+#[cfg(unix)]
+fn account_user() -> Option<String> {
+    let mut entry = std::mem::MaybeUninit::<libc::passwd>::uninit();
+    let mut buffer = vec![0_u8; 4096];
+    let mut found: *mut libc::passwd = std::ptr::null_mut();
+    // SAFETY: every pointer is valid for the call, the buffer for its whole length, and
+    // `found` is set to `entry` or null.
+    let status = unsafe {
+        libc::getpwuid_r(
+            libc::getuid(),
+            entry.as_mut_ptr(),
+            buffer.as_mut_ptr().cast(),
+            buffer.len(),
+            &mut found,
+        )
+    };
+    if status != 0 || found.is_null() {
+        return None;
+    }
+    // SAFETY: getpwuid_r succeeded, so `entry` is initialized and `pw_name` points into
+    // `buffer` at a NUL-terminated name.
+    let name = unsafe { std::ffi::CStr::from_ptr((*found).pw_name) };
+    name.to_str().ok().map(str::to_string)
+}
+
+#[cfg(not(unix))]
+fn account_user() -> Option<String> {
+    None
+}
+
+/// The macOS LocalHostName, which Bonjour shares as `<name>.local` and which can differ
+/// from the host name (#368), read from the system preferences without starting a
+/// process.
+#[cfg(target_os = "macos")]
+fn local_host_name() -> Option<String> {
+    let text =
+        std::fs::read_to_string("/Library/Preferences/SystemConfiguration/preferences.plist")
+            .ok()?;
+    let after = &text[text.find("<key>LocalHostName</key>")? + 24..];
+    let value = after.trim_start().strip_prefix("<string>")?;
+    let name = &value[..value.find("</string>")?];
+    (!name.is_empty()).then(|| name.to_string())
+}
+
+#[cfg(not(target_os = "macos"))]
+fn local_host_name() -> Option<String> {
+    None
 }
 
 #[cfg(unix)]
@@ -155,6 +237,49 @@ pub(crate) fn check(local: &Local, field: &str, value: &str) -> Result<()> {
         "refused:leak: {field} holds {}; remove it, or pass --redact to store `<redacted:<kind>>` instead; nothing was written",
         kinds.join(", ")
     )
+}
+
+/// What `value` holds that an error must not show (REQ-records-006, #367): the kinds of
+/// leak it matches, and control characters, invisible formatting ones included, or
+/// `None` when an error may show it.
+pub(crate) fn unshowable(value: &str) -> Option<String> {
+    let mut held: Vec<&str> = find(Local::current(), value)
+        .iter()
+        .map(|found| found.kind.name())
+        .collect();
+    held.sort_unstable();
+    held.dedup();
+    if value.chars().any(hidden) {
+        held.push("control characters");
+    }
+    (!held.is_empty()).then(|| held.join(", "))
+}
+
+/// `value`, given as `field`, as an error shows it (REQ-records-006, #367): the value
+/// itself when it is clean, otherwise `<field holding what>`, never the value.
+pub(crate) fn shown(field: &str, value: &str) -> String {
+    match unshowable(value) {
+        None => value.to_string(),
+        Some(held) => format!("<{field} holding {held}>"),
+    }
+}
+
+/// Whether `character` is a control character or an invisible formatting one, such as a
+/// right-to-left override or a zero-width space, which a terminal acts on or hides.
+fn hidden(character: char) -> bool {
+    character.is_control()
+        || matches!(
+            character,
+            '\u{ad}'
+                | '\u{61c}'
+                | '\u{180e}'
+                | '\u{200b}'..='\u{200f}'
+                | '\u{202a}'..='\u{202e}'
+                | '\u{2060}'..='\u{2064}'
+                | '\u{2066}'..='\u{206f}'
+                | '\u{feff}'
+                | '\u{fff9}'..='\u{fffb}'
+        )
 }
 
 /// Refuse a name a person gives, such as a session key or an explicit entry ID, that
@@ -300,8 +425,14 @@ fn paths(value: &str, all: &mut Vec<Match>) {
             }
         }
     }
-    for (start, _) in value.match_indices("~/") {
-        if starts_word(bytes, start) {
+    for (start, _) in value.match_indices('~') {
+        // `~/` is this user's home, and `~<user>/` another user's (#368); a user name
+        // starts with a letter or `_`, so `~1/3` is a fraction.
+        let name_end = run(bytes, start + 1, name_byte);
+        let named = name_end == start + 1
+            || bytes[start + 1].is_ascii_alphabetic()
+            || bytes[start + 1] == b'_';
+        if starts_word(bytes, start) && named && bytes.get(name_end) == Some(&b'/') {
             all.push(Match {
                 kind: Kind::HomePath,
                 start,
@@ -380,12 +511,15 @@ fn names(local: &Local, value: &str, all: &mut Vec<Match>) {
     for host in &local.hosts {
         let needle = host.to_ascii_lowercase();
         let anywhere = host_anywhere(host);
+        // A dotted name, such as a fully qualified one, counts glued into a hyphenated
+        // name too, as in `build-<host>-1` (#368); a single label might be one word of a
+        // slug, so a hyphen still continues it.
+        let glued = host.contains('.');
+        let continues = |byte: u8| byte.is_ascii_alphanumeric() || (byte == b'-' && !glued);
         for (start, _) in lower.match_indices(&needle) {
             let end = start + needle.len();
-            let before = start == 0
-                || !(bytes[start - 1].is_ascii_alphanumeric() || bytes[start - 1] == b'-');
-            let after =
-                end == bytes.len() || !(bytes[end].is_ascii_alphanumeric() || bytes[end] == b'-');
+            let before = start == 0 || !continues(bytes[start - 1]);
+            let after = end == bytes.len() || !continues(bytes[end]);
             if before && after && (anywhere || names_a_host(bytes, start, end, &urls)) {
                 all.push(Match {
                     kind: Kind::HostName,
@@ -395,12 +529,54 @@ fn names(local: &Local, value: &str, all: &mut Vec<Match>) {
             }
         }
     }
-    let Some(user) = &local.user else {
-        return;
-    };
-    for (start, _) in value.match_indices(user.as_str()) {
+    for user in &local.users {
+        user_names(user, value, all);
+    }
+}
+
+/// The top folders of a system's root, which name no user even when a user has the same
+/// name, as `/dev/` for a user named `dev` (#379).
+const ROOT_FOLDERS: [&str; 24] = [
+    "Applications",
+    "Library",
+    "System",
+    "Users",
+    "Volumes",
+    "bin",
+    "boot",
+    "cores",
+    "dev",
+    "etc",
+    "home",
+    "lib",
+    "lib64",
+    "media",
+    "mnt",
+    "nix",
+    "opt",
+    "private",
+    "proc",
+    "root",
+    "run",
+    "sbin",
+    "snap",
+    "srv",
+];
+
+/// The places `user`, the local user name, appears in `value`: inside a path, but not as
+/// the first folder of an absolute path where it names a system root, or as
+/// `<user>@<host>` (REQ-records-006).
+fn user_names(user: &str, value: &str, all: &mut Vec<Match>) {
+    let bytes = value.as_bytes();
+    for (start, _) in value.match_indices(user) {
         let end = start + user.len();
+        let at_root = start > 0
+            && bytes[start - 1] == b'/'
+            && (start == 1
+                || (!name_byte(bytes[start - 2]) && !matches!(bytes[start - 2], b'/' | b'~')))
+            && ROOT_FOLDERS.contains(&user);
         let in_path = start > 0
+            && !at_root
             && matches!(bytes[start - 1], b'/' | b'\\')
             && (end == bytes.len() || matches!(bytes[end], b'/' | b'\\') || !name_byte(bytes[end]));
         let at_host = starts_word(bytes, start)
@@ -489,7 +665,7 @@ type TokenForm = (&'static str, usize, fn(u8) -> bool, fn(u8) -> bool);
 
 fn tokens(value: &str, all: &mut Vec<Match>) {
     let bytes = value.as_bytes();
-    let forms: [TokenForm; 12] = [
+    let forms: [TokenForm; 14] = [
         ("ghp_", 30, |byte| byte.is_ascii_alphanumeric(), word_byte),
         ("gho_", 30, |byte| byte.is_ascii_alphanumeric(), word_byte),
         ("ghu_", 30, |byte| byte.is_ascii_alphanumeric(), word_byte),
@@ -505,6 +681,10 @@ fn tokens(value: &str, all: &mut Vec<Match>) {
         ("xoxb-", 10, token_byte, word_byte),
         ("xoxp-", 10, token_byte, word_byte),
         ("xoxa-", 10, token_byte, word_byte),
+        // A Slack app-level token (#368).
+        ("xapp-", 10, token_byte, word_byte),
+        // A Hugging Face access token (#368).
+        ("hf_", 30, |byte| byte.is_ascii_alphanumeric(), word_byte),
         // `sk-` is short and common in slugs (`-sk-learn-…`, a generated bug ID), so a
         // hyphen before it continues a word, as in 0.6.0 (#316); the distinctive forms
         // above keep the hyphen boundary of #267.
@@ -633,7 +813,15 @@ fn credentials(value: &str, all: &mut Vec<Match>) {
     let bytes = value.as_bytes();
     let lower = value.to_ascii_lowercase();
     for word in [
-        "password", "passwd", "secret", "token", "api_key", "apikey", "api-key",
+        "password",
+        "passwd",
+        "secret",
+        "secret_key",
+        "secret_access_key",
+        "token",
+        "api_key",
+        "apikey",
+        "api-key",
     ] {
         for (at, _) in lower.match_indices(word) {
             let key_end = at + word.len();
@@ -644,7 +832,12 @@ fn credentials(value: &str, all: &mut Vec<Match>) {
             {
                 continue;
             }
-            let mut cursor = run(bytes, key_end, |byte| byte == b' ');
+            // A quoted key, as in JSON's `{"password": …}`, closes its quote first (#368).
+            let mut cursor = key_end;
+            if matches!(bytes.get(cursor), Some(b'"' | b'\'')) {
+                cursor += 1;
+            }
+            cursor = run(bytes, cursor, |byte| byte == b' ');
             if !matches!(bytes.get(cursor), Some(b'=' | b':')) {
                 continue;
             }
@@ -1029,5 +1222,118 @@ mod tests {
             redact(&local, "see brp:/Users/SYNTHETIC-person/project").0,
             "see <redacted:host-name>:<redacted:home-path>"
         );
+    }
+
+    /// #368: the listed forms: a quoted JSON key, `SECRET_KEY` and `AWS_SECRET_ACCESS_KEY`
+    /// assignments, `xapp-` and `hf_` tokens and `~<user>/` paths, while a fraction such
+    /// as `~1/3` and an ordinary `secret` word are no match.
+    #[test]
+    fn the_listed_forms_are_leaks() {
+        let local = local();
+        let kinds = |value: &str| -> Vec<&'static str> {
+            find(&local, value)
+                .iter()
+                .map(|found| found.kind.name())
+                .collect()
+        };
+        assert_eq!(
+            kinds(concat!("{\"password\": \"", "hunter2hunter2\"}")),
+            ["credential"]
+        );
+        assert_eq!(
+            kinds(concat!("{'secret': '", "abcdefgh12345678'}")),
+            ["credential"]
+        );
+        assert_eq!(
+            kinds(concat!("SECRET_KEY = ", "abcdefgh12345678")),
+            ["credential"]
+        );
+        assert_eq!(
+            kinds(concat!(
+                "export AWS_SECRET_ACCESS_KEY=",
+                "wJalrXUtnFEMIK7MDENG"
+            )),
+            ["credential"]
+        );
+        assert_eq!(
+            kinds(concat!("slack xapp-", "1-A0123ABCDEF-1234567890123-abcdef")),
+            ["token"]
+        );
+        assert_eq!(
+            kinds(concat!("hf_", "abcdefghijklmnopqrstuvwxyzABCDEFGH")),
+            ["token"]
+        );
+        assert_eq!(kinds("see ~bob/projects/app"), ["home-path"]);
+        assert_eq!(kinds("see ~/projects/app"), ["home-path"]);
+        assert!(kinds("about ~1/3 of the runs").is_empty());
+        assert!(kinds("keep the secret_key out of git").is_empty());
+        assert!(kinds("the \"password\": field is documented").is_empty());
+        // A short `hf_` word is no token.
+        assert!(kinds("hf_short").is_empty());
+    }
+
+    /// #368: a host's `<name>.local` Bonjour name, the macOS LocalHostName given as
+    /// another host and its `.local` name are host names, and a dotted host name glued
+    /// into a hyphenated build name still is, while a single label stays a word of a slug.
+    #[test]
+    fn bonjour_names_and_dotted_hosts_in_build_names_are_host_names() {
+        let mut local = Local::new(None, Some("ci-box.example.com"));
+        local.add_host("Studio");
+        let kinds = |value: &str| -> Vec<&'static str> {
+            find(&local, value)
+                .iter()
+                .map(|found| found.kind.name())
+                .collect()
+        };
+        assert_eq!(kinds("ping ci-box.local now"), ["host-name"]);
+        assert_eq!(kinds("ping studio.local now"), ["host-name"]);
+        assert_eq!(kinds("built on build-ci-box.example.com-1"), ["host-name"]);
+        // A short all-letter LocalHostName alone is still an ordinary word.
+        assert!(kinds("the Studio session").is_empty());
+        assert_eq!(kinds("ssh me@studio"), ["host-name"]);
+        // A single label inside a slug is a word of it, as before.
+        assert!(kinds("fix-ci-box-flake").is_empty());
+    }
+
+    /// #379: a user named like a system root names no user as the first folder of an
+    /// absolute path, as `/dev/disk2s1`, but still does deeper in a path or as
+    /// `<user>@<host>`; every name the user goes by counts.
+    #[test]
+    fn a_system_root_is_no_user_name_path() {
+        let mut local = Local::new(Some("dev"), None);
+        local.add_user("SYNTHETICother");
+        let kinds = |value: &str| -> Vec<&'static str> {
+            find(&local, value)
+                .iter()
+                .map(|found| found.kind.name())
+                .collect()
+        };
+        assert!(kinds("mounted /dev/disk2s1").is_empty());
+        assert!(kinds("(/dev/null)").is_empty());
+        assert_eq!(kinds("see /opt/dev/x"), ["user-name"]);
+        assert_eq!(kinds("ssh dev@build-box"), ["user-name"]);
+        assert_eq!(kinds("see /srv/SYNTHETICother/x"), ["user-name"]);
+    }
+
+    /// #367: an error shows a clean value as it is, and otherwise names what it holds,
+    /// leak kinds and control or invisible formatting characters alike, never the value.
+    #[test]
+    fn an_unclean_value_is_named_by_what_it_holds() {
+        assert_eq!(shown("bug ID", "2026-01-01-totals"), "2026-01-01-totals");
+        let token = concat!("x ghp_", "abcdefghij0123456789abcdefghij0123 y");
+        assert_eq!(shown("bug ID", token), "<bug ID holding token>");
+        assert_eq!(
+            shown("name", "a\u{1b}[31mb"),
+            "<name holding control characters>"
+        );
+        assert_eq!(
+            shown("name", "a\u{202e}b"),
+            "<name holding control characters>"
+        );
+        assert_eq!(
+            shown("name", "a\u{200b}b"),
+            "<name holding control characters>"
+        );
+        assert_eq!(unshowable("plain words"), None);
     }
 }

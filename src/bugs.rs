@@ -434,7 +434,11 @@ pub(super) fn resolve_id(root: &Path, id: &str) -> Result<String> {
 fn find<'a>(bugs: &'a [Stored], id: &str) -> Result<&'a Stored> {
     let found: Vec<&Stored> = bugs.iter().filter(|bug| bug.holds(id)).collect();
     match found.as_slice() {
-        [] => bail!("unknown bug: {id}; run `chough bug list --all` to see the bug IDs"),
+        // REQ-records-006 (#367): the ID is shown only when clean.
+        [] => bail!(
+            "unknown bug: {}; run `chough bug list --all` to see the bug IDs",
+            crate::leaks::shown("bug ID", id)
+        ),
         [bug] => Ok(bug),
         _ => bail!(
             "refused: {id} is the id or alias of more than one bug ({}); `chough doctor` reports it",
@@ -808,7 +812,8 @@ fn check_evidence(evidence: &Evidence<'_>, bug: &Stored, ids: &[String]) -> Resu
     for id in ids {
         let linked = evidence.find(bug, id)?.with_context(|| {
             format!(
-                "unknown evidence {id}: no open session's entry, archived story's receipt or receipt of this bug has that id or alias"
+                "unknown evidence {}: no open session's entry, archived story's receipt or receipt of this bug has that id or alias",
+                crate::leaks::shown("evidence ID", id)
             )
         })?;
         stored.push(stored_form(id, &linked));
@@ -890,7 +895,10 @@ fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Resul
         "a regression needs --regression-baseline: a passed observation at an earlier, ancestor revision",
     )?;
     let baseline = evidence.find(bug, &baseline_id)?.with_context(|| {
-        format!("unknown evidence {baseline_id}: the regression baseline is not present")
+        format!(
+            "unknown evidence {}: the regression baseline is not present",
+            crate::leaks::shown("evidence ID", &baseline_id)
+        )
     })?;
     ensure!(
         baseline.is("passed"),

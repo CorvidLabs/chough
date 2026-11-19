@@ -1020,3 +1020,78 @@ fn a_gate_close_names_the_step_its_decision_allows_never_chough_next() {
         }
     }
 }
+
+/// The list and number `gate list` gives the open gate `gate`.
+#[cfg(unix)]
+fn listed(fixture: &Fixture, gate: &str) -> (String, String) {
+    let listed = fixture.ok(&["gate", "list", "--json"]);
+    let list = listed["list"].as_str().unwrap().to_string();
+    let number = listed["gates"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|listed| listed["gate"] == gate)
+        .unwrap()["number"]
+        .to_string();
+    (list, number)
+}
+
+/// REQ-records-006 (#367, #380), TC-records-a-decided-by-value-is-shown-only-when-clean:
+/// `gate record --decided-by` holding a leak or a control character names no configured
+/// human and is refused naming what it holds, never the value; a clean unknown name is
+/// still named. A close that `gate record` runs and that is refused as a leak says
+/// `Error:` once.
+#[cfg(unix)]
+#[test]
+fn a_decided_by_value_is_shown_only_when_clean() {
+    let fixture = project();
+    fixture.ok(&["checkpoint", "--awaiting-human", SCOPE, "--holds", "plan"]);
+    let (list, number) = listed(&fixture, SCOPE);
+    let before = records(fixture.root());
+    let record = |who: &str, words: &str| {
+        fixture.run(&[
+            "gate",
+            "record",
+            &list,
+            "--gates",
+            &number,
+            "--decided-by",
+            who,
+            "--words",
+            words,
+            "--where",
+            "SYNTHETIC chat",
+            "--recorded-by",
+            "SYNTHETIC-agent",
+        ])
+    };
+    for (who, held, secret) in [
+        (
+            "SYNTHETIC synthetic.person@example.com",
+            "email",
+            "example.com",
+        ),
+        ("SYNTHETIC \u{202e}nosrep", "control characters", "\u{202e}"),
+    ] {
+        let output = record(who, "yes");
+        let text = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert!(!output.status.success(), "{text}");
+        assert!(text.contains("refused:human-identity-unknown"), "{text}");
+        assert!(!text.contains(secret), "the value was shown: {text:?}");
+        assert!(
+            text.contains(&format!("--decided-by, which holds {held}, names")),
+            "{text}"
+        );
+    }
+    let text = String::from_utf8_lossy(&record("nobody", "yes").stderr).into_owned();
+    assert!(text.contains("--decided-by \"nobody\""), "{text}");
+    assert_eq!(records(fixture.root()), before, "something was written");
+
+    let words = concat!("ok ghp_", "abcdefghij0123456789", "abcdefghij0123");
+    let output = record("SYNTHETIC-human", words);
+    let text = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "{text}");
+    assert!(text.contains("refused:leak"), "{text}");
+    assert_eq!(text.matches("Error:").count(), 1, "{text}");
+    assert_eq!(records(fixture.root()), before, "something was written");
+}
