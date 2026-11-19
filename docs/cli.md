@@ -1296,8 +1296,11 @@ review (REQ-cli-059). It runs in these steps:
    an archived change is not a second state.
    SpecSync reads that history as corrupt and would only say so after archiving, so
    the ship would stop halfway (#298). It checks every commit in that range, however
-   many, and refuses as `refused:history-unchecked` when Git cannot list the range or
-   read a commit in it, as in a shallow clone without the base commit (#400). The gate
+   many (#400). In a shallow clone that lacks the base commit it refuses as
+   `refused:history-unchecked`, naming `git fetch --unshallow`; in a complete clone
+   whose base commit is no longer there, as after a squash merge removed it, there is no
+   range to read, so it says so on standard error and the ship goes on; a commit in the
+   range that Git cannot read is refused, named. The gate
    close and the move into done after the ship act on the session the command resolved,
    so `--session` and `CHOUGH_SESSION` hold for them too (#369). The refusal names the commit that brought the
    duplicate in, how many commits hold it, and the change, and says to rebuild the

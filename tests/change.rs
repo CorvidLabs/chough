@@ -1394,7 +1394,7 @@ fn head_of(fixture: &Fixture) -> String {
 /// 1,001 more commits, is still refused, with nothing run. A recorded base commit the
 /// repository does not hold is refused as `refused:history-unchecked`, never passed.
 #[test]
-fn ship_checks_the_whole_history_and_refuses_what_it_cannot_read() {
+fn ship_checks_the_whole_history_and_goes_on_without_a_base() {
     let fixture = shipping_session_at("accept");
     let base = head_of(&fixture);
     std::fs::remove_dir_all(
@@ -1433,7 +1433,8 @@ fn ship_checks_the_whole_history_and_refuses_what_it_cannot_read() {
     assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
     assert_eq!(fixture.read(&record), before);
 
-    // A base commit the repository does not hold.
+    // A complete clone whose recorded base commit is not an object, as after a squash
+    // merge removed it: there is no range to read, so the ship says so and goes on.
     let fixture = shipping_session_at("accept");
     fixture.write(
         ".specsync/changes/a5/state.json",
@@ -1442,18 +1443,80 @@ fn ship_checks_the_whole_history_and_refuses_what_it_cannot_read() {
             "3".repeat(40)
         ),
     );
-    fixture.commit("a5 with a base this clone lacks");
-    let before = fixture.read(&record_of(&fixture));
+    fixture.commit("a5 with a base the squash merge removed");
     let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
-    let said = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{stderr}");
+    assert!(
+        stderr.contains("could not be checked") && stderr.contains("3333333333"),
+        "{stderr}"
     );
-    assert!(!output.status.success(), "the ship ran: {said}");
-    assert!(said.contains("refused:history-unchecked"), "{said}");
-    assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
-    assert_eq!(fixture.read(&record_of(&fixture)), before);
+    assert_eq!(ship_session(&fixture)["stage"]["current"], "done");
+}
+
+/// REQ-cli-059 (#400): in a shallow clone that lacks the change's base commit, the ship
+/// refuses as `refused:history-unchecked`, naming `git fetch --unshallow`, with nothing
+/// run and nothing written.
+#[cfg(unix)]
+#[test]
+fn ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow() {
+    let fixture = shipping_session_at("accept");
+    let base = head_of(&fixture);
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    fixture.write("notes.txt", "later work\n");
+    fixture.commit("later work");
+    let clone = tempfile::tempdir().unwrap();
+    let shallow = clone.path().join("shallow");
+    let cloned = std::process::Command::new("git")
+        .args(["clone", "-q", "--depth", "1"])
+        .arg(format!("file://{}", fixture.root().display()))
+        .arg(&shallow)
+        .output()
+        .unwrap();
+    assert!(
+        cloned.status.success(),
+        "{}",
+        String::from_utf8_lossy(&cloned.stderr)
+    );
+    // The machine-local files a clone does not carry: the identity and the pointer.
+    let local = fixture.root().join(".chough/local");
+    std::fs::create_dir_all(shallow.join(".chough/local")).unwrap();
+    for entry in std::fs::read_dir(&local).unwrap().flatten() {
+        if entry.path().is_file() {
+            std::fs::copy(
+                entry.path(),
+                shallow.join(".chough/local").join(entry.file_name()),
+            )
+            .unwrap();
+        }
+    }
+    let record = format!(".chough/sessions/{}/session.md", fixture.active_id());
+    let before = std::fs::read_to_string(shallow.join(&record)).unwrap();
+    let mut paths = vec![shallow.join("bin")];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_chough"))
+        .arg("--root")
+        .arg(&shallow)
+        .args(ship_with(SHIP_ID, &review_relay()))
+        .env("PATH", std::env::join_paths(paths).unwrap())
+        .env("CHOUGH_ACTOR", "SYNTHETIC-agent")
+        .output()
+        .unwrap();
+    let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(!output.status.success(), "the ship ran: {stderr}");
+    assert!(stderr.contains("refused:history-unchecked"), "{stderr}");
+    assert!(stderr.contains("git fetch --unshallow"), "{stderr}");
+    assert!(!shallow.join(".stub-ship-calls").exists(), "SpecSync ran");
+    assert_eq!(
+        std::fs::read_to_string(shallow.join(&record)).unwrap(),
+        before
+    );
 }
 
 /// Add `count` empty commits on the current branch in one `git fast-import` run.
@@ -1493,10 +1556,6 @@ fn empty_commits(fixture: &Fixture, count: usize) {
         .write_all(stream.as_bytes())
         .unwrap();
     assert!(child.wait().unwrap().success());
-}
-
-fn record_of(fixture: &Fixture) -> String {
-    format!(".chough/sessions/{}/session.md", fixture.active_id())
 }
 
 /// REQ-cli-059 (#369): with the pointer on another session, `chough change ship <id>

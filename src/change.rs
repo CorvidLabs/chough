@@ -662,12 +662,31 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
     if git(&["rev-parse", "--git-dir"]).is_none() {
         return Ok(());
     }
+    let short_base = &base[..base.len().min(12)];
     let unchecked = |what: &str| {
         anyhow::anyhow!(
-            "refused:history-unchecked: Git could not read {what}, so this change's history from its base commit {} to HEAD could not be checked and nothing ran.\nFetch the missing history (in a shallow clone, `git fetch --unshallow`) and run the ship again.",
-            &base[..base.len().min(12)]
+            "refused:history-unchecked: Git could not read {what}, so this change's history from its base commit {short_base} to HEAD could not be checked and nothing ran.\nFetch the missing history and run the ship again."
         )
     };
+    // REQ-cli-059 (#400): a base commit that is not an object. In a shallow clone the
+    // history is only missing here, so fetching it is the way on; in a complete clone,
+    // as after a squash merge removed the base, there is no range to read at all, and
+    // refusing would stop the ship for good, so it goes on and says so.
+    if git(&["cat-file", "-e", &format!("{base}^{{commit}}")]).is_none() {
+        if git(&["rev-parse", "--is-shallow-repository"])
+            .as_deref()
+            .map(str::trim)
+            == Some("true")
+        {
+            bail!(
+                "refused:history-unchecked: this shallow clone does not hold the change's base commit {short_base}, so its history to HEAD could not be checked and nothing ran.\nRun `git fetch --unshallow`, then the ship again."
+            );
+        }
+        eprintln!(
+            "note: the change's base commit {short_base} is not in this repository, as after a squash merge removed it, so its history from that base could not be checked; the ship goes on."
+        );
+        return Ok(());
+    }
     // REQ-cli-059 (#400): the whole range, however many commits.
     let range = format!("{base}..HEAD");
     let commits = git(&["rev-list", &range]).ok_or_else(|| unchecked(&range))?;

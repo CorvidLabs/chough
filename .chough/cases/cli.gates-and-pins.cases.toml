@@ -23,7 +23,7 @@ test = "a_hand_edited_no_native_change_cannot_unlock_the_ungated_move"
 
 [[case]]
 id = "TC-cli-ship-checks-the-whole-history"
-title = "A history holding a change both open and archived and then 1,001 more commits is still refused as refused:corrupt-history, and a base commit the repository lacks is refused as refused:history-unchecked"
+title = "A history holding a change both open and archived and then 1,001 more commits is still refused as refused:corrupt-history, and in a complete clone whose base commit is gone the ship says so and goes on"
 status = "active"
 track = "functional"
 method = "automated"
@@ -32,12 +32,12 @@ requirements = ["REQ-cli-059"]
 paths = ["src/change.rs", "tests/change.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/change.rs::ship_checks_the_whole_history_and_refuses_what_it_cannot_read passes"]
+expected = ["tests/change.rs::ship_checks_the_whole_history_and_goes_on_without_a_base passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "change"
-test = "ship_checks_the_whole_history_and_refuses_what_it_cannot_read"
+test = "ship_checks_the_whole_history_and_goes_on_without_a_base"
 
 [[case]]
 id = "TC-cli-ship-acts-on-the-pinned-session"
@@ -92,3 +92,21 @@ expected = ["tests/sessions.rs::session_shelve_resolves_its_key_as_session_use_d
 adapter = "cargo-test"
 test_target = "sessions"
 test = "session_shelve_resolves_its_key_as_session_use_does"
+
+[[case]]
+id = "TC-cli-ship-in-a-shallow-clone-names-fetch-unshallow"
+title = "In a shallow clone that lacks the change's base commit, change ship refuses as refused:history-unchecked naming git fetch --unshallow, with nothing run"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-3"]
+requirements = ["REQ-cli-059"]
+paths = ["src/change.rs", "tests/change.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/change.rs::ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "change"
+test = "ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow"
