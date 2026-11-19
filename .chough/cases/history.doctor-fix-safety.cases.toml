@@ -234,3 +234,39 @@ expected = ["tests/sessions.rs::a_failed_git_read_holds_the_finish_and_says_so p
 adapter = "cargo-test"
 test_target = "sessions"
 test = "a_failed_git_read_holds_the_finish_and_says_so"
+
+[[case]]
+id = "TC-history-an-unreadable-entry-is-dropped-by-the-printed-commands"
+title = "After a first fix with an unreadable entry, next's command and the finding's drop command run as printed and finish the archive (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/main.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_unreadable_entry_is_dropped_by_the_printed_commands passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_unreadable_entry_is_dropped_by_the_printed_commands"
+
+[[case]]
+id = "TC-history-a-redacting-save-leaves-no-timeline-rewrite"
+title = "A save under --redact redacts an older Timeline leak in place, and doctor reports no timeline_rewritten (#374)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::a_redacting_save_leaves_no_timeline_rewrite passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "a_redacting_save_leaves_no_timeline_rewrite"

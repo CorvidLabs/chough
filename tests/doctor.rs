@@ -1586,6 +1586,50 @@ fn a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is() {
     );
 }
 
+/// REQ-history-012 (#374, with #407's in-place redaction), TC-history-a-redacting-save-leaves-no-timeline-rewrite:
+/// a save under `--redact`, such as `checkpoint --decision`, redacts a leak an older
+/// Chough left in a committed Timeline entry where it stands, and the next `doctor`
+/// reports no `timeline_rewritten`, since the entry equals HEAD's redacted again; the
+/// save also says how many values it redacted.
+#[test]
+fn a_redacting_save_leaves_no_timeline_rewrite() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.ok(&["stage", "advance", "--json"]);
+    let file = fixture.session_file();
+    let text = fixture.read(&file);
+    let entry = text
+        .lines()
+        .find(|line| line.starts_with("- 20") && line.contains(" · "))
+        .unwrap_or_else(|| panic!("{text}"))
+        .to_string();
+    // An older Chough let a home path into the entry's text, before its `^t-` ID.
+    let leaking = entry.replacen(" ^t-", " /Users/SYNTHETIC-person/notes ^t-", 1);
+    assert_ne!(leaking, entry);
+    fixture.write(&file, &text.replacen(&entry, &leaking, 1));
+    fixture.commit("an entry holding a home path");
+    let output = fixture.run(&[
+        "--redact",
+        "checkpoint",
+        "--decision",
+        "SYNTHETIC keep going",
+    ]);
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{said}");
+    assert!(
+        said.contains("redacted 1 value(s) in the session record"),
+        "{said}"
+    );
+    let saved = fixture.read(&file);
+    assert!(!saved.contains("/Users/SYNTHETIC-person"), "{saved}");
+    assert!(saved.contains("<redacted:home-path>"), "{saved}");
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(
+        of_kind(&report, "timeline_rewritten").is_empty(),
+        "{report:#}"
+    );
+}
+
 /// REQ-records-014 (#402), TC-records-the-spec-walk-follows-no-link-and-is-bounded: with
 /// `source_dirs = ["."]` and `specs/` holding a link to a spec outside the project, a
 /// folder link outside it and two folder links back to the project, `doctor` and `init`
