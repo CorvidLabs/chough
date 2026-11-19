@@ -1,0 +1,143 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795045210,
+      "digest": "82b21588a0a0af12e631ee8171380a057fafec02499ae802082d9997e86b5812",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-361\": \"doctor and next\" (GitHub issue #361, which records Leif's decision of 2026-11-18 (chough doctor reports each known-outdated skill file naming chough skill update, chough next shows one line, and status JSON carries no_native_change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval). Relayed and recorded by fable-t4b at 2026-11-18T23:40:10Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-361",
+        "title": "Fix 361",
+        "description": "fix 361",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.skill-outdated-nudge.cases.toml",
+          "changelog.d/2026-11-18-fix-361.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/doctor.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "While an installed skill file is byte-identical to a known earlier bundle, chough doctor reports it as skill_outdated, naming the file and chough skill update, not a decision, and chough next shows the line 'Skill files are outdated: run chough skill update' and skill_outdated as the count; a current, missing or edited file gives neither, and chough skill update clears both. chough status carries no_native_change once the session recorded it."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lessons apply: human gates are plain text in tasks.md and the delta is frozen at approval. Doctor writes no skill file (REQ-cli-016 keeps updates to chough skill update), and next reads only the installed copy's files.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "9f529780411d04e2334a97ac6b06786998b1d470d447a4e2889ed23732351b74"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-016": "6e395768b4fa4e4d1cdd4aa94f85a1fb1c1417a1e8bcf8f020c92ab73363c23d"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "doctor and next",
+        "where": "GitHub issue #361, which records Leif's decision of 2026-11-18 (chough doctor reports each known-outdated skill file naming chough skill update, chough next shows one line, and status JSON carries no_native_change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795054067,
+      "digest": "82b21588a0a0af12e631ee8171380a057fafec02499ae802082d9997e86b5812",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-361 with the uninspected-path sentence (native approval)\": \"Yes, approve the sentence\" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #362: the sentence added to REQ-cli-016 about a skill directory or file that cannot be inspected, with a one-time send-back of fix-361). Relayed and recorded by fable-t4b at 2026-11-19T02:07:46Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-361",
+        "title": "Fix 361",
+        "description": "fix 361",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.skill-outdated-nudge.cases.toml",
+          "changelog.d/2026-11-18-fix-361.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "src/doctor.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "tests/package.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "While an installed skill file is byte-identical to a known earlier bundle, chough doctor reports it as skill_outdated, naming the file and chough skill update, not a decision, and chough next shows the line 'Skill files are outdated: run chough skill update' and skill_outdated as the count; a current, missing or edited file gives neither, and chough skill update clears both. chough status carries no_native_change once the session recorded it."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lessons apply: human gates are plain text in tasks.md and the delta is frozen at approval. Doctor writes no skill file (REQ-cli-016 keeps updates to chough skill update), and next reads only the installed copy's files.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "1ecd5b717b076da814b2735cb532897320fac126a46aed755fb67fb331e96450"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-016": "6e395768b4fa4e4d1cdd4aa94f85a1fb1c1417a1e8bcf8f020c92ab73363c23d"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Yes, approve the sentence",
+        "where": "Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #362: the sentence added to REQ-cli-016 about a skill directory or file that cannot be inspected, with a one-time send-back of fix-361",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795055752,
+      "digest": "e8bb061f3e00de0cef2728c79c098926ff286a75ad73bc8b1f1d812f93ed6ae7",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": [],
+  "send_backs": [
+    {
+      "schema_version": 1,
+      "change_id": "fix-361",
+      "actor": "0xLeif",
+      "reason": "The tester's finding on #362 adds one sentence to REQ-cli-016 (a skill directory or file that cannot be inspected is skipped and reported as skill_uninspected). Leif allowed this send-back once and approved the sentence, relayed by his planning session (hc t4c), 2026-11-18. Run by fable-t4b.",
+      "timestamp": 1795054066,
+      "from_state": "verifying",
+      "to_state": "draft",
+      "cancelled_approvals": 1,
+      "cancelled_review_attempts": 0,
+      "canonical_applied": true,
+      "applied_items": [
+        {
+          "module": "cli",
+          "operation": "modified",
+          "target": "requirement",
+          "key": "REQ-cli-016",
+          "content": "Host skill installation. The helper SHALL install the complete skill bundle once for each distinct supported host directory requested, defaulting to `.agents/skills`, with the claude host sharing `.agents/skills`; SHALL report each installed file as current, edited, known-outdated or missing; SHALL update only missing files and files byte-identical to a known earlier bundle; SHALL report an installed legacy `.claude/skills/chough-workflow/` copy as legacy without writing or deleting it during init, status or update; and SHALL remove legacy files only through an explicit remove-legacy command that requires the shared copy, removes only files byte-identical to the current or a known earlier bundle and keeps every other file. While an installed skill file is byte-identical to a known earlier bundle, `chough doctor` SHALL report it as `skill_outdated`, naming the file and `chough skill update`, with no fix of its own, since doctor never writes the skill, and `chough next` SHALL show one line, ``Skill files are outdated: run `chough skill update` ``, and give the count as `skill_outdated`; neither SHALL report a current file, a missing file or a file a person edited. Trace: FLOW-1, LIFE-4, LIFE-12, LIFE-13, LIFE-14.\n\nAcceptance Criteria\n- Installing for the claude host, alone or together with openai, creates only `.agents/skills/chough-workflow/` with the complete bundle and no `.claude/` directory, and repeating the install preserves edits.\n- A bundle file byte-identical to one from a known earlier build is updated, while an edited file is reported and left unchanged.\n- An installed `.claude/skills/chough-workflow/` copy is reported as legacy by status and update and stays byte-identical; remove-legacy refuses with nothing removed while the shared copy is missing, and otherwise removes current and known-outdated legacy files and keeps edited or unknown ones.\n\n- For the exact source bundle bytes pinned to v0.1.0 c03d41956ef1d9f8380f02034f03d42bf52bc174, v0.2.0 edbc3c1adecebf6a1378a731965c3bfe8c8217df, v0.3.0 4d65542ff583ee2478f7d98c1dd4434a960e9dc1, v0.4.0 69950c7a9253230aeeee3bac0d0d6b580e291aad and v0.5.0 455cb643cd91a9c804afdf5566e3889abf1bde49, each of the24 manifest-named files reads current or known-outdated and skill update refreshes its pristine copy. This criterion covers those pinned bundles only, not unlisted future release contents.\n- Recognition matches both the manifest file name and exact byte SHA256; user-edited bytes, including one-byte/newline changes, stay edited and retain exact bytes and modes after update. Host sharing/routing, missing/current behavior and explicit legacy handling above remain unchanged.",
+          "previous_content": "Host skill installation. The helper SHALL install the complete skill bundle once for each distinct supported host directory requested, defaulting to `.agents/skills`, with the claude host sharing `.agents/skills`; SHALL report each installed file as current, edited, known-outdated or missing; SHALL update only missing files and files byte-identical to a known earlier bundle; SHALL report an installed legacy `.claude/skills/chough-workflow/` copy as legacy without writing or deleting it during init, status or update; and SHALL remove legacy files only through an explicit remove-legacy command that requires the shared copy, removes only files byte-identical to the current or a known earlier bundle and keeps every other file. Trace: FLOW-1, LIFE-4, LIFE-12, LIFE-13, LIFE-14.\n\nAcceptance Criteria\n- Installing for the claude host, alone or together with openai, creates only `.agents/skills/chough-workflow/` with the complete bundle and no `.claude/` directory, and repeating the install preserves edits.\n- A bundle file byte-identical to one from a known earlier build is updated, while an edited file is reported and left unchanged.\n- An installed `.claude/skills/chough-workflow/` copy is reported as legacy by status and update and stays byte-identical; remove-legacy refuses with nothing removed while the shared copy is missing, and otherwise removes current and known-outdated legacy files and keeps edited or unknown ones.\n\n- For the exact source bundle bytes pinned to v0.1.0 c03d41956ef1d9f8380f02034f03d42bf52bc174, v0.2.0 edbc3c1adecebf6a1378a731965c3bfe8c8217df, v0.3.0 4d65542ff583ee2478f7d98c1dd4434a960e9dc1, v0.4.0 69950c7a9253230aeeee3bac0d0d6b580e291aad and v0.5.0 455cb643cd91a9c804afdf5566e3889abf1bde49, each of the24 manifest-named files reads current or known-outdated and skill update refreshes its pristine copy. This criterion covers those pinned bundles only, not unlisted future release contents.\n- Recognition matches both the manifest file name and exact byte SHA256; user-edited bytes, including one-byte/newline changes, stay edited and retain exact bytes and modes after update. Host sharing/routing, missing/current behavior and explicit legacy handling above remain unchanged."
+        }
+      ],
+      "applied_modules": [
+        "cli"
+      ]
+    }
+  ]
+}
