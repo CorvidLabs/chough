@@ -49,6 +49,26 @@ observations:
   - 2026-11-19-tc-cli-the-printed-command-commits-the-story
   - 2026-11-19-tc-records-a-front-matter-conflict-is-named
   - 2026-11-19-tc-records-the-spec-walk-follows-no-link-and-is-bounded
+  - 2026-11-19-tc-history-the-archive-finish-keeps-what-the-story-does-not-e7c642
+  - 2026-11-19-tc-history-an-entry-that-differs-from-its-receipt-is-kept-b7d61f
+  - 2026-11-19-tc-history-macos-metadata-never-blocks-the-archive-finish-0c69e2
+  - 2026-11-19-tc-history-next-names-finishing-the-archive-8afceb
+  - 2026-11-19-tc-history-a-front-matter-conflict-is-named-5d2141
+  - 2026-11-19-tc-history-a-redacted-timeline-entry-is-not-rewritten-8f0184
+  - 2026-11-19-tc-history-a-story-an-earlier-release-wrote-still-holds-its-ba11f2
+  - 2026-11-19-tc-history-an-unreadable-file-never-stops-doctor-3cb989
+  - 2026-11-19-tc-history-the-finish-waits-until-the-story-is-committed-2cd41f
+  - 2026-11-19-tc-history-a-story-edited-after-its-commit-holds-the-finish-a6651f
+  - 2026-11-19-tc-history-an-ignored-story-holds-the-finish
+  - 2026-11-19-tc-history-an-ignored-journal-post-holds-the-finish
+  - 2026-11-19-tc-history-a-failed-git-read-holds-the-finish
+  - 2026-11-19-tc-cli-next-names-finishing-the-archive-a7d9b2
+  - 2026-11-19-tc-cli-next-names-the-archive-with-a-session-open-914865
+  - 2026-11-19-tc-cli-the-finish-command-quotes-each-path-ca5f3c
+  - 2026-11-19-tc-cli-the-archive-line-runs-as-printed-744a60
+  - 2026-11-19-tc-cli-the-printed-command-commits-the-story-5bc003
+  - 2026-11-19-tc-records-a-front-matter-conflict-is-named-d7da54
+  - 2026-11-19-tc-records-the-spec-walk-follows-no-link-and-is-bounded-d43aba
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -106,6 +126,26 @@ doctor --fix never destroys or hangs: the archive finish keeps evidence its stor
 - [Ran cargo test --locked --test next -- --exact the_printed_command_commits_the_story_with_or_without_a_journal_post for TC-cli-the-printed-command-commits-the-story: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-the-printed-command-commits-the-story.md)
 - [Ran cargo test --locked --test doctor -- --exact a_front_matter_conflict_is_named_and_resolved_not_shelved for TC-records-a-front-matter-conflict-is-named: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-front-matter-conflict-is-named.md)
 - [Ran cargo test --locked --test doctor -- --exact the_spec_walk_follows_no_link_and_is_bounded for TC-records-the-spec-walk-follows-no-link-and-is-bounded: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-the-spec-walk-follows-no-link-and-is-bounded.md)
+- [Ran cargo test --locked --test sessions -- --exact the_archive_finish_keeps_what_the_story_does_not_hold for TC-history-the-archive-finish-keeps-what-the-story-does-not-hold: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-the-archive-finish-keeps-what-the-story-does-not-e7c642.md)
+- [Ran cargo test --locked --test sessions -- --exact an_entry_that_differs_from_its_receipt_is_kept for TC-history-an-entry-that-differs-from-its-receipt-is-kept: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-an-entry-that-differs-from-its-receipt-is-kept-b7d61f.md)
+- [Ran cargo test --locked --test sessions -- --exact macos_metadata_never_blocks_the_archive_finish for TC-history-macos-metadata-never-blocks-the-archive-finish: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-macos-metadata-never-blocks-the-archive-finish-0c69e2.md)
+- [Ran cargo test --locked --test next -- --exact next_names_finishing_the_archive_until_the_folder_is_gone for TC-history-next-names-finishing-the-archive: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-next-names-finishing-the-archive-8afceb.md)
+- [Ran cargo test --locked --test doctor -- --exact a_front_matter_conflict_is_named_and_resolved_not_shelved for TC-history-a-front-matter-conflict-is-named: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-front-matter-conflict-is-named-5d2141.md)
+- [Ran cargo test --locked --test doctor -- --exact a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is for TC-history-a-redacted-timeline-entry-is-not-rewritten: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-redacted-timeline-entry-is-not-rewritten-8f0184.md)
+- [Ran cargo test --locked --test sessions -- --exact a_story_an_earlier_release_wrote_still_holds_its_entries for TC-history-a-story-an-earlier-release-wrote-still-holds-its-entries: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-story-an-earlier-release-wrote-still-holds-its-ba11f2.md)
+- [Ran cargo test --locked --test sessions -- --exact an_unreadable_file_in_an_archived_folder_never_stops_doctor for TC-history-an-unreadable-file-never-stops-doctor: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-an-unreadable-file-never-stops-doctor-3cb989.md)
+- [Ran cargo test --locked --test sessions -- --exact the_finish_waits_until_the_story_and_post_are_committed for TC-history-the-finish-waits-until-the-story-is-committed: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-the-finish-waits-until-the-story-is-committed-2cd41f.md)
+- [Ran cargo test --locked --test sessions -- --exact a_story_edited_after_its_commit_holds_the_finish for TC-history-a-story-edited-after-its-commit-holds-the-finish: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-story-edited-after-its-commit-holds-the-finish-a6651f.md)
+- [Ran cargo test --locked --test sessions -- --exact an_ignored_story_holds_the_finish_and_names_git_add_f for TC-history-an-ignored-story-holds-the-finish: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-an-ignored-story-holds-the-finish.md)
+- [Ran cargo test --locked --test sessions -- --exact an_ignored_journal_post_holds_the_finish for TC-history-an-ignored-journal-post-holds-the-finish: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-an-ignored-journal-post-holds-the-finish.md)
+- [Ran cargo test --locked --test sessions -- --exact a_failed_git_read_holds_the_finish_and_says_so for TC-history-a-failed-git-read-holds-the-finish: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-a-failed-git-read-holds-the-finish.md)
+- [Ran cargo test --locked --test next -- --exact next_names_finishing_the_archive_until_the_folder_is_gone for TC-cli-next-names-finishing-the-archive: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-next-names-finishing-the-archive-a7d9b2.md)
+- [Ran cargo test --locked --test next -- --exact next_with_a_session_open_names_an_unfinished_archive_first for TC-cli-next-names-the-archive-with-a-session-open: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-next-names-the-archive-with-a-session-open-914865.md)
+- [Ran cargo test --locked --test next -- --exact the_finish_command_quotes_each_path_and_leaves_metadata_out for TC-cli-the-finish-command-quotes-each-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-the-finish-command-quotes-each-path-ca5f3c.md)
+- [Ran cargo test --locked --test next -- --exact the_archive_line_runs_as_printed_with_other_archives_waiting for TC-cli-the-archive-line-runs-as-printed: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-the-archive-line-runs-as-printed-744a60.md)
+- [Ran cargo test --locked --test next -- --exact the_printed_command_commits_the_story_with_or_without_a_journal_post for TC-cli-the-printed-command-commits-the-story: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-the-printed-command-commits-the-story-5bc003.md)
+- [Ran cargo test --locked --test doctor -- --exact a_front_matter_conflict_is_named_and_resolved_not_shelved for TC-records-a-front-matter-conflict-is-named: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-front-matter-conflict-is-named-d7da54.md)
+- [Ran cargo test --locked --test doctor -- --exact the_spec_walk_follows_no_link_and_is_bounded for TC-records-the-spec-walk-follows-no-link-and-is-bounded: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-the-spec-walk-follows-no-link-and-is-bounded-d43aba.md)
 
 ## Open threads
 
