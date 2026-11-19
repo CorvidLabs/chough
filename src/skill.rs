@@ -789,11 +789,37 @@ pub(super) fn planned_files(hosts: &[String]) -> Result<Vec<(String, &'static st
     Ok(files)
 }
 
+/// The most bytes read from an installed skill file (REQ-cli-016, #361): 1 MiB, far
+/// above any bundled file.
+const SKILL_FILE_BOUND: u64 = 1_048_576;
+
 fn file_state(root: &Path, base: &str, name: &str, content: &str) -> Result<&'static str> {
     let path = local_path(root, &format!("{base}/{name}"))?;
-    let Ok(bytes) = fs::read(&path) else {
+    if fs::symlink_metadata(&path).is_err() {
         return Ok("missing");
+    }
+    // #361 (lead-F1): what stands at the name may not be a regular file. A FIFO is
+    // opened without blocking and refused by its type on the handle, as a record is
+    // (#262), and reads as `edited`: it is not Chough's copy, so nothing reports it as
+    // outdated and nothing overwrites it.
+    let Ok(file) = crate::records::open_regular(&path) else {
+        return Ok("edited");
     };
+    // #361 (62-F8): a skill file is small. One over the bound is not read whole on every
+    // `next` and `doctor`; it cannot be Chough's copy, so it reads as `edited`.
+    if file
+        .metadata()
+        .is_ok_and(|meta| meta.len() > SKILL_FILE_BOUND)
+    {
+        return Ok("edited");
+    }
+    let mut bytes = vec![];
+    let mut bounded = std::io::Read::take(file, SKILL_FILE_BOUND + 1);
+    if std::io::Read::read_to_end(&mut bounded, &mut bytes).is_err()
+        || bytes.len() as u64 > SKILL_FILE_BOUND
+    {
+        return Ok("edited");
+    }
     if bytes == content.as_bytes() {
         return Ok("current");
     }
@@ -858,6 +884,65 @@ pub(super) fn update_advice(root: &Path) -> Result<Option<String>> {
         "Update the installed skill copy, which is not current and may still name 0.5.x commands and paths: {}. Run `chough skill update`, which replaces known-outdated files and adds missing ones and keeps edited ones, then `chough skill status` to check it (REQ-cli-016).",
         stale.join("; ")
     )))
+}
+
+/// What a scan of the installed skill copies found (REQ-cli-016, #361).
+pub(super) struct SkillScan {
+    /// Each installed file that is byte-identical to a known earlier bundle,
+    /// project-relative, once however many hosts share its directory.
+    pub(super) outdated: Vec<String>,
+    /// Each host's skill directory that could not be inspected, such as one reached
+    /// through a symlink. It is skipped and named, and never hides another copy.
+    pub(super) uninspected: Vec<String>,
+    /// One host name for each installed directory that was inspected.
+    hosts: Vec<String>,
+}
+
+impl SkillScan {
+    /// The update to run when a directory was not inspected: plain
+    /// `chough skill update` refuses that directory and updates nothing, so each
+    /// inspected copy is named by its host. Empty while every directory was inspected.
+    pub(super) fn host_updates(&self) -> Vec<String> {
+        if self.uninspected.is_empty() {
+            return vec![];
+        }
+        self.hosts
+            .iter()
+            .map(|host| format!("chough skill update --host {host}"))
+            .collect()
+    }
+}
+
+/// Scan every host's skill directory on its own. A file a person edited, a missing one
+/// and a current one are not listed; a directory or a file that cannot be inspected
+/// stops nothing else, so a scan never reports zero only because one path was refused.
+pub(super) fn known_outdated(root: &Path) -> SkillScan {
+    let mut scan = SkillScan {
+        outdated: vec![],
+        uninspected: vec![],
+        hosts: vec![],
+    };
+    let mut seen = std::collections::BTreeSet::new();
+    for (host, path) in HOSTS {
+        let base = format!("{path}/chough-workflow");
+        if !seen.insert(base.clone()) {
+            continue;
+        }
+        match local_path(root, &base) {
+            Ok(folder) if folder.is_dir() => scan.hosts.push((*host).to_string()),
+            Ok(_) => continue,
+            Err(_) => {
+                scan.uninspected.push(base);
+                continue;
+            }
+        }
+        for (name, content) in BUNDLE {
+            if matches!(file_state(root, &base, name, content), Ok("known-outdated")) {
+                scan.outdated.push(format!("{base}/{name}"));
+            }
+        }
+    }
+    scan
 }
 
 fn report(root: &Path, hosts: &[String], update: bool) -> Result<Value> {

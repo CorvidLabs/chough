@@ -1,0 +1,41 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #347: a new bug's Log named its evidence with no link, and a link to an open
+# session's entry went stale when that session was archived.
+
+[[case]]
+id = "TC-cli-a-new-bugs-log-links-its-evidence"
+title = "A new bug's Log names its evidence as a link relative to the bug's file that opens the entry, bug update links what it adds, and the front matter keeps the stored form"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_new_bugs_log_links_its_evidence_relative_to_the_bug passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_new_bugs_log_links_its_evidence_relative_to_the_bug"
+
+[[case]]
+id = "TC-cli-doctor-relinks-a-bugs-evidence-after-archiving"
+title = "After a session is archived, doctor reports a bug whose link to its entry went stale as stale_bug_links, and --fix appends one Log entry linking the story with every earlier line unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-cli-012"]
+paths = ["src/bugs.rs", "src/doctor.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::doctor_relinks_a_bugs_evidence_after_its_session_is_archived passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "doctor_relinks_a_bugs_evidence_after_its_session_is_archived"

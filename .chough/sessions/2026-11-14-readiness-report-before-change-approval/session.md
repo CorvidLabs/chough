@@ -37,6 +37,46 @@ observations:
   - 2026-11-19-tc-cli-change-ready-stale-delta
   - 2026-11-19-tc-cli-change-ready-undocumented-export
   - 2026-11-19-tc-cli-change-ready-unknown-change
+  - 2026-11-19-tc-cli-change-ready-carried-delta-c74f5b
+  - 2026-11-19-tc-cli-change-ready-cross-module-case-b06d7d
+  - 2026-11-19-tc-cli-change-ready-draft-fixes-d3f705
+  - 2026-11-19-tc-cli-change-ready-fast-path-dd926a
+  - 2026-11-19-tc-cli-change-ready-missing-specsync-fcea02
+  - 2026-11-19-tc-cli-change-ready-no-spec-change-473e45
+  - 2026-11-19-tc-cli-change-ready-outside-path-36e6bd
+  - 2026-11-19-tc-cli-change-ready-stale-delta-dde404
+  - 2026-11-19-tc-cli-change-ready-undocumented-export-b7af39
+  - 2026-11-19-tc-cli-change-ready-unknown-change-542c9b
+  - 2026-11-19-tc-cli-change-ready-carried-delta-5b3cd3
+  - 2026-11-19-tc-cli-change-ready-cross-module-case-8b4128
+  - 2026-11-19-tc-cli-change-ready-draft-fixes-b7fa59
+  - 2026-11-19-tc-cli-change-ready-fast-path-f3cec5
+  - 2026-11-19-tc-cli-change-ready-missing-specsync-ec0126
+  - 2026-11-19-tc-cli-change-ready-no-spec-change-e0665b
+  - 2026-11-19-tc-cli-change-ready-outside-path-56bda7
+  - 2026-11-19-tc-cli-change-ready-stale-delta-7b9dee
+  - 2026-11-19-tc-cli-change-ready-undocumented-export-97768a
+  - 2026-11-19-tc-cli-change-ready-unknown-change-37efe5
+  - 2026-11-19-tc-cli-change-ready-carried-delta-a60817
+  - 2026-11-19-tc-cli-change-ready-cross-module-case-d7283c
+  - 2026-11-19-tc-cli-change-ready-draft-fixes-6263f6
+  - 2026-11-19-tc-cli-change-ready-fast-path-72c3c8
+  - 2026-11-19-tc-cli-change-ready-missing-specsync-e40b48
+  - 2026-11-19-tc-cli-change-ready-no-spec-change-eb2f12
+  - 2026-11-19-tc-cli-change-ready-outside-path-ef4054
+  - 2026-11-19-tc-cli-change-ready-stale-delta-a0fc54
+  - 2026-11-19-tc-cli-change-ready-undocumented-export-93bb69
+  - 2026-11-19-tc-cli-change-ready-unknown-change-4d4838
+  - 2026-11-19-tc-cli-change-ready-carried-delta-83ce80
+  - 2026-11-19-tc-cli-change-ready-cross-module-case-c11600
+  - 2026-11-19-tc-cli-change-ready-draft-fixes-3ab90d
+  - 2026-11-19-tc-cli-change-ready-fast-path-ccc4ee
+  - 2026-11-19-tc-cli-change-ready-missing-specsync-ca3384
+  - 2026-11-19-tc-cli-change-ready-no-spec-change-7ab82b
+  - 2026-11-19-tc-cli-change-ready-outside-path-b9eed7
+  - 2026-11-19-tc-cli-change-ready-stale-delta-ca2614
+  - 2026-11-19-tc-cli-change-ready-undocumented-export-9895a9
+  - 2026-11-19-tc-cli-change-ready-unknown-change-3789bf
 bugs: []
 blockers: []
 waiting_on_human:
@@ -63,6 +103,8 @@ One read-only command lists everything still missing before a change is approved
 - 0xLeif decided "Scope approval of readiness-report-before-change-approval": "Approve this scope (Recommended)" (Grok chat, 2026-11-14, choosing the option Approve this scope for this change's scope question. Relayed by grok (hc t1w).); recorded by grok-t1w; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
 - fable-t4b took this session over on Leif's choice 'You take it over' (Claude Code session, 2026-11-18): merged main, moved the changelog entry to changelog.d, renumbered the cli change log row to 101. The planned local-agent proof was not run; the command was used for real on fix-263 and fix-307 instead
 - 0xLeif decided "Scope approval of readiness-report-before-change-approval with src/skill.rs added (native approval)": "Yes" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #311: send its change back once to add src/skill.rs for the two 0.6.1 digests, with his relayed re-approval, same scope otherwise); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
+- 0xLeif decided "Scope approval of readiness-report-before-change-approval with the own-work wording (native approval)": "Approve" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: the REQ-cli-067 wording 'Each file that differs from the change's base_commit and is the change's own work', its definition sentence and the new acceptance criterion, with one send-back; nothing else in the delta changes); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
+- 0xLeif decided "Scope approval of readiness-report-before-change-approval with its changelog fragment added (native approval)": "Yes, add it" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: one more send-back to add changelog.d/2026-11-14-readiness-report-before-change-approval.md to the declared paths, paths only with the delta untouched); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve readiness-report-before-change-approval as 0xLeif
 
 ## What was verified
 
@@ -86,6 +128,46 @@ One read-only command lists everything still missing before a change is approved
 - [Ran cargo test --locked --test ready -- --exact a_stale_delta_is_named_until_the_body_is_rewritten for TC-cli-change-ready-stale-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-stale-delta.md)
 - [Ran cargo test --locked --test ready -- --exact an_undocumented_export_in_a_declared_file_is_named for TC-cli-change-ready-undocumented-export: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undocumented-export.md)
 - [Ran cargo test --locked --test ready -- --exact an_unknown_change_names_status for TC-cli-change-ready-unknown-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-unknown-change.md)
+- [Ran cargo test --locked --test ready -- --exact a_delta_that_already_carries_the_canonical_move_is_not_named for TC-cli-change-ready-carried-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-carried-delta-c74f5b.md)
+- [Ran cargo test --locked --test ready -- --exact a_case_that_links_another_modules_requirement_is_named for TC-cli-change-ready-cross-module-case: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-cross-module-case-b06d7d.md)
+- [Ran cargo test --locked --test ready -- --exact a_draft_names_each_missing_fix_and_passes_once_they_are_fixed for TC-cli-change-ready-draft-fixes: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-draft-fixes-d3f705.md)
+- [Ran cargo test --locked --test package -- --exact the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change for TC-cli-change-ready-fast-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-fast-path-dd926a.md)
+- [Ran cargo test --locked --test ready -- --exact a_missing_specsync_names_the_install_command for TC-cli-change-ready-missing-specsync: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-missing-specsync-fcea02.md)
+- [Ran cargo test --locked --test ready -- --exact a_no_spec_change_names_every_delta_for_removal for TC-cli-change-ready-no-spec-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-no-spec-change-473e45.md)
+- [Ran cargo test --locked --test ready -- --exact a_changed_file_outside_the_declared_paths_is_named for TC-cli-change-ready-outside-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-outside-path-36e6bd.md)
+- [Ran cargo test --locked --test ready -- --exact a_stale_delta_is_named_until_the_body_is_rewritten for TC-cli-change-ready-stale-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-stale-delta-dde404.md)
+- [Ran cargo test --locked --test ready -- --exact an_undocumented_export_in_a_declared_file_is_named for TC-cli-change-ready-undocumented-export: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undocumented-export-b7af39.md)
+- [Ran cargo test --locked --test ready -- --exact an_unknown_change_names_status for TC-cli-change-ready-unknown-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-unknown-change-542c9b.md)
+- [Ran cargo test --locked --test ready -- --exact a_delta_that_already_carries_the_canonical_move_is_not_named for TC-cli-change-ready-carried-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-carried-delta-5b3cd3.md)
+- [Ran cargo test --locked --test ready -- --exact a_case_that_links_another_modules_requirement_is_named for TC-cli-change-ready-cross-module-case: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-cross-module-case-8b4128.md)
+- [Ran cargo test --locked --test ready -- --exact a_draft_names_each_missing_fix_and_passes_once_they_are_fixed for TC-cli-change-ready-draft-fixes: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-draft-fixes-b7fa59.md)
+- [Ran cargo test --locked --test package -- --exact the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change for TC-cli-change-ready-fast-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-fast-path-f3cec5.md)
+- [Ran cargo test --locked --test ready -- --exact a_missing_specsync_names_the_install_command for TC-cli-change-ready-missing-specsync: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-missing-specsync-ec0126.md)
+- [Ran cargo test --locked --test ready -- --exact a_no_spec_change_names_every_delta_for_removal for TC-cli-change-ready-no-spec-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-no-spec-change-e0665b.md)
+- [Ran cargo test --locked --test ready -- --exact a_changed_file_outside_the_declared_paths_is_named for TC-cli-change-ready-outside-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-outside-path-56bda7.md)
+- [Ran cargo test --locked --test ready -- --exact a_stale_delta_is_named_until_the_body_is_rewritten for TC-cli-change-ready-stale-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-stale-delta-7b9dee.md)
+- [Ran cargo test --locked --test ready -- --exact an_undocumented_export_in_a_declared_file_is_named for TC-cli-change-ready-undocumented-export: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undocumented-export-97768a.md)
+- [Ran cargo test --locked --test ready -- --exact an_unknown_change_names_status for TC-cli-change-ready-unknown-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-unknown-change-37efe5.md)
+- [Ran cargo test --locked --test ready -- --exact a_delta_that_already_carries_the_canonical_move_is_not_named for TC-cli-change-ready-carried-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-carried-delta-a60817.md)
+- [Ran cargo test --locked --test ready -- --exact a_case_that_links_another_modules_requirement_is_named for TC-cli-change-ready-cross-module-case: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-cross-module-case-d7283c.md)
+- [Ran cargo test --locked --test ready -- --exact a_draft_names_each_missing_fix_and_passes_once_they_are_fixed for TC-cli-change-ready-draft-fixes: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-draft-fixes-6263f6.md)
+- [Ran cargo test --locked --test package -- --exact the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change for TC-cli-change-ready-fast-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-fast-path-72c3c8.md)
+- [Ran cargo test --locked --test ready -- --exact a_missing_specsync_names_the_install_command for TC-cli-change-ready-missing-specsync: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-missing-specsync-e40b48.md)
+- [Ran cargo test --locked --test ready -- --exact a_no_spec_change_names_every_delta_for_removal for TC-cli-change-ready-no-spec-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-no-spec-change-eb2f12.md)
+- [Ran cargo test --locked --test ready -- --exact a_changed_file_outside_the_declared_paths_is_named for TC-cli-change-ready-outside-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-outside-path-ef4054.md)
+- [Ran cargo test --locked --test ready -- --exact a_stale_delta_is_named_until_the_body_is_rewritten for TC-cli-change-ready-stale-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-stale-delta-a0fc54.md)
+- [Ran cargo test --locked --test ready -- --exact an_undocumented_export_in_a_declared_file_is_named for TC-cli-change-ready-undocumented-export: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undocumented-export-93bb69.md)
+- [Ran cargo test --locked --test ready -- --exact an_unknown_change_names_status for TC-cli-change-ready-unknown-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-unknown-change-4d4838.md)
+- [Ran cargo test --locked --test ready -- --exact a_delta_that_already_carries_the_canonical_move_is_not_named for TC-cli-change-ready-carried-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-carried-delta-83ce80.md)
+- [Ran cargo test --locked --test ready -- --exact a_case_that_links_another_modules_requirement_is_named for TC-cli-change-ready-cross-module-case: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-cross-module-case-c11600.md)
+- [Ran cargo test --locked --test ready -- --exact a_draft_names_each_missing_fix_and_passes_once_they_are_fixed for TC-cli-change-ready-draft-fixes: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-draft-fixes-3ab90d.md)
+- [Ran cargo test --locked --test package -- --exact the_stage_contract_opens_with_a_short_fast_path_for_a_routine_change for TC-cli-change-ready-fast-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-fast-path-ccc4ee.md)
+- [Ran cargo test --locked --test ready -- --exact a_missing_specsync_names_the_install_command for TC-cli-change-ready-missing-specsync: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-missing-specsync-ca3384.md)
+- [Ran cargo test --locked --test ready -- --exact a_no_spec_change_names_every_delta_for_removal for TC-cli-change-ready-no-spec-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-no-spec-change-7ab82b.md)
+- [Ran cargo test --locked --test ready -- --exact a_changed_file_outside_the_declared_paths_is_named for TC-cli-change-ready-outside-path: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-outside-path-b9eed7.md)
+- [Ran cargo test --locked --test ready -- --exact a_stale_delta_is_named_until_the_body_is_rewritten for TC-cli-change-ready-stale-delta: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-stale-delta-ca2614.md)
+- [Ran cargo test --locked --test ready -- --exact an_undocumented_export_in_a_declared_file_is_named for TC-cli-change-ready-undocumented-export: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-undocumented-export-9895a9.md)
+- [Ran cargo test --locked --test ready -- --exact an_unknown_change_names_status for TC-cli-change-ready-unknown-change: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-ready-unknown-change-3789bf.md)
 
 ## Open threads
 
@@ -162,6 +244,64 @@ One read-only command lists everything still missing before a change is approved
     - decided_by: 0xLeif
     - words: Yes
     - where: Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #311: send its change back once to add src/skill.rs for the two 0.6.1 digests, with his relayed re-approval, same scope otherwise
+    - recorded_by: fable-t4b
+    - native: specsync change approve readiness-report-before-change-approval
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T03:57:21Z · gate-opened · accept → accept · Scope approval of readiness-report-before-change-approval with the own-work wording (native approval) ^t-b4329c
+  - native_change: readiness-report-before-change-approval
+  - revision: f27fabc978595e274d59c1f6af7ae03b4c95966f
+  - holds: accept
+  - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T03:57:44Z · direct-native-write · accept → accept · readiness-report-before-change-approval's lifecycle records changed outside Chough: state.json changed, approvals.json changed; state verifying → draft ^t-7b4d12
+  - native_change: readiness-report-before-change-approval
+  - revision: c17066e4d5d1bbe2b64f2db286b3aca282e21798
+  - direct_write:
+    - change: readiness-report-before-change-approval
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T03:57:44Z · gate-closed · accept → accept · Scope approval of readiness-report-before-change-approval with the own-work wording (native approval) ^t-cff492
+  - native_change: readiness-report-before-change-approval
+  - revision: c17066e4d5d1bbe2b64f2db286b3aca282e21798
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve
+    - where: Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: the REQ-cli-067 wording 'Each file that differs from the change's base_commit and is the change's own work', its definition sentence and the new acceptance criterion, with one send-back; nothing else in the delta changes
+    - recorded_by: fable-t4b
+    - native: specsync change approve readiness-report-before-change-approval
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T04:18:07Z · gate-opened · accept → accept · Scope approval of readiness-report-before-change-approval with its changelog fragment added (native approval) ^t-2f6629
+  - native_change: readiness-report-before-change-approval
+  - revision: c018cddd399af9ccbed1e978e01e7177ab48e351
+  - holds: accept
+  - drives: approve
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T04:18:08Z · direct-native-write · accept → accept · readiness-report-before-change-approval's lifecycle records changed outside Chough: state.json changed, approvals.json changed, verification.json changed, verification-attempts.json changed; state verifying → draft ^t-7062b5
+  - native_change: readiness-report-before-change-approval
+  - revision: c018cddd399af9ccbed1e978e01e7177ab48e351
+  - direct_write:
+    - change: readiness-report-before-change-approval
+    - files:
+      - state.json: changed
+      - approvals.json: changed
+      - verification.json: changed
+      - verification-attempts.json: changed
+    - before_state: verifying
+    - after_state: draft
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T04:18:08Z · gate-closed · accept → accept · Scope approval of readiness-report-before-change-approval with its changelog fragment added (native approval) ^t-bd0cff
+  - native_change: readiness-report-before-change-approval
+  - revision: c018cddd399af9ccbed1e978e01e7177ab48e351
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Yes, add it
+    - where: Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53), 2026-11-18, for PR #311: one more send-back to add changelog.d/2026-11-14-readiness-report-before-change-approval.md to the declared paths, paths only with the delta untouched
     - recorded_by: fable-t4b
     - native: specsync change approve readiness-report-before-change-approval
     - actor: 0xLeif

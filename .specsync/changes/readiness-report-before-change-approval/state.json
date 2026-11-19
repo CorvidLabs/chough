@@ -11,7 +11,7 @@
   "canonical_applied": true,
   "base_commit": "cf2ff72c9f6f67cfa050cd92562dcc1b1b4f52c8",
   "created_at": 1794689756,
-  "updated_at": 1795054663,
+  "updated_at": 1795062167,
   "affected_specs": [
     "cli"
   ],
@@ -35,7 +35,8 @@
     "skills/chough-workflow/references/plan.md",
     ".agents/skills/chough-workflow/references/stages.md",
     ".agents/skills/chough-workflow/references/plan.md",
-    "src/skill.rs"
+    "src/skill.rs",
+    "changelog.d/2026-11-14-readiness-report-before-change-approval.md"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,

@@ -4373,3 +4373,306 @@ fn spec_files_merge_through_specsync_s_driver_in_this_repository() {
         "AGENTS.md names the one-time driver setup"
     );
 }
+
+/// REQ-cli-016 (#361), TC-cli-doctor-and-next-name-skill-update-for-outdated-files:
+/// while an installed skill file is byte-identical to a known earlier bundle, `chough
+/// doctor` reports it as `skill_outdated`, naming `chough skill update`, and `chough
+/// next` shows one line saying so. A current copy and a file a person edited give
+/// neither, and `chough skill update` clears both. `chough status` carries
+/// `no_native_change` once the session recorded it.
+#[test]
+fn doctor_and_next_say_when_skill_files_are_known_outdated() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let raw = |args: &[&str]| -> String {
+        let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(args)
+            .output()
+            .unwrap();
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let outdated = || -> Vec<Value> {
+        let report: Value = serde_json::from_str(&raw(&["doctor"])).unwrap();
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "skill_outdated")
+            .cloned()
+            .collect()
+    };
+    let line = "Skill files are outdated: run `chough skill update`";
+    assert!(outdated().is_empty());
+    assert!(!raw(&["next"]).contains(line));
+
+    let file = ".agents/skills/chough-workflow/references/stages.md";
+    let installed = root.join(file);
+    fs::write(&installed, STAGES_AT_F19823D).unwrap();
+    let found = outdated();
+    assert_eq!(found.len(), 1, "{found:#?}");
+    assert_eq!(found[0]["target"], file);
+    assert_eq!(found[0]["decision"], false);
+    assert!(
+        found[0]["fix"]
+            .as_str()
+            .unwrap()
+            .contains("chough skill update"),
+        "{found:#?}"
+    );
+    assert!(raw(&["next"]).contains(line));
+    let next: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(next["skill_outdated"], 1, "{next}");
+
+    // A file a person edited is theirs: it is not reported as outdated.
+    fs::write(&installed, "my own notes\n").unwrap();
+    assert!(outdated().is_empty());
+    assert!(!raw(&["next"]).contains(line));
+
+    // The update clears the finding and the line.
+    fs::write(&installed, STAGES_AT_F19823D).unwrap();
+    chough(root, &["skill", "update"]);
+    assert!(outdated().is_empty());
+    assert!(!raw(&["next"]).contains(line));
+
+    chough(
+        root,
+        &[
+            "checkpoint",
+            "--no-native-change",
+            "SYNTHETIC planning only",
+        ],
+    );
+    let status = raw(&["status"]);
+    assert!(
+        status.contains("\"no_native_change\": \"SYNTHETIC planning only\""),
+        "{status}"
+    );
+
+    // With no session open the nudge shows too (Leif's review of #362).
+    let session = fs::read_dir(root.join(".chough/sessions"))
+        .unwrap()
+        .flatten()
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .next()
+        .expect("an open session");
+    chough(
+        root,
+        &["session", "close", &session, "--reason", "SYNTHETIC closed"],
+    );
+    let none: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(none["session"], Value::Null, "{none}");
+    assert_eq!(none["skill_outdated"], 0, "{none}");
+    assert!(!raw(&["next"]).contains(line));
+    fs::write(&installed, STAGES_AT_F19823D).unwrap();
+    let none: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(none["skill_outdated"], 1, "{none}");
+    let text = raw(&["next"]);
+    assert!(text.starts_with("Session: none open\n"), "{text}");
+    assert!(text.contains(line), "{text}");
+}
+
+/// REQ-cli-016 (#361, swarm finding lead-F1 on #362): a FIFO where an installed skill
+/// file should be blocks nothing. `chough next` and `chough doctor` return within the
+/// deadline, and the FIFO is not reported as outdated: it is not an earlier release's
+/// copy.
+#[cfg(unix)]
+#[test]
+fn a_fifo_at_an_installed_skill_file_blocks_neither_next_nor_doctor() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow/references/stages.md");
+    fs::remove_file(&installed).unwrap();
+    assert!(
+        Command::new("mkfifo")
+            .arg(&installed)
+            .status()
+            .unwrap()
+            .success()
+    );
+    let within_deadline = |args: &[&str]| -> String {
+        let mut child = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(args)
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .unwrap();
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+        loop {
+            if child.try_wait().unwrap().is_some() {
+                break;
+            }
+            if std::time::Instant::now() >= deadline {
+                let _ = child.kill();
+                let _ = child.wait();
+                panic!("chough {args:?} blocked on a FIFO at a skill file");
+            }
+            std::thread::sleep(std::time::Duration::from_millis(50));
+        }
+        let output = child.wait_with_output().unwrap();
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let next = within_deadline(&["next"]);
+    assert!(
+        !next.contains("Skill files are outdated"),
+        "a FIFO is not an earlier release's copy: {next}"
+    );
+    let report: Value = serde_json::from_str(&within_deadline(&["doctor"])).unwrap();
+    assert!(
+        !report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|finding| finding["kind"] == "skill_outdated"),
+        "{report:#}"
+    );
+    within_deadline(&["skill", "status"]);
+}
+
+/// REQ-cli-016 (#361, swarm finding 62-F8 on #362): a skill file is small, so reading
+/// one stops at a bound. A file over 1 MiB at an installed skill path is not read
+/// whole: it reads as `edited`, is not reported as outdated, and is left as it is.
+#[test]
+fn an_oversized_file_at_a_skill_path_reads_as_edited() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow/references/stages.md");
+    // An earlier release's bytes, then padding past the bound: by content it is not
+    // that release's copy, and it is never compared past the bound.
+    let mut oversized = STAGES_AT_F19823D.as_bytes().to_vec();
+    oversized.resize(1_048_577, b'\n');
+    fs::write(&installed, &oversized).unwrap();
+    let status = chough(root, &["skill", "status"]);
+    assert_eq!(
+        skill_state(&status, "references/stages.md")["state"],
+        "edited"
+    );
+    let next: Value = serde_json::from_slice(
+        &Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(["next", "--json"])
+            .output()
+            .unwrap()
+            .stdout,
+    )
+    .unwrap();
+    assert_eq!(next["skill_outdated"], 0, "{next}");
+    chough(root, &["skill", "update"]);
+    assert_eq!(fs::read(&installed).unwrap().len(), 1_048_577);
+}
+
+/// REQ-cli-016 (#361, the reviewer's finding on #362): one skill path that cannot be
+/// inspected hides nothing else. With `references/stages.md` an earlier release's copy
+/// and `agents/openai.yaml` replaced by a symlink, `next` still counts the outdated
+/// file and doctor still reports it.
+#[cfg(unix)]
+#[test]
+fn an_uninspectable_skill_path_hides_no_other_outdated_file() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let base = root.join(".agents/skills/chough-workflow");
+    fs::write(base.join("references/stages.md"), STAGES_AT_F19823D).unwrap();
+    let rejected = base.join("agents/openai.yaml");
+    fs::remove_file(&rejected).unwrap();
+    std::os::unix::fs::symlink(root.join("elsewhere.yaml"), &rejected).unwrap();
+    let raw = |args: &[&str]| -> String {
+        let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(args)
+            .output()
+            .unwrap();
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let next: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(next["skill_outdated"], 1, "{next}");
+    let report: Value = serde_json::from_str(&raw(&["doctor"])).unwrap();
+    let outdated: Vec<&Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["kind"] == "skill_outdated")
+        .collect();
+    assert_eq!(outdated.len(), 1, "{report:#}");
+    assert_eq!(
+        outdated[0]["target"],
+        ".agents/skills/chough-workflow/references/stages.md"
+    );
+}
+
+/// REQ-cli-016 (#361, the tester's finding on #362): a host folder that cannot be
+/// inspected hides nothing either. With the shared `.agents` copy an earlier release's
+/// and `.codex/skills` a symlink to it, the usual way to share one copy, `next` still
+/// counts the outdated file, doctor still reports it, and doctor says, as advice, that
+/// the symlinked copy was not inspected.
+#[cfg(unix)]
+#[test]
+fn a_symlinked_host_folder_hides_no_outdated_file() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    fs::write(
+        root.join(".agents/skills/chough-workflow/references/stages.md"),
+        STAGES_AT_F19823D,
+    )
+    .unwrap();
+    fs::create_dir_all(root.join(".codex")).unwrap();
+    std::os::unix::fs::symlink("../.agents/skills", root.join(".codex/skills")).unwrap();
+    let raw = |args: &[&str]| -> String {
+        let output = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(args)
+            .output()
+            .unwrap();
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let next: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(next["skill_outdated"], 1, "{next}");
+    let report: Value = serde_json::from_str(&raw(&["doctor"])).unwrap();
+    let of = |kind: &str| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == kind)
+            .cloned()
+            .collect()
+    };
+    let outdated = of("skill_outdated");
+    assert_eq!(outdated.len(), 1, "{report:#}");
+    assert_eq!(
+        outdated[0]["target"],
+        ".agents/skills/chough-workflow/references/stages.md"
+    );
+    let skipped = of("skill_uninspected");
+    assert_eq!(skipped.len(), 1, "{report:#}");
+    assert_eq!(skipped[0]["target"], ".codex/skills/chough-workflow");
+    assert_eq!(skipped[0]["advisory"], true, "{report:#}");
+    // The nudge never dead-ends (the tester's note on #362): plain
+    // `chough skill update` is refused beside the symlink, so `next` and the advice
+    // name the update for the host that is really installed, and that update works.
+    let by_host = "chough skill update --host openai";
+    assert_eq!(next["skill_update"], serde_json::json!([by_host]), "{next}");
+    let text = raw(&["next"]);
+    assert!(
+        text.contains("Skill files are outdated: run `chough skill update`"),
+        "{text}"
+    );
+    assert!(text.contains(&format!("run `{by_host}`")), "{text}");
+    assert!(
+        skipped[0]["fix"].as_str().unwrap().contains(by_host),
+        "{report:#}"
+    );
+    chough(root, &["skill", "update", "--host", "openai"]);
+    let after: Value = serde_json::from_str(&raw(&["next", "--json"])).unwrap();
+    assert_eq!(after["skill_outdated"], 0, "{after}");
+}
