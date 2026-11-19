@@ -100,6 +100,26 @@
         "REQ-cli-055",
         "REQ-records-001"
       ]
+    },
+    {
+      "timestamp": 1795047700,
+      "commit": "131f1a7ddf2ca4be9c1095fba5af297657e449e3",
+      "contract_digest": "5adc064e918c24f55bda4d4b23c388063431d3d0af5f60d3ee19228f9a0f03a7",
+      "execution_digest": "c61c7a5f2981c423fbf9522ba2417876acadd84e17ba4b6a9a9120fb2a8dbbdf",
+      "workspace_digest": "ca7d5c0544814217a68d705353776fb3baf042baaa7e19d98f7fbcbeea04ed2c",
+      "passed": true,
+      "commands": [
+        {
+          "command": "specsync check --spec cli --spec records",
+          "success": true,
+          "exit_code": 0
+        }
+      ],
+      "requirement_ids": [
+        "REQ-cli-009",
+        "REQ-cli-055",
+        "REQ-records-001"
+      ]
     }
   ]
 }
