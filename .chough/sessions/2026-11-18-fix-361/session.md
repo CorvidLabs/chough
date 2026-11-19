@@ -5,7 +5,7 @@ aliases: [fix-361]
 objective: chough doctor and chough next say when installed skill files are known-outdated and name chough skill update, and status JSON carries no_native_change (#361)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -23,13 +23,9 @@ observations:
   - 2026-11-19-tc-cli-doctor-and-next-name-skill-update-for-outdated-files-9045e7
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-361
-    holds: accept
-    drives: review
-    opened: 2026-11-18T23:44:05Z
+waiting_on_human: []
 run_consents: []
-next: Wait for the tester's check and Leif's implementation review of fix-361
+next: Continue done
 title: Doctor and next name skill update for outdated skill files
 summary:
   - chough doctor reports each installed skill file that is an earlier release's copy as skill_outdated, and chough next shows one line naming chough skill update, with or without a session. A skill folder or file that cannot be inspected is skipped, reported as the advisory skill_uninspected, and hides nothing; beside one, the update is named per host.
@@ -48,6 +44,7 @@ chough doctor and chough next say when installed skill files are known-outdated 
 
 - 0xLeif decided "Scope approval of fix-361": "doctor and next" (GitHub issue #361, which records Leif's decision of 2026-11-18 (chough doctor reports each known-outdated skill file naming chough skill update, chough next shows one line, and status JSON carries no_native_change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-361 as 0xLeif
 - 0xLeif decided "Scope approval of fix-361 with the uninspected-path sentence (native approval)": "Yes, approve the sentence" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #362: the sentence added to REQ-cli-016 about a skill directory or file that cannot be inspected, with a one-time send-back of fix-361); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-361 as 0xLeif
+- 0xLeif decided "Implementation review of fix-361": "Approve; show it with no session too" (Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #362; the later reviewer and tester fixes and his approved REQ-cli-016 sentence were reported to him by that session, which gave the go to merge at 5c977807); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-361 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -134,4 +131,20 @@ chough doctor and chough next say when installed skill files are known-outdated 
     - recorded_by: fable-t4b
     - native: specsync change approve fix-361
     - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:36:33Z · gate-closed · accept → accept · Implementation review of fix-361 ^t-cf468d
+  - native_change: fix-361
+  - revision: 9776dcd5ccf86edcb19c4a9226f5504080520485
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve; show it with no session too
+    - where: Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #362; the later reviewer and tester fixes and his approved REQ-cli-016 sentence were reported to him by that session, which gave the go to merge at 5c977807
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-361
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T02:36:36Z · advance · accept → done · native:archived ^t-5b356c
+  - native_change: fix-361
+  - gate: native:archived
+  - revision: 9776dcd5ccf86edcb19c4a9226f5504080520485
   - by: fable (claude-fable-5-2, hc t4b)
