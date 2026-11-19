@@ -2295,3 +2295,140 @@ fn macos_metadata_never_blocks_the_archive_finish() {
         "{report:#}"
     );
 }
+
+/// An archived session whose evidence entry was not committed at the move into done, so
+/// the folder keeps it, with everything committed after; returns the session's ID and the
+/// entry's file.
+#[cfg(unix)]
+fn archived_with_a_kept_entry(fixture: &Fixture) -> (String, String) {
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("start");
+    let id = fixture.active_id();
+    advance_to(fixture, "accept");
+    fixture.commit("at accept");
+    let entry = evidence_entry(fixture, "SYNTHETIC check at accept");
+    fixture.ok(&["stage", "advance", "--json"]);
+    let file = format!(".chough/sessions/{id}/evidence/{entry}.md");
+    assert!(fixture.exists(&file), "the move into done removed {file}");
+    (id, file)
+}
+
+/// The `unfinished_archive` finding a `doctor` run reports, with its exit status, stdout
+/// and stderr.
+#[cfg(unix)]
+fn archive_finding(fixture: &Fixture, args: &[&str]) -> (Value, Value, String) {
+    let output = fixture.run(args);
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let report: Value = serde_json::from_slice(&output.stdout)
+        .unwrap_or_else(|error| panic!("{args:?} gave no report ({error}): {said}"));
+    let finding = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|finding| finding["kind"] == "unfinished_archive")
+        .unwrap_or_else(|| panic!("{report:#}"))
+        .clone();
+    (finding, report, said)
+}
+
+/// REQ-history-012 (#381, fable-lead's review of D1), TC-history-a-story-an-earlier-release-wrote-still-holds-its-entries:
+/// a story that 0.6.0 or 0.6.1 wrote has receipts without the `criteria`, `requirements`
+/// and `limitations` fields #342 added. An entry it holds is still held, compared on the
+/// fields its receipt holds, so `doctor --fix` finishes the archive.
+#[cfg(unix)]
+#[test]
+fn a_story_an_earlier_release_wrote_still_holds_its_entries() {
+    let fixture = Fixture::new();
+    let (id, file) = archived_with_a_kept_entry(&fixture);
+    let story = format!(".chough/archive/sessions/{id}.md");
+    let text = fixture.read(&story);
+    let (told, receipts) = text.split_once("\n## Receipts\n").unwrap();
+    let older: String = receipts
+        .lines()
+        .filter(|line| {
+            let field = line.trim_start();
+            !["criteria: ", "requirements: ", "limitations: "]
+                .iter()
+                .any(|name| field.starts_with(name))
+        })
+        .map(|line| format!("{line}\n"))
+        .collect();
+    assert_ne!(
+        older, receipts,
+        "the receipt held no criteria or requirements"
+    );
+    fixture.write(&story, &format!("{told}\n## Receipts\n{older}"));
+    fixture.commit("archived by an earlier release");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "fixed", "{report:#}");
+    assert!(!fixture.exists(&file));
+    assert!(!fixture.exists(&format!(".chough/sessions/{id}")));
+}
+
+/// REQ-history-012 (#381, fable-lead's review of D1, tester2), TC-history-an-unreadable-file-never-stops-doctor:
+/// a 0-byte evidence entry, a cut-off one and a story over its bound in an archived
+/// session's folder each leave `doctor` and `doctor --fix` reporting, as on main: the
+/// file's own finding is there, `unfinished_archive` removes nothing and says why, and
+/// no output names an absolute path.
+#[cfg(unix)]
+#[test]
+fn an_unreadable_file_in_an_archived_folder_never_stops_doctor() {
+    for case in ["empty entry", "cut-off entry", "oversize story"] {
+        let fixture = Fixture::new();
+        let (id, file) = archived_with_a_kept_entry(&fixture);
+        let story = format!(".chough/archive/sessions/{id}.md");
+        let damaged = match case {
+            "empty entry" => {
+                fixture.write(&file, "");
+                file.clone()
+            }
+            "cut-off entry" => {
+                let text = fixture.read(&file);
+                fixture.write(&file, &text[..text.len() / 2]);
+                file.clone()
+            }
+            _ => {
+                let text = fixture.read(&story);
+                fixture.write(&story, &format!("{text}\n{}\n", "x".repeat(1_100_000)));
+                story.clone()
+            }
+        };
+        fixture.commit(case);
+        let root = fixture.root().to_string_lossy().into_owned();
+        let canonical = fixture
+            .root()
+            .canonicalize()
+            .unwrap()
+            .to_string_lossy()
+            .into_owned();
+        for args in [&["doctor"][..], &["doctor", "--fix"][..]] {
+            let (finding, report, said) = archive_finding(&fixture, args);
+            assert!(
+                !said.contains(&root) && !said.contains(&canonical),
+                "{case}, {args:?}: an absolute path: {said}"
+            );
+            let named =
+                report["findings"].as_array().unwrap().iter().any(|other| {
+                    other["kind"] != "unfinished_archive" && other["target"] == damaged
+                });
+            assert!(
+                named,
+                "{case}, {args:?}: no finding names {damaged}: {report:#}"
+            );
+            if args.len() > 1 {
+                assert_eq!(finding["status"], "skipped", "{case}: {report:#}");
+                let reason = finding["reason"].as_str().unwrap_or_default();
+                assert!(
+                    reason.contains("removes nothing until it reads"),
+                    "{case}: {finding:#}"
+                );
+            }
+            assert!(fixture.exists(&file), "{case}, {args:?}: the entry went");
+        }
+    }
+}

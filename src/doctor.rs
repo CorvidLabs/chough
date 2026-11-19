@@ -1687,7 +1687,20 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
         );
         // #381: the entries the story does not hold are kept, so the finding names them
         // and the way out by hand.
-        let unheld = sessions::unheld_files(root, &id)?;
+        // A file the finish reads that cannot be read stops this finish only: its own
+        // finding (`oversize`, `unreadable`) says why, and the rest of doctor runs.
+        let unheld = match sessions::unheld_files(root, &id) {
+            Ok(unheld) => unheld,
+            Err(error) => {
+                finding.fix =
+                    "make it readable, as its own finding says, then chough doctor --fix".into();
+                finding.blocked = Some(format!(
+                    "{error}; the archive finish removes nothing until it reads"
+                ));
+                archives.push(finding);
+                continue;
+            }
+        };
         if !unheld.is_empty() {
             finding.fix = format!(
                 "chough doctor --fix, then by hand: {}",
@@ -1695,7 +1708,7 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
             );
             finding.detail = Some(json!({"kept": unheld}));
         }
-        let uncommitted = sessions::uncommitted_files(root, &id)?;
+        let uncommitted = sessions::uncommitted_files(root, &id, &unheld)?;
         if !uncommitted.is_empty() {
             finding.fix = format!(
                 "commit {}, then chough doctor --fix",
@@ -1921,7 +1934,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         Kind::FinishedSession => sessions::archive_open(root, &finding.target)?,
         Kind::UnfinishedArchive => {
             let unheld = sessions::unheld_files(root, &finding.target)?;
-            let kept = sessions::remove_archived_folder(root, &finding.target)?;
+            let kept = sessions::remove_archived_folder(root, &finding.target, &unheld)?;
             let changed: Vec<&String> = kept.iter().filter(|file| !unheld.contains(file)).collect();
             ensure!(
                 changed.is_empty(),

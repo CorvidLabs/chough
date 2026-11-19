@@ -1100,50 +1100,77 @@ fn host_update_line(updates: &[String]) -> Option<String> {
     ))
 }
 
+/// REQ-cli-021 (#371): finishing the first archived session whose folder still holds
+/// files: commit what is not committed, then `chough doctor --fix`. None while no folder
+/// does, or where Git cannot be read, as in a project that is not a repository, where no
+/// commit can finish it. `next` names it first, as its next valid action with no session
+/// open and on the line below the objective with one open.
+fn archive_finish(root: &Path) -> Option<Value> {
+    let unfinished = sessions::unfinished_archives(root).ok()?;
+    let id = unfinished.first()?;
+    let commit = sessions::archive_to_commit(root, id)?;
+    let command = if commit.is_empty() {
+        "chough doctor --fix".to_string()
+    } else {
+        // macOS metadata stays out of the commit: the finish removes it as it is (#377).
+        format!(
+            "git add -- {} ':(exclude,glob)**/.DS_Store' ':(exclude,glob)**/._*' && git commit -m \"Archive the {id} session and its journal post.\" && chough doctor --fix",
+            commit
+                .iter()
+                .map(|path| shell_word(path))
+                .collect::<Vec<_>>()
+                .join(" ")
+        )
+    };
+    // An entry the story does not hold stays until it is moved or dropped by hand, as the
+    // finding's way out says (#381).
+    let kept = sessions::unheld_files(root, id).is_ok_and(|files| !files.is_empty());
+    let action = if !commit.is_empty() {
+        format!(
+            "Finish the archive of session {id}: commit {}, then run chough doctor --fix.",
+            commit.join(", ")
+        )
+    } else if kept {
+        format!(
+            "Finish the archive of session {id} with chough doctor --fix, then move or drop by hand each entry it keeps, as its finding says."
+        )
+    } else {
+        format!("Finish the archive of session {id} with chough doctor --fix.")
+    };
+    Some(json!({
+        "session": id,
+        "others": unfinished.len() - 1,
+        "action": action,
+        "reason": format!("There is no open session: the move into done archived session {id}, and its folder stays until its files are committed and `chough doctor --fix` removes them; then start the next piece of work with `chough session new <key>`."),
+        "command": command,
+    }))
+}
+
+/// `text` as one POSIX shell word: bare when it holds only characters a shell reads as
+/// they are, otherwise in single quotes.
+fn shell_word(text: &str) -> String {
+    let plain = !text.is_empty()
+        && text
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || "._/-+@:,=".contains(c));
+    if plain {
+        text.to_string()
+    } else {
+        format!("'{}'", text.replace('\'', "'\\''"))
+    }
+}
+
 fn no_open_session(root: &Path, as_json: bool) -> String {
     // REQ-cli-016 (#361): the skill nudge shows with no session open too.
     let scan = skill::known_outdated(root);
     let skill_outdated = scan.outdated.len();
     let host_updates = scan.host_updates();
-    // REQ-cli-021 (#371): while an archived session's folder still holds files, finishing
-    // that archive comes first: commit what is not committed, then `chough doctor --fix`.
-    // Where Git cannot be read no commit can finish it, so a new session comes next, as
-    // before.
-    let unfinished = sessions::unfinished_archives(root)
-        .ok()
-        .and_then(|ids| ids.into_iter().next())
-        .and_then(|id| sessions::archive_to_commit(root, &id).map(|commit| (id, commit)));
-    let action = match &unfinished {
-        Some((id, commit)) => {
-            let command = if commit.is_empty() {
-                "chough doctor --fix".to_string()
-            } else {
-                format!(
-                    "git add -- {} && git commit -m \"Archive the {id} session and its journal post.\" && chough doctor --fix",
-                    commit.join(" ")
-                )
-            };
-            // An entry the story does not hold stays until it is moved or dropped by hand,
-            // as the finding's way out says (#381).
-            let kept = sessions::unheld_files(root, id).is_ok_and(|files| !files.is_empty());
-            let action = if !commit.is_empty() {
-                format!(
-                    "Finish the archive of session {id}: commit {}, then run chough doctor --fix.",
-                    commit.join(", ")
-                )
-            } else if kept {
-                format!(
-                    "Finish the archive of session {id} with chough doctor --fix, then move or drop by hand each entry it keeps, as its finding says."
-                )
-            } else {
-                format!("Finish the archive of session {id} with chough doctor --fix.")
-            };
-            json!({
-                "action": action,
-                "reason": format!("There is no open session: the move into done archived session {id}, and its folder stays until its files are committed and `chough doctor --fix` removes them; then start the next piece of work with `chough session new <key>`."),
-                "command": command,
-            })
-        }
+    let action = match archive_finish(root) {
+        Some(finish) => json!({
+            "action": finish["action"],
+            "reason": finish["reason"],
+            "command": finish["command"],
+        }),
         None => json!({
             "action": "Start the next piece of work in a new session.",
             "reason": "There is no open session, the normal state after the move into done archives one.",
@@ -1274,6 +1301,14 @@ fn next(root: &Path, environment: Option<&str>, as_json: bool) -> Result<String>
         // REQ-cli-016 (#361): how many installed skill files are an earlier release's.
         "skill_outdated": skill_scan.outdated.len(),
         "skill_update": skill_scan.host_updates(),
+        // REQ-cli-021 (#371): an archived session's folder that still holds files, named
+        // first, beside the open session's own next valid action.
+        "unfinished_archive": archive_finish(root).map(|finish| json!({
+            "session": finish["session"],
+            "others": finish["others"],
+            "action": finish["action"],
+            "command": finish["command"],
+        })),
         "native_check": native_check::view(root, change.as_deref(), summary)?,
         "direct_writes": direct_writes::view(root, change.as_deref()),
         "native": native,
@@ -1385,6 +1420,21 @@ fn next_text(view: &Value) -> String {
             })
             .unwrap_or_default();
         lines.extend(host_update_line(&updates));
+    }
+    // REQ-cli-021 (#371): finishing an archive comes first, on one line.
+    if let Some(action) = view["unfinished_archive"]["action"].as_str() {
+        let others = view["unfinished_archive"]["others"].as_u64().unwrap_or(0);
+        let more = if others > 0 {
+            format!(
+                " {others} more archived session folder(s) wait too; `chough doctor` names each."
+            )
+        } else {
+            String::new()
+        };
+        lines.push(format!(
+            "Archive: {action} Run: {}{more}",
+            text(&view["unfinished_archive"]["command"])
+        ));
     }
     let stage = &view["stage"];
     if stage.is_null() {

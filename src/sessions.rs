@@ -1170,8 +1170,7 @@ pub(super) fn unfinished_archives(root: &Path) -> Result<Vec<String>> {
 /// The files of archived session `id`'s folder that are not committed at HEAD as they
 /// are, leaving out macOS metadata, which the archive finish removes as it is (#377), and
 /// the entries the story does not hold, which it keeps (#381).
-pub(super) fn uncommitted_files(root: &Path, id: &str) -> Result<Vec<String>> {
-    let unheld = unheld_files(root, id)?;
+pub(super) fn uncommitted_files(root: &Path, id: &str, unheld: &[String]) -> Result<Vec<String>> {
     let mut files = vec![];
     collect_files(root, &format!("{DIR}/{id}"), &mut files)?;
     Ok(files
@@ -1194,7 +1193,13 @@ pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
     let story = archive_file(id);
     let held: Vec<Vec<(String, String)>> = match local_path(root, &story) {
         Ok(path) if path.is_file() => {
-            let text = read_bounded_record(&path, RecordKind::Story.bound())?;
+            // Named by its path in the project, never the absolute path the reader gives.
+            let text = read_bounded_record(&path, RecordKind::Story.bound()).map_err(|_| {
+                anyhow::anyhow!(
+                    "the story {story} cannot be read within its bound of {} bytes",
+                    RecordKind::Story.bound()
+                )
+            })?;
             crate::markdown::parse(&story, &text)?.story_receipts(&story)?
         }
         _ => vec![],
@@ -1206,7 +1211,18 @@ pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
             .find(|(key, _)| key == "id")
             .map(|(_, value)| value.clone())
             .unwrap_or_default();
-        if !held.contains(&receipt) {
+        // Held when a story receipt has the entry's ID and agrees with the receipt the
+        // entry gives now in every field it holds, so a story an earlier release wrote,
+        // whose receipts hold fewer fields, still holds its entries (REQ-history-012).
+        let holds = |story: &Vec<(String, String)>| {
+            story
+                .iter()
+                .any(|(key, value)| key == "id" && *value == entry)
+                && story
+                    .iter()
+                    .all(|field| receipt.iter().any(|given| given == field))
+        };
+        if !held.iter().any(holds) {
             unheld_ids.push(entry);
         }
     }
@@ -1243,7 +1259,7 @@ pub(super) fn archive_to_commit(root: &Path, id: &str) -> Option<Vec<String>> {
         std::process::Command::new("git")
             .arg("-C")
             .arg(root)
-            .args(["status", "--porcelain", "--untracked-files=all", "--"])
+            .args(["status", "--porcelain", "-z", "--untracked-files=all", "--"])
             .args([&folder, &story, &journal]),
         None,
     ) else {
@@ -1252,11 +1268,29 @@ pub(super) fn archive_to_commit(root: &Path, id: &str) -> Option<Vec<String>> {
     if !output.status.success() {
         return None;
     }
-    let mut paths = vec![];
-    for line in String::from_utf8_lossy(&output.stdout).lines() {
-        let Some(path) = line.get(3..).map(|path| path.trim_matches('"')) else {
+    // With `-z` each path is given as it is, never quoted or escaped, and a rename or a
+    // copy gives its source in the field after it.
+    let listed = String::from_utf8_lossy(&output.stdout).into_owned();
+    let mut fields = listed.split('\0').filter(|field| !field.is_empty());
+    let mut changed = vec![];
+    while let Some(field) = fields.next() {
+        let (Some(status), Some(path)) = (field.get(..2), field.get(3..)) else {
             continue;
         };
+        changed.push(path.to_string());
+        if (status.contains('R') || status.contains('C'))
+            && let Some(source) = fields.next()
+        {
+            changed.push(source.to_string());
+        }
+    }
+    let mut paths = vec![];
+    for path in &changed {
+        let path = path.as_str();
+        // macOS metadata needs no commit: the finish removes it as it is (#377).
+        if os_metadata(path) {
+            continue;
+        }
         let wanted = if path.starts_with(&format!("{folder}/")) {
             format!("{folder}/")
         } else if path == story {
@@ -1287,13 +1321,16 @@ fn os_metadata(relative: &str) -> bool {
 /// Remove an archived session's folder, each file only when committed at HEAD, keeping
 /// the entries its story does not hold (#381) and removing macOS metadata as it is
 /// (#377); returns the files kept (REQ-records-012).
-pub(super) fn remove_archived_folder(root: &Path, id: &str) -> Result<Vec<String>> {
+pub(super) fn remove_archived_folder(
+    root: &Path,
+    id: &str,
+    unheld: &[String],
+) -> Result<Vec<String>> {
     ensure!(
         local_path(root, &archive_file(id))?.is_file(),
         "session {id} has no story; it is not archived"
     );
-    let unheld = unheld_files(root, id)?;
-    remove_committed_except(root, &format!("{DIR}/{id}"), &unheld)
+    remove_committed_except(root, &format!("{DIR}/{id}"), unheld)
 }
 
 /// Archive open session `id` as finished, for `chough doctor --fix`.

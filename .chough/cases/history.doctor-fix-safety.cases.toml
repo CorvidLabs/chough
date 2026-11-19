@@ -126,3 +126,38 @@ expected = ["tests/doctor.rs::the_spec_walk_follows_no_link_and_is_bounded passe
 adapter = "cargo-test"
 test_target = "doctor"
 test = "the_spec_walk_follows_no_link_and_is_bounded"
+[[case]]
+id = "TC-history-a-story-an-earlier-release-wrote-still-holds-its-entries"
+title = "A story whose receipts lack the fields #342 added still holds its entries, so doctor --fix finishes the archive"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_story_an_earlier_release_wrote_still_holds_its_entries passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_an_earlier_release_wrote_still_holds_its_entries"
+
+[[case]]
+id = "TC-history-an-unreadable-file-never-stops-doctor"
+title = "An empty or cut-off entry or an oversize story in an archived folder leaves doctor reporting, removing nothing and naming no absolute path"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_unreadable_file_in_an_archived_folder_never_stops_doctor passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_unreadable_file_in_an_archived_folder_never_stops_doctor"
