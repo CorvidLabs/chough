@@ -1704,18 +1704,28 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
         if !unheld.is_empty() {
             finding.fix = format!(
                 "chough doctor --fix, then by hand: {}",
-                keep_or_drop(&unheld)
+                keep_or_drop(&unheld, &unreadable_entries(root, &id))
             );
             finding.detail = Some(json!({"kept": unheld}));
         }
-        let uncommitted = sessions::uncommitted_files(root, &id, &unheld)?;
+        let mut uncommitted = sessions::uncommitted_files(root, &id, &unheld)?;
+        // #389: nothing is removed while the story or its journal post is not committed
+        // at HEAD as it is, so the folder never goes while the story is the session's only
+        // record and is not committed.
+        let folder = format!(".chough/sessions/{id}/");
+        uncommitted.extend(
+            sessions::archive_to_commit(root, &id)
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|path| !path.starts_with(&folder)),
+        );
         if !uncommitted.is_empty() {
             finding.fix = format!(
                 "commit {}, then chough doctor --fix",
                 uncommitted.join(", ")
             );
             finding.blocked = Some(format!(
-                "{} not committed at HEAD; commit it first, so Git holds every byte removed",
+                "{} not committed at HEAD; commit it first, so Git holds every byte removed and the story before its folder goes",
                 uncommitted.join(", ")
             ));
         }
@@ -1945,7 +1955,11 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
                     .collect::<Vec<_>>()
                     .join(", ")
             );
-            ensure!(unheld.is_empty(), "{}", keep_or_drop(&unheld));
+            ensure!(
+                unheld.is_empty(),
+                "{}",
+                keep_or_drop(&unheld, &unreadable_entries(root, &finding.target))
+            );
         }
         Kind::UnfinishedSession => {
             sessions::close_session(root, &finding.target, reason.unwrap_or_default())?;
@@ -1957,13 +1971,57 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
 /// What a person does with the entries an archived session's story does not hold, which
 /// the archive finish keeps (REQ-history-012, #381): keep each in an open session or drop
 /// it in a reviewed commit, then run the fix again.
-fn keep_or_drop(unheld: &[String]) -> String {
-    format!(
-        "{} {} not held by the session's story, so doctor keeps {}; keep an evidence entry by moving it with `git mv`, with the files beside it, into an open session's `evidence/` folder and committing that, or drop it with `git rm` in a reviewed commit; for an unfolded inbox entry, add its text again in an open session with `chough inbox add`, then drop the kept copy with `git rm` in a reviewed commit; then run `chough doctor --fix` again",
-        unheld.join(", "),
-        if unheld.len() == 1 { "is" } else { "are" },
-        if unheld.len() == 1 { "it" } else { "them" }
-    )
+/// An evidence entry that cannot be read is kept too, but moving it would make an open
+/// session unreadable, so only dropping it is named for it and the files beside it.
+fn keep_or_drop(unheld: &[String], unreadable: &[String]) -> String {
+    let stem = |file: &str| -> String {
+        let name = file.rsplit('/').next().unwrap_or_default();
+        name.split('.').next().unwrap_or_default().to_string()
+    };
+    let broken_stems: Vec<String> = unreadable.iter().map(|file| stem(file)).collect();
+    let (broken, rest): (Vec<&String>, Vec<&String>) = unheld
+        .iter()
+        .partition(|file| file.contains("/evidence/") && broken_stems.contains(&stem(file)));
+    let join = |files: &[&String]| {
+        files
+            .iter()
+            .map(|file| file.as_str())
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+    let forms = |count: usize| {
+        if count == 1 {
+            ("is", "it")
+        } else {
+            ("are", "them")
+        }
+    };
+    let mut parts = vec![];
+    if !broken.is_empty() {
+        let (_, it) = forms(broken.len());
+        parts.push(format!(
+            "{} cannot be read, as its `unreadable` finding says, so doctor keeps {it}; drop {it} with `git rm` in a reviewed commit",
+            join(&broken),
+        ));
+    }
+    if !rest.is_empty() {
+        let (is, it) = forms(rest.len());
+        parts.push(format!(
+            "{} {is} not held by the session's story, so doctor keeps {it}; keep an evidence entry by moving it with `git mv`, with the files beside it, into an open session's `evidence/` folder and committing that, or drop it with `git rm` in a reviewed commit; for an unfolded inbox entry, add its text again in an open session with `chough inbox add`, then drop the kept copy with `git rm` in a reviewed commit",
+            join(&rest),
+        ));
+    }
+    format!("{}; then run `chough doctor --fix` again", parts.join("; "))
+}
+
+/// The evidence entries of archived session `id`'s folder that cannot be read.
+fn unreadable_entries(root: &Path, id: &str) -> Vec<String> {
+    crate::evidence::entry_receipts(root, id)
+        .unwrap_or_default()
+        .into_iter()
+        .filter(|(_, receipt)| receipt.is_none())
+        .map(|(name, _)| format!(".chough/sessions/{id}/evidence/{name}.md"))
+        .collect()
 }
 
 /// Run the doctor; returns whether any finding is left unresolved (exit 1).

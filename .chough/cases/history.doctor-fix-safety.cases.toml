@@ -8,7 +8,7 @@ status = "active"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-17"]
-requirements = ["REQ-history-012"]
+requirements = ["REQ-history-012", "REQ-history-006"]
 paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
@@ -26,7 +26,7 @@ status = "active"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-17"]
-requirements = ["REQ-history-012"]
+requirements = ["REQ-history-012", "REQ-history-006"]
 paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
@@ -110,23 +110,6 @@ test_target = "doctor"
 test = "a_redacted_timeline_entry_is_not_rewritten_but_a_hand_edit_is"
 
 [[case]]
-id = "TC-history-the-spec-walk-follows-no-link-and-is-bounded"
-title = "The spec walk follows no link out of or back into the project, finishes, and names its bound when a specs folder exceeds it (#402)"
-status = "active"
-track = "functional"
-method = "automated"
-criteria = ["DRIVE-17"]
-requirements = ["REQ-history-012"]
-paths = ["src/doctor.rs", "tests/doctor.rs"]
-environments = ["local-macos-arm64", "ci-linux"]
-artifacts = ["test-log"]
-expected = ["tests/doctor.rs::the_spec_walk_follows_no_link_and_is_bounded passes"]
-
-[case.bind]
-adapter = "cargo-test"
-test_target = "doctor"
-test = "the_spec_walk_follows_no_link_and_is_bounded"
-[[case]]
 id = "TC-history-a-story-an-earlier-release-wrote-still-holds-its-entries"
 title = "A story whose receipts lack the fields #342 added still holds its entries, so doctor --fix finishes the archive"
 status = "active"
@@ -161,3 +144,39 @@ expected = ["tests/sessions.rs::an_unreadable_file_in_an_archived_folder_never_s
 adapter = "cargo-test"
 test_target = "sessions"
 test = "an_unreadable_file_in_an_archived_folder_never_stops_doctor"
+
+[[case]]
+id = "TC-history-the-finish-waits-until-the-story-is-committed"
+title = "doctor --fix removes nothing while the story or its journal post is not committed, naming each to commit, then removes the folder (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::the_finish_waits_until_the_story_and_post_are_committed passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "the_finish_waits_until_the_story_and_post_are_committed"
+
+[[case]]
+id = "TC-history-a-story-edited-after-its-commit-holds-the-finish"
+title = "A story edited after its commit holds the archive finish until the edit is committed (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_story_edited_after_its_commit_holds_the_finish passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_story_edited_after_its_commit_holds_the_finish"

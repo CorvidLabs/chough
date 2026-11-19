@@ -1205,7 +1205,12 @@ pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
         _ => vec![],
     };
     let mut unheld_ids = vec![];
-    for receipt in crate::evidence::receipts_of(root, id)? {
+    for (name, receipt) in crate::evidence::entry_receipts(root, id)? {
+        // An entry that cannot be read is not held: the finish keeps it and names it.
+        let Some(receipt) = receipt else {
+            unheld_ids.push(name);
+            continue;
+        };
         let entry = receipt
             .iter()
             .find(|(key, _)| key == "id")
