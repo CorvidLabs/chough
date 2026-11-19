@@ -5,7 +5,7 @@ aliases: [fix-351]
 objective: The workflow skill teaches --no-native-change, and chough next offers both paths when a move is refused for lacking a native change (#351)
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-19-tc-cli-a-refused-move-for-lacking-a-change-offers-both-paths
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-351
-    holds: accept
-    drives: review
-    opened: 2026-11-18T22:58:59Z
+waiting_on_human: []
 run_consents: []
-next: Wait for the tester's check and Leif's implementation review of fix-351
+next: Continue done
 title: next and the skill teach --no-native-change
 summary:
   - Nothing told an agent that chough checkpoint --no-native-change exists (#351). A move refused for lacking a native change, and chough next, now name both ways on; once the flag is set next says the session needs no native change, with the reason; the literal <reason> placeholder is refused. The workflow skill explains the flag, and a project installed by 0.6.1 gets the new text on chough skill update. Tests failed first; the verify lane passed on macOS after main was merged in, and the tester passed the recheck. Linux was not run locally.
@@ -47,6 +43,7 @@ The workflow skill teaches --no-native-change, and chough next offers both paths
 
 - 0xLeif decided "Scope approval of fix-351": "yes, both" (Leif's decision of 2026-11-18 recorded in GitHub issue #351 (the skill explains chough checkpoint --no-native-change, and chough next offers both paths when a move is refused for lacking a native change); his planning session (hc t4c) relayed it to fable-t4b as his scope approval); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-351 as 0xLeif
 - 0xLeif decided "Scope approval of fix-351, with three more paths (native approval)": "Yes: send back once + re-approve" (Relayed by Leif's planning session (hc t4c) on 2026-11-18, which asked him fable-t4b's question: send back fix-351 once and re-approve it with src/skill.rs, src/checkpoint.rs and src/main.rs added; the requirement text does not change); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-351 as 0xLeif
+- 0xLeif decided "Implementation review of fix-351": "Approve, merge when green" (Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after the tester's recheck PASS on PR #359 at 9bfd8195); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change review fix-351 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -132,4 +129,20 @@ The workflow skill teaches --no-native-change, and chough next offers both paths
     - recorded_by: fable-t4b
     - native: specsync change approve fix-351
     - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T01:30:36Z · gate-closed · accept → accept · Implementation review of fix-351 ^t-617577
+  - native_change: fix-351
+  - revision: a5b1a680d66f1795bc8f5efefb17bbf9bdc28aae
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve, merge when green
+    - where: Relayed by Leif's planning session (hc t4c) to fable-t4b on 2026-11-18, after the tester's recheck PASS on PR #359 at 9bfd8195
+    - recorded_by: fable-t4b
+    - native: specsync change review fix-351
+    - actor: 0xLeif
+  - by: fable (claude-fable-5-2, hc t4b)
+- 2026-11-19T01:30:37Z · advance · accept → done · native:archived ^t-d00740
+  - native_change: fix-351
+  - gate: native:archived
+  - revision: a5b1a680d66f1795bc8f5efefb17bbf9bdc28aae
   - by: fable (claude-fable-5-2, hc t4b)
