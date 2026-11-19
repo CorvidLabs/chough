@@ -246,34 +246,50 @@ pub(super) fn valid_change_id(value: &str) -> bool {
 /// of `=======` is one inside a conflict. A marker inside a closed fenced code block,
 /// quoting an example or tool output, does not count, except in a section Chough writes.
 pub(super) fn conflict_markers(text: &str) -> Vec<(usize, String)> {
-    scan_conflicts(text, true).0
+    scan_conflicts(text, true).markers
 }
 
 /// Every Git conflict marker in a TOML case definition (#339), by the same rule as
 /// [`conflict_markers`], with no front matter or code fences to skip. A definition that
 /// parses as TOML holds none: a marker line there is quoted in a string.
 pub(super) fn conflict_markers_in_toml(text: &str) -> Vec<(usize, String)> {
-    toml_conflicts(text).0
+    toml_conflicts(text).markers
 }
 
 /// The 1-based lines of each lone `=======` outside a conflict and outside a code fence
 /// (#339): possibly left by a half-resolved conflict, possibly a heading underline, so
 /// `chough doctor` warns of it and no write is refused for it.
 pub(super) fn lone_separators(text: &str) -> Vec<usize> {
-    scan_conflicts(text, true).1
+    scan_conflicts(text, true).lone
+}
+
+/// Each conflict marker line inside a closed code fence of a record's body, with its
+/// 1-based line (#339): a quoted example, or a real conflict Git left inside the fence,
+/// which cannot be told apart, so `chough doctor` warns of it and no write is refused.
+pub(super) fn fenced_conflict_markers(text: &str) -> Vec<(usize, String)> {
+    scan_conflicts(text, true).fenced
 }
 
 /// The lone `=======` lines of a TOML case definition that does not parse (#339).
 pub(super) fn lone_separators_in_toml(text: &str) -> Vec<usize> {
-    toml_conflicts(text).1
+    toml_conflicts(text).lone
 }
 
 /// The conflicts of a TOML case definition: none when it parses as TOML (#339).
-fn toml_conflicts(text: &str) -> (Vec<(usize, String)>, Vec<usize>) {
+fn toml_conflicts(text: &str) -> Scan {
     if text.parse::<toml::Table>().is_ok() {
-        return (vec![], vec![]);
+        return Scan::default();
     }
     scan_conflicts(text, false)
+}
+
+/// What [`scan_conflicts`] finds in a text (#339): its conflict markers, the lines of its
+/// lone `=======` separators, and the marker lines inside a code fence.
+#[derive(Default)]
+struct Scan {
+    markers: Vec<(usize, String)>,
+    lone: Vec<usize>,
+    fenced: Vec<(usize, String)>,
 }
 
 /// The sections Chough writes itself, an archived story's `## Receipts` block and a
@@ -337,8 +353,9 @@ fn fenced(lines: &[&str], start: usize) -> Vec<bool> {
     fenced
 }
 
-/// The conflict markers of `text` and the lines of its lone `=======` separators.
-fn scan_conflicts(text: &str, markdown: bool) -> (Vec<(usize, String)>, Vec<usize>) {
+/// The conflict markers of `text`, the lines of its lone `=======` separators and the
+/// marker lines inside its code fences.
+fn scan_conflicts(text: &str, markdown: bool) -> Scan {
     let lines: Vec<&str> = text
         .lines()
         .map(|line| line.trim_end_matches('\r'))
@@ -357,12 +374,26 @@ fn scan_conflicts(text: &str, markdown: bool) -> (Vec<(usize, String)>, Vec<usiz
         vec![false; lines.len()]
     };
     let mut open = false;
-    let mut found = vec![];
-    let mut lone = vec![];
+    // A conflict opened inside the current code fence.
+    let mut quoted = false;
+    let mut scan = Scan::default();
     for (index, &line) in lines.iter().enumerate().skip(start) {
         if fenced[index] {
+            let marker = if line.starts_with("<<<<<<<") {
+                quoted = true;
+                true
+            } else if line.starts_with(">>>>>>>") {
+                quoted = false;
+                true
+            } else {
+                quoted && line == "======="
+            };
+            if marker {
+                scan.fenced.push((index + 1, line.to_string()));
+            }
             continue;
         }
+        quoted = false;
         let marker = if line.starts_with("<<<<<<<") {
             open = true;
             true
@@ -370,16 +401,16 @@ fn scan_conflicts(text: &str, markdown: bool) -> (Vec<(usize, String)>, Vec<usiz
             open = false;
             true
         } else if line == "=======" && !open {
-            lone.push(index + 1);
+            scan.lone.push(index + 1);
             false
         } else {
             open && line == "======="
         };
         if marker {
-            found.push((index + 1, line.to_string()));
+            scan.markers.push((index + 1, line.to_string()));
         }
     }
-    (found, lone)
+    scan
 }
 
 /// Whether `relative` is where a record of REQ-records-001 lives: a Markdown file under

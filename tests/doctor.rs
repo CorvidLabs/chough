@@ -1152,3 +1152,61 @@ fn doctor_reports_a_conflict_inside_chough_s_own_fenced_sections() {
         .collect();
     assert_eq!(lines, expected, "{report:#}");
 }
+
+/// REQ-records-001, REQ-cli-055 (#339, swarm finding 62-F1),
+/// TC-records-doctor-warns-of-a-conflict-inside-a-code-fence: a real Git conflict left
+/// inside a fenced block of a committed session cannot be told from a quoted one, so each
+/// of its marker lines is an advisory `possible_fenced_conflict` finding, "possible
+/// conflict markers inside a code fence at line N". Doctor's exit status is what it was
+/// without it, and the next write is not refused.
+#[test]
+fn doctor_warns_of_a_conflict_inside_a_code_fence() {
+    let fixture = Fixture::new();
+    fixture.init();
+    fixture.commit("a session");
+    let (before, _) = doctor(&fixture, &[]);
+    let file = fixture.session_file();
+    let text = fixture.read(&file).replacen(
+        "## Goal\n\nShip a focused change\n",
+        "## Goal\n\nShip a focused change\n\n```text\n<<<<<<< HEAD\nport = 7070\n=======\nport = 9090\n>>>>>>> c1\n```\n",
+        1,
+    );
+    let lines: Vec<u64> = text
+        .lines()
+        .enumerate()
+        .filter(|(_, line)| {
+            line.starts_with("<<<<<<<") || line.starts_with(">>>>>>>") || *line == "======="
+        })
+        .map(|(index, _)| index as u64 + 1)
+        .collect();
+    assert_eq!(lines.len(), 3);
+    fixture.write(&file, &text);
+    fixture.commit("a conflict left inside a code fence");
+    let (after, report) = doctor(&fixture, &[]);
+    let found = of_kind(&report, "possible_fenced_conflict");
+    let named: Vec<u64> = found
+        .iter()
+        .map(|finding| finding["line"].as_u64().unwrap())
+        .collect();
+    assert_eq!(named, lines, "{report:#}");
+    for finding in &found {
+        assert_eq!(finding["target"], file);
+        assert_eq!(finding["advisory"], true);
+        assert_eq!(
+            finding["warning"],
+            format!(
+                "possible conflict markers inside a code fence at line {}",
+                finding["line"]
+            )
+        );
+    }
+    assert!(
+        of_kind(&report, "conflict_markers").is_empty(),
+        "{report:#}"
+    );
+    assert_eq!(
+        after, before,
+        "an advisory finding changed doctor's exit: {report:#}"
+    );
+    fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
+}

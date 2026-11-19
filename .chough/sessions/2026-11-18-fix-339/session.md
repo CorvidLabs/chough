@@ -51,6 +51,7 @@ Conflict-marker follow-ups: markers in fenced code blocks don't count, a stray =
 
 - 0xLeif decided "Scope approval of fix-339": "exempt markers inside fenced code blocks, catch a stray =======, case TOML findings, and the migrate message naming the 0.5.x source … Warn only" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his decisions on the #336 follow-ups filed as CorvidLabs/chough#339, his scope approval for that issue; then for item 2 'Warn only': a lone line of exactly seven '=' with no <<<<<<< or >>>>>>> around it is reported by doctor as 'possible leftover conflict separator at line N', and writes are never refused for it); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339 as 0xLeif
 - 0xLeif decided "Re-approval of fix-339 for the tester's four findings": "Fix first" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, after the tester's PASS of #356 with notes, within his #339 scope: (a) a code fence never hides a conflict in the Timeline or Receipts sections Chough writes; (b) in a case definition, markers count only when it does not parse as TOML; (c) fences follow CommonMark: a fence that never closes hides nothing, and a backtick line whose tag holds a backtick is not a fence; (d) the migrate preview offers no apply command when the apply would refuse); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339 as 0xLeif
+- 0xLeif decided "Re-approval of fix-339 for a conflict inside a code fence": "Advisory finding" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, on swarm finding 62-F1 in #356 (a real Git conflict inside a fenced block of a session passed silently), within his #339 scope: doctor reports 'possible conflict markers inside a code fence at line N' as an advisory finding, with doctor's exit status unchanged and writes allowed, like the stray ======= rule); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339 as 0xLeif
 
 ## What was verified
 
@@ -127,6 +128,35 @@ Conflict-marker follow-ups: markers in fenced code blocks don't count, a stray =
     - decided_by: 0xLeif
     - words: Fix first
     - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, after the tester's PASS of #356 with notes, within his #339 scope: (a) a code fence never hides a conflict in the Timeline or Receipts sections Chough writes; (b) in a case definition, markers count only when it does not parse as TOML; (c) fences follow CommonMark: a fence that never closes hides nothing, and a backtick line whose tag holds a backtick is not a fence; (d) the migrate preview offers no apply command when the apply would refuse
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change approve fix-339
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:17:09Z · gate-opened · accept → accept · Re-approval of fix-339 for a conflict inside a code fence ^t-baeffb
+  - native_change: fix-339
+  - revision: 80f964d83d299b34692f5ed8e2165884fde53ba2
+  - holds: accept
+  - drives: approve
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:17:09Z · direct-native-write · accept → accept · fix-339's lifecycle records changed outside Chough: state.json changed, verification.json changed, verification-attempts.json changed; state stays verifying ^t-7da367
+  - native_change: fix-339
+  - revision: 80f964d83d299b34692f5ed8e2165884fde53ba2
+  - direct_write:
+    - change: fix-339
+    - files:
+      - state.json: changed
+      - verification.json: changed
+      - verification-attempts.json: changed
+    - before_state: verifying
+    - after_state: verifying
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:17:09Z · gate-closed · accept → accept · Re-approval of fix-339 for a conflict inside a code fence ^t-3d5d88
+  - native_change: fix-339
+  - revision: 80f964d83d299b34692f5ed8e2165884fde53ba2
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Advisory finding
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, on swarm finding 62-F1 in #356 (a real Git conflict inside a fenced block of a session passed silently), within his #339 scope: doctor reports 'possible conflict markers inside a code fence at line N' as an advisory finding, with doctor's exit status unchanged and writes allowed, like the stray ======= rule
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve fix-339
     - actor: 0xLeif

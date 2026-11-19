@@ -75,3 +75,21 @@ expected = ["tests/doctor.rs::doctor_reports_a_conflict_inside_chough_s_own_fenc
 adapter = "cargo-test"
 test_target = "doctor"
 test = "doctor_reports_a_conflict_inside_chough_s_own_fenced_sections"
+
+[[case]]
+id = "TC-records-doctor-warns-of-a-conflict-inside-a-code-fence"
+title = "A Git conflict left inside a code fence of a committed session gives one advisory possible_fenced_conflict finding per marker line; doctor's exit status and the next write are unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/doctor.rs", "src/records.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_warns_of_a_conflict_inside_a_code_fence passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_warns_of_a_conflict_inside_a_code_fence"

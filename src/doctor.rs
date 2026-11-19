@@ -54,6 +54,7 @@ enum Kind {
     ConflictMarkers,
     GitOperation,
     PossibleConflictSeparator,
+    PossibleFencedConflict,
 }
 
 impl Kind {
@@ -76,6 +77,7 @@ impl Kind {
             Self::ConflictMarkers => "conflict_markers",
             Self::GitOperation => "git_operation",
             Self::PossibleConflictSeparator => "possible_conflict_separator",
+            Self::PossibleFencedConflict => "possible_fenced_conflict",
         }
     }
 }
@@ -771,6 +773,26 @@ fn conflict_marker_findings(root: &Path, files: &[String]) -> Result<Vec<Finding
             }));
             found.push(finding);
         }
+        // A marker inside a code fence may quote an example or be a real conflict Git
+        // left there, which cannot be told apart, so it is a warning only (#339).
+        if case_definition {
+            continue;
+        }
+        for (line, marker) in crate::records::fenced_conflict_markers(&text) {
+            let mut finding = Finding::new(
+                Kind::PossibleFencedConflict,
+                path,
+                "none: if the code fence holds a Git conflict, resolve it by hand; a quoted example can stay".into(),
+                false,
+            );
+            finding.advisory = true;
+            finding.detail = Some(json!({
+                "line": line,
+                "marker": marker,
+                "warning": format!("possible conflict markers inside a code fence at line {line}"),
+            }));
+            found.push(finding);
+        }
     }
     Ok(found)
 }
@@ -1449,7 +1471,8 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         | Kind::MergeDriverOutdated
         | Kind::ConflictMarkers
         | Kind::GitOperation
-        | Kind::PossibleConflictSeparator => {
+        | Kind::PossibleConflictSeparator
+        | Kind::PossibleFencedConflict => {
             bail!("{} has no fix", finding.kind.name())
         }
         Kind::Leak => {
