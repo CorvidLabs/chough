@@ -1,0 +1,40 @@
+---
+kind: evidence
+id: 2026-11-19-tc-cli-change-ready-stale-delta
+aliases: []
+claim: "Ran cargo test --locked --test ready -- --exact a_stale_delta_is_named_until_the_body_is_rewritten for TC-cli-change-ready-stale-delta: passed (exit 0, tests run 1)."
+result: passed
+evidence_kind: product-test
+method: automated
+track: functional
+case: [TC-cli-change-ready-stale-delta]
+case_digest: [3b14f5b1df7c6ea1a96739442f5903068bca246e377c9352cb040829c9b6ae16]
+command:
+  - cargo
+  - test
+  - "--locked"
+  - "--test"
+  - ready
+  - "--"
+  - "--exact"
+  - a_stale_delta_is_named_until_the_body_is_rewritten
+exit_code: 0
+tests_run: 1
+duration_seconds: 3
+revision: 24323c5c04434521dfff65da788125d02010f545
+content: 896ac699cac24ac978487013ca31fddc5a27f90a2931184ae75b0812c68d6280
+environment: local-macos-arm64
+fingerprint: sha256:10d783679d42f3f90ddedd25b2835e68f96a2f9e1633a531b51fcd1ec0740e8a
+criteria: [DRIVE-29]
+requirements: [REQ-cli-067]
+contracts: [specs/cli/cli.spec.md]
+limitations: [inherited environment variables were not recorded]
+observed: 2026-11-19T02:17:10Z
+actor:
+  - agent: fable
+    model: claude-fable-5-2
+    terminal: t4b
+---
+**Ran cargo test --locked --test ready -- --exact a_stale_delta_is_named_until_the_body_is_rewritten for TC-cli-change-ready-stale-delta: passed (exit 0, tests run 1).**
+
+Recorded as passed in local-macos-arm64 at revision 24323c5c0443, observed 2026-11-19T02:17:10Z. The raw log stays in the machine-local store.
