@@ -841,30 +841,114 @@ fn spec_listings(root: &Path) -> Vec<(String, BTreeSet<String>)> {
     listings
 }
 
-/// The entries of the `files:` list in a spec's front matter.
+/// The entries of the `files:` list in a spec's front matter, in each form SpecSync
+/// reads: a block list, a flow list on the key's line (`files: [a, b]`), and a single
+/// value, each with or without quotes and a trailing `# comment`.
 fn listed_files(spec: &str) -> BTreeSet<String> {
     let mut files = BTreeSet::new();
     let mut lines = spec.lines();
     if lines.next().map(str::trim_end) != Some("---") {
         return files;
     }
-    let mut in_files = false;
+    let mut add = |entry: &str| {
+        let entry = unquoted(entry);
+        if !entry.is_empty() {
+            files.insert(entry.replace('\\', "/"));
+        }
+    };
+    // The key whose block list is being read, as SpecSync tracks it.
+    let mut key: Option<String> = None;
     for line in lines {
         if line.trim_end() == "---" {
             break;
         }
-        if !line.starts_with([' ', '\t', '-']) {
-            in_files = line.trim_end() == "files:";
+        if let Some(item) = line.trim_start().strip_prefix("- ")
+            && key.is_some()
+        {
+            if key.as_deref() == Some("files") {
+                add(without_comment(item.trim()));
+            }
             continue;
         }
-        if let Some(entry) = line.trim().strip_prefix('-').filter(|_| in_files) {
-            let entry = entry.trim().trim_matches(['"', '\'']);
-            if !entry.is_empty() {
-                files.insert(entry.replace('\\', "/"));
+        let Some((name, value)) = line.split_once(':') else {
+            continue;
+        };
+        let name = name.trim();
+        if name.is_empty() || name.contains(' ') {
+            continue;
+        }
+        let value = without_comment(value.trim());
+        if value.is_empty() || value == "[]" {
+            key = Some(name.to_string());
+            continue;
+        }
+        key = None;
+        if name != "files" {
+            continue;
+        }
+        match value.strip_prefix('[') {
+            Some(flow) => {
+                for item in flow_items(flow.strip_suffix(']').unwrap_or(flow)) {
+                    add(&item);
+                }
             }
+            None => add(value),
         }
     }
     files
+}
+
+/// A front matter value without its trailing `# comment`: a `#` at the start or after
+/// white space, outside quotes.
+fn without_comment(value: &str) -> &str {
+    let mut quote: Option<char> = None;
+    let mut before = ' ';
+    for (at, character) in value.char_indices() {
+        match quote {
+            Some(open) if character == open => quote = None,
+            Some(_) => {}
+            None if character == '"' || character == '\'' => quote = Some(character),
+            None if character == '#' && before.is_whitespace() => return value[..at].trim_end(),
+            None => {}
+        }
+        before = character;
+    }
+    value.trim_end()
+}
+
+/// A value without one pair of surrounding quotes.
+fn unquoted(value: &str) -> &str {
+    let value = value.trim();
+    for quote in ['"', '\''] {
+        if let Some(inner) = value
+            .strip_prefix(quote)
+            .and_then(|rest| rest.strip_suffix(quote))
+        {
+            return inner;
+        }
+    }
+    value
+}
+
+/// The items of a flow list's inside, split at commas outside quotes.
+fn flow_items(inside: &str) -> Vec<String> {
+    let mut items = vec![String::new()];
+    let mut quote: Option<char> = None;
+    for character in inside.chars() {
+        match quote {
+            Some(open) if character == open => quote = None,
+            None if character == '"' || character == '\'' => quote = Some(character),
+            None if character == ',' => {
+                items.push(String::new());
+                continue;
+            }
+            _ => {}
+        }
+        if let Some(item) = items.last_mut() {
+            item.push(character);
+        }
+    }
+    items
 }
 
 fn ignored_prefixes(root: &Path) -> Vec<String> {

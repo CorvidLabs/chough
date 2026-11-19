@@ -482,6 +482,66 @@ fn a_path_whose_owning_module_is_not_declared_is_named() {
     assert_report(&fixture, &[]);
 }
 
+/// REQ-cli-067 (#307, the review of #310): the owner check reads a spec's `files:` in
+/// each form SpecSync reads it: a block list, a block list with comments on the key and
+/// on an item, a flow list, and a quoted flow list with a comment. Each names the
+/// undeclared owner alike, and none does once the owner is declared.
+#[test]
+fn an_owner_is_named_whatever_form_its_files_list_takes() {
+    let forms = [
+        ("block", "files:\n  - src/main.rs\n  - src/checkpoint.rs\n"),
+        (
+            "commented",
+            "files: # sources\n  - src/main.rs # entry\n  - \"src/checkpoint.rs\"   # quoted\n",
+        ),
+        ("flow", "files: [src/main.rs, src/checkpoint.rs]\n"),
+        (
+            "quoted flow",
+            "files: [\"src/main.rs\", 'src/checkpoint.rs'] # both\n",
+        ),
+    ];
+    for (form, files) in forms {
+        let fixture = project(OLD_REQ, &["src/"]);
+        fixture.write(
+            "specs/cli/cli.spec.md",
+            &format!(
+                "---\nmodule: cli\nversion: 1\nstatus: active\n{files}db_tables: []\n---\n\n# CLI\n"
+            ),
+        );
+        for path in ["src/main.rs", "src/checkpoint.rs"] {
+            fixture.write(path, "// fixture\n");
+        }
+        fixture.commit("specs and sources");
+        let base = head(&fixture);
+        let paths = ["src/checkpoint.rs", "src/main.rs"];
+        write_change(&fixture, &base, "draft", &paths, true);
+        std::fs::remove_file(
+            fixture
+                .root()
+                .join(format!(".specsync/changes/{ID}/deltas/cli.md")),
+        )
+        .unwrap();
+        let output = fixture.run(&["change", "ready", ID]);
+        let stdout = String::from_utf8(output.stdout).unwrap();
+        assert_eq!(
+            stdout,
+            report(&[(
+                "cli owns src/checkpoint.rs,src/main.rs and is not in affected_specs; declaring it can add interview questions",
+                "chough change answer demo affected_specs \"cli\"",
+            )]),
+            "{form}"
+        );
+        // The control: with the owner declared, nothing is missing.
+        write_change(&fixture, &base, "draft", &paths, false);
+        let output = fixture.run(&["change", "ready", ID]);
+        assert_eq!(
+            String::from_utf8(output.stdout).unwrap(),
+            report(&[]),
+            "{form}, declared"
+        );
+    }
+}
+
 /// REQ-cli-067 (#363): after another branch is merged in, the files that merge brought
 /// are not the change's own, so they are not named as outside the declared paths. A
 /// file the change's own commit touches outside its paths still is, and so is one left
