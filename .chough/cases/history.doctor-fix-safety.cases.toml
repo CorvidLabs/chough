@@ -324,3 +324,39 @@ expected = ["tests/sessions.rs::the_way_out_names_the_open_sessions_when_none_is
 adapter = "cargo-test"
 test_target = "sessions"
 test = "the_way_out_names_the_open_sessions_when_none_is_active"
+
+[[case]]
+id = "TC-history-an-untracked-kept-entry-is-committed-first"
+title = "An entry the story does not hold that Git does not track holds the finish and is named in the commit, so its way out runs as printed (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_untracked_kept_entry_is_committed_first_so_its_way_out_runs passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_untracked_kept_entry_is_committed_first_so_its_way_out_runs"
+
+[[case]]
+id = "TC-history-an-inbox-entry-is-kept-whatever-its-name"
+title = "Every file in an archived session's inbox is kept, a name with a dot or a capital letter included (#381)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_inbox_entry_is_kept_whatever_its_name passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_inbox_entry_is_kept_whatever_its_name"

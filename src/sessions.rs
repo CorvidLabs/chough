@@ -1194,8 +1194,12 @@ pub(super) fn uncommitted_files(root: &Path, id: &str, unheld: &[String]) -> Res
     collect_files(root, &format!("{DIR}/{id}"), &mut files)?;
     Ok(files
         .into_iter()
-        .filter(|file| !os_metadata(file) && !unheld.contains(file))
+        .filter(|file| !os_metadata(file))
         .filter(|file| !committed_at_head(root, file))
+        // An entry the story does not hold is kept, but one Git does not track yet is
+        // committed first, so its printed way out (`git mv`, `git rm`) runs as printed
+        // (#381, rule 3).
+        .filter(|file| !unheld.contains(file) || !tracked_by_git(root, file))
         .collect())
 }
 
@@ -1258,15 +1262,22 @@ pub(super) fn unheld_files(root: &Path, id: &str) -> Result<Vec<String>> {
     let mut unheld: Vec<String> = files
         .into_iter()
         .filter(|file| {
+            // A file belongs to an entry when its name is the entry's name or ID and then
+            // a dot, so a name holding a dot of its own is kept too; over-keeping a sibling
+            // is the safe side (corvid-agent's review of #414).
             let name = file.rsplit('/').next().unwrap_or_default();
-            let stem = name.split('.').next().unwrap_or_default();
-            !os_metadata(file) && unheld_ids.iter().any(|entry| entry == stem)
+            !os_metadata(file)
+                && unheld_ids.iter().any(|entry| {
+                    name.strip_prefix(entry.as_str())
+                        .is_some_and(|rest| rest.starts_with('.'))
+                })
         })
         .collect();
-    let inbox = inbox_dir(id);
-    for entry in entry_names(root, &inbox)? {
-        unheld.push(format!("{inbox}/{entry}.md"));
-    }
+    // Every file in the inbox, whatever its name: an unfolded entry renamed with a dot or
+    // a capital letter is someone's work too (#381).
+    let mut inbox = vec![];
+    collect_files(root, &inbox_dir(id), &mut inbox)?;
+    unheld.extend(inbox.into_iter().filter(|file| !os_metadata(file)));
     unheld.sort();
     Ok(unheld)
 }
@@ -1388,6 +1399,20 @@ pub(super) fn head_readable(root: &Path) -> bool {
             "--verify",
             "--quiet",
             "HEAD",
+        ]),
+        None,
+    )
+    .is_ok_and(|output| output.status.success())
+}
+
+/// Whether Git tracks the file at `relative`.
+pub(super) fn tracked_by_git(root: &Path, relative: &str) -> bool {
+    crate::records::run_owned(
+        std::process::Command::new("git").arg("-C").arg(root).args([
+            "ls-files",
+            "--error-unmatch",
+            "--",
+            relative,
         ]),
         None,
     )

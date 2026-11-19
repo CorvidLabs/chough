@@ -2015,9 +2015,13 @@ fn sh(text: &str) -> String {
 /// that cannot be read is only dropped, since moving it would make an open session
 /// unreadable.
 fn keep_or_drop(root: &Path, id: &str, unheld: &[String]) -> String {
+    // The name without its final extension only, as `unreadable_entries` and
+    // `entry_receipts` read it, so a name holding a dot groups with its own files.
     let stem = |file: &str| -> String {
         let name = file.rsplit('/').next().unwrap_or_default();
-        name.split('.').next().unwrap_or_default().to_string()
+        name.rsplit_once('.')
+            .map_or(name, |(stem, _)| stem)
+            .to_string()
     };
     let broken: Vec<String> = unreadable_entries(root, id)
         .iter()
