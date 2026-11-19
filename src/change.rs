@@ -728,11 +728,18 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
             (names.len() == 1).then(|| names[0].to_string())
         });
     let refetch = match &remote {
-        Some(remote) => format!(
-            "Run `git fetch --refetch {}` to fetch every object again, then the ship.",
+        // A name that cannot be shown is not printed, so there is nothing to paste.
+        Some(remote) if crate::leaks::unshowable(remote).is_some() => format!(
+            "Run `git fetch --refetch -- <remote>` with the name of {}, to fetch every object again, then the ship.",
             crate::leaks::shown("remote", remote)
         ),
-        None => "Run `git fetch --refetch <remote>`, naming the remote that holds this history, to fetch every object again, then the ship.".to_string(),
+        // One quoted word after `--`, so any name a person's config holds pastes as one
+        // argument and is never read as an option or by the shell.
+        Some(remote) => format!(
+            "Run `git fetch --refetch -- {}` to fetch every object again, then the ship.",
+            shell_quoted(remote)
+        ),
+        None => "Add the remote that holds this history with `git remote add <name> <url>`, then run `git fetch --refetch -- <name>` to fetch every object again, then the ship.".to_string(),
     };
     let unchecked = |what: &str| {
         anyhow::anyhow!(
@@ -850,6 +857,11 @@ fn refuse_corrupt_history(root: &Path, id: &str) -> Result<()> {
         );
     }
     Ok(())
+}
+
+/// `value` as one POSIX shell word: in single quotes, each `'` written as `'\''`.
+fn shell_quoted(value: &str) -> String {
+    format!("'{}'", value.replace('\'', "'\\''"))
 }
 
 /// The changes other than `id` that `commit` holds both open and archived, by their

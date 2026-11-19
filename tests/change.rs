@@ -1760,7 +1760,8 @@ fn ship_with_an_unreadable_commit_names_fetch_refetch() {
     assert!(!output.status.success(), "the ship ran: {stderr}");
     assert!(stderr.contains("refused:history-unchecked"), "{stderr}");
     // No remote at all in this fixture: the generic form, which names the remote to give.
-    assert!(stderr.contains("git fetch --refetch <remote>"), "{stderr}");
+    assert!(stderr.contains("git remote add <name> <url>"), "{stderr}");
+    assert!(stderr.contains("git fetch --refetch -- <name>"), "{stderr}");
     assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
 }
 
@@ -1808,6 +1809,12 @@ fn ship_with_a_base_commit_that_is_not_an_object_id_goes_on() {
 #[cfg(unix)]
 #[test]
 fn the_refetch_command_names_the_real_remote_and_works() {
+    for name in ["upstream", "it's", "-x", "a&b"] {
+        refetch_with_a_remote_named(name);
+    }
+}
+
+fn refetch_with_a_remote_named(name: &str) {
     let fixture = shipping_session_at("accept");
     let base = head_of(&fixture);
     fixture.write(
@@ -1831,7 +1838,7 @@ fn the_refetch_command_names_the_real_remote_and_works() {
         "{}",
         String::from_utf8_lossy(&cloned.stderr)
     );
-    fixture.git(&["remote", "add", "upstream", &bare.display().to_string()]);
+    fixture.git(&["remote", "add", "--", name, &bare.display().to_string()]);
     let object = fixture
         .root()
         .join(".git/objects")
@@ -1840,28 +1847,28 @@ fn the_refetch_command_names_the_real_remote_and_works() {
     std::fs::remove_file(&object).unwrap();
     let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
     let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
-    assert!(!output.status.success(), "the ship ran: {stderr}");
-    let command = stderr
-        .split('`')
-        .find(|part| part.starts_with("git fetch --refetch"))
-        .unwrap_or_else(|| panic!("no refetch command: {stderr}"))
-        .to_string();
-    assert_eq!(command, "git fetch --refetch upstream", "{stderr}");
-    let words: Vec<&str> = command.split_whitespace().collect();
-    let fetched = std::process::Command::new(words[0])
-        .args(&words[1..])
+    assert!(!output.status.success(), "{name}: the ship ran: {stderr}");
+    let line = stderr
+        .lines()
+        .find(|line| line.contains("git fetch --refetch"))
+        .unwrap_or_else(|| panic!("{name}: no refetch command: {stderr}"));
+    let command = line.split('`').nth(1).unwrap().to_string();
+    // Pasted into a shell exactly as printed.
+    let fetched = std::process::Command::new("sh")
+        .args(["-c", &command])
         .current_dir(fixture.root())
+        .env("GIT_TERMINAL_PROMPT", "0")
         .output()
         .unwrap();
     assert!(
         fetched.status.success(),
-        "{}",
+        "{name}: `{command}`: {}",
         String::from_utf8_lossy(&fetched.stderr)
     );
     let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
     assert!(
         output.status.success(),
-        "{}",
+        "{name}: {}",
         String::from_utf8_lossy(&output.stderr)
     );
 }
