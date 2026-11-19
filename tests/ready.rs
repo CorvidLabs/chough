@@ -362,10 +362,13 @@ fn an_unknown_change_names_status() {
         assert_eq!(output.status.code(), Some(1));
         assert!(output.stdout.is_empty());
         let stderr = String::from_utf8(output.stderr).unwrap();
-        assert_eq!(
-            stderr,
-            format!("no change `{id}` to read\nFix: `chough change status`\n")
-        );
+        // An id that is not a valid change id is not shown as typed.
+        let named = if id == "missing" {
+            format!("no change `{id}` to read")
+        } else {
+            "no change to read: that is not a valid change id".to_string()
+        };
+        assert_eq!(stderr, format!("{named}\nFix: `chough change status`\n"));
     }
 }
 
@@ -391,7 +394,7 @@ fn a_missing_specsync_names_the_install_command() {
                 "write .specsync/changes/demo/deltas/cli.md",
             ),
             (
-                "specsync cannot be started, so undocumented exports were not read",
+                "specsync cannot be started, so interview questions and undocumented exports were not read",
                 "cargo install --locked specsync@6.3.0",
             ),
         ]),
@@ -454,6 +457,60 @@ fn files_a_merge_brought_in_are_not_outside_the_declared_paths() {
     );
 }
 
+/// REQ-cli-067 (the review of #311): what a merge commit itself changes is the change's
+/// own work. A file outside the declared paths that only the merge's resolution
+/// changed is named, while the files the other branch brought in are not.
+#[test]
+fn a_file_changed_only_in_a_merge_resolution_is_named() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    fixture.write("src/owned.rs", "fn owned() {}\n");
+    fixture.commit("the change's own work");
+    fixture.git(&["checkout", "-q", "-b", "other", &base]);
+    fixture.write("docs/from-main.md", "from main\n");
+    fixture.write("shared.txt", "from main\n");
+    fixture.commit("main moved on");
+    fixture.git(&["checkout", "-q", "-"]);
+    fixture.git(&["merge", "-q", "--no-ff", "--no-commit", "other"]);
+    // The resolution edits a file the other branch brought, and adds one of its own.
+    fixture.write("shared.txt", "changed while merging\n");
+    fixture.write("added-while-merging.txt", "own\n");
+    fixture.git(&["add", "shared.txt", "added-while-merging.txt"]);
+    fixture.git(&["commit", "-q", "-m", "merge other, with edits"]);
+    write_change(&fixture, &base, "draft", &["src/"], false);
+    let fix =
+        "chough change answer demo affected_paths \"src/,added-while-merging.txt,shared.txt\"";
+    assert_report(
+        &fixture,
+        &[
+            (
+                "changed file added-while-merging.txt is outside the declared paths",
+                fix,
+            ),
+            ("changed file shared.txt is outside the declared paths", fix),
+        ],
+    );
+}
+
+/// REQ-cli-067, REQ-records-006: an id that is not a valid change id is not shown as
+/// typed, since it can hold anything; a valid one that names no change is.
+#[test]
+fn an_invalid_id_is_not_echoed() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let typed = "SYNTHETIC/secret value";
+    let output = fixture.run(&["change", "ready", typed]);
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert_eq!(output.status.code(), Some(1));
+    assert!(!stderr.contains("SYNTHETIC"), "{stderr}");
+    assert!(stderr.contains("chough change status"), "{stderr}");
+    let output = fixture.run(&["change", "ready", "no-such-change"]);
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(
+        stderr.contains("no change `no-such-change` to read"),
+        "{stderr}"
+    );
+}
+
 /// REQ-cli-067 (the review of #311): the report restores only the cache its own
 /// SpecSync runs wrote. A cache another process replaced meanwhile, by a regular file
 /// or by a symlink to a tracked file, stays as that process left it, nothing is written
@@ -461,15 +518,15 @@ fn files_a_merge_brought_in_are_not_outside_the_declared_paths() {
 #[cfg(unix)]
 #[test]
 fn a_cache_replaced_while_the_report_runs_is_left_alone() {
-    // The fixture tracks its cache, so the replacement is also a changed file; the
-    // finding under test is this one.
-    let left = "- .specsync/hashes.json was replaced while this report ran, so it was left as it is now\n  Fix: `chough change ready demo`\n";
+    // Said on stderr, not as a finding: REQ-cli-067 lists the findings, and no other.
+    let left =
+        ".specsync/hashes.json was replaced while this report ran, so it was left as it is now\n";
     for kind in ["regular", "symlink"] {
         let fixture = project(OLD_REQ, &["src/"]);
         let output = fixture.run_with_env(&["change", "ready", ID], &[("READY_TEST_CACHE", kind)]);
         let stdout = String::from_utf8(output.stdout).unwrap();
-        assert!(stdout.contains(left), "{kind}: {stdout}");
-        assert_eq!(output.status.code(), Some(1), "{kind}");
+        assert_eq!(String::from_utf8(output.stderr).unwrap(), left, "{kind}");
+        assert!(!stdout.contains("was replaced"), "{kind}: {stdout}");
         let cache = fixture.root().join(".specsync/hashes.json");
         // The tracked file the symlink points to keeps its text either way.
         assert_eq!(fixture.read("specs/cli/requirements.md"), OLD_REQ, "{kind}");
