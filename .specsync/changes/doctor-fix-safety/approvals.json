@@ -1,4 +1,70 @@
 {
-  "approvals": [],
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795062174,
+      "digest": "f9edc08a69220e33dcfe90cfb08d391c89e05fe5c25de091b21f36fd77e72694",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of doctor-fix-safety\": \"Approve, with the 3 recommended choices\" (Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, his scope approval of D1 'doctor --fix must not destroy or hang' (#381, #402, #377, #371, #374) for the deltas at bf9f70c, with the three recommended choices: #381 keeps and names the entry, attaching it to the story being later and its own issue; #371 next says commit, then doctor --fix; #374 a Timeline entry changed only by redaction is not reported as rewritten, checked by redacting HEAD's text again). Relayed and recorded by chough-fixer-t4g at 2026-11-19T04:22:54Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "doctor-fix-safety",
+        "title": "Doctor fix safety",
+        "description": "doctor fix safety",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.doctor-fix-safety.cases.toml",
+          "changelog.d/2026-11-19-doctor-fix-safety.md",
+          "docs/cli.md",
+          "src/doctor.rs",
+          "src/main.rs",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/doctor.rs",
+          "tests/git_merge.rs",
+          "tests/history.rs",
+          "tests/leaks.rs",
+          "tests/next.rs",
+          "tests/records.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "doctor --fix never deletes an evidence entry its archived story does not hold (by ID and receipt) or an unfolded inbox entry, and names each kept entry with the way out by hand (#381); macOS metadata never blocks the archive finish (#377); next names committing the session folder, story and journal post, then doctor --fix, while an archive is unfinished (#371); a front-matter conflict is reported as conflict_markers and unreadable names resolving it, and a Timeline entry that only redaction changed is not reported as rewritten while a hand edit still is (#374); the spec walk follows no symlink, is bounded at 4,096 entries and 32 folders, and says when it stops at the bound (#402)."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Leif's decision on #402 ('fix in 0.6.2', the finding as scope) and his words on #381, #377, #371 and #374, relayed through fable-lead from hc t4c, set the scope. doctor --fix never removes work a story does not hold and never hangs; failing tests first. File boundaries from fable-lead: doctor.rs (archive finish, spec walk, conflict and timeline advice), the archive finish in sessions.rs and next's line in main.rs; t4b keeps the stale-pointer check, session_md.rs, stage.rs, change.rs and the inbox, shelve and session-use code.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "008bdc734d9d113eb6a36900db20e82afc058695e8c431f1a78a8009facf4d03",
+        "history": "0fca378e50c8b40859b467c1caa52141d45e88b7182639dfdbf9e920ebb2a8a0",
+        "records": "417e779220c39f099c690c356521d15fd63add9d3acac88be9f0047b0d7b2d88"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-021": "35e3a369cf9e973c99ab3cb91823e59c027a7a544b419b910a8638edca04a609",
+        "history: REQUIREMENT REQ-history-006": "89bb2c3ed93fe4f46eeda58164fa7bbc6dd61b106a88c0f091a22f05517dbc82",
+        "history: REQUIREMENT REQ-history-012": "1900cd7e96b4fff95684584a7b49148f5b2c82f483d7d4ca1941b44f7428f8fe",
+        "records: REQUIREMENT REQ-records-001": "449532db24add6347348595dfb99604ca06917b7e853f32f0c96b63e7f15946b",
+        "records: REQUIREMENT REQ-records-014": "d39797f12217992794a3cc1eef2bb836448fc044c24afa25b881ec1ca1833739"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Approve, with the 3 recommended choices",
+        "where": "Relayed by Leif's planning session (hc t4c) through fable-lead (hc t53) to chough-fixer, 2026-11-18, his scope approval of D1 'doctor --fix must not destroy or hang' (#381, #402, #377, #371, #374) for the deltas at bf9f70c, with the three recommended choices: #381 keeps and names the entry, attaching it to the story being later and its own issue; #371 next says commit, then doctor --fix; #374 a Timeline entry changed only by redaction is not reported as rewritten, checked by redacting HEAD's text again",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    }
+  ],
   "reopenings": []
 }

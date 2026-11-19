@@ -1,6 +1,6 @@
 ---
 id: doctor-fix-safety
-state: draft
+state: approved
 type: bug_fix
 base_commit: 6936f88f47a2c69f9febf15822678f1d804ff027
 ---
