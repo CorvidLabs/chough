@@ -16,7 +16,15 @@ requirements: [REQ-cli-007, REQ-cli-037, REQ-cli-057, REQ-cli-059]
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-19-tc-cli-a-hand-edited-no-native-change-cannot-unlock-the
+  - 2026-11-19-tc-cli-ship-checks-the-whole-history
+  - 2026-11-19-tc-cli-ship-acts-on-the-pinned-session
+  - 2026-11-19-tc-cli-session-use-and-new-say-when-a-pin-names-another
+  - 2026-11-19-tc-cli-session-shelve-resolves-its-key
+  - 2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow
+  - 2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument
+  - 2026-11-19-tc-history-inbox-list-lists-the-pinned-session
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -38,6 +46,15 @@ Gates and session pins fail closed: a hand-edited no_native_change cannot unlock
 - 0xLeif decided "Scope approval of fix-g1-gates-and-pins-fail-closed with the narrowed #400 sentence (native approval)": "yes to both" (Claude Code chat message relayed by hc t4c through fable-lead (hc t53), about 14:47Z on 2026-11-19: yes to the replacement #400 sentence and criterion in REQ-cli-059 as sent (g1-400-wording), and to t4b running this one send-back. The send-back cancelled his three earlier answers on G1, which stand for the rest of the delta: 'Approve, both as recommended' (about 05:21Z), 'Approve' (about 06:12Z), 'Yes, covered' (morning MST)); recorded by fable-t4b; a relayed claim, not authenticated; ran specsync change approve fix-g1-gates-and-pins-fail-closed as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test stages -- --exact a_hand_edited_no_native_change_cannot_unlock_the_ungated_move for TC-cli-a-hand-edited-no-native-change-cannot-unlock-the-ungated-move: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-a-hand-edited-no-native-change-cannot-unlock-the.md)
+- [Ran cargo test --locked --test change -- --exact ship_checks_the_whole_history_and_goes_on_without_a_base for TC-cli-ship-checks-the-whole-history: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-checks-the-whole-history.md)
+- [Ran cargo test --locked --test change -- --exact ship_closes_the_gate_and_moves_the_stage_in_the_pinned_session for TC-cli-ship-acts-on-the-pinned-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-acts-on-the-pinned-session.md)
+- [Ran cargo test --locked --test session_pin -- --exact session_use_and_new_say_when_a_pin_still_names_another_session for TC-cli-session-use-and-new-say-when-a-pin-names-another-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-session-use-and-new-say-when-a-pin-names-another.md)
+- [Ran cargo test --locked --test sessions -- --exact session_shelve_resolves_its_key_as_session_use_does for TC-cli-session-shelve-resolves-its-key: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-session-shelve-resolves-its-key.md)
+- [Ran cargo test --locked --test change -- --exact ship_in_a_shallow_clone_without_the_base_names_fetch_unshallow for TC-cli-ship-in-a-shallow-clone-names-fetch-unshallow: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-ship-in-a-shallow-clone-names-fetch-unshallow.md)
+- [Ran cargo test --locked --test change -- --exact change_commands_refuse_a_leaking_argument_before_specsync_runs for TC-cli-change-commands-refuse-a-leaking-argument: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-change-commands-refuse-a-leaking-argument.md)
+- [Ran cargo test --locked --test session_pin -- --exact inbox_list_lists_the_pinned_session for TC-history-inbox-list-lists-the-pinned-session: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-history-inbox-list-lists-the-pinned-session.md)
 
 ## Open threads
 
