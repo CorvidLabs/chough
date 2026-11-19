@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-361",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "5c977807d92b638d515f8a896c5231f60a017bf2",
+  "contract_digest": "82b21588a0a0af12e631ee8171380a057fafec02499ae802082d9997e86b5812",
+  "execution_digest": "ba92abfc53e0a2e31999c35f7c6ff6a8361cffc2a8f49b496d5e6c48783a8b3d",
+  "workspace_digest": "0b2c9b8f9b494cec4fe4a478ee89673bd444139b328c63c9c7d600e0e43c23ef",
+  "timestamp": 1795055741,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve; show it with no session too",
+    "where": "Relayed by Leif's planning session (hc t4c), 2026-11-18, for PR #362; the later reviewer and tester fixes and his approved REQ-cli-016 sentence were reported to him by that session, which gave the go to merge at 5c977807",
+    "recorded_by": "fable-t4b"
+  }
+}
