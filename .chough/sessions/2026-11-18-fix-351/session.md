@@ -19,6 +19,7 @@ files: [src/stage.rs, tests/stages.rs, skills/chough-workflow/references/lifecyc
 observations:
   - 2026-11-18-tc-cli-a-refused-move-for-lacking-a-change-offers-both-paths
   - 2026-11-18-tc-cli-a-refused-move-for-lacking-a-change-offers-both-paths-8e78d9
+  - 2026-11-19-tc-cli-a-refused-move-for-lacking-a-change-offers-both-paths
 bugs: []
 blockers: []
 waiting_on_human:
@@ -48,6 +49,7 @@ The workflow skill teaches --no-native-change, and chough next offers both paths
 
 - [Ran cargo test --locked --test stages -- --exact a_move_refused_for_lacking_a_change_offers_both_paths for TC-cli-a-refused-move-for-lacking-a-change-offers-both-paths: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-refused-move-for-lacking-a-change-offers-both-paths.md)
 - [Ran cargo test --locked --test stages -- --exact a_move_refused_for_lacking_a_change_offers_both_paths for TC-cli-a-refused-move-for-lacking-a-change-offers-both-paths: passed (exit 0, tests run 1).](evidence/2026-11-18-tc-cli-a-refused-move-for-lacking-a-change-offers-both-paths-8e78d9.md)
+- [Ran cargo test --locked --test stages -- --exact a_move_refused_for_lacking_a_change_offers_both_paths for TC-cli-a-refused-move-for-lacking-a-change-offers-both-paths: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-cli-a-refused-move-for-lacking-a-change-offers-both-paths.md)
 
 ## Open threads
 
