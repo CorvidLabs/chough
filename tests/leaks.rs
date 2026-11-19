@@ -1447,3 +1447,50 @@ fn the_redaction_count_is_what_the_save_replaced() {
     assert!(said.contains("value(s) in evidence entry"), "{said}");
     assert!(!said.contains("in the session record"), "{said}");
 }
+
+/// REQ-records-006 (#407): `session close --redact` over a session that already holds a
+/// leaking decision writes the story with the decision redacted, and says how many
+/// values it redacted in it.
+#[test]
+fn closing_a_session_with_a_stored_leak_redacts_the_story_and_says_so() {
+    let fixture = Fixture::new();
+    fixture.init();
+    assert!(
+        run(&fixture, &["checkpoint", "--decision", "decided: first"])
+            .status
+            .success()
+    );
+    let file = fixture.session_file();
+    let id = fixture.active_id();
+    let secret = concat!("ghp_", "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8");
+    let text = fixture.read(&file).replacen(
+        "- decided: first\n",
+        &format!("- decided: first\n- decided: use {secret} for the deploy\n"),
+        1,
+    );
+    fixture.write(&file, &text);
+    fixture.commit("an older session holding a leaking decision");
+    let output = run(
+        &fixture,
+        &[
+            "--redact",
+            "session",
+            "close",
+            &id,
+            "--reason",
+            "SYNTHETIC abandoned",
+        ],
+    );
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{said}");
+    assert!(
+        said.contains("redacted 1 value(s) in the archived story"),
+        "{said}"
+    );
+    let story = fixture.read(&format!(".chough/archive/sessions/{id}.md"));
+    assert!(!story.contains(secret), "{story}");
+    assert!(
+        story.contains("use <redacted:token> for the deploy"),
+        "{story}"
+    );
+}

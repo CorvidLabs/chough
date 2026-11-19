@@ -219,3 +219,21 @@ expected = ["tests/leaks.rs::the_redaction_count_is_what_the_save_replaced passe
 adapter = "cargo-test"
 test_target = "leaks"
 test = "the_redaction_count_is_what_the_save_replaced"
+
+[[case]]
+id = "TC-records-closing-a-session-with-a-stored-leak-redacts-the-story"
+title = "session close --redact over a session holding a leaking decision writes the story with it redacted and says how many values it redacted"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/sessions.rs", "src/checkpoint.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::closing_a_session_with_a_stored_leak_redacts_the_story_and_says_so passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "closing_a_session_with_a_stored_leak_redacts_the_story_and_says_so"

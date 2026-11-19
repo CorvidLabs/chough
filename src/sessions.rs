@@ -904,7 +904,7 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     // line links its file and becomes its receipt line below, never a bare ID beside it.
     let mut linked = session.clone();
     linked.evidence_links = checkpoint::evidence_links(root, &linked);
-    let mut record = checkpoint::render_checkpoint(&linked)?;
+    let (mut record, redacted) = checkpoint::render_counted(&linked)?;
     // REQ-history-006 (#344): when the objective changed after the Goal was filled, the
     // story says so in one line after the Goal paragraph; nothing is rewritten.
     let objective = session
@@ -974,6 +974,11 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
         written == text,
         "{story} did not read back as written; nothing was removed"
     );
+    // REQ-records-006: under `--redact`, the count of what the story's write replaced,
+    // once the story is written, as `session close` over a stored leak needs.
+    if crate::leaks::redacting() && redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in the archived story {story} (--redact)");
+    }
     let mut kept = crate::evidence::move_screenshots_at_finish(root, id)?;
     // A screenshot that is not committed yet is kept by both steps; list it once.
     for file in remove_committed(root, &format!("{DIR}/{id}"))? {
