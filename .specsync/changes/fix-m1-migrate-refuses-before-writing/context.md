@@ -52,6 +52,18 @@ and SHA-256, the format this build writes. Not tried on the binary, and to be pi
 by the first failing tests: a returning file whose session has since been archived,
 and a returning fixed-path `.chough/session.json` that holds a different session.
 
+Telling an earlier migration's receipt from this migration's own: the receipt is
+written before any 0.5.x file is removed, so an interrupted apply leaves every source
+present with the bytes its receipt lists. The two are told apart by Git, not by the
+plan: a finished migration is committed (a file can only come back through Git after
+that), while an interrupted apply's receipt is not committed. An uncommitted receipt
+judges nothing and is used again as today. Walked through for a stop before the
+receipt (no receipt, same plan), after the receipt (uncommitted receipt, same plan
+and digest, receipt reused) and partway through the removals (as today, since the
+receipt is still uncommitted). If someone commits a half-applied tree, its sources
+are then removed as already migrated, which is right because every 0.6.0 file is
+written before the receipt.
+
 Not in this scope: a hand-made file under `.chough/` that is no 0.5.x record kind,
 such as a `.chough/proposals/` note, is neither carried, removed nor mentioned.
 
