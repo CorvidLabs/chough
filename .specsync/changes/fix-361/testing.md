@@ -19,6 +19,11 @@ artifact: testing
 - with no session open, `next` still gives `skill_outdated` in its JSON and shows the
   line under `Session: none open` (added on Leif's review of #362).
 
+`a_fifo_at_an_installed_skill_file_blocks_neither_next_nor_doctor` (added after the
+swarm's finding on #362): with a FIFO at an installed skill file, `next`, `doctor`
+and `skill status` return within 20 seconds and report no outdated file. It fails
+without the non-blocking open, where `next` blocks.
+
 It fails on main, where doctor reports nothing. No new free-text input is added.
 
 ## Requirement evidence

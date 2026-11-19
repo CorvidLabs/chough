@@ -4472,3 +4472,63 @@ fn doctor_and_next_say_when_skill_files_are_known_outdated() {
     assert!(text.starts_with("Session: none open\n"), "{text}");
     assert!(text.contains(line), "{text}");
 }
+
+/// REQ-cli-016 (#361, swarm finding lead-F1 on #362): a FIFO where an installed skill
+/// file should be blocks nothing. `chough next` and `chough doctor` return within the
+/// deadline, and the FIFO is not reported as outdated: it is not an earlier release's
+/// copy.
+#[cfg(unix)]
+#[test]
+fn a_fifo_at_an_installed_skill_file_blocks_neither_next_nor_doctor() {
+    let project = empty_project();
+    let root = project.path();
+    chough(root, &["init", "--objective", "Try Chough"]);
+    let installed = root.join(".agents/skills/chough-workflow/references/stages.md");
+    fs::remove_file(&installed).unwrap();
+    assert!(
+        Command::new("mkfifo")
+            .arg(&installed)
+            .status()
+            .unwrap()
+            .success()
+    );
+    let within_deadline = |args: &[&str]| -> String {
+        let mut child = Command::new(env!("CARGO_BIN_EXE_chough"))
+            .arg("--root")
+            .arg(root)
+            .args(args)
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .unwrap();
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(20);
+        loop {
+            if child.try_wait().unwrap().is_some() {
+                break;
+            }
+            if std::time::Instant::now() >= deadline {
+                let _ = child.kill();
+                let _ = child.wait();
+                panic!("chough {args:?} blocked on a FIFO at a skill file");
+            }
+            std::thread::sleep(std::time::Duration::from_millis(50));
+        }
+        let output = child.wait_with_output().unwrap();
+        String::from_utf8(output.stdout).unwrap()
+    };
+    let next = within_deadline(&["next"]);
+    assert!(
+        !next.contains("Skill files are outdated"),
+        "a FIFO is not an earlier release's copy: {next}"
+    );
+    let report: Value = serde_json::from_str(&within_deadline(&["doctor"])).unwrap();
+    assert!(
+        !report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|finding| finding["kind"] == "skill_outdated"),
+        "{report:#}"
+    );
+    within_deadline(&["skill", "status"]);
+}

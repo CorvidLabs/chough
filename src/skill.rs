@@ -775,9 +775,20 @@ pub(super) fn planned_files(hosts: &[String]) -> Result<Vec<(String, &'static st
 
 fn file_state(root: &Path, base: &str, name: &str, content: &str) -> Result<&'static str> {
     let path = local_path(root, &format!("{base}/{name}"))?;
-    let Ok(bytes) = fs::read(&path) else {
+    if fs::symlink_metadata(&path).is_err() {
         return Ok("missing");
+    }
+    // #361 (lead-F1): what stands at the name may not be a regular file. A FIFO is
+    // opened without blocking and refused by its type on the handle, as a record is
+    // (#262), and reads as `edited`: it is not Chough's copy, so nothing reports it as
+    // outdated and nothing overwrites it.
+    let Ok(mut file) = crate::records::open_regular(&path) else {
+        return Ok("edited");
     };
+    let mut bytes = vec![];
+    if std::io::Read::read_to_end(&mut file, &mut bytes).is_err() {
+        return Ok("edited");
+    }
     if bytes == content.as_bytes() {
         return Ok("current");
     }
