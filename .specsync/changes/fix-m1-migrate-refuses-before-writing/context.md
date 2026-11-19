@@ -58,9 +58,12 @@ present with the bytes its receipt lists. The two are told apart by Git, not by 
 plan: a finished migration is committed (a file can only come back through Git after
 that), while an interrupted apply's receipt is not committed. An uncommitted receipt
 judges nothing and is used again as today. Walked through for a stop before the
-receipt (no receipt, same plan), after the receipt (uncommitted receipt, same plan
-and digest, receipt reused) and partway through the removals (as today, since the
-receipt is still uncommitted). If someone commits a half-applied tree, its sources
+receipt (no receipt, the plan as before), after the receipt and partway through the
+removals (the receipt is uncommitted, so it judges nothing and the apply goes on as
+today). Tried on the binary by putting sources back after a full apply, which is not
+a faithful stop: the next preview had another digest and the apply wrote a second
+receipt, with no duplicate session. So the criterion promises what the existing text
+does, that the next apply completes with the same result, and not a same digest. If someone commits a half-applied tree, its sources
 are then removed as already migrated, which is right because every 0.6.0 file is
 written before the receipt.
 
