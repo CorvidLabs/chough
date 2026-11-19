@@ -1207,13 +1207,21 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
 fn stale_bug_link_findings(root: &Path) -> Vec<Finding> {
     crate::bugs::stale_evidence_links(root)
         .into_iter()
-        .map(|(path, stale)| {
-            let mut finding = Finding::new(
-                Kind::StaleBugLinks,
-                &path,
-                "chough doctor --fix".into(),
-                false,
-            );
+        .map(|found| {
+            let (path, stale) = (found.path, found.links);
+            // #347 (62-F9): a bug too near its size bound cannot take the line, so the
+            // finding says where the evidence is and offers no fix that never applies.
+            let fix = if found.fits {
+                "chough doctor --fix".to_string()
+            } else {
+                "none: the bug is too near its size bound for the link line; its evidence is in the archived story this finding names".to_string()
+            };
+            let mut finding = Finding::new(Kind::StaleBugLinks, &path, fix, false);
+            if !found.fits {
+                finding.blocked = Some(format!(
+                    "{path} is too near its 65,536-byte bound to take one more Log line, so doctor leaves it as it is; the linked evidence is in the archived story"
+                ));
+            }
             finding.detail = Some(json!({
                 "links": stale
                     .iter()

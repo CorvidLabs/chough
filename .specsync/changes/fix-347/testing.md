@@ -23,6 +23,11 @@ hand-edited link whose entry name holds a credential, are not relinked; only the
 entry the story holds as a receipt is, and the credential is never written again.
 It fails without the receipt check.
 
+`a_bug_too_near_its_bound_gets_advice_and_no_relink_fix` (added after the swarm's
+finding 62-F9 on #360): a bug 60 bytes below its bound gets a finding whose fix
+starts `none:` and names the story, and `--fix` leaves it byte for byte. It fails
+without the fit check, where the finding offers `chough doctor --fix` for ever.
+
 Two existing tests that pinned the bare `<session>/<id>` text in a Log line now
 expect the link. The link text is built from evidence names the bug already
 holds, so no new free-text input is added.

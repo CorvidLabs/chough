@@ -825,7 +825,15 @@ fn check_evidence(evidence: &Evidence<'_>, bug: &Stored, ids: &[String]) -> Resu
 /// that is gone because its session was archived, each with those entries and the
 /// session whose archived story now holds them as receipts. An entry the bug's body already links
 /// to that story is left out, so a fixed bug is not found again.
-pub(super) fn stale_evidence_links(root: &Path) -> Vec<(String, Vec<(String, String)>)> {
+/// One bug's stale evidence links: its path, each entry with the session whose story
+/// holds it, and whether the relink line fits within the bug's size bound.
+pub(super) struct StaleLinks {
+    pub(super) path: String,
+    pub(super) links: Vec<(String, String)>,
+    pub(super) fits: bool,
+}
+
+pub(super) fn stale_evidence_links(root: &Path) -> Vec<StaleLinks> {
     const OPEN: &str = "](../sessions/";
     let mut found = vec![];
     // Only what an archived story holds as a receipt is relinked: such an ID passed the
@@ -871,7 +879,14 @@ pub(super) fn stale_evidence_links(root: &Path) -> Vec<(String, Vec<(String, Str
             }
         }
         if !stale.is_empty() {
-            found.push((bug.path.clone(), stale));
+            // #347 (62-F9): a bug near its bound cannot take the line; that is said
+            // once, as advice, where a fix would never apply.
+            let fits = (text.len() + relink_line(&stale, 0).len()) as u64 <= Kind::Bug.bound();
+            found.push(StaleLinks {
+                path: bug.path.clone(),
+                links: stale,
+                fits,
+            });
         }
     }
     found
@@ -887,12 +902,13 @@ fn story_link(entry: &str, session: &str) -> String {
 /// that links each such entry to its archived story. The Log is append-only, so the
 /// earlier line keeps its link and the new one says where the evidence is now.
 pub(super) fn relink_archived_evidence(root: &Path, path: &str) -> Result<()> {
-    let Some((_, stale)) = stale_evidence_links(root)
+    let Some(found) = stale_evidence_links(root)
         .into_iter()
-        .find(|(bug, _)| bug == path)
+        .find(|found| found.path == path)
     else {
         return Ok(());
     };
+    let stale = found.links;
     let mut stored = records_in(root, BUGS_DIR, Kind::Bug.bound())
         .into_iter()
         .map(|(name, record)| Stored {
@@ -901,19 +917,23 @@ pub(super) fn relink_archived_evidence(root: &Path, path: &str) -> Result<()> {
         })
         .find(|bug| bug.path == path)
         .with_context(|| format!("{path} is gone"))?;
+    let at = now()?;
+    stored
+        .record
+        .append_to_section(LOG, &relink_line(&stale, at))?;
+    stored.record.set_scalar("updated", &iso_time(at))?;
+    markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
+    Ok(())
+}
+
+/// The Log line that links each of `stale` to its archived story, at time `at`.
+fn relink_line(stale: &[(String, String)], at: u64) -> String {
     let links: Vec<String> = stale
         .iter()
         .map(|(entry, session)| story_link(entry, session))
         .collect();
-    let at = now()?;
     let text = format!("Evidence now in its archived session: {}", links.join(", "));
-    stored.record.append_to_section(
-        LOG,
-        &(log_line(at, &text, Actor::current().as_ref()) + "\n"),
-    )?;
-    stored.record.set_scalar("updated", &iso_time(at))?;
-    markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
-    Ok(())
+    log_line(at, &text, Actor::current().as_ref()) + "\n"
 }
 
 /// A stored `<session>/<entry>` link as a Markdown link to that open session's entry,

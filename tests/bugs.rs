@@ -2611,3 +2611,59 @@ fn doctor_relinks_only_what_the_archived_story_holds_as_a_receipt() {
     assert_eq!(after.matches(token).count(), 1, "{after}");
     assert!(stale(&report(&[])).is_empty());
 }
+
+/// REQ-history-012 (#347, swarm finding 62-F9 on #360): a bug too near its 65,536-byte
+/// bound cannot take the relink line. Doctor says so, names where the evidence is, and
+/// offers no `chough doctor --fix` that would never apply; `--fix` leaves the bug byte
+/// for byte.
+#[test]
+fn a_bug_too_near_its_bound_gets_advice_and_no_relink_fix() {
+    let fixture = ordered_bug(&[("first-failure", "failed", 100)]);
+    let id = only_bug_id(&fixture);
+    let session = fixture.active_id();
+    let path = format!(".chough/bugs/{id}.md");
+    let text = fixture.read(&path);
+    // One hand-written Log line that leaves 60 bytes below the bound.
+    let prefix = "- 2026-11-10T00:00:05Z · SYNTHETIC padding ";
+    let padding = 65_536 - 60 - text.len() - prefix.len() - 1;
+    fixture.write(&path, &format!("{text}{prefix}{}\n", "x".repeat(padding)));
+    assert_eq!(fixture.read(&path).len(), 65_536 - 60);
+    fixture.commit("a bug near its bound");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    let before = fixture.read(&path);
+
+    let report = |args: &[&str]| -> Value {
+        let mut all = vec!["doctor"];
+        all.extend_from_slice(args);
+        serde_json::from_slice(&fixture.run(&all).stdout).unwrap()
+    };
+    let stale = |report: &Value| -> Vec<Value> {
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "stale_bug_links")
+            .cloned()
+            .collect()
+    };
+    let found = stale(&report(&[]));
+    assert_eq!(found.len(), 1, "{found:#?}");
+    let fix = found[0]["fix"].as_str().unwrap();
+    assert!(fix.starts_with("none:"), "{fix}");
+    assert!(!fix.contains("chough doctor --fix"), "{fix}");
+    assert_eq!(
+        found[0]["links"][0]["story"],
+        format!(".chough/archive/sessions/{session}.md")
+    );
+
+    let fixed = stale(&report(&["--fix"]));
+    assert_eq!(fixed[0]["status"], "skipped", "{fixed:#?}");
+    assert!(
+        fixed[0]["reason"]
+            .as_str()
+            .unwrap()
+            .contains("65,536-byte bound"),
+        "{fixed:#?}"
+    );
+    assert_eq!(fixture.read(&path), before);
+}
