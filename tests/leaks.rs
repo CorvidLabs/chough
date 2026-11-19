@@ -1193,7 +1193,7 @@ fn the_user_name_comes_from_the_account() {
     .unwrap()
     .trim()
     .to_string();
-    assert!(account.len() >= 2, "{account:?}");
+    assert!(account.len() >= 2, "the account name is too short to check");
     // `root` never counts as a user name (#379), so a container run as root has none.
     if account == "root" {
         return;
@@ -1207,7 +1207,10 @@ fn the_user_name_comes_from_the_account() {
         &[("USER", ""), ("LOGNAME", "")],
     );
     let said = String::from_utf8_lossy(&output.stderr).into_owned();
-    assert!(!output.status.success(), "{value} was written");
+    assert!(
+        !output.status.success(),
+        "the account's <user>@<host> was written"
+    );
     assert!(said.contains("decision holds user-name"), "{said}");
     assert_eq!(tree(fixture.root()), before);
 
@@ -1261,7 +1264,9 @@ fn a_redacting_save_replaces_a_stored_leak_in_place() {
         !output.status.success(),
         "a plain save over a stored leak was written"
     );
-    redacted(&fixture, &["checkpoint", "--decision", "decided: clean"]);
+    let said = redacted(&fixture, &["checkpoint", "--decision", "decided: clean"]);
+    // One stored leak is one redacted value, though it is both a value and a body line.
+    assert!(said.contains("redacted 1 value(s)"), "{said}");
     let text = fixture.read(&file);
     assert!(!text.contains(secret), "{text}");
     assert_eq!(

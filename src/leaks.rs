@@ -145,12 +145,19 @@ fn account_user() -> Option<String> {
             &mut found,
         )
     };
-    if status != 0 || found.is_null() {
+    // getpwuid_r succeeded only when it returned 0 and pointed `found` at `entry`.
+    if status != 0 || found.is_null() || found != entry.as_mut_ptr() {
         return None;
     }
-    // SAFETY: getpwuid_r succeeded, so `entry` is initialized and `pw_name` points into
-    // `buffer` at a NUL-terminated name.
-    let name = unsafe { std::ffi::CStr::from_ptr((*found).pw_name) };
+    // SAFETY: getpwuid_r returned 0 with `found` pointing at `entry`, so it filled
+    // `entry` in.
+    let entry = unsafe { entry.assume_init() };
+    if entry.pw_name.is_null() {
+        return None;
+    }
+    // SAFETY: `pw_name` is not null, and getpwuid_r points it into `buffer`, which is
+    // still alive, at a NUL-terminated name.
+    let name = unsafe { std::ffi::CStr::from_ptr(entry.pw_name) };
     name.to_str().ok().map(str::to_string)
 }
 
@@ -643,8 +650,11 @@ fn in_absolute_path(bytes: &[u8], at: usize) -> bool {
         && !matches!(
             bytes[start - 1],
             b'"' | b'\'' | b'`' | b')' | b'(' | b'<' | b'>' | b',' | b';' | b'|' | b']' | b'['
-                // An assignment, as `X=/tmp/<user>/data`, starts the path after the `=`.
+                // An assignment, as `X=/tmp/<user>/data`, starts the path after the `=`,
+                // and a brace, as `{/opt/<user>/x}`, encloses one.
                 | b'='
+                | b'{'
+                | b'}'
         )
     {
         start -= 1;
@@ -656,7 +666,9 @@ fn in_absolute_path(bytes: &[u8], at: usize) -> bool {
     match token {
         [b'/' | b'\\', ..] => true,
         [drive, b':', b'/' | b'\\', ..] => drive.is_ascii_alphabetic(),
-        _ => false,
+        // An scp-style remote path, `<host>:/<absolute path>`, carries an absolute path
+        // after its colon (REQ-records-006).
+        _ => token.windows(2).any(|window| window == b":/"),
     }
 }
 
@@ -1442,5 +1454,25 @@ mod tests {
         assert!(kinds(&root, "postgres://root@db/x").is_empty());
         assert!(kinds(&root, "see /opt/root/x").is_empty());
         assert_eq!(kinds(&root, "ran in /root/app"), ["home-path"]);
+    }
+
+    /// fable-lead's note on #407: an scp-style path carries an absolute path after its
+    /// colon, so the user name inside it still counts.
+    #[test]
+    fn the_user_name_counts_in_an_scp_style_path() {
+        let dev = Local::new(Some("dev"), None);
+        let kinds = |value: &str| -> Vec<&'static str> {
+            find(&dev, value)
+                .iter()
+                .map(|found| found.kind.name())
+                .collect()
+        };
+        assert_eq!(kinds("copy build-box:/data/dev/x"), ["user-name"]);
+        // tester2's shapes on #407: an scp or rsync path and a braced path.
+        assert_eq!(kinds("rsync box:/opt/dev/x"), ["user-name"]);
+        assert_eq!(kinds("rsync box:/srv/dev/"), ["user-name"]);
+        assert_eq!(kinds("paths {/opt/dev/x}"), ["user-name"]);
+        // A web URL is still no local path.
+        assert!(kinds("see https://example.com/dev/guide").is_empty());
     }
 }
