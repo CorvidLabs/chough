@@ -865,7 +865,10 @@ pub(super) fn run(root: &Path, command: SessionCommand) -> Result<()> {
                     match open_matches(root, &key)?.as_slice() {
                         [id] => id.clone(),
                         [] => key,
-                        _ => return Err(resolve_open(root, &key).unwrap_err()),
+                        // Several: refused with `session use`'s own message. Should the two
+                        // reads ever disagree, the session it resolves is shelved, never a
+                        // panic.
+                        _ => resolve_open(root, &key)?,
                     }
                 };
             shelve(root, &folder)
