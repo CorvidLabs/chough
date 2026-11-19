@@ -5,7 +5,7 @@ aliases: [fix-251]
 objective: "When SpecSync's source_dirs or meaningful_paths covers the whole repository, chough init and chough doctor advise narrowing to the code folders and say why, instead of a list SpecSync refuses (REQ-records-014, #251, #279)"
 intent_scope: ""
 modules: []
-stage: accept
+stage: done
 stage_status: active
 iteration: 1
 callers: []
@@ -22,13 +22,9 @@ observations:
   - 2026-11-19-tc-records-a-whole-repository-specsync-gets-the-narrowing
 bugs: []
 blockers: []
-waiting_on_human:
-  - gate: Implementation review of fix-251
-    holds: accept
-    drives: review
-    opened: 2026-11-18T20:54:37Z
+waiting_on_human: []
 run_consents: []
-next: Continue accept
+next: Continue done
 ---
 # When SpecSync's source_dirs or meaningful_paths covers the whole repository, chough init and chough doctor advise narrowing to the code folders and say why, instead of a list SpecSync refuses (REQ-records-014, #251, #279)
 
@@ -45,6 +41,7 @@ When SpecSync's source_dirs or meaningful_paths covers the whole repository, cho
 
 - 0xLeif decided "Scope approval of fix-251": "Chough advises narrowing. When SpecSync's source_dirs is ["."], chough init and chough doctor advise narrowing it to the real code folders (for example ["src"]) and say why, instead of advice SpecSync refuses as overlapping. This fixes #251 and #279 together, without changing SpecSync's overlap rule. … Yes, both" (Leif's decision comment on CorvidLabs/chough#251 and #279 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval; then 'Yes, both', relayed by hc t4c on 2026-11-18: init and doctor also advise removing '.' from meaningful_paths in .specsync/sdd.json, with the same why); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-251 as 0xLeif
 - 0xLeif decided "Re-approval of fix-251 for code at the repository root": "Chough advises narrowing. … Yes, both … Both: better advice + SpecSync" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, with his #251/#279 decision comment and 'Yes, both' as the scope: after the tester's BLOCK on the NFTMix shape, he chose that when the specified code sits at the repository root (no code folder to narrow to), init and doctor advise adding the skill bundle and Chough's folders to exclude_dirs, and say the ignored list needs the code moved into a folder or SpecSync's fix, CorvidLabs/spec-sync#1083; the folder-repo advice stays as it is); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-251 as 0xLeif
+- 0xLeif decided "Implementation review of fix-251": "Approve + follow-up" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #354 after the tester's recheck PASS at a059d88 on real NFTMix and arcron; the follow-up is #357 (root code in every files: style, and a folder repo with one root file)); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change review fix-251 as 0xLeif with verdict pass
 
 ## What was verified
 
@@ -119,4 +116,20 @@ When SpecSync's source_dirs or meaningful_paths covers the whole repository, cho
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve fix-251
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:32:42Z · gate-closed · accept → accept · Implementation review of fix-251 ^t-055565
+  - native_change: fix-251
+  - revision: ef41d3bbed04b18dd1819ee95c8b289c354fda33
+  - relayed_by:
+    - decided_by: 0xLeif
+    - words: Approve + follow-up
+    - where: Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #354 after the tester's recheck PASS at a059d88 on real NFTMix and arcron; the follow-up is #357 (root code in every files: style, and a folder repo with one root file)
+    - recorded_by: chough-fixer-t4g
+    - native: specsync change review fix-251
+    - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-19T00:32:43Z · advance · accept → done · native:archived ^t-3c7863
+  - native_change: fix-251
+  - gate: native:archived
+  - revision: ef41d3bbed04b18dd1819ee95c8b289c354fda33
   - by: chough-fixer (claude-opus-5-5, hc t4n)
