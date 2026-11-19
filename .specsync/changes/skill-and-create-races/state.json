@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "workflow_version": 2,
+  "workflow_origin_version": 2,
+  "id": "skill-and-create-races",
+  "slug": "skill-and-create-races",
+  "title": "Skill and create races",
+  "description": "skill and create races",
+  "kind": "feature",
+  "state": "draft",
+  "base_commit": "9d260310bca8553a0203e5ef90bc8372b4e15aae",
+  "created_at": 1795074277,
+  "updated_at": 1795074359,
+  "affected_specs": [
+    "cli",
+    "history"
+  ],
+  "affected_paths": [
+    "src/skill.rs",
+    "src/records.rs",
+    "src/doctor.rs",
+    "src/main.rs",
+    "tests/cli.rs",
+    "tests/doctor.rs",
+    "tests/parallel.rs",
+    "docs/cli.md",
+    "changelog.d/2026-11-19-skill-and-create-races.md",
+    ".chough/cases/cli.skill-and-create-races.cases.toml",
+    ".chough/cases/history.skill-and-create-races.cases.toml"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A CRLF skill copy counts as the bundle file it equals and is refreshed with CRLF line breaks, and a file skill update cannot write is refused naming it, never assertion text (#373). Parallel skill update and init runs each succeed, or refuse only as a run on its own would (#386). Plain skill status and update skip a host folder that cannot be inspected, report it relative to the project and update the rest, exiting 0, while --host for it refuses (#403). chough doctor reports an untracked record under .chough/ that its reader refuses as unreadable, with the file and the reason (#408)."
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The issues set the scope: #373 (lead-F5, F6), #386 (s3-F2, F7) as \"the same create-new race\", #403 and #408, with fable-lead adding uncommitted unreadable records beside #408. CRLF matching changes REQ-cli-016's criterion that newline changes stay edited, so it is a choice for Leif. Based on main; it modifies no requirement #407, D1, L2 or #311 modifies, and #408 is a new requirement so it does not wait on D1. No new dependency. Failing tests first.",
+    "public_contract": "yes"
+  }
+}
