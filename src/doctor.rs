@@ -1708,20 +1708,48 @@ fn session_findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
             );
             finding.detail = Some(json!({"kept": unheld}));
         }
+        // When Git cannot read HEAD, nothing can be shown committed, so the finish waits
+        // and says why rather than naming files that only seem uncommitted (#389).
+        if !sessions::head_readable(root) {
+            finding.fix =
+                "make `git rev-parse HEAD` work in this project, then chough doctor --fix".into();
+            finding.blocked = Some(
+                "Git cannot read HEAD here, so the archive finish removes nothing until it can"
+                    .into(),
+            );
+            archives.push(finding);
+            continue;
+        }
         let mut uncommitted = sessions::uncommitted_files(root, &id, &unheld)?;
         // #389: nothing is removed while the story or its journal post is not committed
         // at HEAD as it is, so the folder never goes while the story is the session's only
         // record and is not committed.
-        let folder = format!(".chough/sessions/{id}/");
-        uncommitted.extend(
-            sessions::archive_to_commit(root, &id)
-                .unwrap_or_default()
-                .into_iter()
-                .filter(|path| !path.starts_with(&folder)),
-        );
+        // Git is asked of each record whether HEAD holds it as it is, so a record Git
+        // ignores, which `git status` never lists, or a Git call that fails holds the
+        // finish too; an ignored record is named with a way out Git accepts.
+        let held: Vec<String> = sessions::archive_records(root, &id)
+            .into_iter()
+            .filter(|path| !sessions::committed_at_head(root, path))
+            .collect();
+        let ignored: Vec<String> = held
+            .iter()
+            .filter(|path| sessions::ignored_by_git(root, path))
+            .cloned()
+            .collect();
+        uncommitted.extend(held);
         if !uncommitted.is_empty() {
+            let force = if ignored.is_empty() {
+                String::new()
+            } else {
+                format!(
+                    " (Git ignores {}: add {} with `git add -f {}`, or change the ignore rule)",
+                    ignored.join(", "),
+                    if ignored.len() == 1 { "it" } else { "them" },
+                    ignored.join(" ")
+                )
+            };
             finding.fix = format!(
-                "commit {}, then chough doctor --fix",
+                "commit {}{force}, then chough doctor --fix",
                 uncommitted.join(", ")
             );
             finding.blocked = Some(format!(

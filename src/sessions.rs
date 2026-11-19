@@ -1315,6 +1315,70 @@ pub(super) fn archive_to_commit(root: &Path, id: &str) -> Option<Vec<String>> {
     Some(paths)
 }
 
+/// The records archived session `id`'s finish waits on (#389): its story and each journal
+/// post whose `record` is the story, found by reading the journal, wherever Git stands on
+/// them.
+pub(super) fn archive_records(root: &Path, id: &str) -> Vec<String> {
+    let story = archive_file(id);
+    let mut records = vec![];
+    if local_path(root, &story).is_ok_and(|path| path.is_file()) {
+        records.push(story.clone());
+    }
+    let journal = crate::prefs::effective(root, "library-dir")
+        .map(|(dir, _)| format!("{}/journal", dir.trim_end_matches('/')))
+        .unwrap_or_else(|_| "knowledge/journal".into());
+    let Ok(entries) = local_path(root, &journal).and_then(|folder| Ok(fs::read_dir(folder)?))
+    else {
+        return records;
+    };
+    let mut names: Vec<String> = entries
+        .flatten()
+        .filter_map(|entry| entry.file_name().into_string().ok())
+        .filter(|name| name.ends_with(".md") && !os_metadata(name))
+        .collect();
+    names.sort();
+    for name in names {
+        let path = format!("{journal}/{name}");
+        let is_post = local_path(root, &path)
+            .ok()
+            .and_then(|full| read_bounded_record(&full, crate::markdown::RECORD_BOUND).ok())
+            .and_then(|text| crate::markdown::parse(&path, &text).ok())
+            .is_some_and(|post| post.scalar("record") == Some(story.as_str()));
+        if is_post {
+            records.push(path);
+        }
+    }
+    records
+}
+
+/// Whether Git can read the project's HEAD commit.
+pub(super) fn head_readable(root: &Path) -> bool {
+    crate::records::run_owned(
+        std::process::Command::new("git").arg("-C").arg(root).args([
+            "rev-parse",
+            "--verify",
+            "--quiet",
+            "HEAD",
+        ]),
+        None,
+    )
+    .is_ok_and(|output| output.status.success())
+}
+
+/// Whether Git ignores the file at `relative`.
+pub(super) fn ignored_by_git(root: &Path, relative: &str) -> bool {
+    crate::records::run_owned(
+        std::process::Command::new("git").arg("-C").arg(root).args([
+            "check-ignore",
+            "-q",
+            "--",
+            relative,
+        ]),
+        None,
+    )
+    .is_ok_and(|output| output.status.success())
+}
+
 /// Whether the file at `relative` is macOS metadata (REQ-cli-068).
 fn os_metadata(relative: &str) -> bool {
     crate::evidence::is_os_metadata(relative.rsplit('/').next().unwrap_or_default())

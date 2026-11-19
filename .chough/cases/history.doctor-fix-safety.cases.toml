@@ -180,3 +180,57 @@ expected = ["tests/sessions.rs::a_story_edited_after_its_commit_holds_the_finish
 adapter = "cargo-test"
 test_target = "sessions"
 test = "a_story_edited_after_its_commit_holds_the_finish"
+
+[[case]]
+id = "TC-history-an-ignored-story-holds-the-finish"
+title = "A story Git ignores holds the archive finish, and the finding names git add -f (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_ignored_story_holds_the_finish_and_names_git_add_f passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_ignored_story_holds_the_finish_and_names_git_add_f"
+
+[[case]]
+id = "TC-history-an-ignored-journal-post-holds-the-finish"
+title = "A journal post Git ignores, found by its record field, holds the archive finish (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::an_ignored_journal_post_holds_the_finish passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "an_ignored_journal_post_holds_the_finish"
+
+[[case]]
+id = "TC-history-a-failed-git-read-holds-the-finish"
+title = "When Git cannot read HEAD the archive finish removes nothing and says why (#389)"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-history-012"]
+paths = ["src/doctor.rs", "src/sessions.rs", "tests/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/sessions.rs::a_failed_git_read_holds_the_finish_and_says_so passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "sessions"
+test = "a_failed_git_read_holds_the_finish_and_says_so"

@@ -2573,3 +2573,108 @@ fn a_story_edited_after_its_commit_holds_the_finish() {
     assert_eq!(finding["status"], "fixed", "{report:#}");
     assert!(!fixture.exists(&folder));
 }
+
+/// REQ-history-012 (#389, fable-lead's read of D1): a story Git ignores is never listed
+/// by `git status`, so the finish asks Git whether it is committed. With the story
+/// ignored, `doctor --fix` removes nothing, and its finding names a way out that works,
+/// `git add -f`; once it is committed, the folder goes.
+#[cfg(unix)]
+#[test]
+fn an_ignored_story_holds_the_finish_and_names_git_add_f() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    fixture.write(".gitignore", &format!("{story}\n"));
+    assert!(
+        git(&fixture, &["add", "--", ".gitignore", &post])
+            .status
+            .success()
+    );
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "ignore the story"])
+            .status
+            .success()
+    );
+    assert!(!tracked(&fixture, &story));
+    let folder = format!(".chough/sessions/{id}");
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let fix = finding["fix"].as_str().unwrap_or_default();
+    assert!(fix.contains(&format!("git add -f {story}")), "{finding:#}");
+    assert!(
+        fixture.exists(&folder),
+        "the folder went while the story was ignored"
+    );
+
+    assert!(git(&fixture, &["add", "-f", "--", &story]).status.success());
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "the story"])
+            .status
+            .success()
+    );
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "fixed", "{report:#}");
+    assert!(!fixture.exists(&folder));
+}
+
+/// REQ-history-012 (#389): the session's journal post is found by its `record` field,
+/// not only among the paths `git status` lists, so an ignored post holds the finish too.
+#[cfg(unix)]
+#[test]
+fn an_ignored_journal_post_holds_the_finish() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    fixture.write(".gitignore", "knowledge/journal/\n");
+    assert!(
+        git(&fixture, &["add", "--", ".gitignore", &story])
+            .status
+            .success()
+    );
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "ignore the journal"])
+            .status
+            .success()
+    );
+    assert!(!tracked(&fixture, &post));
+    let (finding, report, _) = archive_finding(&fixture, &["doctor", "--fix"]);
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let fix = finding["fix"].as_str().unwrap_or_default();
+    assert!(fix.contains(&format!("git add -f {post}")), "{finding:#}");
+    assert!(fixture.exists(&format!(".chough/sessions/{id}")));
+}
+
+/// REQ-history-012 (#389): when Git cannot read HEAD, the finish removes nothing and its
+/// finding names that, not files that only seem uncommitted.
+#[cfg(unix)]
+#[test]
+fn a_failed_git_read_holds_the_finish_and_says_so() {
+    let fixture = Fixture::new();
+    let (id, story, post) = archived_with_the_folder_committed(&fixture);
+    assert!(
+        git(&fixture, &["add", "--", &story, &post])
+            .status
+            .success()
+    );
+    assert!(
+        git(&fixture, &["commit", "-q", "-m", "the story and its post"])
+            .status
+            .success()
+    );
+    let output = fixture.run_with_env(&["doctor", "--fix"], &[("GIT_DIR", "/nonexistent-git-dir")]);
+    let report: Value = serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
+        panic!(
+            "no report ({error}): {}",
+            String::from_utf8_lossy(&output.stderr)
+        )
+    });
+    let finding = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|finding| finding["kind"] == "unfinished_archive")
+        .unwrap_or_else(|| panic!("{report:#}"))
+        .clone();
+    assert_eq!(finding["status"], "skipped", "{report:#}");
+    let reason = finding["reason"].as_str().unwrap_or_default();
+    assert!(reason.contains("Git cannot read HEAD"), "{finding:#}");
+    assert!(fixture.exists(&format!(".chough/sessions/{id}")));
+}
