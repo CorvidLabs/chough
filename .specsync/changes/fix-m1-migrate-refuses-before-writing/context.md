@@ -37,5 +37,16 @@ Reproduced on main (9d260310) with the built binary on scratch 0.5.x fixtures:
   losers print `applied: true` with nothing written. The plan and every check run
   before the writer lock is taken.
 
+On real projects (tester2, four 0.5.x projects, macOS and Linux) #370 is wider than
+the alias: a returning edited `session.json` became a second open session, and a
+returning edited history event was planned as removed for a reason that was not the
+true one. The first reproduces on the scratch fixture: an edited `open-one.json`
+becomes `2026-11-19-open-one` beside `2026-11-11-open-one`, and `next` refuses with
+several open sessions. The receipt already lists every file an earlier migration read
+with its SHA-256 (its Before section), so the rule is stated on the receipt.
+
+Not in this scope: a hand-made file under `.chough/` that is no 0.5.x record kind,
+such as a `.chough/proposals/` note, is neither carried, removed nor mentioned.
+
 Also seen and covered by the same sentences: the preview never says that the apply
 would refuse on an existing target.

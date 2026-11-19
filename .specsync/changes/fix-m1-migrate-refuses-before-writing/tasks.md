@@ -10,6 +10,8 @@ artifact: tasks
 - [ ] #337: one no-follow check of every target and receipt name before any write.
 - [ ] #370: refuse a returning record whose ID is already held; rebuild the index
       and feed in place.
+- [ ] The change-open refusal, when built: plural wording, one change id per line,
+      and the command that archives or finishes a change named (no sentence changes).
 - [ ] #378: take the writer lock before the plan is read.
 - [ ] #338: write a case-colliding target under a temporary name and rename it into
       place before any removal; remove no source until every planned file is on disk.

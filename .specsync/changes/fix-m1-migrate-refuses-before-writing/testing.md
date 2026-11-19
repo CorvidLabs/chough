@@ -14,9 +14,10 @@ One test per issue, each failing on main before the fix:
   no read permission, a non-UTF-8 file and a FIFO at `knowledge/index.md` and at the
   next receipt name; the preview returns, nothing is written, every source stays,
   the path in the refusal is relative.
-- #370 (`tests/migrate_bugs.rs`): a returning bug with an edited title is refused by
-  name in preview and apply; the unchanged one still migrates; a new one migrates
-  with the index rebuilt.
+- #370 (`tests/migrate_bugs.rs`, `tests/migrate.rs`): a returning bug, open session
+  file and history event, each with edited bytes, are refused naming the file, the
+  receipt and the way on; each with the receipt's bytes is removed as already
+  migrated; a new bug migrates with the index rebuilt.
 - #378 (`tests/migrate.rs`): three applies of one digest at once leave one receipt
   with one consent, and no second `applied: true`.
 
