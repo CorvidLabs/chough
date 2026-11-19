@@ -7,10 +7,11 @@
   "title": "Fix 349",
   "description": "fix 349",
   "kind": "bug_fix",
-  "state": "approved",
+  "state": "verifying",
+  "canonical_applied": true,
   "base_commit": "235c3bfb063e835f67c4aae12f873ceac4074be7",
   "created_at": 1795041817,
-  "updated_at": 1795047542,
+  "updated_at": 1795047563,
   "affected_specs": [
     "history",
     "cli"
