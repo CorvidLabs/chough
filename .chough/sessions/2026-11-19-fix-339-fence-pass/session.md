@@ -16,7 +16,10 @@ requirements: [REQ-records-001]
 cases: []
 design: []
 files: []
-observations: []
+observations:
+  - 2026-11-19-tc-records-many-unclosed-fence-openers-are-scanned-in-bounded
+  - 2026-11-19-tc-records-a-fence-hides-a-conflict-only-when-closed-095bfc
+  - 2026-11-19-tc-records-a-fenced-example-and-a-lone-separator-both-save-96b8af
 bugs: []
 blockers: []
 waiting_on_human: []
@@ -36,6 +39,10 @@ The code-fence scan visits each line a bounded number of times, so many unclosed
 - 0xLeif decided "Scope approval of fix-339-fence-pass": "Yes, for today" (Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18: his standing rule for today, that a real gap his review thread finds in an already-approved PR is fixed inside its approved scope as a small follow-up change, applied to his P2 thread on #356 ('Avoid rescanning the full suffix for every unmatched fence'): compute matching fences in a bounded pass, keep the rule that an unclosed fence hides nothing, and add a regression for many unmatched openers); recorded by chough-fixer-t4g; a relayed claim, not authenticated; ran specsync change approve fix-339-fence-pass as 0xLeif
 
 ## What was verified
+
+- [Ran cargo test --locked --test records -- --exact many_unclosed_fence_openers_are_scanned_in_bounded_time for TC-records-many-unclosed-fence-openers-are-scanned-in-bounded-time: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-many-unclosed-fence-openers-are-scanned-in-bounded.md)
+- [Ran cargo test --locked --test records -- --exact a_fence_hides_a_conflict_only_when_it_is_one_and_closes for TC-records-a-fence-hides-a-conflict-only-when-closed: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-fence-hides-a-conflict-only-when-closed-095bfc.md)
+- [Ran cargo test --locked --test records -- --exact a_fenced_example_and_a_lone_separator_both_save for TC-records-a-fenced-example-and-a-lone-separator-both-save: passed (exit 0, tests run 1).](evidence/2026-11-19-tc-records-a-fenced-example-and-a-lone-separator-both-save-96b8af.md)
 
 ## Open threads
 
