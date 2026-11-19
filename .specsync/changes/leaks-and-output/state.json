@@ -7,11 +7,10 @@
   "title": "Leaks and output",
   "description": "leaks and output",
   "kind": "bug_fix",
-  "state": "verifying",
-  "canonical_applied": true,
+  "state": "approved",
   "base_commit": "bd77bbd15f0e373776192a7d058a09c70fdbc00e",
   "created_at": 1795053435,
-  "updated_at": 1795065141,
+  "updated_at": 1795098173,
   "affected_specs": [
     "records",
     "cli",
@@ -49,7 +48,9 @@
     "tests/evidence.rs",
     "docs/cli.md",
     "changelog.d/2026-11-19-leaks-and-output.md",
-    ".chough/cases/records.leaks-and-output.cases.toml"
+    ".chough/cases/records.leaks-and-output.cases.toml",
+    ".chough/cases/cli.leaks-and-output.cases.toml",
+    ".chough/cases/history.leaks-and-output.cases.toml"
   ],
   "no_spec_change": false,
   "no_spec_change_rationale": null,
