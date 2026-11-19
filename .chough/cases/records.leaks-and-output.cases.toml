@@ -201,3 +201,21 @@ expected = ["tests/leaks.rs::every_user_variable_that_is_set_counts passes"]
 adapter = "cargo-test"
 test_target = "leaks"
 test = "every_user_variable_that_is_set_counts"
+
+[[case]]
+id = "TC-records-the-redaction-count-is-what-the-save-replaced"
+title = "--redact counts only the replacements a save made: a new leak is 1, evidence add's session save says nothing, and quoted <redacted:token> text counts nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/checkpoint.rs", "src/sessions.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::the_redaction_count_is_what_the_save_replaced passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "the_redaction_count_is_what_the_save_replaced"

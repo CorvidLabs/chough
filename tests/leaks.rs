@@ -1401,3 +1401,49 @@ fn every_user_variable_that_is_set_counts() {
     assert!(!text.contains("SYNTHETICtwo@build-box"), "{text}");
     assert!(text.contains("<redacted:user-name>"), "{text}");
 }
+
+/// REQ-records-006 (#407, tester2's check of the count): `--redact` says how many leaks a
+/// save replaced, counting only replacements it made: a new leaking decision is 1;
+/// `evidence add --redact` names its entry and no session-record count, since the
+/// session copies the entry's already redacted summary; and a clean decision that only
+/// quotes `<redacted:token>` redacts nothing and says nothing.
+#[test]
+fn the_redaction_count_is_what_the_save_replaced() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    let token = concat!("use ghp_", "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8");
+    let output = run(&fixture, &["--redact", "checkpoint", "--decision", token]);
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{said}");
+    assert!(
+        said.contains("redacted 1 value(s) in the session record"),
+        "{said}"
+    );
+
+    let output = run(
+        &fixture,
+        &[
+            "--redact",
+            "checkpoint",
+            "--decision",
+            "the marker reads <redacted:token> here",
+        ],
+    );
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{said}");
+    assert!(
+        !said.contains("redacted"),
+        "a quoted marker was counted: {said}"
+    );
+
+    fixture.commit("fixture");
+    let arguments = evidence_add("SYNTHETIC check /Users/SYNTHETIC-person/notes.txt");
+    let mut arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
+    arguments.insert(0, "--redact");
+    let output = run(&fixture, &arguments);
+    let said = String::from_utf8_lossy(&output.stderr).into_owned();
+    assert!(output.status.success(), "{said}");
+    assert!(said.contains("value(s) in evidence entry"), "{said}");
+    assert!(!said.contains("in the session record"), "{said}");
+}

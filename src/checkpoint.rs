@@ -361,7 +361,7 @@ pub(super) fn observation_room(root: &Path) -> Result<()> {
     if session.observations.len() >= MAX_OBSERVATIONS {
         bail!(observations_full(root, session.observations.len(), 1)?);
     }
-    guard_leaks(&mut (*session).clone())?;
+    guard_leaks(&mut (*session).clone(), "")?;
     Ok(())
 }
 
@@ -567,8 +567,21 @@ pub(super) fn read_checkpoint_unlocked(root: &Path) -> Result<Checkpoint> {
 /// Every value this checkpoint writes, checked for leaks or redacted under `--redact`
 /// (REQ-records-006); returns how many matches were redacted. Prose a person wrote in
 /// the body is theirs and is not rewritten.
-fn guard_leaks(session: &mut Checkpoint) -> Result<usize> {
-    use crate::leaks::{Local, guard};
+fn guard_leaks(session: &mut Checkpoint, stored: &str) -> Result<usize> {
+    use crate::leaks::Local;
+    // A value the stored body already holds is counted by the body's redaction, so a
+    // stored leak a save redacts is counted once (#407).
+    let guard = |local: &Local, field: &str, value: &mut String| -> Result<usize> {
+        let original = value.clone();
+        let found = crate::leaks::guard(local, field, value)?;
+        Ok(
+            if found > 0 && !stored.is_empty() && stored.contains(original.as_str()) {
+                0
+            } else {
+                found
+            },
+        )
+    };
     let local = Local::current();
     let mut count = 0;
     count += guard(local, "objective", &mut session.objective)?;
@@ -673,38 +686,41 @@ fn check_id(local: &crate::leaks::Local, session: &str, field: &str, value: &str
 /// The session record `session` saves as, within its bound (REQ-records-001), with
 /// every value Chough writes checked for leaks first (REQ-records-006).
 pub(super) fn render_checkpoint(session: &Checkpoint) -> Result<crate::markdown::Record> {
+    render_counted(session).map(|(record, _)| record)
+}
+
+/// As [`render_checkpoint`], with how many leaks `--redact` replaced in it: each leak in
+/// the stored body, replaced where it stands, and each in a value the body does not
+/// already hold, so a stored leak is counted once, and a value an earlier write already
+/// redacted, or text that only quotes `<redacted:<kind>>`, counts nothing (#407). The
+/// writer says the count once its write has succeeded.
+pub(super) fn render_counted(session: &Checkpoint) -> Result<(crate::markdown::Record, usize)> {
     validate_v2(session)?;
     let mut guarded = session.clone();
-    // The redactions the record held before this save, so the count says what it adds.
-    let held = guarded
+    let stored = guarded
         .source
         .as_ref()
-        .map_or(0, |source| source.render().matches("<redacted:").count());
-    guard_leaks(&mut guarded)?;
+        .map(|source| source.body().to_string())
+        .unwrap_or_default();
+    let mut redacted = guard_leaks(&mut guarded, &stored)?;
     // REQ-records-006: under `--redact`, a leak already stored in the record's body, such
     // as a decision an older Chough wrote, is replaced where it stands, so the save adds no
     // redacted copy beside the original and the next plain save is not refused for it.
     if crate::leaks::redacting()
         && let Some(source) = guarded.source.as_mut()
     {
-        source.redact_body(crate::leaks::Local::current());
+        redacted += source.redact_body(crate::leaks::Local::current());
     }
     let session = &guarded;
     let record = crate::session_md::render(session, crate::records::now()?)?;
     let content = record.render();
-    // One stored leak is redacted both as a value and in the body, so the count is what
-    // the saved record gains: one per redacted match.
-    let redacted = content.matches("<redacted:").count().saturating_sub(held);
-    if crate::leaks::redacting() && redacted > 0 {
-        eprintln!("chough: redacted {redacted} value(s) in the session record (--redact)");
-    }
     ensure!(
         content.len() as u64 <= SESSION_LIMIT,
         "refused: the session record would be {} bytes, over its bound of {SESSION_LIMIT} bytes; run `chough session close {} --reason <text>` and then `chough session new <key>`; the session file is unchanged",
         content.len(),
         session.meta.id
     );
-    Ok(record)
+    Ok((record, redacted))
 }
 
 /// Each referenced observation that resolves to an open session's entry, as a link
@@ -748,17 +764,21 @@ pub(super) fn save_checkpoint(root: &Path, session: &mut Checkpoint) -> Result<(
     lock_checkpoint(root)?;
     remove_orphaned_session_temps(root)?;
     session.evidence_links = evidence_links(root, session);
-    let record = render_checkpoint(session)?;
+    let (record, redacted) = render_counted(session)?;
     write_replace_bounded(
         root,
         &crate::sessions::checkpoint_path(root)?,
         &record.render(),
         SESSION_LIMIT,
     )?;
+    // REQ-records-006: the count, once the write has succeeded.
+    if crate::leaks::redacting() && redacted > 0 {
+        eprintln!("chough: redacted {redacted} value(s) in the session record (--redact)");
+    }
     // Under `--redact` the checkpoint then holds the values saved, so what a command
     // prints is what the session record says (REQ-records-006).
     if crate::leaks::redacting() {
-        guard_leaks(session)?;
+        guard_leaks(session, "")?;
     }
     session.source = Some(record);
     session.pending.clear();

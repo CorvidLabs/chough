@@ -726,10 +726,14 @@ pub(super) fn create(
     let mut session = checkpoint::new_checkpoint(objective, intent_scope, modules);
     session.meta.aliases = vec![key.to_string()];
     crate::stage::log_start(root, &mut session, &start)?;
+    // How many leaks `--redact` replaced, said once the session is written.
+    let redacted = std::cell::Cell::new(0);
     let render = |id: &str| -> Result<String> {
         let mut draft = session.clone();
         draft.meta.id = id.to_string();
-        Ok(checkpoint::render_checkpoint(&draft)?.render())
+        let (record, count) = checkpoint::render_counted(&draft)?;
+        redacted.set(count);
+        Ok(record.render())
     };
     let id = if local_path(root, &archive_file(&name))?.exists() {
         // An archived session's ID is never reused: one suffix is drawn, and a second
@@ -757,6 +761,12 @@ pub(super) fn create(
             render,
         )?
     };
+    if crate::leaks::redacting() && redacted.get() > 0 {
+        eprintln!(
+            "chough: redacted {} value(s) in the session record (--redact)",
+            redacted.get()
+        );
+    }
     point(root, &id)?;
     Ok(id)
 }
