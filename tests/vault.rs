@@ -395,6 +395,20 @@ fn index_check_names_stale_files_and_passes_after_a_rebuild() {
     assert!(error.contains(feed), "{error}");
 }
 
+/// Issue #289: a hand-edited generated file is still wrong, so a bullet whose text changed
+/// while its link stayed (a lesson count) fails the strict check, naming the file, until the
+/// rebuild writes the right bytes.
+#[test]
+fn a_hand_edited_lesson_count_fails_the_check() {
+    let fixture = vault();
+    let index = fixture.read("knowledge/index.md");
+    let edited = index.replace(", 2 lessons", ", 99 lessons");
+    assert_ne!(edited, index, "the hand edit changed the index");
+    fixture.write("knowledge/index.md", &edited);
+    let error = fixture.fails(&["library", "index", "--check"]);
+    assert!(error.contains("knowledge/index.md"), "{error}");
+}
+
 /// REQ-cli-015, KNOW-6: existing snapshots and briefs stay byte-identical and linked, and
 /// `library snapshot` and `library archive` are gone, the help naming `library index`.
 #[test]

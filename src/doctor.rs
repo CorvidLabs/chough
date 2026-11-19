@@ -51,6 +51,10 @@ enum Kind {
     RecordsInVerification,
     MergeDrivers,
     MergeDriverOutdated,
+    ConflictMarkers,
+    GitOperation,
+    PossibleConflictSeparator,
+    PossibleFencedConflict,
 }
 
 impl Kind {
@@ -70,6 +74,10 @@ impl Kind {
             Self::RecordsInVerification => "records_in_verification",
             Self::MergeDrivers => "merge_drivers",
             Self::MergeDriverOutdated => "merge_driver_outdated",
+            Self::ConflictMarkers => "conflict_markers",
+            Self::GitOperation => "git_operation",
+            Self::PossibleConflictSeparator => "possible_conflict_separator",
+            Self::PossibleFencedConflict => "possible_fenced_conflict",
         }
     }
 }
@@ -81,10 +89,14 @@ struct Finding {
     decision: bool,
     status: &'static str,
     reason: Option<String>,
+    /// The `--reason` a decision fix was applied with (REQ-history-012, #250).
+    decision_reason: Option<String>,
     /// Why the fix cannot run even with `--fix`, when known before fixing.
     blocked: Option<String>,
     /// Fields the finding adds to its JSON, such as the missing entries.
     detail: Option<Value>,
+    /// A warning only: reported, but it never makes doctor exit 1 (#339).
+    advisory: bool,
 }
 
 impl Finding {
@@ -96,8 +108,10 @@ impl Finding {
             decision,
             status: "found",
             reason: None,
+            decision_reason: None,
             blocked: None,
             detail: None,
+            advisory: false,
         }
     }
 
@@ -117,10 +131,16 @@ impl Finding {
         if let Some(reason) = &self.reason {
             value["reason"] = json!(reason);
         }
+        if let Some(reason) = &self.decision_reason {
+            value["decision_reason"] = json!(reason);
+        }
         if let Some(Value::Object(detail)) = &self.detail {
             for (key, field) in detail {
                 value[key] = field.clone();
             }
+        }
+        if self.advisory {
+            value["advisory"] = json!(true);
         }
         value
     }
@@ -168,6 +188,160 @@ fn git(root: &Path, arguments: &[&str]) -> Option<Vec<u8>> {
     output.status.success().then_some(output.stdout)
 }
 
+/// A Git merge or rebase in progress, or unmerged paths left by one (REQ-cli-069).
+#[derive(Clone)]
+pub(super) struct GitOperation {
+    /// `merge`, `rebase`, `cherry-pick` or `revert`, or None when Git only reports
+    /// unmerged paths, as after a conflicted `git stash pop`.
+    operation: Option<&'static str>,
+    /// Every unmerged path, project-relative and sorted.
+    unmerged: Vec<String>,
+}
+
+/// How many unmerged paths a view or a refusal names.
+const UNMERGED_SHOWN: usize = 10;
+
+impl GitOperation {
+    /// The unmerged paths under `.chough/`.
+    fn chough_unmerged(&self) -> Vec<&str> {
+        self.unmerged
+            .iter()
+            .map(String::as_str)
+            .filter(|path| path.starts_with(".chough/"))
+            .collect()
+    }
+
+    /// Whether a path under `.chough/` is unmerged, so writes refuse.
+    pub(super) fn blocks_writes(&self) -> bool {
+        !self.chough_unmerged().is_empty()
+    }
+
+    fn what(&self) -> &'static str {
+        match self.operation {
+            Some("merge") => "a git merge is in progress",
+            Some("rebase") => "a git rebase is in progress",
+            Some("cherry-pick") => "a git cherry-pick is in progress",
+            Some(_) => "a git revert is in progress",
+            None => "git reports unmerged paths",
+        }
+    }
+
+    fn named(paths: &[&str]) -> String {
+        let shown: Vec<&str> = paths.iter().take(UNMERGED_SHOWN).copied().collect();
+        let more = paths.len().saturating_sub(shown.len());
+        if more > 0 {
+            format!("{} and {more} more", shown.join(", "))
+        } else {
+            shown.join(", ")
+        }
+    }
+
+    /// One line: what is in progress, the unmerged paths under `.chough/`, and what to do.
+    pub(super) fn text(&self) -> String {
+        let chough = self.chough_unmerged();
+        let others = self.unmerged.len() - chough.len();
+        let mut text = self.what().to_string();
+        if !chough.is_empty() {
+            text.push_str(&format!(
+                ", with {} unmerged under .chough/: {}",
+                chough.len(),
+                Self::named(&chough)
+            ));
+        } else if others > 0 {
+            text.push_str(&format!(", with {others} unmerged outside .chough/"));
+        }
+        text.push_str("; finish or abort it first");
+        text
+    }
+
+    /// The JSON `next`, `status` and `doctor` give it.
+    pub(super) fn view(&self) -> Value {
+        let chough = self.chough_unmerged();
+        json!({
+            "operation": self.operation,
+            "unmerged": chough.iter().take(UNMERGED_SHOWN).collect::<Vec<_>>(),
+            "unmerged_total": chough.len(),
+            "unmerged_outside_total": self.unmerged.len() - chough.len(),
+            "text": self.text(),
+        })
+    }
+}
+
+/// The merge or rebase in progress in the project's Git work tree, read once per
+/// process; None outside a work tree or when there is nothing to report (REQ-cli-069).
+pub(super) fn git_operation(root: &Path) -> Option<GitOperation> {
+    static READ: std::sync::OnceLock<Option<GitOperation>> = std::sync::OnceLock::new();
+    READ.get_or_init(|| read_git_operation(root)).clone()
+}
+
+fn read_git_operation(root: &Path) -> Option<GitOperation> {
+    let dir = git(root, &["rev-parse", "--absolute-git-dir"])?;
+    let dir = std::path::PathBuf::from(String::from_utf8_lossy(&dir).trim());
+    // A rebase is in progress while its folder is there, as `git status` reads it: Git
+    // can leave `REBASE_HEAD` behind after a rebase has finished (#330 review).
+    let operation = if dir.join("MERGE_HEAD").is_file() {
+        Some("merge")
+    } else if dir.join("rebase-merge").is_dir() || dir.join("rebase-apply").is_dir() {
+        Some("rebase")
+    } else if dir.join("CHERRY_PICK_HEAD").is_file() {
+        Some("cherry-pick")
+    } else if dir.join("REVERT_HEAD").is_file() {
+        Some("revert")
+    } else {
+        None
+    };
+    // `<mode> <object> <stage>\t<path>`, one entry per stage of each unmerged path.
+    let listed = git(root, &["ls-files", "-u", "-z"]).unwrap_or_default();
+    let unmerged: std::collections::BTreeSet<String> = listed
+        .split(|byte| *byte == 0)
+        .filter_map(|entry| {
+            let tab = entry.iter().position(|byte| *byte == b'\t')?;
+            Some(String::from_utf8_lossy(&entry[tab + 1..]).into_owned())
+        })
+        .filter(|path| !path.is_empty())
+        .collect();
+    if operation.is_none() && unmerged.is_empty() {
+        return None;
+    }
+    Some(GitOperation {
+        operation,
+        unmerged: unmerged.into_iter().collect(),
+    })
+}
+
+/// Refuse a write while a path under `.chough/` is unmerged, naming the paths, before
+/// anything is written (REQ-cli-069).
+pub(super) fn refuse_if_unmerged(root: &Path) -> Result<()> {
+    let Some(git) = git_operation(root) else {
+        return Ok(());
+    };
+    let paths = git.chough_unmerged();
+    if paths.is_empty() {
+        return Ok(());
+    }
+    bail!(
+        "refused:unmerged: {}, so Chough writes none of its records: {} under .chough/ {} unmerged ({}). Finish or abort the Git operation first (`git status` names its next step), then run the command again; nothing was written",
+        git.what(),
+        paths.len(),
+        if paths.len() == 1 { "is" } else { "are" },
+        GitOperation::named(&paths)
+    )
+}
+
+/// The `git_operation` finding: a merge or rebase in progress, which has no Chough fix.
+fn git_operation_finding(root: &Path) -> Option<Finding> {
+    let git = git_operation(root)?;
+    let mut finding = Finding::new(
+        Kind::GitOperation,
+        git.operation.unwrap_or("unmerged"),
+        "none: finish the Git operation (resolve the conflicts, then commit or continue it) or abort it (`git merge --abort`, `git rebase --abort`, `git cherry-pick --abort`, `git revert --abort`, or after a conflicted `git stash pop`, `git checkout -- <path>` or `git reset`), then run chough doctor again".into(),
+        false,
+    );
+    finding.blocked = Some(git.text());
+    finding.detail = Some(git.view());
+    Some(finding)
+}
+
 /// NUL-separated Git output as paths.
 fn paths_of(output: Option<Vec<u8>>) -> Vec<String> {
     output
@@ -197,18 +371,43 @@ fn tracked_text(root: &Path, path: &str) -> Option<String> {
     String::from_utf8(std::fs::read(full).ok()?).ok()
 }
 
+/// The text the leak scan reads from a tracked file: a macOS metadata file's bytes with
+/// each invalid UTF-8 sequence replaced, since a binary AppleDouble `._*` file can hold
+/// a leak in its extended attributes (REQ-cli-068); any other file only when it is valid
+/// UTF-8, as before, so no other binary file, such as a screenshot, is read as text.
+/// Nothing is ever written from it.
+fn leak_scan_text(root: &Path, path: &str) -> Option<String> {
+    let metadata = path
+        .rsplit('/')
+        .next()
+        .is_some_and(crate::evidence::is_os_metadata);
+    if !metadata {
+        return tracked_text(root, path);
+    }
+    let full = local_path(root, path).ok()?;
+    if !std::fs::symlink_metadata(&full).ok()?.is_file() {
+        return None;
+    }
+    Some(String::from_utf8_lossy(&std::fs::read(full).ok()?).into_owned())
+}
+
 /// Each leak in the files Git tracks under `.chough/` and the knowledge directory: the
 /// file, the line and the kind, never the text (REQ-records-006).
 fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
     let local = crate::leaks::Local::current();
     let mut found = vec![];
     for path in files {
-        let Some(text) = tracked_text(root, path) else {
+        let Some(text) = leak_scan_text(root, path) else {
             continue;
         };
         // REQ-records-006: a temporary path in a case definition is a deliberate test
         // setting, not a leak; everything else in it is checked as anywhere else.
         let case_definition = path.starts_with(".chough/cases/") && path.ends_with(".cases.toml");
+        let ids = if path.ends_with(".md") {
+            id_lines(&text)
+        } else {
+            Default::default()
+        };
         for (number, line) in text.lines().enumerate() {
             let matches = if case_definition {
                 crate::leaks::find_in_case_definition(local, line)
@@ -226,11 +425,115 @@ fn leak_findings(root: &Path, files: &[String]) -> Vec<Finding> {
                     false,
                 );
                 finding.detail = Some(json!({"line": number + 1, "match": kind}));
+                // REQ-history-012 (#320): an ID is never redacted; the finding names
+                // the recovery instead.
+                if ids.contains(&number) {
+                    let recovery = id_leak_recovery(path);
+                    finding.fix = format!("none: {recovery}");
+                    finding.blocked = Some(format!(
+                        "line {} gives an ID, which `--redact` never rewrites since a redacted ID no longer reads; {recovery}",
+                        number + 1
+                    ));
+                }
                 found.push(finding);
             }
         }
     }
     found
+}
+
+/// Front matter keys whose values are a record's ID or IDs it references (REQ-records-003).
+/// A leak on such a line is never redacted, since a redacted ID no longer reads
+/// (REQ-history-012, #320).
+const ID_KEYS: [&str; 14] = [
+    "id",
+    "aliases",
+    "native_change",
+    "modules",
+    "criteria",
+    "requirements",
+    "cases",
+    "observations",
+    "bugs",
+    "evidence",
+    "related",
+    "duplicate_of",
+    "regression_baseline",
+    "case",
+];
+
+/// The zero-based numbers of `text`'s front matter lines that give an ID: a line whose
+/// key is an ID key, a block-list item under one, and an ID key inside a list of maps.
+fn id_lines(text: &str) -> std::collections::BTreeSet<usize> {
+    let mut ids = std::collections::BTreeSet::new();
+    let mut lines = text.lines().enumerate();
+    if !matches!(lines.next(), Some((_, "---"))) {
+        return ids;
+    }
+    let key_of = |line: &str| line.split_once(':').map(|(key, _)| key.trim().to_string());
+    let mut under_id_key = false;
+    for (number, line) in lines {
+        if line == "---" {
+            break;
+        }
+        let continued = line.starts_with(' ') || line.starts_with('-');
+        if !continued {
+            under_id_key = key_of(line).is_some_and(|key| ID_KEYS.contains(&key.as_str()));
+            if under_id_key {
+                ids.insert(number);
+            }
+            continue;
+        }
+        let item = line.trim_start().trim_start_matches("- ");
+        let inner_id = key_of(item).is_some_and(|key| ID_KEYS.contains(&key.as_str()));
+        if under_id_key || inner_id {
+            ids.insert(number);
+        }
+    }
+    ids
+}
+
+/// What to do about a leak in an ID of the record at `path`, which `--redact` never
+/// rewrites (#320): shelve a session, otherwise remove it in a reviewed hand edit.
+fn id_leak_recovery(path: &str) -> String {
+    match path.split('/').collect::<Vec<_>>().as_slice() {
+        [".chough", "sessions", id, "session.md"] => format!(
+            "set the session aside with `chough session shelve {id}` and continue in `chough session new <key>`"
+        ),
+        _ => "remove it from the record in a reviewed hand edit".to_string(),
+    }
+}
+
+/// `text` with its leaks redacted, except on the front matter lines in `keep`: the body
+/// as a whole, so a block that spans lines is found, and each other front matter line.
+fn redact_except(text: &str, keep: &std::collections::BTreeSet<usize>) -> (String, usize) {
+    let local = crate::leaks::Local::current();
+    if keep.is_empty() {
+        return crate::leaks::redact(local, text);
+    }
+    let lines: Vec<&str> = text.split_inclusive('\n').collect();
+    let close = lines
+        .iter()
+        .enumerate()
+        .skip(1)
+        .find(|(_, line)| line.trim_end_matches(['\n', '\r']) == "---")
+        .map(|(number, _)| number)
+        .unwrap_or(lines.len().saturating_sub(1));
+    let mut out = String::with_capacity(text.len());
+    let mut count = 0;
+    for (number, line) in lines.iter().enumerate().take(close + 1) {
+        if number == 0 || number == close || keep.contains(&number) {
+            out.push_str(line);
+        } else {
+            let (redacted, found) = crate::leaks::redact(local, line);
+            count += found;
+            out.push_str(&redacted);
+        }
+    }
+    let body: String = lines.iter().skip(close + 1).copied().collect();
+    let (body, found) = crate::leaks::redact(local, &body);
+    out.push_str(&body);
+    (out, count + found)
 }
 
 /// The ID of a Timeline entry, from its `^t-xxxxxx` anchor, or its position.
@@ -417,14 +720,102 @@ fn alias_findings(root: &Path) -> Vec<Finding> {
     found
 }
 
+/// Each conflict marker in the body of a committed record (REQ-records-001, #265): one
+/// finding per marker line, naming the file, the line and the marker. Only records are
+/// read, the files `bound_of` gives a record's bound; a case definition, a README or a
+/// generated index is not one. A conflict is resolved by hand, so there is no fix.
+fn conflict_marker_findings(root: &Path, files: &[String]) -> Result<Vec<Finding>> {
+    let knowledge = crate::prefs::effective(root, "library-dir")?.0;
+    let mut found = vec![];
+    // The generated knowledge index has a bound but is not a record.
+    let index = format!("{}/index.md", knowledge.trim_end_matches('/'));
+    for path in files {
+        // Records, and the case definitions a change's verification reads (#339).
+        let case_definition = path.starts_with(".chough/cases/") && path.ends_with(".cases.toml");
+        let record = path.ends_with(".md")
+            && *path != index
+            && matches!(bound_of(path, &knowledge), Some((_, false)));
+        if !case_definition && !record {
+            continue;
+        }
+        let Some(text) = tracked_text(root, path) else {
+            continue;
+        };
+        let markers = if case_definition {
+            crate::records::conflict_markers_in_toml(&text)
+        } else {
+            crate::records::conflict_markers(&text)
+        };
+        for (line, marker) in markers {
+            let mut finding = Finding::new(
+                Kind::ConflictMarkers,
+                path,
+                "none: resolve the conflict in the record by hand in a reviewed change, then run chough doctor again".into(),
+                false,
+            );
+            finding.blocked = Some(format!(
+                "{path} line {line} holds the Git conflict marker `{marker}`; doctor never rewrites a record"
+            ));
+            finding.detail = Some(json!({"line": line, "marker": marker}));
+            found.push(finding);
+        }
+        // A lone `=======` may be a heading underline, so it is a warning only (#339).
+        let lone = if case_definition {
+            crate::records::lone_separators_in_toml(&text)
+        } else {
+            crate::records::lone_separators(&text)
+        };
+        for line in lone {
+            let mut finding = Finding::new(
+                Kind::PossibleConflictSeparator,
+                path,
+                "none: if the line is left from a Git conflict, resolve it by hand; a heading underline can stay".into(),
+                false,
+            );
+            finding.advisory = true;
+            finding.detail = Some(json!({
+                "line": line,
+                "warning": format!("possible leftover conflict separator at line {line}"),
+            }));
+            found.push(finding);
+        }
+        // A marker inside a code fence may quote an example or be a real conflict Git
+        // left there, which cannot be told apart, so it is a warning only (#339).
+        if case_definition {
+            continue;
+        }
+        for (line, marker) in crate::records::fenced_conflict_markers(&text) {
+            let mut finding = Finding::new(
+                Kind::PossibleFencedConflict,
+                path,
+                "none: if the code fence holds a Git conflict, resolve it by hand; a quoted example can stay".into(),
+                false,
+            );
+            finding.advisory = true;
+            finding.detail = Some(json!({
+                "line": line,
+                "marker": marker,
+                "warning": format!("possible conflict markers inside a code fence at line {line}"),
+            }));
+            found.push(finding);
+        }
+    }
+    Ok(found)
+}
+
 /// The bound of one key screenshot and of all of a session's (REQ-records-013).
 const SCREENSHOT_BOUND: u64 = 524_288;
 const SESSION_SCREENSHOTS_BOUND: u64 = 2_097_152;
 /// The bound of a generated knowledge file (REQ-cli-044).
 const KNOWLEDGE_BOUND: u64 = 65_536;
 
-/// A tracked file's bound, by where it lives, and whether it is a screenshot.
+/// A tracked file's bound, by where it lives, and whether it is a screenshot. macOS
+/// metadata in `.chough/` is not a record, so it has none and is never reported as
+/// `unreadable` or `oversize` (REQ-cli-068); the leak scan still reads it.
 fn bound_of(path: &str, knowledge: &str) -> Option<(u64, bool)> {
+    if path.starts_with(".chough/") && path.split('/').any(crate::evidence::is_os_metadata) {
+        return None;
+    }
     let image = [".png", ".jpg", ".jpeg"]
         .iter()
         .any(|extension| path.to_ascii_lowercase().ends_with(extension));
@@ -582,6 +973,110 @@ pub(super) struct Exclusions {
     /// Listed entries broader than a record prefix, such as `.chough/`, which also hide
     /// case definitions and preferences that a change's verification needs.
     pub(super) broader: Vec<String>,
+    /// SpecSync settings that cover the whole repository (#251, #279): `source_dirs`
+    /// holding `.` in `.specsync/config.toml`, and `.` in the policy's
+    /// `meaningful_paths`. SpecSync refuses a `verification_ignored_paths` entry that
+    /// overlaps either, and a whole-repository `source_dirs` counts the skill bundle
+    /// `chough init` installs as uncovered source.
+    pub(super) whole_repo: Vec<String>,
+    /// With `source_dirs` covering the repository, a file a spec covers that sits at the
+    /// repository root, so there is no code folder to narrow to (#354), if any.
+    pub(super) root_code: Option<String>,
+    /// The skill bundle's and Chough's top folders that `exclude_dirs` does not list yet,
+    /// for that case: excluding them keeps them out of SpecSync's coverage (#279).
+    pub(super) unexcluded: Vec<String>,
+}
+
+/// SpecSync's native configuration, whose `source_dirs` Chough reads and never writes.
+const SPECSYNC_CONFIG: &str = ".specsync/config.toml";
+
+/// A file a SpecSync spec covers that sits at the repository root, read from the
+/// `files:` lists of the specs under `specs_dir` (#354): with one, there is no code
+/// folder to narrow `source_dirs` to.
+fn root_code(root: &Path) -> Option<String> {
+    let config = crate::records::read_native_text(&local_path(root, SPECSYNC_CONFIG).ok()?).ok()?;
+    let config: toml::Value = toml::from_str(&config).ok()?;
+    let specs = config
+        .get("specs_dir")
+        .and_then(toml::Value::as_str)
+        .unwrap_or("specs")
+        .trim_end_matches('/')
+        .to_string();
+    let mut pending = vec![local_path(root, &specs).ok()?];
+    let mut found: Vec<String> = vec![];
+    while let Some(dir) = pending.pop() {
+        let Ok(entries) = std::fs::read_dir(&dir) else {
+            continue;
+        };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                pending.push(path);
+                continue;
+            }
+            if !path.to_string_lossy().ends_with(".spec.md") {
+                continue;
+            }
+            let Ok(text) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            let front = text
+                .strip_prefix("---\n")
+                .and_then(|rest| rest.split_once("\n---\n"))
+                .map(|(front, _)| front)
+                .unwrap_or_default();
+            let mut in_files = false;
+            for line in front.lines() {
+                if !line.starts_with(' ') && !line.starts_with('-') {
+                    in_files = line.trim_end() == "files:";
+                    continue;
+                }
+                if in_files && let Some(file) = line.trim_start().strip_prefix("- ") {
+                    let file = file.trim().trim_matches('"');
+                    if !file.is_empty() && !file.contains('/') {
+                        found.push(file.to_string());
+                    }
+                }
+            }
+        }
+    }
+    found.sort();
+    found.into_iter().next()
+}
+
+/// `.chough` and the top folder of each installed skill bundle, as `exclude_dirs` names
+/// them, that `exclude_dirs` in SpecSync's config does not list yet (#279, #354).
+fn unexcluded(root: &Path) -> Vec<String> {
+    let excluded: Vec<String> =
+        crate::records::read_native_text(&local_path(root, SPECSYNC_CONFIG).unwrap_or_default())
+            .ok()
+            .and_then(|text| toml::from_str::<toml::Value>(&text).ok())
+            .and_then(|config| config.get("exclude_dirs").cloned())
+            .and_then(|dirs| dirs.as_array().cloned())
+            .unwrap_or_default()
+            .iter()
+            .filter_map(|dir| {
+                dir.as_str()
+                    .map(|dir| dir.trim_end_matches('/').to_string())
+            })
+            .collect();
+    let mut folders = vec![".chough".to_string()];
+    for (_, skills) in crate::skill::HOSTS {
+        let top = skills.split('/').next().unwrap_or_default().to_string();
+        let installed =
+            local_path(root, &format!("{skills}/chough-workflow")).is_ok_and(|path| path.is_dir());
+        if installed && !folders.contains(&top) {
+            folders.push(top);
+        }
+    }
+    folders.retain(|folder| !excluded.contains(folder));
+    folders.sort();
+    folders
+}
+
+/// Whether a SpecSync path entry names the repository root.
+fn is_root(entry: &str) -> bool {
+    matches!(entry.trim_end_matches('/'), "" | ".")
 }
 
 impl Exclusions {
@@ -602,6 +1097,61 @@ impl Exclusions {
     /// The advice `chough doctor` and `chough init` give while a record prefix is not
     /// listed exactly, or None when all three are.
     pub(super) fn advice(&self) -> Option<String> {
+        // REQ-records-014 (#354): with the specified code at the repository root there
+        // is no folder to narrow to, so the advice is to exclude the skill bundle and
+        // Chough's folder, and that the list needs the code in a folder or SpecSync's fix.
+        if let Some(example) = &self.root_code
+            && (self.no_policy || !self.missing.is_empty() || !self.unexcluded.is_empty())
+        {
+            let mut advice = format!(
+                "source_dirs = [\".\"] in {SPECSYNC_CONFIG} covers the whole repository, and the code SpecSync specifies sits at its root (for example {example}), so there is no code folder to narrow source_dirs to."
+            );
+            if !self.unexcluded.is_empty() {
+                advice.push_str(&format!(
+                    " Add {} to exclude_dirs in {SPECSYNC_CONFIG}, so SpecSync no longer counts the skill bundle `chough init` installs and Chough's records as uncovered source.",
+                    self.unexcluded.join(", ")
+                ));
+            }
+            if !self.no_policy && !self.missing.is_empty() {
+                advice.push_str(&format!(
+                    " Listing {} in verification_ignored_paths in {SDD_POLICY} needs the code moved into a folder, since SpecSync refuses an entry that overlaps source_dirs [\".\"], or SpecSync's fix, CorvidLabs/spec-sync#1083.",
+                    self.missing.join(", ")
+                ));
+            }
+            advice
+                .push_str(" Each is an ordinary reviewed change, and Chough writes neither file.");
+            return Some(advice);
+        }
+        // REQ-records-014 (#251, #279): while SpecSync covers the whole repository, the
+        // list is refused as overlapping, so the advice is to narrow first.
+        if !self.whole_repo.is_empty() && (self.no_policy || !self.missing.is_empty()) {
+            let list = if self.no_policy {
+                String::new()
+            } else {
+                format!(
+                    ", then list {} in verification_ignored_paths in {SDD_POLICY}",
+                    self.missing.join(", ")
+                )
+            };
+            let verb = if self.whole_repo.len() > 1 {
+                "cover"
+            } else {
+                "covers"
+            };
+            let bundle = if self
+                .whole_repo
+                .iter()
+                .any(|setting| setting.starts_with("source_dirs"))
+            {
+                ", and SpecSync counts the skill bundle `chough init` installs as uncovered source"
+            } else {
+                ""
+            };
+            return Some(format!(
+                "{} {verb} the whole repository, so SpecSync refuses a verification_ignored_paths entry for Chough's record folders as overlapping it{bundle}. Narrow source_dirs to the folders that hold the code, for example [\"src\"], and keep \".\" out of meaningful_paths{list}; each is an ordinary reviewed change, and Chough writes neither file.",
+                self.whole_repo.join(" and ")
+            ));
+        }
         if self.no_policy {
             return None;
         }
@@ -668,7 +1218,27 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
         unreadable: None,
         missing: vec![],
         broader: vec![],
+        whole_repo: vec![],
+        root_code: None,
+        unexcluded: vec![],
     };
+    // `source_dirs` lives in SpecSync's config; an unreadable one is SpecSync's to report.
+    if let Ok(path) = local_path(root, SPECSYNC_CONFIG)
+        && let Ok(text) = crate::records::read_native_text(&path)
+        && let Ok(config) = toml::from_str::<toml::Value>(&text)
+        && config
+            .get("source_dirs")
+            .and_then(toml::Value::as_array)
+            .is_some_and(|dirs| dirs.iter().filter_map(toml::Value::as_str).any(is_root))
+    {
+        found
+            .whole_repo
+            .push(format!("source_dirs = [\".\"] in {SPECSYNC_CONFIG}"));
+        found.root_code = root_code(root);
+        if found.root_code.is_some() {
+            found.unexcluded = unexcluded(root);
+        }
+    }
     let path = match local_path(root, SDD_POLICY) {
         Ok(path) => path,
         Err(error) => {
@@ -689,6 +1259,14 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
             return found;
         }
     };
+    if policy["meaningful_paths"]
+        .as_array()
+        .is_some_and(|paths| paths.iter().filter_map(Value::as_str).any(is_root))
+    {
+        found
+            .whole_repo
+            .push(format!("\".\" in meaningful_paths in {SDD_POLICY}"));
+    }
     let listed: Vec<String> = policy["verification_ignored_paths"]
         .as_array()
         .into_iter()
@@ -715,25 +1293,47 @@ pub(super) fn exclusions(root: &Path) -> Exclusions {
 /// finding is never fixed by `--fix`.
 fn records_in_verification(root: &Path) -> Option<Finding> {
     let exclusions = exclusions(root);
+    // The finding is the policy's (REQ-history-012): with no policy, only `chough init`
+    // gives the narrowing advice.
+    if exclusions.no_policy {
+        return None;
+    }
     let advice = exclusions.advice()?;
-    let mut finding = Finding::new(
-        Kind::RecordsInVerification,
-        SDD_POLICY,
+    let entries = if exclusions.missing.is_empty() {
+        RECORD_PREFIXES.join(", ")
+    } else {
+        exclusions.missing.join(", ")
+    };
+    let fix = if let Some(example) = &exclusions.root_code {
+        // #354: no code folder to narrow to.
+        let exclude = if exclusions.unexcluded.is_empty() {
+            String::new()
+        } else {
+            format!(
+                "add {} to exclude_dirs in {SPECSYNC_CONFIG} in a reviewed change; ",
+                exclusions.unexcluded.join(", ")
+            )
+        };
         format!(
-            "add {} to verification_ignored_paths in {SDD_POLICY} in a reviewed change",
-            if exclusions.missing.is_empty() {
-                RECORD_PREFIXES.join(", ")
-            } else {
-                exclusions.missing.join(", ")
-            }
-        ),
-        false,
-    );
+            "{exclude}listing {entries} in verification_ignored_paths needs the code at the repository root (such as {example}) moved into a folder, or CorvidLabs/spec-sync#1083"
+        )
+    } else if exclusions.whole_repo.is_empty() {
+        format!("add {entries} to verification_ignored_paths in {SDD_POLICY} in a reviewed change")
+    } else {
+        format!(
+            "narrow SpecSync's whole-repository {} to the code folders, then add {entries} to verification_ignored_paths in {SDD_POLICY}, in reviewed changes",
+            exclusions.whole_repo.join(" and ")
+        )
+    };
+    let mut finding = Finding::new(Kind::RecordsInVerification, SDD_POLICY, fix, false);
     finding.blocked = Some(format!(
         "Chough never writes {SDD_POLICY}; adding the entries is an ordinary reviewed change to it"
     ));
     finding.detail = Some(json!({
         "missing": exclusions.missing,
+        "whole_repo": exclusions.whole_repo,
+        "root_code": exclusions.root_code,
+        "unexcluded": exclusions.unexcluded,
         "specsync": format!("{EXCLUSIONS_SINCE} and later"),
         "advice": advice,
     }));
@@ -860,6 +1460,8 @@ fn findings(root: &Path, args: &DoctorArgs) -> Result<Vec<Finding>> {
     found.extend(records_in_verification(root));
     found.extend(merge_drivers(root)?);
     found.extend(merge_driver_outdated(root));
+    found.extend(conflict_marker_findings(root, &files)?);
+    found.extend(git_operation_finding(root));
     Ok(found)
 }
 
@@ -1081,21 +1683,41 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         | Kind::AliasConflict
         | Kind::Oversize
         | Kind::Unreadable
-        | Kind::MergeDriverOutdated => {
+        | Kind::MergeDriverOutdated
+        | Kind::ConflictMarkers
+        | Kind::GitOperation
+        | Kind::PossibleConflictSeparator
+        | Kind::PossibleFencedConflict => {
             bail!("{} has no fix", finding.kind.name())
         }
         Kind::Leak => {
             // `--redact` replaces each match in the file in place; a file an earlier
             // finding already redacted has nothing left to replace.
             let path = local_path(root, &finding.target)?;
+            // A file that is not valid UTF-8, such as a binary AppleDouble `._*` file,
+            // is reported but never rewritten: writing back decoded text would corrupt
+            // it (REQ-cli-068).
             let Some(text) = tracked_text(root, &finding.target) else {
-                bail!("{} is not a readable text file", finding.target);
+                bail!(
+                    "{} is not valid UTF-8, so doctor leaves it unchanged; remove it by hand, for example with `git rm`",
+                    finding.target
+                );
             };
-            let (redacted, count) = crate::leaks::redact(crate::leaks::Local::current(), &text);
+            // REQ-history-012 (#320): a record's ID lines are never rewritten; its other
+            // lines still are, whichever of its findings comes first.
+            let ids = if finding.target.ends_with(".md") {
+                id_lines(&text)
+            } else {
+                Default::default()
+            };
+            let (redacted, count) = redact_except(&text, &ids);
             if count > 0 {
                 crate::records::write_replace(root, &finding.target, &redacted)?;
             }
             ensure!(path.is_file(), "{} is gone", finding.target);
+            if let Some(blocked) = &finding.blocked {
+                bail!("{blocked}");
+            }
         }
         Kind::StalePointer => {
             let path = local_path(root, sessions::POINTER)?;
@@ -1105,7 +1727,7 @@ fn apply(root: &Path, finding: &Finding, _args: &DoctorArgs, reason: Option<&str
         }
         Kind::StaleGates => {
             sessions::pin(root, &sessions::session_file(&finding.target));
-            let result = checkpoint::withdraw_gates(root);
+            let result = checkpoint::withdraw_gates(root, reason.unwrap_or_default());
             sessions::unpin(root);
             result?;
         }
@@ -1179,6 +1801,21 @@ pub(super) fn run(root: &Path, args: DoctorArgs) -> Result<bool> {
             match apply(root, finding, &args, reason) {
                 Ok(()) => {
                     found[index - 1].status = "fixed";
+                    // REQ-history-012 (#250): a decision the fix applied echoes the
+                    // reason it was given.
+                    if found[index - 1].decision
+                        && let Some(reason) = reason
+                    {
+                        // What was written: under `--redact` the reason is echoed as
+                        // redacted, never raw (REQ-records-006).
+                        let mut echoed = reason.to_string();
+                        let _ = crate::leaks::guard(
+                            crate::leaks::Local::current(),
+                            "reason",
+                            &mut echoed,
+                        );
+                        found[index - 1].decision_reason = Some(echoed);
+                    }
                     // A withdrawn gate leaves a finished session, archived next.
                     if found[index - 1].kind == Kind::StaleGates {
                         let key = found[index - 1].target.clone();
@@ -1224,7 +1861,10 @@ pub(super) fn run(root: &Path, args: DoctorArgs) -> Result<bool> {
             found.push(cleared);
         }
     }
-    let unresolved = found.iter().any(|finding| finding.status != "fixed");
+    // An advisory finding warns only and never makes doctor exit 1 (#339).
+    let unresolved = found
+        .iter()
+        .any(|finding| finding.status != "fixed" && !finding.advisory);
     print_json(&json!({
         "schema_version": 1,
         "mode": mode,

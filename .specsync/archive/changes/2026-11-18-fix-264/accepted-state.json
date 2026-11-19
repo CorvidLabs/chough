@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-264",
+  "slug": "fix-264",
+  "title": "Fix 264",
+  "description": "fix 264",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "9dd28de28015ce6f873e237044cc9650e74a3712",
+  "created_at": 1795030415,
+  "updated_at": 1795031813,
+  "affected_specs": [
+    "records"
+  ],
+  "affected_paths": [
+    "src/migrate.rs",
+    "tests/migrate.rs",
+    "docs/cli.md",
+    "specs/records/requirements.md",
+    "specs/records/records.spec.md",
+    ".chough/cases/records.migrate-same-day-receipt.cases.toml",
+    "changelog.d/2026-11-18-fix-264.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A second migration on one day names its receipt <date>-from-0-5-2.md in the preview, as JSON and as text, with the name part of the plan's digest; its apply writes that receipt, leaves the first receipt byte for byte and removes the 0.5.x record. When another plan's receipt takes the previewed name after the preview, the apply refuses with every file unchanged. An interrupted apply still completes under its own receipt name."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "public_contract": "yes"
+  }
+}

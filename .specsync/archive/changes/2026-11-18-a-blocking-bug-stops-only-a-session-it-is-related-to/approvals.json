@@ -1,0 +1,78 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794961585,
+      "digest": "94d2b007c62c0a41baf005d4e0d0f813b9f47fca1bc6b1a832897c2210800437",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of a blocking bug stops only a session it is related to\": \"i approve\" (reply in this chat on 2026-11-18 to the blocking-bug rule). Relayed and recorded by grok-t1w at 2026-11-18T00:26:25Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "a-blocking-bug-stops-only-a-session-it-is-related-to",
+        "title": "A blocking bug stops only a session it is related to",
+        "description": "A blocking bug stops only a session it is related to",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/bugs.md",
+          ".agents/skills/chough-workflow/references/stages.md",
+          "changelog.d/2026-11-18-blocking-bug-session.md",
+          "docs/FRD.md",
+          "docs/cli.md",
+          "docs/diagrams/stages.mmd",
+          "docs/diagrams/stages.svg",
+          "docs/lifecycle.md",
+          "skills/chough-workflow/references/bugs.md",
+          "skills/chough-workflow/references/stages.md",
+          "specs/cli/requirements.md",
+          "src/bugs.rs",
+          "src/main.rs",
+          "src/skill.rs",
+          "src/stage.rs",
+          "tests/advance_to.rs",
+          "tests/bugs.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/next.rs",
+          "tests/skill_releases.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "An open blocking bug stops leaving test only for a session that lists it, has its evidence prefixed with that session id, or shares a criterion, requirement, or case. Another session advances, and chough next names the bug and says it does not block this session. A blocking bug that names nothing stops no session. A related blocking bug still refuses with refused:blocking-bugs. Closing it releases that session."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "none",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "7f74606e2c2d3b21b9e8404f9cbf981ea134fd3c74f6e77a8f341f6f99cff4a9"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-021": "88f2b970c920a45eb9eaed1de662869f7cff8ec66919d1c43785a8c23903e6e9",
+        "cli: REQUIREMENT REQ-cli-052": "d6d24400dcfe753d56fe13777a8f1fc804a16c75d9b31e9570ab5eeb99f75950",
+        "cli: REQUIREMENT REQ-cli-054": "fc24815b397f91c5c50e400ced51d53fed2de74c0483dd8f22de53f881c998c7"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "i approve",
+        "where": "reply in this chat on 2026-11-18 to the blocking-bug rule",
+        "recorded_by": "grok-t1w"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794962182,
+      "digest": "816ace701f0d7c66680afd65258f6d7a7103be04a05632a37f160fd9fd06792f",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

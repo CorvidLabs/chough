@@ -1,0 +1,25 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #316: since #303 a hyphen before every token prefix was a boundary, so a slug
+# holding -sk- and 20 or more letters, digits and hyphens read as a model-provider key;
+# new bugs titled "Fix flaky sk-learn tests in CI pipeline" were refused and 0.6.0 bugs
+# with such IDs could not be updated.
+
+[[case]]
+id = "TC-records-sk-after-a-hyphen-is-not-a-key"
+title = "A bug whose ID holds -sk-learn- is written, a 0.6.0 bug with such an ID updates and gives chough doctor --leaks no leak, and x-ghp_<token> in a decision is still refused"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::a_slug_holding_sk_is_not_a_key_and_a_glued_token_still_is passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "a_slug_holding_sk_is_not_a_key_and_a_glued_token_still_is"

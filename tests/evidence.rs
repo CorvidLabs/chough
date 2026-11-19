@@ -562,6 +562,15 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
         "SYNTHETIC-ci-run-7",
     ]);
     let plain_entry = add(&["--summary", "SYNTHETIC plain check"]);
+    // #286: what an entry was verified against, and its stated limits.
+    let limited_entry = add(&[
+        "--summary",
+        "SYNTHETIC limited check",
+        "--limitation",
+        "SYNTHETIC only the first page was read",
+        "--limitation",
+        "SYNTHETIC no network",
+    ]);
     let screenshot = fixture
         .read(&format!(
             ".chough/sessions/{session}/evidence/{shot_entry}.md"
@@ -574,7 +583,7 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
     fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
     let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
     let receipts = story_receipts(&story);
-    assert_eq!(receipts.len(), 3, "{story}");
+    assert_eq!(receipts.len(), 4, "{story}");
     let order = [
         "id",
         "aliases",
@@ -588,6 +597,9 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
         "raw_log",
         "case",
         "case_digest",
+        "criteria",
+        "requirements",
+        "limitations",
         "screenshot",
         "observed",
         "duration_seconds",
@@ -649,9 +661,53 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
         assert!(!shown.contains_key(key), "{key}: {shown:?}");
     }
     let plain = receipt(&plain_entry);
-    for key in ["aliases", "command", "screenshot", "raw_log", "case"] {
+    for key in [
+        "aliases",
+        "command",
+        "screenshot",
+        "raw_log",
+        "case",
+        "limitations",
+    ] {
         assert!(!plain.contains_key(key), "{key}: {plain:?}");
     }
+    // #286: a receipt keeps its entry's criteria and requirements, comma-and-space
+    // separated, and its limitations, semicolon-and-space separated.
+    assert_eq!(plain["criteria"], "LIFE-1");
+    assert_eq!(plain["requirements"], "REQ-cli-001");
+    let limited = receipt(&limited_entry);
+    assert_eq!(limited["criteria"], "LIFE-1");
+    assert_eq!(limited["requirements"], "REQ-cli-001");
+    assert_eq!(
+        limited["limitations"],
+        "SYNTHETIC only the first page was read; SYNTHETIC no network"
+    );
+    // #349: the story's What was verified line shows the limits beside the claim, and
+    // an entry without any gets no such text.
+    let line_of = |id: &str| -> String {
+        story
+            .lines()
+            .find(|line| line.starts_with("- ") && line.ends_with(&format!(" ^{id}")))
+            .unwrap_or_else(|| panic!("no What was verified line for {id}: {story}"))
+            .to_string()
+    };
+    assert!(
+        line_of(&limited_entry)
+            .contains("; limits: SYNTHETIC only the first page was read; SYNTHETIC no network ^"),
+        "{}",
+        line_of(&limited_entry)
+    );
+    assert!(
+        !line_of(&plain_entry).contains("limits:"),
+        "{}",
+        line_of(&plain_entry)
+    );
+    assert_eq!(case["criteria"], "LIFE-1");
+    assert_eq!(case["requirements"], "REQ-cli-001");
+    assert!(
+        case["limitations"].contains("inherited environment variables were not recorded"),
+        "{case:?}"
+    );
 }
 
 /// REQ-cli-004 (#203): an entry carries a 0.5.x diagnostic input inventory as front
@@ -832,4 +888,479 @@ fn an_empty_change_directory_left_by_a_branch_switch_is_not_an_open_change() {
     let next = fixture.ok(&["next", "--json"]);
     assert!(!next.to_string().contains("left-behind"), "{next:#}");
     fixture.ok(&["gate", "list", "--json"]);
+}
+
+/// `chough <args>` in `fixture` as a child process the test can watch, with the same
+/// PATH, actor and identity isolation as `Fixture::run`.
+fn spawnable(fixture: &Fixture, args: &[&str]) -> std::process::Command {
+    let mut command = std::process::Command::new(env!("CARGO_BIN_EXE_chough"));
+    command.arg("--root").arg(fixture.root()).args(args);
+    let mut paths = vec![fixture.root().join("bin")];
+    paths.extend(std::env::split_paths(
+        &std::env::var_os("PATH").unwrap_or_default(),
+    ));
+    command.env("PATH", std::env::join_paths(paths).unwrap());
+    for name in common::ACTOR_VARIABLES {
+        command.env_remove(name);
+    }
+    command.env("XDG_CONFIG_HOME", fixture.root().join(common::USER_CONFIG));
+    command
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped());
+    command
+}
+
+/// `evidence add` arguments for a passed human observation with this summary.
+fn add_args(summary: &str) -> Vec<String> {
+    [
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--requirement",
+        "REQ-cli-001",
+        "--contract",
+        "specs/cli/cli.spec.md",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        summary,
+    ]
+    .iter()
+    .map(|part| part.to_string())
+    .collect()
+}
+
+/// The active session's folder, relative to the project.
+fn session_folder(fixture: &Fixture) -> String {
+    let sessions = fixture.root().join(".chough/sessions");
+    let mut names: Vec<String> = fs::read_dir(&sessions)
+        .unwrap()
+        .flatten()
+        .filter(|entry| entry.path().is_dir())
+        .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .collect();
+    assert_eq!(names.len(), 1, "{names:?}");
+    format!(".chough/sessions/{}", names.remove(0))
+}
+
+/// REQ-cli-040 (#317), TC-cli-evidence-writers-reread-under-the-lock: `evidence add`
+/// reads the session it changes under the project's writer lock, so an update another
+/// writer saves while it waits for the lock survives its save. The test holds the lock,
+/// lets `evidence add` block on it (before it writes anything, #325), changes the
+/// session's next action as another writer would, and then releases the lock.
+#[cfg(unix)]
+#[test]
+fn evidence_add_rereads_the_session_under_the_writer_lock() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let folder = session_folder(&fixture);
+    let lock_path = common::checkpoint_lock_path(fixture.root()).unwrap();
+    fs::create_dir_all(lock_path.parent().unwrap()).unwrap();
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+
+    let args = add_args("SYNTHETIC entry saved after the wait");
+    let args: Vec<&str> = args.iter().map(String::as_str).collect();
+    let mut add = spawnable(&fixture, &args).spawn().unwrap();
+    // The evidence save takes the lock before it writes anything (#325), so it is
+    // blocked well within this second.
+    std::thread::sleep(std::time::Duration::from_millis(1_000));
+    assert!(
+        add.try_wait().unwrap().is_none(),
+        "evidence add did not wait for the writer lock"
+    );
+
+    // Another writer's update, saved while evidence add waits.
+    let record = format!("{folder}/session.md");
+    let text = fixture.read(&record);
+    let next = text
+        .lines()
+        .find(|line| line.starts_with("next: "))
+        .expect("a next action")
+        .to_string();
+    fixture.write(
+        &record,
+        &text.replacen(
+            &next,
+            "next: SYNTHETIC next action saved by another writer",
+            1,
+        ),
+    );
+    <fs::File as fs4::FileExt>::unlock(&lock).unwrap();
+
+    let output = add.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = fixture.read(&record);
+    assert!(
+        text.contains("SYNTHETIC next action saved by another writer"),
+        "the other writer's update was lost:\n{text}"
+    );
+    assert_eq!(
+        fixture.checkpoint()["observations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1,
+        "{text}"
+    );
+}
+
+/// REQ-cli-040 (#317): ten `checkpoint --decision` and ten `evidence add` commands at
+/// once each apply their change to the latest session, so all ten decisions and all ten
+/// observation references are kept.
+#[cfg(unix)]
+#[test]
+fn parallel_decisions_and_evidence_adds_all_land() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let mut children = vec![];
+    for number in 1..=10 {
+        let decision = format!("decided: SYNTHETIC storm decision {number}");
+        children.push(
+            spawnable(&fixture, &["checkpoint", "--decision", &decision])
+                .spawn()
+                .unwrap(),
+        );
+        let args = add_args(&format!("SYNTHETIC storm entry {number}"));
+        let args: Vec<&str> = args.iter().map(String::as_str).collect();
+        children.push(spawnable(&fixture, &args).spawn().unwrap());
+    }
+    for child in children {
+        let output = child.wait_with_output().unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+    let text = fixture.read(&format!("{}/session.md", session_folder(&fixture)));
+    assert_eq!(
+        text.matches("SYNTHETIC storm decision ").count(),
+        10,
+        "decisions were lost:\n{text}"
+    );
+    assert_eq!(
+        fixture.checkpoint()["observations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        10,
+        "observation references were lost:\n{text}"
+    );
+}
+
+/// REQ-cli-040 (#317), TC-cli-bug-add-holds-the-writer-lock: `bug add` given an
+/// observation of the active session takes the project's writer lock before it reads
+/// anything, so it writes no bug while another writer holds the lock, and then adds the
+/// bug to the session without losing that writer's update. The test holds the lock,
+/// starts `bug add`, changes the session's next action as another writer would, and
+/// releases the lock.
+#[cfg(unix)]
+#[test]
+fn bug_add_holds_the_writer_lock_and_keeps_another_writers_update() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let folder = session_folder(&fixture);
+    let mut failed = add_args("SYNTHETIC failing check");
+    let at = failed.iter().position(|part| part == "passed").unwrap();
+    failed[at] = "failed".to_string();
+    let failed: Vec<&str> = failed.iter().map(String::as_str).collect();
+    let observation = fixture.ok(&failed)["observation"]
+        .as_str()
+        .expect("the failed observation's ID")
+        .to_string();
+
+    let lock_path = common::checkpoint_lock_path(fixture.root()).unwrap();
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let mut add = spawnable(
+        &fixture,
+        &[
+            "bug",
+            "add",
+            "--title",
+            "SYNTHETIC check fails at the boundary",
+            "--symptom",
+            "The check fails",
+            "--trigger",
+            "Running the check",
+            "--expected",
+            "It passes",
+            "--actual",
+            "It fails",
+            "--environment",
+            "local",
+            "--observation",
+            &observation,
+        ],
+    )
+    .spawn()
+    .unwrap();
+    // bug add takes the lock before it reads anything, so it waits and writes nothing.
+    let bugs = fixture.root().join(".chough/bugs");
+    std::thread::sleep(std::time::Duration::from_millis(1_000));
+    assert!(
+        add.try_wait().unwrap().is_none(),
+        "bug add did not wait for the writer lock"
+    );
+    assert_eq!(
+        fs::read_dir(&bugs).map_or(0, |entries| entries.count()),
+        0,
+        "a bug was written under another writer's lock"
+    );
+
+    let record = format!("{folder}/session.md");
+    let text = fixture.read(&record);
+    let next = text
+        .lines()
+        .find(|line| line.starts_with("next: "))
+        .expect("a next action")
+        .to_string();
+    fixture.write(
+        &record,
+        &text.replacen(
+            &next,
+            "next: SYNTHETIC next action saved by another writer",
+            1,
+        ),
+    );
+    <fs::File as fs4::FileExt>::unlock(&lock).unwrap();
+
+    let output = add.wait_with_output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = fixture.read(&record);
+    assert!(
+        text.contains("SYNTHETIC next action saved by another writer"),
+        "the other writer's update was lost:\n{text}"
+    );
+    assert_eq!(
+        fixture.checkpoint()["bugs"].as_array().unwrap().len(),
+        1,
+        "the bug did not join the session:\n{text}"
+    );
+}
+
+/// REQ-cli-040 (#325), TC-cli-a-busy-evidence-add-leaves-nothing: `evidence add` takes
+/// the project's writer lock before it writes anything, so while another process holds
+/// the lock it writes no entry, its `refused:checkpoint-busy` after the wait leaves every
+/// file unchanged, and a rerun once the lock is free records one entry, not two.
+#[cfg(unix)]
+#[test]
+fn a_busy_evidence_add_writes_nothing_and_refuses_with_nothing_saved() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let folder = session_folder(&fixture);
+    let evidence = fixture.root().join(&folder).join("evidence");
+    let entries = || fs::read_dir(&evidence).map_or(0, |entries| entries.count());
+    let lock_path = common::checkpoint_lock_path(fixture.root()).unwrap();
+    fs::create_dir_all(lock_path.parent().unwrap()).unwrap();
+    let lock = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .open(&lock_path)
+        .unwrap();
+    <fs::File as fs4::FileExt>::lock(&lock).unwrap();
+    let before = fs::read_to_string(fixture.root().join(&folder).join("session.md")).unwrap();
+
+    let args = add_args("SYNTHETIC entry while the lock is held");
+    let args: Vec<&str> = args.iter().map(String::as_str).collect();
+    let mut add = spawnable(&fixture, &args).spawn().unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(1_000));
+    assert!(
+        add.try_wait().unwrap().is_none(),
+        "evidence add did not wait for the writer lock"
+    );
+    assert_eq!(
+        entries(),
+        0,
+        "an entry was written before the lock was taken"
+    );
+
+    let output = add.wait_with_output().unwrap();
+    let said = String::from_utf8_lossy(&output.stderr);
+    assert!(!output.status.success(), "evidence add was saved: {said}");
+    assert!(said.contains("refused:checkpoint-busy"), "{said}");
+    assert_eq!(entries(), 0, "the refused evidence add left its entry");
+    assert_eq!(
+        fs::read_to_string(fixture.root().join(&folder).join("session.md")).unwrap(),
+        before
+    );
+
+    <fs::File as fs4::FileExt>::unlock(&lock).unwrap();
+    let output = spawnable(&fixture, &args).output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(entries(), 1, "the rerun did not record exactly one entry");
+}
+
+/// REQ-history-006 (#349, the tester's finding on #358): a What was verified line is one
+/// line whatever its claim or a limitation holds. A summary or a limitation with line
+/// breaks is folded into the line, so no extra item appears under What was verified and
+/// a `## Timeline` inside a limitation does not become a second Timeline heading.
+#[cfg(unix)]
+#[test]
+fn a_verified_line_stays_one_line_whatever_its_claim_or_limits_hold() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let session = fixture.active_id();
+    let added = fixture.ok(&[
+        "evidence",
+        "add",
+        "--criterion",
+        "LIFE-1",
+        "--kind",
+        "human-observation",
+        "--outcome",
+        "passed",
+        "--environment",
+        "local",
+        "--summary",
+        "SYNTHETIC first line\nSYNTHETIC second line",
+        "--limitation",
+        "SYNTHETIC limit\n## Timeline\n- SYNTHETIC forged entry",
+    ]);
+    let entry = added["observation"].as_str().unwrap().to_string();
+    fixture.commit("the entry");
+    fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
+    let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
+    let line = story
+        .lines()
+        .find(|line| line.ends_with(&format!(" ^{entry}")))
+        .unwrap_or_else(|| panic!("no What was verified line for {entry}: {story}"));
+    assert!(
+        line.starts_with("- SYNTHETIC first line SYNTHETIC second line"),
+        "{line}"
+    );
+    assert!(
+        line.contains("; limits: SYNTHETIC limit ## Timeline - SYNTHETIC forged entry ^"),
+        "{line}"
+    );
+    assert_eq!(
+        story.lines().filter(|line| *line == "## Timeline").count(),
+        1,
+        "{story}"
+    );
+    assert!(
+        !story.lines().any(|line| line == "- SYNTHETIC forged entry"),
+        "{story}"
+    );
+    assert!(
+        !story.lines().any(|line| line == "SYNTHETIC second line"),
+        "{story}"
+    );
+}
+
+/// REQ-cli-017 (#349 part 3, swarm finding 62-F5 on #358): a person may give an evidence
+/// entry at most 8 limitations of at most 512 bytes each. At the bound the entry is
+/// written; one byte or one limitation more is refused as `refused:limitations` with
+/// nothing written.
+#[cfg(unix)]
+#[test]
+fn limitations_are_bounded_at_512_bytes_and_8_per_entry() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.commit("fixture");
+    let session = fixture.active_id();
+    let entries = |fixture: &Fixture| -> usize {
+        fs::read_dir(
+            fixture
+                .root()
+                .join(format!(".chough/sessions/{session}/evidence")),
+        )
+        .map_or(0, |entries| entries.count())
+    };
+    let add = |summary: &str, limitations: &[String]| -> std::process::Output {
+        let mut args = vec![
+            "evidence",
+            "add",
+            "--criterion",
+            "LIFE-1",
+            "--kind",
+            "human-observation",
+            "--outcome",
+            "passed",
+            "--environment",
+            "local",
+            "--summary",
+            summary,
+        ];
+        for limitation in limitations {
+            args.extend(["--limitation", limitation.as_str()]);
+        }
+        fixture.run(&args)
+    };
+    let at_bound = "x".repeat(512);
+    let over = "x".repeat(513);
+
+    // At the bound: 8 limitations of 512 bytes each.
+    let eight = vec![at_bound.clone(); 8];
+    let output = add("SYNTHETIC at the bound", &eight);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert_eq!(entries(&fixture), 1);
+    let record = fixture.read(&fixture.session_file());
+
+    // One byte over.
+    let refused = add("SYNTHETIC one byte over", std::slice::from_ref(&over));
+    assert!(!refused.status.success());
+    let said = String::from_utf8_lossy(&refused.stderr);
+    assert!(
+        said.contains("refused:limitations") && said.contains("513 bytes"),
+        "{said}"
+    );
+    // One limitation over.
+    let nine = vec!["SYNTHETIC short".to_string(); 9];
+    let refused = add("SYNTHETIC one too many", &nine);
+    assert!(!refused.status.success());
+    let said = String::from_utf8_lossy(&refused.stderr);
+    assert!(
+        said.contains("refused:limitations") && said.contains("9 limitations"),
+        "{said}"
+    );
+    assert_eq!(entries(&fixture), 1, "a refused add wrote an entry");
+    assert_eq!(fixture.read(&fixture.session_file()), record);
 }

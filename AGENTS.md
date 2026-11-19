@@ -32,16 +32,32 @@ the same checkpoint (DRIVE-3, DRIVE-12):
 - `.chough/sessions/`, `.chough/archive/` and `.chough/bugs/` are listed in
   `verification_ignored_paths` (`.specsync/sdd.json`), so Chough's records can be
   written and committed at any point of the native order; `chough next` says so.
-  `CHANGELOG.md` merges with Git's union driver.
+- Add a change's changelog entry as a fragment of its own,
+  `changelog.d/<YYYY-MM-DD>-<change-id>.md`, not in `CHANGELOG.md`; a release assembles
+  the fragments into `CHANGELOG.md` with `fledge run changelog` (#290).
+
+For a local or small-context agent, including Flint, Nemotron, Ripple, and every host
+template under `integrations/`:
+
+- Before any edit, run `chough session list`, then `chough next --environment local`, and do the `Run:` line.
+- For a bug fix or small feature in one module, read only the fast path in `skills/chough-workflow/references/stages.md` and the one reference `chough next` names.
+- The session key is `fix-<issue>`. The change description is `fix <issue>`, not a sentence. Use an existing HI id. Do not invent one. A `REQ-` id goes on `--requirement` only.
+- Use `chough change new`, `answer`, `check`, `status` and `ship`. Do not run `specsync change approve`, `review`, `reopen` or `send-back`. Declare every path, including tests, before the first product edit.
+- Stop at intent, scope approval and implementation review. Open a gate with `chough checkpoint --awaiting-human`. Close it with `--close-gate` only with words the human gave you.
+- Before the review: `chough change check <id> --no-commit` when the delta changes requirements, `chough cases run`, open the review gate, commit the source with `.chough/`, then `chough change check <id>`, which commits the verification. Add the changelog fragment in that same work. End every file with a trailing newline.
+- A `refused:` message is the answer. Run the command it names, or stop and report it. Do not hand-edit a session, the Timeline, an archive or an approval. If `chough <command> --help` does not show a flag, it does not exist.
+- Do not push, open or merge a pull request, or release, unless the task says so. Wait on another agent with the harness's wait. Do not sleep in a loop. A review ends with a line that is exactly `Verdict: pass` or `Verdict: block`.
 - Add a change's cases in a file of its own,
   `.chough/cases/<module>.<change-topic>.cases.toml`, not in the shared module file.
 - Set up Chough's two merge drivers once per clone:
   `git config --local merge.chough-bug.driver "chough bug merge %O %A %B"` and
   `git config --local merge.chough-generated.driver "chough library merge %O %A %B"`.
+  Also run `specsync merge --install` once, so `specs/**/*.spec.md` and
+  `specs/**/requirements.md` merge through SpecSync's driver (#291).
   Sessions need no merge driver: each is its own folder.
-- After merging main into a branch, run `chough library index` and commit `knowledge/`.
-  The merge keeps your side of `knowledge/index.md` and the feed, and the verify lane's
-  `library index --check` fails until they are rebuilt.
+- Rebuild the generated `knowledge/index.md` and its feed with `chough library index`
+  and commit `knowledge/` when preparing a release, before the version bump is tagged;
+  the release task then runs `chough library index --check` before that branch merges.
 - Still conflicting, until SpecSync fixes it: a module's spec change log and
   `requirements.md` (CorvidLabs/spec-sync#862). Keep both sides' rows, renumber yours
   after main's, set `version:` to the last row, and keep requirement IDs unique.

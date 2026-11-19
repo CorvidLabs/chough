@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #283: cases check refused a retired case whose fledge-task binding named a
+# task since removed from fledge.toml, so the binding could not stay as history.
+
+[[case]]
+id = "TC-cli-a-retired-case-keeps-its-fledge-task-binding"
+title = "A retired case bound to a fledge task no longer in fledge.toml passes cases check with its binding kept; the same binding on an active case is refused, and cases run refuses the retired case"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-8"]
+requirements = ["REQ-cli-009"]
+paths = ["src/cases.rs", "tests/cases.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/cases.rs::a_retired_case_keeps_a_binding_to_a_removed_fledge_task passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "cases"
+test = "a_retired_case_keeps_a_binding_to_a_removed_fledge_task"

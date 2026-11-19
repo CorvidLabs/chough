@@ -550,3 +550,492 @@ fn a_given_name_holding_the_host_name_is_refused() {
     let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
     refused(&fixture, &arguments, "id", "host-name", &words);
 }
+
+/// REQ-records-006 (#267), TC-records-a-hyphen-glued-token-is-a-leak: a token glued to
+/// a hyphen, the shape a slug or a run name gives it, is refused at the write like the
+/// same token after a space, and the doctor reports it in a committed file.
+#[test]
+fn a_hyphen_glued_token_is_refused_at_the_write_and_found_by_the_doctor() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+    let glued = concat!("x-", "ghp_", "abcdefghij0123456789abcdefghij0123");
+    let secret = concat!("ghp_", "abcdefghij0123456789");
+    let decision = format!("decided: probe {glued}");
+    refused(
+        &fixture,
+        &["checkpoint", "--decision", &decision],
+        "decision",
+        "token",
+        secret,
+    );
+    let before = tree(fixture.root());
+    let output = run(&fixture, &["session", "new", glued, "--objective", "probe"]);
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        !output.status.success(),
+        "the session key was written: {said}"
+    );
+    assert!(said.contains("refused:leak"), "{said}");
+    assert!(said.contains("holds token"), "{said}");
+    assert!(
+        !said.contains(secret),
+        "the refusal echoed the value: {said}"
+    );
+    assert_eq!(tree(fixture.root()), before, "session new changed a file");
+
+    let lesson = "knowledge/lessons/2026-01-01-old-run.md";
+    fixture.write(
+        lesson,
+        &format!(
+            "---\nid: 2026-01-01-old-run\ntitle: \"Old\"\ntype: lesson\ntags: []\n---\n\nSee run {glued}\n"
+        ),
+    );
+    fixture.git(&["add", lesson]);
+    fixture.git(&["commit", "-qm", "an old run name"]);
+    let output = run(&fixture, &["doctor", "--leaks"]);
+    let said = String::from_utf8_lossy(&output.stdout).into_owned();
+    assert_eq!(output.status.code(), Some(1), "{said}");
+    assert!(
+        !said.contains(secret),
+        "the doctor echoed the value: {said}"
+    );
+    let report: serde_json::Value = serde_json::from_str(&said).unwrap();
+    let leaks: Vec<&serde_json::Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["kind"] == "leak")
+        .collect();
+    assert_eq!(leaks.len(), 1, "{report:#}");
+    assert_eq!(leaks[0]["target"], lesson);
+    assert_eq!(leaks[0]["match"], "token");
+}
+
+/// REQ-records-006, TC-records-sk-after-a-hyphen-is-not-a-key (#316): `sk-` after a
+/// hyphen continues a word, as in 0.6.0, so a bug whose generated ID holds `-sk-learn-…`
+/// is written, a 0.6.0 bug with such an ID still updates and gives the doctor no leak,
+/// and a distinctive token glued to a hyphen (#267) is still refused.
+#[test]
+fn a_slug_holding_sk_is_not_a_key_and_a_glued_token_still_is() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+
+    let output = run(
+        &fixture,
+        &[
+            "bug",
+            "add",
+            "--title",
+            "Fix flaky sk-learn tests in CI pipeline",
+            "--symptom",
+            "s",
+            "--trigger",
+            "t",
+            "--expected",
+            "e",
+            "--actual",
+            "a",
+            "--environment",
+            "local",
+        ],
+    );
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        output.status.success(),
+        "the sk-learn bug was refused: {said}"
+    );
+    assert!(
+        said.contains("-fix-flaky-sk-learn-tests-in-ci-pipeline"),
+        "{said}"
+    );
+
+    let upgraded = "2026-11-18-use-sk-learn-for-the-classifier-model";
+    fixture.bug_md(upgraded, "in-scope", "open", &[]);
+    fixture.git(&["add", "-A"]);
+    fixture.git(&["commit", "-qm", "a 0.6.0 bug and the sk-learn bug"]);
+    let output = run(
+        &fixture,
+        &[
+            "bug",
+            "update",
+            upgraded,
+            "--note",
+            "Pinned the sk-learn version",
+        ],
+    );
+    assert!(
+        output.status.success(),
+        "the 0.6.0 bug did not update: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    fixture.git(&["add", "-A"]);
+    fixture.git(&["commit", "-qm", "update the 0.6.0 bug"]);
+    let output = run(&fixture, &["doctor", "--leaks"]);
+    let said = String::from_utf8_lossy(&output.stdout).into_owned();
+    let report: serde_json::Value = serde_json::from_str(&said).unwrap();
+    let leaks: Vec<&serde_json::Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["kind"] == "leak")
+        .collect();
+    assert!(leaks.is_empty(), "{report:#}");
+
+    let glued = concat!("x-", "ghp_", "abcdefghij0123456789abcdefghij0123");
+    refused(
+        &fixture,
+        &[
+            "checkpoint",
+            "--decision",
+            &format!("decided: probe {glued}"),
+        ],
+        "decision",
+        "token",
+        concat!("ghp_", "abcdefghij0123456789"),
+    );
+}
+
+/// REQ-records-006, TC-records-a-file-or-design-path-passes-the-leak-guard (#268): a
+/// `checkpoint --file` or `--design` path is a value Chough writes into `session.md`, so
+/// a token in it refuses the write naming the field, with the token never echoed and
+/// every file unchanged; with `--redact` the path is stored redacted; a clean path is
+/// saved as before.
+#[test]
+fn a_token_in_a_file_or_design_path_is_refused_at_the_write() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+    let path = concat!("src/", "ghp_", "abcdefghij0123456789abcdefghij0123", ".txt");
+    let secret = concat!("ghp_", "abcdefghij0123456789");
+    refused(
+        &fixture,
+        &["checkpoint", "--file", path],
+        "file",
+        "token",
+        secret,
+    );
+    refused(
+        &fixture,
+        &["checkpoint", "--design", path],
+        "design",
+        "token",
+        secret,
+    );
+
+    let said = redacted(&fixture, &["checkpoint", "--file", path, "--design", path]);
+    assert!(!said.contains(secret), "--redact echoed the value: {said}");
+    assert!(
+        holding(fixture.root(), secret).is_empty(),
+        "a file still holds the token"
+    );
+    let session = holding(fixture.root(), "src/<redacted:token>.txt");
+    assert_eq!(session.len(), 1, "{session:?}");
+    assert!(session[0].ends_with("/session.md"), "{session:?}");
+
+    let output = run(
+        &fixture,
+        &[
+            "checkpoint",
+            "--file",
+            "src/main.rs",
+            "--design",
+            "docs/flow.md",
+        ],
+    );
+    assert!(output.status.success(), "{output:?}");
+    let session = fs::read_to_string(fixture.root().join(&session[0])).unwrap();
+    assert!(session.contains("src/main.rs"), "{session}");
+    assert!(session.contains("docs/flow.md"), "{session}");
+}
+
+/// REQ-records-006 (#268): an ID reference is a value Chough writes too, so a token in a
+/// `--criterion`, `--requirement`, `--case`, `--observation` or `--native-change` value
+/// refuses the write naming the field; under `--redact` it still refuses, since an ID
+/// would not keep its form as `<redacted:<kind>>`, with every file unchanged.
+#[test]
+fn a_token_in_an_id_reference_is_refused_even_under_redact() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    fixture.commit("fixture");
+    let secret = concat!("ghp_", "abcdefghij0123456789");
+    let github = concat!("ghp_", "abcdefghij0123456789abcdefghij0123");
+    let criterion = format!("x-{github}");
+    let case = format!("TC-x-{github}");
+    let requirement = concat!("REQ-", "AKIA", "ABCDEFGHIJKLMNOP");
+    let observation = concat!("o-", "glp", "at-abcdefghijklmnopqrstuvwx");
+    for (flag, value, field, hidden) in [
+        ("--criterion", criterion.as_str(), "criterion", secret),
+        (
+            "--requirement",
+            requirement,
+            "requirement",
+            "ABCDEFGHIJKLMNOP",
+        ),
+        ("--case", case.as_str(), "case", secret),
+        (
+            "--observation",
+            observation,
+            "observation",
+            "abcdefghijklmnopqrst",
+        ),
+        ("--native-change", github, "native_change", secret),
+    ] {
+        refused(
+            &fixture,
+            &["checkpoint", flag, value],
+            field,
+            "token",
+            hidden,
+        );
+        refused(
+            &fixture,
+            &["--redact", "checkpoint", flag, value],
+            field,
+            "token",
+            hidden,
+        );
+    }
+    assert!(holding(fixture.root(), secret).is_empty());
+}
+
+/// REQ-records-006 (#268 review): in a session that already holds a value its save
+/// would refuse, such as a token-bearing `--file` path written before #268, `evidence
+/// add` refuses before it writes its entry, so a retry adds nothing either.
+#[test]
+fn evidence_add_in_a_session_holding_a_leak_writes_nothing() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.configure_human();
+    fixture.init();
+    let path = concat!("src/", "ghp_", "abcdefghij0123456789abcdefghij0123", ".txt");
+    let session = tree(fixture.root())
+        .into_keys()
+        .find(|name| name.ends_with("/session.md"))
+        .unwrap();
+    let text = fs::read_to_string(fixture.root().join(&session)).unwrap();
+    assert!(text.contains("\nfiles: []\n"), "{text}");
+    fs::write(
+        fixture.root().join(&session),
+        text.replace("\nfiles: []\n", &format!("\nfiles: [{path}]\n")),
+    )
+    .unwrap();
+    fixture.commit("a session written before #268");
+    let arguments = evidence_add("SYNTHETIC entry in a leaking session");
+    let arguments: Vec<&str> = arguments.iter().map(String::as_str).collect();
+    for _ in 0..2 {
+        refused(
+            &fixture,
+            &arguments,
+            "file",
+            "token",
+            concat!("ghp_", "abcdefghij0123456789"),
+        );
+    }
+}
+
+/// A committed session whose `cases` reference holds a token, as an older Chough let
+/// one be saved, with an email in its Goal too: (fixture, session record, session ID).
+fn session_with_a_leaking_id() -> (Fixture, String, String) {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    let id = fixture.active_id();
+    let record = format!(".chough/sessions/{id}/session.md");
+    let text = fs::read_to_string(fixture.root().join(&record)).unwrap();
+    assert!(text.contains("\ncases: []\n"), "{text}");
+    let leaking = concat!("TC-x-", "ghp_", "abcdefghij0123456789abcdefghij0123");
+    let email = concat!("someone", "@", "example.org");
+    let text = text
+        .replace("\ncases: []\n", &format!("\ncases: [{leaking}]\n"))
+        .replacen(
+            "## Goal\n\n",
+            &format!("## Goal\n\nWrite to {email} for access.\n\n"),
+            1,
+        );
+    fs::write(fixture.root().join(&record), text).unwrap();
+    fixture.commit("a session an older Chough let hold a token");
+    (fixture, record, id)
+}
+
+/// REQ-records-006 (#320): a save refused because a session already holds a leaking ID
+/// reference names the recovery, `chough session shelve <id>`, with every file unchanged.
+#[test]
+fn a_leaking_id_reference_names_the_recovery() {
+    let (fixture, _record, id) = session_with_a_leaking_id();
+    let before = tree(fixture.root());
+    let output = run(
+        &fixture,
+        &["checkpoint", "--decision", "decided: SYNTHETIC"],
+    );
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!output.status.success(), "{said}");
+    assert!(said.contains("refused:leak: case holds token"), "{said}");
+    assert!(
+        said.contains(&format!("chough session shelve {id}")),
+        "the refusal names no recovery: {said}"
+    );
+    assert!(!said.contains(concat!("ghp_", "abcdefghij")), "{said}");
+    assert_eq!(tree(fixture.root()), before);
+}
+
+/// REQ-history-012, REQ-cli-055 (#320), TC-cli-doctor-redact-never-rewrites-an-id: the
+/// doctor's leak finding on an ID line names `chough session shelve <id>`, and `--fix
+/// --redact` leaves that line byte for byte with the finding skipped, so the session
+/// still reads, while it redacts the email on an ordinary line of the same record.
+#[test]
+fn doctor_redact_never_rewrites_an_id() {
+    let (fixture, record, id) = session_with_a_leaking_id();
+    let leaks = |args: &[&str]| -> Vec<serde_json::Value> {
+        let output = run(&fixture, args);
+        let report: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+        report["findings"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|finding| finding["kind"] == "leak")
+            .cloned()
+            .collect()
+    };
+    let found = leaks(&["doctor", "--leaks"]);
+    assert_eq!(found.len(), 2, "{found:#?}");
+    let id_finding = found
+        .iter()
+        .find(|finding| finding["match"] == "token")
+        .expect("the ID's finding");
+    assert!(
+        id_finding
+            .to_string()
+            .contains(&format!("chough session shelve {id}")),
+        "{id_finding:#}"
+    );
+
+    let fixed = leaks(&["doctor", "--fix", "--redact"]);
+    let token = fixed
+        .iter()
+        .find(|finding| finding["match"] == "token")
+        .expect("the ID's finding");
+    assert_eq!(token["status"], "skipped", "{fixed:#?}");
+    let email = fixed
+        .iter()
+        .find(|finding| finding["match"] == "email")
+        .expect("the email's finding");
+    assert_eq!(email["status"], "fixed", "{fixed:#?}");
+    let text = fs::read_to_string(fixture.root().join(&record)).unwrap();
+    assert!(
+        text.contains(concat!(
+            "cases: [TC-x-",
+            "ghp_",
+            "abcdefghij0123456789abcdefghij0123]"
+        )),
+        "the ID was rewritten:\n{text}"
+    );
+    assert!(text.contains("<redacted:email>"), "{text}");
+    let next = run(&fixture, &["next"]);
+    assert!(
+        next.status.success(),
+        "the session no longer reads: {}",
+        String::from_utf8_lossy(&next.stderr)
+    );
+}
+
+/// REQ-history-012, REQ-cli-055 (#320, #335 review): a session's `modules` and a bug's
+/// `regression_baseline` give IDs too, a module name and an evidence ID. `--fix
+/// --redact` leaves both lines byte for byte with their findings skipped, so the
+/// session and the bug still read, as before the doctor ran.
+#[test]
+fn doctor_redact_never_rewrites_modules_or_a_regression_baseline() {
+    let fixture = Fixture::new();
+    fixture.configure_human();
+    fixture.init();
+    let email = concat!("someone", "@", "example.org");
+    let token = concat!("sk-", "abcdefghijklmnopqrstuvwx");
+    fixture.ok(&[
+        "session",
+        "new",
+        "mods",
+        "--objective",
+        "module probe",
+        "--module",
+        email,
+        "--module",
+        token,
+    ]);
+    let id = fixture.active_id();
+    let record = format!(".chough/sessions/{id}/session.md");
+    let session = fs::read_to_string(fixture.root().join(&record)).unwrap();
+    let modules = session
+        .lines()
+        .find(|line| line.starts_with("modules:"))
+        .expect("a modules line")
+        .to_string();
+    assert!(
+        modules.contains(token) && modules.contains(email),
+        "{session}"
+    );
+    let baseline = concat!("o-x-", "ghp_", "abcdefghij0123456789abcdefghij0123");
+    let bug = ".chough/bugs/2026-11-10-totals.md";
+    fixture.write(
+        bug,
+        &format!(
+            "---\nkind: bug\nid: 2026-11-10-totals\ntitle: Totals\nstatus: open\nclassification: regression\nscope: in-scope\nimpact: High\ncriteria: []\nrequirements: []\ncases: []\nevidence: []\nregression_baseline: {baseline}\nreceipts: []\nenvironment: test-local\nfound_by: manual report\nrelated: []\ncreated: 2026-11-10T10:00:00Z\nupdated: 2026-11-10T10:00:00Z\n---\n# Totals\n\n**What happened:** Off by one\n\n**Steps:** Any order\n\n**Expected:** Exact\n\n**Why it matters:** High\n\n**Fix:** Not fixed yet.\n\n## Log\n\n- 2026-11-10T10:00:00Z · Reported (manual report)\n"
+        ),
+    );
+    fixture.commit("leaking module names and a leaking regression baseline");
+    let reads = |args: &[&str]| {
+        let output = run(&fixture, args);
+        assert!(
+            output.status.success(),
+            "{args:?} no longer reads: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    };
+    reads(&["next"]);
+    reads(&["bug", "show", "2026-11-10-totals"]);
+
+    let output = run(&fixture, &["doctor", "--fix", "--redact"]);
+    let report: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    let leaks: Vec<&serde_json::Value> = report["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|finding| finding["kind"] == "leak")
+        .collect();
+    assert_eq!(leaks.len(), 3, "{report:#}");
+    for finding in &leaks {
+        assert_eq!(finding["status"], "skipped", "{finding:#}");
+    }
+    assert!(
+        fs::read_to_string(fixture.root().join(&record))
+            .unwrap()
+            .lines()
+            .any(|line| line == modules),
+        "the modules line was rewritten"
+    );
+    assert!(
+        fs::read_to_string(fixture.root().join(bug))
+            .unwrap()
+            .contains(&format!("\nregression_baseline: {baseline}\n")),
+        "the regression baseline was rewritten"
+    );
+    reads(&["next"]);
+    reads(&["status"]);
+    reads(&["bug", "show", "2026-11-10-totals"]);
+}

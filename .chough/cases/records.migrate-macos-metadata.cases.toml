@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #314 review: chough migrate made no plan with an AppleDouble ._* file beside a
+# 0.5.x bug, session or observation.
+
+[[case]]
+id = "TC-records-migrate-skips-macos-metadata"
+title = "A 0.5.x project with ._* and .DS_Store files beside its bugs, sessions, archived sessions, inbox entries, evidence, history events and knowledge notes previews with the same plan digest as without them, the apply succeeds, and every one of them is still there after"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-14"]
+requirements = ["REQ-records-015"]
+paths = ["src/migrate.rs", "src/evidence_migrate.rs", "src/bugs.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::migrate_skips_macos_metadata_beside_0_5_records passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "migrate_skips_macos_metadata_beside_0_5_records"

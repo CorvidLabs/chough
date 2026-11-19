@@ -1,0 +1,128 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794711338,
+      "digest": "6304b90ba6f5f1dba69d3f5172adbc544d374e18a9c197305955eb7a39f24771",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with\": \"yes\" (Claude Code chat (hc t28), 2026-11-14, reply to the #278 scope summary). Relayed and recorded by claude-code (hc t28) at 2026-11-15T02:55:38Z through chough gate record dd016d1e95f2; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with",
+        "title": "Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278)",
+        "description": "Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.archived-stories.cases.toml",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/history/history.spec.md",
+          "specs/history/requirements.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/gates.rs",
+          "src/journal.rs",
+          "src/sessions.rs",
+          "tests/journal.rs",
+          "tests/migrate_evidence.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "An archived or migrated story's What was verified line and a gate summary's Change line hold no em dash: each joins with ' - ',A journal post derived from a story archived with the earlier ' — ' join still gives the line's claim alone and copies no evidence ID"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Stories archived before this change are never rewritten: readers accept both joins",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "d10661a0eb962b7489c803f1a2ce0f006bd69bdc9f4d77419837a89d9cd86845",
+        "history": "224d8b5535bf4935076ff4c51cab398447079fc38e3e437e67ecbf8028b6fec6",
+        "records": "026da5159b4372bbb8ad958d0d807dde226129a2c05b233cb0cac5b42890e646"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-061": "49fb7a4d9af92011fc1859feaf004b62386a46422039a28122ab9e4e7ec0460d",
+        "history: REQUIREMENT REQ-history-006": "4d20e16320db39f5ce5d297f6aefbf881fef98883dbbe0a75b68d4df69567330",
+        "records: REQUIREMENT REQ-records-011": "a7dfcd9f966f121a1cc00a4a3efe73cabe38043d72d8670f50aa16c1649e9597"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794713941,
+      "digest": "6304b90ba6f5f1dba69d3f5172adbc544d374e18a9c197305955eb7a39f24771",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approve the scope of chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with after review fixes\": \"Yes\" (Claude Code chat (hc t28), 2026-11-14, reply to the #278 re-approval summary after Grok's review fixes). Relayed and recorded by claude-code (hc t28) at 2026-11-15T03:39:01Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with",
+        "title": "Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278)",
+        "description": "Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278)",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.archived-stories.cases.toml",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "specs/cli/cli.spec.md",
+          "specs/cli/requirements.md",
+          "specs/history/history.spec.md",
+          "specs/history/requirements.md",
+          "specs/records/records.spec.md",
+          "specs/records/requirements.md",
+          "src/gates.rs",
+          "src/journal.rs",
+          "src/sessions.rs",
+          "tests/journal.rs",
+          "tests/migrate_evidence.rs",
+          "tests/sessions.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "An archived or migrated story's What was verified line and a gate summary's Change line hold no em dash: each joins with ' - ',A journal post derived from a story archived with the earlier ' — ' join still gives the line's claim alone and copies no evidence ID"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Stories archived before this change are never rewritten: readers accept both joins",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "d10661a0eb962b7489c803f1a2ce0f006bd69bdc9f4d77419837a89d9cd86845",
+        "history": "968d0fe60dffd9ed3a9d0c5fcc978aca856fc4e5be348925ba789e417ce6a507",
+        "records": "60a55f3eba1cec0983e4503dfe9c4f9d9e339d1dd13321d947cd196a4e7db4ec"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-061": "49fb7a4d9af92011fc1859feaf004b62386a46422039a28122ab9e4e7ec0460d",
+        "history: REQUIREMENT REQ-history-006": "6cb3ff3c3221284ac9052ca407e96deedf3a95bcb6abb7c8d29bd1f7c45f71d7",
+        "records: REQUIREMENT REQ-records-011": "bb84b807184343e1c2f3e8a3855e26ffc7f41ea94caa6a3ec3affb4ee96bb5b0"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794714322,
+      "digest": "3e846a85664a33fa66488d0f0a2951c1480c3a737bd37f96fa8d332d55384ebc",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

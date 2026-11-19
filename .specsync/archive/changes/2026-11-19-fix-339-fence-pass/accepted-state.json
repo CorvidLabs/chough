@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-339-fence-pass",
+  "slug": "fix-339-fence-pass",
+  "title": "Fix 339 fence pass",
+  "description": "fix 339 fence pass",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "082f1734397527910603c96624c5faf58f34bae0",
+  "created_at": 1795050092,
+  "updated_at": 1795052608,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "tests/records.rs",
+    "changelog.d/2026-11-18-fix-339.md",
+    ".chough/cases/records.conflict-marker-follow-ups.cases.toml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-records-001 already fixes which lines a code fence exempts and that an unclosed fence hides nothing; this change finds the same closes in a bounded pass instead of rescanning the rest of the text for every unclosed opener, so only code, a test and the changelog change.",
+  "acceptance_criteria": [
+    "With a session body holding many code fence openers that never close, a record write and chough doctor finish in time that grows linearly with the record, not quadratically: each line is visited a bounded number of times. A conflict after those openers is still refused, since an unclosed fence hides nothing, and closed fences, Chough's own sections and the advisory findings behave as before."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "Leif's P2 review comment on #356 and the standing rule 'Yes, for today' set the scope: compute matching fences in a bounded pass, keep the rule that an unclosed fence hides nothing, and add a regression for many unmatched openers. Deltas none; REQ-records-001 already states which lines a fence exempts.",
+    "public_contract": "no"
+  }
+}

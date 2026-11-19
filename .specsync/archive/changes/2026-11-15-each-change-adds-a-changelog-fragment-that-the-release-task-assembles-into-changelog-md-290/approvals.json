@@ -1,0 +1,58 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794755530,
+      "digest": "a4974da5ce1e3764cb99be1d1399c8a07d4d410a7595e3ac813c5367a7bb6dcd",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290\": \"yes\" (Claude Code chat (hc t28), 2026-11-15, reply to the #290 scope summary). Relayed and recorded by claude-code (hc t28) at 2026-11-15T15:12:10Z through chough gate record 05e9d46ea2bd; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290",
+        "title": "Each change adds a changelog fragment that the release task assembles into CHANGELOG.md (#290)",
+        "description": "Each change adds a changelog fragment that the release task assembles into CHANGELOG.md (#290)",
+        "kind": "operations",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".agents/skills/chough-workflow/references/stages.md",
+          "AGENTS.md",
+          "CHANGELOG.md",
+          "changelog.d",
+          "docs/releasing.md",
+          "fledge.toml",
+          "skills/chough-workflow/references/stages.md",
+          "src/skill.rs",
+          "tests/changelog.rs",
+          "tests/fixtures/skill-releases/manifest.json",
+          "tests/package.rs",
+          "tests/skill_releases.rs",
+          "tools/changelog.py"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "No requirement describes the changelog's layout; LIFE-16 is unchanged, and the change is repository tooling, its tests, the release doc and the workflow skill's fast path",
+        "acceptance_criteria": [
+          "A change adds its entry as changelog.d/<date>-<change-id>.md and CHANGELOG.md is not edited by the change"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Assembly must be deterministic and must never drop existing CHANGELOG.md text",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {}
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794760857,
+      "digest": "afabb197c972056cdec76a904cb7d9fda37a59d2e274bce5321312dbdfb24439",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

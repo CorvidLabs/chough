@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289",
+  "slug": "the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289",
+  "title": "The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)",
+  "description": "The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)",
+  "kind": "feature",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "4d3c1a5cfddc9e6710be2dad1c39162816adacf0",
+  "created_at": 1794767037,
+  "updated_at": 1794777602,
+  "affected_specs": [
+    "cli",
+    "records",
+    "history"
+  ],
+  "affected_paths": [
+    "src/library.rs",
+    "src/sessions.rs",
+    "src/stage.rs",
+    "fledge.toml",
+    ".github/workflows/ci.yml",
+    "docs",
+    "README.md",
+    "AGENTS.md",
+    "skills",
+    ".agents/skills",
+    "src/skill.rs",
+    "tests"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "A change's move into done and its pull request leave knowledge/index.md and feed.xml unchanged, no PR or CI lane runs library index --check, and fledge run release-check rebuilds both and passes the strict check before the release PR merges"
+  ],
+  "selected_artifacts": [
+    "context",
+    "requirements",
+    "plan",
+    "tasks",
+    "testing",
+    "docs",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "KNOW-4: the index stays regenerable from its sources; the strict check is unchanged; Leif chose design B (check only at release)",
+    "public_contract": "yes"
+  }
+}

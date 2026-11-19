@@ -1,0 +1,53 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794714131,
+      "digest": "0beba74cefba630f8bb35dfb58209ea5dced50f69e2b40f83109a996be6e2e7c",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of clarify-req-cli-001-init-preserves-bytes-acceptance\": \"I approve\" (chat, 2026-11-15 (this session)). Relayed and recorded by pi-agent at 2026-11-15T03:42:10Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "clarify-req-cli-001-init-preserves-bytes-acceptance",
+        "title": "Clarify REQ-cli-001 init-preserves-bytes acceptance",
+        "description": "Clarify REQ-cli-001 init-preserves-bytes acceptance",
+        "kind": "documentation",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.walk-ready.cases.toml",
+          "CHANGELOG.md",
+          "docs/cli.md",
+          "specs/cli/requirements.md"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "Repeated init preserves edited session and skill bytes; missing bundle files can be added without overwriting neighbors; a session with edited files stays byte-identical on later init."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "Documentation-only change to specs/cli/requirements.md; no code, no public API, no behavior change; init must never replace or remove existing files.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "8d19c8632b994a5ca7ba92b571f2930432343e6397488b1bea3bcd4bdefb27b0"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-001": "64e33daee6bb9ca2708fd512429c30318b9d0bc8b08745027cbd7df4720c1e5c"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794714777,
+      "digest": "5a2746f998f905061e70f2b880c1b023451f490daaf92ab0b3516bfb20134290",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

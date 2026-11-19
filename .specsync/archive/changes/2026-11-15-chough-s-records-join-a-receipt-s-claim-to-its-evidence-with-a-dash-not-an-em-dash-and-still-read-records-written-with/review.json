@@ -1,0 +1,16 @@
+{
+  "schema_version": 2,
+  "change_id": "chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "6e740be091d31ce05c70e6fcce098b808e7a8fb3",
+  "contract_digest": "6304b90ba6f5f1dba69d3f5172adbc544d374e18a9c197305955eb7a39f24771",
+  "execution_digest": "a60154ef695ef44c017ed30a9cf3450ec4742b8e7bc1afdcf985349ab2d64d1e",
+  "workspace_digest": "9d30a676e66503a59a625c157f039577fee98cf4a88c59503ed73d57b53940ae",
+  "timestamp": 1794714314
+}

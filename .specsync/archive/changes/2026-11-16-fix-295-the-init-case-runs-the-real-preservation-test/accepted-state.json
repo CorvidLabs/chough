@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-295-the-init-case-runs-the-real-preservation-test",
+  "slug": "fix-295-the-init-case-runs-the-real-preservation-test",
+  "title": "Fix #295: the init case runs the real preservation test",
+  "description": "Fix #295: the init case runs the real preservation test",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "82a52e2dd5cb9f131b5c1a33133002fbda83b9f6",
+  "created_at": 1794799983,
+  "updated_at": 1794800625,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "tests/cli.rs",
+    ".chough/cases/cli.walk-ready.cases.toml"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-cli-001 already states the preservation rule. This change binds the case to the existing init test and adds the missing-bundle assertion.",
+  "acceptance_criteria": [
+    "TC-cli-walk-ready-init-preserves runs init_preserves_user_files_and_installs_a_complete_skill. That test keeps edited session and skill bytes and adds a missing bundle file without rewriting the edited neighbor. specsync change audit reports no uncovered meaningful path."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "LIFE-4, LIFE-6, and REQ-cli-001. The requirement text is already approved. This change only binds the case and the test.",
+    "public_contract": "no"
+  }
+}

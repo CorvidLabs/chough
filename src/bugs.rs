@@ -829,12 +829,13 @@ fn stored_form(id: &str, linked: &Linked) -> String {
     }
 }
 
-/// REQ-cli-012: a bug written with `--observation` naming an entry of the active session,
-/// which [`stored_form`] stores as `<session>/<id>`, joins that session's checkpoint as
-/// `checkpoint --bug` adds it (REQ-records-004), once, so the session's story names the
-/// bugs found in it. An entry of another session, a receipt or no active session leaves
-/// every checkpoint unchanged.
-fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
+/// REQ-cli-012: the bug joins the active session's checkpoint as `checkpoint --bug` adds
+/// it (REQ-records-004), once, so the session's story names the bugs found in it and a
+/// blocking one stops it (REQ-cli-054). A new bug (`always`) joins whenever a session is
+/// active (#329); an updated one joins only when `--observation` names an entry of the
+/// active session, which [`stored_form`] stores as `<session>/<id>`. An entry of another
+/// session, a receipt or no active session leaves every checkpoint unchanged.
+fn join_active_session(root: &Path, bug: &str, links: &[String], always: bool) -> Result<()> {
     let Some(active) = crate::sessions::checkpoint_path(root)
         .ok()
         .and_then(|relative| crate::sessions::id_of(&relative))
@@ -842,7 +843,7 @@ fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
         return Ok(());
     };
     let prefix = format!("{active}/");
-    if !links.iter().any(|link| link.starts_with(&prefix)) {
+    if !always && !links.iter().any(|link| link.starts_with(&prefix)) {
         return Ok(());
     }
     let mut session = match crate::checkpoint::read_session(root)? {
@@ -853,6 +854,32 @@ fn join_active_session(root: &Path, bug: &str, links: &[String]) -> Result<()> {
     }
     session.bugs.push(bug.to_string());
     crate::checkpoint::save_checkpoint(root, &mut session)
+}
+
+/// Before `bug add` writes anything (#343 review): the active session, if one is, can
+/// take the new bug's link, checked as its save would check it, so a new bug is never
+/// left out of the session it was filed in. The check holds a name as long as any name
+/// `create` can give the bug, so the save after it is never larger than the one checked.
+fn session_takes_a_bug(root: &Path) -> Result<()> {
+    let Some(active) = crate::sessions::checkpoint_path(root)
+        .ok()
+        .and_then(|relative| crate::sessions::id_of(&relative))
+    else {
+        return Ok(());
+    };
+    let mut session = match crate::checkpoint::read_session(root)? {
+        crate::checkpoint::Session::V2(session) => *session,
+    };
+    let date = identity::utc_date(now()?);
+    session.bugs.push(format!(
+        "{date}-{}",
+        "x".repeat(identity::NAME_LIMIT - date.len() - 1)
+    ));
+    crate::checkpoint::check_save(root, &session).map_err(|error| {
+        anyhow::anyhow!(
+            "refused: session {active} cannot take another bug ({error:#}), and a bug added now would be left out of it; run `chough session new <key>` and add the bug there; nothing was written"
+        )
+    })
 }
 
 fn check_regression(evidence: &Evidence<'_>, root: &Path, bug: &Stored) -> Result<()> {
@@ -1452,8 +1479,9 @@ fn add(root: &Path, args: AddArgs) -> Result<Value> {
         source: args.source,
         notes,
     };
+    session_takes_a_bug(root)?;
     let (stored, redacted) = create(root, draft, false)?;
-    join_active_session(root, stored.id(), &stored.list("evidence"))?;
+    join_active_session(root, stored.id(), &stored.list("evidence"), true)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
@@ -1617,7 +1645,7 @@ fn update(root: &Path, args: UpdateArgs) -> Result<Value> {
     validate(&stored)?;
     let redacted = guard(&mut stored.record, Local::current())?;
     markdown::replace(root, &stored.path, &stored.record, Kind::Bug)?;
-    join_active_session(root, &id, &links)?;
+    join_active_session(root, &id, &links, false)?;
     let mut output = json!({
         "schema_version": 1,
         "recorded": stored.path,
@@ -1809,12 +1837,68 @@ pub(super) fn is_closed_status(status: &str) -> bool {
     CLOSED.contains(&status)
 }
 
-pub(super) fn open_blocking(root: &Path) -> Result<Vec<String>> {
-    Ok(read_all(root)?
+/// Open blocking bugs as one session meets them (REQ-cli-054).
+pub(super) struct SessionBlocking {
+    /// Bugs that stop this session leaving test.
+    pub(super) stops: Vec<String>,
+    /// Open blocking bugs that are not related to this session.
+    pub(super) warns: Vec<String>,
+}
+
+/// Whether `bug` is related to `session`: the session lists it, its evidence names
+/// that session, or they share a criterion, requirement, or case.
+fn related_to(session: &crate::checkpoint::Checkpoint, bug: &Stored) -> bool {
+    if session.bugs.iter().any(|id| bug.holds(id)) {
+        return true;
+    }
+    let id = session.meta.id.as_str();
+    if !id.is_empty() {
+        let prefix = format!("{id}/");
+        if bug
+            .list("evidence")
+            .iter()
+            .any(|link| link.starts_with(&prefix))
+        {
+            return true;
+        }
+    }
+    let references = &session.references;
+    for (key, held) in [
+        ("criteria", &references.criteria),
+        ("requirements", &references.requirements),
+        ("cases", &references.cases),
+    ] {
+        if bug
+            .list(key)
+            .iter()
+            .any(|item| held.iter().any(|have| have == item))
+        {
+            return true;
+        }
+    }
+    false
+}
+
+/// Every open bug with scope blocking, split by whether it stops `session`.
+/// A bug that names no criterion, requirement, case, or evidence, and is on no
+/// session's bugs list, is not related to this session, so it warns and does not stop.
+pub(super) fn open_blocking(
+    root: &Path,
+    session: &crate::checkpoint::Checkpoint,
+) -> Result<SessionBlocking> {
+    let mut stops = vec![];
+    let mut warns = vec![];
+    for bug in read_all(root)?
         .iter()
         .filter(|bug| bug.is_open() && bug.text("scope") == "blocking")
-        .map(|bug| bug.id().to_string())
-        .collect())
+    {
+        if related_to(session, bug) {
+            stops.push(bug.id().to_string());
+        } else {
+            warns.push(bug.id().to_string());
+        }
+    }
+    Ok(SessionBlocking { stops, warns })
 }
 
 pub(super) fn open_backlog_section(root: &Path, as_json: bool) -> Result<Section> {
@@ -2047,6 +2131,8 @@ fn legacy_bugs(root: &Path) -> Result<Vec<(String, Legacy)>> {
         .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_file()))
         .filter_map(|entry| entry.file_name().into_string().ok())
         .filter(|name| name.ends_with(".json"))
+        // macOS metadata beside a 0.5.x bug is not one (REQ-records-015).
+        .filter(|name| !crate::evidence::is_os_metadata(name))
         .collect();
     names.sort();
     let mut bugs = vec![];
@@ -2180,6 +2266,33 @@ fn migration_suffix(old: &str) -> String {
     format!("{:x}", Sha256::digest(old.as_bytes()))[..6].to_string()
 }
 
+/// How a migrated bug's body names a 0.5.x observation (#277): a Markdown link,
+/// relative to the bug's file in `.chough/bugs/`, to the open session's evidence entry
+/// or to the archived story that holds its receipt. A receipt only the bug itself holds
+/// is named and said to be the bug's own, and one carried nowhere keeps its bare ID,
+/// which resolves as `removed`.
+fn body_link(homes: &crate::migrate::ObservationHomes, id: &str) -> String {
+    let name = homes.name(id);
+    let held = homes.entries.get(id).or_else(|| homes.stories.get(id));
+    match held.and_then(|path| path.strip_prefix(".chough/")) {
+        Some(path) => format!("[{name}](../{path})"),
+        None if homes.receipts.contains_key(id) => format!("{name} (a receipt of this bug)"),
+        None => name,
+    }
+}
+
+/// Each of `ids` by [`body_link`], once, in order.
+fn body_links(homes: &crate::migrate::ObservationHomes, ids: &[String]) -> Vec<String> {
+    let mut links: Vec<String> = vec![];
+    for id in ids {
+        let link = body_link(homes, id);
+        if !links.contains(&link) {
+            links.push(link);
+        }
+    }
+    links
+}
+
 /// Migration hook 4 (REQ-records-009): each 0.5.x bug as the Markdown bug `bug add`
 /// writes, named by its creation date and title, its 0.5.x ID an alias. Every field,
 /// note and status change carries over with its original time. Each linked observation
@@ -2244,9 +2357,9 @@ pub(super) fn migrate_0_5(
             criteria: legacy.criteria.clone(),
             requirements: legacy.requirements.clone(),
             cases: legacy.cases.clone(),
-            // The Reported Log line keeps the IDs the report linked, as the notes' lines
-            // do; the front matter `evidence` is set below.
-            evidence: reported,
+            // The Reported Log line links what the report linked, as the notes' lines
+            // do (#277); the front matter `evidence` is set below.
+            evidence: body_links(homes, &reported),
             // t38n's round-4 F9: front matter names the carried entry or receipt, whose
             // alias keeps the 0.5.x ID.
             regression_baseline: legacy
@@ -2309,7 +2422,10 @@ pub(super) fn migrate_0_5(
             .map(|note| {
                 let mut text = note.text.clone();
                 if !note.observations.is_empty() {
-                    text.push_str(&format!("; evidence: {}", note.observations.join(", ")));
+                    text.push_str(&format!(
+                        "; evidence: {}",
+                        body_links(homes, &note.observations).join(", ")
+                    ));
                 }
                 log_line(note.at_unix_seconds, &text, None)
             })
@@ -3051,6 +3167,11 @@ mod tests {
         homes
             .receipts
             .insert("OBS-receipt".into(), receipt_map.clone());
+        // #277: the archived story that holds the receipt.
+        homes.stories.insert(
+            "OBS-receipt".into(),
+            ".chough/archive/sessions/2026-11-01-old-work.md".into(),
+        );
 
         assert_eq!(
             links_0_5(root).unwrap().get("BUG-0007"),
@@ -3170,7 +3291,9 @@ mod tests {
         assert_eq!(
             stored.log(),
             vec![
-                "- 2026-11-01T10:00:00Z · Reported (manual report); evidence: OBS-entry, OBS-receipt, OBS-gone",
+                // #277: each carried observation links the file that holds it, relative to
+                // the bug's own file; one that was removed keeps its bare 0.5.x ID.
+                "- 2026-11-01T10:00:00Z · Reported (manual report); evidence: [2026-11-01-entry](../sessions/2026-11-01-work/evidence/2026-11-01-entry.md), [2026-11-01-receipt](../archive/sessions/2026-11-01-old-work.md), OBS-gone",
                 "- 2026-11-01T10:01:40Z · status: open -> investigating. Seen again; evidence: OBS-later",
             ]
         );

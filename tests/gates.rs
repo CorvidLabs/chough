@@ -574,6 +574,27 @@ fn a_summary_with_no_base_says_so_instead_of_a_broken_diff_command() {
     assert!(diff.contains("unknown"), "{diff}");
 }
 
+/// REQ-cli-061, TC-cli-gate-summary-names-its-change-with-a-plain-dash (#278, #294): a
+/// gate's summary names its change as `Change: <id> - <title> (<state>)`, joined with a
+/// plain dash, and holds no em dash, in `chough gate list` and its JSON alike.
+#[test]
+fn a_gate_summary_names_its_change_with_a_plain_dash() {
+    let fixture = project(&[SCOPE]);
+    let line = format!("Change: {ID} - Free shipping at the threshold (approved)");
+    let listed = list(&fixture);
+    let summary = listed["gates"][0]["summary"].as_str().unwrap();
+    assert!(
+        summary.lines().any(|shown| shown == line),
+        "no `{line}` line:\n{summary}"
+    );
+    assert!(!summary.contains('\u{2014}'), "an em dash:\n{summary}");
+    let output = fixture.run(&["gate", "list"]);
+    assert!(output.status.success(), "{output:?}");
+    let text = String::from_utf8_lossy(&output.stdout);
+    assert!(text.contains(&line), "no `{line}` line:\n{text}");
+    assert!(!text.contains('\u{2014}'), "an em dash:\n{text}");
+}
+
 /// REQ-cli-061, TC-cli-gate-summary-shows-the-scope (t38j's fresh-eyes report): at a gate
 /// that drives approval, the summary counts and names the change's own Markdown files
 /// (its `change.md`, deltas and plan) first, since they are what the human approves,

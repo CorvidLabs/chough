@@ -41,6 +41,7 @@ use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 /// One 0.6.0 file the migration writes, create-new.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -161,6 +162,9 @@ pub(crate) type Receipt = Vec<(String, String)>;
 pub(crate) struct ObservationHomes {
     pub(crate) entries: BTreeMap<String, String>,
     pub(crate) receipts: BTreeMap<String, Receipt>,
+    /// The archived story (its path) that holds each observation carried as a receipt,
+    /// when a story does; a receipt only a bug holds has none (#277).
+    pub(crate) stories: BTreeMap<String, String>,
 }
 
 impl ObservationHomes {
@@ -281,7 +285,11 @@ pub(crate) fn legacy_paths(root: &Path) -> Result<Vec<String>> {
         };
         for entry in entries.flatten() {
             let name = entry.file_name().to_string_lossy().to_string();
-            if name.ends_with(".json") && entry.path().is_file() {
+            // macOS metadata beside a 0.5.x record is not one (REQ-records-015).
+            if name.ends_with(".json")
+                && !crate::evidence::is_os_metadata(&name)
+                && entry.path().is_file()
+            {
                 found.insert(format!("{folder}/{name}"));
             }
         }
@@ -308,12 +316,16 @@ fn accountable_paths(root: &Path) -> Result<Vec<String>> {
     Ok(found.into_iter().collect())
 }
 
-/// Every file under `relative`, as project-relative paths.
+/// Every file under `relative`, as project-relative paths, leaving out macOS metadata
+/// files and folders, which the migration neither carries nor removes (REQ-records-015).
 fn walk_files(root: &Path, relative: &str, found: &mut BTreeSet<String>) -> Result<()> {
     let Ok(entries) = std::fs::read_dir(local_path(root, relative)?) else {
         return Ok(());
     };
     for entry in entries.flatten() {
+        if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
+            continue;
+        }
         let name = format!("{relative}/{}", entry.file_name().to_string_lossy());
         let kind = entry.file_type()?;
         if kind.is_dir() {
@@ -359,6 +371,8 @@ struct Plan {
     kept: BTreeMap<String, String>,
     /// Every file the apply writes, text (redacted) and binary, by path.
     files: Vec<Planned>,
+    /// The receipt the apply writes, named when the plan is built (REQ-records-009).
+    receipt: String,
     redactions: Vec<Redaction>,
     follow_ups: Vec<String>,
 }
@@ -404,6 +418,7 @@ impl Plan {
             "sources": self.sources,
             "becomes": self.becomes(),
             "writes": written,
+            "receipt": self.receipt,
             "redactions": self.redactions,
             "removed": self.carried.removed,
             "kept": self.kept,
@@ -445,8 +460,7 @@ const NOTHING_TO_MIGRATE: &str =
     "no 0.5.x record is left, so there is nothing to migrate and no plan digest to apply";
 
 pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
-    let plan = plan(root)?;
-    let digest = plan.digest();
+    let (plan, digest) = plan_with_a_free_receipt(root)?;
     match args.apply {
         // REQ-records-009: on a tree with no 0.5.x record the preview says there is
         // nothing to migrate and gives no plan digest, as the apply there reports
@@ -472,6 +486,14 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
             // change is open, naming each. It stays outside the digest, which names only
             // the conversion.
             let open = open_native_changes(root)?;
+            if open.is_empty()
+                && let Some(refusal) = conflict_refusal(root, &plan)
+            {
+                view["apply_refused"] = json!({
+                    "refusal": "refused:conflict-markers",
+                    "why": refusal,
+                });
+            }
             if !open.is_empty() {
                 view["apply_refused"] = json!({
                     "refusal": "refused:change-open",
@@ -481,6 +503,12 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
                         open.join(", ")
                     ),
                 });
+            }
+            // #339: a plan the apply would refuse is not offered to apply, in JSON either.
+            if view["apply_refused"].is_object()
+                && let Some(fields) = view.as_object_mut()
+            {
+                fields.remove("apply");
             }
             // REQ-records-009 (F12b): a person consents to the plan, so it is text by
             // default, and the same plan and digest as JSON under --json.
@@ -493,6 +521,65 @@ pub(super) fn run(root: &Path, args: MigrateArgs) -> Result<()> {
         }
         Some(wanted) => apply(root, &plan, &digest, &wanted, args.consent.as_deref()),
     }
+}
+
+/// Each planned record that would hold a Git conflict marker, with the 0.5.x file it
+/// comes from, its line in the record and the marker (REQ-records-001, #339).
+fn planned_conflicts(root: &Path, plan: &Plan) -> Vec<(String, String, usize, String)> {
+    let mut found = vec![];
+    for written in &plan.files {
+        let Ok(text) = std::str::from_utf8(&written.bytes) else {
+            continue;
+        };
+        if !crate::records::holds_a_record(root, &written.path) {
+            continue;
+        }
+        if let Some((line, marker)) = crate::records::conflict_markers(text).into_iter().next() {
+            let source = plan
+                .carried
+                .becomes
+                .iter()
+                .find(|(_, targets)| targets.contains(&written.path))
+                .map_or_else(|| written.path.clone(), |(source, _)| source.clone());
+            found.push((source, written.path.clone(), line, marker));
+        }
+    }
+    found
+}
+
+/// The refusal `--apply` gives, and the preview names up front, while a planned record
+/// would hold a Git conflict marker: the 0.5.x file to resolve, not only the 0.6 target.
+fn conflict_refusal(root: &Path, plan: &Plan) -> Option<String> {
+    let conflicts = planned_conflicts(root, plan);
+    let (source, target, line, marker) = conflicts.first()?;
+    let more = match conflicts.len() {
+        1 => String::new(),
+        count => format!(" ({} more files hold one too)", count - 1),
+    };
+    Some(format!(
+        "refused:conflict-markers: {source} holds a Git conflict marker, which would migrate into {target} at line {line} (`{marker}`){more}; resolve the conflict in {source} by hand and commit it, then run `chough migrate` again; nothing was written"
+    ))
+}
+
+/// Build the plan under the first receipt name that is free for it (REQ-records-009,
+/// #264): `<date>-from-0-5.md`, then `<date>-from-0-5-2.md` and so on. A name is free
+/// when no file holds it, or when the receipt there is this plan's own, left by an
+/// interrupted apply. The name is part of the plan, so each candidate has its own
+/// digest, and the same tree always gives the same name and digest.
+fn plan_with_a_free_receipt(root: &Path) -> Result<(Plan, String)> {
+    for ordinal in 1..=RECEIPT_ORDINALS {
+        RECEIPT_ORDINAL.store(ordinal, Ordering::Relaxed);
+        let plan = plan(root)?;
+        let digest = plan.digest();
+        let taken = std::fs::read_to_string(local_path(root, &plan.receipt)?)
+            .is_ok_and(|existing| !existing.contains(&format!("plan_digest: {digest}")));
+        if !taken || plan.sources.is_empty() {
+            return Ok((plan, digest));
+        }
+    }
+    bail!(
+        "refused:receipt-names: {RECEIPT_ORDINALS} migration receipts already exist for today, so nothing was written. Run `chough migrate` again tomorrow (UTC)."
+    )
 }
 
 /// The preview as text, for the person who consents to it (REQ-records-009, F12b): the
@@ -631,10 +718,17 @@ fn preview_text(view: &Value) -> String {
         ));
     }
     out.push_str(&format!(
-        "\nPlan digest: {}\nApply this plan with the human's consent:\n  {}\n",
-        text(&view["plan_digest"]),
-        text(&view["apply"])
+        "\nReceipt: {}\nPlan digest: {}\n",
+        text(&view["receipt"]),
+        text(&view["plan_digest"])
     ));
+    // #339: a plan the apply would refuse is not offered to apply.
+    if !view["apply_refused"].is_object() {
+        out.push_str(&format!(
+            "Apply this plan with the human's consent:\n  {}\n",
+            text(&view["apply"])
+        ));
+    }
     out
 }
 
@@ -703,11 +797,17 @@ fn apply(
             .collect::<Vec<_>>()
             .join(", ")
     );
+    // REQ-records-001 (#265, #339): no record is written with a Git conflict marker in
+    // its body; every planned file is checked before any is written, so nothing is, and
+    // the refusal names the 0.5.x file to resolve.
+    if let Some(refusal) = conflict_refusal(root, plan) {
+        bail!("{refusal}");
+    }
     for written in &plan.files {
         let path = local_path(root, &written.path)?;
         if let Ok(existing) = std::fs::read(&path)
             && existing != written.bytes
-            && !collides_by_case(plan, &written.path)
+            && !is_a_planned_removal_by_case(root, plan, &written.path)?
         {
             bail!(
                 "refused:target-exists: {} already exists with other bytes, and the migration writes by create-new only, so nothing more was written.",
@@ -717,7 +817,16 @@ fn apply(
     }
     // The receipt is known before anything is written: one over its own bound refuses
     // here, writing nothing (REQ-records-001, REQ-records-009).
-    let receipt = receipt_path()?;
+    let receipt = plan.receipt.clone();
+    // Every target is checked before any write (#264): a receipt of that name for
+    // another plan, which only another writer could have put there since the plan was
+    // built, refuses here and not after the 0.6.0 files are written.
+    if let Ok(existing) = std::fs::read_to_string(local_path(root, &receipt)?) {
+        ensure!(
+            existing.contains(&format!("plan_digest: {digest}")),
+            "refused:target-exists: {receipt} already exists for another plan, so nothing was written.\nRun `chough migrate` to preview the current plan, then apply its digest."
+        );
+    }
     let receipt_text = receipt_record(plan, digest, &consent, &removals, root).map_err(|error| {
         anyhow::anyhow!(
             "refused:receipt-bound: the migration receipt would exceed its {} byte bound, so nothing was written: {error:#}",
@@ -878,6 +987,42 @@ fn collides_by_case(plan: &Plan, path: &str) -> bool {
         .any(|removed| removed != path && removed.eq_ignore_ascii_case(path))
 }
 
+/// Whether the file read at the planned `path` is a planned removal under its other
+/// spelling, so its other bytes are the 0.5.x file's and not a target in the way
+/// (REQ-records-009, #263). That holds only where the two names are one file: a
+/// removal that differs only in case still opens, and the folder does not list both
+/// names. On a case-sensitive file system `knowledge/index.md` beside
+/// `knowledge/INDEX.md` is a file of its own, and the apply refuses it before writing.
+fn is_a_planned_removal_by_case(root: &Path, plan: &Plan, path: &str) -> Result<bool> {
+    let target = local_path(root, path)?;
+    for removed in plan
+        .carried
+        .removed
+        .keys()
+        .chain(plan.carried.sources.iter())
+        .filter(|removed| *removed != path && removed.eq_ignore_ascii_case(path))
+    {
+        if one_file_by_case(&target, &local_path(root, removed)?) {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+/// Whether `target` and `removal`, two paths in one folder that differ only in case,
+/// name one file: `removal` opens, and the folder does not list both names.
+fn one_file_by_case(target: &Path, removal: &Path) -> bool {
+    let listed = |path: &Path| {
+        path.parent()
+            .zip(path.file_name())
+            .is_some_and(|(folder, name)| {
+                std::fs::read_dir(folder)
+                    .is_ok_and(|entries| entries.flatten().any(|entry| entry.file_name() == name))
+            })
+    };
+    removal.exists() && !(listed(target) && listed(removal))
+}
+
 /// Write one planned file by create-new, or count it done when it already holds the
 /// planned bytes, then read it back.
 fn write_planned(root: &Path, written: &Planned, written_now: &mut Vec<String>) -> Result<()> {
@@ -999,10 +1144,17 @@ fn is_valid(state: &str) -> bool {
     matches!(state, "authenticated-history" | "exact" | "valid")
 }
 
+/// Whether the folder at `path` holds nothing at all. macOS's rmdir deletes orphaned
+/// AppleDouble `._*` files in a folder it removes, so a folder is removed only when this
+/// holds, and the migration never removes macOS metadata (REQ-records-015).
+fn holds_nothing(path: &Path) -> bool {
+    std::fs::read_dir(path).is_ok_and(|mut entries| entries.next().is_none())
+}
+
 /// Remove each folder a removal left empty, from the removed file's own folder up to,
 /// never including, the project root: a session rolled into the vault leaves no empty
-/// `knowledge/attachments/<folder>/sessions/` behind. A folder that still holds anything
-/// stays.
+/// `knowledge/attachments/<folder>/sessions/` behind. A folder that still holds anything,
+/// macOS metadata included, stays.
 fn prune_emptied<'a>(root: &Path, removed: impl Iterator<Item = &'a str>) {
     for path in removed {
         let mut folder = Path::new(path).parent();
@@ -1010,7 +1162,7 @@ fn prune_emptied<'a>(root: &Path, removed: impl Iterator<Item = &'a str>) {
             let Ok(local) = local_path(root, &relative.to_string_lossy()) else {
                 break;
             };
-            if std::fs::remove_dir(local).is_err() {
+            if !holds_nothing(&local) || std::fs::remove_dir(local).is_err() {
                 break;
             }
             folder = relative.parent();
@@ -1023,12 +1175,19 @@ fn prune_empty_folders(root: &Path) -> Result<()> {
     fn prune(path: &std::path::Path) {
         if let Ok(entries) = std::fs::read_dir(path) {
             for entry in entries.flatten() {
+                // A macOS metadata folder is neither entered nor removed, so the folder
+                // that holds it stays too (REQ-records-015, #321 review).
+                if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
+                    continue;
+                }
                 if entry.path().is_dir() {
                     prune(&entry.path());
                 }
             }
         }
-        let _ = std::fs::remove_dir(path);
+        if holds_nothing(path) {
+            let _ = std::fs::remove_dir(path);
+        }
     }
     for folder in [
         ".chough/history",
@@ -1209,6 +1368,19 @@ fn plan(root: &Path) -> Result<Plan> {
     story_receipts(&mut carried, &homes, &observations)?;
     session_verified_links(&mut carried, &homes, &observations)?;
     observation_names(&mut carried, &homes, &observations)?;
+    // #277: a bug's body links a receipt to the archived story that holds it, the
+    // first in session order when several do.
+    let mut observations = observations;
+    for home in homes.values().filter(|home| home.archived) {
+        for id in &home.observations {
+            if observations.receipts.contains_key(id) {
+                observations
+                    .stories
+                    .entry(id.clone())
+                    .or_insert_with(|| format!(".chough/archive/sessions/{}.md", home.id));
+            }
+        }
+    }
     carried.absorb(bugs_0_5(root, &observations)?)?;
     // Knowledge runs last: its index.md is the one the tree has once every other
     // mapper's plan applies.
@@ -1295,6 +1467,7 @@ fn plan(root: &Path) -> Result<Plan> {
         carried,
         kept,
         files,
+        receipt: receipt_path()?,
         redactions,
         follow_ups,
     })
@@ -1376,11 +1549,24 @@ fn redact(local: &Local, written: &mut Written) -> Result<Vec<Redaction>> {
 /// The migration receipt's path, fixed when the plan is built: an apply on another UTC
 /// day rebuilds a plan with another digest and asks for a fresh preview.
 pub(crate) fn receipt_path() -> Result<String> {
+    let suffix = match RECEIPT_ORDINAL.load(Ordering::Relaxed) {
+        0 | 1 => String::new(),
+        ordinal => format!("-{ordinal}"),
+    };
     Ok(format!(
-        ".chough/archive/migrations/{}-from-0-5.md",
+        ".chough/archive/migrations/{}-from-0-5{suffix}.md",
         crate::identity::utc_date(crate::records::now()?)
     ))
 }
+
+/// Which same-day receipt name the plan being built uses: 1 is `<date>-from-0-5.md`,
+/// and 2 and later add `-<n>` (REQ-records-009, #264). Set by
+/// [`plan_with_a_free_receipt`] before each build, and read by everything that names
+/// the receipt, so the plan, its digest and the receipt agree.
+static RECEIPT_ORDINAL: AtomicU32 = AtomicU32::new(1);
+
+/// How many receipts one UTC day can hold.
+const RECEIPT_ORDINALS: u32 = 99;
 
 /// A deterministic six-hex-digit suffix or entry ID from `seed`, so the plan an apply
 /// rebuilds has the previewed digest (REQ-records-009).
@@ -1493,6 +1679,7 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
             .flatten()
             .filter(|entry| entry.path().join("sessions").is_dir())
             .filter_map(|entry| entry.file_name().into_string().ok())
+            .filter(|folder| !crate::evidence::is_os_metadata(folder))
             .map(|folder| format!("{attachments}/{folder}/sessions"))
             .collect();
         rolled.sort();
@@ -1507,6 +1694,7 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
                     .filter(|entry| entry.path().is_file())
                     .filter_map(|entry| entry.file_name().into_string().ok())
                     .filter(|name| name.ends_with(".json"))
+                    .filter(|name| !crate::evidence::is_os_metadata(name))
                     .collect()
             })
             .unwrap_or_default();
@@ -1638,6 +1826,7 @@ fn sessions_0_5(root: &Path) -> Result<(Carried, BTreeMap<String, SessionHome>)>
                     .flatten()
                     .filter_map(|entry| entry.file_name().into_string().ok())
                     .filter(|name| name.ends_with(".json"))
+                    .filter(|name| !crate::evidence::is_os_metadata(name))
                     .collect()
             })
             .unwrap_or_default();
@@ -2095,6 +2284,7 @@ mod tests {
         let homes = ObservationHomes {
             entries: BTreeMap::from([("OBS-entry".into(), "elsewhere".into())]),
             receipts: BTreeMap::from([("OBS-carried".into(), carried_map.clone())]),
+            stories: BTreeMap::new(),
         };
         story_receipts(&mut carried, &sessions, &homes).unwrap();
         let written = carried
@@ -2186,5 +2376,25 @@ mod tests {
         let mut two = Carried::default();
         two.written.push(file);
         assert!(one.absorb(two).is_err());
+    }
+
+    /// REQ-records-009 (#263): two names that differ only in case are one file only
+    /// where the file system says so. A folder that lists both holds two files, and a
+    /// target whose other spelling no longer opens stands alone.
+    #[test]
+    fn two_names_differing_only_in_case_are_one_file_only_when_the_folder_lists_one() {
+        let root = tempfile::tempdir().unwrap();
+        let old = root.path().join("INDEX.md");
+        let new = root.path().join("index.md");
+        std::fs::write(&old, "old").unwrap();
+        if new.exists() {
+            // A case-insensitive file system: one file under either spelling.
+            assert!(one_file_by_case(&new, &old));
+            return;
+        }
+        std::fs::write(&new, "other bytes").unwrap();
+        assert!(!one_file_by_case(&new, &old), "the folder lists both names");
+        std::fs::remove_file(&old).unwrap();
+        assert!(!one_file_by_case(&new, &old), "the other spelling is gone");
     }
 }

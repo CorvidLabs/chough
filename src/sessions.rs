@@ -249,9 +249,12 @@ pub(super) fn open_ids(root: &Path) -> Result<Vec<String>> {
         let Some(id) = entry.file_name().to_str().map(str::to_string) else {
             continue;
         };
+        // A `session.md` that is not a regular file, such as a FIFO, still makes the
+        // folder a session: one that cannot be read, which `session list` reports with
+        // the reason and the recovery instead of dropping it (REQ-history-006, #262).
         if entry.file_type()?.is_dir()
             && valid_change_id(&id)
-            && local_path(root, &session_file(&id))?.is_file()
+            && local_path(root, &session_file(&id))?.exists()
             && !local_path(root, &archive_file(&id))?.exists()
         {
             ids.push(id);
@@ -411,7 +414,9 @@ fn active(root: &Path) -> Result<String> {
                 "the active session {id} is archived; run `chough session use <id>` or `chough session new <key>`"
             );
         }
-        if local_path(root, &session_file(&id))?.is_file() {
+        // A record that is there but is not a regular file is a session that cannot be
+        // read, not a missing one: its reader refuses it with the recovery (#262).
+        if local_path(root, &session_file(&id))?.exists() {
             return Ok(id);
         }
         bail!(
@@ -886,6 +891,20 @@ fn archive(root: &Path, id: &str, session: &Checkpoint, outcome: &str) -> Result
     let mut linked = session.clone();
     linked.evidence_links = checkpoint::evidence_links(root, &linked);
     let mut record = checkpoint::render_checkpoint(&linked)?;
+    // REQ-history-006 (#344): when the objective changed after the Goal was filled, the
+    // story says so in one line after the Goal paragraph; nothing is rewritten.
+    let objective = session
+        .objective
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let goal = crate::journal::first_paragraph(&record, crate::session_md::GOAL);
+    if !objective.is_empty() && goal != objective {
+        record.append_to_section(
+            crate::session_md::GOAL,
+            &format!("\nObjective at closeout: {objective}\n"),
+        )?;
+    }
     // REQ-history-006 (Kimi 6): the story is archived, and the session's next action no
     // longer applies.
     record.set_scalar("stage_status", ARCHIVED_STATUS)?;
@@ -1046,8 +1065,9 @@ fn story_verified_lines(
 }
 
 /// A receipt's What was verified line (REQ-history-006): its claim, or its ID without
-/// one; after one ` — `, its command unless the claim already holds it and the first 12
-/// digits of its fingerprint, when it has them; a link to `screenshot`, its key
+/// one; after one ` - `, its command unless the claim already holds it and the first 12
+/// digits of its fingerprint, when it has them; `; limits: ` and its limitations, when
+/// it has any; a link to `screenshot`, its key
 /// screenshot beside the story, when given; ending `^<evidence id>`. A story at
 /// archiving and the migration write the same line (REQ-records-009). None for a
 /// receipt with no ID.
@@ -1079,12 +1099,24 @@ pub(super) fn receipt_line(
     }
     let mut line = claim;
     if !parts.is_empty() {
-        line.push_str(&format!(" — {}", parts.join(" ")));
+        line.push_str(&format!(" - {}", parts.join(" ")));
+    }
+    // REQ-history-006 (#349): the entry's stated limits, beside its claim.
+    if let Some(limitations) = get("limitations") {
+        line.push_str(&format!("; limits: {limitations}"));
     }
     if let Some(link) = screenshot {
         line.push_str(&format!(" [screenshot]({link})"));
     }
     line.push_str(&format!(" ^{entry}"));
+    // One line, whatever line breaks a claim or a limitation holds: a second line
+    // would read as another item, or as a heading, of the story (#349).
+    let line = line
+        .split(['\n', '\r'])
+        .map(str::trim)
+        .filter(|part| !part.is_empty())
+        .collect::<Vec<_>>()
+        .join(" ");
     Some(line)
 }
 
@@ -1273,7 +1305,8 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
     session.decisions.push(decision);
     checkpoint::validate_v2(&session)?;
     let report = archive(root, &id, &session, "closed-without-done")?;
-    // REQ-records-011: the closed session's journal post, then the index and feed.
+    // REQ-records-011: the closed session's journal post; the librarian refreshes the
+    // vault at release, not here.
     let post = crate::journal::post_for_close(root, &id);
     let index = crate::library::refresh_at_done(root);
     Ok(json!({
@@ -1291,13 +1324,15 @@ pub(super) fn close_session(root: &Path, key: &str, reason: &str) -> Result<serd
 /// The name of the note shelving writes inside the shelved folder (REQ-history-006).
 const SHELVED_NOTE: &str = "shelved.md";
 
-/// One entry of a shelved folder: a file's size and SHA-256, or a symbolic link, which is
-/// listed and not followed.
-type ShelvedFile = (String, Option<(u64, String)>);
+/// One entry of a shelved folder: a file's size and SHA-256, or what else it is: a
+/// symbolic link, which is listed and not followed, or another non-regular file, such
+/// as a FIFO, which is listed and not read (#262).
+type ShelvedFile = (String, Result<(u64, String), &'static str>);
 
 /// Every file under `dir`, folder-relative and sorted (REQ-history-006).
 fn shelved_files(dir: &Path, relative: &str, out: &mut Vec<ShelvedFile>) -> Result<()> {
     use sha2::{Digest, Sha256};
+    use std::io::Read as _;
     let mut entries: Vec<fs::DirEntry> = fs::read_dir(dir)?.collect::<Result<_, _>>()?;
     entries.sort_by_key(fs::DirEntry::file_name);
     for entry in entries {
@@ -1311,11 +1346,18 @@ fn shelved_files(dir: &Path, relative: &str, out: &mut Vec<ShelvedFile>) -> Resu
         if kind.is_dir() {
             shelved_files(&entry.path(), &path, out)?;
         } else if kind.is_file() {
-            let bytes = fs::read(entry.path()).with_context(|| format!("reading {path}"))?;
+            // Through the non-blocking open: the entry may have changed since it was
+            // listed (#262, review of #305).
+            let mut bytes = vec![];
+            crate::records::open_regular(&entry.path())
+                .and_then(|mut file| Ok(file.read_to_end(&mut bytes)?))
+                .with_context(|| format!("reading {path}"))?;
             let sha256 = format!("{:x}", Sha256::digest(&bytes));
-            out.push((path, Some((bytes.len() as u64, sha256))));
+            out.push((path, Ok((bytes.len() as u64, sha256))));
+        } else if kind.is_symlink() {
+            out.push((path, Err("a symbolic link, not followed")));
         } else {
-            out.push((path, None));
+            out.push((path, Err("not a regular file, not read")));
         }
     }
     Ok(())
@@ -1340,7 +1382,15 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
         !from.join(SHELVED_NOTE).exists(),
         "{source}/{SHELVED_NOTE} would become {note}, which shelving writes; it never replaces a file, so nothing was moved"
     );
-    let session_bytes = fs::read(from.join("session.md")).unwrap_or_default();
+    // Never block on a `session.md` that is not a regular file, such as a FIFO (#262).
+    use std::io::Read as _;
+    let session_path = from.join("session.md");
+    let mut session_bytes = vec![];
+    if let Ok(mut file) = crate::records::open_regular(&session_path)
+        && file.read_to_end(&mut session_bytes).is_err()
+    {
+        session_bytes.clear();
+    }
     let readable = session_bytes.len() as u64 <= checkpoint::SESSION_LIMIT
         && String::from_utf8(session_bytes.clone())
             .ok()
@@ -1360,15 +1410,15 @@ fn shelve(root: &Path, key: &str) -> Result<()> {
     shelved_files(&from, "", &mut files)?;
     let total: u64 = files
         .iter()
-        .filter_map(|(_, file)| Some(file.as_ref()?.0))
+        .filter_map(|(_, file)| Some(file.as_ref().ok()?.0))
         .sum();
     let mut body = format!(
         "# Shelved session {key}\n\nMoved unparsed and byte for byte from `{source}`: {reason}. No reader scans this folder.\n\n## Files\n\n"
     );
     for (path, file) in &files {
         match file {
-            Some((size, sha256)) => body.push_str(&format!("- `{path}` {size} bytes {sha256}\n")),
-            None => body.push_str(&format!("- `{path}` a symbolic link, not followed\n")),
+            Ok((size, sha256)) => body.push_str(&format!("- `{path}` {size} bytes {sha256}\n")),
+            Err(kind) => body.push_str(&format!("- `{path}` {kind}\n")),
         }
     }
     let mut record = crate::markdown::Record::new(&body);

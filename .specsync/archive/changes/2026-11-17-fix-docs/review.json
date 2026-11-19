@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-docs",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "1a69bc45f8618114597c89a8ea76908d2febe01a",
+  "contract_digest": "53eca328ef6947271c516ea6a2b628f80ef50dd5983679b0d76e6ab9d988ae8a",
+  "execution_digest": "009a19d6ca380acc9b3969a3b12ca559f487e0657676fababf29c92506c7bb08",
+  "workspace_digest": "8c0dfd8e46af340d2109b2ab7d65dcd36d4a08f17577eb455e3083f37b008a74",
+  "timestamp": 1794925411,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Ship it, then merge when CI is green (Recommended)",
+    "where": "Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w",
+    "recorded_by": "grok-t1w"
+  }
+}

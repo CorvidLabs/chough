@@ -14,7 +14,7 @@ flowchart TB
     design -->|"advance, or skip with a reason when nothing is visual"| plan["plan: native change, one scope approval"]
     plan -->|"gate: native definition approved"| build["build: approved tasks"]
     build -->|"gate: native approval valid or archived"| test["test: focused cases, three tracks"]
-    test -->|"gate: no open blocking bug or unlinked failure; native approval valid or archived"| accept["accept: evidence for human review"]
+    test -->|"gate: no blocking bug related to this session, or unlinked failure; native approval valid or archived"| accept["accept: evidence for human review"]
     accept -->|"gate: native change archived, terminal evidence authenticates"| done["done"]
     done -. "only on request or standing setting" .-> release["release: optional, real commands"]
     release -->|"same archive gate"| done
@@ -45,8 +45,10 @@ the focused next action but executes nothing; there is no unattended runner.
 Routine build, test and stage movement inside an approved scope is the agent's work
 under the recorded authorization, not a new permission question per tool call. Of
 the `chough change` wrappers, `new`, `answer`, `check` and `status` pass SpecSync's
-output through unchanged and write nothing under `.chough/`; only `ship` also
-closes the review gate and moves the session to done.
+output through unchanged and write no Chough record. `new`, `answer` and `check` leave
+only the untracked direct-write baseline `.chough/local/native-writes/<id>.json`;
+`status` writes nothing. Only `ship` also closes the review gate and moves the session
+to done.
 
 Human decisions sit at natural points, not at every step: the intent as a whole,
 the rendered design with its companion, one native scope approval, and the
@@ -75,7 +77,7 @@ flowchart TB
     human -->|"changes requested"| build["Back to build"]
     build --> tests
     human -->|"approved"| ship["chough change ship --close-gate: SpecSync review as the human, then ship and finalize (same PR), then done"]
-    ship --> story["Commit the archived story, journal post and index"]
+    ship --> story["Commit the archived story and journal post"]
     story --> cleanup["chough doctor --fix removes the committed session folder; commit"]
     cleanup --> push["Push; hosted CI at the archived tip"]
     push --> merge["Merge through the normal process"]
@@ -89,26 +91,32 @@ Cases may link requirements the approved delta adds before materialization while
 checkpoint records that change.
 
 The order before the review is: when the delta adds or modifies requirements, run
-`specsync change check <id>` first to materialize them; `chough cases run`; open the
-review gate with `chough checkpoint --awaiting-human "Implementation review of <id>"`,
-which holds accept and drives the native review by default; commit the source
-together with `.chough/`; `chough change check <id>` (SpecSync's `change check <id>
---commit`); present the work. When the human decides,
-`chough change ship <id> --close-gate "<gate>" --decided-by "<who>" --words "<their
-words>" --where "<where>" --recorded-by "<agent>-<terminal>"` does four things in
-order:
-1. records SpecSync's review in their name, from the configured identity;
+`chough change check <id> --no-commit` first (SpecSync's check without `--commit`) to
+materialize them; `chough cases run`; open the review gate with
+`chough checkpoint --awaiting-human "Implementation review of <id>"`, which holds
+accept and drives the native review by default; commit the source together with
+`.chough/`; `chough change check <id>` (SpecSync's `change check <id> --commit`);
+present the work. When the human decides, `chough change ship <id> --close-gate
+"<gate>" --decided-by "<who>" --words "<their words>" --where "<where>"
+--recorded-by "<agent>-<terminal>"` does four things in order:
+1. when the gate drives review and SpecSync reports no current scoped review, records
+   SpecSync's review in their name with verdict pass, from the configured identity;
+   otherwise no review runs;
 2. ships (SpecSync's `ship`, which finalizes);
 3. closes the review gate with the human's relayed decision;
 4. moves the session to done.
 
-A request for changes is recorded with `chough checkpoint --close-gate "<gate>" ...
---no-native`, which runs nothing, and the work goes back to build.
+A request for changes on a review-driving gate is recorded with
+`chough checkpoint --close-gate "<gate>" ... --verdict block`, which records SpecSync's
+review as that human with verdict block, and the work goes back to build. `--no-native`
+is only for a decision that is neither an approval nor a review; it runs nothing.
 
 The move into done archives the session into one story,
-`.chough/archive/sessions/<id>.md`, writes a journal post and regenerates `knowledge/`.
-Commit those. Then run `chough doctor --fix`, which removes the session folder now that
-its bytes are committed, and commit that. The closeout is archive-first: the hosted
+`.chough/archive/sessions/<id>.md`, and, when the librarian is on, writes a journal
+post. The generated knowledge directory is refreshed at release, not here. Commit the
+story and the post, if one was written.
+Then run `chough doctor --fix`, which removes the session folder now that its bytes are
+committed, and commit that. The closeout is archive-first: the hosted
 Archive gate refuses while a native change is open. So only after finalize and these
 two commits do you push and observe hosted CI at the archived tip (#122). A push before
 the review only shows the work early: expect the Archive gate red and do not wait on
@@ -143,8 +151,11 @@ that was done. Build needs a valid definition approval, and test and accept need
 approval or such an archive. Unknown or unavailable native state, an invalid approval
 and an invalid SDD policy refuse these moves, and so does SpecSync configured with SDD
 enabled but no native change recorded in the checkpoint (`refused:no-native-change`;
-record it with `chough checkpoint --native-change <id>`). No SpecSync configuration or
-a valid disabled policy leaves them ungated.
+record it with `chough checkpoint --native-change <id>`). An invalid native correction
+(`refused:native-correction-invalid`) and an approved delta that changed after approval
+or cannot be compared (`refused:native-delta-changed`,
+`refused:native-delta-unverifiable`) also refuse build, test and accept. No SpecSync
+configuration or a valid disabled policy leaves them ungated.
 
 ## Release, monitoring and learning
 
@@ -158,7 +169,7 @@ source, scope and future use.
 ## Adoption in this repository
 
 The bootstrap used native structural checks with SDD disabled and claimed no
-approval. Chough then adopted the workflow-v2 lifecycle (commit c582a10). The first
+approval. Chough then adopted the workflow-v2 lifecycle (PR #2, squash-merged as `4008346`). The first
 fully native change, `evolve-chough-into-a-resumable-stage-workflow`, was approved by
 the human before implementation, reviewed by the human at acceptance and archived on
 2026-10-31; later changes are archived the same way in `.specsync/archive/changes/`.

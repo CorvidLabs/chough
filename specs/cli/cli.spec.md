@@ -1,6 +1,6 @@
 ---
 module: cli
-version: 99
+version: 119
 status: active
 files:
   - src/main.rs
@@ -379,5 +379,25 @@ provider, runtime or hosted service.
 | 95 | 2026-11-13 | 219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a: #219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune |
 | 96 | 2026-11-14 | fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes: Fix #245: chough library index links no source Git ignores, so a fresh clone's index check passes |
 | 97 | 2026-11-14 | fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag: Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag |
-| 98 | 2026-11-14 | readiness-report-before-change-approval: Readiness report before change approval |
-| 99 | 2026-11-18 | fix-307: Fix 307 |
+| 98 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
+| 99 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
+| 100 | 2026-11-15 | clarify-req-cli-001-init-preserves-bytes-acceptance: Clarify REQ-cli-001 init-preserves-bytes acceptance |
+| 101 | 2026-11-18 | a-blocking-bug-stops-only-a-session-it-is-related-to: A blocking bug stops only a session it is related to |
+| 102 | 2026-11-18 | fix-314: Fix 314 |
+| 103 | 2026-11-18 | fix-271: Fix 271 |
+| 104 | 2026-11-18 | fix-266: Fix 266 |
+| 105 | 2026-11-18 | fix-320: Fix 320 |
+| 106 | 2026-11-18 | fix-265: Fix 265 |
+| 107 | 2026-11-18 | fix-286: Fix 286 |
+| 108 | 2026-11-18 | fix-281: Fix 281 |
+| 109 | 2026-11-18 | fix-250: Fix 250 |
+| 110 | 2026-11-18 | fix-298: Fix 298 |
+| 111 | 2026-11-18 | fix-329: Fix 329 |
+| 112 | 2026-11-18 | fix-282: Fix 282 |
+| 113 | 2026-11-18 | fix-334: Fix 334 |
+| 114 | 2026-11-18 | fix-251: Fix 251 |
+| 115 | 2026-11-19 | fix-349: Fix 349 |
+| 116 | 2026-11-18 | fix-351: Fix 351 |
+| 117 | 2026-11-18 | fix-339: Fix 339 |
+| 118 | 2026-11-14 | readiness-report-before-change-approval: Readiness report before change approval |
+| 119 | 2026-11-18 | fix-307: Fix 307 |

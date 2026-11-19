@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-269-post",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "933aad92dfef6546612f7306dcaf229a6e1bc19d",
+  "contract_digest": "b4bfc2008eff44c3fda76f9707997ec4973f59252e5f8ab61226ed632b1c7dbc",
+  "execution_digest": "df4d12b7e4ff1a8078909768c6937e8eb6bc4039249a1a38247227d204e6e001",
+  "workspace_digest": "57c50f443d6132d8eb012fa6593c4803b25b25d10281a0bedede41f0631831c4",
+  "timestamp": 1795046881,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve, merge when green",
+    "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc fixer), 2026-11-18, his implementation review of #344 for both fix-269 and fix-269-post after the tester's recheck PASS at 551f136",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}

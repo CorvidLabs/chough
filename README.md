@@ -252,12 +252,12 @@ without SpecSync configured, or with SDD disabled, is not gated.
 | `evidence add` | Record an observation as an entry of the active session, with its revision, inputs, environment and artifacts, and optionally a key screenshot or a manual failure's key failing lines; freshness compares content, not the revision |
 | `bug add/update/search/list/show/report/merge` | Local-first backlog of Markdown bugs with an append-only Log; old IDs still resolve; report candidates are never posted; `merge` is the Git merge driver for bug records |
 | `pref`, `consent`, `validate` | Standing preferences versus run-only consent; optional repeated runs |
-| `library init/index/merge` | Project librarian, on by default in `knowledge/`: `index.md` and the journal feed, regenerated from their sources; `index --check` fails when they drift; `merge` is their Git merge driver |
+| `library init/index/merge` | Project librarian, on by default in `knowledge/`: `index.md` and the journal feed, regenerated from their sources; `index --check` fails when they are missing or wrong, and the release task runs the rebuild before the check; `merge` is their Git merge driver |
 | `journal add` | Write one short dated post in `knowledge/journal/` that links the records; the move into done and `session close` write one too |
 | `timing` | Read-only report of how long stages, tests, bug fixes and human gates took, as elapsed wall-clock time with history ranges that are estimates, not targets |
 
-This table documents 0.6.0, which is not released yet. Every command writes
-0.6.0 records, which the released 0.5.0 binary cannot read.
+This table documents 0.6.1. Every command writes records in the format 0.6.0
+introduced, which a Chough 0.5.x binary cannot read.
 
 ## Record identities and compatibility
 
@@ -289,7 +289,7 @@ from 6.0.
 |---|---|
 | Hosted CI: Ubuntu, macOS | `cargo test` and a release build |
 | Hosted CI: Ubuntu, Rust 1.88.0 | `cargo test` with the minimum Rust version |
-| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (tool versions against the CI pins, format, lint, tests, HI and SpecSync checks, change audit, case definitions, the knowledge index check, the leak scan, the feature and bug exercise, build); the native archive check and its fixtures |
+| Hosted CI: Ubuntu | An archive gate that runs first and blocks every other job while a SpecSync change is open; the Fledge `verify` lane (tool versions against the CI pins, format, lint, tests, HI and SpecSync checks, change audit, case definitions, the leak scan, the feature and bug exercise, build); the native archive check and its fixtures |
 | Local: macOS arm64 | Development, the exercises and lifecycle records |
 
 On Windows, install Rust, Chough, HI, SpecSync and Fledge inside Ubuntu on WSL 2, and

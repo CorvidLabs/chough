@@ -799,18 +799,38 @@ fn changed_files(root: &Path, base: &str) -> Result<BTreeSet<String>> {
     if base.is_empty() {
         return Err(anyhow!("the change records no base commit"));
     }
-    let diff = git(root, &["diff", "--name-only", "-z", "--no-renames", base])?;
-    if !diff.status.success() {
-        let detail = String::from_utf8_lossy(&diff.stderr);
-        return Err(anyhow!(detail.trim().to_string()));
-    }
-    let untracked = git(root, &["ls-files", "-z", "--others", "--exclude-standard"])?;
-    if !untracked.status.success() {
-        let detail = String::from_utf8_lossy(&untracked.stderr);
-        return Err(anyhow!(detail.trim().to_string()));
-    }
-    let mut files = names(&diff.stdout);
-    files.extend(names(&untracked.stdout));
+    let run = |args: &[&str]| -> Result<BTreeSet<String>> {
+        let output = git(root, args)?;
+        if !output.status.success() {
+            let detail = String::from_utf8_lossy(&output.stderr);
+            return Err(anyhow!(detail.trim().to_string()));
+        }
+        Ok(names(&output.stdout))
+    };
+    // What differs from the base now, committed or not.
+    let differs = run(&["diff", "--name-only", "-z", "--no-renames", base])?;
+    // #363: only the change's own work counts. A file that a merge from another branch
+    // brought in differs from the base too, but no commit of this branch's own line
+    // touched it, so it is left out; a file changed and not committed yet is the
+    // change's own.
+    let range = format!("{base}..HEAD");
+    let own = run(&[
+        "log",
+        "--first-parent",
+        "--no-merges",
+        "--name-only",
+        "--no-renames",
+        "-z",
+        "--format=",
+        &range,
+    ])?;
+    let uncommitted = run(&["diff", "--name-only", "-z", "--no-renames", "HEAD"])?;
+    let untracked = run(&["ls-files", "-z", "--others", "--exclude-standard"])?;
+    let mut files: BTreeSet<String> = differs
+        .into_iter()
+        .filter(|path| own.contains(path) || uncommitted.contains(path))
+        .collect();
+    files.extend(untracked);
     Ok(files)
 }
 

@@ -177,6 +177,12 @@ pub(super) fn authorized(root: &Path, session: &Checkpoint, key: &str) -> Result
 }
 
 pub(super) fn pref(root: &Path, command: PrefCommand) -> Result<()> {
+    // REQ-cli-040, REQ-cli-069 (#330 review): `.chough/preferences.json` is a committed
+    // record, so a write takes the writer lock before it reads, and refuses while a path
+    // under `.chough/` is unmerged, as every other writer does; `show` only reads.
+    if !matches!(command, PrefCommand::Show) {
+        crate::sessions::lock_project(root)?;
+    }
     let mut preferences = read_preferences(root)?;
     match command {
         PrefCommand::Show => {}

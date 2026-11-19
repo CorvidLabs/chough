@@ -24,16 +24,16 @@ changes. Changes archived before the journal began are in [.specsync/archive/cha
 
 Newest posts:
 
-- [Fix #249: a relayed decision reaches SpecSync's approval and review…](journal/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and.md) (2026-11-14, shipped)
-- [The leak check reads an scp-style host path](journal/2026-11-14-the-leak-check-reads-an-scp-style-host-path.md) (2026-11-14, shipped)
-- [#217: fledge run flake-window computes Chough's two-week clean…](journal/2026-11-14-217-fledge-run-flake-window-computes-chough-s-two-week-clean.md) (2026-11-14, shipped)
-- [#219: integrations/ ships versioned example hc templates for Claude Code](journal/2026-11-14-219-integrations-ships-versioned-example-hc-templates-for.md) (2026-11-14, shipped)
-- [Fix #245: the index links no source Git ignores](journal/2026-11-14-fix-245-the-index-links-no-source-git-ignores.md) (2026-11-14, shipped)
-- [Give agents, local models included](journal/2026-11-14-give-agents-local-models-included.md) (2026-11-14, shipped)
-- [#217: CI also runs once a day on main](journal/2026-11-13-217-ci-also-runs-once-a-day-on-main.md) (2026-11-13, shipped)
-- [#217: seed the flake tracker](journal/2026-11-13-217-seed-the-flake-tracker.md) (2026-11-13, shipped)
-- [0.6.1: record polish: a bug's Actual line, migrated names, a fresh guide](journal/2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-migrated-names-a-fresh.md) (2026-11-13, shipped)
-- [Host-matrix harness](journal/2026-11-13-host-matrix-harness.md) (2026-11-13, shipped)
+- [Chough 0.6.1 release preparation](journal/2026-11-18-chough-0-6-1-release-preparation.md) (2026-11-18, shipped)
+- [A test asserts the gate summary's Change line separator](journal/2026-11-18-a-test-asserts-the-gate-summary-s-change-line-separator.md) (2026-11-18, shipped)
+- [evidence add, cases run and cases record re-read session.md under…](journal/2026-11-18-evidence-add-cases-run-and-cases-record-re-read-session-md.md) (2026-11-18, shipped)
+- [The feature-bug-loop example stops at a refused chough or SpecSync…](journal/2026-11-18-the-feature-bug-loop-example-stops-at-a-refused-chough-or.md) (2026-11-18, shipped)
+- [Revert #306's new-record writer for 0.6.1](journal/2026-11-18-revert-306-s-new-record-writer-for-0-6-1.md) (2026-11-18, shipped)
+- [checkpoint --file and --design values pass the write-time leak guard](journal/2026-11-18-checkpoint-file-and-design-values-pass-the-write-time-leak.md) (2026-11-18, shipped)
+- [A slug with -sk- is not a model-provider key again](journal/2026-11-18-a-slug-with-sk-is-not-a-model-provider-key-again.md) (2026-11-18, shipped)
+- [A new record whose write fails is not left behind](journal/2026-11-18-a-new-record-whose-write-fails-is-not-left-behind.md) (2026-11-18, shipped)
+- [A FIFO swapped in at the open blocks no reader](journal/2026-11-18-a-fifo-swapped-in-at-the-open-blocks-no-reader.md) (2026-11-18, shipped)
+- [journal add holds the writer lock with no .chough directory](journal/2026-11-18-journal-add-holds-the-writer-lock-with-no-chough-directory.md) (2026-11-18, shipped)
 
 ## Where things live
 
@@ -80,9 +80,9 @@ Lessons that span projects:
 
 Lesson bundles of the newest 3 archived changes:
 
-- [fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag](../.specsync/archive/changes/2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag/lesson-bundle.md), Fix #249: a relayed decision reaches SpecSync's approval and review records, each value joined to its flag
-- [217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read](../.specsync/archive/changes/2026-11-14-217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read/lesson-bundle.md), #217 bar 2: fledge run flake-window computes the two-week clean window from CI history, flake issues and bug records, read-only, as a receipt with a clean, running or blocked verdict
-- [219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a](../.specsync/archive/changes/2026-11-14-219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a/lesson-bundle.md), #219 LIFE-24: integrations/ ships versioned example hc templates for Claude Code, Codex, Kimi, Grok and a local agent, a manifest with each template's version and digest, and a README; Chough never runs hc, Herdr or Rune
+- [release-0-6-1](../.specsync/archive/changes/2026-11-18-release-0-6-1/lesson-bundle.md), Release 0 6 1
+- [fix-294](../.specsync/archive/changes/2026-11-18-fix-294/lesson-bundle.md), Fix 294
+- [fix-317](../.specsync/archive/changes/2026-11-18-fix-317/lesson-bundle.md), Fix 317
 
 ## Snapshots and briefs
 

@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "clarify-req-cli-001-init-preserves-bytes-acceptance",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "ba30b7d713b9b331bf7e2e2362a531e1aa59c56a",
+  "contract_digest": "0beba74cefba630f8bb35dfb58209ea5dced50f69e2b40f83109a996be6e2e7c",
+  "execution_digest": "b2955e2e6d83cb15a2735bcf74bbb581005271310f0991683e6c78c5cb73f5a8",
+  "workspace_digest": "87d10ddf49115edb6ab39da3646c8bb8ce1c25a26169b54f3f12ac47e875059c",
+  "timestamp": 1794714769,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "I approve",
+    "where": "chat, 2026-11-15 (this session)",
+    "recorded_by": "pi-agent"
+  }
+}

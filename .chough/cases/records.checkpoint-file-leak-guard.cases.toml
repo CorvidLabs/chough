@@ -1,0 +1,59 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #268: a token in a `chough checkpoint --file` or `--design` path passed the
+# write guard and was committed to session.md's files list; only doctor found it later.
+
+[[case]]
+id = "TC-records-a-file-or-design-path-passes-the-leak-guard"
+title = "A token in a checkpoint --file or --design path refuses the write as refused:leak naming the field with every file unchanged, --redact stores the path redacted, and a clean path is saved"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/checkpoint.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::a_token_in_a_file_or_design_path_is_refused_at_the_write passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "a_token_in_a_file_or_design_path_is_refused_at_the_write"
+
+[[case]]
+id = "TC-records-an-id-reference-passes-the-leak-guard"
+title = "A token in a checkpoint --criterion, --requirement, --case, --observation or --native-change value refuses the write naming the field, under --redact too, with every file unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/checkpoint.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::a_token_in_an_id_reference_is_refused_even_under_redact passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "a_token_in_an_id_reference_is_refused_even_under_redact"
+
+[[case]]
+id = "TC-records-evidence-add-in-a-leaking-session-writes-nothing"
+title = "In a session that already holds a leaking --file path, evidence add refuses as refused:leak before it writes its entry, and a retry writes nothing either"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/checkpoint.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::evidence_add_in_a_session_holding_a_leak_writes_nothing passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "evidence_add_in_a_session_holding_a_leak_writes_nothing"

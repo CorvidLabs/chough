@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-295-the-init-case-runs-the-real-preservation-test",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "24a068b9f81132fb55f4fc0ae692d1369704115d",
+  "contract_digest": "59d27ad3aa0d839f7df91b639fdb4f32d8329eaa84ae6487081fa790a1649374",
+  "execution_digest": "c81c244574332a785fb25cdef507ec53b9b1c2ba88eaf83f5bfd14fc1b906808",
+  "workspace_digest": "f2d01fccbfde34eb433f68a97c63690eba8af4a6164a335bbcd2ff53f1feb977",
+  "timestamp": 1794800618,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "finish them up",
+    "where": "Grok session on 2026-11-16, relayed by grok-t1w",
+    "recorded_by": "grok-t1w"
+  }
+}

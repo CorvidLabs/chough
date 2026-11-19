@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-262-open-race",
+  "implementation_commit": "bb65c09d060400389c31ab2218b20c6c16f7ad92",
+  "implementation_tree": "8ce1a9a5929b5d3202ed2c6d826c2e09a5be73cd",
+  "contract_digest": "5e52b11c50bd8bb08633b93fab0eb73cea243cd34728fc3bd17410c8d09829a5",
+  "workspace_digest": "e605d919c1258348035e566de494bbe245b11c650e8493923c9dee302cb7850d",
+  "closing_digest": "069d7fb0fba9e685c5a7d8c29d8aefdf787e9d513840bdae7211abedf39d7aac",
+  "review_digest": "28887079253a1e1bf0c7fae1bc64b64f6624c72a55d6f0042cdde0941d4ffe76",
+  "finalization_digest": "b904f1c8dee79f37c49df2a35ca3877fdca41d23c77470f51a314c49fdfc4469",
+  "timestamp": 1794982259
+}

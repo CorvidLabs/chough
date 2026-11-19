@@ -1,0 +1,201 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794773901,
+      "digest": "776bd435417d745684b63505c96a95495b50dbe4390d284b6f4b315363db5a3d",
+      "note": "Approved by 0xLeif at the Chough gate \"Approve the scope of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289\": \"yes I approve\" (Claude Code chat (hc t28), 2026-11-15, on the #289 scope summary; list refreshed only for Flint's two announced tests (7321283) and a re-run of TC-cli-documented-merge-drivers-match). Relayed and recorded by claude-code (hc t28) at 2026-11-15T20:18:20Z through chough gate record faa979714b50; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289",
+        "title": "The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)",
+        "description": "The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".agents/skills",
+          ".github/workflows/ci.yml",
+          "AGENTS.md",
+          "README.md",
+          "docs",
+          "fledge.toml",
+          "skills",
+          "src/library.rs",
+          "src/sessions.rs",
+          "src/skill.rs",
+          "src/stage.rs",
+          "tests"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A change's move into done and its pull request leave knowledge/index.md and feed.xml unchanged, no PR or CI lane runs library index --check, and fledge run release-check rebuilds both and passes the strict check before the release PR merges"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "KNOW-4: the index stays regenerable from its sources; the strict check is unchanged; Leif chose design B (check only at release)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "31ebd5c64cf95d193cc7938e7a2c32af71d84a8206325cddc6fa3425441c48cf",
+        "history": "8cea421c106b7f12d501f385338fda3bfdca83a5edaa77bd4ad7e1ee47512b80",
+        "records": "237a1c87e61c6b29f38d5866f650e5e1562d5c02254724b5caf48c539a956dcd"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-043": "67208a33354d3a41230d7457fd524936fe351f4c76a12074c540840d90fb1d01",
+        "cli: REQUIREMENT REQ-cli-047": "36ddae690e31a5a8d8e088d3724c4bd71448c3cb82e853f4c1b6aaf097a7d602",
+        "cli: REQUIREMENT REQ-cli-052": "f75476de46bd22c65502461869a6d814cf526ad5ba7d26f42c2bb6f7ba233b85",
+        "history: REQUIREMENT REQ-history-006": "eb56a8cb163b885e0cca8c7cb5c0c47538440f57fbd5945e737c98113249c1a0",
+        "records: REQUIREMENT REQ-records-011": "657b11aee00496f832a8229e540521cbfbf5e243e9fed9bb66e0c018f538e397"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "yes I approve",
+        "where": "Claude Code chat (hc t28), 2026-11-15, on the #289 scope summary; list refreshed only for Flint's two announced tests (7321283) and a re-run of TC-cli-documented-merge-drivers-match",
+        "recorded_by": "claude-code (hc t28)"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794775168,
+      "digest": "776bd435417d745684b63505c96a95495b50dbe4390d284b6f4b315363db5a3d",
+      "note": null,
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289",
+        "title": "The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)",
+        "description": "The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".agents/skills",
+          ".github/workflows/ci.yml",
+          "AGENTS.md",
+          "README.md",
+          "docs",
+          "fledge.toml",
+          "skills",
+          "src/library.rs",
+          "src/sessions.rs",
+          "src/skill.rs",
+          "src/stage.rs",
+          "tests"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A change's move into done and its pull request leave knowledge/index.md and feed.xml unchanged, no PR or CI lane runs library index --check, and fledge run release-check rebuilds both and passes the strict check before the release PR merges"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "KNOW-4: the index stays regenerable from its sources; the strict check is unchanged; Leif chose design B (check only at release)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "31ebd5c64cf95d193cc7938e7a2c32af71d84a8206325cddc6fa3425441c48cf",
+        "history": "9200be7c0db22f52c01a0b24674cf50ee6ccba75f9829ac7cb598b699a0a5ef1",
+        "records": "f0fe1cac3c19e098ccc271c7f2df385e463e0bc2d1806b4e582ac238f6b824c2"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-043": "67208a33354d3a41230d7457fd524936fe351f4c76a12074c540840d90fb1d01",
+        "cli: REQUIREMENT REQ-cli-047": "36ddae690e31a5a8d8e088d3724c4bd71448c3cb82e853f4c1b6aaf097a7d602",
+        "cli: REQUIREMENT REQ-cli-052": "f75476de46bd22c65502461869a6d814cf526ad5ba7d26f42c2bb6f7ba233b85",
+        "history: REQUIREMENT REQ-history-006": "79e4464ef99272c2ff0d9a6afa27e8176e9da5368630a44ca723d1fb7eb469d1",
+        "records: REQUIREMENT REQ-records-011": "608fc7d5ad0821b5ba88fd2e0968e5b0a1900ce599424f56a35337ca956e9105"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "yes I re-approve the #289 deltas",
+        "where": "Claude Code chat (hc t28), 2026-11-15, on the rebased REQ-history-006 and REQ-records-011 deltas after merging main 06e1aaf",
+        "recorded_by": "claude-code (hc t28)"
+      }
+    },
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794775176,
+      "digest": "776bd435417d745684b63505c96a95495b50dbe4390d284b6f4b315363db5a3d",
+      "note": "Approved by 0xLeif at the Chough gate \"Re-approve the rebased deltas of the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289\": \"yes I re-approve the #289 deltas\" (Claude Code chat (hc t28), 2026-11-15, on the rebased REQ-history-006 and REQ-records-011 deltas; native approval recorded with specsync change approve). Relayed and recorded by claude-code (hc t28) at 2026-11-15T20:39:35Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289",
+        "title": "The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)",
+        "description": "The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289)",
+        "kind": "feature",
+        "affected_specs": [
+          "cli",
+          "history",
+          "records"
+        ],
+        "affected_paths": [
+          ".agents/skills",
+          ".github/workflows/ci.yml",
+          "AGENTS.md",
+          "README.md",
+          "docs",
+          "fledge.toml",
+          "skills",
+          "src/library.rs",
+          "src/sessions.rs",
+          "src/skill.rs",
+          "src/stage.rs",
+          "tests"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A change's move into done and its pull request leave knowledge/index.md and feed.xml unchanged, no PR or CI lane runs library index --check, and fledge run release-check rebuilds both and passes the strict check before the release PR merges"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "KNOW-4: the index stays regenerable from its sources; the strict check is unchanged; Leif chose design B (check only at release)",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "31ebd5c64cf95d193cc7938e7a2c32af71d84a8206325cddc6fa3425441c48cf",
+        "history": "9200be7c0db22f52c01a0b24674cf50ee6ccba75f9829ac7cb598b699a0a5ef1",
+        "records": "f0fe1cac3c19e098ccc271c7f2df385e463e0bc2d1806b4e582ac238f6b824c2"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-043": "67208a33354d3a41230d7457fd524936fe351f4c76a12074c540840d90fb1d01",
+        "cli: REQUIREMENT REQ-cli-047": "36ddae690e31a5a8d8e088d3724c4bd71448c3cb82e853f4c1b6aaf097a7d602",
+        "cli: REQUIREMENT REQ-cli-052": "f75476de46bd22c65502461869a6d814cf526ad5ba7d26f42c2bb6f7ba233b85",
+        "history: REQUIREMENT REQ-history-006": "79e4464ef99272c2ff0d9a6afa27e8176e9da5368630a44ca723d1fb7eb469d1",
+        "records: REQUIREMENT REQ-records-011": "608fc7d5ad0821b5ba88fd2e0968e5b0a1900ce599424f56a35337ca956e9105"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "yes I re-approve the #289 deltas",
+        "where": "Claude Code chat (hc t28), 2026-11-15, on the rebased REQ-history-006 and REQ-records-011 deltas; native approval recorded with specsync change approve",
+        "recorded_by": "claude-code (hc t28)"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794777602,
+      "digest": "8ceb00d0642aa2a92cbef6078488a24f43f31a9ac3cb0f92e41a5aeb6dd38fbd",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

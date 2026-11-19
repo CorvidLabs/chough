@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-260",
+  "slug": "fix-260",
+  "title": "Fix 260",
+  "description": "fix 260",
+  "kind": "bug_fix",
+  "state": "archived",
+  "canonical_applied": true,
+  "base_commit": "8abb5bb89b5244e72327e1ea6abfc7e66634ebe1",
+  "created_at": 1794962150,
+  "updated_at": 1795011014,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "tests/bugs.rs",
+    ".chough/cases/records.no-partial-new-record.cases.toml",
+    "changelog.d/2026-11-18-fix-260.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "REQ-records-001 already says every record Chough writes is one Markdown file that starts with front matter; a create-new write that fails part way left a file that is not one. Only the writer and its test change.",
+  "acceptance_criteria": [
+    "When the write of a new bug record fails part way, as under a file size limit, chough bug add exits non-zero, no file is left in .chough/bugs/, and chough bug list, chough status and chough next still exit 0."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

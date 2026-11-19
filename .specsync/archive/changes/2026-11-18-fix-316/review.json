@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-316",
+  "reviewer": "0xLeif",
+  "provenance": {
+    "schema_version": 1,
+    "provider": "github_actions_check",
+    "required_check": "SpecSync scoped review"
+  },
+  "verdict": "pass",
+  "implementation_commit": "d52fe25e13a32daf616006d8f418dbe018eb2a4a",
+  "contract_digest": "324593c7512798824e641f58a2789c6a52ceec9a76b6fae525c1ff8388983c17",
+  "execution_digest": "fd9f58e11a7a15a3c2a3f8efe84c4534b375bef033dd92c6a753cefd303af941",
+  "workspace_digest": "c07518c09f5d9a3af6d139055e5d48d048345f3028bf819476a984e271003660",
+  "timestamp": 1795017627,
+  "relayed_by": {
+    "decided_by": "0xLeif",
+    "words": "Approve, merge when green",
+    "where": "Relayed by Leif's planning session (hc t4c) to chough-fixer (hc t4g), 2026-11-18, his implementation review of #318 after the tester's PASS and t4c's read of the leaks.rs diff for him",
+    "recorded_by": "chough-fixer-t4g"
+  }
+}

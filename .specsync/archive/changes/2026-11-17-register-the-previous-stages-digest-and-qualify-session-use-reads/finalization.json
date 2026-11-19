@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "register-the-previous-stages-digest-and-qualify-session-use-reads",
+  "implementation_commit": "1044263846f31c785db1bda4a32d0a8c4b3d206b",
+  "implementation_tree": "22f309f8cdb1b82881377dfc299667384ee8283f",
+  "contract_digest": "facadc6fcecb07a6ed45376927822b516dfb9981f46eba02d281bfba0ec38d86",
+  "workspace_digest": "17e9a07ced6a09c63795834626016fdcd1ba811271a5ab4c5328fdefd9507581",
+  "closing_digest": "da0b3b1707bad29af0f7905ddd12c2b073d2ea15d779b5f03a36dfed52ce8ff6",
+  "review_digest": "d6403c503c57eebe9eedd51dfa2779954fd23c80d9ac142dede9a02b1f6f3c9a",
+  "finalization_digest": "aeacdbef3f25e2d7cba6e0ca789d8af8e22f195185a918f7b173778e65490fe3",
+  "timestamp": 1794926987
+}

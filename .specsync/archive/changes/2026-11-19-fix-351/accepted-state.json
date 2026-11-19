@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-351",
+  "slug": "fix-351",
+  "title": "Fix 351",
+  "description": "fix 351",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "235c3bfb063e835f67c4aae12f873ceac4074be7",
+  "created_at": 1795042416,
+  "updated_at": 1795051812,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/stage.rs",
+    "src/skill.rs",
+    "src/checkpoint.rs",
+    "src/main.rs",
+    "tests/stages.rs",
+    "specs/cli/requirements.md",
+    "specs/cli/cli.spec.md",
+    "skills/chough-workflow/",
+    ".agents/skills/chough-workflow/",
+    "tests/fixtures/skill-releases/manifest.json",
+    "tests/skill_releases.rs",
+    ".chough/cases/cli.next-offers-no-native-change.cases.toml",
+    "changelog.d/2026-11-18-fix-351.md"
+  ],
+  "no_spec_change": false,
+  "no_spec_change_rationale": null,
+  "acceptance_criteria": [
+    "With SpecSync configured and no native change recorded, a refused stage move and chough next, as JSON and as text, name both chough checkpoint --native-change <id> and chough checkpoint --no-native-change \"<reason>\"; next's command stays specsync change new; the workflow skill's lifecycle reference explains the flag in the canonical and the installed copy."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design",
+    "requirements",
+    "docs"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lessons apply: human gates are plain text in tasks.md, the delta is frozen at approval, and a skill edit refreshes the release manifest digest and its pinned hash in the same change.",
+    "public_contract": "yes"
+  }
+}

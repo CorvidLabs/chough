@@ -1,0 +1,55 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794962172,
+      "digest": "0ef4daf0df532f3d874511ac48c56b58bc2543615b170f64598d5977dc777841",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-260\": \"record my scope approval of fix-272, fix-267, fix-262 and fix-260 as 0xLeif\" (Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates). Relayed and recorded by fable-t4b at 2026-11-18T00:36:11Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-260",
+        "title": "Fix 260",
+        "description": "fix 260",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.no-partial-new-record.cases.toml",
+          "changelog.d/2026-11-18-fix-260.md",
+          "src/records.rs",
+          "tests/bugs.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-records-001 already says every record Chough writes is one Markdown file that starts with front matter; a create-new write that fails part way left a file that is not one. Only the writer and its test change.",
+        "acceptance_criteria": [
+          "When the write of a new bug record fails part way, as under a file size limit, chough bug add exits non-zero, no file is left in .chough/bugs/, and chough bug list, chough status and chough next still exit 0."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "record my scope approval of fix-272, fix-267, fix-262 and fix-260 as 0xLeif",
+        "where": "Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795011013,
+      "digest": "2b594585b6f6a3bf9b5912d3d62799e86009a86f4307b35158663c9d5e89ac98",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

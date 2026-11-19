@@ -11,10 +11,18 @@ intent = "hi check --json"
 spec = "specsync check --strict --require-coverage 100 --force"
 audit = "specsync change audit"
 cases = "cargo run --quiet --locked -- cases check"
-knowledge = "cargo run --quiet --locked -- library index --check"
+# The release check (issue #289): rebuild the knowledge index, then check it. Not in a
+# lane: it runs on the release preparation branch, before the release PR merges and before
+# the version commit is tagged. It fails when the rebuild changed a generated file that is
+# not committed, so a green run means HEAD holds the rebuilt index (#289).
+release-check = "cargo run --quiet --locked -- library index && git diff --quiet HEAD -- knowledge/index.md knowledge/journal/feed.xml && test -z \"$(git ls-files --others --exclude-standard -- knowledge/index.md knowledge/journal/feed.xml)\" || { echo 'release-check: the rebuild changed knowledge/index.md or knowledge/journal/feed.xml; commit them and run it again' >&2; exit 1; } && cargo run --quiet --locked -- library index --check"
 # Fails on a leak or an oversized record Git tracks under .chough/ or knowledge/
 # (REQ-records-006, REQ-history-012); it changes nothing.
 leaks = "cargo run --quiet --locked -- doctor --leaks"
+# Assembles changelog.d/ fragments into CHANGELOG.md under a release heading and
+# removes the fragments (LIFE-16); the release heading is given, e.g.
+# `fledge run changelog -- --release 0.7.0 --date 2026-11-16` or `--release Unreleased`.
+changelog = "python3 tools/changelog.py"
 exercise = "cargo build --locked --quiet && CHOUGH=\"$PWD/target/debug/chough\" sh examples/feature-bug-loop.sh"
 # The host-matrix harness (REQ-cli-066): `fledge run host-matrix -- <host>` drives that
 # agent host through one scripted Chough cycle; the self-test runs the stand-in host,
@@ -33,7 +41,7 @@ linux-verify = "sh tools/linux/verify.sh"
 toolchain = "sh tools/toolchain.sh"
 [lanes.ci]
 description = "Run full CI pipeline"
-steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "leaks", "exercise", "build"]
+steps = ["fmt", "lint", "test", "intent", "spec", "audit", "cases", "leaks", "exercise", "build"]
 
 [lanes.check]
 description = "Quick quality check"
@@ -48,4 +56,4 @@ steps = ["fmt", "check", "intent", "spec", "audit"]
 
 [lanes.verify]
 description = "Product, structural, native lifecycle and case-definition verification"
-steps = ["toolchain", "fmt", "lint", "test", "intent", "spec", "audit", "cases", "knowledge", "leaks", "exercise", "build"]
+steps = ["toolchain", "fmt", "lint", "test", "intent", "spec", "audit", "cases", "leaks", "exercise", "build"]

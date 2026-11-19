@@ -1,0 +1,57 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794926770,
+      "digest": "facadc6fcecb07a6ed45376927822b516dfb9981f46eba02d281bfba0ec38d86",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of register-the-previous-stages-digest-and-qualify-session-use-reads\": \"Ship it, then merge when CI is green (Recommended)\" (Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. These two review findings are what still block that merge.). Relayed and recorded by grok-t1w at 2026-11-17T14:46:09Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "register-the-previous-stages-digest-and-qualify-session-use-reads",
+        "title": "Register the previous stages digest and qualify session-use reads",
+        "description": "Register the previous stages digest and qualify session-use reads",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.previous-stages.cases.toml",
+          "changelog.d/2026-11-17-register-previous-stages.md",
+          "docs/architecture.md",
+          "src/skill.rs",
+          "tests/docs.rs",
+          "tests/fixtures/stages-at-0fd9fd22.md"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "FLOW-18 already requires the docs and skill to say what current main does. REQ-cli-016 already updates a file byte-identical to a known earlier bundle and leaves an edited copy. This change registers main 0fd9fd22's stages.md digest and qualifies one architecture sentence. No requirement text changes.",
+        "acceptance_criteria": [
+          "A pristine copy of the workflow stages file from main 0fd9fd22 is known-outdated and chough skill update replaces it with the current bundle. An edited copy of that file stays byte-identical. docs/architecture.md says an exact open session ID is returned without reading another session, a bare key or alias reads each open session, and a name that matches none also reads archived stories."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "SpecSync change check refuses while tasks.md has unchecked boxes, so human gates stay plain text. The skill-release corpus inventory rejects a new blob under tests/fixtures/skill-releases/blobs. Meaningful paths need this change archived before the pull request audit.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "Ship it, then merge when CI is green (Recommended)",
+        "where": "Grok session on 2026-11-17, multiple-choice interview, relayed by grok-t1w. These two review findings are what still block that merge.",
+        "recorded_by": "grok-t1w"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794926987,
+      "digest": "da0b3b1707bad29af0f7905ddd12c2b073d2ea15d779b5f03a36dfed52ce8ff6",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

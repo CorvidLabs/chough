@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794962148,
+      "digest": "7de6a4e457101c5748149594a99b112a44e2f79bed2eefd3bda8ab4b7c218bbf",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-267\": \"record my scope approval of fix-272, fix-267, fix-262 and fix-260 as 0xLeif\" (Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates). Relayed and recorded by fable-t4b at 2026-11-18T00:35:48Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-267",
+        "title": "Fix 267",
+        "description": "fix 267",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.hyphen-glued-token.cases.toml",
+          "changelog.d/2026-11-18-fix-267.md",
+          "src/leaks.rs",
+          "tests/leaks.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-records-006 already refuses a GitHub, GitLab, Slack, AWS or model-provider token form in every value Chough writes; only the matcher and its tests change.",
+        "acceptance_criteria": [
+          "A token form that directly follows a hyphen, such as x-ghp_<token> in a checkpoint question, a session key or a raw log name, refuses the write as refused:leak naming the field and the kind token, with every file unchanged; chough doctor reports the same text in a committed record as a leak finding. The same token after a space, colon or dot is still refused."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "record my scope approval of fix-272, fix-267, fix-262 and fix-260 as 0xLeif",
+        "where": "Claude Code session with Fable, 2026-11-17, after his 'i approve all' to Fable's report of the four scope gates",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794964014,
+      "digest": "9d34d4edfda2980edb3bc70a44a02e04e60898d8fc7c058abdaf6dba3e352ee8",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "revert-306",
+  "slug": "revert-306",
+  "title": "Revert 306",
+  "description": "revert 306",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "66543c2bf509627ec2a165414acae0bc8ab59c4a",
+  "created_at": 1795016762,
+  "updated_at": 1795020364,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "src/records.rs",
+    "tests/bugs.rs",
+    "tests/no_hard_links.rs",
+    ".chough/cases/records.no-partial-new-record.cases.toml",
+    ".chough/cases/records.no-hard-links.cases.toml",
+    "changelog.d/2026-11-18-fix-260.md",
+    "changelog.d/2026-11-18-revert-306.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "No requirement text changes. #306 changed how a new record is written (a temporary file linked to the name). That writer fails on file systems without hard links (#313) and leaves its temporary files where a concurrent writer sweeps them. The create-new writer goes back to what 0.6.0 shipped; #260 reopens for 0.6.2.",
+  "acceptance_criteria": [
+    "On an exFAT volume chough init, chough bug add and chough journal add succeed and write whole records, as in 0.6.0. The create-new writer in src/records.rs is the one 0.6.0 shipped. #305's non-blocking reader and #308's journal lock are unchanged."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks",
+    "design"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes. The archived change fix-260 and its records stay as history; only code, its test, its case and its changelog fragment are reverted.",
+    "public_contract": "no"
+  }
+}

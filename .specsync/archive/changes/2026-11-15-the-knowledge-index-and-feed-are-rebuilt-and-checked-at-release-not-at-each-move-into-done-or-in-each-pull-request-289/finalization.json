@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289",
+  "implementation_commit": "c6b6e3a8f11b71ebf991906445aa93667bc4cb3c",
+  "implementation_tree": "22539ef2d08156282899c6b6ae3aba7aa244faf5",
+  "contract_digest": "776bd435417d745684b63505c96a95495b50dbe4390d284b6f4b315363db5a3d",
+  "workspace_digest": "f839189cc27e5399d10068c7cebf9373c4c6633ca4383722c169ca3aa085c3c1",
+  "closing_digest": "8ceb00d0642aa2a92cbef6078488a24f43f31a9ac3cb0f92e41a5aeb6dd38fbd",
+  "review_digest": "10d140eaa78b66285025f1a283034ad7546cb3338e215e6433c0abed8b3d2554",
+  "finalization_digest": "9669759bdc853f515cd535aae7cb8f83629e99fb5531206677534711ecc72806",
+  "timestamp": 1794777602
+}

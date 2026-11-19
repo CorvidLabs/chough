@@ -1,0 +1,59 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #265: Git conflict markers in a record's body were accepted and committed
+# silently. Each case binds one test, so their expectations don't overlap.
+
+[[case]]
+id = "TC-records-a-conflict-marker-write-is-refused"
+title = "A session whose body holds a Git conflict block refuses the next write as refused:conflict-markers, naming the file, the line and the marker, with the file unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/records.rs", "tests/records.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/records.rs::a_record_body_with_conflict_markers_is_refused_and_unchanged passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "records"
+test = "a_record_body_with_conflict_markers_is_refused_and_unchanged"
+
+[[case]]
+id = "TC-records-doctor-reports-conflict-markers-in-records"
+title = "A committed story with a conflict block gives one conflict_markers finding per marker line, with its line and marker, skipped by --fix; a committed case definition and README holding marker lines give none"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/doctor.rs", "tests/doctor.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/doctor.rs::doctor_reports_conflict_markers_in_committed_records_only passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "doctor"
+test = "doctor_reports_conflict_markers_in_committed_records_only"
+
+[[case]]
+id = "TC-records-migrate-refuses-conflict-markers"
+title = "A 0.5.x inbox entry whose text holds a conflict block makes migrate --apply refuse as refused:conflict-markers before writing any file"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-25"]
+requirements = ["REQ-records-001"]
+paths = ["src/migrate.rs", "tests/migrate.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate.rs::migrate_refuses_a_plan_whose_files_would_hold_conflict_markers passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate"
+test = "migrate_refuses_a_plan_whose_files_would_hold_conflict_markers"

@@ -467,3 +467,47 @@ fn a_path_whose_owning_module_is_not_declared_is_named() {
     write_change(&fixture, &base, "draft", &paths, false);
     assert_report(&fixture, &[]);
 }
+
+/// REQ-cli-067 (#363): after another branch is merged in, the files that merge brought
+/// are not the change's own, so they are not named as outside the declared paths. A
+/// file the change's own commit touches outside its paths still is, and so is one left
+/// uncommitted.
+#[test]
+fn files_a_merge_brought_in_are_not_outside_the_declared_paths() {
+    let fixture = project(OLD_REQ, &["src/"]);
+    let base = head(&fixture);
+    // The change's own work, committed.
+    fixture.write("src/owned.rs", "fn owned() {}\n");
+    fixture.commit("the change's own work");
+    let work = head(&fixture);
+    // Another branch, from the base, adds files of its own; the work branch merges it.
+    fixture.git(&["checkout", "-q", "-b", "other", &base]);
+    fixture.write("docs/from-main.md", "from main\n");
+    fixture.write("notes-from-main.txt", "from main\n");
+    fixture.commit("main moved on");
+    fixture.git(&["checkout", "-q", "-"]);
+    assert_eq!(head(&fixture), work);
+    fixture.git(&["merge", "-q", "--no-ff", "--no-edit", "other"]);
+    write_change(&fixture, &base, "draft", &["src/"], false);
+    assert_report(&fixture, &[]);
+
+    // The change's own file outside its paths is still named, committed or not.
+    fixture.write("own-outside.txt", "own\n");
+    fixture.git(&["add", "own-outside.txt"]);
+    fixture.git(&["commit", "-q", "-m", "an own file outside the paths"]);
+    fixture.write("uncommitted-outside.txt", "own\n");
+    write_change(&fixture, &base, "draft", &["src/"], false);
+    assert_report(
+        &fixture,
+        &[
+            (
+                "changed file own-outside.txt is outside the declared paths",
+                "chough change answer demo affected_paths \"src/,own-outside.txt,uncommitted-outside.txt\"",
+            ),
+            (
+                "changed file uncommitted-outside.txt is outside the declared paths",
+                "chough change answer demo affected_paths \"src/,own-outside.txt,uncommitted-outside.txt\"",
+            ),
+        ],
+    );
+}

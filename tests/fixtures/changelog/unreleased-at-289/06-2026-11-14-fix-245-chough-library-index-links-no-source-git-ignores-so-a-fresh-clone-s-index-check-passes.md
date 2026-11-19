@@ -1,0 +1,1 @@
+- `chough library index` links no rule, skill, decision or policy file that Git ignores, such as a host's skill copy under an ignored `.grok/`, so `knowledge/index.md` is the same in a working tree and a fresh clone, and `library index --check` passes there (#245, REQ-cli-043).

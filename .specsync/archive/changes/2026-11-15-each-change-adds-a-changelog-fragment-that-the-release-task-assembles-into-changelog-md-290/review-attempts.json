@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviews": [
+    {
+      "schema_version": 2,
+      "change_id": "each-change-adds-a-changelog-fragment-that-the-release-task-assembles-into-changelog-md-290",
+      "reviewer": "0xLeif",
+      "provenance": {
+        "schema_version": 1,
+        "provider": "github_actions_check",
+        "required_check": "SpecSync scoped review"
+      },
+      "verdict": "pass",
+      "implementation_commit": "957afb4d8b1833f12c868e3535085455f6540130",
+      "contract_digest": "a4974da5ce1e3764cb99be1d1399c8a07d4d410a7595e3ac813c5367a7bb6dcd",
+      "execution_digest": "235acfa122c37b348e6852c786aaffbd03bbfb33da1037717f97363134288304",
+      "workspace_digest": "16c1077da5e152686bfa2c024ffb2c9381cfb50207e94b9511a4f6ff42128f88",
+      "timestamp": 1794760847,
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "yes i approve",
+        "where": "Claude Code chat (hc t28), 2026-11-15, reply to the #290 implementation review (PR #296)",
+        "recorded_by": "claude-code (hc t28)"
+      }
+    }
+  ]
+}

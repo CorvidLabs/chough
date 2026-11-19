@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "change_id": "fix-295-the-init-case-runs-the-real-preservation-test",
+  "implementation_commit": "24a068b9f81132fb55f4fc0ae692d1369704115d",
+  "implementation_tree": "cdbb4d47be6f1dbe7327c9662c725f1d49130157",
+  "contract_digest": "59d27ad3aa0d839f7df91b639fdb4f32d8329eaa84ae6487081fa790a1649374",
+  "workspace_digest": "f2d01fccbfde34eb433f68a97c63690eba8af4a6164a335bbcd2ff53f1feb977",
+  "closing_digest": "d454e450d252a1a7d02515678bc50df07ebd9a1a749244257b7c0e4f210fa6df",
+  "review_digest": "771ab41980b43ee0223aca3a32a503bc0c5581eb99b8b8e805b7967a6c8ea58d",
+  "finalization_digest": "28615646d10bf112e7b71f1960cf4586752b399e9c18d6aca79082803b9f74ff",
+  "timestamp": 1794800625
+}

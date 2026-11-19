@@ -1,0 +1,64 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795027212,
+      "digest": "a396b3a4bbca478256cf3afa4675e470f850211fdf55ef62e837f807106ac5f7",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-320\": \"approved as a fix. The refusal names the recovery (chough session shelve <id>, or a command that removes the reference), and doctor --fix --redact never rewrites an ID.\" (Leif's decision comment on CorvidLabs/chough#320 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for this change). Relayed and recorded by chough-fixer-t4g at 2026-11-18T18:40:11Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-320",
+        "title": "Fix 320",
+        "description": "fix 320",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.leaking-id-recovery.cases.toml",
+          "changelog.d/2026-11-18-fix-320.md",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "src/doctor.rs",
+          "tests/leaks.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "A save refused because a criterion, requirement, case, observation, bug or native change reference holds a leak names the recovery, chough session shelve <session id>, beside removing the value. A committed session record whose case reference holds a token gives a leak finding naming chough session shelve <id>, and chough doctor --fix --redact leaves that ID unchanged with the finding skipped, so the session still reads, while it still redacts a leak on an ordinary line of the same record."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and the deltas are frozen at approval. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "4ae96126102217a5559d3fa52816689636bdbdeab80fda7069f9bbabc7544775",
+        "history": "a145ed79944b380a6a8d53c1d9e296cfb6c06fd3724ee31badbbe62afbc2b07b"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-055": "2e0b32a3acbebe757ffc96a2a4a595c8de5fc1d616286fd73cae66e0cf636765",
+        "history: REQUIREMENT REQ-history-012": "f11b1f06e5688534149cee8eb00fc07c734f376942f39dd6fc1790c568e14321"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "approved as a fix. The refusal names the recovery (chough session shelve <id>, or a command that removes the reference), and doctor --fix --redact never rewrites an ID.",
+        "where": "Leif's decision comment on CorvidLabs/chough#320 from his 2026-11-18 planning interview, relayed by his planning session (hc t4c) to chough-fixer (hc fixer) as the scope approval for this change",
+        "recorded_by": "chough-fixer-t4g"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795032317,
+      "digest": "beebd60821029627c6b591140fd6b7857b4ebe608191ea5dc2c1809bf9a47106",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

@@ -368,6 +368,10 @@ pub(super) struct Transition {
     /// On a `correction` entry, the entry it corrects, as `^t-xxxxxx` (REQ-history-015).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) corrects: Option<String>,
+    /// On a `gate-closed` entry of a gate `chough doctor --fix --reason` withdrew, that
+    /// reason in the person's words (REQ-history-012, #250).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) withdrawn: Option<String>,
 }
 
 /// An append-only correction of an earlier entry (REQ-history-015); it starts and ends
@@ -563,10 +567,21 @@ pub(super) fn gate_for_state(
                 "{purpose} cannot be checked, so it is refused: {reason}. SpecSync rejects this policy too (see `specsync change audit`); fix the file, or set \"enabled\": false in a valid policy to disable native gates deliberately."
             ),
         ),
+        // REQ-cli-007 (#281): the session recorded, with a reason, that its work needs
+        // no native change, so no native lifecycle gates this move. A human gate that
+        // holds the stage still refuses it, before this is read.
+        NativeState::NoChange if session.no_native_change.is_some() => Gate {
+            allowed: true,
+            label: "ungated:no-native-change-required".into(),
+            detail: format!(
+                "The session records that its work needs no native change: {}",
+                session.no_native_change.as_deref().unwrap_or_default()
+            ),
+        },
         NativeState::NoChange => refused(
             "refused:no-native-change".into(),
             format!(
-                "{purpose} needs the native change: record it with `chough checkpoint --native-change <id>`."
+                "{purpose} needs the native change: record it with `chough checkpoint --native-change <id>`, or, when this work needs none (planning, docs or issues, say), record why with `chough checkpoint --no-native-change \"<reason>\"`."
             ),
         ),
         NativeState::Unknown(reason) => refused(
@@ -1239,6 +1254,7 @@ pub(super) fn assess(
     session: &Checkpoint,
     state: &NativeState,
     blocking: &[String],
+    unrelated: &[String],
     history: Option<&crate::history::HistoryRead>,
 ) -> (Option<(String, Gate)>, Action) {
     let current = session.stage.current.as_str();
@@ -1314,7 +1330,7 @@ pub(super) fn assess(
                 "Acceptance-blocking bugs are open ({}); go back to build and retest the affected cases.",
                 blocking.join(", ")
             ),
-            reason: "Acceptance waits for every blocking bug to be verified or rescoped.".into(),
+            reason: "Acceptance waits for every blocking bug related to this session to be verified or rescoped.".into(),
             command: Some("chough stage back --to build --reason \"<why>\"".into()),
         }
     } else if let Some(refusal) = (current == "test")
@@ -1513,13 +1529,22 @@ pub(super) fn assess(
             sentence(&session.next_action)
         };
         if observations().is_some_and(|all| every_case_passed(session, all)) {
-            // F7 (REQ-cli-021): blocking bugs were handled above, so with every referenced
-            // case's latest run passed, test is done.
+            // F7 (REQ-cli-021): blocking bugs related to this session were handled above.
+            let aside = if unrelated.is_empty() {
+                "no blocking bug related to this session is open".to_string()
+            } else {
+                format!(
+                    "blocking bugs not related to this session ({}) do not block it",
+                    unrelated.join(", ")
+                )
+            };
             Action {
                 action: format!(
-                    "Continue test: {next}Every referenced case's latest run passed and no blocking bug is open, so move to accept with `chough stage advance`."
+                    "Continue test: {next}Every referenced case's latest run passed and {aside}, so move to accept with `chough stage advance`."
                 ),
-                reason: "Each case the checkpoint references passed on its latest run, and no acceptance-blocking bug is open.".into(),
+                reason: format!(
+                    "Each case the checkpoint references passed on its latest run, and {aside}."
+                ),
                 command: Some("chough stage advance".into()),
             }
         } else {
@@ -1705,6 +1730,7 @@ fn log_transition_at(
         holds: None,
         drives: None,
         corrects: None,
+        withdrawn: None,
     };
     validate_records(&transition)?;
     // REQ-cli-060 (DRIVE-21): a stage move, and a gate close with a relayed decision
@@ -1730,6 +1756,7 @@ fn log_transition_at(
                 holds: None,
                 drives: None,
                 corrects: None,
+                withdrawn: None,
             };
             validate_records(&event)?;
             append_transition(root, session, event)?;
@@ -2417,11 +2444,11 @@ fn forward_step(
 ) -> Result<Option<String>> {
     let (from, to) = route;
     if from == "test" && to == "accept" {
-        let blocking = bugs::open_blocking(root)?;
+        let blocking = bugs::open_blocking(root, session)?;
         ensure!(
-            blocking.is_empty(),
+            blocking.stops.is_empty(),
             "{kind} refused (refused:blocking-bugs): open acceptance-blocking bugs {}; go back to build, fix and retest",
-            blocking.join(", ")
+            blocking.stops.join(", ")
         );
         if let Some(refusal) = unlinked_failure(root, session)? {
             bail!("{kind} refused (refused:unlinked-failure): {refusal}");
@@ -2877,8 +2904,8 @@ pub(super) fn run(root: &Path, command: StageCommand, as_json: bool) -> Result<(
         // and the active pointer is cleared; never undoes the move.
         let from = applied["from"].as_str().unwrap_or_default().to_string();
         applied["session_archive"] = crate::sessions::archive_at_done(root, &session, &from);
-        // REQ-records-011: then its journal post, and REQ-cli-043: then index.md and
-        // feed.xml, regenerated once; neither undoes the move.
+        // REQ-records-011: then its journal post; the librarian refreshes the vault at
+        // release, not here, so neither undoes the move.
         if applied["session_archive"]["status"] == "archived"
             && let Some(id) = applied["session_archive"]["id"]
                 .as_str()

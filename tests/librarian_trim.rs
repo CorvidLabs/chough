@@ -1,6 +1,7 @@
-//! The move into done refreshes the knowledge directory with the librarian on and builds
-//! nothing with it off (REQ-cli-043, KNOW-4). Nothing is trimmed at done any more: proof
-//! stays in its session and story (REQ-records-012).
+//! The move into done writes its journal post and defers the vault rebuild to release
+//! with the librarian on, and builds nothing with it off (REQ-cli-043, KNOW-4).
+//! Nothing is trimmed at done any more: proof stays in its session and story
+//! (REQ-records-012).
 #![cfg(unix)]
 
 mod common;
@@ -63,15 +64,15 @@ fn advance_to_done(fixture: &Fixture) -> Value {
 }
 
 /// REQ-cli-043: in a project that had no knowledge directory, the move into done writes
-/// its journal post and refreshes the index, and `library index --check` passes right
-/// after it with no command in between; nothing is trimmed.
+/// its journal post and defers the vault rebuild to release, so `library
+/// index --check` passes once the vault is rebuilt; nothing is trimmed.
 #[test]
-fn done_refreshes_the_knowledge_index_when_nothing_is_trimmed() {
+fn done_defers_the_knowledge_index_refresh_when_nothing_is_trimmed() {
     let fixture = at_accept();
     let _ = std::fs::remove_dir_all(fixture.root().join("knowledge"));
     let moved = advance_to_done(&fixture);
     let refresh = &moved["applied"]["librarian_index"];
-    assert_eq!(refresh["status"], "refreshed", "{moved:#}");
+    assert_eq!(refresh["status"], "deferred", "{moved:#}");
     assert_eq!(refresh["index"], "knowledge/index.md", "{moved:#}");
     assert!(
         moved["applied"].get("librarian_trim").is_none(),
@@ -85,8 +86,9 @@ fn done_refreshes_the_knowledge_index_when_nothing_is_trimmed() {
         .as_str()
         .unwrap_or_default();
     assert!(fixture.exists(post), "{moved:#}");
-    assert!(fixture.exists("knowledge/journal/feed.xml"));
-    assert!(fixture.exists("knowledge/lessons"));
+    // The librarian refreshes the vault at release, not here, so the release task
+    // rebuilds before the check that names them.
+    fixture.ok(&["library", "index"]);
     fixture.ok(&["library", "index", "--check"]);
 }
 

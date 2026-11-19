@@ -1,0 +1,392 @@
+{
+  "timestamp": 1794759786,
+  "commit": "957afb4d8b1833f12c868e3535085455f6540130",
+  "contract_digest": "a4974da5ce1e3764cb99be1d1399c8a07d4d410a7595e3ac813c5367a7bb6dcd",
+  "execution_digest": "235acfa122c37b348e6852c786aaffbd03bbfb33da1037717f97363134288304",
+  "workspace_digest": "16c1077da5e152686bfa2c024ffb2c9381cfb50207e94b9511a4f6ff42128f88",
+  "acceptance_input_digest": "08206e549a0f611351db0e3475a9358f368064cbf71d1778a0ab3197d203e0e3",
+  "acceptance_manifest": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "path": ".agents/skills/chough-workflow/references/stages.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5c5f0b80d039b8c10b7b276ce73f2dd8e88aa9329503cd233d675d340128beac",
+        "entry_digest": "81143448c467f40bb81aa7bbc246e759cf3a41c92919a03ce4457718dfa058b2",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "AGENTS.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "1d29f9265153eda296219b5dd1003b47ee87166fffa13e1fd2ad7f6fb8a7ff2b",
+        "entry_digest": "4429faa89f3360bbe3f0e3402d1a487a6c53919da33d8d431b5bd90c115f6b18",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "CHANGELOG.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "c68db92fa853da4b1b6b5dfc730d6fee55efa875db606a0816d30e3bd39eac7f",
+        "entry_digest": "c8fd610b4747c0539455a7347a7fb0b1a53fd3b3e02e32e388f9b5e2d83af777",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d",
+        "kind": "non_file",
+        "mode": 0,
+        "payload_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "entry_digest": "6f56e328248bbc9dd161aeceecb04275f0a738de67e64ac9014a043d7415d0d3",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/01-2026-11-14-the-leak-check-flags-an-scp-style-host-path-as-the-host-name-and-the-path-it-carries-275.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "07c8af9203b3af54964837cda2a341b3855e23345c5bf8415e53d520cf618487",
+        "entry_digest": "b45b98bec6bb189861c8afb00c25041d0c5d4fd86436ed3683aaea33933227b9",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/02-2026-11-13-0-6-1-the-leak-check-does-not-read-an-ordinary-word-equal-to-a-short-host-name-as-a-host-name-leak.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "936068fee9b2727edf05191ed3b728a239aca32ac6f71ac374bc5eadac4ce875",
+        "entry_digest": "6d7a6b63d1ae07c67f6d24d35105ad7c8f1061de6569c1c425a4a7c31ec52a5c",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/03-2026-11-14-fix-276-mark-a-cut-change-ship-summary-with-its-line-count-and-json.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "38f6a2d20d51de7112f5589c9cf4915698551e56e6d2050251f6b04fba6bdb10",
+        "entry_digest": "347722f7aae19f7b9eddaec35c74fc0f333ae7ec51887c44283d14e8399638c0",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/04-2026-11-13-0-6-1-at-the-400-observation-cap-every-write-that-adds-an-observation-refuses-before-writing-anything-and-names-chough.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f0014bd36f82b4063e3e20110792944f92cb757f640eed6f2eb93e0d76fd8424",
+        "entry_digest": "f69f817c21ae95d4531a08595796c8adbf2acc3337772594f1f899659429a955",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/05-2026-11-13-0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "140e3a12ba8bb28fbaa8f56b5594c6e12dd792f2cbb0b158705b70cdfd40e85a",
+        "entry_digest": "a0755856607ca57adf8e6eefd7e092793cf7bb1ce0ec0c39fe18cb840de8a97d",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/06-2026-11-14-fix-245-chough-library-index-links-no-source-git-ignores-so-a-fresh-clone-s-index-check-passes.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "f022fac6f942d51b4dcb6a11a54e373586c97b9c55d9d6029105cebfd49353c9",
+        "entry_digest": "07eb9901de0831c279ac29b88697396009a333a5b39e8808528c0c0059047cb3",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/07-2026-11-13-0-6-1-the-intent-gate-summary-gives-each-criterion-s-sentence-no-diff-line-without-a-base-and-adds-or-modifies-said-as.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "85b8ef5c03c19b17c8dea72a774df42dcbc62e45f11f43bb07e49b57f912f826",
+        "entry_digest": "2f811e52fa4d4b6802b954d6b1dfd420eb6742d1f34961baa492f1c85fa3ce95",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/08-2026-11-13-0-6-1-record-polish-a-bug-s-actual-line-stands-apart-migrated-front-matter-names-the-new-entries-and-a-fresh-project-s.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4c2c8cbaa771cca210e8fc8153007c9a0f66be50fed1466d780287968ca874de",
+        "entry_digest": "0587d6ad865f52fbc383f73557e6c8e4c7f056c89be3962e933d497e997460a1",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/09-2026-11-13-fix-247-the-verify-lane-s-example-waits-past-the-failing-run-s-second-before-its-rerun.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5ede0ab628ec17bc2be41dc19f45cc2e6a8c9577c7d2c610e77d7d64cf376379",
+        "entry_digest": "e5f796762fa64f1d1ba899ce95ca7fd71a41e07f4aba5b076fa1565eb13dab01",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/10-2026-11-13-fix-246-chough-migrate-s-preview-and-receipt-name-the-sessions-chough-doctor-will-report-after-the-apply.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "207817af4a701ab47997cc20b8082f89d6d179ecbfcf64a16d77db4bb35e9c92",
+        "entry_digest": "9cc26f23fc9961534043e65be891fb49b024f33c86dedf5d288d6798200960cd",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/11-2026-11-13-host-matrix-harness-one-scripted-chough-cycle-per-agent-host-judged-from-the-files-with-a-stand-in-host-self-test-in.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "472a3bea92f9e8cf115f9338f7d53e7476801039a904b847f7e4feebf09bf3b6",
+        "entry_digest": "12043d123aee6d81581f2207262ebc376c4c8b727ac044c9c5cf3a1fe43e281b",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/12-2026-11-13-217-bar-2-ci-runs-once-a-day-on-main-so-the-flake-window-sees-macos-and-linux-every-day-and-the-specsync-archive-jobs.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "91ea721e39da5cc0d526928a6cdffbba4deb117974f6841c8c6e995a483098db",
+        "entry_digest": "83734cc85393e6214d65f368a0f4257febb73d26088ae22a52b577b76c8fb9bc",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/13-2026-11-14-workflow-skill-a-fast-path-for-routine-changes-so-local-and-small-context-agents-edit-early-and-carry-every-required.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "13b7dd794c2a241c2e0b48e9be08eb6a8838ad74a63001657b23880f6686f589",
+        "entry_digest": "379e4abbbfe506f3fac91009fda85054f8b7c9528f6d2a326c14367f0316d4a9",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/14-2026-11-14-219-life-24-integrations-ships-versioned-example-hc-templates-for-claude-code-codex-kimi-grok-and-a-local-agent-a.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "37acde7ac26a23d909d8522c15d659decc492d413b715dbdbfc297d77f7c9fa1",
+        "entry_digest": "d6e8a5ba5643a1846c8bc30d908b5dbe88f29db3b78da13b9218bc0343d1b824",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/15-2026-11-14-217-bar-2-fledge-run-flake-window-computes-the-two-week-clean-window-from-ci-history-flake-issues-and-bug-records-read.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "b9e1c8dde31376368b4196be9aade623302ce48e5552771986920d2b1a6190e0",
+        "entry_digest": "9019c34089c349f7ee3e947dbb489a7880c4620ec1bc7be81da690a89c426306",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/16-2026-11-14-fix-249-a-relayed-decision-reaches-specsync-s-approval-and-review-records-each-value-joined-to-its-flag.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8192f10299dfc97ab280de1efa66fa4d1c35c29f7e3834c73979899b055ae3b4",
+        "entry_digest": "ebecf0eaf090b5ef9ea0c69f12b54fc53b7a639dcc3ff2958574bea3379a2cc5",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/2026-11-14-290-changelog-fragments.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "cf42847930f2787ca42ec79527851f5ae9ea7e30e44f3db1af983e0db36313c5",
+        "entry_digest": "a461738f2d9dc4cbc9ca6b7774389e3e46a4b536a27e108c385d4ea43e3aec69",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "changelog.d/2026-11-15-fix-278-receipt-dash.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "dff3775ed9c5624f1e397b3d49fbfa24eeac414f7b902f86f5bf497cf830c616",
+        "entry_digest": "63417961d60a68f9234b5625ef0eeebc0ddbac7da630a7c9e38c2aa1d323cfc4",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "docs/releasing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "d5b0459e9d1bb8bb9f92c7ae49ef0f0d4caaf569de64ce794f117d84477f0f62",
+        "entry_digest": "2519cbbd43468cc9e7b31d1838f84bc5ed55a4db0eb2a46f1f3823c91e34c58e",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "fledge.toml",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "79767d6659f4b6d516fccddb903a7953213211c7062bd657a70bab26dba6a56e",
+        "entry_digest": "808087998edcc1744fd704b36ad1a6b70d935584d6fe2ab551b43c3b79111dda",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "skills/chough-workflow/references/stages.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "5c5f0b80d039b8c10b7b276ce73f2dd8e88aa9329503cd233d675d340128beac",
+        "entry_digest": "f1cdb2d328f392d85eddb8cbdfab8fc980f656fa4eea66a56b46f417475b59b8",
+        "owners": [
+          "@exact:delivery"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.3md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "35c0238b3221ca8b600366541d910327bd81b6a85cde2f9278bf38af5ae99074",
+        "entry_digest": "0ed50b4fc722a134345453943f6afc0e00078c6006f0a4df0843db3e745a7cd3",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/cli.spec.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "2c9b35dab33ad572747d79110abf303bf3e29e82c097732276a73ed218474003",
+        "entry_digest": "f9b4025bd6823dfa464b761c37de46e9b9149336eebd78aea089cb595d0b79b3",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/context.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "8b46f365bff777029f5fdd15c4e1acbd5e21bc59020c42f5d7c3401641235588",
+        "entry_digest": "bdaff9b6032ceb643b10c08714e9b812e9d8ff9fa18b6f3317999e0afb112f0d",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/requirements.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "4aa70e37b4186edd28999dc45f7915869ac860910a1ae9bda5c8def9d95d983c",
+        "entry_digest": "021abb7be7b2970f443b8a5c911a79a35e21745a28d154a1c7e2a25b1481c54d",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/tasks.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "06f3a8c0850c62325383f36e79273eb2fd9d355ce4d83a543f3c306c43294c3d",
+        "entry_digest": "8f5dc063d921267ddba11b030ed5d923c31baaedd8368d9816a654c8bf950e56",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "specs/cli/testing.md",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "483933ab74792a113e55a1b3bf4ab1bc2e36578229a52a89c5dbee82d5375eec",
+        "entry_digest": "8ff2dbf45ad083bbcbd7ab754fb4bf49d644ee8baea9f02dc8dd4f4c313ce848",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "src/skill.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "860029b768442458b6377bd7c04e788d73fcb626895126d584a3fd64101c8acd",
+        "entry_digest": "d04423ab8aa72c6a218ae8763f9ae02d30e4c75dd835bcf34a083a0217ef0c8a",
+        "owners": [
+          "cli"
+        ]
+      },
+      {
+        "path": "tests/changelog.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "44991f27231bfc0b93dfd420bb6e66d0ec218a69839e38da478d8d220cd392bd",
+        "entry_digest": "29a6d5623d820b6a05cf4d12ad9a250178b7aeabb1f336f1e86b291ecab3e3f7",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/fixtures/skill-releases/manifest.json",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "3cc4166226ac410c0b8146d8c96d2363caf2f53a5c4ba4d9c061710d31ce6e2d",
+        "entry_digest": "7787a086d425ddbc780b062991301f0a03f1cf7edfb50855d1f0ef4a0049612d",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/package.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "30b2c83b66fc22c4b708e529dee33a00ce8ace7244e37f75a9fd21ccb21349a2",
+        "entry_digest": "67580d7579fbc48ea942a0da31e3933872002f1a2796016c905218480030a7f1",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tests/skill_releases.rs",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "12a855386e15d2893daf5bf17edb34d8a6baf5163f9b8f0a6b643f7e62c0896f",
+        "entry_digest": "7b40be4619b648fc40e2b2e8e934a03955d514399c45f56a3b12b3b0e20f5ae3",
+        "owners": [
+          "@exact:test"
+        ]
+      },
+      {
+        "path": "tools/changelog.py",
+        "kind": "file",
+        "mode": 33188,
+        "payload_digest": "37d7aa9bf876ffd8f2ee170ab2e650e15e7a4e004c38b8a3fcdeb1c01b64d575",
+        "entry_digest": "9ad9ab07a52d5e0050b4ea3eff31f87406b92ae80a7a1fb57ad24b63fd2f4c2f",
+        "owners": [
+          "@exact:delivery"
+        ]
+      }
+    ]
+  },
+  "passed": true,
+  "commands": [
+    {
+      "command": "specsync check --spec cli",
+      "success": true,
+      "exit_code": 0
+    }
+  ],
+  "requirement_ids": []
+}

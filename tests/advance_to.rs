@@ -69,7 +69,7 @@ fn approved_session_at_plan() -> Fixture {
 }
 
 fn blocking_bug(fixture: &Fixture) {
-    fixture.ok(&[
+    let added = fixture.ok(&[
         "bug",
         "add",
         "--title",
@@ -89,6 +89,8 @@ fn blocking_bug(fixture: &Fixture) {
         "--scope",
         "blocking",
     ]);
+    let id = added["id"].as_str().unwrap();
+    fixture.ok(&["checkpoint", "--bug", id]);
 }
 
 #[test]

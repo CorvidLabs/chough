@@ -1,0 +1,57 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794967551,
+      "digest": "5e52b11c50bd8bb08633b93fab0eb73cea243cd34728fc3bd17410c8d09829a5",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-262-open-race\": \"approve all three, record as 0xLeif\" (Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the gates on #308, #305 and #306). Relayed and recorded by fable-t4b at 2026-11-18T02:05:51Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-262-open-race",
+        "title": "Fix 262 open race",
+        "description": "fix 262 open race",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "history"
+        ],
+        "affected_paths": [
+          ".chough/cases/history.non-regular-files-open.cases.toml",
+          "changelog.d/2026-11-18-fix-262-open-race.md",
+          "src/records.rs",
+          "src/sessions.rs",
+          "tests/special_files.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-history-006 already says a session that cannot be read stops no other command; this closes a window in the reader added for #262. Only the readers and their tests change.",
+        "acceptance_criteria": [
+          "The bounded record reader opens a path without blocking and checks on the opened handle that it is a regular file, so a FIFO at the path at the moment of the open is refused at once; chough session shelve reads session.md and each listed file through the same non-blocking open."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes. No other lesson or principle constrains it.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "approve all three, record as 0xLeif",
+        "where": "Claude Code session with Fable, 2026-11-17, in reply to Fable's report of the gates on #308, #305 and #306",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794982259,
+      "digest": "069d7fb0fba9e685c5a7d8c29d8aefdf787e9d513840bdae7211abedf39d7aac",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

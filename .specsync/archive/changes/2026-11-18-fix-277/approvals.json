@@ -1,0 +1,58 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795031183,
+      "digest": "5268f0bfcbaac4873e8e193e667ca7c5cadc0be79e69d3725d6bf4d3a13bea83",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-277\": \"relative links. A migrated bug's body links each carried observation to the file of the entry or story that holds it, as a new bug's body does.\" (Leif's decision comment on GitHub issue #277, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval). Relayed and recorded by fable-t4b at 2026-11-18T19:46:22Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-277",
+        "title": "Fix 277",
+        "description": "fix 277",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/records.migrated-bug-links.cases.toml",
+          "changelog.d/2026-11-18-fix-277.md",
+          "docs/cli.md",
+          "src/bugs.rs",
+          "src/migrate.rs",
+          "tests/migrate_evidence.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "REQ-records-009 already says each bug becomes a Markdown bug and each carried observation becomes an entry or a receipt. The Log lines of a migrated bug named those observations by bare 0.5.x ID; they now link the file that holds each. No requirement text changes.",
+        "acceptance_criteria": [
+          "A migrated bug's Log names each carried observation as a Markdown link, relative to the bug's file, to the open session's evidence entry or to the archived story that holds its receipt; every such link opens a file; a receipt only the bug holds is named as the bug's own; a removed observation keeps its 0.5.x ID. The bug's front matter is unchanged."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes. No requirement text changes, so no delta.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "relative links. A migrated bug's body links each carried observation to the file of the entry or story that holds it, as a new bug's body does.",
+        "where": "Leif's decision comment on GitHub issue #277, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795033766,
+      "digest": "ec43dae7f72e3f0eeda535af8f8069e298761de219e8a1872c3c37994ad178a1",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

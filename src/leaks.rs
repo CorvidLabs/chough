@@ -476,30 +476,44 @@ fn token_byte(byte: u8) -> bool {
     byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-')
 }
 
-/// A token prefix, the fewest bytes that follow it, and which bytes may follow.
-type TokenForm = (&'static str, usize, fn(u8) -> bool);
+/// Whether `byte` before a token prefix makes the prefix the middle of a word, so no
+/// token starts there. A hyphen does not: a slug, an ID or a CI run name glues a token
+/// to one, as `x-ghp_…`, and it is still a token (REQ-records-006, #267).
+fn word_byte(byte: u8) -> bool {
+    byte.is_ascii_alphanumeric() || byte == b'_'
+}
+
+/// A token prefix, the fewest bytes that follow it, which bytes may follow, and which
+/// byte before the prefix continues a word, so no token starts there.
+type TokenForm = (&'static str, usize, fn(u8) -> bool, fn(u8) -> bool);
 
 fn tokens(value: &str, all: &mut Vec<Match>) {
     let bytes = value.as_bytes();
     let forms: [TokenForm; 12] = [
-        ("ghp_", 30, |byte| byte.is_ascii_alphanumeric()),
-        ("gho_", 30, |byte| byte.is_ascii_alphanumeric()),
-        ("ghu_", 30, |byte| byte.is_ascii_alphanumeric()),
-        ("ghs_", 30, |byte| byte.is_ascii_alphanumeric()),
-        ("ghr_", 30, |byte| byte.is_ascii_alphanumeric()),
-        ("github_pat_", 20, |byte| {
-            byte.is_ascii_alphanumeric() || byte == b'_'
-        }),
-        ("glpat-", 20, token_byte),
-        ("xoxb-", 10, token_byte),
-        ("xoxp-", 10, token_byte),
-        ("xoxa-", 10, token_byte),
-        ("sk-", 20, token_byte),
-        ("AIza", 30, token_byte),
+        ("ghp_", 30, |byte| byte.is_ascii_alphanumeric(), word_byte),
+        ("gho_", 30, |byte| byte.is_ascii_alphanumeric(), word_byte),
+        ("ghu_", 30, |byte| byte.is_ascii_alphanumeric(), word_byte),
+        ("ghs_", 30, |byte| byte.is_ascii_alphanumeric(), word_byte),
+        ("ghr_", 30, |byte| byte.is_ascii_alphanumeric(), word_byte),
+        (
+            "github_pat_",
+            20,
+            |byte| byte.is_ascii_alphanumeric() || byte == b'_',
+            word_byte,
+        ),
+        ("glpat-", 20, token_byte, word_byte),
+        ("xoxb-", 10, token_byte, word_byte),
+        ("xoxp-", 10, token_byte, word_byte),
+        ("xoxa-", 10, token_byte, word_byte),
+        // `sk-` is short and common in slugs (`-sk-learn-…`, a generated bug ID), so a
+        // hyphen before it continues a word, as in 0.6.0 (#316); the distinctive forms
+        // above keep the hyphen boundary of #267.
+        ("sk-", 20, token_byte, token_byte),
+        ("AIza", 30, token_byte, word_byte),
     ];
-    for (prefix, minimum, allowed) in forms {
+    for (prefix, minimum, allowed, continues) in forms {
         for (start, _) in value.match_indices(prefix) {
-            if start > 0 && token_byte(bytes[start - 1]) {
+            if start > 0 && continues(bytes[start - 1]) {
                 continue;
             }
             let end = run(bytes, start + prefix.len(), allowed);
@@ -517,7 +531,7 @@ fn tokens(value: &str, all: &mut Vec<Match>) {
             let end = run(bytes, start + prefix.len(), |byte| {
                 byte.is_ascii_uppercase() || byte.is_ascii_digit()
             });
-            if (start == 0 || !token_byte(bytes[start - 1])) && end - start == 20 {
+            if (start == 0 || !word_byte(bytes[start - 1])) && end - start == 20 {
                 all.push(Match {
                     kind: Kind::Token,
                     start,
@@ -774,6 +788,54 @@ mod tests {
             for found in find(&local(), value) {
                 assert!(!error.contains(&value[found.start..found.end]), "{error}");
             }
+        }
+    }
+
+    /// REQ-records-006 (#267): a hyphen before a token form is a boundary, as a slug,
+    /// an ID or a CI run name glues one; a letter, digit or underscore still continues
+    /// a word.
+    #[test]
+    fn a_token_glued_to_a_hyphen_is_found() {
+        for value in [
+            concat!("probe x-", "ghp_", "abcdefghij0123456789abcdefghij0123"),
+            concat!("run-", "glp", "at-abcdefghijklmnopqrstuvwx"),
+            concat!("ci-", "AKIA", "ABCDEFGHIJKLMNOP"),
+        ] {
+            assert_eq!(kinds(value), ["token"], "{value:?}");
+            assert!(check(&local(), "summary", value).is_err(), "{value:?}");
+        }
+        for value in [
+            concat!("probe x", "ghp_", "abcdefghij0123456789abcdefghij0123"),
+            concat!("probe x_", "ghp_", "abcdefghij0123456789abcdefghij0123"),
+            concat!("ciX", "AKIA", "ABCDEFGHIJKLMNOP"),
+        ] {
+            assert_eq!(kinds(value), Vec::<&str>::new(), "{value:?}");
+        }
+    }
+
+    /// REQ-records-006 (#316): `sk-` after a hyphen continues a word, as in 0.6.0, so a
+    /// slug such as a bug ID generated from "Fix flaky sk-learn tests in CI pipeline" is
+    /// not a model-provider key; at the start of a value or after a space it still is,
+    /// and the distinctive forms keep #267's hyphen boundary.
+    #[test]
+    fn sk_after_a_hyphen_continues_a_word() {
+        for value in [
+            "2026-11-18-fix-flaky-sk-learn-tests-in-ci-pipeline",
+            "2026-11-18-use-sk-learn-for-the-classifier-model",
+            concat!("x-", "sk-", "abcdefghijklmnopqrstuvwx"),
+        ] {
+            assert_eq!(kinds(value), Vec::<&str>::new(), "{value:?}");
+            assert!(check(&local(), "id", value).is_ok(), "{value:?}");
+        }
+        for value in [
+            concat!("sk-", "abcdefghijklmnopqrstuvwx"),
+            concat!("key ", "sk-", "abcdefghijklmnopqrstuvwx"),
+            concat!("probe x-", "ghp_", "abcdefghij0123456789abcdefghij0123"),
+            concat!("run-", "glp", "at-abcdefghijklmnopqrstuvwx"),
+            concat!("team-", "xo", "xb-0123456789abcdef"),
+            concat!("ci-", "AKIA", "ABCDEFGHIJKLMNOP"),
+        ] {
+            assert_eq!(kinds(value), ["token"], "{value:?}");
         }
     }
 

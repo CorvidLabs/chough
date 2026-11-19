@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "records"
+
+# GitHub #263: on a case-sensitive file system a separate knowledge/index.md passed the
+# pre-write check, and the apply removed the 0.5.x files before failing on it.
+
+[[case]]
+id = "TC-records-migrate-refuses-a-separate-case-colliding-target"
+title = "On a case-sensitive file system, migrate --apply refuses a separate knowledge/index.md with other bytes as refused:target-exists and writes, removes and changes nothing"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-20"]
+requirements = ["REQ-records-009"]
+paths = ["src/migrate.rs", "tests/migrate_knowledge.rs"]
+environments = ["local-linux-aarch64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/migrate_knowledge.rs::a_separate_file_at_a_case_colliding_target_refuses_before_any_write passes on a case-sensitive file system"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "migrate_knowledge"
+test = "a_separate_file_at_a_case_colliding_target_refuses_before_any_write"

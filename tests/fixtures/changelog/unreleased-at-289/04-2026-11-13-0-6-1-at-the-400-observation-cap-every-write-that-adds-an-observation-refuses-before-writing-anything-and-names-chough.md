@@ -1,0 +1,1 @@
+- At the 400-observation cap, `chough cases run`, `cases record`, `evidence add` and `checkpoint --observation` refuse before running or writing anything, naming the bound and `chough session shelve <id>`, and `next` and the leave-test gate take a case's latest run only from the observations the checkpoint references (REQ-cli-032).

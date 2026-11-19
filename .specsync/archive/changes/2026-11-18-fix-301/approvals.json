@@ -1,0 +1,56 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1794962771,
+      "digest": "81c11759a028aabee4bf9d480cc15011744957705f00073a160da6a77cd4f4b4",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-301\": \"approved\" (Claude Code chat (hc t28), 2026-11-17, in reply to the #301 scope summary (docs/cli.md rows, help text for all 11 checkpoint flags, help --help exits 0, changelog fragment)). Relayed and recorded by claude-code (hc t28) at 2026-11-18T00:46:11Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-301",
+        "title": "CLI reference and help text cover every command and flag (#301)",
+        "description": "Add clap help text to all eleven list-valued checkpoint flags (--criterion, --requirement, --case, --design, --file, --observation, --bug, --decision, --question, --completed, --blocker), document the full CLI reference in docs/cli.md (checkpoint flags, change ready, doctor --leaks, migrate --json, stage help, top-level chough help), and make chough help --help exit 0 with help text, covered by a test.",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli"
+        ],
+        "affected_paths": [
+          "changelog.d/",
+          "docs/cli.md",
+          "src/checkpoint.rs",
+          "src/main.rs",
+          "tests/cli.rs"
+        ],
+        "no_spec_change": true,
+        "no_spec_change_rationale": "No canonical spec or requirement wording changes. This is a CLI bug fix: chough help --help currently exits 2 (no help subcommand exists) and should exit 0 with help text, so it changes CLI behavior (exit code and help output) only. A changelog fragment at changelog.d/<YYYY-MM-DD>-fix-301.md accompanies this change, per repo convention.",
+        "acceptance_criteria": [
+          "docs/cli.md documents the checkpoint command's eleven list-valued flags (--criterion, --requirement, --case, --design, --file, --observation, --bug, --decision, --question, --completed, --blocker), adds change ready to the change row and to the SpecSync change steps section, adds doctor --leaks to the doctor row, adds migrate --json to the migrate row, and adds stage help and the top-level chough help command; chough checkpoint --help prints help text for each of the eleven list-valued flags; chough help --help exits 0 with help text, covered by a test"
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "No requirement wording changes. Only docs/cli.md, clap help text on the checkpoint flags, the help --help exit code, a test for it in tests/cli.rs and a changelog fragment change; every other command's flags, output and exit codes stay as they are.",
+          "public_contract": "no"
+        }
+      },
+      "approved_delta_digests": {},
+      "approved_delta_bases": {},
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "approved",
+        "where": "Claude Code chat (hc t28), 2026-11-17, in reply to the #301 scope summary (docs/cli.md rows, help text for all 11 checkpoint flags, help --help exits 0, changelog fragment)",
+        "recorded_by": "claude-code (hc t28)"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1794973042,
+      "digest": "7e389be6b84e47540b333a9475ef160d76d2a975a8ba4aeab0c5c2405315687c",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

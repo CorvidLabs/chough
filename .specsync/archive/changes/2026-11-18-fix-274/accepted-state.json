@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "workflow_version": 3,
+  "workflow_origin_version": 2,
+  "id": "fix-274",
+  "slug": "fix-274",
+  "title": "Fix 274",
+  "description": "fix 274",
+  "kind": "bug_fix",
+  "state": "accepted",
+  "canonical_applied": true,
+  "base_commit": "be6c9f126e448bd33945a52261d55db2a9677d3d",
+  "created_at": 1795016496,
+  "updated_at": 1795020884,
+  "affected_specs": [
+    "cli"
+  ],
+  "affected_paths": [
+    "examples/feature-bug-loop.sh",
+    "tests/cli.rs",
+    ".chough/cases/cli.example-stops-at-a-refused-command.cases.toml",
+    "changelog.d/2026-11-18-fix-274.md"
+  ],
+  "no_spec_change": true,
+  "no_spec_change_rationale": "No requirement covers how the example script fails; it is a test harness for the verify lane. Only the script, its test, a case and a changelog fragment change.",
+  "acceptance_criteria": [
+    "When a chough or SpecSync command whose JSON examples/feature-bug-loop.sh reads with jq fails or is refused, such as chough bug update --status verified, the example stops at that command with a non-zero exit and that command's error, and runs no later step. No such command's output is piped straight into jq. A run whose commands all succeed passes as before."
+  ],
+  "selected_artifacts": [
+    "context",
+    "testing",
+    "tasks"
+  ],
+  "dependencies": [],
+  "answers": {
+    "architecture_risk": "no",
+    "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are listed as plain text in tasks.md, not as checkboxes, and a delta is frozen at approval (this change has none). No other lesson or principle constrains it.",
+    "public_contract": "no"
+  }
+}

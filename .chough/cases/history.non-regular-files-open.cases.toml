@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "history"
+
+# Review of #305: the reader checked the path and then opened it, so a file swapped for a
+# FIFO in between still blocked. The open is now non-blocking and checks the handle.
+
+[[case]]
+id = "TC-history-a-fifo-at-the-open-is-refused-without-blocking"
+title = "The bounded record reader refuses a FIFO that is at the path at the moment of the open, without blocking, by the type of the opened handle, and still reads a regular file"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-14"]
+requirements = ["REQ-history-006"]
+paths = ["src/records.rs", "src/sessions.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["the non-blocking open test passes"]
+
+[case.bind]
+adapter = "command"
+argv = ["cargo", "test", "--locked", "--bin", "chough", "--", "--exact", "records::tests::a_fifo_at_the_moment_of_the_open_is_refused_without_blocking"]
+expect_output = ["test records::tests::a_fifo_at_the_moment_of_the_open_is_refused_without_blocking ... ok"]
+timeout_seconds = 600

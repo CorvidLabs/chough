@@ -1,0 +1,24 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #320: a session holding a leaking ID reference could not be saved and nothing
+# named the way out, and doctor --fix --redact rewrote the ID, leaving the session
+# unreadable.
+
+[[case]]
+id = "TC-cli-doctor-redact-never-rewrites-an-id"
+title = "A committed session whose case reference holds a token gives a leak finding naming chough session shelve <id>; doctor --fix --redact leaves that ID line byte for byte with the finding skipped, redacts the email on an ordinary line, and the session still reads"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-cli-055"]
+paths = ["src/doctor.rs", "src/checkpoint.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::doctor_redact_never_rewrites_an_id passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "doctor_redact_never_rewrites_an_id"

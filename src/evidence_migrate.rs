@@ -511,6 +511,7 @@ fn read_observations(root: &Path, carried: &mut Carried) -> Result<Vec<Observati
         .flatten()
         .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_dir()))
         .map(|entry| entry.file_name().to_string_lossy().into_owned())
+        .filter(|folder| !crate::evidence::is_os_metadata(folder))
         .collect();
     folders.sort();
     for folder in folders {
@@ -628,6 +629,10 @@ fn files_under(root: &Path, relative: &str) -> Result<Vec<String>> {
         };
         for entry in entries {
             let entry = entry?;
+            // macOS metadata beside a 0.5.x observation is not one (REQ-records-015).
+            if crate::evidence::is_os_metadata(&entry.file_name().to_string_lossy()) {
+                continue;
+            }
             let name = format!("{relative}/{}", entry.file_name().to_string_lossy());
             let kind = entry.file_type()?;
             if kind.is_dir() {
@@ -844,6 +849,16 @@ fn receipt_map(evidence: &Evidence) -> Receipt {
     if let Some(case) = evidence.cases.first() {
         map.push(("case".into(), case.id.clone()));
         map.push(("case_digest".into(), case.digest.clone()));
+    }
+    // #286: as a finished session's receipt keeps them.
+    if !evidence.criteria.is_empty() {
+        map.push(("criteria".into(), evidence.criteria.join(", ")));
+    }
+    if !evidence.requirements.is_empty() {
+        map.push(("requirements".into(), evidence.requirements.join(", ")));
+    }
+    if !evidence.limitations.is_empty() {
+        map.push(("limitations".into(), evidence.limitations.join("; ")));
     }
     if let Some(screenshot) = &evidence.screenshot {
         map.push(("screenshot".into(), screenshot.clone()));

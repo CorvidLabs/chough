@@ -2367,6 +2367,104 @@ fn toolchain_task_names_a_version_that_differs() {
     );
 }
 
+/// Issue #289 (design B): the verify lane runs no knowledge task, so no lane or job checks
+/// the generated knowledge directory; the release task is the only place that rebuilds and
+/// then checks it.
+#[test]
+fn the_verify_lane_does_not_run_the_knowledge_check() {
+    let fledge = fs::read_to_string(manifest_dir().join("fledge.toml")).unwrap();
+    let verify = fledge
+        .split("[lanes.verify]")
+        .nth(1)
+        .and_then(|lane| lane.lines().find(|line| line.starts_with("steps = ")))
+        .unwrap_or_default();
+    assert!(
+        !verify.contains("knowledge"),
+        "the verify lane runs the knowledge task: {verify}"
+    );
+}
+
+/// Issue #289 (design B): the release task rebuilds the knowledge index and then checks it.
+#[test]
+fn the_release_task_rebuilds_and_checks_the_knowledge_index() {
+    let fledge = fs::read_to_string(manifest_dir().join("fledge.toml")).unwrap();
+    assert!(
+        fledge
+            .lines()
+            .any(|line| line.trim().starts_with("release-check = ")
+                && line.contains("library index")
+                && line.contains("library index --check")),
+        "fledge.toml defines no release-check task that rebuilds and checks the knowledge index:\n{fledge}"
+    );
+}
+
+/// Issue #289 (design B): no step of the ci or verify lane resolves to a task that runs
+/// the knowledge check, and the release task rebuilds the index and then checks it.
+#[test]
+fn no_ci_or_verify_lane_step_runs_the_knowledge_check_and_the_release_task_rebuilds_then_checks() {
+    let fledge = fs::read_to_string(manifest_dir().join("fledge.toml")).unwrap();
+    let task_command = |name: &str| -> String {
+        fledge
+            .split("[tasks]")
+            .nth(1)
+            .and_then(|tasks| tasks.split("\n[").next())
+            .unwrap_or("")
+            .lines()
+            .find_map(|line| {
+                let rest = line.trim_start();
+                let (key, value) = rest.split_once('=')?;
+                if key.trim() == name {
+                    return Some(value.trim().to_string());
+                }
+                None
+            })
+            .unwrap_or_else(|| panic!("fledge.toml has no task {name}"))
+    };
+    let release = task_command("release-check");
+    let rebuild = "cargo run --quiet --locked -- library index";
+    let check = "cargo run --quiet --locked -- library index --check";
+    assert!(
+        release.contains(rebuild)
+            && release.contains(check)
+            && release.find(rebuild) < release.find(check),
+        "the release task must rebuild then check: {release}"
+    );
+    let committed = "git diff --quiet HEAD -- knowledge/index.md knowledge/journal/feed.xml";
+    assert!(
+        release.find(rebuild) < release.find(committed)
+            && release.find(committed) < release.find(check),
+        "the release task must fail on an uncommitted rebuild before it checks: {release}"
+    );
+    for lane in ["ci", "verify"] {
+        let section = fledge
+            .split(&format!("[lanes.{lane}]"))
+            .nth(1)
+            .unwrap_or("");
+        let steps_line = section
+            .lines()
+            .find(|line| line.trim_start().starts_with("steps"))
+            .unwrap_or("");
+        let steps: Vec<String> = steps_line
+            .split('"')
+            .filter(|part| {
+                !part.is_empty() && part.chars().all(|c| c.is_ascii_alphanumeric() || c == '-')
+            })
+            .map(str::to_string)
+            .collect();
+        assert!(
+            steps.len() > 3,
+            "the {lane} lane's steps were not read from one `steps = [...]` line: {steps_line}"
+        );
+        for step in steps {
+            let command = task_command(&step);
+            assert!(
+                !command.contains("library index"),
+                "the {lane} lane step {step} runs the knowledge check: {command}"
+            );
+        }
+    }
+}
+
 /// TC-cli-bug-0022-toolchain-matches-ci, a second copy on PATH (BUG-0022): when a tool
 /// differs, the failure names the copy PATH finds first, the one in use, and every
 /// other copy on PATH, each with its version, so the human knows which binary to fix.
@@ -4251,4 +4349,27 @@ fn ci_runs_once_a_day_on_main_with_a_real_archive_base() {
             "the SpecSync Archive base falls back to github.sha: {base}"
         );
     }
+}
+
+/// #291 (DRIVE-12): this repository routes its module contracts to SpecSync's
+/// ancestor-aware merge driver, and AGENTS.md names the one-time setup, so two branches
+/// that each bump one module's `version:` and Change Log merge locally without a
+/// hand-resolved conflict.
+#[test]
+fn spec_files_merge_through_specsync_s_driver_in_this_repository() {
+    let attributes = fs::read_to_string(manifest_dir().join(".gitattributes")).unwrap();
+    for pattern in ["specs/**/*.spec.md", "specs/**/requirements.md"] {
+        assert!(
+            attributes.lines().any(|line| {
+                let mut fields = line.split_whitespace();
+                fields.next() == Some(pattern) && fields.any(|field| field == "merge=specsync")
+            }),
+            ".gitattributes routes {pattern} to merge=specsync"
+        );
+    }
+    let agents = fs::read_to_string(manifest_dir().join("AGENTS.md")).unwrap();
+    assert!(
+        agents.contains("specsync merge --install"),
+        "AGENTS.md names the one-time driver setup"
+    );
 }

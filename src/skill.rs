@@ -152,6 +152,22 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
         "references/lifecycle.md",
         "4b2d2c8246ca5bc6f2b9b37c9f608f35b767190629f274c45d97b8e6ad812e08",
     ),
+    // v0.6.1 (tag at cef86e26): the released plan and stages references, replaced when
+    // the skill named `chough change ready` (REQ-cli-067), so a 0.6.1 install updates.
+    (
+        "references/plan.md",
+        "06c450931a6c6dd6fdeb0bca5afcce984bad36239a6b21e7fe50e17e135b0fdd",
+    ),
+    (
+        "references/stages.md",
+        "515693d51d4b40ab515f0223dc41f5c16bbf00e1eb0830e40de5a8e019c6452c",
+    ),
+    // v0.6.1 (tag at cef86e26): the released lifecycle reference, replaced when the
+    // skill learned `--no-native-change` (#351), so a 0.6.1 install updates.
+    (
+        "references/lifecycle.md",
+        "d4670557b29768b4b9fe99040ba3a37f448f8bd185840e59ba8097cdb134c593",
+    ),
     (
         "references/bugs.md",
         "83714902fba86e418dcf29045127fb6f619af6d2168b8f1e226cba7c45736b33",
@@ -474,6 +490,46 @@ const KNOWN_PREVIOUS: &[(&str, &str)] = &[
     (
         "references/stages.md",
         "de8db3cb911d4b4cebf836be8c8dfcbf631b54ad663a75eab0345d392dddac46",
+    ), // Main cf82890; superseded by rebuilding the knowledge index at release (#289).
+    (
+        "references/accept.md",
+        "b063138264e63d1aeb528163e90e5ec6da036ec96aa883145fd8c3d3d5796eb7",
+    ),
+    (
+        "references/checkpoint.md",
+        "8e5684f9c6871f804e1c81a45ac83e6bcadac635d9603a72d1d539bff3a2058c",
+    ),
+    (
+        "references/librarian.md",
+        "d16f00f6929079b73c408245af0218c17350d7939d6bff36f796e5bab9afda2b",
+    ),
+    (
+        "references/lifecycle.md",
+        "5838a2024495717a721aa0afd03ad3d39c32c690aaabad4d61933b647fb018af",
+    ),
+    (
+        "references/stages.md",
+        "5c5f0b80d039b8c10b7b276ce73f2dd8e88aa9329503cd233d675d340128beac",
+    ),
+    // Main cf2ff72; superseded by changelog fragments in the fast path (#290).
+    (
+        "references/stages.md",
+        "dd6b1fcdbec31f75afbb0c89211d6490782fb9da20c1f0ab72690b1dbf54a1c6",
+    ),
+    // Main 0fd9fd22, the stages.md this branch replaced. A pristine install of that
+    // copy is known-outdated, so `chough skill update` replaces it (REQ-cli-016).
+    (
+        "references/stages.md",
+        "36522cbfa49c0d29b2505c552ff15d3743b9bca7c5985db0fb002d6b61974727",
+    ),
+    // Main 8abb5bb, before a blocking bug was limited to the session it is related to.
+    (
+        "references/stages.md",
+        "ab21a76a1f12aade6398112b1611d1165fb22c4beb528ffa5d6735b4f6efd997",
+    ),
+    (
+        "references/bugs.md",
+        "a81ae65f51ded7a9e09901f21b881ae47a1652e7722298df8d9d0470ccc876c1",
     ),
 ];
 
@@ -857,5 +913,132 @@ pub(super) fn run(root: &Path, command: SkillCommand) -> Result<()> {
             print_json(&report(root, &hosts, true)?)
         }
         SkillCommand::RemoveLegacy { hosts } => print_json(&remove_legacy(root, &hosts)?),
+    }
+}
+
+#[cfg(test)]
+mod released_digests {
+    use super::*;
+
+    /// Every bundle file as release 0.6.1 shipped it (tag `v0.6.1`, cef86e26).
+    const RELEASED_0_6_1: &[(&str, &str)] = &[
+        (
+            "SKILL.md",
+            "c6c0b4fea98dad74a3b2505bb33e1ebf9e154cf4bb7356fa9959af71bf0b2a40",
+        ),
+        (
+            "agents/openai.yaml",
+            "e61ad96fe5e2933c538d1ac775e7541a025d81fcd02804dc7c4d0fd215ed10f0",
+        ),
+        (
+            "references/accept.md",
+            "1d326c7a372af3ed26c80b54cfcd783688d000b47cff102015bd03df44d735f3",
+        ),
+        (
+            "references/bugs.md",
+            "63b5b788f4ab937a4b7373b668030a9f91ec32380b85a87622654118634a97f0",
+        ),
+        (
+            "references/build.md",
+            "970d5a96be20ac737f8e1c9650bc327355792b3ee4b2e525acbbd7dc14c7ad30",
+        ),
+        (
+            "references/checkpoint.md",
+            "1dc5e92b4715e69d5498dc244667275c92be37a0df4db64119afe882a422763b",
+        ),
+        (
+            "references/design.md",
+            "ac8d5c162ec4340c82ebe534dc5f5e68ddb503ff4a8a690075bee515ccfb4717",
+        ),
+        (
+            "references/intent.md",
+            "10cd3cbe76a8a56e6e931bed15a42d4ec1a10ccc8a9091fac3f60ca507856069",
+        ),
+        (
+            "references/librarian.md",
+            "547f86fa50858a9cd3bb106a2592fd8cb3672464d73f4ca5100a5362f4204410",
+        ),
+        (
+            "references/lifecycle.md",
+            "d4670557b29768b4b9fe99040ba3a37f448f8bd185840e59ba8097cdb134c593",
+        ),
+        (
+            "references/plan.md",
+            "06c450931a6c6dd6fdeb0bca5afcce984bad36239a6b21e7fe50e17e135b0fdd",
+        ),
+        (
+            "references/release.md",
+            "77aaf7a6a8538b44f232f845b9bcbc609e2b369527aaf512b5d4f63316bb1ed9",
+        ),
+        (
+            "references/roles.md",
+            "4995658517849e80e567a73eaf0399ec51123549a7e94649a17afa35ec40f20d",
+        ),
+        (
+            "references/stages.md",
+            "515693d51d4b40ab515f0223dc41f5c16bbf00e1eb0830e40de5a8e019c6452c",
+        ),
+        (
+            "references/testing.md",
+            "0389a3c78be3736e46ccdc2463f959fc7ca580ab22e9ae1a30222c72fcba5ec0",
+        ),
+        (
+            "references/validate.md",
+            "1fd485b0b4720f6016a84015df958e17a9edf5fb1ccaecb9c9d8b2ad7e784f45",
+        ),
+        (
+            "templates/brief.md",
+            "816e40ecd47f39ac62e8f0f5e84a9e6277e3470221df1d9c80fff9d6bccb378e",
+        ),
+        (
+            "templates/bug-report.md",
+            "9998443e61450f0383c211a49121bfb07256b35ba7972302a02d0d67cc099476",
+        ),
+        (
+            "templates/cases.toml",
+            "e1ee1997d7d1b2f247fa3e5634b197726dc2a031c4f34578a54a8e9b0da517f3",
+        ),
+        (
+            "templates/frd.md",
+            "1492e0c5368df8762f09b2bb590a049f6dc88649c6003686951dddf6fe34b2bf",
+        ),
+        (
+            "templates/prototype/COMPANION.md",
+            "3e249d2df0a95fd167712e54a2078e75a1ebebc5c1066ef6ec6a1228b32e9655",
+        ),
+        (
+            "templates/prototype/index.html",
+            "366259957ea1289ac4c9046a4c65b42cb4a7228ab93006ca9396bc5840d612e3",
+        ),
+        (
+            "templates/prototype/styles.css",
+            "33c5c3beba2fb94e8e4674ac56f8cda230a0d2f5d091fc11faa42781558ff3af",
+        ),
+        (
+            "templates/review-findings.md",
+            "8a50dd8a1ea1afadffaf8b56f86d0031ada23ecc1f72569df3c3ff24642448b4",
+        ),
+    ];
+
+    /// #351 (the tester's finding on #359): a file the current bundle replaces must be
+    /// known as a previous release's, or `skill status` calls an untouched install
+    /// `edited` and `skill update` never updates it. Each 0.6.1 file is either still
+    /// current or listed in [`KNOWN_PREVIOUS`]. Add the next release's table here when
+    /// it ships.
+    #[test]
+    fn every_released_file_the_bundle_replaces_is_known_previous() {
+        for (name, released) in RELEASED_0_6_1 {
+            let Some((_, content)) = BUNDLE.iter().find(|(bundled, _)| bundled == name) else {
+                continue;
+            };
+            let current = digest_bytes(content.as_bytes());
+            assert!(
+                current == *released
+                    || KNOWN_PREVIOUS
+                        .iter()
+                        .any(|(known, previous)| known == name && previous == released),
+                "{name} changed since 0.6.1 and its released digest {released} is not in KNOWN_PREVIOUS"
+            );
+        }
     }
 }

@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #266: during a git merge that conflicted on .chough/ records, chough next,
+# status and doctor said nothing, and Chough wrote into the conflicted tree.
+
+[[case]]
+id = "TC-cli-git-merge-in-progress-warns-and-refuses-writes"
+title = "With a session record unmerged by a git merge, next and status name the merge and exit 0, doctor reports a git_operation finding, and a decision, an evidence entry and a bug each refuse as refused:unmerged with every file unchanged"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-17"]
+requirements = ["REQ-cli-069"]
+paths = ["src/doctor.rs", "src/main.rs", "src/checkpoint.rs", "tests/git_merge.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/git_merge.rs::a_merge_conflict_in_chough_warns_and_refuses_writes passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "git_merge"
+test = "a_merge_conflict_in_chough_warns_and_refuses_writes"

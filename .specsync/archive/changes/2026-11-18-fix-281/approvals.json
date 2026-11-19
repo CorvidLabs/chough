@@ -1,0 +1,67 @@
+{
+  "approvals": [
+    {
+      "gate": "definition",
+      "actor": "0xLeif",
+      "timestamp": 1795033175,
+      "digest": "1e374ee2bda49d87db190674a90f9c943600302a3c8bb60b26396774c5750d02",
+      "note": "Approved by 0xLeif at the Chough gate \"Scope approval of fix-281\": \"done without a change. A session can record that it needs no native change, with a reason, and then may advance to done and archive with outcome done. Its human gates still have to be closed by a person, as in any other session.\" (Leif's decision comment on GitHub issue #281, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval). Relayed and recorded by fable-t4b at 2026-11-18T20:19:34Z through chough checkpoint --close-gate; a relayed claim, not authenticated.",
+      "approved_scope": {
+        "schema_version": 1,
+        "change_id": "fix-281",
+        "title": "Fix 281",
+        "description": "fix 281",
+        "kind": "bug_fix",
+        "affected_specs": [
+          "cli",
+          "records"
+        ],
+        "affected_paths": [
+          ".chough/cases/cli.no-native-change-required.cases.toml",
+          "changelog.d/2026-11-18-fix-281.md",
+          "docs/cli.md",
+          "specs/cli/requirements.md",
+          "specs/records/records.spec.md",
+          "src/checkpoint.rs",
+          "src/session_md.rs",
+          "src/stage.rs",
+          "tests/stages.rs"
+        ],
+        "no_spec_change": false,
+        "no_spec_change_rationale": null,
+        "acceptance_criteria": [
+          "With SpecSync configured and no native change recorded, chough checkpoint --no-native-change <reason> records the reason in the session; its gated stage moves are then allowed and labelled ungated:no-native-change-required, so it reaches done and is archived with outcome done, the story keeping the reason; an open human gate still refuses the move; a blank reason is refused; the flag is refused while a native change is recorded, and recording one removes the reason."
+        ],
+        "dependencies": [],
+        "supersedes": [],
+        "answers": {
+          "architecture_risk": "no",
+          "constraints": "The specs/cli/cli.3md lesson on native tasks applies: human gates are plain text in tasks.md, not checkboxes, and the deltas are frozen at approval. REQ-cli-030 is unchanged: no flag or reason bypasses a human gate, and this flag does not.",
+          "public_contract": "yes"
+        }
+      },
+      "approved_delta_digests": {
+        "cli": "ab1bca31b8766a73d07f59e22c9d318cd0cc69533a4f2ee28057b9a30758b5ca",
+        "records": "74ee2761263783380b61ed14106a258b910528d6f099c5fb6db612fc968716b3"
+      },
+      "approved_delta_bases": {
+        "cli: REQUIREMENT REQ-cli-007": "e88c603fe1026b6b3fb9ed21a35c8fc933a8ab36b01611e617c5bacb47444964",
+        "records: SPEC SECTION Invariants": "00e325cdd71efc64e4cba2bfa63387b70ded2b6a355696da32fc1cfa9649ccb1"
+      },
+      "relayed_by": {
+        "decided_by": "0xLeif",
+        "words": "done without a change. A session can record that it needs no native change, with a reason, and then may advance to done and archive with outcome done. Its human gates still have to be closed by a person, as in any other session.",
+        "where": "Leif's decision comment on GitHub issue #281, 2026-11-18, from his planning interview; his planning session (hc t4c) relayed it to fable-t4b as his scope approval",
+        "recorded_by": "fable-t4b"
+      }
+    },
+    {
+      "gate": "finalization",
+      "actor": "specsync:finalization",
+      "timestamp": 1795036055,
+      "digest": "e9344268205a397aee64a3ee2333099ea4928769fbbddaca2447b5ba12e42800",
+      "note": "Same-PR finalization closing digest"
+    }
+  ],
+  "reopenings": []
+}

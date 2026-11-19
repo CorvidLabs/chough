@@ -1,6 +1,6 @@
 ---
 module: history
-version: 23
+version: 29
 status: active
 files:
   - src/history.rs
@@ -106,3 +106,10 @@ reads and atomic writes. Git supplies revisions; no external service is used.
 | 21 | 2026-11-12 | chough-0-6-0-human-first-records-one-markdown-file-with-yaml-front-matter-per-record-date-slug-session-folders-with-an: Chough 0.6.0 human-first records: one Markdown file with YAML front matter per record, date+slug session folders with an append-only timeline that fold into one archived story at finish, a knowledge vault that links and never copies, no local facts or credentials in committed records, a human's gate approval drives the SpecSync approval as that human, and chough migrate converts 0.5.x projects with a digest receipt |
 | 22 | 2026-11-12 | prepare-the-chough-0-6-0-release-cargo-0-6-0-and-the-dated-changelog-with-the-dogfood-results-and-the-fixes-the-dogfood: Prepare the Chough 0.6.0 release: Cargo 0.6.0 and the dated CHANGELOG with the dogfood results, and the fixes the dogfood found |
 | 23 | 2026-11-13 | 0-6-1-chough-next-with-no-open-session-says-so-and-exits-0-and-timing-says-elapsed-wall-clock-once: 0.6.1: chough next with no open session says so and exits 0, and timing says elapsed wall-clock once |
+| 24 | 2026-11-15 | chough-s-records-join-a-receipt-s-claim-to-its-evidence-with-a-dash-not-an-em-dash-and-still-read-records-written-with: Chough's records join a receipt's claim to its evidence with a dash, not an em dash, and still read records written with the old join (#278) |
+| 25 | 2026-11-15 | the-knowledge-index-and-feed-are-rebuilt-and-checked-at-release-not-at-each-move-into-done-or-in-each-pull-request-289: The knowledge index and feed are rebuilt and checked at release, not at each move into done or in each pull request (#289) |
+| 25 | 2026-11-18 | fix-320: Fix 320 |
+| 26 | 2026-11-18 | fix-286: Fix 286 |
+| 27 | 2026-11-18 | fix-250: Fix 250 |
+| 28 | 2026-11-18 | fix-269-post: Fix 269 post |
+| 29 | 2026-11-19 | fix-349: Fix 349 |

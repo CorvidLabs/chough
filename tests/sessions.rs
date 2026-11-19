@@ -1726,7 +1726,7 @@ fn local_state_is_ignored_by_git() {
 /// REQ-history-006, REQ-records-004, TC-history-a-story-lists-each-entry-once (R6, S7):
 /// a closed session's story lists each evidence entry once in What was verified, as
 /// its receipt line; an entry with no command still separates its claim from the
-/// fingerprint digits with ` — `.
+/// fingerprint digits with ` - `.
 #[test]
 fn a_story_lists_each_entry_once_with_its_receipt() {
     let fixture = Fixture::new();
@@ -1782,7 +1782,7 @@ fn a_story_lists_each_entry_once_with_its_receipt() {
     assert_eq!(naming.len(), 1, "{section}");
     let line = naming[0];
     let after = line
-        .strip_prefix("- SYNTHETIC external proof — ")
+        .strip_prefix("- SYNTHETIC external proof - ")
         .unwrap_or_else(|| panic!("no separator: {line}"));
     assert!(
         after.len() > 12 && after[..12].bytes().all(|byte| byte.is_ascii_hexdigit()),

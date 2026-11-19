@@ -186,7 +186,7 @@ chough change ship free-shipping-at-the-threshold \
 It checks the session, the stage and the relay before it runs anything. If the move
 into done is refused after the ship, it says the change is shipped and names the
 command left to run. The move into done turns the session into one story in
-`.chough/archive/sessions/` and writes a journal post. The agent commits those, then
+`.chough/archive/sessions/` and, when the librarian is on, writes a journal post. The agent commits those, then
 runs `chough doctor --fix`, which removes the session folder now that it is committed,
 and commits that. Pushing and observing CI come last, because the hosted Archive gate
 refuses while the change is open. See [the

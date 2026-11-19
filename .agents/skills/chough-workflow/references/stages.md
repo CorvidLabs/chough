@@ -21,16 +21,19 @@ reference `chough next` names, and the code. Local and small-context agents star
    intent, `chough stage advance` leaves intent; when nothing visual changes,
    `chough stage skip --reason "<why>"` skips design.
 3. `chough change new "<outcome>" --kind <kind> --spec <module> --path <path>…`,
-   declaring every path. Answer its questions with `specsync change answer`, and
-   write `deltas/<module>.md` for each affected spec (`## MODIFIED` with each changed
-   requirement's full new text), unless the change is `--no-spec-change`.
+   declaring every path, including tests. Answer with `chough change answer`, the
+   same interview as `specsync change answer`, and write `deltas/<module>.md` for each affected spec
+   (`## MODIFIED` with each changed requirement's full new text),
+   unless the change is `--no-spec-change`.
 4. Fill the change's artifacts, run `chough change ready <id>`, then stop: scope approval belongs to the human unless
    standing authorization covers it ([plan.md](plan.md)).
 5. Make the first code edit soon. Search for the names you need; don't survey.
 6. Add a test that fails without the fix and a case in its own
-   `.chough/cases/<module>.<topic>.cases.toml`; update the changelog and docs.
-7. `fledge run fmt`, `fledge run test`, `fledge run lint`, then `chough change check
-   <id>`, commit, and stop for the human's review.
+   `.chough/cases/<module>.<topic>.cases.toml`; add the changelog entry as
+   `changelog.d/<YYYY-MM-DD>-<change-id>.md` and update the docs.
+7. `fledge run fmt`, `fledge run test`, `fledge run lint`. Then `chough cases run`,
+   open the review gate, commit the source with `.chough/`, run `chough change check
+   <id>` (it commits the verification), and stop for the human's review.
 
 Work only in your own checkout and branch; other branches are not inputs.
 
@@ -112,10 +115,10 @@ observations and evidence named in the refresh list must be redone by their owne
 - Outputs: evidence entries in the session's `evidence/` folder (raw logs stay local and in CI), bugs for failures.
 - Roles and tools: QA; `chough cases run/record`; browser for design QA.
 - Completion evidence: selected cases observed; failures captured; omissions explained.
-- Approval: none; blocking bugs send work back to build.
+- Approval: none; a blocking bug related to this session sends work back to build. An unrelated blocking bug is named and does not stop the session.
 - Questions: whether a gap is a product decision rather than a defect.
 - Checkpoint: case and observation references, open bugs, test debt.
-- Transitions: advance to accept (refused while blocking bugs are open); back to build.
+- Transitions: advance to accept (refused while a blocking bug related to this session is open); back to build. An unrelated blocking bug does not refuse the move.
 
 ## accept
 
@@ -132,7 +135,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## done
 
 - Purpose: the change is archived. Merge follows the repository's process.
-- Outputs: the move into done archives the session into one story in `.chough/archive/sessions/`, a journal post and a refreshed knowledge index. Commit them, then run `chough doctor --fix` and commit that.
+- Outputs: the move into done archives the session into one story in `.chough/archive/sessions/`, and, when the librarian is on, a journal post. The generated knowledge directory is refreshed at release, not here. Commit the story and the post, if one was written, then run `chough doctor --fix` and commit that.
 - Transitions: release only with authorization, asked before done so the session stays open; start new work with `chough session new <key>`.
 
 ## release
@@ -146,7 +149,7 @@ observations and evidence named in the refresh list must be redone by their owne
 ## bugs
 
 - Side stage for reproducing, classifying, deduplicating and recording a defect locally.
-- Returns to its caller; blocking bugs send the main flow back to build.
+- Returns to its caller; a blocking bug related to this session sends the main flow back to build. An unrelated one is named and does not.
 
 ## validate
 
