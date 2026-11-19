@@ -45,6 +45,13 @@ becomes `2026-11-19-open-one` beside `2026-11-11-open-one`, and `next` refuses w
 several open sessions. The receipt already lists every file an earlier migration read
 with its SHA-256 (its Before section), so the rule is stated on the receipt.
 
+Receipts as input, checked on real ones: this repository's own receipt of
+2026-11-12 (1,577,630 bytes, under the 4,194,304-byte receipt bound) and jackdaw's of
+2026-11-13 and 2026-11-16 all carry `## Before` with one line per file read, its path
+and SHA-256, the format this build writes. Not tried on the binary, and to be pinned
+by the first failing tests: a returning file whose session has since been archived,
+and a returning fixed-path `.chough/session.json` that holds a different session.
+
 Not in this scope: a hand-made file under `.chough/` that is no 0.5.x record kind,
 such as a `.chough/proposals/` note, is neither carried, removed nor mentioned.
 
