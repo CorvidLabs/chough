@@ -1361,3 +1361,43 @@ fn errors_show_a_given_value_only_when_clean() {
     }
     assert_eq!(tree(fixture.root()), before);
 }
+
+/// REQ-records-006 (#379, corvid-agent's review of #407): with `USER` and `LOGNAME`
+/// naming two different users, both are local user names: each is refused in an absolute
+/// path and as `<user>@<host>`, and redacted under `--redact`.
+#[test]
+fn every_user_variable_that_is_set_counts() {
+    let fixture = Fixture::new();
+    fixture.init();
+    let env = [("USER", "SYNTHETICone"), ("LOGNAME", "SYNTHETICtwo")];
+    for value in [
+        "see /opt/SYNTHETICone/x",
+        "see /opt/SYNTHETICtwo/x",
+        "ssh SYNTHETICone@build-box",
+        "ssh SYNTHETICtwo@build-box",
+    ] {
+        let before = tree(fixture.root());
+        let output = fixture.run_with_env(&["checkpoint", "--decision", value], &env);
+        let said = String::from_utf8_lossy(&output.stderr).into_owned();
+        assert!(!output.status.success(), "{value} was written");
+        assert!(said.contains("decision holds user-name"), "{value}: {said}");
+        assert_eq!(tree(fixture.root()), before, "{value} changed a file");
+    }
+    let output = fixture.run_with_env(
+        &[
+            "--redact",
+            "checkpoint",
+            "--decision",
+            "ssh SYNTHETICtwo@build-box",
+        ],
+        &env,
+    );
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let text = fixture.read(&fixture.session_file());
+    assert!(!text.contains("SYNTHETICtwo@build-box"), "{text}");
+    assert!(text.contains("<redacted:user-name>"), "{text}");
+}

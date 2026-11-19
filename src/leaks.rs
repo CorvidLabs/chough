@@ -59,17 +59,19 @@ pub(crate) struct Local {
 
 impl Local {
     /// This machine's user and host names, read once per process: the account's user
-    /// name, and `USER` or `LOGNAME` when it names another (#379); the host name, and on
-    /// macOS the LocalHostName (#368).
+    /// name, and each of `USER`, `LOGNAME` and `USERNAME` that is set and names another
+    /// (#379); the host name, and on macOS the LocalHostName (#368).
     pub(crate) fn current() -> &'static Local {
         static LOCAL: OnceLock<Local> = OnceLock::new();
         LOCAL.get_or_init(|| {
-            let variable = ["USER", "LOGNAME", "USERNAME"]
-                .iter()
-                .find_map(|name| std::env::var(name).ok().filter(|value| !value.is_empty()));
             let mut local = Local::new(account_user().as_deref(), host_name().as_deref());
-            if let Some(user) = variable {
-                local.add_user(&user);
+            // Every variable that is set, not only the first: a shell can carry two names.
+            for name in ["USER", "LOGNAME", "USERNAME"] {
+                if let Ok(user) = std::env::var(name)
+                    && !user.is_empty()
+                {
+                    local.add_user(&user);
+                }
             }
             if let Some(host) = local_host_name() {
                 local.add_host(&host);

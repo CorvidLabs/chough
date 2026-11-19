@@ -183,3 +183,21 @@ expected = ["tests/humans.rs::gate_record_redact_redacts_in_the_close_it_runs pa
 adapter = "cargo-test"
 test_target = "humans"
 test = "gate_record_redact_redacts_in_the_close_it_runs"
+
+[[case]]
+id = "TC-records-every-user-variable-counts"
+title = "With USER and LOGNAME naming two different users, both are refused in an absolute path and as user@host, and redacted under --redact"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["LIFE-26"]
+requirements = ["REQ-records-006"]
+paths = ["src/leaks.rs", "tests/leaks.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/leaks.rs::every_user_variable_that_is_set_counts passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "leaks"
+test = "every_user_variable_that_is_set_counts"
