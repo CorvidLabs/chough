@@ -1,0 +1,23 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# GitHub #281: a finished session with no native change could only be archived as
+# abandoned.
+
+[[case]]
+id = "TC-cli-a-session-that-needs-no-native-change-reaches-done"
+title = "A session that records, with a reason, that it needs no native change advances to done as ungated:no-native-change-required and is archived with outcome done, while an open human gate still refuses"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-16"]
+requirements = ["REQ-cli-007"]
+paths = ["src/stage.rs", "src/checkpoint.rs", "src/session_md.rs", "tests/stages.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/stages.rs::a_session_that_needs_no_native_change_reaches_done_and_archives_as_done passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "stages"
+test = "a_session_that_needs_no_native_change_reaches_done_and_archives_as_done"

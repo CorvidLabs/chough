@@ -3034,3 +3034,32 @@ fn a_valid_case_definition_may_quote_a_marker_in_a_string() {
         .collect();
     assert!(about.is_empty(), "{report:#}");
 }
+
+/// #283, TC-cli-a-retired-case-keeps-its-fledge-task-binding: removing a fledge task is
+/// often why its case was retired, so `cases check` returns early for a retired case
+/// before checking its `fledge-task` binding, and the binding stays as written, as
+/// history. An active case naming a missing task is still refused, and `cases run`
+/// still refuses the retired case.
+#[test]
+fn a_retired_case_keeps_a_binding_to_a_removed_fledge_task() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    fixture.init();
+    fixture.write("fledge.toml", "[tasks]\nkept = \"echo kept\"\n");
+    let binding = "adapter = \"fledge-task\"\ntask = \"removed-task\"\nexpect_output = [\"ok\"]";
+    let active = format!("{HEADER}{}", bound("TC-cli-0001", binding, ""));
+    fixture.write(".chough/cases/cli.cases.toml", &active);
+    let refused = fixture.fails(&["cases", "check"]);
+    assert!(
+        refused.contains("fledge task removed-task is not defined in fledge.toml"),
+        "{refused}"
+    );
+
+    let retired = active.replace("status = \"active\"", "status = \"retired\"");
+    assert_ne!(retired, active);
+    fixture.write(".chough/cases/cli.cases.toml", &retired);
+    assert_eq!(fixture.ok(&["cases", "check"])["valid"], true);
+    assert_eq!(fixture.read(".chough/cases/cli.cases.toml"), retired);
+    let run = fixture.fails(&["cases", "run", "TC-cli-0001", "--environment", "local"]);
+    assert!(run.contains("TC-cli-0001 is retired"), "{run}");
+}

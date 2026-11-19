@@ -1,6 +1,6 @@
 ---
 module: records
-version: 13
+version: 19
 status: active
 files:
   - src/markdown.rs
@@ -134,7 +134,7 @@ or redacting every value before it is written.
 | `Written` | One 0.6.0 file the migration writes create-new, with its bytes (REQ-records-009). |
 | `Carried` | What one mapper carries into 0.6.0: the 0.5.x sources it read, the files it writes, the aliases it keeps, the files it removes with why, the leaks it kept and the gaps it found. |
 | `SessionHome` | Where a 0.5.x session went, by its 0.5.x key: its open session folder or its archived story. |
-| `Receipt` | The receipt map of one carried observation, as a story's or a bug's `receipts:` list holds it (REQ-history-006). |
+| `Receipt` | The receipt map of one carried observation, as a story's or a bug's `receipts:` list holds it, with the observation's criteria, requirements and limitations when it has any (REQ-history-006). |
 | `ObservationHomes` | Where each 0.5.x observation went: an open session's evidence entry or a receipt; one in neither was removed. |
 | `names` | Each of a list of 0.5.x observation IDs by the name of the entry or receipt it became, once each and in order; a removed one keeps its ID. |
 | `legacy_paths` | Every 0.5.x record path in the project, sorted; any one makes the tree unmigrated (REQ-records-010). |
@@ -167,6 +167,9 @@ or redacting every value before it is written.
    suffix, never a count; a clash draws one suffix, and a second clash is refused
    without another draw.
 5. A refusal for a leak names the field and the kind of match, never the text.
+6. A session's front matter holds `no_native_change`, the reason its work needs no
+   native change, only once the session recorded it (REQ-cli-007), and never together
+   with a native change; an archived story keeps it.
 
 ## Behavioral Examples
 
@@ -217,4 +220,10 @@ use this one for every record they write.
 | 10 | 2026-11-18 | fix-314: Fix 314 |
 | 11 | 2026-11-18 | fix-264: Fix 264 |
 | 12 | 2026-11-18 | fix-265: Fix 265 |
-| 13 | 2026-11-18 | fix-339: Fix 339 |
+| 13 | 2026-11-18 | fix-286: Fix 286 |
+| 14 | 2026-11-18 | fix-281: Fix 281 |
+| 15 | 2026-11-18 | fix-250: Fix 250 |
+| 16 | 2026-11-18 | fix-269: Fix 269 |
+| 17 | 2026-11-18 | fix-269-post: Fix 269 post |
+| 18 | 2026-11-18 | fix-251: Fix 251 |
+| 19 | 2026-11-18 | fix-339: Fix 339 |

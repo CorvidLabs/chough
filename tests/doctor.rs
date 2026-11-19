@@ -278,6 +278,34 @@ fn doctor_decision_fixes_need_a_reason_and_record_no_human_decision() {
         serde_json::json!([]),
         "{archived:#}"
     );
+    // #250: each withdrawn gate's Timeline entry carries the reason, in the archived
+    // story too, and doctor's JSON echoes it on the decisions it applied.
+    let story = fixture.read(&format!(
+        ".chough/archive/sessions/{}.md",
+        fixture.id_of("alpha")
+    ));
+    let closed_entry = story
+        .find("· gate-closed ·")
+        .unwrap_or_else(|| panic!("no gate-closed entry: {story}"));
+    let after = &story[closed_entry..];
+    let entry_end = after.find("\n- ").unwrap_or(after.len());
+    assert!(
+        after[..entry_end].contains("  - withdrawn: Superseded; ch-alpha is archived"),
+        "{}",
+        &after[..entry_end]
+    );
+    for finding in fixed["findings"].as_array().unwrap() {
+        let echoed = finding["decision_reason"].as_str();
+        if finding["decision"] == true {
+            assert_eq!(
+                echoed,
+                Some("Superseded; ch-alpha is archived"),
+                "{finding:#}"
+            );
+        } else {
+            assert_eq!(echoed, None, "{finding:#}");
+        }
+    }
     // Withdrawing a gate records no human decision.
     assert!(
         !archived["decisions"]
@@ -1017,6 +1045,127 @@ fn doctor_reports_merge_drivers_that_would_run_an_older_chough() {
     assert!(outdated(&report).is_empty(), "{report:#}");
 }
 
+/// REQ-records-014 (#251, #279), TC-cli-whole-repository-specsync-gets-the-narrowing-advice:
+/// while SpecSync's `source_dirs` or `meaningful_paths` covers the whole repository,
+/// SpecSync refuses the record folders in `verification_ignored_paths` as overlapping, so
+/// `chough init` and `chough doctor` advise narrowing to the code folders first and say
+/// why, the skill bundle counted as uncovered source among it; once both are narrowed the
+/// advice is the list again. Neither file is ever written.
+#[test]
+fn a_whole_repository_specsync_gets_the_narrowing_advice() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    let config = "specs_dir = \"specs\"\nsource_dirs = [\".\"]\n";
+    fixture.write(".specsync/config.toml", config);
+    let init = fixture.ok(&[
+        "init",
+        "--objective",
+        "SYNTHETIC objective",
+        "--intent-scope",
+        "LIFE",
+    ]);
+    let advice = init["records_in_verification"].as_str().unwrap_or_default();
+    assert!(
+        advice
+            .contains("source_dirs = [\".\"] in .specsync/config.toml covers the whole repository")
+            && advice.contains("refuses a verification_ignored_paths entry")
+            && advice.contains("skill bundle")
+            && advice.contains("for example [\"src\"]")
+            && !advice.contains("then list"),
+        "{init:#}"
+    );
+    // No policy: the doctor finding is the policy's, so there is none.
+    let (_, report) = doctor(&fixture, &[]);
+    assert!(exclusions_finding(&report).is_none(), "{report:#}");
+
+    let whole = "{\n  \"version\": 2,\n  \"enabled\": true,\n  \"meaningful_paths\": [\".\"],\n  \"verification_ignored_paths\": []\n}\n";
+    fixture.write(".specsync/sdd.json", whole);
+    let (code, report) = doctor(&fixture, &["--fix"]);
+    assert_eq!(code, 1, "{report:#}");
+    let finding = exclusions_finding(&report).expect("a records_in_verification finding");
+    assert!(
+        finding["fix"]
+            .as_str()
+            .is_some_and(|fix| fix.starts_with("narrow SpecSync's whole-repository source_dirs")),
+        "{finding:#}"
+    );
+    let advice = finding["advice"].as_str().unwrap_or_default();
+    assert!(
+        advice.contains("and \".\" in meaningful_paths in .specsync/sdd.json cover the whole repository")
+            && advice.contains("then list .chough/sessions/, .chough/archive/, .chough/bugs/ in verification_ignored_paths"),
+        "{finding:#}"
+    );
+    assert_eq!(fixture.read(".specsync/config.toml"), config);
+    assert_eq!(fixture.read(".specsync/sdd.json"), whole);
+
+    fixture.write(
+        ".specsync/config.toml",
+        "specs_dir = \"specs\"\nsource_dirs = [\"src\"]\n",
+    );
+    fixture.write(".specsync/sdd.json", &policy(&[]));
+    let (_, report) = doctor(&fixture, &[]);
+    let finding = exclusions_finding(&report).expect("a records_in_verification finding");
+    assert!(
+        finding["fix"]
+            .as_str()
+            .is_some_and(|fix| fix.starts_with("add ")),
+        "{finding:#}"
+    );
+    assert!(
+        !finding["advice"]
+            .as_str()
+            .unwrap_or_default()
+            .contains("whole repository"),
+        "{finding:#}"
+    );
+}
+
+/// REQ-records-006, REQ-history-012 (#250, the tester's finding on #345): the reason a
+/// stale gate is withdrawn with is a written value. One that holds a credential is
+/// refused with nothing written, as `session close --reason` refuses it; with
+/// `--redact` it is written redacted, in the story and in doctor's JSON, never raw.
+#[cfg(unix)]
+#[test]
+fn a_stale_gate_reason_that_leaks_is_refused_or_redacted() {
+    let fixture = Fixture::new();
+    fixture.ok(&["session", "new", "alpha", "--objective", "Ship alpha"]);
+    fixture.ok(&[
+        "checkpoint",
+        "--awaiting-human",
+        "Native approval of ch-alpha",
+    ]);
+    finalized_change(&fixture, "alpha", "ch-alpha");
+    no_native_reads(&fixture);
+    let token = concat!("ghp_", "abcdefghijklmnopqrstuvwxyz0123456789");
+    let reason = format!("SYNTHETIC superseded, token {token}");
+    let before = fixture.read(&fixture.session_file_of("alpha"));
+
+    let refused = fixture.run(&["doctor", "--fix", "--reason", &reason]);
+    assert!(!refused.status.success());
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&refused.stdout),
+        String::from_utf8_lossy(&refused.stderr)
+    );
+    assert!(said.contains("refused:leak"), "{said}");
+    assert!(!said.contains(token), "{said}");
+    assert_eq!(fixture.read(&fixture.session_file_of("alpha")), before);
+    assert!(!fixture.exists(".chough/archive/sessions"));
+
+    let (code, fixed) = doctor(&fixture, &["--fix", "--redact", "--reason", &reason]);
+    assert_eq!(code, 0, "{fixed:#}");
+    let story = fixture.read(&format!(
+        ".chough/archive/sessions/{}.md",
+        fixture.id_of("alpha")
+    ));
+    assert!(!story.contains(token), "{story}");
+    assert!(
+        story.contains("  - withdrawn: SYNTHETIC superseded, token <redacted:"),
+        "{story}"
+    );
+    assert!(!fixed.to_string().contains(token), "{fixed:#}");
+}
+
 /// REQ-records-001, REQ-cli-055 (#265), TC-records-doctor-reports-conflict-markers-in-records:
 /// a committed record whose body holds a conflict gives one `conflict_markers` finding per
 /// marker line, naming the file, the line and the marker, and `--fix` skips them. Since
@@ -1209,4 +1358,73 @@ fn doctor_warns_of_a_conflict_inside_a_code_fence() {
         "an advisory finding changed doctor's exit: {report:#}"
     );
     fixture.ok(&["checkpoint", "--decision", "decided: SYNTHETIC kept"]);
+}
+
+/// REQ-records-014 (#354): when the code SpecSync specifies sits at the repository root,
+/// as in NFTMix, there is no folder to narrow `source_dirs` to. `chough init` and `chough
+/// doctor` advise adding the skill bundle's and Chough's folders to `exclude_dirs`,
+/// which keeps them out of coverage (#279), and say the ignored list needs the code moved
+/// into a folder or SpecSync's fix, CorvidLabs/spec-sync#1083. Once those folders are
+/// excluded, only the list's part is left. Neither file is ever written.
+#[test]
+fn root_level_code_gets_the_exclude_advice_instead_of_narrowing() {
+    let fixture = Fixture::new();
+    fixture.stubs();
+    let config = "specs_dir = \"specs\"\nsource_dirs = [\".\"]\nexclude_dirs = []\n";
+    fixture.write(".specsync/config.toml", config);
+    fixture.write(
+        "specs/app/app.spec.md",
+        "---\nmodule: app\nfiles:\n  - generate.py\n  - config.yaml\n---\n\n# App\n",
+    );
+    fixture.write(".specsync/sdd.json", &policy(&[]));
+    let init = fixture.ok(&[
+        "init",
+        "--objective",
+        "SYNTHETIC objective",
+        "--intent-scope",
+        "LIFE",
+    ]);
+    let advice = init["records_in_verification"].as_str().unwrap_or_default();
+    assert!(
+        advice.contains("sits at its root (for example config.yaml)")
+            && advice.contains("no code folder to narrow source_dirs to")
+            && advice.contains(".chough")
+            && advice.contains("to exclude_dirs in .specsync/config.toml")
+            && advice.contains("needs the code moved into a folder")
+            && advice.contains("CorvidLabs/spec-sync#1083")
+            && !advice.contains("for example [\"src\"]"),
+        "{init:#}"
+    );
+    let (code, report) = doctor(&fixture, &[]);
+    assert_eq!(code, 1, "{report:#}");
+    let finding = exclusions_finding(&report).expect("a records_in_verification finding");
+    assert!(
+        finding["fix"].as_str().is_some_and(
+            |fix| fix.contains("exclude_dirs") && fix.contains("CorvidLabs/spec-sync#1083")
+        ),
+        "{finding:#}"
+    );
+    assert_eq!(finding["root_code"], "config.yaml", "{finding:#}");
+
+    let excluded = finding["unexcluded"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    let names: Vec<String> = excluded
+        .iter()
+        .filter_map(|dir| dir.as_str().map(|dir| format!("\"{dir}\"")))
+        .collect();
+    let narrowed_config = format!(
+        "specs_dir = \"specs\"\nsource_dirs = [\".\"]\nexclude_dirs = [{}]\n",
+        names.join(", ")
+    );
+    fixture.write(".specsync/config.toml", &narrowed_config);
+    let (_, report) = doctor(&fixture, &[]);
+    let advice = exclusions_finding(&report).expect("a finding")["advice"]
+        .as_str()
+        .unwrap_or_default()
+        .to_string();
+    assert!(!advice.contains("to exclude_dirs"), "{advice}");
+    assert!(advice.contains("CorvidLabs/spec-sync#1083"), "{advice}");
+    assert_eq!(fixture.read(".specsync/config.toml"), narrowed_config);
 }

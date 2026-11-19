@@ -850,6 +850,16 @@ fn receipt_map(evidence: &Evidence) -> Receipt {
         map.push(("case".into(), case.id.clone()));
         map.push(("case_digest".into(), case.digest.clone()));
     }
+    // #286: as a finished session's receipt keeps them.
+    if !evidence.criteria.is_empty() {
+        map.push(("criteria".into(), evidence.criteria.join(", ")));
+    }
+    if !evidence.requirements.is_empty() {
+        map.push(("requirements".into(), evidence.requirements.join(", ")));
+    }
+    if !evidence.limitations.is_empty() {
+        map.push(("limitations".into(), evidence.limitations.join("; ")));
+    }
     if let Some(screenshot) = &evidence.screenshot {
         map.push(("screenshot".into(), screenshot.clone()));
     }

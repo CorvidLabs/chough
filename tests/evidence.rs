@@ -562,6 +562,15 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
         "SYNTHETIC-ci-run-7",
     ]);
     let plain_entry = add(&["--summary", "SYNTHETIC plain check"]);
+    // #286: what an entry was verified against, and its stated limits.
+    let limited_entry = add(&[
+        "--summary",
+        "SYNTHETIC limited check",
+        "--limitation",
+        "SYNTHETIC only the first page was read",
+        "--limitation",
+        "SYNTHETIC no network",
+    ]);
     let screenshot = fixture
         .read(&format!(
             ".chough/sessions/{session}/evidence/{shot_entry}.md"
@@ -574,7 +583,7 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
     fixture.ok(&["session", "close", &session, "--reason", "SYNTHETIC closed"]);
     let story = fixture.read(&format!(".chough/archive/sessions/{session}.md"));
     let receipts = story_receipts(&story);
-    assert_eq!(receipts.len(), 3, "{story}");
+    assert_eq!(receipts.len(), 4, "{story}");
     let order = [
         "id",
         "aliases",
@@ -588,6 +597,9 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
         "raw_log",
         "case",
         "case_digest",
+        "criteria",
+        "requirements",
+        "limitations",
         "screenshot",
         "observed",
         "duration_seconds",
@@ -649,9 +661,33 @@ fn a_story_receipt_carries_each_field_its_entry_knows() {
         assert!(!shown.contains_key(key), "{key}: {shown:?}");
     }
     let plain = receipt(&plain_entry);
-    for key in ["aliases", "command", "screenshot", "raw_log", "case"] {
+    for key in [
+        "aliases",
+        "command",
+        "screenshot",
+        "raw_log",
+        "case",
+        "limitations",
+    ] {
         assert!(!plain.contains_key(key), "{key}: {plain:?}");
     }
+    // #286: a receipt keeps its entry's criteria and requirements, comma-and-space
+    // separated, and its limitations, semicolon-and-space separated.
+    assert_eq!(plain["criteria"], "LIFE-1");
+    assert_eq!(plain["requirements"], "REQ-cli-001");
+    let limited = receipt(&limited_entry);
+    assert_eq!(limited["criteria"], "LIFE-1");
+    assert_eq!(limited["requirements"], "REQ-cli-001");
+    assert_eq!(
+        limited["limitations"],
+        "SYNTHETIC only the first page was read; SYNTHETIC no network"
+    );
+    assert_eq!(case["criteria"], "LIFE-1");
+    assert_eq!(case["requirements"], "REQ-cli-001");
+    assert!(
+        case["limitations"].contains("inherited environment variables were not recorded"),
+        "{case:?}"
+    );
 }
 
 /// REQ-cli-004 (#203): an entry carries a 0.5.x diagnostic input inventory as front

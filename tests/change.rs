@@ -1268,3 +1268,113 @@ fn a_refused_step_for_an_unknown_change_leaves_no_baseline() {
         "a baseline was written for an unknown change"
     );
 }
+
+/// REQ-cli-059 (#298), TC-cli-ship-refuses-a-corrupt-history: a commit between the
+/// change's base commit and HEAD that holds a change both open and archived is a
+/// history SpecSync reads as corrupt, so the archive would not authenticate; the ship
+/// refuses before it runs SpecSync's review or ship, naming the commit and the change,
+/// with every file unchanged.
+#[test]
+fn ship_refuses_a_history_with_a_change_both_open_and_archived() {
+    let fixture = shipping_session_at("accept");
+    let head = |fixture: &Fixture| -> String {
+        let output = std::process::Command::new("git")
+            .current_dir(fixture.root())
+            .args(["rev-parse", "HEAD"])
+            .output()
+            .unwrap();
+        String::from_utf8_lossy(&output.stdout).trim().to_string()
+    };
+    let base = head(&fixture);
+    // a5 is in progress on this branch, with its base recorded.
+    std::fs::remove_dir_all(
+        fixture
+            .root()
+            .join(".specsync/archive/changes/2026-11-01-a5"),
+    )
+    .unwrap();
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    // A merge of main kept the branch's copy of change old beside main's archive of it.
+    fixture.write(
+        ".specsync/changes/old/state.json",
+        "{\"id\": \"old\", \"state\": \"verifying\"}\n",
+    );
+    fixture.write(
+        ".specsync/archive/changes/2026-11-01-old/state.json",
+        "{\"id\": \"old\", \"state\": \"archived\"}\n",
+    );
+    fixture.commit("merge main, keeping both copies of old");
+    let duplicated = head(&fixture);
+    fixture.write("notes.txt", "later work\n");
+    fixture.commit("later work, with both copies still there");
+    std::fs::remove_dir_all(fixture.root().join(".specsync/changes/old")).unwrap();
+    fixture.commit("drop the duplicate copy of old");
+
+    let record = format!(".chough/sessions/{}/session.md", fixture.active_id());
+    let before = fixture.read(&record);
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!output.status.success(), "the ship ran: {said}");
+    assert!(said.contains("refused:corrupt-history"), "{said}");
+    assert!(
+        said.contains(&format!("commit {} ", &duplicated[..12])),
+        "the commit that brought it in is not named: {said}"
+    );
+    assert!(said.contains("2 commits"), "{said}");
+    assert!(said.contains("without those commits"), "{said}");
+    assert!(said.contains("`old`"), "the change is not named: {said}");
+    assert_eq!(ship_calls(&fixture), Vec::<String>::new(), "SpecSync ran");
+    assert!(native_arguments(&fixture).is_empty(), "a native step ran");
+    assert_eq!(fixture.read(&record), before);
+}
+
+/// #333 review: SpecSync counts a change kept both ways only by its two `state.json`
+/// files, so a leftover `tasks.md` of an archived change, as a modify/delete conflict
+/// can keep, is no corrupt history and the ship runs.
+#[test]
+fn ship_runs_with_a_leftover_file_of_an_archived_change() {
+    let fixture = shipping_session_at("accept");
+    let output = std::process::Command::new("git")
+        .current_dir(fixture.root())
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .unwrap();
+    let base = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    std::fs::remove_dir_all(
+        fixture
+            .root()
+            .join(".specsync/archive/changes/2026-11-01-a5"),
+    )
+    .unwrap();
+    fixture.write(
+        ".specsync/changes/a5/state.json",
+        &format!("{{\"id\": \"a5\", \"state\": \"verifying\", \"base_commit\": \"{base}\"}}\n"),
+    );
+    fixture.commit("a5 in progress");
+    fixture.write(
+        ".specsync/archive/changes/2026-11-01-old/state.json",
+        "{\"id\": \"old\", \"state\": \"archived\"}\n",
+    );
+    fixture.write(".specsync/changes/old/tasks.md", "# Tasks\n\n- [x] Done\n");
+    fixture.commit("merge main, keeping a leftover tasks.md of old");
+    std::fs::remove_dir_all(fixture.root().join(".specsync/changes/old")).unwrap();
+    fixture.commit("drop the leftover");
+
+    let output = fixture.run(&ship_with(SHIP_ID, &review_relay()));
+    let said = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!said.contains("refused:corrupt-history"), "{said}");
+    assert!(output.status.success(), "the ship did not run: {said}");
+    assert_eq!(ship_calls(&fixture), ["change", "ship", SHIP_ID], "{said}");
+}

@@ -368,6 +368,10 @@ pub(super) struct Transition {
     /// On a `correction` entry, the entry it corrects, as `^t-xxxxxx` (REQ-history-015).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(super) corrects: Option<String>,
+    /// On a `gate-closed` entry of a gate `chough doctor --fix --reason` withdrew, that
+    /// reason in the person's words (REQ-history-012, #250).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) withdrawn: Option<String>,
 }
 
 /// An append-only correction of an earlier entry (REQ-history-015); it starts and ends
@@ -563,6 +567,17 @@ pub(super) fn gate_for_state(
                 "{purpose} cannot be checked, so it is refused: {reason}. SpecSync rejects this policy too (see `specsync change audit`); fix the file, or set \"enabled\": false in a valid policy to disable native gates deliberately."
             ),
         ),
+        // REQ-cli-007 (#281): the session recorded, with a reason, that its work needs
+        // no native change, so no native lifecycle gates this move. A human gate that
+        // holds the stage still refuses it, before this is read.
+        NativeState::NoChange if session.no_native_change.is_some() => Gate {
+            allowed: true,
+            label: "ungated:no-native-change-required".into(),
+            detail: format!(
+                "The session records that its work needs no native change: {}",
+                session.no_native_change.as_deref().unwrap_or_default()
+            ),
+        },
         NativeState::NoChange => refused(
             "refused:no-native-change".into(),
             format!(
@@ -1715,6 +1730,7 @@ fn log_transition_at(
         holds: None,
         drives: None,
         corrects: None,
+        withdrawn: None,
     };
     validate_records(&transition)?;
     // REQ-cli-060 (DRIVE-21): a stage move, and a gate close with a relayed decision
@@ -1740,6 +1756,7 @@ fn log_transition_at(
                 holds: None,
                 drives: None,
                 corrects: None,
+                withdrawn: None,
             };
             validate_records(&event)?;
             append_transition(root, session, event)?;
