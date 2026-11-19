@@ -101,7 +101,7 @@ Chough prints its help with the usual `--help`, `-h` and `-V` flags on every com
 | `session new\|use\|list\|close\|shelve`, `inbox add\|list\|fold` | Sessions in their own folders, setting aside an unreadable one, and the subagent inbox. Starting or switching work never touches another session. See [Sessions](#sessions). |
 | `doctor [--dry-run\|--fix] [--reason R] [--close KEY]... [--leaks]` | Finds and fixes the Chough debt that stops a fresh worktree from entering Chough. `--leaks` reports only the `leak` and `oversize` findings, changes nothing and exits 1 on any, for the verify lane's `leaks` step. See [Doctor](#doctor). |
 | `gate list\|record` | Numbers the open human gates, each with a one-screen summary and its digest, and records one relayed reply for listed gates only, with `--verdict` or `--no-native` for a gate that drives a native step. See [Gate lists](#gate-lists). |
-| `change new\|answer\|check\|status\|ship` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged; `ship` checks first, runs the human's review when the gate drives one, ships, then closes the review gate with its relay and moves to done. See [SpecSync change steps](#specsync-change-steps). |
+| `change new\|answer\|check\|status\|ready\|ship` | Runs SpecSync's change new, answer, check (with `--commit`) or status step in `--root` and passes its output, refusals and exit code through unchanged; `ready` lists everything still missing before approval and names each fix, writing nothing; `ship` checks first, runs the human's review when the gate drives one, ships, then closes the review gate with its relay and moves to done. See [SpecSync change steps](#specsync-change-steps). |
 
 ## Backfilled moves
 
@@ -1187,6 +1187,31 @@ nothing and writes nothing under `.chough/`.
   SpecSync and its descendants (FLOW-14).
 - When `specsync` cannot be started, the step refuses with exit 1 and runs nothing,
   naming `cargo install --locked specsync@6.3.0` and the step to run again.
+
+### Readiness before approval
+
+`chough change ready <id>` is not one of those steps (REQ-cli-067, DRIVE-29). It
+reads the change and prints one report. It exits 0 when nothing is missing and 1
+when a finding remains. An unknown change exits 1 and names `chough change status`.
+It writes nothing: every tracked file and SpecSync's gitignored hash cache stay as
+they were. Each finding names one exact command that fixes it.
+
+- A missing delta for an affected spec: `write .specsync/changes/<id>/deltas/<module>.md`.
+  An extra delta file: `remove .specsync/changes/<id>/deltas/<module>.md`. On a change
+  declared `--no-spec-change`, every delta file is removed the same way.
+- A delta approved against canonical text that has since changed, when the approved
+  body does not already carry that change: `rewrite .specsync/changes/<id>/deltas/<module>.md`
+  and then `chough change ready <id>`.
+- An undocumented export in a declared file, the same export `specsync check --spec <module>`
+  reports: `document <symbol> in specs/<module>/<module>.spec.md`. When `specsync` cannot
+  be started: `cargo install --locked specsync@6.3.0`.
+- A case that links another module's requirement: `move <case> to .chough/cases/<owner>.<topic>.cases.toml`.
+- A changed file outside the declared paths. On a draft, including `Draft`:
+  `chough change answer <id> affected_paths "<the full list>"`. After approval:
+  `specsync change send-back <id> --actor <name> --reason "<the paths>"`.
+- An unanswered interview question: `chough change answer <id> <question> "<answer>"`.
+  An artifact that is still a TODO, or a plan missing approach, out of scope, steps,
+  risks, or constraints consulted: `complete <path>`.
 
 A human's approval and review run through their gate (see
 [Relayed decisions at gates](#relayed-decisions-at-gates)).
