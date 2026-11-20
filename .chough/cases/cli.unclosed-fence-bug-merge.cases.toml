@@ -1,0 +1,22 @@
+profile = "chough-testing/1"
+module = "cli"
+
+# #394: the bug merge driver read the Log as code after a fence that never closes.
+
+[[case]]
+id = "TC-cli-an-unclosed-fence-keeps-the-bug-log-mergeable"
+title = "Two branches that each add a Log entry to a bug whose write-up holds a code fence that never closes merge with both entries and no hand-resolved conflict"
+status = "active"
+track = "functional"
+method = "automated"
+criteria = ["DRIVE-12"]
+requirements = ["REQ-cli-047"]
+paths = ["src/bugs.rs", "tests/bugs.rs"]
+environments = ["local-macos-arm64", "ci-linux"]
+artifacts = ["test-log"]
+expected = ["tests/bugs.rs::a_bug_with_an_unclosed_fence_still_merges_both_log_entries passes"]
+
+[case.bind]
+adapter = "cargo-test"
+test_target = "bugs"
+test = "a_bug_with_an_unclosed_fence_still_merges_both_log_entries"

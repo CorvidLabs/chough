@@ -1122,13 +1122,13 @@ fn plain_safe(text: &str, in_flow: bool) -> bool {
 /// The byte range of the text under `## <heading>`, after its heading line, up to the
 /// next level one or two heading outside a code fence.
 fn section_span(body: &str, heading: &str) -> Option<(usize, usize)> {
+    let lines: Vec<&str> = body.split_inclusive('\n').collect();
+    let hidden = fenced_lines(&lines);
     let mut offset = 0;
-    let mut fenced = false;
     let mut start = None;
-    for line in body.split_inclusive('\n') {
+    for (index, line) in lines.iter().enumerate() {
         let content = line.trim_end_matches('\n').trim_end();
-        let fence = content.trim_start().starts_with("```");
-        if !fenced && !fence {
+        if !hidden[index] {
             let is_heading = content.starts_with("# ") || content.starts_with("## ");
             if let Some(begin) = start {
                 if is_heading {
@@ -1138,12 +1138,84 @@ fn section_span(body: &str, heading: &str) -> Option<(usize, usize)> {
                 start = Some(offset + line.len());
             }
         }
-        if fence {
-            fenced = !fenced;
-        }
         offset += line.len();
     }
     start.map(|begin| (begin, body.len()))
+}
+
+/// The opening line of a code fence as CommonMark reads one: at most three spaces of
+/// indent, then three or more backticks or tildes, and for backticks an info string
+/// with no backtick. Returns the fence character and the run's length.
+fn fence_open(line: &str) -> Option<(char, usize)> {
+    let content = line.trim_end_matches('\n').trim_end_matches('\r');
+    let trimmed = content.trim_start_matches(' ');
+    if content.len() - trimmed.len() > 3 {
+        return None;
+    }
+    let mark = trimmed
+        .chars()
+        .next()
+        .filter(|mark| *mark == '`' || *mark == '~')?;
+    let run = trimmed.chars().take_while(|ch| *ch == mark).count();
+    if run < 3 || (mark == '`' && trimmed[run..].contains('`')) {
+        return None;
+    }
+    Some((mark, run))
+}
+
+/// For each line, whether a closed code fence hides it (REQ-records-001, #394): a fence
+/// hides its lines up to and including its closing line, and a fence that never closes
+/// hides nothing after it, so a heading after it is still read. The one rule the section
+/// reader and the bug merge driver share.
+pub(super) fn fenced_lines(lines: &[&str]) -> Vec<bool> {
+    // One backward pass finds, for each opening line, the nearest line after it that
+    // closes it. Per fence character the candidate closes are kept nearest last, each
+    // longer than every nearer one, as `records::fence_closes` keeps them (#356): each
+    // line is pushed and popped once, and each opener is a binary search, so the scan
+    // stays linear however many fences never close, whatever their length.
+    let mut close_of: Vec<Option<usize>> = vec![None; lines.len()];
+    let mut candidates: [Vec<(usize, usize)>; 2] = [vec![], vec![]];
+    for index in (0..lines.len()).rev() {
+        if let Some((mark, run)) = fence_open(lines[index]) {
+            let stack = &candidates[usize::from(mark == '~')];
+            let longer = stack.partition_point(|&(_, length)| length >= run);
+            close_of[index] = longer.checked_sub(1).map(|at| stack[at].0);
+        }
+        if let Some((mark, run)) = fence_close_run(lines[index]) {
+            let stack = &mut candidates[usize::from(mark == '~')];
+            while stack.last().is_some_and(|&(_, farther)| farther <= run) {
+                stack.pop();
+            }
+            stack.push((index, run));
+        }
+    }
+    let mut hidden = vec![false; lines.len()];
+    let mut index = 0;
+    while index < lines.len() {
+        if let Some(close) = close_of[index] {
+            hidden[index..=close].fill(true);
+            index = close + 1;
+        } else {
+            index += 1;
+        }
+    }
+    hidden
+}
+
+/// A line that can close a fence: at most three spaces of indent, then a run of three
+/// or more backticks or tildes and nothing else. Returns the character and the run.
+fn fence_close_run(line: &str) -> Option<(char, usize)> {
+    let content = line.trim_end_matches('\n').trim_end_matches('\r');
+    let trimmed = content.trim_start_matches(' ');
+    if content.len() - trimmed.len() > 3 {
+        return None;
+    }
+    let mark = trimmed
+        .chars()
+        .next()
+        .filter(|mark| *mark == '`' || *mark == '~')?;
+    let run = trimmed.chars().take_while(|ch| *ch == mark).count();
+    (run >= 3 && trimmed[run..].trim().is_empty()).then_some((mark, run))
 }
 
 #[cfg(test)]
@@ -1180,6 +1252,44 @@ mod tests {
     }
 
     use super::*;
+
+    /// #394: a fence that never closes hides nothing after it, a closed fence hides its
+    /// lines, and many openers longer than every closer after them are read in bounded
+    /// time (#356's bound), not by rescanning the rest of the text for each one.
+    #[test]
+    fn fenced_lines_hide_only_closed_fences_in_bounded_time() {
+        let lines = [
+            "```\n",
+            "## Goal\n",
+            "~~~\n",
+            "## Kept\n",
+            "~~~\n",
+            "## After\n",
+        ];
+        assert_eq!(
+            fenced_lines(&lines),
+            vec![false, false, true, true, true, false]
+        );
+        // corvid-agent's case on #423: openers longer than any short-run cap, above
+        // closers one shorter, in bounded time too.
+        let long_opener = format!("{}x\n", "`".repeat(18));
+        let long_closer = format!("{}\n", "`".repeat(17));
+        let mut long: Vec<&str> = vec![long_opener.as_str(); 20_000];
+        long.extend(vec![long_closer.as_str(); 20_000]);
+        let started = std::time::Instant::now();
+        let hidden = fenced_lines(&long);
+        assert!(started.elapsed() < std::time::Duration::from_secs(2));
+        assert!(hidden[..20_000].iter().all(|line| !line));
+        let mut many: Vec<&str> = vec!["`````x\n"; 20_000];
+        many.extend(vec!["```\n"; 20_000]);
+        let started = std::time::Instant::now();
+        let hidden = fenced_lines(&many);
+        assert!(started.elapsed() < std::time::Duration::from_secs(2));
+        // The openers carry an info string, so none closes another; the short closers
+        // pair up among themselves; no long opener is ever closed.
+        assert!(hidden[..20_000].iter().all(|line| !line));
+        assert!(hidden[20_000..].iter().all(|line| *line));
+    }
 
     const SESSION: &str = "---\nkind: session\nid: 2026-11-10-alpha\naliases: [alpha, BUG-0012]\nobjective: \"Ship: alpha\"\nwaiting_on_human:\n  - gate: Scope approval\n    holds: plan\n    drives: approve\ncriteria:\n  - DRIVE-24\n  - DRIVE-25\n---\n# Ship alpha\n\n## Goal\n\nA person's words.\n\n## Timeline\n\n- 2026-11-10 entry one ^t-aaaaaa\n\n## Notes\n\nKeep me.\n";
 
