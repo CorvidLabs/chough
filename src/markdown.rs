@@ -112,6 +112,9 @@ enum Item {
 pub(crate) struct Record {
     items: Vec<Item>,
     body: String,
+    /// The first key whose value given to `set` held a tab, which the subset cannot hold
+    /// and [`Record::check_controls`] refuses (REQ-records-016).
+    folded_tab: Option<String>,
 }
 
 impl Record {
@@ -120,6 +123,7 @@ impl Record {
         Self {
             items: vec![],
             body: body.to_string(),
+            folded_tab: None,
         }
     }
 
@@ -177,8 +181,12 @@ impl Record {
         // The subset holds no tab, so a tab in a value, such as pasted terminal output,
         // is stored as one space: Chough never writes front matter its reader refuses
         // (REQ-records-001).
-        // A Windows line break is stored as a line feed (REQ-records-016).
-        let clean = |text: &mut String| {
+        // A Windows line break is stored as a line feed (REQ-records-016). A tab, which
+        // the subset cannot hold, is stored as a space and remembered, so a check of what
+        // a person gave still refuses it.
+        let mut tab = false;
+        let mut clean = |text: &mut String| {
+            tab |= text.contains('\t');
             untab(text);
             if text.contains("\r\n") {
                 *text = text.replace("\r\n", "\n");
@@ -186,8 +194,11 @@ impl Record {
         };
         match &mut value {
             Value::Scalar(text) => clean(text),
-            Value::List(items) => items.iter_mut().for_each(clean),
+            Value::List(items) => items.iter_mut().for_each(&mut clean),
             Value::Maps(maps) => maps.iter_mut().flatten().for_each(|(_, text)| clean(text)),
+        }
+        if tab && self.folded_tab.is_none() {
+            self.folded_tab = Some(key.to_string());
         }
         if let Value::Maps(maps) = &value {
             for map in maps {
@@ -229,13 +240,13 @@ impl Record {
 
     /// Set `key` to `value` written double-quoted whatever it holds, for a text field a
     /// YAML reader would otherwise take as a number, such as a pull request (REQ-cli-007).
-    pub(crate) fn set_quoted(&mut self, key: &str, value: &str) -> Result<()> {
+    pub(super) fn set_quoted(&mut self, key: &str, value: &str) -> Result<()> {
         self.set_written(key, value, quoted(value))
     }
 
     /// Set `key` to the YAML boolean `value`, written plain: a flag, not text, so the
     /// quoting of YAML's reserved words leaves it a boolean (REQ-records-016).
-    pub(crate) fn set_bool(&mut self, key: &str, value: bool) -> Result<()> {
+    pub(super) fn set_bool(&mut self, key: &str, value: bool) -> Result<()> {
         let text = if value { "true" } else { "false" };
         self.set_written(key, text, text.to_string())
     }
@@ -532,7 +543,7 @@ impl Record {
     /// Escape every control character this record's values and body hold, as Chough
     /// prints text (REQ-records-016): for a record generated from stored text, such as an
     /// archived story, which then holds none raw and still reads back.
-    pub(crate) fn make_printable(&mut self) {
+    pub(super) fn make_printable(&mut self) {
         let printable = |text: &mut String| -> bool {
             match crate::leaks::printable(text, false) {
                 std::borrow::Cow::Owned(escaped) => {
@@ -565,7 +576,10 @@ impl Record {
     /// (REQ-records-016): in every value without `stored`, and with it only in a value it
     /// does not already hold, and in the body only on a line it does not already hold, so
     /// text written by hand or by an earlier release never blocks a save.
-    pub(crate) fn check_controls(&self, stored: Option<&Record>) -> Result<()> {
+    pub(super) fn check_controls(&self, stored: Option<&Record>) -> Result<()> {
+        if let Some(field) = &self.folded_tab {
+            crate::leaks::check_controls(field, "\t", false)?;
+        }
         let kept: std::collections::BTreeMap<String, String> =
             stored.map(Record::fields).unwrap_or_default().into_iter().collect();
         for (field, value) in self.fields() {
@@ -722,6 +736,7 @@ pub(crate) fn parse(file: &str, text: &str) -> Result<Record> {
     Ok(Record {
         items,
         body: body.to_string(),
+        folded_tab: None,
     })
 }
 

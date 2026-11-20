@@ -513,6 +513,9 @@ pub(super) fn record(root: &Path, evidence: &Evidence, files: EntryFiles) -> Res
     }
     let mut record = entry.to_record(&name);
     let mut redacted = 0;
+    // A control character in a value given for the entry is refused under `--redact`
+    // too (REQ-records-016, #366).
+    record.check_controls(None)?;
     if leaks::redacting() {
         redacted = record.redact_leaks(leaks::Local::current());
     } else {

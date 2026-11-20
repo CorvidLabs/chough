@@ -234,7 +234,7 @@ pub(crate) fn guard(local: &Local, field: &str, value: &mut String) -> Result<us
 /// As [`guard`], for a value the stored record already holds: a control character in
 /// it, written by hand or by an earlier release, never blocks a save; it is escaped when
 /// printed (REQ-records-016).
-pub(crate) fn guard_kept(local: &Local, field: &str, value: &mut String) -> Result<usize> {
+pub(super) fn guard_kept(local: &Local, field: &str, value: &mut String) -> Result<usize> {
     if redacting() {
         let (text, found) = redact(local, value);
         if found > 0 {
@@ -248,7 +248,7 @@ pub(crate) fn guard_kept(local: &Local, field: &str, value: &mut String) -> Resu
 
 /// Whether `character` is a control character (REQ-records-016): a C0 control, DEL, a
 /// C1 control, or a bidirectional override or isolate.
-pub(crate) fn control(character: char) -> bool {
+pub(super) fn control(character: char) -> bool {
     matches!(
         character,
         '\u{0}'..='\u{1f}' | '\u{7f}'..='\u{9f}' | '\u{202a}'..='\u{202e}' | '\u{2066}'..='\u{2069}'
@@ -272,7 +272,7 @@ fn first_control(value: &str, line_breaks: bool) -> Option<char> {
 /// Refuse a value a person gives that holds a control character (REQ-records-016, #366),
 /// naming the field and the character's code point, never the value. `line_breaks` says
 /// whether the field takes a line break.
-pub(crate) fn check_controls(field: &str, value: &str, line_breaks: bool) -> Result<()> {
+pub(super) fn check_controls(field: &str, value: &str, line_breaks: bool) -> Result<()> {
     if let Some(character) = first_control(value, line_breaks) {
         bail!(
             "refused:control-character: {field} holds U+{:04X}, a control character a terminal can act on or hide; remove it; nothing was written",
@@ -286,7 +286,7 @@ pub(crate) fn check_controls(field: &str, value: &str, line_breaks: bool) -> Res
 /// `\u` and four lowercase hex digits, the form JSON uses, so no terminal acts on it; a
 /// line feed stays where the text is shown on several lines and is `\n` where
 /// `one_line`.
-pub(crate) fn printable(text: &str, one_line: bool) -> std::borrow::Cow<'_, str> {
+pub(super) fn printable(text: &str, one_line: bool) -> std::borrow::Cow<'_, str> {
     if !text
         .chars()
         .any(|character| control(character) && (one_line || character != '\n'))
@@ -313,7 +313,7 @@ pub(crate) fn check(local: &Local, field: &str, value: &str) -> Result<()> {
 }
 
 /// Refuse a value that leaks, naming the field and the kinds, never the text.
-pub(crate) fn check_leaks_in(local: &Local, field: &str, value: &str) -> Result<()> {
+pub(super) fn check_leaks_in(local: &Local, field: &str, value: &str) -> Result<()> {
     let found = find(local, value);
     if found.is_empty() {
         return Ok(());
