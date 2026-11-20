@@ -12,7 +12,7 @@ callers: []
 native_change: skill-and-create-races
 pr: "420"
 criteria: [LIFE-4, LIFE-12, DRIVE-17]
-requirements: [REQ-cli-016, REQ-cli-001]
+requirements: [REQ-cli-016, REQ-cli-001, REQ-history-016]
 cases: []
 design: []
 files: []
