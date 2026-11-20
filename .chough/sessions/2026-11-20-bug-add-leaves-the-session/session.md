@@ -5,7 +5,7 @@ aliases: [bug-add-leaves-the-session]
 objective: "bug add records the session on the new bug and never writes the session, so parallel filing merges and filing costs the same at any size (#382, #395)"
 intent_scope: ""
 modules: [cli, history]
-stage: plan
+stage: build
 stage_status: active
 iteration: 1
 callers: []
@@ -21,7 +21,7 @@ bugs: []
 blockers: []
 waiting_on_human: []
 run_consents: []
-next: "Gate \"Approve the scope of bug-add-leaves-the-session\" closed (approved); run `chough stage advance` to move on."
+next: Continue build
 ---
 # bug add records the session on the new bug and never writes the session, so parallel filing merges and filing costs the same at any size (#382, #395)
 
@@ -66,4 +66,9 @@ bug add records the session on the new bug and never writes the session, so para
     - recorded_by: chough-fixer-t4g
     - native: specsync change approve bug-add-leaves-the-session
     - actor: 0xLeif
+  - by: chough-fixer (claude-opus-5-5, hc t4n)
+- 2026-11-20T15:18:26Z · advance · plan → build · native:approved ^t-41ac22
+  - native_change: bug-add-leaves-the-session
+  - gate: native:approved
+  - revision: 5db3b73de910f88edf637f2a58ca014405030f5c
   - by: chough-fixer (claude-opus-5-5, hc t4n)
