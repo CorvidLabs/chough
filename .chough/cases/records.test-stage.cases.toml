@@ -96,21 +96,21 @@ test = "a_block_list_item_starting_with_a_hyphen_reads_back"
 
 [[case]]
 id = "TC-records-tabs-in-values-read-back"
-title = "A tab in a front matter value is stored as a space, so the record stays readable"
+title = "A tab given in a front matter value is refused as refused:control-character naming U+0009, with nothing written, so the record stays readable"
 status = "active"
 track = "functional"
 method = "automated"
 criteria = ["DRIVE-25", "DRIVE-26", "KNOW-32", "LIFE-3"]
-requirements = ["REQ-records-001"]
-paths = ["src/markdown.rs", "tests/front_matter_writes.rs"]
+requirements = ["REQ-records-001", "REQ-records-016"]
+paths = ["src/markdown.rs", "src/leaks.rs", "tests/front_matter_writes.rs"]
 environments = ["local-macos-arm64", "ci-linux"]
 artifacts = ["test-log"]
-expected = ["tests/front_matter_writes.rs::a_tab_in_a_value_is_stored_as_a_space_and_reads_back passes"]
+expected = ["tests/front_matter_writes.rs::a_tab_in_a_given_value_is_refused_and_the_records_stay_readable passes"]
 
 [case.bind]
 adapter = "cargo-test"
 test_target = "front_matter_writes"
-test = "a_tab_in_a_value_is_stored_as_a_space_and_reads_back"
+test = "a_tab_in_a_given_value_is_refused_and_the_records_stay_readable"
 
 [[case]]
 id = "TC-records-migrate-case-only-rename-reaches-git"

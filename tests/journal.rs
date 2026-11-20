@@ -713,8 +713,10 @@ fn library_merge_keeps_ours_and_refuses_a_missing_file() {
     assert!(out.stdout.is_empty());
     assert_eq!(fixture.read("ours.xml"), "ours\r\n");
     assert_eq!(fixture.read("theirs.xml"), "theirs\n");
+    // An absolute path under the temporary root is named by what it holds, never shown
+    // (REQ-records-006); Git hands the driver relative paths, which are shown.
     let error = fixture.fails(&["library", "merge", &base, &path("gone.xml"), &theirs]);
-    assert!(error.contains("gone.xml"), "{error}");
+    assert!(error.contains("is not a file"), "{error}");
 }
 
 /// REQ-cli-044, KNOW-14, KNOW-33 (BUG-journal-add-link-accepts-untracked-ignored-and-git-paths-which-are-dead-2adf94a75196d7f71102d782):
@@ -1175,7 +1177,7 @@ fn the_post_uses_the_title_and_summary_the_agent_set() {
     let long_summary = "s".repeat(901);
     for (args, why) in [
         (vec!["checkpoint", "--title", long_title.as_str()], "72"),
-        (vec!["checkpoint", "--title", "two\nlines"], "one line"),
+        (vec!["checkpoint", "--title", "two\nlines"], "U+000A"),
         (
             vec!["checkpoint", "--summary", long_summary.as_str()],
             "900",
@@ -1703,5 +1705,99 @@ fn a_changed_objective_is_in_the_post_and_one_story_line() {
             .count(),
         1,
         "{story}"
+    );
+}
+
+/// Text holding every control character a front matter value can hold raw: no tab, no
+/// backslash and no quote.
+const DIRTY: &str = "X\u{1b}[31m\u{7}\u{7f}\u{9b}31m\u{202e}\u{2066}Y";
+
+/// The code points of the control characters `text` holds raw, a line feed aside
+/// (REQ-records-016).
+fn raw_controls(text: &str) -> Vec<String> {
+    let mut held: Vec<String> = text
+        .chars()
+        .filter(|character| {
+            *character != '\n'
+                && matches!(
+                    character,
+                    '\u{0}'..='\u{1f}'
+                        | '\u{7f}'..='\u{9f}'
+                        | '\u{202a}'..='\u{202e}'
+                        | '\u{2066}'..='\u{2069}'
+                )
+        })
+        .map(|character| format!("U+{:04X}", character as u32))
+        .collect();
+    held.sort();
+    held.dedup();
+    held
+}
+
+/// REQ-cli-007 (#353), TC-cli-the-post-links-only-a-pull-request-form: a stored `pr` that
+/// is neither a pull request number nor an `http(s)` URL, as an earlier release could
+/// write, is left out of the journal post's links, and a session holding `pr: ""` links
+/// none.
+#[test]
+fn a_stored_pr_that_is_neither_form_is_left_out_of_the_post() {
+    for stored in [
+        "\"src/pr.txt\"",
+        "\"42](javascript:alert(1))\"",
+        "\"https://x/1)[click](javascript:alert(1)\"",
+        "\"\"",
+    ] {
+        let fixture = at_accept();
+        fixture.set_front("pr", stored);
+        fixture.commit("an odd pr");
+        let (_, post, _) = advance_to_done(&fixture);
+        assert!(
+            !post.contains("the pull request")
+                && !post.contains("javascript")
+                && !post.contains("src/pr.txt"),
+            "{stored}: {post}"
+        );
+    }
+}
+
+/// REQ-records-016, TC-records-generated-files-hold-text-as-printed: with a session and a
+/// journal post from an earlier release holding each control character, the move into
+/// done writes a story and a post holding none raw, and `chough library index` writes a
+/// feed that parses as XML and an index holding none raw.
+#[test]
+fn generated_files_hold_stored_control_characters_as_printed() {
+    let fixture = at_accept();
+    fixture.set_front("objective", &format!("Ship {DIRTY} now"));
+    fixture.set_front("title", &format!("Shipped {DIRTY} title"));
+    fixture.write(
+        "knowledge/journal/2026-05-01-older.md",
+        &format!(
+            "---\nid: 2026-05-01-older\ntitle: Older {DIRTY} post\ntype: journal\ntags: [chough/journal, chough/note]\ndate: 2026-05-01\nkind: note\n---\n# Older {DIRTY} post\n\nText {DIRTY} here.\n"
+        ),
+    );
+    fixture.commit("records an earlier release wrote");
+    let (post_path, post, story) = advance_to_done(&fixture);
+    assert!(
+        raw_controls(&post).is_empty(),
+        "{post_path}: {:?}",
+        raw_controls(&post)
+    );
+    assert!(
+        raw_controls(&story).is_empty(),
+        "story: {:?}",
+        raw_controls(&story)
+    );
+    fixture.ok(&["library", "index"]);
+    let feed = fixture.read("knowledge/journal/feed.xml");
+    well_formed(&feed).unwrap_or_else(|problem| panic!("{problem}: {feed}"));
+    assert!(
+        raw_controls(&feed).is_empty(),
+        "feed: {:?}",
+        raw_controls(&feed)
+    );
+    let index = fixture.read("knowledge/index.md");
+    assert!(
+        raw_controls(&index).is_empty(),
+        "index: {:?}",
+        raw_controls(&index)
     );
 }

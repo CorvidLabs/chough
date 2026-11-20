@@ -153,7 +153,10 @@ fn build_pending(
     let files = vec![
         (
             format!("{dir}/index.md"),
-            crate::vault::index(root, dir, &posts, pending)?,
+            // REQ-records-016 (#366): the index holds the posts' and records' text as it
+            // is printed, so a control character one of them holds is escaped.
+            crate::leaks::printable(&crate::vault::index(root, dir, &posts, pending)?, false)
+                .into_owned(),
         ),
         (
             format!("{}/{}", crate::journal::dir_of(dir), crate::journal::FEED),
@@ -714,7 +717,7 @@ pub(super) fn run(root: &Path, command: LibraryCommand) -> Result<()> {
         ensure!(
             ours.is_file(),
             "{} is not a file; Git runs this driver as `chough library merge %O %A %B`",
-            ours.display()
+            crate::leaks::shown("file", &ours.display().to_string())
         );
         return Ok(());
     }
